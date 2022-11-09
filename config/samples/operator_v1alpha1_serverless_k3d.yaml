@@ -1,0 +1,18 @@
+apiVersion: operator.kyma-project.io/v1alpha1
+kind: Serverless
+metadata:
+  labels:
+    operator.kyma-project.io/kyma-name: serverless-sample
+    app.kubernetes.io/name: serverless
+    app.kubernetes.io/instance: serverless-sample
+    app.kubernetes.io/part-of: serverless-manager
+    app.kuberentes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: serverless-manager
+  name: serverless-sample
+spec:
+  # you don't need these field because they will be defaulted
+  #dockerRegistry:
+  #  enableInternal: false
+  #  internalServerAddress: k3d-kyma-registry:5000
+  #  registryAddress: k3d-kyma-registry:5000
+  #  serverAddress: k3d-kyma-registry:5000

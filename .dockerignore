@@ -1,0 +1,9 @@
+# Ignore all
+**
+# Allow
+!./main.go
+!api
+!controllers
+!module-chart
+!go.sum
+!go.mod
