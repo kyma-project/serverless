@@ -50,6 +50,17 @@ This project aims to follow the Kubernetes [Operator pattern](https://kubernetes
 It uses [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/) 
 which provides a reconcile function responsible for synchronizing resources untile the desired state is reached on the cluster 
 
+Serverless Manager watches `Serverless` CR and reconciles serverless components.
+When a Serverless CR is discovered the manager uses its content as configuration for all the serverless components.
+When the content of Serverless CR is updated by the user, the manager reconciles the serverless components to make them up to date with the desired configuration.
+
+>Warning: Uninstalling serverless leaves no funtions behind!
+
+When `Serverless` CR is deleted the serverless manager undeploys all serverless workloads, uninstalls the `function.serverless.kyma-project.io` CRD and, as a consequence, deletes all function resources.
+It is important to realize that when you decide to uninstall serverless you will loose all the code stored inline in you functions.  
+Using git sourced functions and version-controlled application definition and configuration is recomended.
+
+
 ### Test It Out
 1. Install the CRDs into the cluster:
 
