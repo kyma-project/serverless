@@ -2,9 +2,6 @@ module github.com/kyma-project/serverless-manager
 
 go 1.19
 
-// https://github.com/kyma-project/module-manager/issues/171
-replace github.com/kyma-project/module-manager/operator => github.com/jakobmoellersap/manifest-operator/operator v0.0.0-20221114155636-680f17dd0bf0
-
 require (
 	github.com/onsi/ginkgo/v2 v2.1.6
 	github.com/onsi/gomega v1.20.1
@@ -123,7 +120,7 @@ require (
 	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/kyma-project/module-manager/operator v0.0.0-20221111190730-77e242b028f4
+	github.com/kyma-project/module-manager/operator v0.0.0-20221117150816-55181c4155aa
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect

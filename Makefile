@@ -81,8 +81,20 @@ fmt: ## Run go fmt against code.
 vet: ## Run go vet against code.
 	go vet ./...
 
+TESTESSENTIALS ?= $(shell pwd)/hack/test-essentials
+$(TESTESSENTIALS):
+	mkdir -p $(TESTESSENTIALS)
+	curl -s "https://raw.githubusercontent.com/kyma-project/kyma/main/installation/resources/crds/monitoring/servicemonitors.monitoring.coreos.crd.yaml" > $(TESTESSENTIALS)/servicemonitors.monitoring.coreos.crd.yaml
+
+.PHONY: test-essentials
+test-essentials: ${TESTESSENTIALS}
+
+.PHONY: test-essentials-clean
+test-essentials-clean:
+	rm -rf ${MODULECHART}
+
 .PHONY: test
-test: manifests generate fmt vet envtest module-chart ## Run tests.
+test: manifests generate fmt vet envtest module-chart test-essentials ## Run tests.
 	KUBEBUILDER_CONTROLPLANE_START_TIMEOUT=2m KUBEBUILDER_CONTROLPLANE_STOP_TIMEOUT=2m KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test ./... -coverprofile cover.out
 
 ##@ Build

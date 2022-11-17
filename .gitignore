@@ -1,3 +1,6 @@
+# IDEs
+.vscode
+.idea
 
 # Binaries for programs and plugins
 *.exe
@@ -25,9 +28,8 @@ Dockerfile.cross
 *.swo
 *~
 
-# serverless fetched chart
 module-chart
-
+hack/test-essentials
 mod
 charts
 default.yaml
