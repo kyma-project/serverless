@@ -19,7 +19,7 @@ It provides API for configuration capabilities:
  - user can override default [function runtime container resources](https://kyma-project.io/docs/kyma/latest/05-technical-reference/svls-09-available-presets/)
  - user can configure max simultaneous build jobs
  - user can set maximum body size accepted by functions
- - user can modify Log level
+ - user can modify log level of the serverless components (i.e controller, webhook)
  - ...
 
  Serverless CR shows the status of serverless module, i.e:
@@ -43,9 +43,10 @@ spec:
   defaultFunctionBuildPreset: S
   maxParallelFunctionBuilds: 5
   controllerLogLevel: debug
+  webhookLogLevel: debug
   ## runtime config
-  maxRequestPayloadSize: 2 #MB
-  functionTimeout: 180 #s
+  maxRequestPayloadSizeMB: 2
+  functionTimeoutSeconds: 180
 status:
  # health of serverless workloads (i.e controller, webhook, docker registry installed)
  # url of the detected event publisher proxy
