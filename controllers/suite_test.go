@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -54,7 +55,10 @@ var _ = BeforeSuite(func() {
 
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{
-		CRDDirectoryPaths:     []string{filepath.Join("..", "config", "crd", "bases")},
+		CRDDirectoryPaths: []string{
+			filepath.Join("..", "config", "crd", "bases"),
+			filepath.Join("..", "hack", "test-essentials"),
+		},
 		ErrorIfCRDPathMissing: true,
 	}
 
@@ -101,5 +105,11 @@ var _ = BeforeSuite(func() {
 var _ = AfterSuite(func() {
 	By("tearing down the test environment")
 	err := testEnv.Stop()
+	Expect(err).NotTo(HaveOccurred())
+
+	By("removing orphant cache file")
+	// TODO: remove this case after resolving folowing issue
+	// https://github.com/kyma-project/module-manager/issues/179
+	err = os.RemoveAll(filepath.Join("..", "module-chart", "manifest"))
 	Expect(err).NotTo(HaveOccurred())
 })

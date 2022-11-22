@@ -11,7 +11,7 @@ metadata:
   name: serverless-sample
 spec:
   # you don't need these field because they will be defaulted
-  #dockerRegistry:
+  # dockerRegistry:
   #  enableInternal: false
   #  internalServerAddress: k3d-kyma-registry:5000
   #  registryAddress: k3d-kyma-registry:5000
