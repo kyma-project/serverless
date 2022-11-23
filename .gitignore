@@ -35,3 +35,5 @@ charts
 default.yaml
 template.yaml
 template-k3d.yaml
+docs/.DS_Store
+.DS_Store
