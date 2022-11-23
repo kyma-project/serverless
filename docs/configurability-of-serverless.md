@@ -15,6 +15,7 @@ It provides API for configuration capabilities:
  - user can override metrics backend ( by default prometheus is used if it is discovered )
  - user can enable/disable internal docker registry
  - user can configure external docker registry configuration
+ - user can override default gateway that exposes internal docker registry url for k8s
  - user can override default [build-time container resources](https://kyma-project.io/docs/kyma/latest/05-technical-reference/svls-09-available-presets/)
  - user can override default [function runtime container resources](https://kyma-project.io/docs/kyma/latest/05-technical-reference/svls-09-available-presets/)
  - user can configure max simultaneous build jobs
@@ -35,7 +36,8 @@ kind: Serverless
 spec:
   dockerRegistry:
     enableInternal: true
-    externalDockerRegistrySecretName: xxxx 
+    externalDockerRegistrySecretName: xxxx
+    gateway: kyma-system/kyma-gateway #dependency to gateway that should expose docker registry for the k8s to schedule function pods
   eventingPublisherProxy: http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish
   otlpTracesEndpoint: http://tracing-jaeger-collector.kyma-system.svc.cluster.local:2342/v1/metrics ##<-- this is a dummy example
   otlpMetricsEndpoint: http://tracing-jaeger-collector.kyma-system.svc.cluster.local:4318/v1/trace
