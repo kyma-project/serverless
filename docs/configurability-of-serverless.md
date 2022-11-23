@@ -45,7 +45,7 @@ spec:
   controllerLogLevel: debug
   webhookLogLevel: debug
   ## runtime config
-  maxRequestPayloadSizeMB: 2
+  maxRequestPayloadSize: 2MB
   functionTimeoutSeconds: 180
 status:
  # health of serverless workloads (i.e controller, webhook, docker registry installed)
