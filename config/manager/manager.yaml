@@ -31,7 +31,7 @@ spec:
         - /manager
         args:
         - --leader-elect
-        image: pprecel/controller:0.1
+        image: kwiatekus/serverless-operator:0.0.1
         name: manager
         securityContext:
           allowPrivilegeEscalation: false
