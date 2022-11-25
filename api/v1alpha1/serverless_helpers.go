@@ -19,7 +19,7 @@ func (s *ServerlessSpec) Default() {
 
 func newK3DDockerRegistry() *DockerRegistry {
 	return &DockerRegistry{
-		EnableInternal:        pointer.Bool(true),
+		EnableInternal:        pointer.Bool(false),
 		InternalServerAddress: pointer.String(defaultInternalServerAddress),
 		RegistryAddress:       pointer.String(defaultRegistryAddress),
 		ServerAddress:         pointer.String(defaultServerAddress),
