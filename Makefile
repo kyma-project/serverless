@@ -112,7 +112,7 @@ run: manifests generate fmt vet module-chart ## Run a controller from your host.
 # More info: https://docs.docker.com/develop/develop-images/build_enhancements/
 .PHONY: docker-build
 docker-build: test ## Build docker image with the manager.
-	docker build -t ${IMG} .
+	IMG=$(IMG) docker build -t ${IMG} .
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.
@@ -221,8 +221,9 @@ module-image: docker-build docker-push ## Build the Module Image and push it to 
 	echo "built and pushed module image $(IMG)"
 
 .PHONY: module-build
-module-build: kyma ## Build the Module and push it to a registry defined in MODULE_REGISTRY
-	@$(KYMA) alpha create module --name=kyma.project.io/module/$(MODULE_NAME) --version=$(MODULE_VERSION) . $(MODULE_CREATION_FLAGS)
+module-build: kyma kustomize ## Build the Module and push it to a registry defined in MODULE_REGISTRY
+	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
+	@$(KYMA) alpha create module --name kyma.project.io/module/$(MODULE_NAME) --version $(MODULE_VERSION) --path . $(MODULE_CREATION_FLAGS)
 
 .PHONY: module-template-push
 module-template-push: crane ## Pushes the ModuleTemplate referencing the Image on MODULE_REGISTRY

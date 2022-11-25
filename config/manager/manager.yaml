@@ -31,7 +31,7 @@ spec:
         - /manager
         args:
         - --leader-elect
-        image: pprecel/controller:0.1
+        image: controller:latest
         name: manager
         securityContext:
           allowPrivilegeEscalation: false
