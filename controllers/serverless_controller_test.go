@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	rtypes "github.com/kyma-project/module-manager/operator/pkg/types"
+	rtypes "github.com/kyma-project/module-manager/pkg/types"
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
