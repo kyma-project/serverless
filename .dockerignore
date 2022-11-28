@@ -4,6 +4,7 @@
 !./main.go
 !api
 !controllers
+!internal
 !module-chart
 !go.sum
 !go.mod
