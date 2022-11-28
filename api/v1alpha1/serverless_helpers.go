@@ -6,6 +6,8 @@ const (
 	defaultInternalServerAddress = "k3d-kyma-registry:5000"
 	defaultRegistryAddress       = "k3d-kyma-registry:5000"
 	defaultServerAddress         = "k3d-kyma-registry:5000"
+	defaultGateway               = "kyma-system/kyma-gateway"
+	defaultGatewayCert           = "kyma-gateway-certs"
 )
 
 // TODO: refactor - we don't want to have method full of ifs
@@ -23,5 +25,7 @@ func newK3DDockerRegistry() *DockerRegistry {
 		InternalServerAddress: pointer.String(defaultInternalServerAddress),
 		RegistryAddress:       pointer.String(defaultRegistryAddress),
 		ServerAddress:         pointer.String(defaultServerAddress),
+		Gateway:               pointer.String(defaultGateway),
+		GatewayCert:           pointer.String(defaultGatewayCert),
 	}
 }

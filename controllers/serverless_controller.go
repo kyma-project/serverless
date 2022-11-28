@@ -20,20 +20,24 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/rest"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/go-logr/logr"
 	"github.com/kyma-project/module-manager/pkg/declarative"
-	"github.com/kyma-project/module-manager/pkg/types"
+	rtypes "github.com/kyma-project/module-manager/pkg/types"
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
+	"github.com/kyma-project/serverless-manager/internal/prerequisites"
 )
 
 const (
-	chartNs = "kyma-system"
+	chartNs         = "kyma-system"
+	requeueInterval = time.Second * 3
 )
 
 // ServerlessReconciler reconciles a Serverless object
@@ -88,9 +92,28 @@ type ServerlessReconciler struct {
 //+kubebuilder:rbac:groups=monitoring.coreos.com,resources=servicemonitors,verbs=get;list;watch;create;update;patch;delete;deletecollection
 
 func (r *ServerlessReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	// TODO: add custom logic here
+	var serverless *v1alpha1.Serverless
+	namespacedName := types.NamespacedName{Namespace: req.Namespace, Name: req.Name}
+	err := r.Client.Get(ctx, namespacedName, serverless)
+	if err != nil {
+		return ctrl.Result{RequeueAfter: requeueInterval}, err
+	}
+
+	err = checkPrerequisites(ctx, r.Client, serverless)
+	if err != nil {
+		return ctrl.Result{RequeueAfter: requeueInterval}, err
+	}
 
 	return r.ManifestReconciler.Reconcile(ctx, req)
+}
+
+func checkPrerequisites(ctx context.Context, client client.Client, serverless *v1alpha1.Serverless) error {
+	if serverless.Status.State != rtypes.StateProcessing &&
+		serverless.Status.State != "" {
+		return nil
+	}
+
+	return prerequisites.Check(ctx, client, serverless)
 }
 
 // initReconciler injects the required configuration into the declarative reconciler.
@@ -124,10 +147,10 @@ type ManifestResolver struct {
 }
 
 // Get returns the chart information to be processed.
-func (m *ManifestResolver) Get(obj types.BaseCustomObject, _ logr.Logger) (types.InstallationSpec, error) {
+func (m *ManifestResolver) Get(obj rtypes.BaseCustomObject, _ logr.Logger) (rtypes.InstallationSpec, error) {
 	serverless, valid := obj.(*v1alpha1.Serverless)
 	if !valid {
-		return types.InstallationSpec{},
+		return rtypes.InstallationSpec{},
 			fmt.Errorf("invalid type conversion for %s", client.ObjectKeyFromObject(obj))
 	}
 
@@ -136,14 +159,14 @@ func (m *ManifestResolver) Get(obj types.BaseCustomObject, _ logr.Logger) (types
 
 	flags, err := structToFlags(serverless.Spec)
 	if err != nil {
-		return types.InstallationSpec{},
+		return rtypes.InstallationSpec{},
 			fmt.Errorf("resolving manifest failed: %w", err)
 	}
 
-	return types.InstallationSpec{
+	return rtypes.InstallationSpec{
 		ChartPath: m.chartPath,
-		ChartFlags: types.ChartFlags{
-			ConfigFlags: types.Flags{
+		ChartFlags: rtypes.ChartFlags{
+			ConfigFlags: rtypes.Flags{
 				"Namespace":       chartNs,
 				"CreateNamespace": false, // TODO: think about it
 			},
@@ -152,7 +175,7 @@ func (m *ManifestResolver) Get(obj types.BaseCustomObject, _ logr.Logger) (types
 	}, nil
 }
 
-func structToFlags(obj interface{}) (flags types.Flags, err error) {
+func structToFlags(obj interface{}) (flags rtypes.Flags, err error) {
 	data, err := json.Marshal(obj)
 
 	if err != nil {
