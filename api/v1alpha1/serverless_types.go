@@ -26,6 +26,8 @@ type DockerRegistry struct {
 	InternalServerAddress *string `json:"internalServerAddress,omitempty"`
 	ServerAddress         *string `json:"serverAddress,omitempty"`
 	RegistryAddress       *string `json:"registryAddress,omitempty"`
+	Gateway               *string `json:"gateway,omitempty"`
+	GatewayCert           *string `json:"gatewayCert,omitempty"`
 }
 
 // ServerlessSpec defines the desired state of Serverless
