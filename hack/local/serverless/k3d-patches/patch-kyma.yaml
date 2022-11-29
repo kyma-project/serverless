@@ -1,0 +1,4 @@
+spec:
+  modules:
+  - name: serverless
+    channel: alpha
