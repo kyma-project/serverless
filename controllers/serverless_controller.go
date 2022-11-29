@@ -92,14 +92,14 @@ type ServerlessReconciler struct {
 //+kubebuilder:rbac:groups=monitoring.coreos.com,resources=servicemonitors,verbs=get;list;watch;create;update;patch;delete;deletecollection
 
 func (r *ServerlessReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	var serverless *v1alpha1.Serverless
+	var serverless v1alpha1.Serverless
 	namespacedName := types.NamespacedName{Namespace: req.Namespace, Name: req.Name}
-	err := r.Client.Get(ctx, namespacedName, serverless)
+	err := r.Client.Get(ctx, namespacedName, &serverless)
 	if err != nil {
 		return ctrl.Result{RequeueAfter: requeueInterval}, err
 	}
 
-	err = checkPrerequisites(ctx, r.Client, serverless)
+	err = checkPrerequisites(ctx, r.Client, &serverless)
 	if err != nil {
 		return ctrl.Result{RequeueAfter: requeueInterval}, err
 	}

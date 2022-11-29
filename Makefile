@@ -263,9 +263,10 @@ crane: $(CRANE)
 
 ########## Local Development ###########
 
-# TODO: implement such logic
-#.PHONY: create-k3d-and-deploy
-#create-k3d-and-deploy: docker-build
-#	k3d import ...
-#	./hack/create-k3d-cluster.sh
-#	deploy
+.PHONY: k3d-run
+k3d-run:
+	@make -C hack/local run
+
+.PHONY: k3d-stop
+k3d-stop:
+	@make -C hack/local stop

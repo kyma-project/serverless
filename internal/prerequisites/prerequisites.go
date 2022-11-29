@@ -82,7 +82,8 @@ func getCRD(ctx context.Context, client client.Client, name string) error {
 		Name: name,
 	}
 
-	return client.Get(ctx, namespacedName, &v1.CustomResourceDefinition{})
+	var crd v1.CustomResourceDefinition
+	return client.Get(ctx, namespacedName, &crd)
 }
 
 // TODO: search for this method
