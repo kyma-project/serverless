@@ -33,6 +33,7 @@ import (
 	rtypes "github.com/kyma-project/module-manager/pkg/types"
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/prerequisites"
+	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 const (
@@ -92,28 +93,37 @@ type ServerlessReconciler struct {
 //+kubebuilder:rbac:groups=monitoring.coreos.com,resources=servicemonitors,verbs=get;list;watch;create;update;patch;delete;deletecollection
 
 func (r *ServerlessReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	log := log.FromContext(ctx)
+
 	var serverless v1alpha1.Serverless
 	namespacedName := types.NamespacedName{Namespace: req.Namespace, Name: req.Name}
 	err := r.Client.Get(ctx, namespacedName, &serverless)
 	if err != nil {
-		return ctrl.Result{RequeueAfter: requeueInterval}, err
+		log.Error(err, "error while getting Serverless CR")
+		return ctrl.Result{RequeueAfter: requeueInterval}, r.updateServerlessState(ctx, &serverless, rtypes.StateError)
 	}
 
-	err = checkPrerequisites(ctx, r.Client, &serverless)
+	err = r.checkPrerequisites(ctx, &serverless)
 	if err != nil {
-		return ctrl.Result{RequeueAfter: requeueInterval}, err
+		log.Error(err, "error while checking for prerequisites")
+		return ctrl.Result{RequeueAfter: requeueInterval}, r.updateServerlessState(ctx, &serverless, rtypes.StateError)
 	}
 
 	return r.ManifestReconciler.Reconcile(ctx, req)
 }
 
-func checkPrerequisites(ctx context.Context, client client.Client, serverless *v1alpha1.Serverless) error {
-	if serverless.Status.State != rtypes.StateProcessing &&
-		serverless.Status.State != "" {
-		return nil
+func (r *ServerlessReconciler) updateServerlessState(ctx context.Context, serverless *v1alpha1.Serverless, state rtypes.State) error {
+	serverless.Status.WithState(state)
+
+	if err := r.Client.Status().Update(ctx, serverless); err != nil {
+		return fmt.Errorf("error while updating status %s to: %w", state, err)
 	}
 
-	return prerequisites.Check(ctx, client, serverless)
+	return nil
+}
+
+func (r *ServerlessReconciler) checkPrerequisites(ctx context.Context, serverless *v1alpha1.Serverless) error {
+	return prerequisites.Check(ctx, r.Client, serverless)
 }
 
 // initReconciler injects the required configuration into the declarative reconciler.

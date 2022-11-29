@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
-	"istio.io/client-go/pkg/apis/networking/v1beta1"
-	v1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	istiov1beta1 "istio.io/client-go/pkg/apis/networking/v1beta1"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -45,7 +45,7 @@ func isGatewayInstalled(ctx context.Context, client client.Client, gateway strin
 
 	namespacedName := newNamespacedNameFromString(gateway)
 
-	return client.Get(ctx, namespacedName, &v1beta1.Gateway{})
+	return client.Get(ctx, namespacedName, &istiov1beta1.Gateway{})
 }
 
 func isVirtualServiceInstalled(ctx context.Context, client client.Client) error {
@@ -82,7 +82,7 @@ func getCRD(ctx context.Context, client client.Client, name string) error {
 		Name: name,
 	}
 
-	var crd v1.CustomResourceDefinition
+	var crd apiextensionsv1.CustomResourceDefinition
 	return client.Get(ctx, namespacedName, &crd)
 }
 
