@@ -83,7 +83,6 @@ require (
 	google.golang.org/genproto v0.0.0-20220804142021-4e6b2dfa6612 // indirect
 	google.golang.org/grpc v1.48.0 // indirect
 	helm.sh/helm/v3 v3.10.1 // indirect
-	istio.io/api v0.0.0-20221109202042-b9e5d446a83d // indirect
 	k8s.io/apiserver v0.25.4 // indirect
 	k8s.io/cli-runtime v0.25.2 // indirect
 	k8s.io/kubectl v0.25.2 // indirect
@@ -148,7 +147,6 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	istio.io/client-go v1.16.0
 	k8s.io/api v0.25.4
 	k8s.io/apiextensions-apiserver v0.25.4
 	k8s.io/component-base v0.25.4 // indirect

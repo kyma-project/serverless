@@ -123,7 +123,13 @@ func (r *ServerlessReconciler) updateServerlessState(ctx context.Context, server
 }
 
 func (r *ServerlessReconciler) checkPrerequisites(ctx context.Context, serverless *v1alpha1.Serverless) error {
-	return prerequisites.Check(ctx, r.Client, serverless)
+	withIstio := false
+	if serverless.Spec.DockerRegistry != nil &&
+		serverless.Spec.DockerRegistry.EnableInternal != nil {
+		withIstio = *serverless.Spec.DockerRegistry.EnableInternal
+	}
+
+	return prerequisites.Check(ctx, r.Client, withIstio)
 }
 
 // initReconciler injects the required configuration into the declarative reconciler.
