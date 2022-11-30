@@ -9,4 +9,8 @@ metadata:
     app.kuberentes.io/managed-by: kustomize
     app.kubernetes.io/created-by: serverless-manager
   name: serverless-sample
-spec: {}
+spec:
+  dockerRegistry:
+    enableInternal: false
+    registryAddress: k3d-kyma-registry:5000
+    serverAddress: k3d-kyma-registry:5000
