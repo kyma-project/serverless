@@ -1,4 +1,6 @@
 CLUSTER_NAME ?= kyma
+KYMA_PROFILE ?= production
+KYMA_SOURCE ?= main
 REGISTRY_PORT ?= 5001
 REGISTRY_NAME ?= ${CLUSTER_NAME}-registry
 
@@ -26,8 +28,7 @@ delete-k3d-cluster:
 .PHONY: create-k3d
 create-k3d: 
 	${KYMA} provision k3d --registry-port ${REGISTRY_PORT} --name ${CLUSTER_NAME}
-#	TODO
-	${KYMA} deploy -s main -p production --component cluster-essentials
+	${KYMA} deploy --source ${KYMA_SOURCE} --profile ${KYMA_PROFILE} --component cluster-essentials
 
 .PHONY: delete-k3d
 delete-k3d: delete-k3d-cluster delete-k3d-registry
@@ -83,4 +84,3 @@ stop: delete-k3d
 .PHONY: verify
 verify:
 	@${PROJECT_ROOT}/hack/verify_kyma_status.sh
-
