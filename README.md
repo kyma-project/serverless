@@ -27,7 +27,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
     make k3d-run
     ```
 
-> Note: To clean up the k3d cluster use the `make k3d-stop` make target.
+>**NOTE**: To clean up the k3d cluster use the `make k3d-stop` make target.
 
 ## Manual installation on k3d cluster
 
@@ -49,7 +49,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
     kyma deploy -s main --component cluster-essentials --profile production --ci
     ```
 
-    > **Note**: This step is required only because `serverless-manager` is in the early stage, and there is no manager for the Kyma CRDs installation.
+    > **NOTE**: This step is required only because `serverless-manager` is in the early stage, and there is no manager for the Kyma CRDs installation.
 
 4. Build and push the Serverless Manager image
 
@@ -96,7 +96,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
         target: control-plane
     ```
 
-    - change the existing repository context in `spec.descriptor.component`:
+    - change the existing repository context in `spec.descriptor.component`:  
     
     >**NOTE:** Because Pods inside the k3d cluster use the docker-internal port of the registry, it tries to resolve the registry against port 5000 instead of 5001. K3d has registry aliases, but `module-manager` is not part of k3d and thus does not know how to properly alias `k3d-kyma-registry.localhost:5001`
 
