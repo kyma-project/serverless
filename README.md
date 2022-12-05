@@ -89,7 +89,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 
     - change `target` to `control-plane`
 
-    >**NOTE:** This is only required in the single cluster mode.\
+    >**NOTE:** This is only required in the single cluster mode. <br>
 
     ```yaml
     spec:
