@@ -27,7 +27,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
     make k3d-run
     ```
 
->**NOTE**: To clean up the k3d cluster use the `make k3d-stop` make target.
+> **NOTE:** To clean up the k3d cluster use the `make k3d-stop` make target.
 
 ## Manual installation on k3d cluster
 
@@ -49,7 +49,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
     kyma deploy -s main --component cluster-essentials --profile production --ci
     ```
 
-    > **NOTE**: This step is required only because `serverless-manager` is in the early stage, and there is no manager for the Kyma CRDs installation.
+    > **NOTE:** This step is required only because `serverless-manager` is in the early stage, and there is no manager for the Kyma CRDs installation.
 
 4. Build and push the Serverless Manager image
 
@@ -83,13 +83,13 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 
 8. Inspect the generated module template
 
-    >**NOTE:** The following sub-steps are temporary workarounds.
+    > **NOTE:** The following sub-steps are temporary workarounds.
 
     Edit the `template.yaml` file and:
 
     - change `target` to `control-plane`
 
-    >**NOTE:** This is only required in the single cluster mode.
+    > **NOTE:** This is only required in the single cluster mode.
 
     ```yaml
     spec:
@@ -98,7 +98,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 
     - change the existing repository context in `spec.descriptor.component`:  
     
-    >**NOTE:** Because Pods inside the k3d cluster use the docker-internal port of the registry, it tries to resolve the registry against port 5000 instead of 5001. K3d has registry aliases, but `module-manager` is not part of k3d and thus does not know how to properly alias `k3d-kyma-registry.localhost:5001`
+    > **NOTE:** Because Pods inside the k3d cluster use the docker-internal port of the registry, it tries to resolve the registry against port 5000 instead of 5001. K3d has registry aliases, but `module-manager` is not part of k3d and thus does not know how to properly alias `k3d-kyma-registry.localhost:5001`
 
     ```yaml
     repositoryContexts:                                                                           
@@ -145,7 +145,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 
 10. Give Module Manager permission to install CustomResourceDefinition (CRD) cluster-wide
 
-    >**NOTE:** This is a temporary workaround and is only required in the single-cluster mode.
+    > **NOTE:** This is a temporary workaround and is only required in the single-cluster mode.
 
     `module-manager` must be able to apply CRDs to install modules. In the remote mode (with control-plane managing remote clusters) it gets an administrative kubeconfig, targeting the remote cluster to do so. But in the local mode (single-cluster mode), it uses Service Account and does not have permission to create CRDs by default.
 
@@ -254,4 +254,4 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
     export KYMA=$(which kyma)
     ```
 
-    > **NOTE**: the example error may look like this: `Error: unsuported platform OS_TYPE: Darwin, OS_ARCH: arm64; to mitigate this problem set variable KYMA with absolute path to kyma-cli binary compatible with your operating system and architecture.  Stop.`
+    > **NOTE:** the example error may look like this: `Error: unsupported platform OS_TYPE: Darwin, OS_ARCH: arm64; to mitigate this problem set variable KYMA with the absolute path to kyma-cli binary compatible with your operating system and architecture.  Stop.`
