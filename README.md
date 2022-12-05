@@ -87,9 +87,9 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 
     Edit the `template.yaml` file and:
 
-    - change `target` to `control-plane` <br>
+    - change `target` to `control-plane`
 
-    >**NOTE:** This is only required in the single cluster mode. <br>
+    >**NOTE:** This is only required in the single cluster mode.
 
     ```yaml
     spec:
