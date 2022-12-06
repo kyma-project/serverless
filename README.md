@@ -89,23 +89,23 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 
     - change `target` to `control-plane`
 
-    > **NOTE:** This is only required in the single cluster mode.
-
     ```yaml
     spec:
         target: control-plane
     ```
 
+    > **NOTE:** This is only required in the single cluster mode.
+
     - change the existing repository context in `spec.descriptor.component`:  
     
-    > **NOTE:** Because Pods inside the k3d cluster use the docker-internal port of the registry, it tries to resolve the registry against port 5000 instead of 5001. K3d has registry aliases, but `module-manager` is not part of k3d and thus does not know how to properly alias `k3d-kyma-registry.localhost:5001`
-
     ```yaml
     repositoryContexts:                                                                           
       - baseUrl: k3d-kyma-registry.localhost:5000/unsigned
         componentNameMapping: urlPath                                                               
         type: ociRegistry
     ```
+
+    > **NOTE:** Because Pods inside the k3d cluster use the docker-internal port of the registry, it tries to resolve the registry against port 5000 instead of 5001. K3d has registry aliases, but `module-manager` is not part of k3d and thus does not know how to properly alias `k3d-kyma-registry.localhost:5001`
 
 9. Install modular Kyma on the k3d cluster
 
@@ -145,8 +145,6 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 
 10. Give Module Manager permission to install CustomResourceDefinition (CRD) cluster-wide
 
-    > **NOTE:** This is a temporary workaround and is only required in the single-cluster mode.
-
     `module-manager` must be able to apply CRDs to install modules. In the remote mode (with control-plane managing remote clusters) it gets an administrative kubeconfig, targeting the remote cluster to do so. But in the local mode (single-cluster mode), it uses Service Account and does not have permission to create CRDs by default.
 
     Run the following to make sure the module manager's Service Account becomes an administrative role
@@ -165,6 +163,8 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
       verbs:                  
       - "*"
     ```
+
+    > **NOTE:** This is a temporary workaround and is only required in the single-cluster mode.
 
 11. Enable Serverless in the Kyma custom resource (CR)
 
