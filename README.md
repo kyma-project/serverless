@@ -13,15 +13,15 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 - [kubectl](https://kubernetes.io/docs/tasks/tools/)
 - [Kubebuilder](https://book.kubebuilder.io/)
 
-## Installation on k3d cluster
+## Installation on the k3d cluster
 
-1. Clone project
+1. Clone the project.
 
     ```bash
     git clone https://github.com/kyma-project/serverless-manager.git && cd serverless-manager/
     ```
 
-2. Build the manager locally and run it on the k3d cluster
+2. Build the manager locally and run it on the k3d cluster.
 
     ```bash
     make k3d-run
@@ -29,21 +29,21 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 
 > **NOTE:** To clean up the k3d cluster use the `make k3d-stop` make target.
 
-## Manual installation on k3d cluster
+## Manual installation on the k3d cluster
 
-1. Clone project
+1. Clone the project.
 
     ```bash
     git clone https://github.com/kyma-project/serverless-manager.git && cd serverless-manager/
     ```
 
-2. Provision k3d cluster
+2. Provide the k3d cluster.
 
     ```bash
     kyma provision k3d
     ```
 
-3. Install prerequisites
+3. Install prerequisites.
 
     ```bash
     kyma deploy -s main --component cluster-essentials --profile production --ci
@@ -51,41 +51,41 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 
     > **NOTE:** This step is required only because `serverless-manager` is in the early stage, and there is no manager for the Kyma CRDs installation.
 
-4. Build and push the Serverless Manager image
+4. Build and push the Serverless Manager image.
 
     ```bash
     make module-image IMG_REGISTRY=localhost:5001/unsigned/operator-images IMG=localhost:5001/serverless-manager-dev-local:0.0.1
     ```
 
-5. Build and push the Serverless module
+5. Build and push the Serverless module.
 
     ```bash
     make module-build IMG=k3d-kyma-registry:5001/serverless-manager-dev-local:0.0.1 MODULE_REGISTRY=localhost:5001/unsigned
     ```
 
-6. Verify if the module and the manager's image are pushed to the local registry
+6. Verify if the module and the manager's image are pushed to the local registry.
 
     ```bash
     curl localhost:5001/v2/_catalog
     ```
 
-    The example result should look like this:
+    You should get a result similar to this example:
 
     ```json
     {"repositories":["serverless-manager-dev-local","unsigned/component-descriptors/kyma.project.io/module/serverless"]}
     ```
 
-7. Patch CoreDNS resource on the Kyma cluster
+7. Patch CoreDNS resource on the Kyma cluster.
 
     ```bash
     bash hack/get_kyma_localhost_registry_name.sh k3d-kyma-registry
     ```
 
-8. Inspect the generated module template
+8. Inspect the generated module template.
 
     > **NOTE:** The following sub-steps are temporary workarounds.
 
-    Edit the `template.yaml` file and:
+    Edit `template.yaml` and:
 
     - change `target` to `control-plane`
 
@@ -94,7 +94,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
         target: control-plane
     ```
 
-    > **NOTE:** This is only required in the single cluster mode.
+    > **NOTE:** This is required in the single cluster mode only.
 
     - change the existing repository context in `spec.descriptor.component`:  
     
@@ -105,55 +105,55 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
         type: ociRegistry
     ```
 
-    > **NOTE:** Because Pods inside the k3d cluster use the docker-internal port of the registry, it tries to resolve the registry against port 5000 instead of 5001. K3d has registry aliases, but `module-manager` is not part of k3d and thus does not know how to properly alias `k3d-kyma-registry.localhost:5001`
+    > **NOTE:** Because Pods inside the k3d cluster use the docker-internal port of the registry, it tries to resolve the registry against port 5000 instead of 5001. K3d has registry aliases, but `module-manager` is not part of k3d and thus does not know how to properly alias `k3d-kyma-registry.localhost:5001`.
 
-9. Install modular Kyma on the k3d cluster
+9. Install modular Kyma on the k3d cluster.
 
     This installs the latest versions of `module-manager` and `lifecycle-manager`.
 
-    You can use the `--template` flag to deploy the Serverless module manifest from the beginning or apply it using kubectl later.
+    Use the `--template` flag to deploy the Serverless module manifest from the beginning, or apply it using kubectl later.
 
     ```bash
     kyma alpha deploy --template=./template.yaml
     ```
 
-    Kyma installation is ready, but no module is activated yet
+    Kyma installation is ready, but the module is not yet activated.
 
     ```bash
     kubectl get kymas.operator.kyma-project.io -A
     ```
 
-    The result should look like this:
+    You should get a result similar to the following example:
 
     ```text
     NAMESPACE    NAME           STATE   AGE
     kcp-system   default-kyma   Ready   71s
     ```
 
-    Serverless Module is a known module, but not activated
+    Serverless Module is a known module, but not activated.
 
     ```bash
     kubectl get moduletemplates.operator.kyma-project.io -A 
     ```
 
-    The result should look like this:
+    You should get a result similar to the following example:
 
     ```text
     NAMESPACE    NAME                  AGE
     kcp-system   moduletemplate-serverless   2m24s
     ```
 
-10. Give Module Manager permission to install CustomResourceDefinition (CRD) cluster-wide
+10. Give Module Manager permission to install CustomResourceDefinition (CRD) cluster-wide.
 
-    `module-manager` must be able to apply CRDs to install modules. In the remote mode (with control-plane managing remote clusters) it gets an administrative kubeconfig, targeting the remote cluster to do so. But in the local mode (single-cluster mode), it uses Service Account and does not have permission to create CRDs by default.
+    `module-manager` must be able to apply CRDs to install modules. In the remote mode (with control-plane managing remote clusters) it gets an administrative kubeconfig, targeting the remote cluster to do so. In the local mode (single-cluster mode), it uses Service Account and does not have permission to create CRDs by default.
 
-    Run the following to make sure the module manager's Service Account becomes an administrative role
+    Run the following to make sure the module manager's Service Account gets an administrative role:
 
     ```bash
     kubectl edit clusterrole module-manager-manager-role
     ```
 
-    And add the following element under the `rules` field
+    And add the following element under `rules`:
 
     ```yaml
     - apiGroups:
@@ -172,7 +172,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
     kubectl edit kymas.operator.kyma-project.io -n kcp-system default-kyma
     ```
 
-    And add the following field under the `spec` field
+    And add the following field under `spec`:
 
     ```yaml
       modules:
@@ -182,31 +182,31 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 
 ## Manual installation
 
-1. Clone project
+1. Clone the project.
 
     ```bash
     git clone https://github.com/kyma-project/serverless-manager.git && cd serverless-manager/
     ```
 
-2. Set the `serverless-manager` image name
+2. Set the `serverless-manager` image name.
 
     ```bash
     export IMG=<DOCKER_USERNAME>/custom-serverless-manager:0.0.1
     ```
 
-3. Verify compability
+3. Verify the compability.
 
     ```bash
     make test
     ```
 
-4. Build and push image to registry
+4. Build and push image to the registry.
 
     ```bash
     make module-image
     ```
 
-5. Deploy
+5. Deploy.
 
     ```bash
     make deploy
@@ -214,21 +214,21 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 
 ## Using `serverless-manager`
 
-- Create a Serverless instance
+- Create a Serverless instance.
 
     ```bash
     kubectl apply -f config/samples/operator_v1alpha1_serverless_k3d.yaml
     ```
 
-- Delete a Serverless instance
+- Delete a Serverless instance.
 
     ```bash
     kubectl delete -f config/samples/operator_v1alpha1_serverless_k3d.yaml
     ```
 
-- Update the Serverless properties
+- Update the Serverless properties.
 
-    This example shows how you can modify the Serverless docker registry address using the `serverless.operator.kyma-project.io` CR
+    The following example shows how you can modify the Serverless docker registry address using the `serverless.operator.kyma-project.io` CR:
 
     ```bash
     cat <<EOF | kubectl apply -f -
@@ -254,4 +254,4 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
     export KYMA=$(which kyma)
     ```
 
-    > **NOTE:** the example error may look like this: `Error: unsupported platform OS_TYPE: Darwin, OS_ARCH: arm64; to mitigate this problem set variable KYMA with the absolute path to kyma-cli binary compatible with your operating system and architecture.  Stop.`
+    > The example error may look like this: `Error: unsupported platform OS_TYPE: Darwin, OS_ARCH: arm64; to mitigate this problem set variable KYMA with the absolute path to kyma-cli binary compatible with your operating system and architecture.  Stop.`
