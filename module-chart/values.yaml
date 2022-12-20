@@ -1,0 +1,307 @@
+# Default values for serverless.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+fullnameOverride: "serverless"
+
+injectCerts:
+  image:
+    pullPolicy: IfNotPresent
+
+migration:
+  image:
+    pullPolicy: IfNotPresent
+
+tests:
+  enabled: true
+  labels:
+    integration: true
+    after-upgrade: true
+    e2e-skr: true
+
+  long:
+    waitTimeout: 180s
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 10m
+      limits:
+        memory: 256Mi
+        cpu: 200m
+    image:
+      pullPolicy: IfNotPresent
+    namespace: "long-running-function-test"
+    name: longrun
+
+  image:
+    pullPolicy: IfNotPresent
+  disableConcurrency: false
+  restartPolicy: Never
+  resources:
+    requests:
+      memory: 32Mi
+      cpu: 10m
+    limits:
+      memory: 64Mi
+      cpu: 200m
+  envs:
+    waitTimeout: 15m
+    verifySSL: "false"
+    verbose: "false"
+    gitServer:
+      repoName: "function"
+    pkgRegistryConfig:
+      secretName: "serverless-package-registry-config"
+      URLNode: "https://pkgs.dev.azure.com/kyma-wookiee/public-packages/_packaging/public-packages%40Release/npm/registry/"
+      URLPython: "https://pkgs.dev.azure.com/kyma-wookiee/public-packages/_packaging/public-packages%40Release/pypi/simple/"
+
+global:
+  domainName: "kyma.example.com"
+  commonLabels:
+    app: '{{ template "name" . }}'
+    version: "{{ .Values.global.images.function_controller.version }}"
+    app.kubernetes.io/name: '{{ template "name" . }}'
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app.kubernetes.io/version: "{{ .Values.global.images.function_controller.version }}"
+    helm.sh/chart: '{{ include "chart" . }}'
+  dockerServicePort: 5000
+  configuration:
+    configmapName: 'serverless-configuration'
+    targetDir: "/appdata"
+    filename: "config.yaml"
+  ingress:
+    domainName:
+  containerRegistry:
+    path: eu.gcr.io/kyma-project
+  images:
+    k8s_tools:
+      name: "k8s-tools"
+      version: "v20221213-1840f45a"
+      directory: "tpi"
+    function_controller:
+      name: "function-controller"
+      version: "PR-16334"
+    function_webhook:
+      name: "function-webhook"
+      version: "PR-16334"
+    function_build_init:
+      name: "function-build-init"
+      version: "PR-16334"
+    function_runtime_nodejs14:
+      name: "function-runtime-nodejs14"
+      version: "PR-16274"
+    function_runtime_nodejs16:
+      name: "function-runtime-nodejs16"
+      version: "PR-16309"
+    function_runtime_python39:
+      name: "function-runtime-python39"
+      version: "PR-16309"
+    kaniko_executor:
+      name: "kaniko-executor"
+      version: "1.9.0-4ced14d5"
+      directory: "tpi"
+    registry:
+      name: "registry"
+      version: "2.8.1-68053f3c"
+      directory: "tpi"
+    google_pause:
+      name: "pause-amd64"
+      version: "3.2"
+      directory: "external/gcr.io/google-containers"
+  testImages:
+    function_controller_test:
+      name: "function-controller-test"
+      version: "PR-16354"
+    git_server:
+      name: "gitserver"
+      version: "708f6a87"
+  highPriorityClassName: "kyma-system-priority"
+
+images:
+  function_controller:
+    pullPolicy: IfNotPresent
+
+
+deployment:
+  replicas: 1
+  labels: {}
+  annotations: {}
+  extraProperties: {}
+  livenessProbe:
+    successThreshold: 1
+    failureThreshold: 3
+    initialDelaySeconds: 50
+    timeoutSeconds: 60
+    periodSeconds: 120
+  readinessProbe:
+    successThreshold: 1
+    failureThreshold: 3
+    initialDelaySeconds: 10
+    timeoutSeconds: 10
+    periodSeconds: 30
+
+pod:
+  labels: {}
+  annotations:
+    sidecar.istio.io/inject: "false"
+  extraProperties:
+    terminationGracePeriodSeconds: 10
+    # the following guidelines should be followed for this https://github.com/kyma-project/community/tree/main/concepts/psp-replacement
+    securityContext:
+      runAsNonRoot: true
+      runAsUser: 1000 # Optional. Use this setting only when necessary, otherwise delete it. Never set to 0 because this is the ID of root.
+      runAsGroup: 1000 # Optional. Use this setting only when necessary, otherwise delete it. Never set to 0 because this is the ID of root.
+      seccompProfile: # Optional. This option can also be set on container level but it is recommended to set it on Pod level and leave it undefined on container level.
+        type: RuntimeDefault
+    hostNetwork: false # Optional. The default is false if the entry is not there.
+    hostPID: false # Optional. The default is false if the entry is not there.
+    hostIPC: false # Optional. The default is false if the entry is not there.
+containers:
+  daemonset:
+    initContainerSecurityContext:
+      privileged: false
+      allowPrivilegeEscalation: false
+      runAsUser: 0
+    containerSecurityContext:
+      privileged: false
+      allowPrivilegeEscalation: false
+  manager:
+    resources:
+      limits:
+        cpu: 300m
+        memory: 160Mi
+      requests:
+        cpu: 10m
+        memory: 32Mi
+    # the following guidelines should be followed for this https://github.com/kyma-project/community/tree/main/concepts/psp-replacement
+    containerSecurityContext:
+      privileged: false
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop: ["ALL"]
+      procMount: default # Optional. The default is false if the entry is not there.
+      readOnlyRootFilesystem: true # Mandatory
+    healthz:
+      port: "8090"
+    extraProperties: {}
+    configuration:
+      data:
+        logLevel: "info"
+        logFormat: "json"
+    envs:
+      configPath:
+        value: "{{ .Values.global.configuration.targetDir }}/{{ .Values.global.configuration.filename }}"
+      configMapRequeueDuration:
+        value: 5m
+      secretRequeueDuration:
+        value: 5m
+      serviceAccountRequeueDuration:
+        value: 5m
+      namespaceExcludedNames:
+        value: "istio-system,kube-node-lease,kube-public,kube-system,kyma-installer,kyma-integration,kyma-system,natss,compass-system"
+      imageRegistryExternalDockerConfigSecretName:
+        value: '{{ template "fullname" . }}-registry-config'
+      imageRegistryDefaultDockerConfigSecretName:
+        value: '{{ template "fullname" . }}-registry-config-default'
+      packageRegistryConfigSecretName:
+        value: '{{ template "fullname" . }}-package-registry-config'
+      imagePullAccountName:
+        value: '{{ template "fullname" . }}-function'
+      targetCPUUtilizationPercentage:
+        value: "50"
+      # Deprecated as of kyma 2.8
+      # TODO : remove this ENV in 2.10 (two version compatibility rule for open source)
+      functionJaegerServiceEndpoint:
+        value: "http://tracing-jaeger-collector.kyma-system.svc.cluster.local:14268/api/traces"
+      functionTraceCollectorEndpoint:
+        value: "http://tracing-jaeger-collector.kyma-system.svc.cluster.local:4318/v1/traces"
+      functionPublisherProxyAddress:
+        value: "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
+      functionRequeueDuration:
+        value: 5m
+      functionBuildExecutorArgs:
+        value: "--insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true"
+      functionBuildMaxSimultaneousJobs:
+        value: "5"
+      healthzLivenessTimeout:
+        value: "10s"
+
+services:
+  manager:
+    type: ClusterIP
+    labels: {}
+    annotations: {}
+    https:
+      port: 443
+      targetPort: 8443
+
+metrics:
+  enabled: true
+  manager:
+    port:
+      name: http-metrics
+      port: 8080
+      targerPort: 8080
+      protocol: TCP
+  serviceMonitor:
+    create: true
+    labels: {}
+    annotations: {}
+  pod:
+    labels: {}
+    annotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8080"
+      prometheus.io/path: "/metrics"
+
+backendModule:
+  enabled: true
+
+clusterMicroFrontend:
+  enabled: true
+
+grafanaDashboard:
+  enabled: true
+  functionMetrics:
+    enabled: false
+
+dockerRegistry:
+  enableInternal: true
+  gateway: "kyma-system/kyma-gateway"
+  gatewayCert: "kyma-gateway-certs"
+  username: "{{ randAlphaNum 20 | b64enc }}" # for gcr "_json_key"
+  password: "{{ randAlphaNum 40 | b64enc }}" # for gcr data from json key
+  internalServerAddress: '{{ template "registry-fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.global.dockerServicePort }}'
+  serverAddress: "registry.{{ .Values.global.domainName -}}"
+  registryAddress: "registry.{{ .Values.global.domainName -}}"
+
+docker-registry:
+  fullnameOverride: "serverless-docker-registry"
+  destinationRule:
+    enabled: true
+  secrets:
+    haSharedSecret: "secret"
+    htpasswd: "generated-in-init-container"
+  extraVolumeMounts:
+    - name: htpasswd-data
+      mountPath: /data
+  extraVolumes:
+    - name: registry-credentials
+      secret:
+        secretName: serverless-registry-config-default
+        items:
+          - key: username
+            path: username.txt
+          - key: password
+            path: password.txt
+    - name: htpasswd-data
+      emptyDir: {}
+  rollme: "{{ randAlphaNum 5}}"
+  registryHTTPSecret: "{{ randAlphaNum 16 | b64enc }}"
+
+webhook:
+  enabled: true
+  fullnameOverride: "serverless-webhook"
+
+k3s-tests:
+  enabled: false # this chart is installed manually, do not flip this value
