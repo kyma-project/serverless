@@ -37,7 +37,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
     git clone https://github.com/kyma-project/serverless-manager.git && cd serverless-manager/
     ```
 
-2. Provide the k3d cluster.
+2. Provision the k3d cluster.
 
     ```bash
     kyma provision k3d
