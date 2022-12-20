@@ -27,7 +27,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
     make k3d-run
     ```
 
-> **NOTE:** To clean up the k3d cluster use the `make k3d-stop` make target.
+> **NOTE:** To clean up the k3d cluster, use the `make k3d-stop` make target.
 
 ## Manual installation on the k3d cluster
 
@@ -147,7 +147,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 
     `module-manager` must be able to apply CRDs to install modules. In the remote mode (with control-plane managing remote clusters) it gets an administrative kubeconfig, targeting the remote cluster to do so. In the local mode (single-cluster mode), it uses Service Account and does not have permission to create CRDs by default.
 
-    Run the following to make sure the module manager's Service Account gets an administrative role:
+    Run the following command to make sure the module manager's Service Account gets an administrative role:
 
     ```bash
     kubectl edit clusterrole module-manager-manager-role
@@ -200,7 +200,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
     make test
     ```
 
-4. Build and push image to the registry.
+4. Build and push the image to the registry.
 
     ```bash
     make module-image
