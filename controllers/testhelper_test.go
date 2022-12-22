@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	rtypes "github.com/kyma-project/module-manager/pkg/types"
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -151,14 +150,14 @@ func (h *testHelper) listKubernetesObjectFunc(list client.ObjectList) (bool, err
 	return true, err
 }
 
-func (h *testHelper) createGetServerlessStateFunc(serverlessName string) func() (rtypes.State, error) {
-	return func() (rtypes.State, error) {
+func (h *testHelper) createGetServerlessStateFunc(serverlessName string) func() (v1alpha1.State, error) {
+	return func() (v1alpha1.State, error) {
 		return h.getServerlessState(serverlessName)
 	}
 }
 
-func (h *testHelper) getServerlessState(serverlessName string) (rtypes.State, error) {
-	var emptyState = rtypes.State("")
+func (h *testHelper) getServerlessState(serverlessName string) (v1alpha1.State, error) {
+	var emptyState = v1alpha1.State("")
 	var serverless v1alpha1.Serverless
 	key := types.NamespacedName{
 		Name:      serverlessName,
