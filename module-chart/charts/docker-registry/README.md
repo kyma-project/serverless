@@ -8,7 +8,7 @@ This directory contains a Kubernetes chart to deploy a private Docker Registry.
 
 ## Chart Details
 
-This chart will do the following:
+This chart implements the Docker Registry deployment.
 
 * Implement a Docker registry deployment
 
