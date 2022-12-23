@@ -28,7 +28,8 @@ Dockerfile.cross
 *.swo
 *~
 
-module-chart
+#  Temporary removed due to problem with Debian 10 (need to revert when on vm the git version will be 2.26 or higher)
+# module-chart
 hack/test-essentials
 mod
 charts
