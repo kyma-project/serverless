@@ -4,7 +4,7 @@ This directory contains a Kubernetes chart to deploy a private Docker Registry.
 
 ## Prerequisites Details
 
-* PV support on underlying infrastructure (if persistence is required)
+* Persistence Volume (PV) support on underlying infrastructure (if persistence is required)
 
 ## Chart Details
 
