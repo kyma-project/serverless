@@ -18,186 +18,56 @@ package controllers
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"time"
 
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/types"
+	"go.uber.org/zap"
 	"k8s.io/client-go/rest"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/go-logr/logr"
-	"github.com/kyma-project/module-manager/pkg/declarative"
-	rtypes "github.com/kyma-project/module-manager/pkg/types"
+	"github.com/kyma-project/module-manager/pkg/cache"
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/internal/prerequisites"
-	"sigs.k8s.io/controller-runtime/pkg/log"
+	"github.com/kyma-project/serverless-manager/internal/state"
 )
 
-const (
-	chartNs         = "kyma-system"
-	requeueInterval = time.Second * 3
-)
-
-// ServerlessReconciler reconciles a Serverless object
-type ServerlessReconciler struct {
-	declarative.ManifestReconciler
-	client.Client
-	Scheme *runtime.Scheme
-	*rest.Config
-	ChartPath string
+// serverlessReconciler reconciles a Serverless object
+type serverlessReconciler struct {
+	initStateMachine func(*zap.SugaredLogger) state.StateReconciler
+	client           client.Client
+	log              *zap.SugaredLogger
 }
 
-// TODO: serverless-manager doesn't need almost half of these rbscs. It uses them only to create another rbacs ( is there any onther option? - investigate )
+func NewServerlessReconciler(client client.Client, config *rest.Config, log *zap.SugaredLogger, chartPath string) *serverlessReconciler {
+	cache := cache.NewCacheManager()
 
-//+kubebuilder:rbac:groups="",resources=events,verbs=get;list;watch;create;patch
-//+kubebuilder:rbac:groups="",resources=namespaces,verbs=get;list;watch;create;update;patch;delete;deletecollection
-//+kubebuilder:rbac:groups="",resources=services;secrets;serviceaccounts;configmaps,verbs=get;list;watch;create;update;patch;delete;deletecollection
-//+kubebuilder:rbac:groups="",resources=persistentvolumeclaims,verbs=get;list;watch;create;update;patch;delete;deletecollection
-
-//+kubebuilder:rbac:groups=apps,resources=replicasets,verbs=list
-//+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete;deletecollection
-//+kubebuilder:rbac:groups=apps,resources=deployments/status,verbs=get
-//+kubebuilder:rbac:groups=apps,resources=daemonsets,verbs=get;list;watch;create;update;patch;delete;deletecollection
-
-//+kubebuilder:rbac:groups=autoscaling,resources=horizontalpodautoscalers,verbs=get;list;watch;create;update;patch;delete;deletecollection
-
-//+kubebuilder:rbac:groups=batch,resources=jobs,verbs=get;list;watch;create;update;patch;delete;deletecollection
-//+kubebuilder:rbac:groups=batch,resources=jobs/status,verbs=get
-
-//+kubebuilder:rbac:groups=policy,resources=podsecuritypolicies,verbs=use
-
-//+kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=clusterroles;clusterrolebindings,verbs=get;list;watch;create;update;patch;delete;deletecollection
-//+kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=rolebindings;roles,verbs=get;list;watch;create;update;patch;delete;deletecollection
-
-//+kubebuilder:rbac:groups=serverless.kyma-project.io,resources=functions,verbs=get;list;watch;create;update;patch;delete;deletecollection
-//+kubebuilder:rbac:groups=serverless.kyma-project.io,resources=functions/status,verbs=get;list;watch;create;update;patch;delete;deletecollection
-//+kubebuilder:rbac:groups=serverless.kyma-project.io,resources=gitrepositories,verbs=get;list;watch;create;update;patch;delete;deletecollection
-//+kubebuilder:rbac:groups=serverless.kyma-project.io,resources=gitrepositories/status,verbs=get
-
-//+kubebuilder:rbac:groups=networking.istio.io,resources=destinationrules,verbs=get;list;watch;create;update;patch;delete;deletecollection
-//+kubebuilder:rbac:groups=networking.istio.io,resources=virtualservices,verbs=get;list;watch;create;update;patch;delete;deletecollection
-
-//+kubebuilder:rbac:groups=operator.kyma-project.io,resources=serverlesses,verbs=get;list;watch;create;update;patch;delete;deletecollection
-//+kubebuilder:rbac:groups=operator.kyma-project.io,resources=serverlesses/status,verbs=get;list;watch;create;update;patch;delete;deletecollection
-//+kubebuilder:rbac:groups=operator.kyma-project.io,resources=serverlesses/finalizers,verbs=get;list;watch;create;update;patch;delete;deletecollection
-
-//+kubebuilder:rbac:groups=admissionregistration.k8s.io,resources=validatingwebhookconfigurations;mutatingwebhookconfigurations,verbs=get;list;watch;create;update;patch;delete;deletecollection
-
-//+kubebuilder:rbac:groups=apiextensions.k8s.io,resources=customresourcedefinitions,verbs=get;list;watch;create;update;patch;delete;deletecollection
-
-//+kubebuilder:rbac:groups=coordination.k8s.io,resources=leases,verbs=get;list;watch;create;update;patch;delete;deletecollection
-
-//+kubebuilder:rbac:groups=monitoring.coreos.com,resources=servicemonitors,verbs=get;list;watch;create;update;patch;delete;deletecollection
-
-func (r *ServerlessReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	log := log.FromContext(ctx)
-
-	var serverless v1alpha1.Serverless
-	namespacedName := types.NamespacedName{Namespace: req.Namespace, Name: req.Name}
-	err := r.Client.Get(ctx, namespacedName, &serverless)
-	if err != nil {
-		log.Error(err, "error while getting Serverless CR")
-		return ctrl.Result{RequeueAfter: requeueInterval}, r.updateServerlessState(ctx, &serverless, rtypes.StateError)
+	return &serverlessReconciler{
+		initStateMachine: func(log *zap.SugaredLogger) state.StateReconciler {
+			return state.NewMachine(client, config, log, cache, chartPath)
+		},
+		client: client,
+		log:    log,
 	}
-
-	err = r.checkPrerequisites(ctx, &serverless)
-	if err != nil {
-		log.Error(err, "error while checking for prerequisites")
-		return ctrl.Result{RequeueAfter: requeueInterval}, r.updateServerlessState(ctx, &serverless, rtypes.StateError)
-	}
-
-	return r.ManifestReconciler.Reconcile(ctx, req)
-}
-
-func (r *ServerlessReconciler) updateServerlessState(ctx context.Context, serverless *v1alpha1.Serverless, state rtypes.State) error {
-	serverless.Status.WithState(state)
-
-	if err := r.Client.Status().Update(ctx, serverless); err != nil {
-		return fmt.Errorf("error while updating status %s to: %w", state, err)
-	}
-
-	return nil
-}
-
-func (r *ServerlessReconciler) checkPrerequisites(ctx context.Context, serverless *v1alpha1.Serverless) error {
-	withIstio := false
-	if serverless.Spec.DockerRegistry != nil &&
-		serverless.Spec.DockerRegistry.EnableInternal != nil {
-		withIstio = *serverless.Spec.DockerRegistry.EnableInternal
-	}
-
-	return prerequisites.Check(ctx, r.Client, withIstio)
-}
-
-// initReconciler injects the required configuration into the declarative reconciler.
-func (r *ServerlessReconciler) initReconciler(mgr ctrl.Manager) error {
-	manifestResolver := &ManifestResolver{
-		chartPath: r.ChartPath,
-	}
-
-	return r.Inject(mgr, &v1alpha1.Serverless{},
-		declarative.WithManifestResolver(manifestResolver),
-		declarative.WithResourcesReady(true),
-		declarative.WithFinalizer("serverless-manager.kyma-project.io/deletion-hook"),
-	)
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *ServerlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	r.Config = mgr.GetConfig()
-	if err := r.initReconciler(mgr); err != nil {
-		return err
-	}
-
+func (r *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.Serverless{}).
 		Complete(r)
 }
 
-// ManifestResolver represents the chart information for the passed Sample resource.
-type ManifestResolver struct {
-	chartPath string
-}
+func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	var instance v1alpha1.Serverless
 
-// Get returns the chart information to be processed.
-func (m *ManifestResolver) Get(obj rtypes.BaseCustomObject, _ logr.Logger) (rtypes.InstallationSpec, error) {
-	serverless, valid := obj.(*v1alpha1.Serverless)
-	if !valid {
-		return rtypes.InstallationSpec{},
-			fmt.Errorf("invalid type conversion for %s", client.ObjectKeyFromObject(obj))
+	log := sr.log.With("request", req)
+	log.Info("reconciliation started")
+
+	if err := sr.client.Get(ctx, req.NamespacedName, &instance); err != nil {
+		return ctrl.Result{
+			RequeueAfter: time.Second * 30,
+		}, client.IgnoreNotFound(err)
 	}
 
-	// default empty fields
-	serverless.Spec.Default()
-
-	flags, err := structToFlags(serverless.Spec)
-	if err != nil {
-		return rtypes.InstallationSpec{},
-			fmt.Errorf("resolving manifest failed: %w", err)
-	}
-
-	return rtypes.InstallationSpec{
-		ChartPath: m.chartPath,
-		ChartFlags: rtypes.ChartFlags{
-			ConfigFlags: rtypes.Flags{
-				"Namespace":       chartNs,
-				"CreateNamespace": false, // TODO: think about it
-			},
-			SetFlags: flags,
-		},
-	}, nil
-}
-
-func structToFlags(obj interface{}) (flags rtypes.Flags, err error) {
-	data, err := json.Marshal(obj)
-
-	if err != nil {
-		return
-	}
-
-	err = json.Unmarshal(data, &flags)
-	return
+	r := sr.initStateMachine(log)
+	return r.Reconcile(ctx, instance)
 }

@@ -1,4 +1,4 @@
-package prerequisites
+package dependencies
 
 import (
 	"context"
@@ -14,7 +14,7 @@ const (
 	gatewayCRD        = "gateways.networking.istio.io"
 )
 
-func Check(ctx context.Context, client client.Client, withIstio bool) error {
+func CheckPrerequisites(ctx context.Context, client client.Client, withIstio bool) error {
 	crds := []string{}
 	crds = append(crds, serviceMonitorCRD)
 
@@ -26,6 +26,8 @@ func Check(ctx context.Context, client client.Client, withIstio bool) error {
 }
 
 func check(ctx context.Context, client client.Client, crds []string) error {
+	// TODO: we should not check dependencies based on CRDs on the cluster
+
 	for i := range crds {
 		crd := crds[i]
 		if err := getCRD(ctx, client, crd); err != nil {

@@ -22,6 +22,8 @@ import (
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
+	uberzap "go.uber.org/zap"
+	uberzapcore "go.uber.org/zap/zapcore"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
 	apiextensionsscheme "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/scheme"
@@ -92,11 +94,19 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controllers.ServerlessReconciler{
-		Client:    mgr.GetClient(),
-		Scheme:    mgr.GetScheme(),
-		ChartPath: "/module-chart",
-	}).SetupWithManager(mgr); err != nil {
+	config := uberzap.NewProductionConfig()
+	config.EncoderConfig.TimeKey = "timestamp"
+	config.EncoderConfig.EncodeTime = uberzapcore.TimeEncoderOfLayout("Jan 02 15:04:05.000000000")
+
+	reconcilerLogger, err := config.Build()
+	if err != nil {
+		setupLog.Error(err, "unable to setup logger")
+		os.Exit(1)
+	}
+
+	reconciler := controllers.NewServerlessReconciler(mgr.GetClient(), mgr.GetConfig(), reconcilerLogger.Sugar(), "/module-chart")
+
+	if err = reconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Serverless")
 		os.Exit(1)
 	}

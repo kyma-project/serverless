@@ -17,8 +17,11 @@ limitations under the License.
 package v1alpha1
 
 import (
-	"github.com/kyma-project/module-manager/pkg/types"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
+const (
+	Finalizer = "serverless-manager.kyma-project.io/deletion-hook"
 )
 
 type DockerRegistry struct {
@@ -35,6 +38,28 @@ type ServerlessSpec struct {
 	DockerRegistry *DockerRegistry `json:"dockerRegistry,omitempty"`
 }
 
+type State string
+
+const (
+	StateReady      State = "Ready"
+	StateProcessing State = "Processing"
+	StateError      State = "Error"
+	StateDeleting   State = "Deleting"
+)
+
+type ServerlessStatus struct {
+	// State signifies current state of Serverless.
+	// Value can be one of ("Ready", "Processing", "Error", "Deleting").
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:Enum=Processing;Deleting;Ready;Error
+	State State `json:"state"`
+
+	// Conditions associated with CustomStatus.
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
+}
+
+// +k8s:deepcopy-gen=true
+
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
 
@@ -43,8 +68,8 @@ type Serverless struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   ServerlessSpec `json:"spec,omitempty"`
-	Status types.Status   `json:"status,omitempty"`
+	Spec   ServerlessSpec   `json:"spec,omitempty"`
+	Status ServerlessStatus `json:"status,omitempty"`
 }
 
 //+kubebuilder:object:root=true
@@ -58,18 +83,4 @@ type ServerlessList struct {
 
 func init() {
 	SchemeBuilder.Register(&Serverless{}, &ServerlessList{})
-}
-
-var _ types.CustomObject = &Serverless{}
-
-func (s *Serverless) GetStatus() types.Status {
-	return s.Status
-}
-
-func (s *Serverless) SetStatus(status types.Status) {
-	s.Status = status
-}
-
-func (s *Serverless) ComponentName() string {
-	return "serverless"
 }

@@ -7,7 +7,6 @@ const (
 	defaultServerAddress   = "k3d-kyma-registry:5000"
 )
 
-// TODO: refactor - we don't want to have method full of ifs
 func (s *ServerlessSpec) Default() {
 
 	// if DockerRegistry struct is nil configure use of k3d registry
@@ -22,4 +21,20 @@ func newK3DDockerRegistry() *DockerRegistry {
 		RegistryAddress: pointer.String(defaultRegistryAddress),
 		ServerAddress:   pointer.String(defaultServerAddress),
 	}
+}
+
+func (dr *DockerRegistry) IsInternalEnabled() bool {
+	if dr != nil && dr.EnableInternal != nil {
+		return *dr.EnableInternal
+	}
+
+	return false
+}
+
+func (s State) IsEmpty() bool {
+	if s == "" {
+		return true
+	}
+
+	return false
 }

@@ -1,4 +1,4 @@
-package prerequisites
+package dependencies
 
 import (
 	"context"
@@ -84,7 +84,7 @@ func TestCheck(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := Check(tt.args.ctx, tt.args.client, tt.args.withIstio); (err != nil) != tt.wantErr {
+			if err := CheckPrerequisites(tt.args.ctx, tt.args.client, tt.args.withIstio); (err != nil) != tt.wantErr {
 				t.Errorf("Check() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
