@@ -33,9 +33,19 @@ type DockerRegistry struct {
 	GatewayCert           *string `json:"gatewayCert,omitempty"`
 }
 
+type TraceCollector struct {
+	Value *string `json:"value,omitempty"`
+}
+
+type PublisherProxy struct {
+	Value *string `json:"value,omitempty"`
+}
+
 // ServerlessSpec defines the desired state of Serverless
 type ServerlessSpec struct {
 	DockerRegistry *DockerRegistry `json:"dockerRegistry,omitempty"`
+	TraceCollector *TraceCollector `json:"TraceCollector,omitempty"`
+	PublisherProxy *PublisherProxy `json:"PublisherProxy,omitempty"`
 }
 
 type State string
@@ -53,6 +63,10 @@ type ServerlessStatus struct {
 	// +kubebuilder:validation:Required
 	// +kubebuilder:validation:Enum=Processing;Deleting;Ready;Error
 	State State `json:"state"`
+
+	TraceCollectorStatus string `json:"TraceCollectorStatus"`
+
+	PublisherProxyStatus string `json:"PublisherProxyStatus"`
 
 	// Conditions associated with CustomStatus.
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
