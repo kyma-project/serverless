@@ -73,11 +73,12 @@ func sFnPrerequisites() (stateFn, *ctrl.Result, error) {
 		}
 
 		// ping optional endpoints before installation
-		for _, URL := range []string{*s.instance.Spec.TraceCollector.Value, *s.instance.Spec.PublisherProxy.Value} {
-			if err := dependencies.CheckOptionalDependencies(ctx, r.client, URL); err != nil {
-				return sFnUpdateServerlessStatus(v1alpha1.StateError) //TODO : Moze inny state (Czy on musi blokowac?)
-			}
-		}
+
+		//for _, URL := range []string{*s.instance.Spec.TraceCollector.Value, *s.instance.Spec.PublisherProxy.Value} {
+		//	if err := dependencies.CheckOptionalDependencies(ctx, r.client, URL); err != nil {
+		//		return sFnUpdateServerlessStatus(v1alpha1.StateError) //TODO : Moze inny state (Czy on musi blokowac?)
+		//	}
+		//}
 
 		// run verification procedure if component is already installed
 		if s.instance.Status.State == v1alpha1.StateReady {
