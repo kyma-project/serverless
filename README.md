@@ -24,10 +24,10 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 2. Build the manager locally and run it on the k3d cluster.
 
     ```bash
-    make k3d-run
+    make local-run
     ```
 
-> **NOTE:** To clean up the k3d cluster, use the `make k3d-stop` make target.
+> **NOTE:** To clean up the k3d cluster, use the `make local-stop` make target.
 
 ## Manual installation on the k3d cluster
 

@@ -27,7 +27,7 @@ delete-k3d-cluster:
 
 .PHONY: create-k3d
 create-k3d: 
-	${KYMA} provision k3d --registry-port ${REGISTRY_PORT} --name ${CLUSTER_NAME}
+	${KYMA} provision k3d --registry-port ${REGISTRY_PORT} --name ${CLUSTER_NAME} --ci
 	${KYMA} deploy --source ${KYMA_SOURCE} --profile ${KYMA_PROFILE} --component cluster-essentials --ci
 
 .PHONY: delete-k3d
@@ -69,6 +69,7 @@ patch-mod-mgr-role:
 .PHONY: install-module
 install-module:
 	${KYMA} alpha deploy \
+		--ci \
 		--template=${PROJECT_ROOT}/template-k3d.yaml
 
 .PHONY: run

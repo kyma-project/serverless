@@ -135,6 +135,16 @@ docker-buildx: manifests generate module-chart ## Build and push docker image fo
 	- docker buildx rm project-v3-builder
 	rm Dockerfile.cross
 
+##@ local
+
+.PHONY: local-run
+local-run:
+	@make -C hack/local run
+
+.PHONY: local-stop
+local-stop:
+	@make -C hack/local stop
+
 ##@ Deployment
 
 ifndef ignore-not-found
@@ -258,13 +268,3 @@ CRANE ?= $(shell which crane)
 .PHONY: crane
 crane: $(CRANE)
 	go install github.com/google/go-containerregistry/cmd/crane@latest
-
-########## Local Development ###########
-
-.PHONY: k3d-run
-k3d-run:
-	@make -C hack/local run
-
-.PHONY: k3d-stop
-k3d-stop:
-	@make -C hack/local stop
