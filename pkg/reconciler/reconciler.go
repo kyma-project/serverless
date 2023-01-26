@@ -3,11 +3,12 @@ package reconciler
 import (
 	"context"
 	"fmt"
+	"time"
+
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-	"time"
 )
 
 type Config struct {
@@ -91,7 +92,7 @@ func (r *Reconciler) buildDeleteFinalizer() ReconciliationAction {
 	return func(ctx context.Context, c client.Client, req ctrl.Request) (shouldContinue, ctrl.Result, error) {
 		instance, ok := r.Prototype.DeepCopyObject().(client.Object)
 		if !ok {
-			return false, defaultResult, fmt.Errorf("invalid custom resource object type  %v", instance)
+			return false, defaultResult, fmt.Errorf("invalid Custom Resource object type  %v", instance)
 		}
 
 		if err := r.Get(ctx, req.NamespacedName, instance); err != nil {
