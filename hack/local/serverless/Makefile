@@ -56,15 +56,15 @@ fix-template:
 enable-module:
 	kubectl patch kymas.operator.kyma-project.io \
 		default-kyma \
-		-n kcp-system \
+		-n kyma-system \
 		--type=merge \
 		--patch-file ./k3d-patches/patch-kyma.yaml
 
 .PHONY: patch-mod-mgr-role
 patch-mod-mgr-role:
 	kubectl patch clusterrole \
-		module-manager-manager-role \
-		--patch-file=./k3d-patches/patch-k3d-module-manager-clusterrole.yaml
+		lifecycle-manager-manager-role \
+		--patch-file=./k3d-patches/patch-k3d-lifecycle-manager-clusterrole.yaml
 
 .PHONY: install-module
 install-module:
