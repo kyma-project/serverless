@@ -141,7 +141,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 
     `lifecycle-manager` must be able to apply CRDs to install modules. In the remote mode (with control-plane managing remote clusters) it gets an administrative kubeconfig, targeting the remote cluster to do so. In the local mode (single-cluster mode), it uses Service Account and does not have permission to create CRDs by default.
 
-    Run the following command to make sure the lifecycle manager's Service Account gets an administrative role:
+    Run the following command to make sure the Lifecycle Manager's Service Account gets an administrative role:
 
     ```bash
     kubectl edit clusterrole lifecycle-manager-manager-role
