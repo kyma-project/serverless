@@ -1,7 +1,7 @@
+include .env
+
 # Module Name used for bundling the OCI Image and later on for referencing in the Kyma Modules
 MODULE_NAME ?= serverless
-# Semantic Module Version used for identifying the build
-MODULE_VERSION ?= 0.0.1
 # Module Registry used for pushing the image
 MODULE_REGISTRY_PORT ?= 8888
 MODULE_REGISTRY ?= op-kcp-registry.localhost:$(MODULE_REGISTRY_PORT)/unsigned
@@ -150,6 +150,24 @@ local-run:
 local-stop:
 	@make -C hack/local stop
 
+##@ CI
+
+.PHONY: ci-k3d-integration-test
+ci-k3d-integration-test: local-run
+	make -C hack/ci integration-test
+
+.PHONY: ci-k3d-upgrade-test
+ci-k3d-upgrade-test:
+	@echo "upgrade tests not implemented yet"
+
+.PHONY: ci-k3d-k8s-compatibility-test
+ci-k3d-k8s-compatibility-test:
+	@echo "k8s compatibility tests not implemented yet"
+
+.PHONY: ci-hyperscalers-compatibility-test
+ci-hyperscalers-compatibility-test:
+	@echo "hyperscalers compatibility tests not implemented yet"
+
 ##@ Deployment
 
 ifndef ignore-not-found
@@ -208,17 +226,7 @@ $(ENVTEST): $(LOCALBIN)
 ## Location to install serverless chart to
 MODULECHART ?= $(shell pwd)/module-chart
 $(MODULECHART):
-	mkdir -p $(MODULECHART)
-	git clone \
-		--depth 1  \
-		--filter=blob:none  \
-		--no-checkout \
-		https://github.com/kyma-project/kyma ${MODULECHART}
-	git -C ${MODULECHART} sparse-checkout set resources/serverless
-	git -C ${MODULECHART} checkout main
-	@mv ${MODULECHART}/resources/serverless/* ${MODULECHART} 
-	@rm -rf ${MODULECHART}/.git
-	@rm -rf ${MODULECHART}/resources
+	@./hack/generate_module-chart.sh
 
 .PHONY: module-chart
 module-chart: ${MODULECHART}
@@ -236,7 +244,9 @@ module-image: docker-build docker-push ## Build the Module Image and push it to 
 .PHONY: module-build
 module-build: kyma kustomize ## Build the Module and push it to a registry defined in MODULE_REGISTRY
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
-	@$(KYMA) alpha create module --channel=${MODULE_CHANNEL} --name kyma.project.io/module/$(MODULE_NAME) --version $(MODULE_VERSION) --path . $(MODULE_CREATION_FLAGS)
+	@$(KYMA) alpha create module --default-cr=config/samples/operator_v1alpha1_serverless_k3d.yaml \
+		--channel=${MODULE_CHANNEL} --name kyma.project.io/module/$(MODULE_NAME) \
+		--version $(MODULE_VERSION) --path . $(MODULE_CREATION_FLAGS)
 
 .PHONY: module-template-push
 module-template-push: crane ## Pushes the ModuleTemplate referencing the Image on MODULE_REGISTRY
@@ -262,6 +272,15 @@ $(KYMA):
 	$(if $(KYMA_FILE_NAME),,$(call os_error, ${OS_TYPE}, ${OS_ARCH}))
 	test -f $@ || curl -s -Lo $(KYMA) https://storage.googleapis.com/kyma-cli-$(KYMA_STABILITY)/$(KYMA_FILE_NAME)
 	chmod 0100 $(KYMA)
+
+########## Helm ###########
+HELM_INSTALL_DIR ?= $(LOCALBIN)
+HELM ?= $(HELM_INSTALL_DIR)/helm
+
+.PHONY: helm-install
+helm-install: $(HELM) ## Download helm locally if necessary.
+$(HELM): $(LOCALBIN)
+	test -s $(HELM) || HELM_INSTALL_DIR=$(HELM_INSTALL_DIR) USE_SUDO=false bash <(curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3)
 
 ########## Grafana Dashboard ###########
 .PHONY: grafana-dashboard
