@@ -8,8 +8,6 @@ MODULE_REGISTRY ?= op-kcp-registry.localhost:$(MODULE_REGISTRY_PORT)/unsigned
 # Desired Channel of the Generated Module Template
 MODULE_TEMPLATE_CHANNEL ?= stable
 MODULE_CHANNEL ?= alpha
-# Consiguration sample name
-MODULE_SAMPLE_NAME ?= ${PWD}/config/samples/operator_v1alpha1_serverless_k3d.yaml
 
 # Image URL to use all building/pushing image targets
 IMG_REGISTRY_PORT ?= $(MODULE_REGISTRY_PORT)
@@ -36,11 +34,11 @@ endif
 # Otherwise we will assume http-based local registries without authentication (e.g. for k3d)
 ifneq (,$(PROW_JOB_ID))
 GCP_ACCESS_TOKEN=$(shell gcloud auth application-default print-access-token)
-MODULE_CREATION_FLAGS=--registry $(MODULE_REGISTRY) -w -c oauth2accesstoken:$(GCP_ACCESS_TOKEN)
+MODULE_CREATION_FLAGS=--registry $(MODULE_REGISTRY) --module-archive-version-overwrite -c oauth2accesstoken:$(GCP_ACCESS_TOKEN)
 else ifeq (,$(MODULE_CREDENTIALS))
-MODULE_CREATION_FLAGS=--registry $(MODULE_REGISTRY) -w --insecure
+MODULE_CREATION_FLAGS=--registry $(MODULE_REGISTRY) --module-archive-version-overwrite --insecure
 else
-MODULE_CREATION_FLAGS=--registry $(MODULE_REGISTRY) -w -c $(MODULE_CREDENTIALS)
+MODULE_CREATION_FLAGS=--registry $(MODULE_REGISTRY) --module-archive-version-overwrite -c $(MODULE_CREDENTIALS)
 endif
 
 # Setting SHELL to bash allows bash commands to be executed by recipes.
@@ -236,12 +234,15 @@ module-image: docker-build docker-push ## Build the Module Image and push it to 
 .PHONY: module-build
 module-build: kyma kustomize ## Build the Module and push it to a registry defined in MODULE_REGISTRY
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
-	@$(KYMA) alpha create module --channel=${MODULE_CHANNEL} --name kyma.project.io/module/$(MODULE_NAME) --version $(MODULE_VERSION) --path . $(MODULE_CREATION_FLAGS)
+	@$(KYMA) alpha create module --default-cr=config/samples/operator_v1alpha1_serverless_k3d.yaml \
+		--channel=${MODULE_CHANNEL} --name kyma.project.io/module/$(MODULE_NAME) \
+		--version $(MODULE_VERSION) --path . $(MODULE_CREATION_FLAGS) \
+		--output=config/moduletemplates/template.yaml
 
 .PHONY: module-template-push
 module-template-push: crane ## Pushes the ModuleTemplate referencing the Image on MODULE_REGISTRY
 	@[[ ! -z "$PROW_JOB_ID" ]] && crane auth login europe-west4-docker.pkg.dev -u oauth2accesstoken -p "$(GCP_ACCESS_TOKEN)" || exit 1
-	@crane append -f <(tar -f - -c ./template.yaml) -t ${MODULE_REGISTRY}/templates/$(MODULE_NAME):$(MODULE_VERSION)
+	@crane append -f <(tar -f - -c ./config/moduletemplates/template.yaml) -t ${MODULE_REGISTRY}/templates/$(MODULE_NAME):$(MODULE_VERSION)
 
 ##@ Tools
 
