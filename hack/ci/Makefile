@@ -1,4 +1,5 @@
 PROJECT_ROOT ?= ../..
+TEMPLATES_DIR ?= ${PROJECT_ROOT}/config/moduletemplates
 
 include ${PROJECT_ROOT}/.env
 
@@ -19,7 +20,7 @@ module-build:
 
 .PHONY: module-template-print
 module-template-print:
-	@cat ${PROJECT_ROOT}/template.yaml
+	@cat ${TEMPLATES_DIR}/template.yaml
 
 .PHONY: all
 all: module-build module-template-print
