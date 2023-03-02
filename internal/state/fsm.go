@@ -3,6 +3,8 @@ package state
 import (
 	"context"
 	"fmt"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/utils/pointer"
 	"reflect"
 	"runtime"
 	"strings"
@@ -29,11 +31,38 @@ type cfg struct {
 }
 
 type systemState struct {
-	instance v1alpha1.Serverless
+	instance       v1alpha1.Serverless
+	dockerRegistry map[string]interface{}
 }
 
 func (s *systemState) setState(state v1alpha1.State) {
 	s.instance.Status.State = state
+}
+
+func (s *systemState) Setup(ctx context.Context, c client.Client, chartNS string) error {
+	s.instance.Spec.Default()
+
+	s.dockerRegistry = map[string]interface{}{
+		"registryAddress": pointer.String(v1alpha1.DefaultRegistryAddress),
+		"serverAddress":   pointer.String(v1alpha1.DefaultServerAddress),
+	}
+	if s.instance.Spec.DockerRegistry.SecretName != nil {
+		var secret corev1.Secret
+		key := client.ObjectKey{
+			Namespace: chartNS,
+			Name:      *s.instance.Spec.DockerRegistry.SecretName,
+		}
+		err := c.Get(ctx, key, &secret)
+		if err != nil {
+			return err
+		}
+		for _, k := range []string{"username", "password", "registryAddress", "serverAddress"} {
+			if v, ok := secret.Data[k]; ok {
+				s.dockerRegistry[k] = string(v)
+			}
+		}
+	}
+	return nil
 }
 
 type k8s struct {

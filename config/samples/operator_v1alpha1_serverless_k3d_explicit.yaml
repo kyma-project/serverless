@@ -12,5 +12,3 @@ metadata:
 spec:
   dockerRegistry:
     enableInternal: false
-    registryAddress: k3d-kyma-registry:5000
-    serverAddress: k3d-kyma-registry:5000
