@@ -20,7 +20,9 @@ module-build:
 
 .PHONY: module-template-print
 module-template-print:
+	@echo "\n~~~~~~~~~~~~BEGINING OF MODULE TEMPLATE~~~~~~~~~~~~~~"
 	@cat ${TEMPLATES_DIR}/template.yaml
+	@echo "\n~~~~~~~~~~~~~~~END OF MODULE TEMPLATE~~~~~~~~~~~~~~~~"
 
 .PHONY: all
 all: module-build module-template-print
