@@ -29,7 +29,6 @@ Dockerfile.cross
 *~
 
 module-chart
-hack/test-essentials
 mod
 charts
 default.yaml

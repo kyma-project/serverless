@@ -12,11 +12,6 @@ import (
 )
 
 var (
-	testServiceMonitorCRD = apiextensionsv1.CustomResourceDefinition{
-		ObjectMeta: v1.ObjectMeta{
-			Name: serviceMonitorCRD,
-		},
-	}
 	testVirtualServiceCRD = apiextensionsv1.CustomResourceDefinition{
 		ObjectMeta: v1.ObjectMeta{
 			Name: virtualServiceCRD,
@@ -44,7 +39,7 @@ func TestCheck(t *testing.T) {
 			name: "check",
 			args: args{
 				ctx:       context.Background(),
-				client:    fake.NewFakeClientWithScheme(apiextensionsscheme.Scheme, &testServiceMonitorCRD),
+				client:    fake.NewFakeClientWithScheme(apiextensionsscheme.Scheme),
 				withIstio: false,
 			},
 			wantErr: false,
@@ -63,7 +58,6 @@ func TestCheck(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				client: fake.NewFakeClientWithScheme(apiextensionsscheme.Scheme,
-					&testServiceMonitorCRD,
 					&testVirtualServiceCRD,
 					&testGatewayCRD),
 				withIstio: true,
@@ -75,7 +69,6 @@ func TestCheck(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 				client: fake.NewFakeClientWithScheme(apiextensionsscheme.Scheme,
-					&testServiceMonitorCRD,
 					&testGatewayCRD),
 				withIstio: true,
 			},
