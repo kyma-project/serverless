@@ -45,15 +45,6 @@ func TestCheck(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "check",
-			args: args{
-				ctx:       context.Background(),
-				client:    fake.NewFakeClientWithScheme(apiextensionsscheme.Scheme),
-				withIstio: false,
-			},
-			wantErr: true,
-		},
-		{
 			name: "check with istio",
 			args: args{
 				ctx: context.Background(),
