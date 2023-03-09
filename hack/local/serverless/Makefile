@@ -74,8 +74,21 @@ install-module:
 		--force-conflicts \
 		--templates=${TEMPLATES_DIR}
 
+.PHONY: deploy
+deploy:
+	@make -C ${PROJECT_ROOT} deploy \
+		IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${MANAGER_IMAGE_NAME}:${MANAGER_IMAGE_TAG}
+
+.PHONY: apply-serverless
+apply-serverless:
+	kubectl apply -n kyma-system \
+		-f ${PROJECT_ROOT}/config/samples/operator_v1alpha1_serverless_k3d.yaml
+
 .PHONY: run
 run: kyma create-k3d module-image module-build fix-template install-module patch-mod-mgr-role enable-module verify
+
+.PHONY: run-manual
+run-manual: kyma create-k3d module-image deploy apply-serverless verify
 
 .PHONY: stop
 stop: delete-k3d
