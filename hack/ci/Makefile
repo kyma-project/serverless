@@ -1,5 +1,4 @@
 PROJECT_ROOT ?= ../..
-TEMPLATES_DIR ?= ${PROJECT_ROOT}/config/moduletemplates
 
 include ${PROJECT_ROOT}/.env
 
@@ -21,7 +20,7 @@ module-build:
 .PHONY: module-template-print
 module-template-print:
 	@echo "\n~~~~~~~~~~~~BEGINING OF MODULE TEMPLATE~~~~~~~~~~~~~~"
-	@cat ${TEMPLATES_DIR}/template.yaml
+	@cat ${PROJECT_ROOT}/template.yaml
 	@echo "\n~~~~~~~~~~~~~~~END OF MODULE TEMPLATE~~~~~~~~~~~~~~~~"
 
 .PHONY: all

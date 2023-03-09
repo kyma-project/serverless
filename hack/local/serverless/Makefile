@@ -8,7 +8,6 @@ MANAGER_IMAGE_NAME ?= serverless-manager-dev-local
 MANAGER_IMAGE_TAG ?= 0.0.1
 
 PROJECT_ROOT ?= ../../..
-TEMPLATES_DIR ?= ${PROJECT_ROOT}/config/moduletemplates
 
 TEMPLATE_PATH ?= ${PROJECT_ROOT}/template.yaml
 
@@ -47,11 +46,11 @@ module-build:
 
 .PHONY: fix-template
 fix-template:
-	@cat ${TEMPLATES_DIR}/template.yaml \
+	@cat ${PROJECT_ROOT}/template.yaml \
 	| sed -e 's/remote/control-plane/g' \
 		-e 's/${REGISTRY_PORT}/5000/g' \
 	      	-e 's/localhost/k3d-${REGISTRY_NAME}.localhost/g' \
-	> ${TEMPLATES_DIR}/template-k3d.yaml
+	> ${PROJECT_ROOT}/template-k3d.yaml
 
 .PHONY: enable-module
 enable-module:
@@ -71,8 +70,8 @@ patch-mod-mgr-role:
 install-module:
 	${KYMA} alpha deploy \
 		--ci \
-		--force-conflicts \
-		--templates=${TEMPLATES_DIR}
+		--force-conflicts
+	kubectl apply -f ${PROJECT_ROOT}/template-k3d.yaml
 
 .PHONY: run
 run: kyma create-k3d module-image module-build fix-template install-module patch-mod-mgr-role enable-module verify
