@@ -9,14 +9,12 @@ import (
 )
 
 const (
-	serviceMonitorCRD = "servicemonitors.monitoring.coreos.com"
 	virtualServiceCRD = "virtualservices.networking.istio.io"
 	gatewayCRD        = "gateways.networking.istio.io"
 )
 
 func CheckPrerequisites(ctx context.Context, client client.Client, withIstio bool) error {
 	crds := []string{}
-	crds = append(crds, serviceMonitorCRD)
 
 	if withIstio {
 		crds = append(crds, virtualServiceCRD, gatewayCRD)
