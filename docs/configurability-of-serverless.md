@@ -35,7 +35,7 @@ kind: Serverless
 spec:
   dockerRegistry:
     enableInternal: true
-    externalDockerRegistrySecretName: xxxx 
+    secretName: xxxx 
   eventingPublisherProxy: http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish
   otlpTracesEndpoint: http://tracing-jaeger-collector.kyma-system.svc.cluster.local:2342/v1/metrics ##<-- this is a dummy example
   otlpMetricsEndpoint: http://tracing-jaeger-collector.kyma-system.svc.cluster.local:4318/v1/trace

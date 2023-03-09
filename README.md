@@ -220,9 +220,22 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
     kubectl delete -f config/samples/operator_v1alpha1_serverless_k3d.yaml
     ```
 
-- Update the Serverless properties.
+- Use external registry.
 
     The following example shows how you can modify the Serverless docker registry address using the `serverless.operator.kyma-project.io` CR:
+
+    ```bash
+    kubectl create secret generic my-secret \
+        --namespace kyma-system \
+        --from-literal username="<USERNAME>" \
+        --from-literal password="<PASSWORD>" \
+        --from-literal serverAddress="<SERVER_ADDRESS>" \
+        --from-literal registryAddress="<REGISTRY_ADDRESS>"
+    ```
+
+    > **NOTE:** For DockerHub: 
+    > - SERVER_ADDRESS is "https://index.docker.io/v1/",
+    > - USERNAME and REGISTRY_ADDRESS should be identical.
 
     ```bash
     cat <<EOF | kubectl apply -f -
@@ -231,10 +244,9 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
     metadata:
     name: serverless-sample
     spec:
-    dockerRegistry:
-        enableInternal: false
-        registryAddress: k3d-kyma-registry:5000
-        serverAddress: k3d-kyma-registry:5000
+        dockerRegistry:
+            enableInternal: false
+            secretName: my-secret
     EOF
     ```
 
