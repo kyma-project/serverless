@@ -235,7 +235,7 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 
     > **NOTE:** For DockerHub: 
     > - SERVER_ADDRESS is "https://index.docker.io/v1/",
-    > - USERNAME and REGISTRY_ADDRESS should be identical.
+    > - USERNAME and REGISTRY_ADDRESS must be identical.
 
     ```bash
     cat <<EOF | kubectl apply -f -
