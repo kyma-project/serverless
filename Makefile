@@ -234,12 +234,12 @@ module-build: kyma kustomize ## Build the Module and push it to a registry defin
 	@$(KYMA) alpha create module --default-cr=config/samples/operator_v1alpha1_serverless_k3d.yaml \
 		--channel=${MODULE_CHANNEL} --name kyma.project.io/module/$(MODULE_NAME) \
 		--version $(MODULE_VERSION) --path . $(MODULE_CREATION_FLAGS) \
-		--output=config/moduletemplates/template.yaml
+		--output=template.yaml
 
 .PHONY: module-template-push
 module-template-push: crane ## Pushes the ModuleTemplate referencing the Image on MODULE_REGISTRY
 	@[[ ! -z "$PROW_JOB_ID" ]] && crane auth login europe-west4-docker.pkg.dev -u oauth2accesstoken -p "$(GCP_ACCESS_TOKEN)" || exit 1
-	@crane append -f <(tar -f - -c ./config/moduletemplates/template.yaml) -t ${MODULE_REGISTRY}/templates/$(MODULE_NAME):$(MODULE_VERSION)
+	@crane append -f <(tar -f - -c ./template.yaml) -t ${MODULE_REGISTRY}/templates/$(MODULE_NAME):$(MODULE_VERSION)
 
 ##@ Tools
 
