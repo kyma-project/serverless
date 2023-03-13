@@ -1,10 +1,12 @@
+PROJECT_COMMON ?= ../common
+
 .PHONY: run-k3d-with-serverless
 run-k3d-with-serverless:
-	@make -C ./serverless run
+	@make -C ${PROJECT_COMMON} run
 
 .PHONY: verify
 verify:
-	@make -C ./serverless verify
+	@make -C ${PROJECT_COMMON} verify
 
 .PHONY: run
 run: run-k3d-with-serverless
@@ -15,4 +17,4 @@ test: run verify
 
 .PHONY: stop
 stop:
-	@make -C ./serverless stop
+	@make -C ${PROJECT_COMMON} stop
