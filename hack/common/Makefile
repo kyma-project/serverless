@@ -61,7 +61,7 @@ delete-k3d-cluster: ## Delete k3d kyma cluster
 .PHONY: verify
 verify: ## Wait for Serverless CR to be in Ready state
 #	TODO: rename to verify-serverless and add verify-kyma
-	@${PROJECT_ROOT}/hack/verify_kyma_status.sh
+	@./verify_kyma_status.sh
 
 .PHONY: enable-module
 enable-module: ## Patch serverless module in the right Kyma CR
