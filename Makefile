@@ -127,11 +127,12 @@ docker-buildx: manifests generate module-chart ## Build and push docker image fo
 	- docker buildx rm project-v3-builder
 	rm Dockerfile.cross
 
+# TODO: remove local and ci sections after changing test-infra targets
 ##@ local
 
 .PHONY: local-run
 local-run:
-	@make -C hack/local run
+	@make -C hack/local run-with-lifecycle-manager
 
 .PHONY: local-stop
 local-stop:
