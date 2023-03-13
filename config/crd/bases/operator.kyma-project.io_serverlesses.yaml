@@ -45,9 +45,7 @@ spec:
                     type: string
                   internalServerAddress:
                     type: string
-                  registryAddress:
-                    type: string
-                  serverAddress:
+                  secretName:
                     type: string
                 type: object
             type: object

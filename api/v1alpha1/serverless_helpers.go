@@ -3,23 +3,18 @@ package v1alpha1
 import "k8s.io/utils/pointer"
 
 const (
-	defaultRegistryAddress = "k3d-kyma-registry:5000"
-	defaultServerAddress   = "k3d-kyma-registry:5000"
+	DefaultEnableInternal  = false
+	DefaultRegistryAddress = "k3d-kyma-registry:5000"
+	DefaultServerAddress   = "k3d-kyma-registry:5000"
 )
 
 func (s *ServerlessSpec) Default() {
-
 	// if DockerRegistry struct is nil configure use of k3d registry
 	if s.DockerRegistry == nil {
-		s.DockerRegistry = newK3DDockerRegistry()
+		s.DockerRegistry = &DockerRegistry{}
 	}
-}
-
-func newK3DDockerRegistry() *DockerRegistry {
-	return &DockerRegistry{
-		EnableInternal:  pointer.Bool(false),
-		RegistryAddress: pointer.String(defaultRegistryAddress),
-		ServerAddress:   pointer.String(defaultServerAddress),
+	if s.DockerRegistry.EnableInternal == nil {
+		s.DockerRegistry.EnableInternal = pointer.Bool(DefaultEnableInternal)
 	}
 }
 

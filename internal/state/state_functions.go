@@ -24,9 +24,6 @@ var (
 
 // choose right scenario to start (installation/deletion)
 func sFnInitialize(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-	// TODO: move defaulting to dedicated space
-	s.instance.Spec.Default()
-
 	instanceIsBeingDeleted := !s.instance.GetDeletionTimestamp().IsZero()
 	instanceHasFinalizer := controllerutil.ContainsFinalizer(&s.instance, r.finalizer)
 
@@ -46,6 +43,11 @@ func sFnInitialize(ctx context.Context, r *reconciler, s *systemState) (stateFn,
 
 	if s.instance.Status.State.IsEmpty() {
 		return sFnUpdateServerlessStatus(v1alpha1.StateProcessing)
+	}
+
+	err := s.Setup(ctx, r.client, r.cfg.chartNs)
+	if err != nil {
+		return sFnUpdateServerlessStatus(v1alpha1.StateError)
 	}
 
 	// in case instance is being deleted and has finalizer - delete all resources
@@ -219,7 +221,7 @@ func requeueAfter(duration time.Duration) (stateFn, *ctrl.Result, error) {
 }
 
 func installationSpec(r *reconciler, s *systemState) (*types.InstallationSpec, error) {
-	flags, err := structToFlags(s.instance.Spec)
+	flags, err := structToFlags(s)
 	if err != nil {
 		return nil, fmt.Errorf("resolving manifest failed: %w", err)
 	}
@@ -271,13 +273,24 @@ func installInfo(ctx context.Context, r *reconciler, s *systemState, installSpec
 	}, nil
 }
 
-func structToFlags(obj interface{}) (flags types.Flags, err error) {
-	data, err := json.Marshal(obj)
+func structToFlags(s *systemState) (flags types.Flags, err error) {
+	data, err := json.Marshal(s.instance.Spec)
 
 	if err != nil {
 		return
 	}
-
 	err = json.Unmarshal(data, &flags)
+
+	enrichFlagsWithDockerRegistry(s.dockerRegistry, &flags)
 	return
+}
+
+func enrichFlagsWithDockerRegistry(d map[string]interface{}, flags *types.Flags) {
+	newDockerRegistry := (*flags)["dockerRegistry"].(map[string]interface{})
+	for _, k := range []string{"username", "password", "registryAddress", "serverAddress"} {
+		if v, ok := d[k]; ok {
+			newDockerRegistry[k] = v
+		}
+	}
+	(*flags)["dockerRegistry"] = newDockerRegistry
 }

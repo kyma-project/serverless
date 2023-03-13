@@ -15,27 +15,47 @@ var _ = Describe("Serverless controller", func() {
 	Context("When creating fresh instance", func() {
 		const (
 			namespaceName            = "kyma-system"
-			serverlessName           = "test"
+			serverlessName           = "serverless-cr-test"
 			serverlessDeploymentName = "serverless-ctrl-mngr"
 			serverlessWebhookName    = "serverless-webhook-svc"
 			serverlessRegistrySecret = "serverless-registry-config-default"
-			operatorName             = "keda-manager"
+			specSecretName           = "spec-secret-name"
 		)
 
 		var (
-			serverlessSpec = v1alpha1.ServerlessSpec{
-				DockerRegistry: &v1alpha1.DockerRegistry{
-					EnableInternal:  pointer.Bool(false),
-					ServerAddress:   pointer.String("testaddress:5000"),
-					RegistryAddress: pointer.String("testaddress:5000"),
+			registryDataDefault = dockerRegistryData{
+				EnableInternal: pointer.Bool(v1alpha1.DefaultEnableInternal),
+				registrySecretData: registrySecretData{
+					ServerAddress:   pointer.String(v1alpha1.DefaultServerAddress),
+					RegistryAddress: pointer.String(v1alpha1.DefaultRegistryAddress),
 				},
 			}
-			serverlessUpdatedSpec = v1alpha1.ServerlessSpec{
-				DockerRegistry: &v1alpha1.DockerRegistry{
-					EnableInternal:  pointer.Bool(false),
-					ServerAddress:   pointer.String("othertestaddress:5000"),
-					RegistryAddress: pointer.String("othertestaddress:5000"),
+			registryDataExternalWithSecret = dockerRegistryData{
+				EnableInternal: pointer.Bool(false),
+				registrySecretData: registrySecretData{
+					Username:        pointer.String("rumburak"),
+					Password:        pointer.String("mlekota"),
+					ServerAddress:   pointer.String("testserveraddress:5000"),
+					RegistryAddress: pointer.String("testregistryaddress:5000"),
 				},
+			}
+			registryDataExternalWithIncompleteSecret = dockerRegistryData{
+				EnableInternal: pointer.Bool(false),
+				registrySecretData: registrySecretData{
+					Username:      pointer.String("blekota"),
+					ServerAddress: pointer.String("testserveraddress:5002"),
+				},
+			}
+			registryDataIncompleteFilledByDefault = dockerRegistryData{
+				EnableInternal: pointer.Bool(v1alpha1.DefaultEnableInternal),
+				registrySecretData: registrySecretData{
+					Username:        pointer.String("blekota"),
+					ServerAddress:   pointer.String("testserveraddress:5002"),
+					RegistryAddress: pointer.String(v1alpha1.DefaultRegistryAddress),
+				},
+			}
+			registryDataExternalWithoutSecret = dockerRegistryData{
+				EnableInternal: pointer.Bool(false),
 			}
 		)
 
@@ -44,15 +64,37 @@ var _ = Describe("Serverless controller", func() {
 				ctx:           context.Background(),
 				namespaceName: namespaceName,
 			}
+			// TODO: implement test for enableInternal: true
+
 			h.createNamespace()
 
-			shouldCreateServerless(h, serverlessName, serverlessDeploymentName, serverlessWebhookName, serverlessSpec)
-
-			shouldPropagateSpecProperties(h, serverlessRegistrySecret, serverlessSpec)
-
-			shouldUpdateServerless(h, serverlessName, serverlessUpdatedSpec)
-
-			shouldPropagateSpecProperties(h, serverlessRegistrySecret, serverlessUpdatedSpec)
+			{
+				emptyData := v1alpha1.ServerlessSpec{}
+				shouldCreateServerless(h, serverlessName, serverlessDeploymentName, serverlessWebhookName, emptyData)
+				shouldPropagateSpecProperties(h, serverlessRegistrySecret, registryDataDefault)
+			}
+			{
+				registryData := registryDataExternalWithSecret
+				secretName := specSecretName + "-full"
+				h.createRegistrySecret(secretName, registryData.registrySecretData)
+				updateData := registryData.toServerlessSpec(secretName)
+				shouldUpdateServerless(h, serverlessName, updateData)
+				shouldPropagateSpecProperties(h, serverlessRegistrySecret, registryData)
+			}
+			{
+				registryData := registryDataExternalWithIncompleteSecret
+				secretName := specSecretName + "-incomplete"
+				h.createRegistrySecret(secretName, registryData.registrySecretData)
+				updateData := registryData.toServerlessSpec(secretName)
+				shouldUpdateServerless(h, serverlessName, updateData)
+				shouldPropagateSpecProperties(h, serverlessRegistrySecret, registryDataIncompleteFilledByDefault)
+			}
+			{
+				registryData := registryDataExternalWithoutSecret
+				updateData := registryData.toServerlessSpec("")
+				shouldUpdateServerless(h, serverlessName, updateData)
+				shouldPropagateSpecProperties(h, serverlessRegistrySecret, registryDataDefault)
+			}
 
 			// TODO: this scenario is not working properly
 			// https://github.com/kyma-project/serverless-manager/issues/36
@@ -76,10 +118,8 @@ func shouldCreateServerless(h testHelper, serverlessName, serverlessDeploymentNa
 		Should(Equal(v1alpha1.StateReady))
 }
 
-func shouldPropagateSpecProperties(h testHelper, registrySecretName string, serverlessSpec v1alpha1.ServerlessSpec) {
-	// TODO: implement more propagation checks here
-
-	Eventually(h.createCheckRegistrySecretFunc(registrySecretName, serverlessSpec)).
+func shouldPropagateSpecProperties(h testHelper, registrySecretName string, expected dockerRegistryData) {
+	Eventually(h.createCheckRegistrySecretFunc(registrySecretName, expected.registrySecretData)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 10).
 		Should(BeTrue())
@@ -141,4 +181,16 @@ func shouldDeleteServerless(h testHelper, serverlessName, serverlessDeploymentNa
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 10).
 		Should(BeTrue())
+}
+
+func (d *dockerRegistryData) toServerlessSpec(secretName string) v1alpha1.ServerlessSpec {
+	result := v1alpha1.ServerlessSpec{
+		DockerRegistry: &v1alpha1.DockerRegistry{
+			EnableInternal: d.EnableInternal,
+		},
+	}
+	if secretName != "" {
+		result.DockerRegistry.SecretName = pointer.String(secretName)
+	}
+	return result
 }
