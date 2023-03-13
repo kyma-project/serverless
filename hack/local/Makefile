@@ -1,5 +1,9 @@
 PROJECT_COMMON ?= ../common
 
+# TODO: add help, comments and sections
+
+# TODO: verify which target is really needed
+
 .PHONY: run-k3d-with-serverless
 run-k3d-with-serverless:
 	@make -C ${PROJECT_COMMON} run

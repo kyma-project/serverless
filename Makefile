@@ -140,7 +140,7 @@ local-stop:
 ##@ CI
 
 .PHONY: ci-k3d-integration-test
-ci-k3d-integration-test: local-run
+ci-k3d-integration-test:
 	make -C hack/ci integration-test
 
 .PHONY: ci-k3d-upgrade-test
