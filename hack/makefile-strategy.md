@@ -15,7 +15,7 @@ Pros of the architecture:
 
 ## Dependencies Graph
 
-![asd](./makefile-schema.png)
+![asd](./makefile-strategy.png)
 
 ## Dependencies description
 
