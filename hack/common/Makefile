@@ -40,10 +40,6 @@ create-k3d: ## Create k3d with kyma CRDs.
 	${KYMA} provision k3d --registry-port ${REGISTRY_PORT} --name ${CLUSTER_NAME} --ci
 	${KYMA} deploy --source ${KYMA_SOURCE} --profile ${KYMA_PROFILE} --component cluster-essentials --ci
 
-# TODO: rename / delete this target
-.PHONY: stop
-stop: delete-k3d
-
 .PHONY: delete-k3d
 delete-k3d: delete-k3d-cluster delete-k3d-registry ## Delete k3d registry & cluster.
 
