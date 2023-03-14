@@ -142,7 +142,7 @@ local-stop:
 
 .PHONY: ci-k3d-integration-test
 ci-k3d-integration-test:
-	make -C hack/ci integration-test
+	make -C hack/ci k3d-lm-integration-test
 
 # TODO: move to the hack/ci dir
 .PHONY: ci-k3d-upgrade-test

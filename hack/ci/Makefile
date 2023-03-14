@@ -24,13 +24,18 @@ module-build: ## Build the Module, push it to a registry and print it based on t
 	@cat ${PROJECT_ROOT}/template.yaml
 	@echo "\n~~~~~~~~~~~~~~~END OF MODULE TEMPLATE~~~~~~~~~~~~~~~~"
 
-# TODO: separate integration-test target and k3d creation
 .PHONY: integration-test
-integration-test: helm-install run-with-lifecycle-manager ## Run integration tests on self-prepared k3d cluster
+integration-test: helm-install ## Run integration tests on self-prepared k3d cluster
 	@helm install k3s-tests ${PROJECT_ROOT}/module-chart/charts/k3s-tests --values ${PROJECT_ROOT}/module-chart/values.yaml
 	@kubectl wait --for=condition=ready pod -l job-name=k3s-serverless-test --timeout=30s
 	kubectl logs -l job-name=k3s-serverless-test -f
 	@kubectl wait --for=condition=complete job k3s-serverless-test --timeout=30s
+
+.PHONY: k3d-lm-integration-test
+k3d-lm-integration-test: run-with-lifecycle-manager integration-test
+
+.PHONY: k3d-integration-test
+k3d-integration-test: run-without-lifecycle-manager integration-test
 
 .PHONY: all
 # TODO: remove it after switching this target on the test-infra side
@@ -45,6 +50,5 @@ run-with-lifecycle-manager:
 	@make -C ${PROJECT_COMMON} run-with-lifecycle-manager
 
 .PHONY: run-without-lifecycle-manager
-# TODO: implement in second intefration scenario
 run-without-lifecycle-manager:
 	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager
