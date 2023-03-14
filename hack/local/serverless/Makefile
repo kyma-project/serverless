@@ -2,4 +2,4 @@
 # https://github.com/kyma-project/test-infra/pull/7183/files
 .PHONY: run-manual
 run-manual: 
-	@make -C ../../common run-manual
+	@make -C ../../common run-without-lifecycle-manager

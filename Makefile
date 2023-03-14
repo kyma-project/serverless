@@ -144,6 +144,7 @@ local-stop:
 ci-k3d-integration-test:
 	make -C hack/ci integration-test
 
+# TODO: move to the hack/ci dir
 .PHONY: ci-k3d-upgrade-test
 ci-k3d-upgrade-test:
 	@echo "upgrade tests not implemented yet"
