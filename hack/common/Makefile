@@ -21,11 +21,11 @@ help: ## Display this help.
 
 .PHONY: run-with-lifecycle-manager
 ## Create k3d cluster and deploy module with the lifecycle-manager.
-run-with-lifecycle-manager: kyma create-k3d module-image module-build fix-template install-module patch-mod-mgr-role enable-module verify 
+run-with-lifecycle-manager: kyma create-k3d module-image module-build fix-template install-module patch-mod-mgr-role enable-module verify-kyma 
 
 .PHONY: run-without-lifecycle-manager
 ## Create k3d cluster and deploy module without the lifecycle-manager.
-run-without-lifecycle-manager: kyma create-k3d module-image deploy apply-serverless verify
+run-without-lifecycle-manager: kyma create-k3d module-image deploy apply-serverless verify-serverless
 
 ##@ Dependencies
 
@@ -53,9 +53,12 @@ delete-k3d-cluster: ## Delete k3d kyma cluster.
 
 ##@ Module management
 
-.PHONY: verify
-verify: ## Wait for Serverless CR to be in Ready state.
-#	TODO: rename to verify-serverless and add verify-kyma
+.PHONY: verify-serverless
+verify-serverless: ## Wait for Serverless CR to be in Ready state.
+	@./verify_serverless_status.sh
+
+.PHONY: verify-kyma
+verify-kyma: ## Wait for Kyma CR to be in Ready state.
 	@./verify_kyma_status.sh
 
 .PHONY: enable-module
