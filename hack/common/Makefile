@@ -31,7 +31,6 @@ run-without-lifecycle-manager: kyma create-k3d module-image deploy apply-serverl
 
 .PHONY: kyma
 kyma: ## Install kyma-cli under the `bin` folder if it does not exist.
-#	TODO: download kyma here
 	@make -C ${PROJECT_ROOT} kyma
 
 ##@ K3D
