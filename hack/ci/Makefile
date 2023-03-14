@@ -45,6 +45,20 @@ k3d-lm-integration-test: run-with-lifecycle-manager integration-test
 .PHONY: k3d-integration-test ## Run integration tests on self-prepared k3d cluster
 k3d-integration-test: run-without-lifecycle-manager integration-test
 
+.PHONY: k3d-upgrade-test
+k3d-upgrade-test: ## Upgrade tests not implemented yet
+	@echo "upgrade tests not implemented yet"
+
+.PHONY: k3d-k8s-compatibility-test
+k3d-k8s-compatibility-test: ## K8s compatibility tests not implemented yet
+	@echo "k8s compatibility tests not implemented yet"
+
+.PHONY: hyperscalers-compatibility-test
+hyperscalers-compatibility-test: ## Hyperscalers compatibility tests not implemented yet
+	@echo "hyperscalers compatibility tests not implemented yet"
+
+### Internal Dependencies
+
 .PHONY: helm
 helm:
 	@make -C ${PROJECT_ROOT} helm

@@ -113,32 +113,16 @@ local-stop:
 ci-k3d-integration-test:
 	make -C hack/ci k3d-lm-integration-test
 
-# TODO: move to the hack/ci dir
-.PHONY: ci-k3d-upgrade-test
-ci-k3d-upgrade-test:
-	@echo "upgrade tests not implemented yet"
-
-.PHONY: ci-k3d-k8s-compatibility-test
-ci-k3d-k8s-compatibility-test:
-	@echo "k8s compatibility tests not implemented yet"
-
-.PHONY: ci-hyperscalers-compatibility-test
-ci-hyperscalers-compatibility-test:
-	@echo "hyperscalers compatibility tests not implemented yet"
-
 ##@ Deployment
-
-ifndef ignore-not-found
-  ignore-not-found = false
-endif
+IGNORE_NOT_FOUND ?= false
 
 .PHONY: install
 install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
 	$(KUSTOMIZE) build config/crd | kubectl apply -f -
 
 .PHONY: uninstall
-uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
-	$(KUSTOMIZE) build config/crd | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
+uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config. Call with IGNORE_NOT_FOUND=true to ignore resource not found errors during deletion.
+	$(KUSTOMIZE) build config/crd | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
 
 .PHONY: deploy
 deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
@@ -146,22 +130,8 @@ deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in
 	$(KUSTOMIZE) build config/default | kubectl apply -f -
 
 .PHONY: undeploy
-undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
-	$(KUSTOMIZE) build config/default | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
-
-##@ Build Dependencies
-
-## Location to install serverless chart to
-MODULECHART ?= $(shell pwd)/module-chart
-$(MODULECHART):
-	@./hack/generate_module-chart.sh
-
-.PHONY: module-chart
-module-chart: ${MODULECHART}
-
-.PHONY: module-chart-clean
-module-chart-clean:
-	rm -rf ${MODULECHART}
+undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with IGNORE_NOT_FOUND=true to ignore resource not found errors during deletion.
+	$(KUSTOMIZE) build config/default | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
 
 ##@ Module
 
@@ -176,6 +146,20 @@ module-build: kyma kustomize ## Build the Module and push it to a registry defin
 		--channel=${MODULE_CHANNEL} --name kyma.project.io/module/$(MODULE_NAME) \
 		--version $(MODULE_VERSION) --path . $(MODULE_CREATION_FLAGS) \
 		--output=template.yaml
+
+##@ Build Dependencies
+
+## Location to install serverless chart to
+MODULECHART ?= $(shell pwd)/module-chart
+$(MODULECHART):
+	@./hack/generate_module-chart.sh
+
+.PHONY: module-chart
+module-chart: ${MODULECHART} ## Fetch latest serverless chart
+
+.PHONY: module-chart-clean
+module-chart-clean: ## Remove the module-chart dir
+	rm -rf ${MODULECHART}
 
 ##@ Tools
 

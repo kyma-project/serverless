@@ -97,7 +97,7 @@ apply-serverless: ## Apply the k3d serverless CR
 	kubectl apply -n kyma-system \
 		-f ${PROJECT_ROOT}/config/samples/operator_v1alpha1_serverless_k3d.yaml
 
-### Other
+### Internal Dependencies
 
 .PHONY: module-image
 module-image:
