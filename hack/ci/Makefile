@@ -30,9 +30,11 @@ all: module-build
 
 ##@ Tests
 
+HELM ?= ${PROJECT_ROOT}/bin/helm
+
 .PHONY: integration-test
-integration-test: helm-install ## Run integration tests on self-prepared k3d cluster
-	@helm install k3s-tests ${PROJECT_ROOT}/module-chart/charts/k3s-tests --values ${PROJECT_ROOT}/module-chart/values.yaml
+integration-test: helm ## Run integration tests on self-prepared k3d cluster
+	@$(HELM) install k3s-tests ${PROJECT_ROOT}/module-chart/charts/k3s-tests --values ${PROJECT_ROOT}/module-chart/values.yaml
 	@kubectl wait --for=condition=ready pod -l job-name=k3s-serverless-test --timeout=30s
 	kubectl logs -l job-name=k3s-serverless-test -f
 	@kubectl wait --for=condition=complete job k3s-serverless-test --timeout=30s
@@ -43,9 +45,9 @@ k3d-lm-integration-test: run-with-lifecycle-manager integration-test
 .PHONY: k3d-integration-test ## Run integration tests on self-prepared k3d cluster
 k3d-integration-test: run-without-lifecycle-manager integration-test
 
-.PHONY: helm-install
-helm-install:
-	@make -C ${PROJECT_ROOT} helm-install
+.PHONY: helm
+helm:
+	@make -C ${PROJECT_ROOT} helm
 
 .PHONY: run-with-lifecycle-manager
 run-with-lifecycle-manager:
