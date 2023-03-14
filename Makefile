@@ -6,7 +6,6 @@ MODULE_NAME ?= serverless
 MODULE_REGISTRY_PORT ?= 8888
 MODULE_REGISTRY ?= op-kcp-registry.localhost:$(MODULE_REGISTRY_PORT)/unsigned
 # Desired Channel of the Generated Module Template
-MODULE_TEMPLATE_CHANNEL ?= stable
 MODULE_CHANNEL ?= alpha
 
 # Image URL to use all building/pushing image targets
