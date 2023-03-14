@@ -52,6 +52,21 @@ SHELL = /usr/bin/env bash -o pipefail
 help: ## Display this help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
+# TODO: remove DEPRECATED after changing test-infra targets
+##@ DEPRECATED
+
+.PHONY: local-run
+local-run:
+	@make -C hack/local run-with-lifecycle-manager
+
+.PHONY: local-stop
+local-stop:
+	@make -C hack/local stop
+
+.PHONY: ci-k3d-integration-test
+ci-k3d-integration-test:
+	make -C hack/ci k3d-lm-integration-test
+
 ##@ Development
 
 .PHONY: manifests
@@ -70,9 +85,8 @@ fmt: ## Run go fmt against code.
 vet: ## Run go vet against code.
 	go vet ./...
 
-
 .PHONY: test
-test: manifests generate fmt vet envtest module-chart ## Run tests.
+test: manifests generate fmt vet envtest module-chart ## Run unit tests.
 	KUBEBUILDER_CONTROLPLANE_START_TIMEOUT=2m KUBEBUILDER_CONTROLPLANE_STOP_TIMEOUT=2m KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test ./... -coverprofile cover.out
 
 ##@ Build
@@ -85,9 +99,6 @@ build: generate fmt vet module-chart ## Build manager binary.
 run: manifests generate fmt vet module-chart ## Run a controller from your host.
 	go run ./main.go
 
-# If you wish built the manager image targeting other platforms you can use the --platform flag.
-# (i.e. docker build --platform linux/arm64 ). However, you must enable docker buildKit for it.
-# More info: https://docs.docker.com/develop/develop-images/build_enhancements/
 .PHONY: docker-build
 docker-build: manifests generate module-chart ## Build docker image with the manager.
 	docker build -t ${IMG} .
@@ -95,23 +106,6 @@ docker-build: manifests generate module-chart ## Build docker image with the man
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.
 	docker push ${IMG}
-
-# TODO: remove local and ci sections after changing test-infra targets
-##@ local
-
-.PHONY: local-run
-local-run:
-	@make -C hack/local run-with-lifecycle-manager
-
-.PHONY: local-stop
-local-stop:
-	@make -C hack/local stop
-
-##@ CI
-
-.PHONY: ci-k3d-integration-test
-ci-k3d-integration-test:
-	make -C hack/ci k3d-lm-integration-test
 
 ##@ Deployment
 IGNORE_NOT_FOUND ?= false
@@ -136,11 +130,11 @@ undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/confi
 ##@ Module
 
 .PHONY: module-image
-module-image: docker-build docker-push ## Build the Module Image and push it to a registry defined in IMG_REGISTRY
+module-image: docker-build docker-push ## Build the Module Image and push it to a registry defined in IMG_REGISTRY.
 	echo "built and pushed module image $(IMG)"
 
 .PHONY: module-build
-module-build: kyma kustomize ## Build the Module and push it to a registry defined in MODULE_REGISTRY
+module-build: kyma kustomize ## Build the Module and push it to a registry defined in MODULE_REGISTRY.
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
 	@$(KYMA) alpha create module --default-cr=config/samples/operator_v1alpha1_serverless_k3d.yaml \
 		--channel=${MODULE_CHANNEL} --name kyma.project.io/module/$(MODULE_NAME) \
@@ -155,10 +149,10 @@ $(MODULECHART):
 	@./hack/generate_module-chart.sh
 
 .PHONY: module-chart
-module-chart: ${MODULECHART} ## Fetch latest serverless chart
+module-chart: ${MODULECHART} ## Fetch latest serverless chart.
 
 .PHONY: module-chart-clean
-module-chart-clean: ## Remove the module-chart dir
+module-chart-clean: ## Remove the module-chart dir.
 	rm -rf ${MODULECHART}
 
 ##@ Tools
