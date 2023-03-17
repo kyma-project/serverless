@@ -15,7 +15,7 @@ To install serverless manager simply apply the following script:
 kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/serverless-manager.yaml
 ```
 
-To get Keda installed, apply the sample KEDA CR:
+To get Serverless installed, apply the sample Serverless CR:
 
 ```bash
 kubectl apply -f config/samples/operator_v1alpha1_serverless_k3d.yaml
