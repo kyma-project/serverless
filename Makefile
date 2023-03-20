@@ -205,12 +205,3 @@ $(KYMA):
 	$(if $(KYMA_FILE_NAME),,$(call os_error, ${OS_TYPE}, ${OS_ARCH}))
 	test -f $@ || curl -s -Lo $(KYMA) https://storage.googleapis.com/kyma-cli-$(KYMA_STABILITY)/$(KYMA_FILE_NAME)
 	chmod 0100 $(KYMA)
-
-########## Helm ###########
-HELM_INSTALL_DIR ?= $(LOCALBIN)
-HELM ?= $(HELM_INSTALL_DIR)/helm
-
-.PHONY: helm
-helm: $(HELM) ## Download helm locally if necessary.
-$(HELM): $(LOCALBIN)
-	test -s $(HELM) || HELM_INSTALL_DIR=$(HELM_INSTALL_DIR) USE_SUDO=false bash <(curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3)

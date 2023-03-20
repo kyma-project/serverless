@@ -1,6 +1,8 @@
 PROJECT_ROOT ?= ../..
 PROJECT_COMMON ?= ${PROJECT_ROOT}/hack/common
 
+MODULECHARTTEST ?= ${PROJECT_ROOT}/module-chart-test
+
 include ${PROJECT_ROOT}/.env
 
 ifndef MODULE_SHA
@@ -30,14 +32,9 @@ all: module-build
 
 ##@ Tests
 
-HELM ?= ${PROJECT_ROOT}/bin/helm
-
 .PHONY: integration-test
-integration-test: helm ## Run integration tests on self-prepared k3d cluster.
-	@$(HELM) install k3s-tests ${PROJECT_ROOT}/module-chart/charts/k3s-tests --values ${PROJECT_ROOT}/module-chart/values.yaml
-	@kubectl wait --for=condition=ready pod -l job-name=k3s-serverless-test --timeout=30s
-	kubectl logs -l job-name=k3s-serverless-test -f
-	@kubectl wait --for=condition=complete job k3s-serverless-test --timeout=30s
+integration-test: module-chart-test  ## Run integration tests on self-prepared k3d cluster.
+	cd ${MODULECHARTTEST} && make serverless-integration
 
 .PHONY: k3d-lm-integration-test ## Run integration tests on self-prepared k3d cluster with lifecycle-manager.
 k3d-lm-integration-test: run-with-lifecycle-manager integration-test
@@ -57,11 +54,24 @@ k3d-k8s-compatibility-test: ## K8s compatibility tests not implemented yet.
 hyperscalers-compatibility-test: ## Hyperscalers compatibility tests not implemented yet.
 	@echo "hyperscalers compatibility tests not implemented yet"
 
-### Internal Dependencies
+.PHONY: module-chart-test
+module-chart-test: $(MODULECHARTTEST) ## Generate module-chart-test dir.
 
-.PHONY: helm
-helm:
-	@make -C ${PROJECT_ROOT} helm
+$(MODULECHARTTEST):
+	mkdir -p ${MODULECHARTTEST}
+		git clone \
+		--depth 1  \
+		--filter=blob:none  \
+		--no-checkout \
+		https://github.com/kyma-project/kyma ${MODULECHARTTEST}
+	git -C ${MODULECHARTTEST} sparse-checkout set tests/function-controller
+	git -C ${MODULECHARTTEST} checkout main
+	mv ${MODULECHARTTEST}/tests/function-controller/* ${MODULECHARTTEST}
+	rm -rf ${MODULECHARTTEST}/.git
+	rm -rf ${MODULECHARTTEST}/tests
+	echo module-chart-test generated
+
+### Internal Dependencies
 
 .PHONY: run-with-lifecycle-manager
 run-with-lifecycle-manager:
