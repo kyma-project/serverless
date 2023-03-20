@@ -4,7 +4,26 @@
 
 Serverless Manager allows deploying the [Serverless](https://kyma-project.io/docs/kyma/latest/01-overview/main-areas/serverless/) component on the Kyma cluster in compatibility with the [Lifecycle Manager](https://github.com/kyma-project/lifecycle-manager).
 
-## Prerequisites
+## Install
+
+> **NOTE:** serverless-manager temporarily has a dependency to `kyma/cluster-essentials`
+
+
+To install serverless-manager simply apply the following script:
+
+```bash
+kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/serverless-manager.yaml
+```
+
+To get Serverless installed, apply the sample Serverless CR:
+
+```bash
+kubectl apply -f config/samples/operator_v1alpha1_serverless_k3d.yaml
+```
+
+## Development
+
+### Prerequisites
 
 - Access to a k8s cluster
 - [Go](https://go.dev/)
@@ -13,168 +32,8 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 - [kubectl](https://kubernetes.io/docs/tasks/tools/)
 - [Kubebuilder](https://book.kubebuilder.io/)
 
-## Installation on the k3d cluster
 
-1. Clone the project.
-
-    ```bash
-    git clone https://github.com/kyma-project/serverless-manager.git && cd serverless-manager/
-    ```
-
-2. Build the manager locally and run it on the k3d cluster.
-
-    ```bash
-    make local-run
-    ```
-
-> **NOTE:** To clean up the k3d cluster, use the `make local-stop` make target.
-
-## Manual installation on the k3d cluster
-
-1. Clone the project.
-
-    ```bash
-    git clone https://github.com/kyma-project/serverless-manager.git && cd serverless-manager/
-    ```
-
-2. Provision the k3d cluster.
-
-    ```bash
-    kyma provision k3d
-    ```
-
-3. Install prerequisites.
-
-    ```bash
-    kyma deploy -s main --component cluster-essentials --profile production --ci
-    ```
-
-    > **NOTE:** This step is required only because `serverless-manager` is in the early stage, and there is no manager for the Kyma CRDs installation.
-
-4. Build and push the Serverless Manager image.
-
-    ```bash
-    make module-image IMG_REGISTRY=localhost:5001/unsigned/operator-images IMG=localhost:5001/serverless-manager-dev-local:0.0.1
-    ```
-
-5. Build and push the Serverless module.
-
-    ```bash
-    make module-build IMG=k3d-kyma-registry:5001/serverless-manager-dev-local:0.0.1 MODULE_REGISTRY=localhost:5001/unsigned
-    ```
-
-6. Verify if the module and the manager's image are pushed to the local registry.
-
-    ```bash
-    curl localhost:5001/v2/_catalog
-    ```
-
-    You should get a result similar to this example:
-
-    ```json
-    {"repositories":["serverless-manager-dev-local","unsigned/component-descriptors/kyma.project.io/module/serverless"]}
-    ```
-
-7. Inspect the generated module template.
-
-    > **NOTE:** The following sub-steps are temporary workarounds.
-
-    Edit `template.yaml` under the `config/moduletemplates` folder and:
-
-    - change `target` to `control-plane`
-
-    ```yaml
-    spec:
-        target: control-plane
-    ```
-
-    > **NOTE:** This is required in the single cluster mode only.
-
-    - change the existing repository context in `spec.descriptor.component`:  
-    
-    ```yaml
-    repositoryContexts:                                                                           
-      - baseUrl: k3d-kyma-registry.localhost:5000/unsigned
-        componentNameMapping: urlPath                                                               
-        type: ociRegistry
-    ```
-
-    > **NOTE:** Because Pods inside the k3d cluster use the docker-internal port of the registry, it tries to resolve the registry against port 5000 instead of 5001. K3d has registry aliases, but `lifecycle-manager` is not part of k3d and thus does not know how to properly alias `k3d-kyma-registry.localhost:5001`.
-
-8. Install modular Kyma on the k3d cluster.
-
-    This installs the latest versions of `lifecycle-manager`.
-
-    Use the `--template` flag to deploy the Serverless module manifest from the beginning, or apply it using kubectl later.
-
-    ```bash
-    kyma alpha deploy --templates=./config/moduletemplates/template.yaml
-    ```
-
-    Kyma installation is ready, but the module is not yet activated.
-
-    ```bash
-    kubectl get kymas.operator.kyma-project.io -A
-    ```
-
-    You should get a result similar to the following example:
-
-    ```text
-    NAMESPACE    NAME           STATE   AGE
-    kyma-system   default-kyma   Ready   71s
-    ```
-
-    Serverless Module is a known module, but not activated.
-
-    ```bash
-    kubectl get moduletemplates.operator.kyma-project.io -A 
-    ```
-
-    You should get a result similar to the following example:
-
-    ```text
-    NAMESPACE    NAME                  AGE
-    kcp-system   moduletemplate-serverless   2m24s
-    ```
-
-9. Give Lifecycle Manager permission to install CustomResourceDefinition (CRD) cluster-wide.
-
-    `lifecycle-manager` must be able to apply CRDs to install modules. In the remote mode (with control-plane managing remote clusters) it gets an administrative kubeconfig, targeting the remote cluster to do so. In the local mode (single-cluster mode), it uses Service Account and does not have permission to create CRDs by default.
-
-    Run the following command to make sure the Lifecycle Manager's Service Account gets an administrative role:
-
-    ```bash
-    kubectl edit clusterrole lifecycle-manager-manager-role
-    ```
-
-    And add the following element under `rules`:
-
-    ```yaml
-    - apiGroups:
-      - "*"
-      resources:
-      - "*"                  
-      verbs:                  
-      - "*"
-    ```
-
-    > **NOTE:** This is a temporary workaround and is only required in the single-cluster mode.
-
-10. Enable Serverless in the Kyma custom resource (CR)
-
-    ```bash
-    kubectl edit kymas.operator.kyma-project.io -n kyma-system default-kyma
-    ```
-
-    And add the following field under `spec`:
-
-    ```yaml
-      modules:
-      - name: serverless
-        channel: alpha
-    ```
-
-## Manual installation
+## Manual installation using make targets
 
 1. Clone the project.
 
@@ -205,6 +64,23 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
     ```bash
     make deploy
     ```
+
+### Test integration with lifecycle-manager on the k3d cluster
+
+1. Clone the project.
+
+    ```bash
+    git clone https://github.com/kyma-project/serverless-manager.git && cd serverless-manager/
+    ```
+
+2. Build the manager locally and run it on the k3d cluster.
+
+    ```bash
+    make local-run
+    ```
+
+> **NOTE:** To clean up the k3d cluster, use the `make local-stop` make target.
+
 
 ## Using `serverless-manager`
 
