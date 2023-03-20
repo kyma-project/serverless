@@ -103,7 +103,7 @@ func (r *Reconciler) buildDeleteFinalizer() ReconciliationAction {
 		if err := c.Update(ctx, instance); err != nil {
 			return false, defaultResult, err
 		}
-		fmt.Println("finalizer removed")
+		fmt.Println("finalizer removed.")
 		return false, defaultResult, nil
 	}
 }
