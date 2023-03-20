@@ -125,7 +125,20 @@ kubectl apply -f config/samples/operator_v1alpha1_serverless_k3d.yaml
             secretName: my-secret
     EOF
     ```
+## Testing Strategy
 
+Each pull request to the repository triggers CI/CD jobs that verify serverless manager reconciliation logic and run integration tests of serverless module.
+
+- `pre-serverless-manager-operator-build` - Compiling serverless manager code and pushing it's docker image.
+- `pre-serverless-manager-operator-tests` - Testing serverless manager reconciliation code (Serverless CR CRUD operations).
+- `pre-main-serverless-manager-verify` - Integration testing for serverless module installed by serverless-manager.
+- `pull-serverless-module-build` - Bundling a module template manifest that allows testing it against lifecycle-manager manually. 
+
+After pull request is merged a collection of CI/CD jobs are executed that:
+ - re-builds serverless manager image
+ - rebuilds serverless module and prepares module template manifest file that could be submitted to modular kyma
+ - tests integration with lifecycle-manager
+ 
 ## Troubleshooting
 
 - For MacBook M1 users
