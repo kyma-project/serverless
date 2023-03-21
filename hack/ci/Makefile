@@ -24,10 +24,6 @@ module-build: ## Build the Module, push it to a registry and print it based on t
 	@cat ${PROJECT_ROOT}/template.yaml
 	@echo "\n~~~~~~~~~~~~~~~END OF MODULE TEMPLATE~~~~~~~~~~~~~~~~"
 
-.PHONY: all
-# TODO: remove it after switching this target on the test-infra side to the `module-build`
-all: module-build
-
 ##@ Tests
 
 HELM ?= ${PROJECT_ROOT}/bin/helm

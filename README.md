@@ -76,10 +76,10 @@ kubectl apply -f config/samples/operator_v1alpha1_serverless_k3d.yaml
 2. Build the manager locally and run it on the k3d cluster.
 
     ```bash
-    make local-run
+    make -C hack/local run-with-lifecycle-manager
     ```
 
-> **NOTE:** To clean up the k3d cluster, use the `make local-stop` make target.
+> **NOTE:** To clean up the k3d cluster, use the `make -C hack/local stop` make target.
 
 
 ## Using `serverless-manager`
