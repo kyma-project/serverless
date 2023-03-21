@@ -51,21 +51,8 @@ hyperscalers-compatibility-test: ## Hyperscalers compatibility tests not impleme
 	@echo "hyperscalers compatibility tests not implemented yet"
 
 .PHONY: module-chart-test
-module-chart-test: $(MODULECHARTTEST) ## Generate module-chart-test dir.
-
-$(MODULECHARTTEST):
-	mkdir -p ${MODULECHARTTEST}
-		git clone \
-		--depth 1  \
-		--filter=blob:none  \
-		--no-checkout \
-		https://github.com/kyma-project/kyma ${MODULECHARTTEST}
-	git -C ${MODULECHARTTEST} sparse-checkout set tests/function-controller
-	git -C ${MODULECHARTTEST} checkout main
-	mv ${MODULECHARTTEST}/tests/function-controller/* ${MODULECHARTTEST}
-	rm -rf ${MODULECHARTTEST}/.git
-	rm -rf ${MODULECHARTTEST}/tests
-	echo module-chart-test generated
+module-chart-test: ## Generate module-chart-test dir.
+	@${PROJECT_ROOT}/hack/clone_dir_from_github.sh kyma tests/function-controller ${MODULECHARTTEST}
 
 ### Internal Dependencies
 
