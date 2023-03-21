@@ -127,17 +127,17 @@ kubectl apply -f config/samples/operator_v1alpha1_serverless_k3d.yaml
     ```
 ## Testing Strategy
 
-Each pull request to the repository triggers CI/CD jobs that verify serverless manager reconciliation logic and run integration tests of serverless module.
+Each pull request to the repository triggers CI/CD jobs that verify the serverless-manager reconciliation logic and run integration tests of the Serverless module.
 
-- `pre-serverless-manager-operator-build` - Compiling serverless manager code and pushing it's docker image.
-- `pre-serverless-manager-operator-tests` - Testing serverless manager reconciliation code (Serverless CR CRUD operations).
-- `pre-main-serverless-manager-verify` - Integration testing for serverless module installed by serverless-manager (**not using lifecycle-manager**).
+- `pre-serverless-manager-operator-build` - Compiling the serverless-manager code and pushing its docker image.
+- `pre-serverless-manager-operator-tests` - Testing the serverless-manager reconciliation code (Serverless CR CRUD operations).
+- `pre-main-serverless-manager-verify` - Integration testing for the Serverless module installed by serverless-manager (**not using lifecycle-manager**).
 - `pull-serverless-module-build` - Bundling a module template manifest that allows testing it against lifecycle-manager manually. 
 
-After pull request is merged a collection of CI/CD jobs are executed that:
+After the pull request is merged, the following CI/CD jobs are executed:
 
- - `post-main-serverless-manager-verify` - Installs serverless module (**using lifecycle-manager**) and runs integration tests of serverless.
- - `post-serverless-manager-operator-build` - rebuilds serverless module and module template manifest file that could be submitted to modular kyma
+ - `post-main-serverless-manager-verify` - Installs the Serverless module (**using lifecycle-manager**) and runs integration tests of Serverless.
+ - `post-serverless-manager-operator-build` - rebuilds the Serverless module and the module template manifest file that can be submitted to modular Kyma.
  
 ## Troubleshooting
 
