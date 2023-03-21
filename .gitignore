@@ -29,6 +29,7 @@ Dockerfile.cross
 *~
 
 module-chart
+module-chart-test
 mod
 charts
 default.yaml
