@@ -105,7 +105,7 @@ apply-serverless: ## Apply the k3d serverless CR.
 ### Internal Dependencies
 
 .PHONY: kyma
-kyma: ## Install kyma-cli under the `bin` folder if it does not exist.
+kyma:
 	@make -C ${PROJECT_ROOT} kyma
 
 .PHONY: module-image
