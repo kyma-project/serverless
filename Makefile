@@ -127,13 +127,9 @@ module-build: kyma kustomize ## Build the Module and push it to a registry defin
 
 ##@ Build Dependencies
 
-## Location to install serverless chart to
-MODULECHART ?= $(shell pwd)/module-chart
-$(MODULECHART):
-	@./hack/generate_module-chart.sh
-
 .PHONY: module-chart
-module-chart: ${MODULECHART} ## Fetch latest serverless chart.
+module-chart: ## Fetch latest serverless chart.
+	@./hack/generate_module-chart.sh
 
 .PHONY: module-chart-clean
 module-chart-clean: ## Remove the module-chart dir.
