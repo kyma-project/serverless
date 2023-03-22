@@ -20,18 +20,25 @@ help: ## Display this help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
 .PHONY: run-with-lifecycle-manager
-## Create k3d cluster and deploy module with the lifecycle-manager.
-run-with-lifecycle-manager: kyma create-k3d module-image module-build fix-template install-module patch-mod-mgr-role enable-module verify-kyma 
+run-with-lifecycle-manager: ## Create k3d cluster and deploy module with the lifecycle-manager.
+run-with-lifecycle-manager: kyma \
+	create-k3d \
+	module-image \
+	module-build \
+	fix-template \
+	install-module \
+	patch-mod-mgr-role \
+	enable-module \
+	verify-kyma 
 
 .PHONY: run-without-lifecycle-manager
-## Create k3d cluster and deploy module without the lifecycle-manager.
-run-without-lifecycle-manager: kyma create-k3d module-image deploy apply-serverless verify-serverless
-
-##@ Dependencies
-
-.PHONY: kyma
-kyma: ## Install kyma-cli under the `bin` folder if it does not exist.
-	@make -C ${PROJECT_ROOT} kyma
+run-without-lifecycle-manager: ## Create k3d cluster and deploy module without the lifecycle-manager.
+run-without-lifecycle-manager: kyma \
+	create-k3d \
+	module-image \
+	deploy \
+	apply-serverless \
+	verify-serverless
 
 ##@ K3D
 
@@ -96,6 +103,10 @@ apply-serverless: ## Apply the k3d serverless CR.
 		-f ${PROJECT_ROOT}/config/samples/operator_v1alpha1_serverless_k3d.yaml
 
 ### Internal Dependencies
+
+.PHONY: kyma
+kyma: ## Install kyma-cli under the `bin` folder if it does not exist.
+	@make -C ${PROJECT_ROOT} kyma
 
 .PHONY: module-image
 module-image:
