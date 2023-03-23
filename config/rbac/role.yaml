@@ -267,6 +267,19 @@ rules:
   - update
   - watch
 - apiGroups:
+  - scheduling.k8s.io
+  resources:
+  - priorityclasses
+  verbs:
+  - create
+  - delete
+  - deletecollection
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
   - serverless.kyma-project.io
   resources:
   - functions

@@ -12,27 +12,19 @@
     kyma provision k3d
     ```
 
-3. Install prerequisites.
-
-    ```bash
-    kyma deploy -s main --component cluster-essentials --profile production --ci
-    ```
-
-    > **NOTE:** This step is required only because `serverless-manager` is in the early stage, and there is no manager for the Kyma CRDs installation.
-
-4. Build and push the Serverless Manager image.
+3. Build and push the Serverless Manager image.
 
     ```bash
     make module-image IMG_REGISTRY=localhost:5001/unsigned/operator-images IMG=localhost:5001/serverless-manager-dev-local:0.0.1
     ```
 
-5. Build and push the Serverless module.
+4. Build and push the Serverless module.
 
     ```bash
     make module-build IMG=k3d-kyma-registry:5001/serverless-manager-dev-local:0.0.1 MODULE_REGISTRY=localhost:5001/unsigned
     ```
 
-6. Verify if the module and the manager's image are pushed to the local registry.
+5. Verify if the module and the manager's image are pushed to the local registry.
 
     ```bash
     curl localhost:5001/v2/_catalog
@@ -44,7 +36,7 @@
     {"repositories":["serverless-manager-dev-local","unsigned/component-descriptors/kyma.project.io/module/serverless"]}
     ```
 
-7. Inspect the generated module template.
+6. Inspect the generated module template.
 
     > **NOTE:** The following sub-steps are temporary workarounds.
 
@@ -70,7 +62,7 @@
 
     > **NOTE:** Because Pods inside the k3d cluster use the docker-internal port of the registry, it tries to resolve the registry against port 5000 instead of 5001. K3d has registry aliases, but `lifecycle-manager` is not part of k3d and thus does not know how to properly alias `k3d-kyma-registry.localhost:5001`.
 
-8. Install modular Kyma on the k3d cluster.
+7. Install modular Kyma on the k3d cluster.
 
     This installs the latest versions of `lifecycle-manager`.
 
@@ -106,7 +98,7 @@
     kcp-system   moduletemplate-serverless   2m24s
     ```
 
-9. Give Lifecycle Manager permission to install CustomResourceDefinition (CRD) cluster-wide.
+8. Give Lifecycle Manager permission to install CustomResourceDefinition (CRD) cluster-wide.
 
     `lifecycle-manager` must be able to apply CRDs to install modules. In the remote mode (with control-plane managing remote clusters) it gets an administrative kubeconfig, targeting the remote cluster to do so. In the local mode (single-cluster mode), it uses Service Account and does not have permission to create CRDs by default.
 
@@ -129,7 +121,7 @@
 
     > **NOTE:** This is a temporary workaround and is only required in the single-cluster mode.
 
-10. Enable Serverless in the Kyma custom resource (CR)
+9. Enable Serverless in the Kyma custom resource (CR)
 
     ```bash
     kubectl edit kymas.operator.kyma-project.io -n kyma-system default-kyma
