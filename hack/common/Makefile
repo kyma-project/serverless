@@ -45,6 +45,7 @@ run-without-lifecycle-manager: kyma \
 .PHONY: create-k3d
 create-k3d: ## Create k3d with kyma CRDs.
 	${KYMA} provision k3d --registry-port ${REGISTRY_PORT} --name ${CLUSTER_NAME} --ci
+	kubectl create namespace kyma-system
 
 .PHONY: delete-k3d
 delete-k3d: delete-k3d-cluster delete-k3d-registry ## Delete k3d registry & cluster.
