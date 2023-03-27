@@ -11,11 +11,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-const (
-	chartNs         = "kyma-system"
-	createNamespace = false // TODO: think about it
-)
-
 type StateReconciler interface {
 	Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl.Result, error)
 }
@@ -26,10 +21,8 @@ func NewMachine(client client.Client, config *rest.Config, log *zap.SugaredLogge
 		cacheManager: cache,
 		log:          log,
 		cfg: cfg{
-			finalizer:       v1alpha1.Finalizer,
-			chartPath:       chartPath,
-			chartNs:         chartNs,
-			createNamespace: createNamespace,
+			finalizer: v1alpha1.Finalizer,
+			chartPath: chartPath,
 		},
 		k8s: k8s{
 			client: client,

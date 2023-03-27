@@ -3,11 +3,12 @@ package state
 import (
 	"context"
 	"fmt"
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/utils/pointer"
 	"reflect"
 	"runtime"
 	"strings"
+
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/utils/pointer"
 
 	"github.com/kyma-project/module-manager/pkg/types"
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
@@ -24,10 +25,8 @@ var (
 type stateFn func(context.Context, *reconciler, *systemState) (stateFn, *ctrl.Result, error)
 
 type cfg struct {
-	finalizer       string
-	chartPath       string
-	chartNs         string
-	createNamespace bool
+	finalizer string
+	chartPath string
 }
 
 type systemState struct {
@@ -39,7 +38,7 @@ func (s *systemState) setState(state v1alpha1.State) {
 	s.instance.Status.State = state
 }
 
-func (s *systemState) Setup(ctx context.Context, c client.Client, chartNS string) error {
+func (s *systemState) Setup(ctx context.Context, c client.Client) error {
 	s.instance.Spec.Default()
 
 	s.dockerRegistry = map[string]interface{}{
@@ -49,7 +48,7 @@ func (s *systemState) Setup(ctx context.Context, c client.Client, chartNS string
 	if s.instance.Spec.DockerRegistry.SecretName != nil {
 		var secret corev1.Secret
 		key := client.ObjectKey{
-			Namespace: chartNS,
+			Namespace: s.instance.Namespace,
 			Name:      *s.instance.Spec.DockerRegistry.SecretName,
 		}
 		err := c.Get(ctx, key, &secret)
