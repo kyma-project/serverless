@@ -45,7 +45,7 @@ func sFnInitialize(ctx context.Context, r *reconciler, s *systemState) (stateFn,
 		return sFnUpdateServerlessStatus(v1alpha1.StateProcessing)
 	}
 
-	err := s.Setup(ctx, r.client, r.cfg.chartNs)
+	err := s.Setup(ctx, r.client)
 	if err != nil {
 		return sFnUpdateServerlessStatus(v1alpha1.StateError)
 	}
@@ -231,8 +231,7 @@ func installationSpec(r *reconciler, s *systemState) (*types.InstallationSpec, e
 		ChartPath: r.chartPath,
 		ChartFlags: types.ChartFlags{
 			ConfigFlags: types.Flags{
-				"Namespace":       r.chartNs,
-				"CreateNamespace": r.createNamespace,
+				"Namespace": s.instance.Namespace,
 			},
 			SetFlags: flags,
 		},
