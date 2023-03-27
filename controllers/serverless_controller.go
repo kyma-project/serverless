@@ -25,8 +25,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/kyma-project/module-manager/pkg/cache"
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
+	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/kyma-project/serverless-manager/internal/state"
 )
 
@@ -38,7 +38,7 @@ type serverlessReconciler struct {
 }
 
 func NewServerlessReconciler(client client.Client, config *rest.Config, log *zap.SugaredLogger, chartPath string) *serverlessReconciler {
-	cache := cache.NewCacheManager()
+	cache := chart.NewRendererCache()
 
 	return &serverlessReconciler{
 		initStateMachine: func(log *zap.SugaredLogger) state.StateReconciler {

@@ -3,8 +3,8 @@ package state
 import (
 	"context"
 
-	"github.com/kyma-project/module-manager/pkg/types"
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
+	"github.com/kyma-project/serverless-manager/internal/chart"
 	"go.uber.org/zap"
 	"k8s.io/client-go/rest"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -15,11 +15,11 @@ type StateReconciler interface {
 	Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl.Result, error)
 }
 
-func NewMachine(client client.Client, config *rest.Config, log *zap.SugaredLogger, cache types.CacheManager, chartPath string) StateReconciler {
+func NewMachine(client client.Client, config *rest.Config, log *zap.SugaredLogger, cache *chart.RendererCache, chartPath string) StateReconciler {
 	return &reconciler{
-		fn:           sFnInitialize,
-		cacheManager: cache,
-		log:          log,
+		fn:    sFnInitialize,
+		cache: cache,
+		log:   log,
 		cfg: cfg{
 			finalizer: v1alpha1.Finalizer,
 			chartPath: chartPath,

@@ -7,13 +7,12 @@ import (
 	"runtime"
 	"strings"
 
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/utils/pointer"
-
-	"github.com/kyma-project/module-manager/pkg/types"
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
+	"github.com/kyma-project/serverless-manager/internal/chart"
 	"go.uber.org/zap"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/rest"
+	"k8s.io/utils/pointer"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -70,10 +69,10 @@ type k8s struct {
 }
 
 type reconciler struct {
-	fn           stateFn
-	log          *zap.SugaredLogger
-	cacheManager types.CacheManager
-	result       ctrl.Result
+	fn     stateFn
+	log    *zap.SugaredLogger
+	cache  *chart.RendererCache
+	result ctrl.Result
 	k8s
 	cfg
 }

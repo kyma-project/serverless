@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/kyma-project/module-manager/pkg/types"
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
+	"github.com/kyma-project/serverless-manager/internal/chart"
 	"go.uber.org/zap"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
@@ -33,12 +33,12 @@ var (
 
 func Test_reconciler_Reconcile(t *testing.T) {
 	type fields struct {
-		fn           stateFn
-		log          *zap.SugaredLogger
-		cacheManager types.CacheManager
-		result       ctrl.Result
-		k8s          k8s
-		cfg          cfg
+		fn     stateFn
+		log    *zap.SugaredLogger
+		cache  *chart.RendererCache
+		result ctrl.Result
+		k8s    k8s
+		cfg    cfg
 	}
 	type args struct {
 		ctx context.Context
@@ -87,12 +87,12 @@ func Test_reconciler_Reconcile(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &reconciler{
-				fn:           tt.fields.fn,
-				log:          tt.fields.log,
-				cacheManager: tt.fields.cacheManager,
-				result:       tt.fields.result,
-				k8s:          tt.fields.k8s,
-				cfg:          tt.fields.cfg,
+				fn:     tt.fields.fn,
+				log:    tt.fields.log,
+				cache:  tt.fields.cache,
+				result: tt.fields.result,
+				k8s:    tt.fields.k8s,
+				cfg:    tt.fields.cfg,
 			}
 			got, err := m.Reconcile(tt.args.ctx, tt.args.v)
 			if (err != nil) != tt.wantErr {
