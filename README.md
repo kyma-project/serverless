@@ -6,9 +6,6 @@ Serverless Manager allows deploying the [Serverless](https://kyma-project.io/doc
 
 ## Install
 
-> **NOTE:** serverless-manager temporarily has a dependency to `kyma/cluster-essentials`
-
-
 To install serverless-manager simply apply the following script:
 
 ```bash
