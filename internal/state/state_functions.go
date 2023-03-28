@@ -186,7 +186,7 @@ func chartConfig(ctx context.Context, r *reconciler, s *systemState) (*chart.Con
 		Release: chart.Release{
 			Flags:     flags,
 			ChartPath: r.chartPath,
-			Namespace: s.instance.Namespace,
+			Namespace: s.instance.GetNamespace(),
 			Name:      s.instance.GetName(),
 		},
 	}, nil

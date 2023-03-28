@@ -1,6 +1,8 @@
 package chart
 
 import (
+	"fmt"
+
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -15,12 +17,12 @@ var (
 func Verify(config *Config) (bool, error) {
 	manifest, err := getManifest(config)
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("could not render manifest from chart: %s", err.Error())
 	}
 
 	objs, err := parseManifest(manifest)
 	if err != nil {
-		return false, err
+		return false, fmt.Errorf("could not parse chart manifest: %s", err.Error())
 	}
 
 	for i := range objs {
@@ -38,7 +40,7 @@ func Verify(config *Config) (bool, error) {
 
 		ready, err := verifyFunc(config, u)
 		if err != nil {
-			return false, err
+			return false, fmt.Errorf("could not verify object %s/%s: %s", u.GetNamespace(), u.GetName(), err.Error())
 		}
 
 		if !ready {

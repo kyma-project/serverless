@@ -89,7 +89,6 @@ var _ = BeforeSuite(func() {
 	chartPath := filepath.Join("..", "module-chart")
 	err = (NewServerlessReconciler(
 		k8sManager.GetClient(),
-		k8sManager.GetConfig(),
 		reconcilerLogger.Sugar(),
 		chartPath,
 	)).SetupWithManager(k8sManager)

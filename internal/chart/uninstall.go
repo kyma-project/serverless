@@ -1,6 +1,8 @@
 package chart
 
 import (
+	"fmt"
+
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 )
@@ -8,12 +10,12 @@ import (
 func Uninstall(config *Config) error {
 	manifest, err := getManifest(config)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not render manifest from chart: %s", err.Error())
 	}
 
 	objs, err := parseManifest(manifest)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not parse chart manifest: %s", err.Error())
 	}
 
 	for i := range objs {
@@ -25,7 +27,7 @@ func Uninstall(config *Config) error {
 			continue
 		}
 		if err != nil {
-			return err
+			return fmt.Errorf("could not uninstall object %s/%s: %s", u.GetNamespace(), u.GetName(), err.Error())
 		}
 	}
 
