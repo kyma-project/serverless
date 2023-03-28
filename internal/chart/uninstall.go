@@ -21,7 +21,7 @@ func Uninstall(config *Config) error {
 	for i := range objs {
 		u := objs[i]
 		config.Log.Debugf("deleting %s %s", u.GetKind(), u.GetName())
-		err := config.Client.Delete(config.Ctx, &u)
+		err := config.Cluster.Client.Delete(config.Ctx, &u)
 		if errors.IsNotFound(err) {
 			config.Log.Debugf("deletion skipped for %s %s", u.GetKind(), u.GetName())
 			continue

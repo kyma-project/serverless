@@ -179,10 +179,13 @@ func chartConfig(ctx context.Context, r *reconciler, s *systemState) (*chart.Con
 	}
 
 	return &chart.Config{
-		Ctx:    ctx,
-		Log:    r.log,
-		Client: r.client,
-		Cache:  r.cache,
+		Ctx:   ctx,
+		Log:   r.log,
+		Cache: r.cache,
+		Cluster: chart.Cluster{
+			Client: r.client,
+			Config: r.config,
+		},
 		Release: chart.Release{
 			Flags:     flags,
 			ChartPath: r.chartPath,

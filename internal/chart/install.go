@@ -21,7 +21,7 @@ func Install(config *Config) error {
 	for i := range objs {
 		u := objs[i]
 		config.Log.Debugf("creating %s %s/%s", u.GetKind(), u.GetNamespace(), u.GetName())
-		err := config.Client.Patch(config.Ctx, &u, client.Apply, &client.PatchOptions{
+		err := config.Cluster.Client.Patch(config.Ctx, &u, client.Apply, &client.PatchOptions{
 			Force:        pointer.Bool(true),
 			FieldManager: "keda-manager",
 		})

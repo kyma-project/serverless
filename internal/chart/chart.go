@@ -11,21 +11,21 @@ import (
 	"gopkg.in/yaml.v3"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chart/loader"
-	"helm.sh/helm/v3/pkg/cli"
 	"helm.sh/helm/v3/pkg/kube"
 	"helm.sh/helm/v3/pkg/release"
 	"helm.sh/helm/v3/pkg/storage"
 	"helm.sh/helm/v3/pkg/storage/driver"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type Config struct {
 	Ctx     context.Context
 	Log     *zap.SugaredLogger
-	Client  client.Client
 	Cache   *ManifestCache
+	Cluster Cluster
 	Release Release
 }
 
@@ -34,6 +34,11 @@ type Release struct {
 	ChartPath string
 	Name      string
 	Namespace string
+}
+
+type Cluster struct {
+	Client client.Client
+	Config *rest.Config
 }
 
 func parseManifest(manifest string) ([]unstructured.Unstructured, error) {
@@ -105,9 +110,11 @@ func renderChart(config *Config) (*release.Release, error) {
 }
 
 func newInstallAction(config *Config) *action.Install {
-	helmCliRestGetter := cli.New().RESTClientGetter()
+	helmRESTGetter := &clientGetter{
+		config: config.Cluster.Config,
+	}
 
-	helmClient := kube.New(helmCliRestGetter)
+	helmClient := kube.New(helmRESTGetter)
 	helmClient.Log = config.Log.Debugf
 
 	actionConfig := new(action.Configuration)
@@ -115,7 +122,7 @@ func newInstallAction(config *Config) *action.Install {
 	actionConfig.Log = helmClient.Log
 
 	actionConfig.Releases = storage.Init(driver.NewMemory())
-	actionConfig.RESTClientGetter = helmCliRestGetter
+	actionConfig.RESTClientGetter = helmRESTGetter
 
 	action := action.NewInstall(actionConfig)
 	action.ReleaseName = config.Release.Name

@@ -104,7 +104,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	reconciler := controllers.NewServerlessReconciler(mgr.GetClient(), reconcilerLogger.Sugar(), "/module-chart")
+	reconciler := controllers.NewServerlessReconciler(mgr.GetClient(), mgr.GetConfig(), reconcilerLogger.Sugar(), "/module-chart")
 
 	if err = reconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Serverless")

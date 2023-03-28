@@ -55,7 +55,7 @@ type verifyFunc func(*Config, unstructured.Unstructured) (bool, error)
 
 func verifyDeployment(config *Config, u unstructured.Unstructured) (bool, error) {
 	var deployment appsv1.Deployment
-	err := config.Client.Get(config.Ctx, types.NamespacedName{
+	err := config.Cluster.Client.Get(config.Ctx, types.NamespacedName{
 		Name:      u.GetName(),
 		Namespace: u.GetNamespace(),
 	}, &deployment)

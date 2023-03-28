@@ -11,6 +11,7 @@ import (
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/client-go/rest"
 	"k8s.io/utils/pointer"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -64,6 +65,7 @@ func (s *systemState) Setup(ctx context.Context, c client.Client) error {
 
 type k8s struct {
 	client client.Client
+	config *rest.Config
 }
 
 type reconciler struct {
