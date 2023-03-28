@@ -7,6 +7,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+// TODO: cover case when user change enableInternal
+
 func Install(config *Config) error {
 	manifest, err := getManifest(config)
 	if err != nil {
