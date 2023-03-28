@@ -14,7 +14,7 @@ type StateReconciler interface {
 	Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl.Result, error)
 }
 
-func NewMachine(client client.Client, log *zap.SugaredLogger, cache *chart.RendererCache, chartPath string) StateReconciler {
+func NewMachine(client client.Client, log *zap.SugaredLogger, cache *chart.ManifestCache, chartPath string) StateReconciler {
 	return &reconciler{
 		fn:    sFnInitialize,
 		cache: cache,

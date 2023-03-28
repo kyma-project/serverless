@@ -35,7 +35,7 @@ func Test_reconciler_Reconcile(t *testing.T) {
 	type fields struct {
 		fn     stateFn
 		log    *zap.SugaredLogger
-		cache  *chart.RendererCache
+		cache  *chart.ManifestCache
 		result ctrl.Result
 		k8s    k8s
 		cfg    cfg

@@ -25,7 +25,7 @@ type Config struct {
 	Ctx     context.Context
 	Log     *zap.SugaredLogger
 	Client  client.Client
-	Cache   *RendererCache
+	Cache   *ManifestCache
 	Release Release
 }
 
