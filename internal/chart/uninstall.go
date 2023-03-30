@@ -8,9 +8,9 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
-type filterFunc func(unstructured.Unstructured) bool
+type FilterFunc func(unstructured.Unstructured) bool
 
-func Uninstall(config *Config, filterFunc ...filterFunc) error {
+func Uninstall(config *Config, filterFunc ...FilterFunc) error {
 	manifest, err := getManifest(config)
 	if err != nil {
 		return fmt.Errorf("could not render manifest from chart: %s", err.Error())
@@ -45,7 +45,11 @@ func Uninstall(config *Config, filterFunc ...filterFunc) error {
 	return nil
 }
 
-func fitToFilters(u unstructured.Unstructured, filterFunc ...filterFunc) bool {
+func WithoutCRDFilter(u unstructured.Unstructured) bool {
+	return !isCRD(u)
+}
+
+func fitToFilters(u unstructured.Unstructured, filterFunc ...FilterFunc) bool {
 	for _, fn := range filterFunc {
 		if !fn(u) {
 			return false

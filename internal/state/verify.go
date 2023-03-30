@@ -9,26 +9,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// run serverless chart installation
-func sFnApplyResources() (stateFn, *ctrl.Result, error) {
-	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		chartConfig, err := chartConfig(ctx, r, s)
-		if err != nil {
-			r.log.Errorf("error while preparing chart config: %s", err.Error())
-			return sFnUpdateServerlessStatus(v1alpha1.StateError)
-		}
-
-		err = chart.Install(chartConfig)
-		if err != nil {
-			r.log.Warnf("error while installing resource %s: %s",
-				client.ObjectKeyFromObject(&s.instance), err.Error())
-			return sFnUpdateServerlessStatus(v1alpha1.StateError)
-		}
-
-		return sFnVerifyResources(chartConfig)
-	}, nil, nil
-}
-
+// verify if all workloads are in ready state
 func sFnVerifyResources(chartConfig *chart.Config) (stateFn, *ctrl.Result, error) {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		ready, err := chart.Verify(chartConfig)
