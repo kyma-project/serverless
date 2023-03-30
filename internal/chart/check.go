@@ -25,18 +25,18 @@ func CheckCRDOrphanResources(config *Config) error {
 			continue
 		}
 
-		crdList, err := buildResourceListFromCRD(obj)
+		crList, err := buildResourceListFromCRD(obj)
 		if err != nil {
 			return err
 		}
 
-		err = config.Cluster.Client.List(config.Ctx, &crdList)
+		err = config.Cluster.Client.List(config.Ctx, &crList)
 		if err != nil {
 			return err
 		}
 
-		if len(crdList.Items) > 0 {
-			return fmt.Errorf("found %d items with VersionKind %s", len(crdList.Items), crdList.GetAPIVersion())
+		if len(crList.Items) > 0 {
+			return fmt.Errorf("found %d items with VersionKind %s", len(crList.Items), crList.GetAPIVersion())
 		}
 	}
 

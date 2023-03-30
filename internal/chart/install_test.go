@@ -22,6 +22,15 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   name: test-crd
+spec:
+  group: test.group
+  names:
+    kind: TestKind
+  versions:
+    - storage: false
+      name: v1alpha1
+    - storage: true
+      name: v1alpha2
 `
 	testDeploy = `
 apiVersion: apps/v1

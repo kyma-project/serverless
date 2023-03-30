@@ -37,6 +37,7 @@ func sFnDeleteResources() (stateFn, *ctrl.Result, error) {
 			return sFnUpdateServerlessStatus(v1alpha1.StateError)
 		}
 
+		// TODO: thinkg about deletion configuration
 		strategyStateFn := deletionStrategyBuilder(defaultDeletionStrategy)
 		return strategyStateFn(chartConfig)
 	}, nil, nil
