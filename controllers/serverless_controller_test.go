@@ -96,9 +96,7 @@ var _ = Describe("Serverless controller", func() {
 				shouldPropagateSpecProperties(h, serverlessRegistrySecret, registryDataDefault)
 			}
 
-			// TODO: this scenario is not working properly
-			// https://github.com/kyma-project/serverless-manager/issues/36
-			// shouldDeleteServerless(h, serverlessName, serverlessDeploymentName, serverlessWebhookName)
+			shouldDeleteServerless(h, serverlessName, serverlessDeploymentName, serverlessWebhookName)
 		})
 	})
 })

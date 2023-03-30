@@ -6,16 +6,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kyma-project/module-manager/pkg/manifest"
-	"github.com/kyma-project/module-manager/pkg/types"
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
+	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/kyma-project/serverless-manager/internal/dependencies"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 var (
@@ -68,11 +64,6 @@ func sFnPrerequisites() (stateFn, *ctrl.Result, error) {
 			return sFnUpdateServerlessStatus(v1alpha1.StateError)
 		}
 
-		// run verification procedure if component is already installed
-		if s.instance.Status.State == v1alpha1.StateReady {
-			return sFnVerifyResources()
-		}
-
 		// when we know that cluster configuration met serverless requirements we can go to installation state
 		return sFnApplyResources()
 	}, nil, nil
@@ -81,24 +72,32 @@ func sFnPrerequisites() (stateFn, *ctrl.Result, error) {
 // run serverless chart installation
 func sFnApplyResources() (stateFn, *ctrl.Result, error) {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		installationSpec, err := installationSpec(r, s)
+		chartConfig, err := chartConfig(ctx, r, s)
 		if err != nil {
-			r.log.Errorf("error while preparing installation spec: %s", err.Error())
+			r.log.Errorf("error while preparing chart config: %s", err.Error())
 			return sFnUpdateServerlessStatus(v1alpha1.StateError)
 		}
 
-		installInfo, err := installInfo(ctx, r, s, installationSpec)
-		if err != nil {
-			r.log.Errorf("error while preparing installation info: %s", err.Error())
-			return sFnUpdateServerlessStatus(v1alpha1.StateError)
-		}
-
-		ready, err := manifest.InstallChart(log.FromContext(ctx), installInfo, nil, r.cacheManager.GetRendererCache())
+		err = chart.Install(chartConfig)
 		if err != nil {
 			r.log.Warnf("error while installing resource %s: %s",
 				client.ObjectKeyFromObject(&s.instance), err.Error())
 			return sFnUpdateServerlessStatus(v1alpha1.StateError)
 		}
+
+		return sFnVerifyResources(chartConfig)
+	}, nil, nil
+}
+
+func sFnVerifyResources(chartConfig *chart.Config) (stateFn, *ctrl.Result, error) {
+	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+		ready, err := chart.Verify(chartConfig)
+		if err != nil {
+			r.log.Warnf("error while verifying resource %s: %s",
+				client.ObjectKeyFromObject(&s.instance), err.Error())
+			return sFnUpdateServerlessStatus(v1alpha1.StateError)
+		}
+
 		if ready {
 			return sFnUpdateServerlessStatus(v1alpha1.StateReady)
 		}
@@ -107,38 +106,6 @@ func sFnApplyResources() (stateFn, *ctrl.Result, error) {
 	}, nil, nil
 }
 
-// verify if installed component is up to date
-func sFnVerifyResources() (stateFn, *ctrl.Result, error) {
-	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		installationSpec, err := installationSpec(r, s)
-		if err != nil {
-			r.log.Errorf("error while preparing installation spec: %s", err.Error())
-			return sFnUpdateServerlessStatus(v1alpha1.StateError)
-		}
-
-		installInfo, err := installInfo(ctx, r, s, installationSpec)
-		if err != nil {
-			r.log.Errorf("error while preparing installation info: %s", err.Error())
-			return sFnUpdateServerlessStatus(v1alpha1.StateError)
-		}
-
-		// verify installed resources
-		ready, err := manifest.ConsistencyCheck(log.FromContext(ctx), installInfo, nil, r.cacheManager.GetRendererCache())
-
-		// update only if resources not ready OR an error occurred during chart verification
-		if err != nil {
-			r.log.Errorf("error while checking resource %s: %s",
-				client.ObjectKeyFromObject(&s.instance), err.Error())
-			return sFnUpdateServerlessStatus(v1alpha1.StateError)
-		} else if !ready {
-			return sFnUpdateServerlessStatus(v1alpha1.StateProcessing)
-		}
-
-		return requeueAfter(requeueDuration)
-	}, nil, nil
-}
-
-// delete installed resources
 func sFnDeleteResources() (stateFn, *ctrl.Result, error) {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		// check if instance is in right state
@@ -146,41 +113,26 @@ func sFnDeleteResources() (stateFn, *ctrl.Result, error) {
 			return sFnUpdateServerlessStatus(v1alpha1.StateDeleting)
 		}
 
-		installationSpec, err := installationSpec(r, s)
+		chartConfig, err := chartConfig(ctx, r, s)
 		if err != nil {
-			r.log.Errorf("can't prepare installation spec: %s", err.Error())
+			r.log.Errorf("error while preparing chart config: %s", err.Error())
 			return sFnUpdateServerlessStatus(v1alpha1.StateError)
 		}
 
-		// fallback logic for flags
-		if installationSpec.SetFlags == nil {
-			installationSpec.SetFlags = map[string]interface{}{}
-		}
-		if installationSpec.ConfigFlags == nil {
-			installationSpec.ConfigFlags = map[string]interface{}{}
-		}
-
-		installInfo, err := installInfo(ctx, r, s, installationSpec)
+		err = chart.Uninstall(chartConfig)
 		if err != nil {
-			r.log.Errorf("can't prepare installation info: %s", err.Error())
-			return sFnUpdateServerlessStatus(v1alpha1.StateError)
-		}
-
-		readyToBeDeleted, err := manifest.UninstallChart(log.FromContext(ctx), installInfo, nil, r.cacheManager.GetRendererCache())
-		if err != nil {
-			r.log.Warnf("error while deleting resource %s: %s",
+			r.log.Warnf("error while uninstalling resource %s: %s",
 				client.ObjectKeyFromObject(&s.instance), err.Error())
-			return stopWithError(err)
+			return sFnUpdateServerlessStatus(v1alpha1.StateError)
 		}
 
 		// if resources are ready to be deleted, remove finalizer
-		if readyToBeDeleted && controllerutil.RemoveFinalizer(&s.instance, r.finalizer) {
+		if controllerutil.RemoveFinalizer(&s.instance, r.finalizer) {
 			return sFnUpdateServerless()
 		}
 
 		return requeue()
 	}, nil, nil
-
 }
 
 func sFnUpdateServerlessStatus(state v1alpha1.State) (stateFn, *ctrl.Result, error) {
@@ -220,59 +172,30 @@ func requeueAfter(duration time.Duration) (stateFn, *ctrl.Result, error) {
 	}, nil
 }
 
-func installationSpec(r *reconciler, s *systemState) (*types.InstallationSpec, error) {
+func chartConfig(ctx context.Context, r *reconciler, s *systemState) (*chart.Config, error) {
 	flags, err := structToFlags(s)
 	if err != nil {
 		return nil, fmt.Errorf("resolving manifest failed: %w", err)
 	}
 
-	// fetch install information
-	installSpec := &types.InstallationSpec{
-		ChartPath: r.chartPath,
-		ChartFlags: types.ChartFlags{
-			ConfigFlags: types.Flags{
-				"Namespace": s.instance.Namespace,
-			},
-			SetFlags: flags,
-		},
-	}
-	if installSpec.ChartPath == "" {
-		return nil, fmt.Errorf("no chart path available for processing")
-	}
-
-	return installSpec, nil
-}
-
-func installInfo(ctx context.Context, r *reconciler, s *systemState, installSpec *types.InstallationSpec) (types.InstallInfo, error) {
-	unstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(&s.instance)
-	if err != nil {
-		return types.InstallInfo{}, err
-	}
-
-	return types.InstallInfo{
-		Ctx: ctx,
-		ChartInfo: &types.ChartInfo{
-			ChartPath:   installSpec.ChartPath,
-			ReleaseName: s.instance.GetName(),
-			Flags:       installSpec.ChartFlags,
-		},
-		ClusterInfo: types.ClusterInfo{
-			// destination cluster rest config
-			Config: r.config,
-			// destination cluster rest client
+	return &chart.Config{
+		Ctx:   ctx,
+		Log:   r.log,
+		Cache: r.cache,
+		Cluster: chart.Cluster{
 			Client: r.client,
+			Config: r.config,
 		},
-		ResourceInfo: types.ResourceInfo{
-			// base operator resource to be passed for custom checks
-			BaseResource: &unstructured.Unstructured{
-				Object: unstructuredObj,
-			},
+		Release: chart.Release{
+			Flags:     flags,
+			ChartPath: r.chartPath,
+			Namespace: s.instance.GetNamespace(),
+			Name:      s.instance.GetName(),
 		},
-		CheckReadyStates: true,
 	}, nil
 }
 
-func structToFlags(s *systemState) (flags types.Flags, err error) {
+func structToFlags(s *systemState) (flags map[string]interface{}, err error) {
 	data, err := json.Marshal(s.instance.Spec)
 
 	if err != nil {
@@ -284,7 +207,7 @@ func structToFlags(s *systemState) (flags types.Flags, err error) {
 	return
 }
 
-func enrichFlagsWithDockerRegistry(d map[string]interface{}, flags *types.Flags) {
+func enrichFlagsWithDockerRegistry(d map[string]interface{}, flags *map[string]interface{}) {
 	newDockerRegistry := (*flags)["dockerRegistry"].(map[string]interface{})
 	for _, k := range []string{"username", "password", "registryAddress", "serverAddress"} {
 		if v, ok := d[k]; ok {
