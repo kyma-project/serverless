@@ -38,3 +38,5 @@ template-k3d.yaml
 docs/.DS_Store
 .DS_Store
 vendor
+
+serverless-manager.yaml

@@ -63,3 +63,7 @@ run-with-lifecycle-manager:
 .PHONY: run-without-lifecycle-manager
 run-without-lifecycle-manager:
 	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager
+
+.PHONY: render-manifest
+render-manifest:
+	@make -C ${PROJECT_ROOT} render-manifest
