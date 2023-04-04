@@ -12,6 +12,7 @@ import (
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/record"
 	"k8s.io/utils/pointer"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -30,7 +31,16 @@ type cfg struct {
 
 type systemState struct {
 	instance       v1alpha1.Serverless
+	snapshot       v1alpha1.ServerlessStatus
 	dockerRegistry map[string]interface{}
+}
+
+func (s *systemState) saveServerlessStatus() {
+	result := s.instance.Status.DeepCopy()
+	if result == nil {
+		result = &v1alpha1.ServerlessStatus{}
+	}
+	s.snapshot = *result
 }
 
 func (s *systemState) setState(state v1alpha1.State) {
@@ -66,6 +76,7 @@ func (s *systemState) Setup(ctx context.Context, c client.Client) error {
 type k8s struct {
 	client client.Client
 	config *rest.Config
+	record.EventRecorder
 }
 
 type reconciler struct {

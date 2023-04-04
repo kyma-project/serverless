@@ -22,6 +22,7 @@ import (
 
 	"go.uber.org/zap"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
@@ -37,12 +38,12 @@ type serverlessReconciler struct {
 	log              *zap.SugaredLogger
 }
 
-func NewServerlessReconciler(client client.Client, config *rest.Config, log *zap.SugaredLogger, chartPath string) *serverlessReconciler {
+func NewServerlessReconciler(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, chartPath string) *serverlessReconciler {
 	cache := chart.NewManifestCache()
 
 	return &serverlessReconciler{
 		initStateMachine: func(log *zap.SugaredLogger) state.StateReconciler {
-			return state.NewMachine(client, config, log, cache, chartPath)
+			return state.NewMachine(client, config, recorder, log, cache, chartPath)
 		},
 		client: client,
 		log:    log,

@@ -7,6 +7,7 @@ import (
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"go.uber.org/zap"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -15,9 +16,9 @@ type StateReconciler interface {
 	Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl.Result, error)
 }
 
-func NewMachine(client client.Client, config *rest.Config, log *zap.SugaredLogger, cache *chart.ManifestCache, chartPath string) StateReconciler {
+func NewMachine(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, cache *chart.ManifestCache, chartPath string) StateReconciler {
 	return &reconciler{
-		fn:    sFnInitialize,
+		fn:    sFnTakeSnapshot,
 		cache: cache,
 		log:   log,
 		cfg: cfg{
@@ -25,8 +26,9 @@ func NewMachine(client client.Client, config *rest.Config, log *zap.SugaredLogge
 			chartPath: chartPath,
 		},
 		k8s: k8s{
-			client: client,
-			config: config,
+			client:        client,
+			config:        config,
+			EventRecorder: recorder,
 		},
 	}
 }
