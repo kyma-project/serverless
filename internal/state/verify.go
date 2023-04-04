@@ -10,19 +10,31 @@ import (
 )
 
 // verify if all workloads are in ready state
-func sFnVerifyResources(chartConfig *chart.Config) (stateFn, *ctrl.Result, error) {
-	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		ready, err := chart.Verify(chartConfig)
-		if err != nil {
-			r.log.Warnf("error while verifying resource %s: %s",
-				client.ObjectKeyFromObject(&s.instance), err.Error())
-			return sFnUpdateServerlessStatus(v1alpha1.StateError)
-		}
+func sFnVerifyResources() (stateFn, *ctrl.Result, error) {
+	return verifyResources, nil, nil
+}
 
-		if ready {
-			return sFnUpdateServerlessStatus(v1alpha1.StateReady)
-		}
+func verifyResources(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+	ready, err := chart.Verify(s.chartConfig)
+	if err != nil {
+		r.log.Warnf("error while verifying resource %s: %s",
+			client.ObjectKeyFromObject(&s.instance), err.Error())
+		return sFnUpdateErrorState(
+			sFnRequeue(),
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstallationErr,
+			err,
+		)
+	}
 
-		return requeueAfter(requeueDuration)
-	}, nil, nil
+	if ready {
+		return sFnUpdateReadyState(
+			sFnStop(),
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstalled,
+			"Serverless installed",
+		)
+	}
+
+	return requeueAfter(requeueDuration)
 }

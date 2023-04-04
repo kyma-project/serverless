@@ -10,21 +10,32 @@ import (
 )
 
 // run serverless chart installation
-func sFnApplyResources() (stateFn, *ctrl.Result, error) {
-	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		chartConfig, err := chartConfig(ctx, r, s)
-		if err != nil {
-			r.log.Errorf("error while preparing chart config: %s", err.Error())
-			return sFnUpdateServerlessStatus(v1alpha1.StateError)
-		}
+func buildSFnApplyResources(s *systemState) stateFn {
+	next := sFnApplyResources
+	if !s.isCondition(v1alpha1.ConditionTypeInstalled) {
+		next, _, _ = sFnUpdateProcessingState(
+			sFnApplyResources,
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstallation,
+			"Installing for configuration",
+		)
+	}
 
-		err = chart.Install(chartConfig)
-		if err != nil {
-			r.log.Warnf("error while installing resource %s: %s",
-				client.ObjectKeyFromObject(&s.instance), err.Error())
-			return sFnUpdateServerlessStatus(v1alpha1.StateError)
-		}
+	return next
+}
 
-		return sFnVerifyResources(chartConfig)
-	}, nil, nil
+func sFnApplyResources(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+	err := chart.Install(s.chartConfig)
+	if err != nil {
+		r.log.Warnf("error while installing resource %s: %s",
+			client.ObjectKeyFromObject(&s.instance), err.Error())
+		return sFnUpdateErrorState(
+			sFnRequeue(),
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstallationErr,
+			err,
+		)
+	}
+
+	return sFnVerifyResources()
 }

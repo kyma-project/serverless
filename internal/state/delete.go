@@ -22,25 +22,19 @@ const (
 )
 
 // delete serverless based on previously installed resources
-func sFnDeleteResources() (stateFn, *ctrl.Result, error) {
-	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		// check if instance is in right state
-		// TODO: in the future base it on conditions
-		if s.instance.Status.State != v1alpha1.StateDeleting &&
-			s.instance.Status.State != v1alpha1.StateError {
-			return sFnUpdateServerlessStatus(v1alpha1.StateDeleting)
-		}
+func buildSFnDeleteResources() (stateFn, *ctrl.Result, error) {
+	return sFnUpdateDeletingState(
+		sFnDeleteResources,
+		v1alpha1.ConditionTypeInstalled,
+		v1alpha1.ConditionReasonDeletion,
+		"Uninstalling",
+	)
+}
 
-		chartConfig, err := chartConfig(ctx, r, s)
-		if err != nil {
-			r.log.Errorf("error while preparing chart config: %s", err.Error())
-			return sFnUpdateServerlessStatus(v1alpha1.StateError)
-		}
-
-		// TODO: thinkg about deletion configuration
-		strategyStateFn := deletionStrategyBuilder(defaultDeletionStrategy)
-		return strategyStateFn(chartConfig)
-	}, nil, nil
+func sFnDeleteResources(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+	// TODO: thinkg about deletion configuration
+	strategyStateFn := deletionStrategyBuilder(defaultDeletionStrategy)
+	return strategyStateFn(s.chartConfig)
 }
 
 type deletionStrategyBuilderFn func(*chart.Config) (stateFn, *ctrl.Result, error)
@@ -70,7 +64,12 @@ func sFnSafeDeletionState(chartConfig *chart.Config) (stateFn, *ctrl.Result, err
 	return func(ctx context.Context, r *reconciler, ss *systemState) (stateFn, *ctrl.Result, error) {
 		if err := chart.CheckCRDOrphanResources(chartConfig); err != nil {
 			// stop state machine with an error and requeue reconciliation in 1min
-			return sFnUpdateServerlessStatus(v1alpha1.StateError)
+			return sFnUpdateErrorState(
+				sFnRequeue(),
+				v1alpha1.ConditionTypeInstalled,
+				v1alpha1.ConditionReasonDeletionErr,
+				err,
+			)
 		}
 
 		return deleteResourcesWithFilter(chartConfig)
@@ -83,10 +82,21 @@ func deleteResourcesWithFilter(chartConfig *chart.Config, filterFuncs ...chart.F
 		if err != nil {
 			r.log.Warnf("error while uninstalling resource %s: %s",
 				client.ObjectKeyFromObject(&s.instance), err.Error())
-			return sFnUpdateServerlessStatus(v1alpha1.StateError)
+			return sFnUpdateErrorState(
+				sFnRequeue(),
+				v1alpha1.ConditionTypeInstalled,
+				v1alpha1.ConditionReasonDeletionErr,
+				err,
+			)
 		}
 
 		// if resources are ready to be deleted, remove finalizer
-		return sFnRemoveFinalizer(ctx, r, s)
+		return sFnUpdateReadyState(
+			sFnRemoveFinalizer(),
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonDeleted,
+			"Serverless module deleted",
+		)
+
 	}, nil, nil
 }

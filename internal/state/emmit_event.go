@@ -29,7 +29,9 @@ func sFnEmmitEventfunc(next stateFn, result *ctrl.Result, err error) stateFn {
 				fmt.Sprintf("%s: %s/%s", condition.Message, s.instance.Namespace, s.instance.Name),
 			)
 		}
-		return next, result, err
+
+		// take a snapshot to not repeat lastly emitted events
+		return sFnTakeSnapsho(next, result, err)
 	}
 }
 

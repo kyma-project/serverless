@@ -18,7 +18,7 @@ func sFnInitialize(ctx context.Context, r *reconciler, s *systemState) (stateFn,
 		controllerutil.AddFinalizer(&s.instance, r.finalizer)
 		err := r.client.Update(ctx, &s.instance)
 		// stop state machine with potential error
-		return stopWithError(err)
+		return stopWithErrorOrRequeue(err)
 	}
 
 	// in case instance has no finalizer and instance is being deleted - end reconciliation
@@ -27,19 +27,20 @@ func sFnInitialize(ctx context.Context, r *reconciler, s *systemState) (stateFn,
 		return stop()
 	}
 
-	if s.instance.Status.State.IsEmpty() {
-		return sFnUpdateServerlessStatus(v1alpha1.StateProcessing)
-	}
-
-	err := s.Setup(ctx, r.client)
+	err := s.Setup(ctx, r)
 	if err != nil {
-		return sFnUpdateServerlessStatus(v1alpha1.StateError)
+		return sFnUpdateErrorState(
+			sFnRequeue(),
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonPrerequisitesErr,
+			err,
+		)
 	}
 
 	// in case instance is being deleted and has finalizer - delete all resources
 	if instanceIsBeingDeleted {
-		return sFnDeleteResources()
+		return buildSFnDeleteResources()
 	}
 
-	return sFnPrerequisites()
+	return buildSFnPrerequisites(s)
 }

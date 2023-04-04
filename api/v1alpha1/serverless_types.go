@@ -17,11 +17,8 @@ limitations under the License.
 package v1alpha1
 
 import (
+	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-)
-
-const (
-	Finalizer = "serverless-manager.kyma-project.io/deletion-hook"
 )
 
 type DockerRegistry struct {
@@ -39,11 +36,33 @@ type ServerlessSpec struct {
 
 type State string
 
+type ConditionReason string
+
+type ConditionType string
+
 const (
 	StateReady      State = "Ready"
 	StateProcessing State = "Processing"
 	StateError      State = "Error"
 	StateDeleting   State = "Deleting"
+
+	// installation and deletion details
+	ConditionTypeInstalled = ConditionType("Installed")
+
+	// prerequisites and soft dependencies
+	ConditionTypeConfigured = ConditionType("Configured")
+
+	ConditionReasonPrerequisites    = ConditionReason("PrerequisitesCheck")
+	ConditionReasonPrerequisitesErr = ConditionReason("PrerequisitesCheckErr")
+	ConditionReasonPrerequisitesMet = ConditionReason("PrerequisitesMet")
+	ConditionReasonInstallation     = ConditionReason("Installation")
+	ConditionReasonInstallationErr  = ConditionReason("InstallationErr")
+	ConditionReasonInstalled        = ConditionReason("Installed")
+	ConditionReasonDeletion         = ConditionReason("Deletion")
+	ConditionReasonDeletionErr      = ConditionReason("DeletionErr")
+	ConditionReasonDeleted          = ConditionReason("Deleted")
+
+	Finalizer = "serverless-manager.kyma-project.io/deletion-hook"
 )
 
 type ServerlessStatus struct {
@@ -69,6 +88,39 @@ type Serverless struct {
 
 	Spec   ServerlessSpec   `json:"spec,omitempty"`
 	Status ServerlessStatus `json:"status,omitempty"`
+}
+
+func (s *Serverless) UpdateConditionFalse(c ConditionType, r ConditionReason, err error) {
+	condition := metav1.Condition{
+		Type:               string(c),
+		Status:             "False",
+		LastTransitionTime: metav1.Now(),
+		Reason:             string(r),
+		Message:            err.Error(),
+	}
+	meta.SetStatusCondition(&s.Status.Conditions, condition)
+}
+
+func (s *Serverless) UpdateConditionUnknown(c ConditionType, r ConditionReason, msg string) {
+	condition := metav1.Condition{
+		Type:               string(c),
+		Status:             "Unknown",
+		LastTransitionTime: metav1.Now(),
+		Reason:             string(r),
+		Message:            msg,
+	}
+	meta.SetStatusCondition(&s.Status.Conditions, condition)
+}
+
+func (s *Serverless) UpdateConditionTrue(c ConditionType, r ConditionReason, msg string) {
+	condition := metav1.Condition{
+		Type:               string(c),
+		Status:             "True",
+		LastTransitionTime: metav1.Now(),
+		Reason:             string(r),
+		Message:            msg,
+	}
+	meta.SetStatusCondition(&s.Status.Conditions, condition)
 }
 
 //+kubebuilder:object:root=true
