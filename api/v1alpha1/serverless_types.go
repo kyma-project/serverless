@@ -52,6 +52,9 @@ const (
 	// prerequisites and soft dependencies
 	ConditionTypeConfigured = ConditionType("Configured")
 
+	// deletion
+	ConditionTypeDeleted = ConditionType("Deleted")
+
 	ConditionReasonPrerequisites    = ConditionReason("PrerequisitesCheck")
 	ConditionReasonPrerequisitesErr = ConditionReason("PrerequisitesCheckErr")
 	ConditionReasonPrerequisitesMet = ConditionReason("PrerequisitesMet")

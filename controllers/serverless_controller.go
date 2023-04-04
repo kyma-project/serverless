@@ -18,7 +18,6 @@ package controllers
 
 import (
 	"context"
-	"time"
 
 	"go.uber.org/zap"
 	"k8s.io/client-go/rest"
@@ -66,9 +65,8 @@ func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	log.Info("reconciliation started")
 
 	if err := sr.client.Get(ctx, req.NamespacedName, &instance); err != nil {
-		return ctrl.Result{
-			RequeueAfter: time.Second * 30,
-		}, client.IgnoreNotFound(err)
+		log.Info("empty request handled - stoping reconciliation")
+		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
 	r := sr.initStateMachine(log)

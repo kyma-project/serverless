@@ -31,7 +31,7 @@ func sFnEmmitEventfunc(next stateFn, result *ctrl.Result, err error) stateFn {
 		}
 
 		// take a snapshot to not repeat lastly emitted events
-		return sFnTakeSnapsho(next, result, err)
+		return sFnTakeSnapshot(next, result, err)
 	}
 }
 

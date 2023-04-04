@@ -24,22 +24,15 @@ const (
 // delete serverless based on previously installed resources
 func buildSFnDeleteResources() (stateFn, *ctrl.Result, error) {
 	return sFnUpdateDeletingState(
-		sFnDeleteResources,
-		v1alpha1.ConditionTypeInstalled,
+		// TODO: thinkg about deletion configuration
+		deletionStrategyBuilder(defaultDeletionStrategy),
+		v1alpha1.ConditionTypeDeleted,
 		v1alpha1.ConditionReasonDeletion,
 		"Uninstalling",
 	)
 }
 
-func sFnDeleteResources(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-	// TODO: thinkg about deletion configuration
-	strategyStateFn := deletionStrategyBuilder(defaultDeletionStrategy)
-	return strategyStateFn(s.chartConfig)
-}
-
-type deletionStrategyBuilderFn func(*chart.Config) (stateFn, *ctrl.Result, error)
-
-func deletionStrategyBuilder(strategy deletionStrategy) deletionStrategyBuilderFn {
+func deletionStrategyBuilder(strategy deletionStrategy) stateFn {
 	switch strategy {
 	case cascadeDeletionStrategy:
 		return sFnCascadeDeletionState
@@ -52,51 +45,46 @@ func deletionStrategyBuilder(strategy deletionStrategy) deletionStrategyBuilderF
 	}
 }
 
-func sFnCascadeDeletionState(chartConfig *chart.Config) (stateFn, *ctrl.Result, error) {
-	return deleteResourcesWithFilter(chartConfig)
+func sFnCascadeDeletionState(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+	return deleteResourcesWithFilter(r, s)
 }
 
-func sFnUpstreamDeletionState(chartConfig *chart.Config) (stateFn, *ctrl.Result, error) {
-	return deleteResourcesWithFilter(chartConfig, chart.WithoutCRDFilter)
+func sFnUpstreamDeletionState(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+	return deleteResourcesWithFilter(r, s, chart.WithoutCRDFilter)
 }
 
-func sFnSafeDeletionState(chartConfig *chart.Config) (stateFn, *ctrl.Result, error) {
-	return func(ctx context.Context, r *reconciler, ss *systemState) (stateFn, *ctrl.Result, error) {
-		if err := chart.CheckCRDOrphanResources(chartConfig); err != nil {
-			// stop state machine with an error and requeue reconciliation in 1min
-			return sFnUpdateErrorState(
-				sFnRequeue(),
-				v1alpha1.ConditionTypeInstalled,
-				v1alpha1.ConditionReasonDeletionErr,
-				err,
-			)
-		}
-
-		return deleteResourcesWithFilter(chartConfig)
-	}, nil, nil
-}
-
-func deleteResourcesWithFilter(chartConfig *chart.Config, filterFuncs ...chart.FilterFunc) (stateFn, *ctrl.Result, error) {
-	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		err := chart.Uninstall(chartConfig)
-		if err != nil {
-			r.log.Warnf("error while uninstalling resource %s: %s",
-				client.ObjectKeyFromObject(&s.instance), err.Error())
-			return sFnUpdateErrorState(
-				sFnRequeue(),
-				v1alpha1.ConditionTypeInstalled,
-				v1alpha1.ConditionReasonDeletionErr,
-				err,
-			)
-		}
-
-		// if resources are ready to be deleted, remove finalizer
-		return sFnUpdateReadyState(
-			sFnRemoveFinalizer(),
-			v1alpha1.ConditionTypeInstalled,
-			v1alpha1.ConditionReasonDeleted,
-			"Serverless module deleted",
+func sFnSafeDeletionState(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+	if err := chart.CheckCRDOrphanResources(s.chartConfig); err != nil {
+		// stop state machine with an error and requeue reconciliation in 1min
+		return sFnUpdateErrorState(
+			sFnRequeue(),
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeletionErr,
+			err,
 		)
+	}
 
-	}, nil, nil
+	return deleteResourcesWithFilter(r, s)
+}
+
+func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...chart.FilterFunc) (stateFn, *ctrl.Result, error) {
+	err := chart.Uninstall(s.chartConfig)
+	if err != nil {
+		r.log.Warnf("error while uninstalling resource %s: %s",
+			client.ObjectKeyFromObject(&s.instance), err.Error())
+		return sFnUpdateErrorState(
+			sFnRequeue(),
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeletionErr,
+			err,
+		)
+	}
+
+	// if resources are ready to be deleted, remove finalizer
+	return sFnUpdateDeletedState(
+		sFnRemoveFinalizer(),
+		v1alpha1.ConditionTypeDeleted,
+		v1alpha1.ConditionReasonDeleted,
+		"Serverless module deleted",
+	)
 }
