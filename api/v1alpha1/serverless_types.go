@@ -80,6 +80,11 @@ type ServerlessStatus struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:printcolumn:name="Configured",type="string",JSONPath=".status.conditions[?(@.type=='Configured')].status"
+//+kubebuilder:printcolumn:name="Installed",type="string",JSONPath=".status.conditions[?(@.type=='Installed')].status"
+//+kubebuilder:printcolumn:name="generation",type="integer",JSONPath=".metadata.generation"
+//+kubebuilder:printcolumn:name="age",type="date",JSONPath=".metadata.creationTimestamp"
+//+kubebuilder:printcolumn:name="state",type="string",JSONPath=".status.state"
 
 // Serverless is the Schema for the serverlesses API
 type Serverless struct {

@@ -15,7 +15,23 @@ spec:
     singular: serverless
   scope: Namespaced
   versions:
-  - name: v1alpha1
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.type=='Configured')].status
+      name: Configured
+      type: string
+    - jsonPath: .status.conditions[?(@.type=='Installed')].status
+      name: Installed
+      type: string
+    - jsonPath: .metadata.generation
+      name: generation
+      type: integer
+    - jsonPath: .metadata.creationTimestamp
+      name: age
+      type: date
+    - jsonPath: .status.state
+      name: state
+      type: string
+    name: v1alpha1
     schema:
       openAPIV3Schema:
         description: Serverless is the Schema for the serverlesses API
