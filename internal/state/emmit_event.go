@@ -2,7 +2,6 @@ package state
 
 import (
 	"context"
-	"fmt"
 
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -26,7 +25,7 @@ func sFnEmmitEventfunc(next stateFn, result *ctrl.Result, err error) stateFn {
 				&s.instance,
 				eventType(condition),
 				condition.Reason,
-				fmt.Sprintf("%s: %s/%s", condition.Message, s.instance.Namespace, s.instance.Name),
+				condition.Message,
 			)
 		}
 
