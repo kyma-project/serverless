@@ -110,10 +110,10 @@ func shouldCreateServerless(h testHelper, serverlessName, serverlessDeploymentNa
 	h.updateDeploymentStatus(serverlessWebhookName)
 
 	// assert
-	Eventually(h.createGetServerlessStateFunc(serverlessName)).
+	Eventually(h.createGetServerlessStatusFunc(serverlessName)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 20).
-		Should(Equal(v1alpha1.StateReady))
+		Should(ConditionTrueMatcher())
 }
 
 func shouldPropagateSpecProperties(h testHelper, registrySecretName string, expected dockerRegistryData) {
@@ -143,6 +143,11 @@ func shouldUpdateServerless(h testHelper, serverlessName string, serverlessSpec 
 		Should(BeTrue())
 
 	Expect(serverless.Spec).To(Equal(serverlessSpec))
+
+	Eventually(h.createGetServerlessStatusFunc(serverlessName)).
+		WithPolling(time.Second * 2).
+		WithTimeout(time.Second * 20).
+		Should(ConditionTrueMatcher())
 }
 
 func shouldDeleteServerless(h testHelper, serverlessName, serverlessDeploymentName, serverlessWebhookName string) {

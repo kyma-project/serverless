@@ -19,6 +19,7 @@ package main
 import (
 	"flag"
 	"os"
+	"time"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -40,8 +41,9 @@ import (
 )
 
 var (
-	scheme   = runtime.NewScheme()
-	setupLog = ctrl.Log.WithName("setup")
+	scheme     = runtime.NewScheme()
+	setupLog   = ctrl.Log.WithName("setup")
+	syncPeriod = time.Minute * 30
 )
 
 func init() {
@@ -77,24 +79,14 @@ func main() {
 		HealthProbeBindAddress: probeAddr,
 		LeaderElection:         enableLeaderElection,
 		LeaderElectionID:       "c9a95105.kyma-project.io",
-		// LeaderElectionReleaseOnCancel defines if the leader should step down voluntarily
-		// when the Manager ends. This requires the binary to immediately end when the
-		// Manager is stopped, otherwise, this setting is unsafe. Setting this significantly
-		// speeds up voluntary leader transitions as the new leader don't have to wait
-		// LeaseDuration time first.
-		//
-		// In the default scaffold provided, the program ends immediately after
-		// the manager stops, so would be fine to enable this option. However,
-		// if you are doing or is intended to do any operation such as perform cleanups
-		// after the manager stops then its usage might be unsafe.
-		// LeaderElectionReleaseOnCancel: true,
+		SyncPeriod:             &syncPeriod,
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
 		os.Exit(1)
 	}
 
-	config := uberzap.NewProductionConfig()
+	config := uberzap.NewDevelopmentConfig()
 	config.EncoderConfig.TimeKey = "timestamp"
 	config.EncoderConfig.EncodeTime = uberzapcore.TimeEncoderOfLayout("Jan 02 15:04:05.000000000")
 
@@ -104,7 +96,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	reconciler := controllers.NewServerlessReconciler(mgr.GetClient(), mgr.GetConfig(), reconcilerLogger.Sugar(), "/module-chart")
+	reconciler := controllers.NewServerlessReconciler(
+		mgr.GetClient(), mgr.GetConfig(),
+		mgr.GetEventRecorderFor("serverless-manager"),
+		reconcilerLogger.Sugar(),
+		"/module-chart")
 
 	if err = reconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Serverless")

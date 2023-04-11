@@ -8,12 +8,54 @@ import (
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	gomegatypes "github.com/onsi/gomega/types"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+type conditionMatcher struct {
+	expectedState           v1alpha1.State
+	expectedConditionStatus metav1.ConditionStatus
+}
+
+func ConditionTrueMatcher() gomegatypes.GomegaMatcher {
+	return &conditionMatcher{
+		expectedState:           v1alpha1.StateReady,
+		expectedConditionStatus: metav1.ConditionTrue,
+	}
+}
+
+func (matcher *conditionMatcher) Match(actual interface{}) (success bool, err error) {
+	status, ok := actual.(v1alpha1.ServerlessStatus)
+	if !ok {
+		return false, fmt.Errorf("ConditionMatcher matcher expects an v1alpha1.ServerlessStatus")
+	}
+
+	if status.State != matcher.expectedState {
+		return false, nil
+	}
+
+	for _, condition := range status.Conditions {
+		if condition.Status != matcher.expectedConditionStatus {
+			return false, nil
+		}
+	}
+
+	return true, nil
+}
+
+func (matcher *conditionMatcher) FailureMessage(actual interface{}) (message string) {
+	return fmt.Sprintf("Expected\n\t%#v\nto be in %s state with all %s conditions",
+		actual, matcher.expectedState, matcher.expectedConditionStatus)
+}
+
+func (matcher *conditionMatcher) NegatedFailureMessage(actual interface{}) (message string) {
+	return fmt.Sprintf("Expected\n\t%#v\nto be in %s state with all %s conditions",
+		actual, matcher.expectedState, matcher.expectedConditionStatus)
+}
 
 type testHelper struct {
 	ctx           context.Context
@@ -168,14 +210,13 @@ func (h *testHelper) listKubernetesObjectFunc(list client.ObjectList) (bool, err
 	return true, err
 }
 
-func (h *testHelper) createGetServerlessStateFunc(serverlessName string) func() (v1alpha1.State, error) {
-	return func() (v1alpha1.State, error) {
-		return h.getServerlessState(serverlessName)
+func (h *testHelper) createGetServerlessStatusFunc(serverlessName string) func() (v1alpha1.ServerlessStatus, error) {
+	return func() (v1alpha1.ServerlessStatus, error) {
+		return h.getServerlessStatus(serverlessName)
 	}
 }
 
-func (h *testHelper) getServerlessState(serverlessName string) (v1alpha1.State, error) {
-	var emptyState = v1alpha1.State("")
+func (h *testHelper) getServerlessStatus(serverlessName string) (v1alpha1.ServerlessStatus, error) {
 	var serverless v1alpha1.Serverless
 	key := types.NamespacedName{
 		Name:      serverlessName,
@@ -183,9 +224,9 @@ func (h *testHelper) getServerlessState(serverlessName string) (v1alpha1.State, 
 	}
 	err := k8sClient.Get(h.ctx, key, &serverless)
 	if err != nil {
-		return emptyState, err
+		return v1alpha1.ServerlessStatus{}, err
 	}
-	return serverless.Status.State, nil
+	return serverless.Status, nil
 }
 
 type dockerRegistryData struct {

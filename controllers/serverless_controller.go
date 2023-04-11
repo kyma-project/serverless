@@ -18,15 +18,17 @@ package controllers
 
 import (
 	"context"
-	"time"
 
 	"go.uber.org/zap"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
+	"github.com/kyma-project/serverless-manager/internal/predicate"
 	"github.com/kyma-project/serverless-manager/internal/state"
 )
 
@@ -37,12 +39,12 @@ type serverlessReconciler struct {
 	log              *zap.SugaredLogger
 }
 
-func NewServerlessReconciler(client client.Client, config *rest.Config, log *zap.SugaredLogger, chartPath string) *serverlessReconciler {
+func NewServerlessReconciler(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, chartPath string) *serverlessReconciler {
 	cache := chart.NewManifestCache()
 
 	return &serverlessReconciler{
 		initStateMachine: func(log *zap.SugaredLogger) state.StateReconciler {
-			return state.NewMachine(client, config, log, cache, chartPath)
+			return state.NewMachine(client, config, recorder, log, cache, chartPath)
 		},
 		client: client,
 		log:    log,
@@ -52,7 +54,7 @@ func NewServerlessReconciler(client client.Client, config *rest.Config, log *zap
 // SetupWithManager sets up the controller with the Manager.
 func (r *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1alpha1.Serverless{}).
+		For(&v1alpha1.Serverless{}, builder.WithPredicates(predicate.NoStatusChangePredicate{})).
 		Complete(r)
 }
 
@@ -63,9 +65,8 @@ func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	log.Info("reconciliation started")
 
 	if err := sr.client.Get(ctx, req.NamespacedName, &instance); err != nil {
-		return ctrl.Result{
-			RequeueAfter: time.Second * 30,
-		}, client.IgnoreNotFound(err)
+		log.Info("empty request handled - stoping reconciliation")
+		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
 	r := sr.initStateMachine(log)
