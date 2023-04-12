@@ -12,65 +12,75 @@ var (
 	requeueDuration = time.Second * 3
 )
 
-func sFnUpdateProcessingState(next stateFn, condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) (stateFn, *ctrl.Result, error) {
+func sFnUpdateProcessingState(next stateFn, condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		s.setState(v1alpha1.StateProcessing)
 		s.instance.UpdateConditionUnknown(condition, reason, msg)
 
-		return updateServerlessStatus(sFnEmitEventfunc(next, nil, nil), ctx, r, s)
-	}, nil, nil
+		return nextState(
+			updateServerlessStatus(buildSFnEmitEvent(next, nil, nil), ctx, r, s),
+		)
+	}
 }
 
-func sFnUpdateProcessingTrueState(next stateFn, condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) (stateFn, *ctrl.Result, error) {
+func sFnUpdateProcessingTrueState(next stateFn, condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		s.setState(v1alpha1.StateProcessing)
 		s.instance.UpdateConditionTrue(condition, reason, msg)
 
-		return updateServerlessStatus(sFnEmitEventfunc(next, nil, nil), ctx, r, s)
-	}, nil, nil
+		return nextState(
+			updateServerlessStatus(buildSFnEmitEvent(next, nil, nil), ctx, r, s),
+		)
+	}
 }
 
-func sFnUpdateReadyState(next stateFn, condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) (stateFn, *ctrl.Result, error) {
+func sFnUpdateReadyState(next stateFn, condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		s.setState(v1alpha1.StateReady)
 		s.instance.UpdateConditionTrue(condition, reason, msg)
 
-		return updateServerlessStatus(sFnEmitEventfunc(next, nil, nil), ctx, r, s)
-	}, nil, nil
+		return nextState(
+			updateServerlessStatus(buildSFnEmitEvent(next, nil, nil), ctx, r, s),
+		)
+	}
 }
 
-func sFnUpdateErrorState(next stateFn, condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, err error) (stateFn, *ctrl.Result, error) {
+func sFnUpdateErrorState(next stateFn, condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, err error) stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		s.setState(v1alpha1.StateError)
 		s.instance.UpdateConditionFalse(condition, reason, err)
 
-		return updateServerlessStatus(sFnEmitEventfunc(next, nil, nil), ctx, r, s)
-	}, nil, nil
+		return nextState(
+			updateServerlessStatus(buildSFnEmitEvent(next, nil, nil), ctx, r, s),
+		)
+	}
 }
 
-func sFnUpdateDeletingState(next stateFn, eventType, eventReason, eventMessage string) (stateFn, *ctrl.Result, error) {
+func sFnUpdateDeletingState(next stateFn, eventType, eventReason, eventMessage string) stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		s.setState(v1alpha1.StateDeleting)
 
-		return updateServerlessStatus(sFnEmitStrictEvent(
-			next, nil, nil,
-			eventType,
-			eventReason,
-			eventMessage,
-		), ctx, r, s)
-	}, nil, nil
+		return nextState(
+			updateServerlessStatus(sFnEmitStrictEvent(
+				next, nil, nil,
+				eventType,
+				eventReason,
+				eventMessage,
+			), ctx, r, s),
+		)
+	}
 }
 
-func sFnUpdateServerless() (stateFn, *ctrl.Result, error) {
+func sFnUpdateServerless() stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		return nil, nil, r.client.Update(ctx, &s.instance)
-	}, nil, nil
+		return stopWithError(r.client.Update(ctx, &s.instance))
+	}
 }
 
-func updateServerlessStatus(next stateFn, ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func updateServerlessStatus(next stateFn, ctx context.Context, r *reconciler, s *systemState) stateFn {
 	err := r.client.Status().Update(ctx, &s.instance)
 	if err != nil {
 		stopWithError(err)
 	}
-	return next, nil, nil
+	return next
 }

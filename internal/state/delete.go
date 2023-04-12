@@ -22,12 +22,14 @@ const (
 
 // delete serverless based on previously installed resources
 func buildSFnDeleteResources() (stateFn, *ctrl.Result, error) {
-	return sFnUpdateDeletingState(
-		// TODO: thinkg about deletion configuration
-		deletionStrategyBuilder(defaultDeletionStrategy),
-		"Normal",
-		"Deletion",
-		"Uninstalling",
+	return nextState(
+		sFnUpdateDeletingState(
+			// TODO: thinkg about deletion configuration
+			deletionStrategyBuilder(defaultDeletionStrategy),
+			"Normal",
+			"Deletion",
+			"Uninstalling",
+		),
 	)
 }
 
@@ -44,22 +46,24 @@ func deletionStrategyBuilder(strategy deletionStrategy) stateFn {
 	}
 }
 
-func sFnCascadeDeletionState(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func sFnCascadeDeletionState(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	return deleteResourcesWithFilter(r, s)
 }
 
-func sFnUpstreamDeletionState(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func sFnUpstreamDeletionState(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	return deleteResourcesWithFilter(r, s, chart.WithoutCRDFilter)
 }
 
-func sFnSafeDeletionState(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func sFnSafeDeletionState(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	if err := chart.CheckCRDOrphanResources(s.chartConfig); err != nil {
 		// stop state machine with an error and requeue reconciliation in 1min
-		return sFnUpdateDeletingState(
-			sFnRequeue(),
-			"Warning",
-			"Deletion",
-			err.Error(),
+		return nextState(
+			sFnUpdateDeletingState(
+				sFnRequeue(),
+				"Warning",
+				"Deletion",
+				err.Error(),
+			),
 		)
 	}
 
@@ -67,23 +71,27 @@ func sFnSafeDeletionState(ctx context.Context, r *reconciler, s *systemState) (s
 }
 
 func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...chart.FilterFunc) (stateFn, *ctrl.Result, error) {
-	err := chart.Uninstall(s.chartConfig)
+	err := chart.Uninstall(s.chartConfig, filterFuncs...)
 	if err != nil {
 		r.log.Warnf("error while uninstalling resource %s: %s",
 			client.ObjectKeyFromObject(&s.instance), err.Error())
-		return sFnUpdateDeletingState(
-			sFnRequeue(),
-			"Warning",
-			"Deletion",
-			err.Error(),
+		return nextState(
+			sFnUpdateDeletingState(
+				sFnRequeue(),
+				"Warning",
+				"Deletion",
+				err.Error(),
+			),
 		)
 	}
 
 	// if resources are ready to be deleted, remove finalizer
-	return sFnUpdateDeletingState(
-		sFnRemoveFinalizer(),
-		"Normal",
-		"Deleted",
-		"Serverless module deleted",
+	return nextState(
+		sFnUpdateDeletingState(
+			sFnRemoveFinalizer(),
+			"Normal",
+			"Deleted",
+			"Serverless module deleted",
+		),
 	)
 }
