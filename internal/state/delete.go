@@ -3,7 +3,6 @@ package state
 import (
 	"context"
 
-	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -26,8 +25,8 @@ func buildSFnDeleteResources() (stateFn, *ctrl.Result, error) {
 	return sFnUpdateDeletingState(
 		// TODO: thinkg about deletion configuration
 		deletionStrategyBuilder(defaultDeletionStrategy),
-		v1alpha1.ConditionTypeDeleted,
-		v1alpha1.ConditionReasonDeletion,
+		"Normal",
+		"Deletion",
 		"Uninstalling",
 	)
 }
@@ -56,11 +55,11 @@ func sFnUpstreamDeletionState(ctx context.Context, r *reconciler, s *systemState
 func sFnSafeDeletionState(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	if err := chart.CheckCRDOrphanResources(s.chartConfig); err != nil {
 		// stop state machine with an error and requeue reconciliation in 1min
-		return sFnUpdateErrorState(
+		return sFnUpdateDeletingState(
 			sFnRequeue(),
-			v1alpha1.ConditionTypeDeleted,
-			v1alpha1.ConditionReasonDeletionErr,
-			err,
+			"Warning",
+			"Deletion",
+			err.Error(),
 		)
 	}
 
@@ -72,19 +71,19 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 	if err != nil {
 		r.log.Warnf("error while uninstalling resource %s: %s",
 			client.ObjectKeyFromObject(&s.instance), err.Error())
-		return sFnUpdateErrorState(
+		return sFnUpdateDeletingState(
 			sFnRequeue(),
-			v1alpha1.ConditionTypeDeleted,
-			v1alpha1.ConditionReasonDeletionErr,
-			err,
+			"Warning",
+			"Deletion",
+			err.Error(),
 		)
 	}
 
 	// if resources are ready to be deleted, remove finalizer
-	return sFnUpdateDeletedState(
+	return sFnUpdateDeletingState(
 		sFnRemoveFinalizer(),
-		v1alpha1.ConditionTypeDeleted,
-		v1alpha1.ConditionReasonDeleted,
+		"Normal",
+		"Deleted",
 		"Serverless module deleted",
 	)
 }

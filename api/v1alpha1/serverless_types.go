@@ -52,18 +52,12 @@ const (
 	// prerequisites and soft dependencies
 	ConditionTypeConfigured = ConditionType("Configured")
 
-	// deletion
-	ConditionTypeDeleted = ConditionType("Deleted")
-
 	ConditionReasonPrerequisites    = ConditionReason("PrerequisitesCheck")
 	ConditionReasonPrerequisitesErr = ConditionReason("PrerequisitesCheckErr")
 	ConditionReasonPrerequisitesMet = ConditionReason("PrerequisitesMet")
 	ConditionReasonInstallation     = ConditionReason("Installation")
 	ConditionReasonInstallationErr  = ConditionReason("InstallationErr")
 	ConditionReasonInstalled        = ConditionReason("Installed")
-	ConditionReasonDeletion         = ConditionReason("Deletion")
-	ConditionReasonDeletionErr      = ConditionReason("DeletionErr")
-	ConditionReasonDeleted          = ConditionReason("Deleted")
 
 	Finalizer = "serverless-manager.kyma-project.io/deletion-hook"
 )

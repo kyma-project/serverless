@@ -17,7 +17,7 @@ func sFnUpdateProcessingState(next stateFn, condition v1alpha1.ConditionType, re
 		s.setState(v1alpha1.StateProcessing)
 		s.instance.UpdateConditionUnknown(condition, reason, msg)
 
-		return updateServerlessStatus(sFnEmmitEventfunc(next, nil, nil), ctx, r, s)
+		return updateServerlessStatus(sFnEmitEventfunc(next, nil, nil), ctx, r, s)
 	}, nil, nil
 }
 
@@ -26,7 +26,7 @@ func sFnUpdateProcessingTrueState(next stateFn, condition v1alpha1.ConditionType
 		s.setState(v1alpha1.StateProcessing)
 		s.instance.UpdateConditionTrue(condition, reason, msg)
 
-		return updateServerlessStatus(sFnEmmitEventfunc(next, nil, nil), ctx, r, s)
+		return updateServerlessStatus(sFnEmitEventfunc(next, nil, nil), ctx, r, s)
 	}, nil, nil
 }
 
@@ -35,7 +35,7 @@ func sFnUpdateReadyState(next stateFn, condition v1alpha1.ConditionType, reason 
 		s.setState(v1alpha1.StateReady)
 		s.instance.UpdateConditionTrue(condition, reason, msg)
 
-		return updateServerlessStatus(sFnEmmitEventfunc(next, nil, nil), ctx, r, s)
+		return updateServerlessStatus(sFnEmitEventfunc(next, nil, nil), ctx, r, s)
 	}, nil, nil
 }
 
@@ -44,25 +44,20 @@ func sFnUpdateErrorState(next stateFn, condition v1alpha1.ConditionType, reason 
 		s.setState(v1alpha1.StateError)
 		s.instance.UpdateConditionFalse(condition, reason, err)
 
-		return updateServerlessStatus(sFnEmmitEventfunc(next, nil, nil), ctx, r, s)
+		return updateServerlessStatus(sFnEmitEventfunc(next, nil, nil), ctx, r, s)
 	}, nil, nil
 }
 
-func sFnUpdateDeletingState(next stateFn, condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) (stateFn, *ctrl.Result, error) {
+func sFnUpdateDeletingState(next stateFn, eventType, eventReason, eventMessage string) (stateFn, *ctrl.Result, error) {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		s.setState(v1alpha1.StateDeleting)
-		s.instance.UpdateConditionUnknown(condition, reason, msg)
 
-		return updateServerlessStatus(sFnEmmitEventfunc(next, nil, nil), ctx, r, s)
-	}, nil, nil
-}
-
-func sFnUpdateDeletedState(next stateFn, condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) (stateFn, *ctrl.Result, error) {
-	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		s.setState(v1alpha1.StateDeleting)
-		s.instance.UpdateConditionTrue(condition, reason, msg)
-
-		return updateServerlessStatus(sFnEmmitEventfunc(next, nil, nil), ctx, r, s)
+		return updateServerlessStatus(sFnEmitStrictEvent(
+			next, nil, nil,
+			eventType,
+			eventReason,
+			eventMessage,
+		), ctx, r, s)
 	}, nil, nil
 }
 
