@@ -8,8 +8,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type flags map[string]interface{}
-
 // build flags for the installation. The Serverless resource should be validated and ready to use
 func BuildFlags(ctx context.Context, client client.Client, serverless *v1alpha1.Serverless) (map[string]interface{}, error) {
 	dockerRegistryFlags, err := dockerRegistryFlags(ctx, client, serverless)
