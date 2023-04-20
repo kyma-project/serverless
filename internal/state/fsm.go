@@ -2,7 +2,6 @@ package state
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"reflect"
 	"runtime"
@@ -11,11 +10,9 @@ import (
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"go.uber.org/zap"
-	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
-	"k8s.io/utils/pointer"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -58,28 +55,7 @@ func (s *systemState) setState(state v1alpha1.State) {
 func (s *systemState) Setup(ctx context.Context, r *reconciler) error {
 	s.instance.Spec.Default()
 
-	dockerRegistry := map[string]interface{}{
-		"registryAddress": pointer.String(v1alpha1.DefaultRegistryAddress),
-		"serverAddress":   pointer.String(v1alpha1.DefaultServerAddress),
-	}
-	if s.instance.Spec.DockerRegistry.SecretName != nil {
-		var secret corev1.Secret
-		key := client.ObjectKey{
-			Namespace: s.instance.Namespace,
-			Name:      *s.instance.Spec.DockerRegistry.SecretName,
-		}
-		err := r.client.Get(ctx, key, &secret)
-		if err != nil {
-			return err
-		}
-		for _, k := range []string{"username", "password", "registryAddress", "serverAddress"} {
-			if v, ok := secret.Data[k]; ok {
-				dockerRegistry[k] = string(v)
-			}
-		}
-	}
-
-	chartConfig, err := chartConfig(ctx, r, s, dockerRegistry)
+	chartConfig, err := chartConfig(ctx, r, s)
 	if err != nil {
 		r.log.Errorf("error while preparing chart config: %s", err.Error())
 		return err
@@ -89,8 +65,8 @@ func (s *systemState) Setup(ctx context.Context, r *reconciler) error {
 	return nil
 }
 
-func chartConfig(ctx context.Context, r *reconciler, s *systemState, customFlags map[string]interface{}) (*chart.Config, error) {
-	flags, err := structToFlags(s, customFlags)
+func chartConfig(ctx context.Context, r *reconciler, s *systemState) (*chart.Config, error) {
+	flags, err := chart.BuildFlags(ctx, r.client, &s.instance)
 	if err != nil {
 		return nil, fmt.Errorf("resolving manifest failed: %w", err)
 	}
@@ -110,28 +86,6 @@ func chartConfig(ctx context.Context, r *reconciler, s *systemState, customFlags
 			Name:      s.instance.GetName(),
 		},
 	}, nil
-}
-
-func structToFlags(s *systemState, customFlags map[string]interface{}) (flags map[string]interface{}, err error) {
-	data, err := json.Marshal(s.instance.Spec)
-
-	if err != nil {
-		return
-	}
-	err = json.Unmarshal(data, &flags)
-
-	enrichFlagsWithDockerRegistry(customFlags, &flags)
-	return
-}
-
-func enrichFlagsWithDockerRegistry(d map[string]interface{}, flags *map[string]interface{}) {
-	newDockerRegistry := (*flags)["dockerRegistry"].(map[string]interface{})
-	for _, k := range []string{"username", "password", "registryAddress", "serverAddress"} {
-		if v, ok := d[k]; ok {
-			newDockerRegistry[k] = v
-		}
-	}
-	(*flags)["dockerRegistry"] = newDockerRegistry
 }
 
 type k8s struct {
