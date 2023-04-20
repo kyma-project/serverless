@@ -30,7 +30,7 @@ func Test_sFnTakeSnapshot(t *testing.T) {
 		}
 
 		// build sFn
-		sFn := buildSFnTakeSnapshot(sFnInitialize(), nil, nil)
+		sFn := sFnTakeSnapshot(sFnInitialize(), nil, nil)
 		require.NotNil(t, sFn)
 
 		// run sFn and return sFnInitialize
@@ -50,7 +50,7 @@ func Test_sFnTakeSnapshot(t *testing.T) {
 		}
 
 		// build sFn
-		sFn := buildSFnTakeSnapshot(nil, nil, nil)
+		sFn := sFnTakeSnapshot(nil, nil, nil)
 		require.NotNil(t, sFn)
 
 		// run sFn and return nil

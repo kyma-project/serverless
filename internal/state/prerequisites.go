@@ -16,8 +16,8 @@ func sFnPrerequisites() stateFn {
 			return nextState(
 				sFnUpdateProcessingState(
 					v1alpha1.ConditionTypeConfigured,
-					v1alpha1.ConditionReasonPrerequisites,
-					"Checking prerequisites",
+					v1alpha1.ConditionReasonConfigurationCheck,
+					"Checking configuration",
 				),
 			)
 		}
@@ -29,26 +29,15 @@ func sFnPrerequisites() stateFn {
 			return nextState(
 				sFnUpdateErrorState(
 					v1alpha1.ConditionTypeConfigured,
-					v1alpha1.ConditionReasonPrerequisitesErr,
+					v1alpha1.ConditionReasonConfigurationErr,
 					err,
-				),
-			)
-		}
-
-		// set condition before next state
-		if !s.instance.IsConditionTrue(v1alpha1.ConditionTypeConfigured) {
-			return nextState(
-				sFnUpdateProcessingTrueState(
-					v1alpha1.ConditionTypeConfigured,
-					v1alpha1.ConditionReasonPrerequisitesMet,
-					"All prerequisites met",
 				),
 			)
 		}
 
 		// when we know that cluster configuration met serverless requirements we can go to installation state
 		return nextState(
-			sFnApplyResources(),
+			sFnOptionalDependencies(),
 		)
 	}
 }

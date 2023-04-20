@@ -31,7 +31,9 @@ type DockerRegistry struct {
 
 // ServerlessSpec defines the desired state of Serverless
 type ServerlessSpec struct {
-	DockerRegistry *DockerRegistry `json:"dockerRegistry,omitempty"`
+	EventPublisherProxyURL *string         `json:"eventPublisherProxyURL,omitempty"`
+	TraceCollectorURL      *string         `json:"traceCollectorURL,omitempty"`
+	DockerRegistry         *DockerRegistry `json:"dockerRegistry,omitempty"`
 }
 
 type State string
@@ -52,17 +54,21 @@ const (
 	// prerequisites and soft dependencies
 	ConditionTypeConfigured = ConditionType("Configured")
 
-	ConditionReasonPrerequisites    = ConditionReason("PrerequisitesCheck")
-	ConditionReasonPrerequisitesErr = ConditionReason("PrerequisitesCheckErr")
-	ConditionReasonPrerequisitesMet = ConditionReason("PrerequisitesMet")
-	ConditionReasonInstallation     = ConditionReason("Installation")
-	ConditionReasonInstallationErr  = ConditionReason("InstallationErr")
-	ConditionReasonInstalled        = ConditionReason("Installed")
+	ConditionReasonConfigurationCheck = ConditionReason("ConfigurationCheck")
+	ConditionReasonConfigurationErr   = ConditionReason("ConfigurationCheckErr")
+	ConditionReasonConfigured         = ConditionReason("Configured")
+	ConditionReasonInstallation       = ConditionReason("Installation")
+	ConditionReasonInstallationErr    = ConditionReason("InstallationErr")
+	ConditionReasonInstalled          = ConditionReason("Installed")
 
 	Finalizer = "serverless-manager.kyma-project.io/deletion-hook"
 )
 
 type ServerlessStatus struct {
+	// Used the Publisher Proxy and the Trace Collector URLs.
+	EventPublisherProxyURL string `json:"eventPublisherProxyURL,omitempty"`
+	TraceCollectorURL      string `json:"traceCollectorURL,omitempty"`
+
 	// State signifies current state of Serverless.
 	// Value can be one of ("Ready", "Processing", "Error", "Deleting").
 	// +kubebuilder:validation:Required

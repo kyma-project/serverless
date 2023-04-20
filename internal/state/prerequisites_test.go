@@ -23,8 +23,8 @@ func Test_sFnPrerequisites(t *testing.T) {
 
 		expectedNext := sFnUpdateProcessingState(
 			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonPrerequisites,
-			"Checking prerequisites",
+			v1alpha1.ConditionReasonConfigurationCheck,
+			"Checking configuration",
 		)
 
 		requireEqualFunc(t, expectedNext, next)
@@ -48,34 +48,8 @@ func Test_sFnPrerequisites(t *testing.T) {
 
 		expectedNext := sFnUpdateErrorState(
 			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonPrerequisitesErr,
+			v1alpha1.ConditionReasonConfigurationErr,
 			errors.New("test error"),
-		)
-
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
-	})
-	t.Run("check prerequisites and update conditions", func(t *testing.T) {
-		serverless := *testInstalledServerless.DeepCopy()
-		serverless.UpdateConditionUnknown(
-			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonPrerequisites,
-			"Checking prerequisites",
-		)
-		s := &systemState{
-			instance: serverless,
-		}
-
-		r := &reconciler{}
-
-		stateFn := sFnPrerequisites()
-		next, result, err := stateFn(nil, r, s)
-
-		expectedNext := sFnUpdateProcessingTrueState(
-			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonPrerequisitesMet,
-			"All prerequisites met",
 		)
 
 		requireEqualFunc(t, expectedNext, next)
@@ -92,7 +66,7 @@ func Test_sFnPrerequisites(t *testing.T) {
 		stateFn := sFnPrerequisites()
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnApplyResources()
+		expectedNext := sFnOptionalDependencies()
 
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)

@@ -23,14 +23,25 @@ var _ = Describe("Serverless controller", func() {
 		)
 
 		var (
-			registryDataDefault = dockerRegistryData{
-				EnableInternal: pointer.Bool(v1alpha1.DefaultEnableInternal),
+			serverlessDataDefault = serverlessData{
+				EventPublisherProxyURL: pointer.String(v1alpha1.DefaultPublisherProxyURL),
+				TraceCollectorURL:      pointer.String(v1alpha1.DefaultTraceCollectorURL),
+				EnableInternal:         pointer.Bool(v1alpha1.DefaultEnableInternal),
 				registrySecretData: registrySecretData{
 					ServerAddress:   pointer.String(v1alpha1.DefaultServerAddress),
 					RegistryAddress: pointer.String(v1alpha1.DefaultRegistryAddress),
 				},
 			}
-			registryDataExternalWithSecret = dockerRegistryData{
+			serverlessDataWithChangedDependencies = serverlessData{
+				EventPublisherProxyURL: pointer.String("test-address"),
+				TraceCollectorURL:      pointer.String(""),
+				EnableInternal:         pointer.Bool(v1alpha1.DefaultEnableInternal),
+				registrySecretData: registrySecretData{
+					ServerAddress:   pointer.String(v1alpha1.DefaultServerAddress),
+					RegistryAddress: pointer.String(v1alpha1.DefaultRegistryAddress),
+				},
+			}
+			serverlessDataExternalWithSecret = serverlessData{
 				EnableInternal: pointer.Bool(false),
 				registrySecretData: registrySecretData{
 					Username:        pointer.String("rumburak"),
@@ -39,14 +50,14 @@ var _ = Describe("Serverless controller", func() {
 					RegistryAddress: pointer.String("testregistryaddress:5000"),
 				},
 			}
-			registryDataExternalWithIncompleteSecret = dockerRegistryData{
+			serverlessDataExternalWithIncompleteSecret = serverlessData{
 				EnableInternal: pointer.Bool(false),
 				registrySecretData: registrySecretData{
 					Username:      pointer.String("blekota"),
 					ServerAddress: pointer.String("testserveraddress:5002"),
 				},
 			}
-			registryDataIncompleteFilledByDefault = dockerRegistryData{
+			serverlessDataIncompleteFilledByDefault = serverlessData{
 				EnableInternal: pointer.Bool(v1alpha1.DefaultEnableInternal),
 				registrySecretData: registrySecretData{
 					Username:        pointer.String("blekota"),
@@ -54,7 +65,7 @@ var _ = Describe("Serverless controller", func() {
 					RegistryAddress: pointer.String(v1alpha1.DefaultRegistryAddress),
 				},
 			}
-			registryDataExternalWithoutSecret = dockerRegistryData{
+			serverlessDataExternalWithoutSecret = serverlessData{
 				EnableInternal: pointer.Bool(false),
 			}
 		)
@@ -71,29 +82,37 @@ var _ = Describe("Serverless controller", func() {
 			{
 				emptyData := v1alpha1.ServerlessSpec{}
 				shouldCreateServerless(h, serverlessName, serverlessDeploymentName, serverlessWebhookName, emptyData)
-				shouldPropagateSpecProperties(h, serverlessRegistrySecret, registryDataDefault)
+				shouldPropagateSpecProperties(h, serverlessDeploymentName, serverlessRegistrySecret, serverlessDataDefault)
 			}
 			{
-				registryData := registryDataExternalWithSecret
+				updateData := v1alpha1.ServerlessSpec{
+					EventPublisherProxyURL: serverlessDataWithChangedDependencies.EventPublisherProxyURL,
+					TraceCollectorURL:      serverlessDataWithChangedDependencies.TraceCollectorURL,
+				}
+				shouldUpdateServerless(h, serverlessName, updateData)
+				shouldPropagateSpecProperties(h, serverlessDeploymentName, serverlessRegistrySecret, serverlessDataWithChangedDependencies)
+			}
+			{
+				registryData := serverlessDataExternalWithSecret
 				secretName := specSecretName + "-full"
 				h.createRegistrySecret(secretName, registryData.registrySecretData)
 				updateData := registryData.toServerlessSpec(secretName)
 				shouldUpdateServerless(h, serverlessName, updateData)
-				shouldPropagateSpecProperties(h, serverlessRegistrySecret, registryData)
+				shouldPropagateSpecProperties(h, serverlessDeploymentName, serverlessRegistrySecret, registryData)
 			}
 			{
-				registryData := registryDataExternalWithIncompleteSecret
+				registryData := serverlessDataExternalWithIncompleteSecret
 				secretName := specSecretName + "-incomplete"
 				h.createRegistrySecret(secretName, registryData.registrySecretData)
 				updateData := registryData.toServerlessSpec(secretName)
 				shouldUpdateServerless(h, serverlessName, updateData)
-				shouldPropagateSpecProperties(h, serverlessRegistrySecret, registryDataIncompleteFilledByDefault)
+				shouldPropagateSpecProperties(h, serverlessDeploymentName, serverlessRegistrySecret, serverlessDataIncompleteFilledByDefault)
 			}
 			{
-				registryData := registryDataExternalWithoutSecret
+				registryData := serverlessDataExternalWithoutSecret
 				updateData := registryData.toServerlessSpec("")
 				shouldUpdateServerless(h, serverlessName, updateData)
-				shouldPropagateSpecProperties(h, serverlessRegistrySecret, registryDataDefault)
+				shouldPropagateSpecProperties(h, serverlessDeploymentName, serverlessRegistrySecret, serverlessDataDefault)
 			}
 
 			shouldDeleteServerless(h, serverlessName, serverlessDeploymentName, serverlessWebhookName)
@@ -116,8 +135,13 @@ func shouldCreateServerless(h testHelper, serverlessName, serverlessDeploymentNa
 		Should(ConditionTrueMatcher())
 }
 
-func shouldPropagateSpecProperties(h testHelper, registrySecretName string, expected dockerRegistryData) {
+func shouldPropagateSpecProperties(h testHelper, deploymentName, registrySecretName string, expected serverlessData) {
 	Eventually(h.createCheckRegistrySecretFunc(registrySecretName, expected.registrySecretData)).
+		WithPolling(time.Second * 2).
+		WithTimeout(time.Second * 10).
+		Should(BeTrue())
+
+	Eventually(h.createCheckOptionalDependenciesFunc(deploymentName, expected)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 10).
 		Should(BeTrue())
@@ -184,16 +208,4 @@ func shouldDeleteServerless(h testHelper, serverlessName, serverlessDeploymentNa
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 10).
 		Should(BeTrue())
-}
-
-func (d *dockerRegistryData) toServerlessSpec(secretName string) v1alpha1.ServerlessSpec {
-	result := v1alpha1.ServerlessSpec{
-		DockerRegistry: &v1alpha1.DockerRegistry{
-			EnableInternal: d.EnableInternal,
-		},
-	}
-	if secretName != "" {
-		result.DockerRegistry.SecretName = pointer.String(secretName)
-	}
-	return result
 }

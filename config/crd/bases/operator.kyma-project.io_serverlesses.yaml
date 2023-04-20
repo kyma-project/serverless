@@ -64,6 +64,10 @@ spec:
                   secretName:
                     type: string
                 type: object
+              eventPublisherProxyURL:
+                type: string
+              traceCollectorURL:
+                type: string
             type: object
           status:
             properties:
@@ -136,6 +140,9 @@ spec:
                   - type
                   type: object
                 type: array
+              eventPublisherProxyURL:
+                description: Used the Publisher Proxy and the Trace Collector URLs.
+                type: string
               state:
                 description: State signifies current state of Serverless. Value can
                   be one of ("Ready", "Processing", "Error", "Deleting").
@@ -144,6 +151,8 @@ spec:
                 - Deleting
                 - Ready
                 - Error
+                type: string
+              traceCollectorURL:
                 type: string
             required:
             - state

@@ -90,7 +90,7 @@ func Test_sFnEmitEventfunc(t *testing.T) {
 		// check conditions, don't emit event
 		next, result, err := stateFn(nil, nil, s)
 
-		expectedNext := buildSFnTakeSnapshot(nil, nil, nil)
+		expectedNext := sFnTakeSnapshot(nil, nil, nil)
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
@@ -116,7 +116,7 @@ func Test_sFnEmitEventfunc(t *testing.T) {
 		// check conditions, don't emit event
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := buildSFnTakeSnapshot(nil, nil, nil)
+		expectedNext := sFnTakeSnapshot(nil, nil, nil)
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
