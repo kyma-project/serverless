@@ -11,33 +11,29 @@ import (
 )
 
 func Test_sFnPrerequisites(t *testing.T) {
-	t.Run("check prerequisites", func(t *testing.T) {
+	t.Run("update condition", func(t *testing.T) {
 		s := &systemState{
-			instance: testInstalledServerless,
+			instance: v1alpha1.Serverless{},
 		}
 
 		r := &reconciler{}
 
-		stateFn := buildSFnPrerequisites(s)
-		requireEqualFunc(t, sFnPrerequisites, stateFn)
-
+		stateFn := sFnPrerequisites()
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnUpdateProcessingTrueState(
-			buildSFnApplyResources(s),
+		expectedNext := sFnUpdateProcessingState(
 			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonPrerequisitesMet,
-			"All prerequisites met",
+			v1alpha1.ConditionReasonPrerequisites,
+			"Checking prerequisites",
 		)
 
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
 	})
-
 	t.Run("check prerequisites error", func(t *testing.T) {
 		s := &systemState{
-			instance: testInstalledServerless,
+			instance: *testInstalledServerless.DeepCopy(),
 		}
 		s.instance.Spec.DockerRegistry.EnableInternal = pointer.Bool(true)
 
@@ -47,17 +43,56 @@ func Test_sFnPrerequisites(t *testing.T) {
 			},
 		}
 
-		stateFn := buildSFnPrerequisites(s)
-		requireEqualFunc(t, sFnPrerequisites, stateFn)
-
+		stateFn := sFnPrerequisites()
 		next, result, err := stateFn(nil, r, s)
 
 		expectedNext := sFnUpdateErrorState(
-			sFnRequeue(),
 			v1alpha1.ConditionTypeConfigured,
 			v1alpha1.ConditionReasonPrerequisitesErr,
 			errors.New("test error"),
 		)
+
+		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		require.Nil(t, err)
+	})
+	t.Run("check prerequisites and update conditions", func(t *testing.T) {
+		serverless := *testInstalledServerless.DeepCopy()
+		serverless.UpdateConditionUnknown(
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonPrerequisites,
+			"Checking prerequisites",
+		)
+		s := &systemState{
+			instance: serverless,
+		}
+
+		r := &reconciler{}
+
+		stateFn := sFnPrerequisites()
+		next, result, err := stateFn(nil, r, s)
+
+		expectedNext := sFnUpdateProcessingTrueState(
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonPrerequisitesMet,
+			"All prerequisites met",
+		)
+
+		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		require.Nil(t, err)
+	})
+	t.Run("check prerequisites and return next state", func(t *testing.T) {
+		s := &systemState{
+			instance: testInstalledServerless,
+		}
+
+		r := &reconciler{}
+
+		stateFn := sFnPrerequisites()
+		next, result, err := stateFn(nil, r, s)
+
+		expectedNext := sFnApplyResources()
 
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)

@@ -6,7 +6,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
-var sFnTakePreInitSnapshot = buildSFnTakeSnapshot(sFnInitialize, nil, nil)
+var sFnTakePreInitSnapshot = buildSFnTakeSnapshot(sFnInitialize(), nil, nil)
 
 func buildSFnTakeSnapshot(next stateFn, result *ctrl.Result, err error) stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {

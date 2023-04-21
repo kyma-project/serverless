@@ -61,13 +61,12 @@ func Test_sFnVerifyResources(t *testing.T) {
 		}
 
 		// build stateFn
-		stateFn := buildSFnVerifyResources()
+		stateFn := sFnVerifyResources()
 
 		// verify and return update condition state
 		next, result, err := stateFn(context.Background(), r, s)
 
 		expectedNext := sFnUpdateReadyState(
-			sFnStop(),
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstalled,
 			"Serverless installed",
@@ -92,13 +91,12 @@ func Test_sFnVerifyResources(t *testing.T) {
 		}
 
 		// build stateFn
-		stateFn := buildSFnVerifyResources()
+		stateFn := sFnVerifyResources()
 
 		// handle verify err and update condition with err
 		next, result, err := stateFn(context.Background(), r, s)
 
 		expectedNext := sFnUpdateErrorState(
-			sFnRequeue(),
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstallationErr,
 			errors.New("test err"),
@@ -136,7 +134,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 		r := &reconciler{}
 
 		// build stateFn
-		stateFn := buildSFnVerifyResources()
+		stateFn := sFnVerifyResources()
 
 		// return requeue on verification failed
 		next, result, err := stateFn(context.Background(), r, s)

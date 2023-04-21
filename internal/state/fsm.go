@@ -10,7 +10,6 @@ import (
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"go.uber.org/zap"
-	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -32,12 +31,6 @@ type systemState struct {
 	instance    v1alpha1.Serverless
 	snapshot    v1alpha1.ServerlessStatus
 	chartConfig *chart.Config
-}
-
-func (s *systemState) isCondition(conditionType v1alpha1.ConditionType) bool {
-	return meta.FindStatusCondition(
-		s.instance.Status.Conditions, string(conditionType),
-	) != nil
 }
 
 func (s *systemState) saveServerlessStatus() {
