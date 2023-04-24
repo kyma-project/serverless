@@ -40,3 +40,4 @@ docs/.DS_Store
 vendor
 
 serverless-manager.yaml
+manifests/serverless/rendered.yaml
