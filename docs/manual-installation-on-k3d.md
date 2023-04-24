@@ -124,13 +124,5 @@
 9. Enable Serverless in the Kyma custom resource (CR)
 
     ```bash
-    kubectl edit kymas.operator.kyma-project.io -n kyma-system default-kyma
-    ```
-
-    And add the following field under `spec`:
-
-    ```yaml
-      modules:
-      - name: serverless
-        channel: alpha
+    kyma alpha enable module serverless -c fast
     ```

@@ -1,3 +1,5 @@
+PROJECT_ROOT ?= ../..
+include ${PROJECT_ROOT}/.env
 CLUSTER_NAME ?= kyma
 KYMA_PROFILE ?= production
 KYMA_SOURCE ?= main
@@ -5,9 +7,8 @@ REGISTRY_PORT ?= 5001
 REGISTRY_NAME ?= ${CLUSTER_NAME}-registry
 
 MANAGER_IMAGE_NAME ?= serverless-manager-dev-local
-MANAGER_IMAGE_TAG ?= 0.0.1
+MANAGER_IMAGE_TAG ?= $(MODULE_VERSION)
 
-PROJECT_ROOT ?= ../..
 
 TEMPLATE_PATH ?= ${PROJECT_ROOT}/template.yaml
 
@@ -26,8 +27,9 @@ run-with-lifecycle-manager: kyma \
 	module-image \
 	module-build \
 	fix-template \
-	install-module \
+	install-kyma-with-lm \
 	patch-mod-mgr-role \
+	install-module-template \
 	enable-module \
 	verify-kyma 
 
@@ -70,11 +72,7 @@ verify-kyma: ## Wait for Kyma CR to be in Ready state.
 
 .PHONY: enable-module
 enable-module: ## Patch serverless module in the right Kyma CR.
-	kubectl patch kymas.operator.kyma-project.io \
-		default-kyma \
-		-n kyma-system \
-		--type=merge \
-		--patch-file ./k3d-patches/patch-kyma.yaml
+	${KYMA} alpha enable module serverless -c fast
 
 .PHONY: patch-mod-mgr-role
 patch-mod-mgr-role: ## Path lifecycle-manager clusterrole.
@@ -82,12 +80,17 @@ patch-mod-mgr-role: ## Path lifecycle-manager clusterrole.
 		lifecycle-manager-manager-role \
 		--patch-file=./k3d-patches/patch-k3d-lifecycle-manager-clusterrole.yaml
 
-.PHONY: install-module
-install-module: ## Kyma alpha deploy with k3d moduletemplate.
+.PHONY: install-kyma-with-lm
+install-kyma-with-lm:
 	${KYMA} alpha deploy \
 		--ci \
 		--force-conflicts
+
+.PHONY: install-module-template
+install-module-template: ## Apply k3d-ready moduletemplate.
 	kubectl apply -f ${PROJECT_ROOT}/template-k3d.yaml
+	kubectl label -n kcp-system moduletemplate moduletemplate-serverless operator.kyma-project.io/use-local-template=true
+
 
 .PHONY: fix-template
 fix-template: ## Create template-k3d.yaml based on template.yaml with right URLs.
