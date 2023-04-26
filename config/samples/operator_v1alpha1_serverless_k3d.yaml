@@ -1,12 +1,5 @@
 apiVersion: operator.kyma-project.io/v1alpha1
 kind: Serverless
 metadata:
-  labels:
-    operator.kyma-project.io/kyma-name: serverless-k3d
-    app.kubernetes.io/name: serverless
-    app.kubernetes.io/instance: serverless-k3d
-    app.kubernetes.io/part-of: serverless-manager
-    app.kuberentes.io/managed-by: kustomize
-    app.kubernetes.io/created-by: serverless-manager
-  name: serverless-k3d
+  name: default
 spec: {}

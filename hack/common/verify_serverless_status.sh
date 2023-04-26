@@ -4,7 +4,7 @@ function get_kyma_status () {
 	local number=1
 	while [[ $number -le 100 ]] ; do
 		echo ">--> checking serverless status #$number"
-		local STATUS=$(kubectl get serverless -n kyma-system serverless-k3d -o jsonpath='{.status.state}')
+		local STATUS=$(kubectl get serverless -n kyma-system default -o jsonpath='{.status.state}')
 		echo "serverless status: ${STATUS:='UNKNOWN'}"
 		[[ "$STATUS" == "Ready" ]] && return 0
 		sleep 5
