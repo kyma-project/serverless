@@ -13,7 +13,7 @@ import (
 func buildSFnApplyResources(s *systemState) stateFn {
 	next := sFnApplyResources
 	if !s.isCondition(v1alpha1.ConditionTypeInstalled) {
-		next, _, _ = sFnUpdateProcessingState(
+		next = sFnUpdateProcessingState(
 			sFnApplyResources,
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstallation,
@@ -29,13 +29,17 @@ func sFnApplyResources(ctx context.Context, r *reconciler, s *systemState) (stat
 	if err != nil {
 		r.log.Warnf("error while installing resource %s: %s",
 			client.ObjectKeyFromObject(&s.instance), err.Error())
-		return sFnUpdateErrorState(
-			sFnRequeue(),
-			v1alpha1.ConditionTypeInstalled,
-			v1alpha1.ConditionReasonInstallationErr,
-			err,
+		return nextState(
+			sFnUpdateErrorState(
+				sFnRequeue(),
+				v1alpha1.ConditionTypeInstalled,
+				v1alpha1.ConditionReasonInstallationErr,
+				err,
+			),
 		)
 	}
 
-	return sFnVerifyResources()
+	return nextState(
+		buildSFnVerifyResources(),
+	)
 }

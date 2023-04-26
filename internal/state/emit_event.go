@@ -21,7 +21,7 @@ func sFnEmitStrictEvent(next stateFn, result *ctrl.Result, err error, eventType,
 	}
 }
 
-func sFnEmitEventfunc(next stateFn, result *ctrl.Result, err error) stateFn {
+func buildSFnEmitEvent(next stateFn, result *ctrl.Result, err error) stateFn {
 	return func(_ context.Context, m *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		// compare if any condition change
 		for _, condition := range s.instance.Status.Conditions {
@@ -43,7 +43,9 @@ func sFnEmitEventfunc(next stateFn, result *ctrl.Result, err error) stateFn {
 		}
 
 		// take a snapshot to not repeat lastly emitted events
-		return sFnTakeSnapshot(next, result, err)
+		return nextState(
+			buildSFnTakeSnapshot(next, result, err),
+		)
 	}
 }
 

@@ -13,6 +13,10 @@ func stopWithErrorOrRequeue(err error) (stateFn, *ctrl.Result, error) {
 	}, err
 }
 
+func nextState(next stateFn) (stateFn, *ctrl.Result, error) {
+	return next, nil, nil
+}
+
 func stopWithError(err error) (stateFn, *ctrl.Result, error) {
 	return nil, nil, err
 }
@@ -27,6 +31,12 @@ func requeue() (stateFn, *ctrl.Result, error) {
 	}, nil
 }
 
+func requeueAfter(duration time.Duration) (stateFn, *ctrl.Result, error) {
+	return nil, &ctrl.Result{
+		RequeueAfter: duration,
+	}, nil
+}
+
 func sFnStop() stateFn {
 	return func(_ context.Context, _ *reconciler, _ *systemState) (stateFn, *ctrl.Result, error) {
 		return stop()
@@ -37,10 +47,4 @@ func sFnRequeue() stateFn {
 	return func(_ context.Context, _ *reconciler, _ *systemState) (stateFn, *ctrl.Result, error) {
 		return requeue()
 	}
-}
-
-func requeueAfter(duration time.Duration) (stateFn, *ctrl.Result, error) {
-	return nil, &ctrl.Result{
-		RequeueAfter: duration,
-	}, nil
 }

@@ -10,17 +10,17 @@ import (
 )
 
 // check necessery dependencies before installation
-func buildSFnPrerequisites(s *systemState) (stateFn, *ctrl.Result, error) {
+func buildSFnPrerequisites(s *systemState) stateFn {
 	next := sFnPrerequisites
 	if meta.FindStatusCondition(s.instance.Status.Conditions, string(v1alpha1.ConditionTypeConfigured)) == nil {
-		next, _, _ = sFnUpdateProcessingState(
+		next = sFnUpdateProcessingState(
 			sFnPrerequisites,
 			v1alpha1.ConditionTypeConfigured,
 			v1alpha1.ConditionReasonPrerequisites,
 			"Checking prerequisites",
 		)
 	}
-	return next, nil, nil
+	return next
 }
 
 func sFnPrerequisites(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
@@ -28,19 +28,23 @@ func sFnPrerequisites(ctx context.Context, r *reconciler, s *systemState) (state
 	withIstio := s.instance.Spec.DockerRegistry.IsInternalEnabled()
 	err := dependencies.CheckPrerequisites(ctx, r.client, withIstio)
 	if err != nil {
-		return sFnUpdateErrorState(
-			sFnRequeue(),
-			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonPrerequisitesErr,
-			err,
+		return nextState(
+			sFnUpdateErrorState(
+				sFnRequeue(),
+				v1alpha1.ConditionTypeConfigured,
+				v1alpha1.ConditionReasonPrerequisitesErr,
+				err,
+			),
 		)
 	}
 
 	// when we know that cluster configuration met serverless requirements we can go to installation state
-	return sFnUpdateProcessingTrueState(
-		buildSFnApplyResources(s),
-		v1alpha1.ConditionTypeConfigured,
-		v1alpha1.ConditionReasonPrerequisitesMet,
-		"All prerequisites met",
+	return nextState(
+		sFnUpdateProcessingTrueState(
+			buildSFnApplyResources(s),
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonPrerequisitesMet,
+			"All prerequisites met",
+		),
 	)
 }

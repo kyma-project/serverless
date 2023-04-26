@@ -10,7 +10,9 @@ import (
 func sFnRemoveFinalizer() stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		if controllerutil.RemoveFinalizer(&s.instance, r.finalizer) {
-			return sFnUpdateServerless()
+			return nextState(
+				sFnUpdateServerless(),
+			)
 		}
 
 		return requeue()

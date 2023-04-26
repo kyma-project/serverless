@@ -29,11 +29,13 @@ func sFnInitialize(ctx context.Context, r *reconciler, s *systemState) (stateFn,
 
 	err := s.Setup(ctx, r)
 	if err != nil {
-		return sFnUpdateErrorState(
-			sFnRequeue(),
-			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonPrerequisitesErr,
-			err,
+		return nextState(
+			sFnUpdateErrorState(
+				sFnRequeue(),
+				v1alpha1.ConditionTypeConfigured,
+				v1alpha1.ConditionReasonPrerequisitesErr,
+				err,
+			),
 		)
 	}
 
@@ -42,5 +44,7 @@ func sFnInitialize(ctx context.Context, r *reconciler, s *systemState) (stateFn,
 		return buildSFnDeleteResources()
 	}
 
-	return buildSFnPrerequisites(s)
+	return nextState(
+		buildSFnPrerequisites(s),
+	)
 }
