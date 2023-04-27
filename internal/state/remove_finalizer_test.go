@@ -50,10 +50,15 @@ func Test_sFnRemoveFinalizer(t *testing.T) {
 		// remove finalizer
 		next, result, err := sFnRemoveFinalizer()(nil, r, s)
 
-		expectedNext, expectedResult, expectedErr := requeue()
+		expectedNext := sFnEmitStrictEvent(
+			nil, nil, nil,
+			"Normal",
+			"Deleted",
+			"Serverless module deleted",
+		)
 
 		requireEqualFunc(t, expectedNext, next)
-		require.Equal(t, expectedResult, result)
-		require.Equal(t, expectedErr, err)
+		require.Nil(t, result)
+		require.Nil(t, err)
 	})
 }

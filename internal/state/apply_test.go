@@ -15,16 +15,20 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{},
 		}
+
+		// return sFnUpdateProcessingState when condition is missing
+		stateFn := sFnApplyResources()
+		next, result, err := stateFn(nil, nil, s)
+
 		expected := sFnUpdateProcessingState(
-			sFnApplyResources,
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstallation,
 			"Installing for configuration",
 		)
 
-		// return sFnUpdateProcessingState when condition is missing
-		stateFn := buildSFnApplyResources(s)
-		requireEqualFunc(t, expected, stateFn)
+		requireEqualFunc(t, expected, next)
+		require.Nil(t, result)
+		require.Nil(t, err)
 	})
 
 	t.Run("apply resources ", func(t *testing.T) {
@@ -42,13 +46,13 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		r := &reconciler{}
 
 		// return sFnApplyResources
-		stateFn := buildSFnApplyResources(s)
-		requireEqualFunc(t, sFnApplyResources, stateFn)
+		stateFn := sFnApplyResources()
+		requireEqualFunc(t, sFnApplyResources(), stateFn)
 
 		// run installation process and return verificating state
 		next, result, err := stateFn(context.Background(), r, s)
 
-		expectedNext := buildSFnVerifyResources()
+		expectedNext := sFnVerifyResources()
 
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
@@ -72,14 +76,13 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		}
 
 		// return sFnApplyResources
-		stateFn := buildSFnApplyResources(s)
-		requireEqualFunc(t, sFnApplyResources, stateFn)
+		stateFn := sFnApplyResources()
+		requireEqualFunc(t, sFnApplyResources(), stateFn)
 
 		// handle error and return update condition state
 		next, result, err := stateFn(context.Background(), r, s)
 
 		expectedNext := sFnUpdateErrorState(
-			sFnRequeue(),
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstallationErr,
 			err,

@@ -30,12 +30,12 @@ func Test_sFnTakeSnapshot(t *testing.T) {
 		}
 
 		// build sFn
-		sFn := buildSFnTakeSnapshot(sFnInitialize, nil, nil)
+		sFn := buildSFnTakeSnapshot(sFnInitialize(), nil, nil)
 		require.NotNil(t, sFn)
 
 		// run sFn and return sFnInitialize
 		next, result, err := sFn(nil, nil, s)
-		requireEqualFunc(t, sFnInitialize, next)
+		requireEqualFunc(t, sFnInitialize(), next)
 		require.Nil(t, result)
 		require.NoError(t, err)
 

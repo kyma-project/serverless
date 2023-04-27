@@ -15,6 +15,13 @@ func sFnRemoveFinalizer() stateFn {
 			)
 		}
 
-		return requeue()
+		return nextState(
+			sFnEmitStrictEvent(
+				nil, nil, nil,
+				"Normal",
+				"Deleted",
+				"Serverless module deleted",
+			),
+		)
 	}
 }

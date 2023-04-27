@@ -28,7 +28,8 @@ func Test_sFnInitialize(t *testing.T) {
 		}
 
 		// set finalizer
-		next, result, err := sFnInitialize(nil, r, s)
+		stateFn := sFnInitialize()
+		next, result, err := stateFn(nil, r, s)
 		require.Nil(t, next) // expected because client is not fully setup
 		require.Equal(t, &ctrl.Result{Requeue: true}, result)
 		require.Error(t, err)
@@ -54,7 +55,8 @@ func Test_sFnInitialize(t *testing.T) {
 		}
 
 		// stop
-		next, result, err := sFnInitialize(nil, r, s)
+		stateFn := sFnInitialize()
+		next, result, err := stateFn(nil, r, s)
 		require.Nil(t, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
@@ -87,10 +89,10 @@ func Test_sFnInitialize(t *testing.T) {
 		}
 
 		// stop
-		next, result, err := sFnInitialize(nil, r, s)
+		stateFn := sFnInitialize()
+		next, result, err := stateFn(nil, r, s)
 
 		expectedNext := sFnUpdateErrorState(
-			sFnRequeue(),
 			v1alpha1.ConditionTypeConfigured,
 			v1alpha1.ConditionReasonPrerequisitesErr,
 			err,
@@ -123,9 +125,10 @@ func Test_sFnInitialize(t *testing.T) {
 		}
 
 		// setup and return buildSFnPrerequisites
-		next, result, err := sFnInitialize(nil, r, s)
+		stateFn := sFnInitialize()
+		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := buildSFnPrerequisites(s)
+		expectedNext := sFnPrerequisites()
 
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
@@ -156,12 +159,13 @@ func Test_sFnInitialize(t *testing.T) {
 		}
 
 		// setup and return buildSFnDeleteResources
-		next, result, err := sFnInitialize(nil, r, s)
+		stateFn := sFnInitialize()
+		next, result, err := stateFn(nil, r, s)
 
-		expectedNext, expectedResult, expectedErr := buildSFnDeleteResources()
+		expectedNext := sFnDeleteResources()
 
 		requireEqualFunc(t, expectedNext, next)
-		require.Equal(t, expectedResult, result)
-		require.Equal(t, expectedErr, err)
+		require.Nil(t, result)
+		require.Nil(t, err)
 	})
 }

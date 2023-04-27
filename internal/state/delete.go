@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 
+	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -21,16 +22,22 @@ const (
 )
 
 // delete serverless based on previously installed resources
-func buildSFnDeleteResources() (stateFn, *ctrl.Result, error) {
-	return nextState(
-		sFnUpdateDeletingState(
-			// TODO: thinkg about deletion configuration
+func sFnDeleteResources() stateFn {
+	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+		if !s.instance.IsInState(v1alpha1.StateDeleting) {
+			return nextState(
+				sFnUpdateDeletingState(
+					"Deletion",
+					"Uninstalling",
+				),
+			)
+		}
+
+		// TODO: thinkg about deletion configuration
+		return nextState(
 			deletionStrategyBuilder(defaultDeletionStrategy),
-			"Normal",
-			"Deletion",
-			"Uninstalling",
-		),
-	)
+		)
+	}
 }
 
 func deletionStrategyBuilder(strategy deletionStrategy) stateFn {
@@ -58,11 +65,9 @@ func sFnSafeDeletionState(_ context.Context, r *reconciler, s *systemState) (sta
 	if err := chart.CheckCRDOrphanResources(s.chartConfig); err != nil {
 		// stop state machine with an error and requeue reconciliation in 1min
 		return nextState(
-			sFnUpdateDeletingState(
-				sFnRequeue(),
-				"Warning",
+			sFnUpdateDeletingErrorState(
 				"Deletion",
-				err.Error(),
+				err,
 			),
 		)
 	}
@@ -76,22 +81,16 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 		r.log.Warnf("error while uninstalling resource %s: %s",
 			client.ObjectKeyFromObject(&s.instance), err.Error())
 		return nextState(
-			sFnUpdateDeletingState(
-				sFnRequeue(),
-				"Warning",
+			sFnUpdateDeletingErrorState(
+
 				"Deletion",
-				err.Error(),
+				err,
 			),
 		)
 	}
 
 	// if resources are ready to be deleted, remove finalizer
 	return nextState(
-		sFnUpdateDeletingState(
-			sFnRemoveFinalizer(),
-			"Normal",
-			"Deleted",
-			"Serverless module deleted",
-		),
+		sFnRemoveFinalizer(),
 	)
 }

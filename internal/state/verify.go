@@ -10,7 +10,7 @@ import (
 )
 
 // verify if all workloads are in ready state
-func buildSFnVerifyResources() stateFn {
+func sFnVerifyResources() stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		ready, err := chart.Verify(s.chartConfig)
 		if err != nil {
@@ -18,7 +18,6 @@ func buildSFnVerifyResources() stateFn {
 				client.ObjectKeyFromObject(&s.instance), err.Error())
 			return nextState(
 				sFnUpdateErrorState(
-					sFnRequeue(),
 					v1alpha1.ConditionTypeInstalled,
 					v1alpha1.ConditionReasonInstallationErr,
 					err,
@@ -29,7 +28,6 @@ func buildSFnVerifyResources() stateFn {
 		if ready {
 			return nextState(
 				sFnUpdateReadyState(
-					sFnStop(),
 					v1alpha1.ConditionTypeInstalled,
 					v1alpha1.ConditionReasonInstalled,
 					"Serverless installed",
