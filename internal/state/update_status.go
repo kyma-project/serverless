@@ -80,8 +80,18 @@ func sFnUpdateServerless() stateFn {
 	}
 }
 
+func sFnUpdateServerlessStatus(next stateFn) stateFn {
+	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+		return updateServerlessStatus(
+			sFnTakeSnapshot(next, nil, nil),
+			ctx, r, s,
+		)
+	}
+}
+
 func updateServerlessStatus(next stateFn, ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-	err := r.client.Status().Update(ctx, &s.instance)
+	instance := s.instance.DeepCopy()
+	err := r.client.Status().Update(ctx, instance)
 	if err != nil {
 		return stopWithError(err)
 	}

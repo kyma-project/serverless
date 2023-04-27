@@ -34,7 +34,7 @@ func sFnInitialize() stateFn {
 			return nextState(
 				sFnUpdateErrorState(
 					v1alpha1.ConditionTypeConfigured,
-					v1alpha1.ConditionReasonPrerequisitesErr,
+					v1alpha1.ConditionReasonConfigurationErr,
 					err,
 				),
 			)

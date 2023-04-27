@@ -22,9 +22,11 @@ func (s *Serverless) IsConditionTrue(conditionType ConditionType) bool {
 }
 
 const (
-	DefaultEnableInternal  = false
-	DefaultRegistryAddress = "k3d-kyma-registry:5000"
-	DefaultServerAddress   = "k3d-kyma-registry:5000"
+	DefaultEnableInternal    = false
+	DefaultRegistryAddress   = "k3d-kyma-registry:5000"
+	DefaultServerAddress     = "k3d-kyma-registry:5000"
+	DefaultPublisherProxyURL = "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
+	DefaultTraceCollectorURL = "http://telemetry-otlp-traces.kyma-system.svc.cluster.local:4318/v1/traces"
 )
 
 func (s *ServerlessSpec) Default() {
@@ -34,6 +36,13 @@ func (s *ServerlessSpec) Default() {
 	}
 	if s.DockerRegistry.EnableInternal == nil {
 		s.DockerRegistry.EnableInternal = pointer.Bool(DefaultEnableInternal)
+	}
+
+	if s.EventPublisherProxyURL == nil {
+		s.EventPublisherProxyURL = pointer.String(DefaultPublisherProxyURL)
+	}
+	if s.TraceCollectorURL == nil {
+		s.TraceCollectorURL = pointer.String(DefaultTraceCollectorURL)
 	}
 }
 

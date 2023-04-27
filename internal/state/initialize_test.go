@@ -94,7 +94,7 @@ func Test_sFnInitialize(t *testing.T) {
 
 		expectedNext := sFnUpdateErrorState(
 			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonPrerequisitesErr,
+			v1alpha1.ConditionReasonConfigurationErr,
 			err,
 		)
 

@@ -44,7 +44,7 @@ func buildSFnEmitEvent(next stateFn, result *ctrl.Result, err error) stateFn {
 
 		// take a snapshot to not repeat lastly emitted events
 		return nextState(
-			buildSFnTakeSnapshot(next, result, err),
+			sFnTakeSnapshot(next, result, err),
 		)
 	}
 }

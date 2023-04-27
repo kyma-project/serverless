@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
+	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/pointer"
@@ -52,13 +53,11 @@ func TestBuildFlags(t *testing.T) {
 				},
 			},
 			want: map[string]interface{}{
-				"dockerRegistry": func() map[string]interface{} {
-					return map[string]interface{}{
-						"enableInternal":  true,
-						"registryAddress": "k3d-kyma-registry:5000",
-						"serverAddress":   "k3d-kyma-registry:5000",
-					}
-				}(),
+				"dockerRegistry": map[string]interface{}{
+					"enableInternal":  true,
+					"registryAddress": "k3d-kyma-registry:5000",
+					"serverAddress":   "k3d-kyma-registry:5000",
+				},
 			},
 		},
 		{
@@ -79,15 +78,13 @@ func TestBuildFlags(t *testing.T) {
 				},
 			},
 			want: map[string]interface{}{
-				"dockerRegistry": func() map[string]interface{} {
-					return map[string]interface{}{
-						"enableInternal":  true,
-						"username":        "test-username",
-						"password":        "test-password",
-						"registryAddress": "test-registryAddress",
-						"serverAddress":   "test-serverAddress",
-					}
-				}(),
+				"dockerRegistry": map[string]interface{}{
+					"enableInternal":  true,
+					"username":        "test-username",
+					"password":        "test-password",
+					"registryAddress": "test-registryAddress",
+					"serverAddress":   "test-serverAddress",
+				},
 			},
 		},
 		{
@@ -123,4 +120,28 @@ func TestBuildFlags(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestAppendContainersFlags(t *testing.T) {
+	t.Run("append flags", func(t *testing.T) {
+		publisherURL := "test-proxy-url"
+		collectorURL := "test-trace-url"
+
+		flags := AppendContainersFlags(map[string]interface{}{}, publisherURL, collectorURL)
+
+		require.Equal(t, map[string]interface{}{
+			"containers": map[string]interface{}{
+				"manager": map[string]interface{}{
+					"envs": map[string]interface{}{
+						"functionTraceCollectorEndpoint": map[string]interface{}{
+							"value": collectorURL,
+						},
+						"functionPublisherProxyAddress": map[string]interface{}{
+							"value": publisherURL,
+						},
+					},
+				},
+			},
+		}, flags)
+	})
 }

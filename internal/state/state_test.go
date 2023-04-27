@@ -30,7 +30,7 @@ var (
 				{
 					Type:   string(v1alpha1.ConditionTypeConfigured),
 					Status: metav1.ConditionTrue,
-					Reason: string(v1alpha1.ConditionReasonPrerequisitesMet),
+					Reason: string(v1alpha1.ConditionReasonConfigurationCheck),
 				},
 				{
 					Type:   string(v1alpha1.ConditionTypeInstalled),

@@ -20,6 +20,23 @@ func BuildFlags(ctx context.Context, client client.Client, serverless *v1alpha1.
 	}, nil
 }
 
+func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceCollectorURL string) map[string]interface{} {
+	flags["containers"] = map[string]interface{}{
+		"manager": map[string]interface{}{
+			"envs": map[string]interface{}{
+				"functionTraceCollectorEndpoint": map[string]interface{}{
+					"value": traceCollectorURL,
+				},
+				"functionPublisherProxyAddress": map[string]interface{}{
+					"value": publisherURL,
+				},
+			},
+		},
+	}
+
+	return flags
+}
+
 func dockerRegistryFlags(ctx context.Context, c client.Client, serverless *v1alpha1.Serverless) (map[string]interface{}, error) {
 	flags := map[string]interface{}{
 		"enableInternal":  *serverless.Spec.DockerRegistry.EnableInternal,

@@ -13,6 +13,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/utils/pointer"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -229,9 +230,25 @@ func (h *testHelper) getServerlessStatus(serverlessName string) (v1alpha1.Server
 	return serverless.Status, nil
 }
 
-type dockerRegistryData struct {
-	EnableInternal *bool
+type serverlessData struct {
+	EventPublisherProxyURL *string
+	TraceCollectorURL      *string
+	EnableInternal         *bool
 	registrySecretData
+}
+
+func (d *serverlessData) toServerlessSpec(secretName string) v1alpha1.ServerlessSpec {
+	result := v1alpha1.ServerlessSpec{
+		EventPublisherProxyURL: d.EventPublisherProxyURL,
+		TraceCollectorURL:      d.TraceCollectorURL,
+		DockerRegistry: &v1alpha1.DockerRegistry{
+			EnableInternal: d.EnableInternal,
+		},
+	}
+	if secretName != "" {
+		result.DockerRegistry.SecretName = pointer.String(secretName)
+	}
+	return result
 }
 
 type registrySecretData struct {
@@ -273,6 +290,51 @@ func (h *testHelper) createCheckRegistrySecretFunc(serverlessRegistrySecret stri
 		}
 		return true, nil
 	}
+}
+
+func (h *testHelper) createCheckOptionalDependenciesFunc(deploymentName string, expected serverlessData) func() (bool, error) {
+	return func() (bool, error) {
+		var deploy appsv1.Deployment
+		ok, err := h.getKubernetesObjectFunc(deploymentName, &deploy)
+		if !ok || err != nil {
+			return ok, err
+		}
+
+		eventProxyURL := v1alpha1.DefaultPublisherProxyURL
+		if expected.EventPublisherProxyURL != nil {
+			eventProxyURL = *expected.EventPublisherProxyURL
+		}
+
+		traceCollectorURL := v1alpha1.DefaultTraceCollectorURL
+		if expected.TraceCollectorURL != nil {
+			traceCollectorURL = *expected.TraceCollectorURL
+		}
+
+		if err := deploymentContainsEnv(deploy, "APP_FUNCTION_PUBLISHER_PROXY_ADDRESS", eventProxyURL); err != nil {
+			return false, err
+		}
+
+		if err := deploymentContainsEnv(deploy, "APP_FUNCTION_TRACE_COLLECTOR_ENDPOINT", traceCollectorURL); err != nil {
+			return false, err
+		}
+
+		return true, nil
+	}
+}
+
+func deploymentContainsEnv(deployment appsv1.Deployment, name, value string) error {
+	envs := deployment.Spec.Template.Spec.Containers[0].Env
+	for i := range envs {
+		if envs[i].Name == name && envs[i].Value == value {
+			return nil
+		}
+
+		if envs[i].Name == name && envs[i].Value != value {
+			return fmt.Errorf("wrong value for %s env: expected %s, got %s", name, value, envs[i].Value)
+		}
+	}
+
+	return fmt.Errorf("env %s does not exist", name)
 }
 
 func secretContainsRequired(configurationSecret corev1.Secret) (bool, error) {
