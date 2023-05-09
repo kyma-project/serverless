@@ -63,7 +63,10 @@ func parseManifest(manifest string) ([]unstructured.Unstructured, error) {
 		}
 
 		u := unstructured.Unstructured{Object: obj}
-		if u.GetObjectKind().GroupVersionKind().Kind == "CustomResourceDefinition" {
+		// some resources need to be applied first (before workloads)
+		// if this statement gets bigger then extract it to the separated place
+		if u.GetObjectKind().GroupVersionKind().Kind == "CustomResourceDefinition" ||
+			u.GetObjectKind().GroupVersionKind().Kind == "PriorityClass" {
 			results = append([]unstructured.Unstructured{u}, results...)
 			continue
 		}
