@@ -10,7 +10,7 @@ The `serverlesses.operator.kyma-project.io` CustomResourceDefinition (CRD) is a 
 
 ## Sample custom resource
 
-The following Serverless custom resource (CR) shows configration of Serverless with the external registry and two user URLs for Publisher Proxy and Trace Collector.
+The following Serverless custom resource (CR) shows configuration of Serverless with the external registry and two user URLs for Publisher Proxy and Trace Collector.
 
    ```yaml
    apiVersion: operator.kyma-project.io/v1alpha1
@@ -52,13 +52,18 @@ For details, see the [Serverless configuration file](https://github.com/kyma-pro
 | ---------------------------------------- | ---------|
 | **spec.eventPublisherProxyURL** | Event publisher endpoint used by [the Serverless SDK](https://kyma-project.io/docs/kyma/latest/05-technical-reference/svls-08-function-specification/#event-object-sdk) |
 | **spec.traceCollectorURL** | URL for your Trace Collector  |
+<<<<<<< HEAD
 | **spec.dockerRegistry** | specifies the configuration of the registry used to store the images of the built functions |
 | **spec.dockerRegistry.enableInternal** | If set to `true`, the internal Serverless Docker registry is used. If set to `false`, provide `secretName` which must be in the same Namespace as Serverless CR. This Secret must contain your address and password to the external Docker registry. If you don't provide your `secretName`, Serverless assumes that installation is provided on k3d and it expects the up-and-running k3d registry. |
+=======
+| **spec.dockerRegistry** |  |
+| **spec.dockerRegistry.enableInternal** | If set to `true`, the internal Serverless Docker registry is used. If set to `false`, provide `secretName`, which must be in the same Namespace as Serverless CR. This Secret must contain your address and password to the external Docker registry. If you don't provide your `secretName`, Serverless assumes that installation is provided on k3d, and it expects the up-and-running k3d registry. |
+>>>>>>> d40c63be023fdcc3cf56409638e55a03806a161d
 | **spec.dockerRegistry.secretName** | Includes the address and credentials to the external Docker registry. |
 | **status.eventPublisherProxyURL** | The eventing endpoint used for the installation |
 | **status.traceCollector** | The tracing endpoint used for the installation |
 | **status.state** | The possible transition types are:<br>- `Ready`: The instance is ready and usable.<br>- `Processing`: The instance is being installed or configured. <br>- `Error`: The operation cannot be executed. <br>- `Delete`: The instance is being deleted. |
 | **status.conditions** | An array of conditions describing the status of Serverless. |
-| **status.conditions.reason** | An array of conditions describing the status of the Serverless. |
+| **status.conditions.reason** | An array of conditions describing the status of Serverless. |
 | **status.conditions.type** | The possible transition types are:<br>- `Installed`: The instance is ready and usable.<br>- `Configured`: The instance is configured. |
 <!-- TABLE-END -->
