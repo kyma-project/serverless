@@ -2,10 +2,10 @@
 title: Serverless
 ---
 
-The `operator.kyma-project.io` CustomResourceDefinition (CRD) is a detailed description of the Serverless configuration that you want to install on your cluster. To get the up-to-date CRD and show the output in the YAML format, run this command:
+The `serverlesses.operator.kyma-project.io` CustomResourceDefinition (CRD) is a detailed description of the Serverless configuration that you want to install on your cluster. To get the up-to-date CRD and show the output in the YAML format, run this command:
 
    ```bash
-   kubectl get crd operator.kyma-project.io -o yaml
+   kubectl get crd serverlesses.operator.kyma-project.io -o yaml
    ```
 
 ## Sample custom resource
