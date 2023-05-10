@@ -52,7 +52,7 @@ For details, see the [Serverless configuration file](https://github.com/kyma-pro
 | ---------------------------------------- | ---------|
 | **spec.eventPublisherProxyURL** | Event publisher endpoint used by [the Serverless SDK](https://kyma-project.io/docs/kyma/latest/05-technical-reference/svls-08-function-specification/#event-object-sdk) |
 | **spec.traceCollectorURL** | URL for your Trace Collector  |
-| **spec.dockerRegistry** |  |
+| **spec.dockerRegistry** | specifies the configuration of the registry used to store the images of the built functions |
 | **spec.dockerRegistry.enableInternal** | If set to `true`, the internal Serverless Docker registry is used. If set to `false`, provide `secretName` which must be in the same Namespace as Serverless CR. This Secret must contain your address and password to the external Docker registry. If you don't provide your `secretName`, Serverless assumes that installation is provided on k3d and it expects the up-and-running k3d registry. |
 | **spec.dockerRegistry.secretName** | Includes the address and credentials to the external Docker registry. |
 | **status.eventPublisherProxyURL** | The eventing endpoint used for the installation |
