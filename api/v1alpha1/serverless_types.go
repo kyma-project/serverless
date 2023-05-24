@@ -38,6 +38,8 @@ type ServerlessSpec struct {
 
 type State string
 
+type Served string
+
 type ConditionReason string
 
 type ConditionType string
@@ -48,18 +50,22 @@ const (
 	StateError      State = "Error"
 	StateDeleting   State = "Deleting"
 
+	ServedTrue  Served = "True"
+	ServedFalse Served = "False"
+
 	// installation and deletion details
 	ConditionTypeInstalled = ConditionType("Installed")
 
 	// prerequisites and soft dependencies
 	ConditionTypeConfigured = ConditionType("Configured")
 
-	ConditionReasonConfigurationCheck = ConditionReason("ConfigurationCheck")
-	ConditionReasonConfigurationErr   = ConditionReason("ConfigurationCheckErr")
-	ConditionReasonConfigured         = ConditionReason("Configured")
-	ConditionReasonInstallation       = ConditionReason("Installation")
-	ConditionReasonInstallationErr    = ConditionReason("InstallationErr")
-	ConditionReasonInstalled          = ConditionReason("Installed")
+	ConditionReasonConfigurationCheck   = ConditionReason("ConfigurationCheck")
+	ConditionReasonConfigurationErr     = ConditionReason("ConfigurationCheckErr")
+	ConditionReasonConfigured           = ConditionReason("Configured")
+	ConditionReasonInstallation         = ConditionReason("Installation")
+	ConditionReasonInstallationErr      = ConditionReason("InstallationErr")
+	ConditionReasonInstalled            = ConditionReason("Installed")
+	ConditionReasonServerlessDuplicated = ConditionReason("ServerlessDuplicated")
 
 	Finalizer = "serverless-manager.kyma-project.io/deletion-hook"
 )
@@ -73,7 +79,12 @@ type ServerlessStatus struct {
 	// Value can be one of ("Ready", "Processing", "Error", "Deleting").
 	// +kubebuilder:validation:Required
 	// +kubebuilder:validation:Enum=Processing;Deleting;Ready;Error
-	State State `json:"state"`
+	State State `json:"state,omitempty"`
+
+	// Served signifies that current Serverless is managed.
+	// Value can be one of ("True", "False").
+	// +kubebuilder:validation:Enum=True;False
+	Served Served `json:"served"`
 
 	// Conditions associated with CustomStatus.
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
@@ -129,6 +140,10 @@ func (s *Serverless) UpdateConditionTrue(c ConditionType, r ConditionReason, msg
 		Message:            msg,
 	}
 	meta.SetStatusCondition(&s.Status.Conditions, condition)
+}
+
+func (s *Serverless) IsServedEmpty() bool {
+	return s.Status.Served == ""
 }
 
 //+kubebuilder:object:root=true

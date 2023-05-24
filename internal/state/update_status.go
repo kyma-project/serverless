@@ -80,12 +80,17 @@ func sFnUpdateServerless() stateFn {
 	}
 }
 
-func sFnUpdateServerlessStatus(next stateFn) stateFn {
+func sFnUpdateServedTrue() stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		return updateServerlessStatus(
-			sFnTakeSnapshot(next, nil, nil),
-			ctx, r, s,
-		)
+		s.setServed(v1alpha1.ServedTrue)
+		return updateServerlessStatus(sFnRequeue(), ctx, r, s)
+	}
+}
+
+func sFnUpdateServedFalse(condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, err error) stateFn {
+	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+		s.setServed(v1alpha1.ServedFalse)
+		return nextState(sFnUpdateErrorState(condition, reason, err))
 	}
 }
 

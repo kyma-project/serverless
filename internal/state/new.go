@@ -18,7 +18,7 @@ type StateReconciler interface {
 
 func NewMachine(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, cache *chart.ManifestCache, chartPath string) StateReconciler {
 	return &reconciler{
-		fn:    sFnTakePreInitSnapshot,
+		fn:    sFnServedFilter,
 		cache: cache,
 		log:   log,
 		cfg: cfg{
