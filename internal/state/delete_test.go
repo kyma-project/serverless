@@ -28,7 +28,8 @@ func Test_sFnDeleteResources(t *testing.T) {
 		next, result, err := stateFn(nil, nil, s)
 
 		expectedNext := sFnUpdateDeletingState(
-			"Deletion",
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeletion,
 			"Uninstalling",
 		)
 
@@ -92,8 +93,9 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnUpdateDeletingErrorState(
-			"Deletion",
+		expectedNext := sFnUpdateErrorState(
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeletionErr,
 			errors.New("test error"),
 		)
 
@@ -120,8 +122,9 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnUpdateDeletingErrorState(
-			"Deletion",
+		expectedNext := sFnUpdateErrorState(
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeletionErr,
 			errors.New("test error"),
 		)
 
