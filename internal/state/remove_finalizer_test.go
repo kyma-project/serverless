@@ -50,10 +50,9 @@ func Test_sFnRemoveFinalizer(t *testing.T) {
 		// remove finalizer
 		next, result, err := sFnRemoveFinalizer()(nil, r, s)
 
-		expectedNext := sFnEmitStrictEvent(
-			nil, nil, nil,
-			"Normal",
-			"Deleted",
+		expectedNext := sFnUpdateDeletingTrueState(
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeleted,
 			"Serverless module deleted",
 		)
 

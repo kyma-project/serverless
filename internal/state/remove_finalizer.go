@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 
+	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
@@ -16,10 +17,9 @@ func sFnRemoveFinalizer() stateFn {
 		}
 
 		return nextState(
-			sFnEmitStrictEvent(
-				nil, nil, nil,
-				"Normal",
-				"Deleted",
+			sFnUpdateDeletingTrueState(
+				v1alpha1.ConditionTypeDeleted,
+				v1alpha1.ConditionReasonDeleted,
 				"Serverless module deleted",
 			),
 		)

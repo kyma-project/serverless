@@ -8,19 +8,6 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
-func sFnEmitStrictEvent(next stateFn, result *ctrl.Result, err error, eventType, eventReason, eventMessage string) stateFn {
-	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		r.Event(
-			&s.instance,
-			eventType,
-			eventReason,
-			eventMessage,
-		)
-
-		return next, result, err
-	}
-}
-
 func buildSFnEmitEvent(next stateFn, result *ctrl.Result, err error) stateFn {
 	return func(_ context.Context, m *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		// compare if any condition change
