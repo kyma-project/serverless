@@ -7,6 +7,7 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func CheckCRDOrphanResources(config *Config) error {
@@ -31,7 +32,7 @@ func CheckCRDOrphanResources(config *Config) error {
 		}
 
 		err = config.Cluster.Client.List(config.Ctx, &crList)
-		if err != nil {
+		if client.IgnoreNotFound(err) != nil {
 			return err
 		}
 
