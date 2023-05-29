@@ -45,6 +45,10 @@ func (s *systemState) setState(state v1alpha1.State) {
 	s.instance.Status.State = state
 }
 
+func (s *systemState) setServed(served v1alpha1.Served) {
+	s.instance.Status.Served = served
+}
+
 func (s *systemState) Setup(ctx context.Context, r *reconciler) error {
 	s.instance.Spec.Default()
 

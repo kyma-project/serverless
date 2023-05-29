@@ -25,7 +25,7 @@ func Install(config *Config) error {
 		config.Log.Debugf("creating %s %s/%s", u.GetKind(), u.GetNamespace(), u.GetName())
 		err := config.Cluster.Client.Patch(config.Ctx, &u, client.Apply, &client.PatchOptions{
 			Force:        pointer.Bool(true),
-			FieldManager: "keda-manager",
+			FieldManager: "serverless-manager",
 		})
 		if err != nil {
 			return fmt.Errorf("could not install object %s/%s: %s", u.GetNamespace(), u.GetName(), err.Error())

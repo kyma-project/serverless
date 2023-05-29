@@ -143,6 +143,13 @@ spec:
               eventPublisherProxyURL:
                 description: Used the Publisher Proxy and the Trace Collector URLs.
                 type: string
+              served:
+                description: Served signifies that current Serverless is managed.
+                  Value can be one of ("True", "False").
+                enum:
+                - "True"
+                - "False"
+                type: string
               state:
                 description: State signifies current state of Serverless. Value can
                   be one of ("Ready", "Processing", "Error", "Deleting").
@@ -155,7 +162,7 @@ spec:
               traceCollectorURL:
                 type: string
             required:
-            - state
+            - served
             type: object
         type: object
     served: true
