@@ -8,12 +8,20 @@ import (
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 var (
 	testDeletingServerless = func() v1alpha1.Serverless {
 		serverless := testInstalledServerless
 		serverless.Status.State = v1alpha1.StateDeleting
+		serverless.Status.Conditions = []metav1.Condition{
+			{
+				Type:   string(v1alpha1.ConditionTypeDeleted),
+				Reason: string(v1alpha1.ConditionReasonDeletion),
+				Status: metav1.ConditionUnknown,
+			},
+		}
 		return serverless
 	}()
 )

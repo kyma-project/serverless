@@ -6,6 +6,7 @@ import (
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	ctrl "sigs.k8s.io/controller-runtime"
 )
 
 func Test_sFnRemoveFinalizer(t *testing.T) {
@@ -28,7 +29,11 @@ func Test_sFnRemoveFinalizer(t *testing.T) {
 		// remove finalizer
 		next, result, err := sFnRemoveFinalizer()(nil, r, s)
 
-		expectedNext := sFnUpdateServerless()
+		expectedNext := sFnUpdateDeletingTrueState(
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeleted,
+			"Serverless module deleted",
+		)
 
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
@@ -50,14 +55,8 @@ func Test_sFnRemoveFinalizer(t *testing.T) {
 		// remove finalizer
 		next, result, err := sFnRemoveFinalizer()(nil, r, s)
 
-		expectedNext := sFnUpdateDeletingTrueState(
-			v1alpha1.ConditionTypeDeleted,
-			v1alpha1.ConditionReasonDeleted,
-			"Serverless module deleted",
-		)
-
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
+		require.Nil(t, next)
+		require.Equal(t, &ctrl.Result{Requeue: true}, result)
 		require.Nil(t, err)
 	})
 }
