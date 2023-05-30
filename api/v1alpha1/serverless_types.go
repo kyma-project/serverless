@@ -59,6 +59,9 @@ const (
 	// prerequisites and soft dependencies
 	ConditionTypeConfigured = ConditionType("Configured")
 
+	// deletion
+	ConditionTypeDeleted = ConditionType("Deleted")
+
 	ConditionReasonConfigurationCheck   = ConditionReason("ConfigurationCheck")
 	ConditionReasonConfigurationErr     = ConditionReason("ConfigurationCheckErr")
 	ConditionReasonConfigured           = ConditionReason("Configured")
@@ -66,6 +69,9 @@ const (
 	ConditionReasonInstallationErr      = ConditionReason("InstallationErr")
 	ConditionReasonInstalled            = ConditionReason("Installed")
 	ConditionReasonServerlessDuplicated = ConditionReason("ServerlessDuplicated")
+	ConditionReasonDeletion             = ConditionReason("Deletion")
+	ConditionReasonDeletionErr          = ConditionReason("DeletionErr")
+	ConditionReasonDeleted              = ConditionReason("Deleted")
 
 	Finalizer = "serverless-manager.kyma-project.io/deletion-hook"
 )

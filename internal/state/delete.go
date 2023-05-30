@@ -24,10 +24,11 @@ const (
 // delete serverless based on previously installed resources
 func sFnDeleteResources() stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		if !s.instance.IsInState(v1alpha1.StateDeleting) {
+		if !s.instance.IsCondition(v1alpha1.ConditionTypeDeleted) {
 			return nextState(
 				sFnUpdateDeletingState(
-					"Deletion",
+					v1alpha1.ConditionTypeDeleted,
+					v1alpha1.ConditionReasonDeletion,
 					"Uninstalling",
 				),
 			)
@@ -65,8 +66,9 @@ func sFnSafeDeletionState(_ context.Context, r *reconciler, s *systemState) (sta
 	if err := chart.CheckCRDOrphanResources(s.chartConfig); err != nil {
 		// stop state machine with an error and requeue reconciliation in 1min
 		return nextState(
-			sFnUpdateDeletingErrorState(
-				"Deletion",
+			sFnUpdateErrorState(
+				v1alpha1.ConditionTypeDeleted,
+				v1alpha1.ConditionReasonDeletionErr,
 				err,
 			),
 		)
@@ -81,9 +83,9 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 		r.log.Warnf("error while uninstalling resource %s: %s",
 			client.ObjectKeyFromObject(&s.instance), err.Error())
 		return nextState(
-			sFnUpdateDeletingErrorState(
-
-				"Deletion",
+			sFnUpdateErrorState(
+				v1alpha1.ConditionTypeDeleted,
+				v1alpha1.ConditionReasonDeletionErr,
 				err,
 			),
 		)

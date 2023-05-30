@@ -48,29 +48,21 @@ func sFnUpdateErrorState(condition v1alpha1.ConditionType, reason v1alpha1.Condi
 	}
 }
 
-func sFnUpdateDeletingState(eventReason, eventMessage string) stateFn {
+func sFnUpdateDeletingState(condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		s.setState(v1alpha1.StateDeleting)
+		s.instance.UpdateConditionUnknown(condition, reason, msg)
 
-		return updateServerlessStatus(sFnEmitStrictEvent(
-			sFnRequeue(), nil, nil,
-			"Normal",
-			eventReason,
-			eventMessage,
-		), ctx, r, s)
+		return updateServerlessStatus(buildSFnEmitEvent(sFnRequeue(), nil, nil), ctx, r, s)
 	}
 }
 
-func sFnUpdateDeletingErrorState(eventReason string, err error) stateFn {
+func sFnUpdateDeletingTrueState(condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		s.setState(v1alpha1.StateDeleting)
+		s.instance.UpdateConditionTrue(condition, reason, msg)
 
-		return updateServerlessStatus(sFnEmitStrictEvent(
-			nil, nil, err,
-			"Warning",
-			eventReason,
-			err.Error(),
-		), ctx, r, s)
+		return updateServerlessStatus(buildSFnEmitEvent(sFnRequeue(), nil, nil), ctx, r, s)
 	}
 }
 
