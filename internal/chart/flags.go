@@ -39,9 +39,11 @@ func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceColl
 
 func dockerRegistryFlags(ctx context.Context, c client.Client, serverless *v1alpha1.Serverless) (map[string]interface{}, error) {
 	flags := map[string]interface{}{
-		"enableInternal":  *serverless.Spec.DockerRegistry.EnableInternal,
-		"registryAddress": v1alpha1.DefaultRegistryAddress,
-		"serverAddress":   v1alpha1.DefaultServerAddress,
+		"enableInternal": *serverless.Spec.DockerRegistry.EnableInternal,
+	}
+	if !*serverless.Spec.DockerRegistry.EnableInternal {
+		flags["registryAddress"] = v1alpha1.DefaultRegistryAddress
+		flags["serverAddress"] = v1alpha1.DefaultServerAddress
 	}
 
 	if serverless.Spec.DockerRegistry.SecretName != nil {
