@@ -27,9 +27,6 @@ package controllers
 //+kubebuilder:rbac:groups=serverless.kyma-project.io,resources=gitrepositories,verbs=get;list;watch;create;update;patch;delete;deletecollection
 //+kubebuilder:rbac:groups=serverless.kyma-project.io,resources=gitrepositories/status,verbs=get
 
-//+kubebuilder:rbac:groups=networking.istio.io,resources=destinationrules,verbs=get;list;watch;create;update;patch;delete;deletecollection
-//+kubebuilder:rbac:groups=networking.istio.io,resources=virtualservices,verbs=get;list;watch;create;update;patch;delete;deletecollection
-
 //+kubebuilder:rbac:groups=operator.kyma-project.io,resources=serverlesses,verbs=get;list;watch;create;update;patch;delete;deletecollection
 //+kubebuilder:rbac:groups=operator.kyma-project.io,resources=serverlesses/status,verbs=get;list;watch;create;update;patch;delete;deletecollection
 //+kubebuilder:rbac:groups=operator.kyma-project.io,resources=serverlesses/finalizers,verbs=get;list;watch;create;update;patch;delete;deletecollection

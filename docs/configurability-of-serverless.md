@@ -57,15 +57,12 @@ status:
 ## Dependencies
 
 There are other kyma modules that are watched by serverless manager:
- - Istio (a hard dependency in case internal docker registry is configured)
  - Eventing (soft dependency)
  - Telemetry (soft dependency)
 
 The eventing and telementry modules are not required for serverless to install. If they are discovered they deliver default values for serverless configuration (i.e publisherProxyEndpoint, otlpEnpoints).
 The detected and used endpoints should be part of the Serverless CR status.
 
-If the internal docker registry is configured serverless exposes it via Istio virtual service. In such case we have to treat istio as hard requirement and fail installation if istio is not discovered.
-If internal docker registry is disabled, serverless doesnt need istio CRs and therefore should not require Istio to install.
 
 ![deps](./assets/modular-serverless.drawio.svg)
 
