@@ -29,12 +29,7 @@ func Test_sFnRemoveFinalizer(t *testing.T) {
 		// remove finalizer
 		next, result, err := sFnRemoveFinalizer()(nil, r, s)
 
-		expectedNext := sFnUpdateDeletingTrueState(
-			v1alpha1.ConditionTypeDeleted,
-			v1alpha1.ConditionReasonDeleted,
-			"Serverless module deleted",
-		)
-
+		expectedNext := sFnUpdateServerless()
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
