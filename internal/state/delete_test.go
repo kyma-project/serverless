@@ -77,7 +77,11 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnRemoveFinalizer()
+		expectedNext := sFnUpdateDeletingTrueState(
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeleted,
+			"Serverless module deleted",
+		)
 
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
@@ -162,7 +166,11 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnRemoveFinalizer()
+		expectedNext := sFnUpdateDeletingTrueState(
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeleted,
+			"Serverless module deleted",
+		)
 
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
