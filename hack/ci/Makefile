@@ -33,10 +33,10 @@ integration-test: module-chart-test  ## Run integration tests on self-prepared k
 	cd ${MODULECHARTTEST} && make serverless-integration
 
 .PHONY: k3d-lm-integration-test ## Run integration tests on self-prepared k3d cluster with lifecycle-manager.
-k3d-lm-integration-test: run-with-lifecycle-manager integration-test
+k3d-lm-integration-test: run-with-lifecycle-manager integration-test remove-serverless
 
 .PHONY: k3d-integration-test ## Run integration tests on self-prepared k3d cluster.
-k3d-integration-test: run-without-lifecycle-manager integration-test
+k3d-integration-test: run-without-lifecycle-manager integration-test remove-serverless
 
 .PHONY: k3d-upgrade-test
 k3d-upgrade-test: ## Upgrade tests not implemented yet.
@@ -53,6 +53,10 @@ hyperscalers-compatibility-test: ## Hyperscalers compatibility tests not impleme
 .PHONY: module-chart-test
 module-chart-test: ## Generate module-chart-test dir.
 	@${PROJECT_ROOT}/hack/clone_dir_from_github.sh kyma tests/function-controller ${MODULECHARTTEST}
+
+.PHONY: remove-serverless
+remove-serverless: ## Remove Serverless CR
+	kubectl delete serverless -n kyma-system default --timeout 1m || (kubectl get serverless -n kyma-system -oyaml && false)
 
 ### Internal Dependencies
 
