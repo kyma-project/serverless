@@ -103,7 +103,7 @@ fix-template: ## Create template-k3d.yaml based on template.yaml with right URLs
 .PHONY: apply-serverless
 apply-serverless: ## Apply the k3d serverless CR.
 	kubectl apply -n kyma-system \
-		-f ${PROJECT_ROOT}/config/samples/operator_v1alpha1_serverless_k3d.yaml
+		-f ${PROJECT_ROOT}/config/samples/operator_v1alpha1_serverless.yaml
 
 ### Internal Dependencies
 

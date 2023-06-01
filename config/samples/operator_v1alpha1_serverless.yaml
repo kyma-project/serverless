@@ -1,0 +1,7 @@
+apiVersion: operator.kyma-project.io/v1alpha1
+kind: Serverless
+metadata:
+  name: default
+spec:
+  dockerRegistry:
+    enableInternal: true

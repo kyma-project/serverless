@@ -54,9 +54,7 @@ func TestBuildFlags(t *testing.T) {
 			},
 			want: map[string]interface{}{
 				"dockerRegistry": map[string]interface{}{
-					"enableInternal":  true,
-					"registryAddress": "k3d-kyma-registry:5000",
-					"serverAddress":   "k3d-kyma-registry:5000",
+					"enableInternal": true,
 				},
 			},
 		},

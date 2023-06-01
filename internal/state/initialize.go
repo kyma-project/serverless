@@ -48,7 +48,7 @@ func sFnInitialize() stateFn {
 		}
 
 		return nextState(
-			sFnPrerequisites(),
+			sFnOptionalDependencies(),
 		)
 	}
 }
