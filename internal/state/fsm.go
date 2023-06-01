@@ -80,7 +80,7 @@ func chartConfig(ctx context.Context, r *reconciler, s *systemState) (*chart.Con
 			Flags:     flags,
 			ChartPath: r.chartPath,
 			Namespace: s.instance.GetNamespace(),
-			Name:      s.instance.GetName(),
+			Name:      "serverless",
 		},
 	}, nil
 }
