@@ -33,7 +33,7 @@ integration-test: module-chart-test  ## Run integration tests on self-prepared k
 	cd ${MODULECHARTTEST} && make serverless-integration
 
 .PHONY: k3d-lm-integration-test ## Run integration tests on self-prepared k3d cluster with lifecycle-manager.
-k3d-lm-integration-test: run-with-lifecycle-manager integration-test remove-serverless
+k3d-lm-integration-test: run-with-lifecycle-manager integration-test
 
 .PHONY: k3d-integration-test ## Run integration tests on self-prepared k3d cluster.
 k3d-integration-test: run-without-lifecycle-manager integration-test remove-serverless
