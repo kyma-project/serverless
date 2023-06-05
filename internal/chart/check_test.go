@@ -38,22 +38,28 @@ var (
 )
 
 func TestCheckCRDOrphanResources(t *testing.T) {
-	cache := NewManifestCache()
-	cache.Set(types.NamespacedName{
+	noCRDManifestKey := types.NamespacedName{
 		Name: "no", Namespace: "crd",
-	}, nil, fmt.Sprint(testDeploy))
-	cache.Set(types.NamespacedName{
+	}
+	noOrphanManifestKey := types.NamespacedName{
 		Name: "no", Namespace: "orphan",
-	}, nil, fmt.Sprint(testCRD, separator, testDeploy))
-	cache.Set(types.NamespacedName{
+	}
+	oneOrphanManifestKey := types.NamespacedName{
 		Name: "one", Namespace: "orphan",
-	}, nil, fmt.Sprint(testCRD, separator, testOrphanCR))
-	cache.Set(types.NamespacedName{
+	}
+	emptyManifestKey := types.NamespacedName{
 		Name: "empty", Namespace: "manifest",
-	}, nil, "")
-	cache.Set(types.NamespacedName{
+	}
+	wrongManifestKey := types.NamespacedName{
 		Name: "wrong", Namespace: "manifest",
-	}, nil, "api: test\n\tversion: test")
+	}
+
+	cache := NewInMemoryManifestCache()
+	cache.Set(context.Background(), noCRDManifestKey, nil, fmt.Sprint(testDeploy))
+	cache.Set(context.Background(), noOrphanManifestKey, nil, fmt.Sprint(testCRD, separator, testDeploy))
+	cache.Set(context.Background(), oneOrphanManifestKey, nil, fmt.Sprint(testCRD, separator, testOrphanCR))
+	cache.Set(context.Background(), emptyManifestKey, nil, "")
+	cache.Set(context.Background(), wrongManifestKey, nil, "api: test\n\tversion: test")
 
 	type args struct {
 		config *Config
@@ -67,11 +73,8 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 			name: "empty manifest",
 			args: args{
 				config: &Config{
-					Cache: cache,
-					Release: Release{
-						Name:      "empty",
-						Namespace: "manifest",
-					},
+					Cache:    cache,
+					CacheKey: emptyManifestKey,
 				},
 			},
 			wantErr: false,
@@ -80,11 +83,8 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 			name: "parse manifest error",
 			args: args{
 				config: &Config{
-					Cache: cache,
-					Release: Release{
-						Name:      "wrong",
-						Namespace: "manifest",
-					},
+					Cache:    cache,
+					CacheKey: wrongManifestKey,
 				},
 			},
 			wantErr: true,
@@ -93,11 +93,8 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 			name: "no CRDs in manifest",
 			args: args{
 				config: &Config{
-					Cache: cache,
-					Release: Release{
-						Name:      "no",
-						Namespace: "crd",
-					},
+					Cache:    cache,
+					CacheKey: noCRDManifestKey,
 				},
 			},
 			wantErr: false,
@@ -106,14 +103,11 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 			name: "no orphan for CRD",
 			args: args{
 				config: &Config{
-					Cache: cache,
-					Ctx:   context.Background(),
+					Cache:    cache,
+					CacheKey: noOrphanManifestKey,
+					Ctx:      context.Background(),
 					Cluster: Cluster{
 						Client: fake.NewFakeClientWithScheme(apiextensionsscheme.Scheme, testCRDObj),
-					},
-					Release: Release{
-						Name:      "no",
-						Namespace: "orphan",
 					},
 				},
 			},
@@ -123,8 +117,9 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 			name: "one orphan for CRD",
 			args: args{
 				config: &Config{
-					Cache: cache,
-					Ctx:   context.Background(),
+					Cache:    cache,
+					CacheKey: oneOrphanManifestKey,
+					Ctx:      context.Background(),
 					Cluster: Cluster{
 						Client: func() client.Client {
 							scheme := runtime.NewScheme()
@@ -137,10 +132,6 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 
 							return c
 						}(),
-					},
-					Release: Release{
-						Name:      "one",
-						Namespace: "orphan",
 					},
 				},
 			},

@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+	"os"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
@@ -12,11 +13,15 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+const (
+	namespaceEnvKey = "SERVERLESS_MANAGER_NAMESPACE"
+)
+
 type StateReconciler interface {
 	Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl.Result, error)
 }
 
-func NewMachine(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, cache *chart.ManifestCache, chartPath string) StateReconciler {
+func NewMachine(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, cache chart.ManifestCache, chartPath string) StateReconciler {
 	return &reconciler{
 		fn:    sFnServedFilter,
 		cache: cache,
@@ -24,6 +29,7 @@ func NewMachine(client client.Client, config *rest.Config, recorder record.Event
 		cfg: cfg{
 			finalizer: v1alpha1.Finalizer,
 			chartPath: chartPath,
+			namespace: getEnvNamespace(),
 		},
 		k8s: k8s{
 			client:        client,
@@ -31,4 +37,13 @@ func NewMachine(client client.Client, config *rest.Config, recorder record.Event
 			EventRecorder: recorder,
 		},
 	}
+}
+
+func getEnvNamespace() string {
+	namespace := os.Getenv(namespaceEnvKey)
+	if namespace == "" {
+		return "default"
+	}
+
+	return namespace
 }

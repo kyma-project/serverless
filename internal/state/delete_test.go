@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 )
 
 var (
@@ -66,7 +67,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 			instance: testDeletingServerless,
 			chartConfig: &chart.Config{
 				Cache: testEmptyManifestCache(),
-				Release: chart.Release{
+				CacheKey: types.NamespacedName{
 					Name:      testDeletingServerless.GetName(),
 					Namespace: testDeletingServerless.GetNamespace(),
 				},
@@ -94,8 +95,8 @@ func Test_sFnDeleteResources(t *testing.T) {
 		s := &systemState{
 			instance: testDeletingServerless,
 			chartConfig: &chart.Config{
-				Cache:   testEmptyManifestCache(),
-				Release: chart.Release{},
+				Cache:    testEmptyManifestCache(),
+				CacheKey: types.NamespacedName{},
 			},
 		}
 
@@ -123,8 +124,8 @@ func Test_sFnDeleteResources(t *testing.T) {
 		s := &systemState{
 			instance: testDeletingServerless,
 			chartConfig: &chart.Config{
-				Cache:   testEmptyManifestCache(),
-				Release: chart.Release{},
+				Cache:    testEmptyManifestCache(),
+				CacheKey: types.NamespacedName{},
 			},
 		}
 
@@ -153,7 +154,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 			instance: testDeletingServerless,
 			chartConfig: &chart.Config{
 				Cache: testEmptyManifestCache(),
-				Release: chart.Release{
+				CacheKey: types.NamespacedName{
 					Name:      testDeletingServerless.GetName(),
 					Namespace: testDeletingServerless.GetNamespace(),
 				},

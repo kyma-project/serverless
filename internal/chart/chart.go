@@ -22,11 +22,12 @@ import (
 )
 
 type Config struct {
-	Ctx     context.Context
-	Log     *zap.SugaredLogger
-	Cache   *ManifestCache
-	Cluster Cluster
-	Release Release
+	Ctx      context.Context
+	Log      *zap.SugaredLogger
+	Cache    ManifestCache
+	CacheKey types.NamespacedName
+	Cluster  Cluster
+	Release  Release
 }
 
 type Release struct {
@@ -77,12 +78,11 @@ func parseManifest(manifest string) ([]unstructured.Unstructured, error) {
 }
 
 func getManifest(config *Config) (string, error) {
-	cacheKey := types.NamespacedName{
-		Name:      config.Release.Name,
-		Namespace: config.Release.Namespace,
+	specManifest, err := config.Cache.Get(config.Ctx, config.CacheKey)
+	if err != nil {
+		return "", err
 	}
 
-	specManifest := config.Cache.Get(cacheKey)
 	if specManifest != nil && reflect.DeepEqual(specManifest.customFlags, config.Release.Flags) {
 		return specManifest.manifest, nil
 	}
@@ -92,8 +92,7 @@ func getManifest(config *Config) (string, error) {
 		return "", err
 	}
 
-	config.Cache.Set(cacheKey, config.Release.Flags, release.Manifest)
-	return release.Manifest, nil
+	return release.Manifest, config.Cache.Set(config.Ctx, config.CacheKey, config.Release.Flags, release.Manifest)
 }
 
 func renderChart(config *Config) (*release.Release, error) {

@@ -66,16 +66,20 @@ var (
 func Test_install(t *testing.T) {
 	log := zap.NewNop().Sugar()
 
-	cache := NewManifestCache()
-	cache.Set(types.NamespacedName{
+	testManifestKey := types.NamespacedName{
 		Name: "test", Namespace: "testnamespace",
-	}, nil, fmt.Sprint(testCRD, separator, testDeploy))
-	cache.Set(types.NamespacedName{
+	}
+	emptyManifestKey := types.NamespacedName{
 		Name: "empty", Namespace: "manifest",
-	}, nil, "")
-	cache.Set(types.NamespacedName{
+	}
+	wrongManifestKey := types.NamespacedName{
 		Name: "wrong", Namespace: "manifest",
-	}, nil, "api: test\n\tversion: test")
+	}
+
+	cache := NewInMemoryManifestCache()
+	cache.Set(context.Background(), testManifestKey, nil, fmt.Sprint(testCRD, separator, testDeploy))
+	cache.Set(context.Background(), emptyManifestKey, nil, "")
+	cache.Set(context.Background(), wrongManifestKey, nil, "api: test\n\tversion: test")
 
 	type args struct {
 		config *Config
@@ -89,11 +93,8 @@ func Test_install(t *testing.T) {
 			name: "empty manifest",
 			args: args{
 				config: &Config{
-					Cache: cache,
-					Release: Release{
-						Name:      "empty",
-						Namespace: "manifest",
-					},
+					Cache:    cache,
+					CacheKey: emptyManifestKey,
 				},
 			},
 			wantErr: false,
@@ -102,11 +103,8 @@ func Test_install(t *testing.T) {
 			name: "parse manifest error",
 			args: args{
 				config: &Config{
-					Cache: cache,
-					Release: Release{
-						Name:      "wrong",
-						Namespace: "manifest",
-					},
+					Cache:    cache,
+					CacheKey: wrongManifestKey,
 				},
 			},
 			wantErr: true,
@@ -115,22 +113,19 @@ func Test_install(t *testing.T) {
 			name: "installation error",
 			args: args{
 				config: &Config{
-					Ctx:   context.Background(),
-					Log:   log,
-					Cache: cache,
+					Ctx:      context.Background(),
+					Log:      log,
+					Cache:    cache,
+					CacheKey: testManifestKey,
 					Cluster: Cluster{
 						Client: fake.NewFakeClientWithScheme(apiextensionsscheme.Scheme),
-					},
-					Release: Release{
-						Name:      "test",
-						Namespace: "testnamespace",
 					},
 				},
 			},
 			wantErr: true,
 		},
 		// we can't simply test succeded installation here because it uses
-		// tha Patch method which is not fully supported by the. This case is tested in controllers pkg
+		// tha Patch method which is not fully supported by the fake client. This case is tested in controllers pkg
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

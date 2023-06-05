@@ -49,7 +49,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 			instance: testInstalledServerless,
 			chartConfig: &chart.Config{
 				Cache: testEmptyManifestCache(),
-				Release: chart.Release{
+				CacheKey: types.NamespacedName{
 					Name:      testInstalledServerless.GetName(),
 					Namespace: testInstalledServerless.GetNamespace(),
 				},
@@ -81,8 +81,8 @@ func Test_sFnVerifyResources(t *testing.T) {
 		s := &systemState{
 			instance: testInstalledServerless,
 			chartConfig: &chart.Config{
-				Cache:   testEmptyManifestCache(),
-				Release: chart.Release{},
+				Cache:    testEmptyManifestCache(),
+				CacheKey: types.NamespacedName{},
 			},
 		}
 
@@ -113,15 +113,15 @@ func Test_sFnVerifyResources(t *testing.T) {
 		s := &systemState{
 			instance: testInstalledServerless,
 			chartConfig: &chart.Config{
-				Cache: func() *chart.ManifestCache {
-					cache := chart.NewManifestCache()
-					cache.Set(types.NamespacedName{
+				Cache: func() chart.ManifestCache {
+					cache := chart.NewInMemoryManifestCache()
+					cache.Set(context.Background(), types.NamespacedName{
 						Name:      testInstalledServerless.GetName(),
 						Namespace: testInstalledServerless.GetNamespace(),
 					}, nil, testDeployManifest)
 					return cache
 				}(),
-				Release: chart.Release{
+				CacheKey: types.NamespacedName{
 					Name:      testInstalledServerless.GetName(),
 					Namespace: testInstalledServerless.GetNamespace(),
 				},
