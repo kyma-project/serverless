@@ -10,6 +10,10 @@ help: ## Display this help.
 run-with-lifecycle-manager: ## Create k3d cluster with module installed by the lifecycle-manager.
 	@make -C ${PROJECT_COMMON} run-with-lifecycle-manager
 
+.PHONY: deploy
+deploy: ## Build image and deploy manager on a cluster
+	@make -C ${PROJECT_COMMON} module-image deploy
+
 .PHONY: run-without-lifecycle-manager
 run-without-lifecycle-manager: ## Create k3d cluster with module.
 	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager

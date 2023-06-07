@@ -90,7 +90,7 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "no CRDs",
+			name: "no CRDs in manifest",
 			args: args{
 				config: &Config{
 					Cache: cache,
@@ -109,7 +109,7 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 					Cache: cache,
 					Ctx:   context.Background(),
 					Cluster: Cluster{
-						Client: fake.NewFakeClientWithScheme(apiextensionsscheme.Scheme),
+						Client: fake.NewFakeClientWithScheme(apiextensionsscheme.Scheme, testCRDObj),
 					},
 					Release: Release{
 						Name:      "no",
@@ -132,7 +132,8 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 								Group:   "test.group",
 								Version: "v1alpha2",
 							}, &testOrphanObj)
-							c := fake.NewFakeClientWithScheme(scheme, &testOrphanObj)
+							apiextensionsscheme.AddToScheme(scheme)
+							c := fake.NewFakeClientWithScheme(scheme, &testOrphanObj, testCRDObj)
 
 							return c
 						}(),
@@ -144,6 +145,29 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 				},
 			},
 			wantErr: true,
+		},
+		{
+			name: "missing CRD on cluster",
+			args: args{
+				config: &Config{
+					Cache: cache,
+					Ctx:   context.Background(),
+					Cluster: Cluster{
+						Client: func() client.Client {
+							scheme := runtime.NewScheme()
+							apiextensionsscheme.AddToScheme(scheme)
+							c := fake.NewFakeClientWithScheme(scheme)
+
+							return c
+						}(),
+					},
+					Release: Release{
+						Name:      "one",
+						Namespace: "orphan",
+					},
+				},
+			},
+			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
