@@ -4,9 +4,11 @@ import (
 	"fmt"
 
 	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -22,10 +24,25 @@ func CheckCRDOrphanResources(config *Config) error {
 	}
 
 	for _, obj := range objs {
+		// continue if obj is not crd
 		if !isCRD(obj) {
 			continue
 		}
 
+		// check if crd exist on the cluster
+		objCopy := unstructured.Unstructured{Object: obj.Object}
+		err := config.Cluster.Client.Get(config.Ctx, types.NamespacedName{
+			Name:      obj.GetName(),
+			Namespace: obj.GetNamespace(),
+		}, &objCopy)
+		if errors.IsNotFound(err) {
+			continue
+		}
+		if err != nil {
+			return err
+		}
+
+		// check if CRs exist on the cluster
 		crList, err := buildResourceListFromCRD(obj)
 		if err != nil {
 			return err
