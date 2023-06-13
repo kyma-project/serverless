@@ -141,8 +141,9 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 			name: "missing CRD on cluster",
 			args: args{
 				config: &Config{
-					Cache: cache,
-					Ctx:   context.Background(),
+					Cache:    cache,
+					CacheKey: oneOrphanManifestKey,
+					Ctx:      context.Background(),
 					Cluster: Cluster{
 						Client: func() client.Client {
 							scheme := runtime.NewScheme()
@@ -151,10 +152,6 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 
 							return c
 						}(),
-					},
-					Release: Release{
-						Name:      "one",
-						Namespace: "orphan",
 					},
 				},
 			},
