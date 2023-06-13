@@ -239,8 +239,8 @@ type serverlessData struct {
 
 func (d *serverlessData) toServerlessSpec(secretName string) v1alpha1.ServerlessSpec {
 	result := v1alpha1.ServerlessSpec{
-		Eventing: &v1alpha1.Endpoint{Endpoint: *d.EventPublisherProxyURL},
-		Tracing:  &v1alpha1.Endpoint{Endpoint: *d.TraceCollectorURL},
+		Eventing: getEndpoint(d.EventPublisherProxyURL),
+		Tracing:  getEndpoint(d.TraceCollectorURL),
 		DockerRegistry: &v1alpha1.DockerRegistry{
 			EnableInternal: d.EnableInternal,
 		},
@@ -249,6 +249,13 @@ func (d *serverlessData) toServerlessSpec(secretName string) v1alpha1.Serverless
 		result.DockerRegistry.SecretName = pointer.String(secretName)
 	}
 	return result
+}
+
+func getEndpoint(url *string) *v1alpha1.Endpoint {
+	if url != nil {
+		return &v1alpha1.Endpoint{Endpoint: *url}
+	}
+	return nil
 }
 
 type registrySecretData struct {
