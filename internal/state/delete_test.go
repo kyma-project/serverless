@@ -66,7 +66,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		s := &systemState{
 			instance: testDeletingServerless,
 			chartConfig: &chart.Config{
-				Cache: testEmptyManifestCache(),
+				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
 					Name:      testDeletingServerless.GetName(),
 					Namespace: testDeletingServerless.GetNamespace(),
@@ -95,8 +95,11 @@ func Test_sFnDeleteResources(t *testing.T) {
 		s := &systemState{
 			instance: testDeletingServerless,
 			chartConfig: &chart.Config{
-				Cache:    testEmptyManifestCache(),
-				CacheKey: types.NamespacedName{},
+				Cache: fixManifestCache("\t"),
+				CacheKey: types.NamespacedName{
+					Name:      testInstalledServerless.GetName(),
+					Namespace: testInstalledServerless.GetNamespace(),
+				},
 			},
 		}
 
@@ -124,8 +127,11 @@ func Test_sFnDeleteResources(t *testing.T) {
 		s := &systemState{
 			instance: testDeletingServerless,
 			chartConfig: &chart.Config{
-				Cache:    testEmptyManifestCache(),
-				CacheKey: types.NamespacedName{},
+				Cache: fixManifestCache("\t"),
+				CacheKey: types.NamespacedName{
+					Name:      testInstalledServerless.GetName(),
+					Namespace: testInstalledServerless.GetNamespace(),
+				},
 			},
 		}
 
@@ -153,7 +159,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		s := &systemState{
 			instance: testDeletingServerless,
 			chartConfig: &chart.Config{
-				Cache: testEmptyManifestCache(),
+				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
 					Name:      testDeletingServerless.GetName(),
 					Namespace: testDeletingServerless.GetNamespace(),

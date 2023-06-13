@@ -77,13 +77,13 @@ func parseManifest(manifest string) ([]unstructured.Unstructured, error) {
 	return results, nil
 }
 
-func getManifest(config *Config) (string, error) {
+func getOrRenderManifest(config *Config) (string, error) {
 	specManifest, err := config.Cache.Get(config.Ctx, config.CacheKey)
 	if err != nil {
 		return "", err
 	}
 
-	if specManifest != nil && reflect.DeepEqual(specManifest.customFlags, config.Release.Flags) {
+	if reflect.DeepEqual(specManifest.customFlags, config.Release.Flags) {
 		return specManifest.manifest, nil
 	}
 
@@ -92,7 +92,7 @@ func getManifest(config *Config) (string, error) {
 		return "", err
 	}
 
-	return release.Manifest, config.Cache.Set(config.Ctx, config.CacheKey, config.Release.Flags, release.Manifest)
+	return release.Manifest, nil
 }
 
 func renderChart(config *Config) (*release.Release, error) {

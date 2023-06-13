@@ -44,12 +44,16 @@ var (
 	}
 )
 
-func testEmptyManifestCache() chart.ManifestCache {
+func fixEmptyManifestCache() chart.ManifestCache {
+	return fixManifestCache("")
+}
+
+func fixManifestCache(manifest string) chart.ManifestCache {
 	cache := chart.NewInMemoryManifestCache()
 	cache.Set(context.Background(), types.NamespacedName{
 		Name:      testInstalledServerless.GetName(),
 		Namespace: testInstalledServerless.GetNamespace(),
-	}, nil, "")
+	}, nil, manifest)
 
 	return cache
 }

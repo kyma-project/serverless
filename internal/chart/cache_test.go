@@ -90,7 +90,7 @@ func TestManifestCache_Get(t *testing.T) {
 		result, err := cache.Get(ctx, key)
 		require.NoError(t, err)
 
-		expectedResult := &ServerlessSpecManifest{
+		expectedResult := ServerlessSpecManifest{
 			customFlags: map[string]interface{}{
 				"flag1": "val1",
 				"flag2": "val2",
@@ -116,7 +116,7 @@ func TestManifestCache_Get(t *testing.T) {
 
 		result, err := cache.Get(ctx, key)
 		require.Error(t, err)
-		require.Nil(t, result)
+		require.Equal(t, emptyServerlessSpecManifest, result)
 	})
 
 	t.Run("secret not found", func(t *testing.T) {
@@ -131,7 +131,7 @@ func TestManifestCache_Get(t *testing.T) {
 
 		result, err := cache.Get(ctx, key)
 		require.NoError(t, err)
-		require.Nil(t, result)
+		require.Equal(t, emptyServerlessSpecManifest, result)
 	})
 
 	t.Run("conversion error", func(t *testing.T) {
@@ -151,7 +151,7 @@ func TestManifestCache_Get(t *testing.T) {
 
 		result, err := cache.Get(ctx, key)
 		require.Error(t, err)
-		require.Nil(t, result)
+		require.Equal(t, emptyServerlessSpecManifest, result)
 	})
 }
 

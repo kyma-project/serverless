@@ -10,12 +10,12 @@ import (
 type FilterFunc func(unstructured.Unstructured) bool
 
 func Uninstall(config *Config, filterFunc ...FilterFunc) error {
-	manifest, err := getManifest(config)
+	spec, err := config.Cache.Get(config.Ctx, config.CacheKey)
 	if err != nil {
 		return fmt.Errorf("could not render manifest from chart: %s", err.Error())
 	}
 
-	objs, err := parseManifest(manifest)
+	objs, err := parseManifest(spec.manifest)
 	if err != nil {
 		return fmt.Errorf("could not parse chart manifest: %s", err.Error())
 	}

@@ -17,9 +17,13 @@ var (
 	_ ManifestCache = (*secretManifestCache)(nil)
 )
 
+var (
+	emptyServerlessSpecManifest = ServerlessSpecManifest{}
+)
+
 type ManifestCache interface {
 	Set(context.Context, client.ObjectKey, map[string]interface{}, string) error
-	Get(context.Context, client.ObjectKey) (*ServerlessSpecManifest, error)
+	Get(context.Context, client.ObjectKey) (ServerlessSpecManifest, error)
 	Delete(context.Context, client.ObjectKey) error
 }
 
@@ -39,13 +43,13 @@ func NewInMemoryManifestCache() *inMemoryManifestCache {
 }
 
 // Get loads the ServerlessSpecManifest from inMemoryManifestCache for the passed client.ObjectKey.
-func (r *inMemoryManifestCache) Get(_ context.Context, key client.ObjectKey) (*ServerlessSpecManifest, error) {
+func (r *inMemoryManifestCache) Get(_ context.Context, key client.ObjectKey) (ServerlessSpecManifest, error) {
 	value, ok := r.processor.Load(key)
 	if !ok {
-		return nil, nil
+		return emptyServerlessSpecManifest, nil
 	}
 
-	return value.(*ServerlessSpecManifest), nil
+	return *value.(*ServerlessSpecManifest), nil
 }
 
 // Set saves the passed flags and manifest into inMemoryManifestCache for the client.ObjectKey.
@@ -96,23 +100,23 @@ func (m *secretManifestCache) Delete(ctx context.Context, key client.ObjectKey) 
 }
 
 // Get - loads the ServerlessSpecManifest from SecretManifestCache based on the passed client.ObjectKey.
-func (m *secretManifestCache) Get(ctx context.Context, key client.ObjectKey) (*ServerlessSpecManifest, error) {
+func (m *secretManifestCache) Get(ctx context.Context, key client.ObjectKey) (ServerlessSpecManifest, error) {
 	secret := corev1.Secret{}
 	err := m.client.Get(ctx, key, &secret)
 	if errors.IsNotFound(err) {
-		return nil, nil
+		return emptyServerlessSpecManifest, nil
 	}
 	if err != nil {
-		return nil, err
+		return emptyServerlessSpecManifest, err
 	}
 
 	customFlags := map[string]interface{}{}
 	err = json.Unmarshal(secret.Data["customFlags"], &customFlags)
 	if err != nil {
-		return nil, err
+		return emptyServerlessSpecManifest, err
 	}
 
-	return &ServerlessSpecManifest{
+	return ServerlessSpecManifest{
 		customFlags: customFlags,
 		manifest:    string(secret.Data["manifest"]),
 	}, nil
