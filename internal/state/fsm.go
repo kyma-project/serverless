@@ -10,6 +10,7 @@ import (
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"go.uber.org/zap"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -18,6 +19,10 @@ import (
 
 var (
 	defaultResult = ctrl.Result{}
+	secretCache   = types.NamespacedName{
+		Name:      "serverless-manifest-cache",
+		Namespace: "kyma-system", // TODO: detect serverless-manager's namespace
+	}
 )
 
 type stateFn func(context.Context, *reconciler, *systemState) (stateFn, *ctrl.Result, error)
@@ -25,6 +30,7 @@ type stateFn func(context.Context, *reconciler, *systemState) (stateFn, *ctrl.Re
 type cfg struct {
 	finalizer string
 	chartPath string
+	namespace string
 }
 
 type systemState struct {
@@ -69,9 +75,10 @@ func chartConfig(ctx context.Context, r *reconciler, s *systemState) (*chart.Con
 	}
 
 	return &chart.Config{
-		Ctx:   ctx,
-		Log:   r.log,
-		Cache: r.cache,
+		Ctx:      ctx,
+		Log:      r.log,
+		Cache:    r.cache,
+		CacheKey: secretCache,
 		Cluster: chart.Cluster{
 			Client: r.client,
 			Config: r.config,
@@ -94,7 +101,7 @@ type k8s struct {
 type reconciler struct {
 	fn     stateFn
 	log    *zap.SugaredLogger
-	cache  *chart.ManifestCache
+	cache  chart.ManifestCache
 	result ctrl.Result
 	k8s
 	cfg

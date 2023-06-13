@@ -1,6 +1,7 @@
 package state
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"runtime"
@@ -43,9 +44,9 @@ var (
 	}
 )
 
-func testEmptyManifestCache() *chart.ManifestCache {
-	cache := chart.NewManifestCache()
-	cache.Set(types.NamespacedName{
+func testEmptyManifestCache() chart.ManifestCache {
+	cache := chart.NewInMemoryManifestCache()
+	cache.Set(context.Background(), types.NamespacedName{
 		Name:      testInstalledServerless.GetName(),
 		Namespace: testInstalledServerless.GetNamespace(),
 	}, nil, "")

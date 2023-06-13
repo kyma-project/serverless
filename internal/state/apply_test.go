@@ -8,6 +8,7 @@ import (
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
+	"k8s.io/apimachinery/pkg/types"
 )
 
 func Test_buildSFnApplyResources(t *testing.T) {
@@ -31,11 +32,15 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		require.Nil(t, err)
 	})
 
-	t.Run("apply resources ", func(t *testing.T) {
+	t.Run("apply resources", func(t *testing.T) {
 		s := &systemState{
 			instance: testInstalledServerless,
 			chartConfig: &chart.Config{
 				Cache: testEmptyManifestCache(),
+				CacheKey: types.NamespacedName{
+					Name:      testInstalledServerless.GetName(),
+					Namespace: testInstalledServerless.GetNamespace(),
+				},
 				Release: chart.Release{
 					Name:      testInstalledServerless.GetName(),
 					Namespace: testInstalledServerless.GetNamespace(),
@@ -64,7 +69,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 			instance: testInstalledServerless,
 			chartConfig: &chart.Config{
 				Cache: testEmptyManifestCache(),
-				Release: chart.Release{
+				CacheKey: types.NamespacedName{
 					Name:      "does-not-exist",
 					Namespace: "test",
 				},
