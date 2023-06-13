@@ -64,10 +64,20 @@ spec:
                   secretName:
                     type: string
                 type: object
-              eventPublisherProxyURL:
-                type: string
-              traceCollectorURL:
-                type: string
+              eventing:
+                properties:
+                  endpoint:
+                    type: string
+                required:
+                - endpoint
+                type: object
+              tracing:
+                properties:
+                  endpoint:
+                    type: string
+                required:
+                - endpoint
+                type: object
             type: object
           status:
             properties:

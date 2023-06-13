@@ -29,11 +29,15 @@ type DockerRegistry struct {
 	GatewayCert           *string `json:"gatewayCert,omitempty"`
 }
 
+type Endpoint struct {
+	Endpoint string `json:"endpoint"`
+}
+
 // ServerlessSpec defines the desired state of Serverless
 type ServerlessSpec struct {
-	EventPublisherProxyURL *string         `json:"eventPublisherProxyURL,omitempty"`
-	TraceCollectorURL      *string         `json:"traceCollectorURL,omitempty"`
-	DockerRegistry         *DockerRegistry `json:"dockerRegistry,omitempty"`
+	Tracing        *Endpoint       `json:"tracing,omitempty"`
+	Eventing       *Endpoint       `json:"eventing,omitempty"`
+	DockerRegistry *DockerRegistry `json:"dockerRegistry,omitempty"`
 }
 
 type State string

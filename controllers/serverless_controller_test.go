@@ -86,8 +86,8 @@ var _ = Describe("Serverless controller", func() {
 			}
 			{
 				updateData := v1alpha1.ServerlessSpec{
-					EventPublisherProxyURL: serverlessDataWithChangedDependencies.EventPublisherProxyURL,
-					TraceCollectorURL:      serverlessDataWithChangedDependencies.TraceCollectorURL,
+					Eventing: &v1alpha1.Endpoint{Endpoint: *serverlessDataWithChangedDependencies.EventPublisherProxyURL},
+					Tracing:  &v1alpha1.Endpoint{Endpoint: *serverlessDataWithChangedDependencies.TraceCollectorURL},
 				}
 				shouldUpdateServerless(h, serverlessName, updateData)
 				shouldPropagateSpecProperties(h, serverlessDeploymentName, serverlessRegistrySecret, serverlessDataWithChangedDependencies)

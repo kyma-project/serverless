@@ -16,11 +16,13 @@ func sFnOptionalDependencies() stateFn {
 		// checking these URLs manually is not possible because of lack of istio-sidecar in the serverless-manager
 
 		// update status and condition if status is not up-to-date
-		if s.instance.Status.EventPublisherProxyURL != *s.instance.Spec.EventPublisherProxyURL ||
-			s.instance.Status.TraceCollectorURL != *s.instance.Spec.TraceCollectorURL {
+		if s.instance.Spec.Eventing != nil ||
+			s.instance.Status.EventPublisherProxyURL != s.instance.Spec.Eventing.Endpoint ||
+			s.instance.Spec.Tracing != nil ||
+			s.instance.Status.TraceCollectorURL != s.instance.Spec.Tracing.Endpoint {
 
-			s.instance.Status.EventPublisherProxyURL = *s.instance.Spec.EventPublisherProxyURL
-			s.instance.Status.TraceCollectorURL = *s.instance.Spec.TraceCollectorURL
+			s.instance.Status.EventPublisherProxyURL = s.instance.Spec.Eventing.Endpoint
+			s.instance.Status.TraceCollectorURL = s.instance.Spec.Tracing.Endpoint
 			return nextState(
 				sFnUpdateProcessingTrueState(
 					v1alpha1.ConditionTypeConfigured,

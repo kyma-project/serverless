@@ -7,7 +7,6 @@ import (
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/utils/pointer"
 )
 
 func Test_sFnOptionalDependencies(t *testing.T) {
@@ -15,8 +14,8 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{
-					EventPublisherProxyURL: pointer.String("test-event-URL"),
-					TraceCollectorURL:      pointer.String("test-trace-URL"),
+					Eventing: &v1alpha1.Endpoint{Endpoint: "test-event-URL"},
+					Tracing:  &v1alpha1.Endpoint{Endpoint: "test-trace-URL"},
 				},
 			},
 		}
@@ -42,8 +41,8 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{
-					EventPublisherProxyURL: pointer.String("test-event-URL"),
-					TraceCollectorURL:      pointer.String(v1alpha1.DefaultTraceCollectorURL),
+					Eventing: &v1alpha1.Endpoint{Endpoint: "test-event-URL"},
+					Tracing:  &v1alpha1.Endpoint{Endpoint: v1alpha1.DefaultTraceCollectorURL},
 				},
 				Status: v1alpha1.ServerlessStatus{
 					Conditions: []metav1.Condition{
