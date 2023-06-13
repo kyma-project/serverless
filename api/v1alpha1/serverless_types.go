@@ -82,8 +82,8 @@ const (
 
 type ServerlessStatus struct {
 	// Used the Publisher Proxy and the Trace Collector URLs.
-	EventPublisherProxyURL string `json:"eventPublisherProxyURL,omitempty"`
-	TraceCollectorURL      string `json:"traceCollectorURL,omitempty"`
+	EventingEndpoint string `json:"eventingEndpoint,omitempty"`
+	TracingEndpoint  string `json:"tracingEndpoint,omitempty"`
 
 	// State signifies current state of Serverless.
 	// Value can be one of ("Ready", "Processing", "Error", "Deleting").

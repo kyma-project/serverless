@@ -33,8 +33,8 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		require.Nil(t, result)
 		require.Nil(t, err)
 
-		require.Equal(t, "test-event-URL", s.instance.Status.EventPublisherProxyURL)
-		require.Equal(t, "test-trace-URL", s.instance.Status.TraceCollectorURL)
+		require.Equal(t, "test-event-URL", s.instance.Status.EventingEndpoint)
+		require.Equal(t, "test-trace-URL", s.instance.Status.TracingEndpoint)
 	})
 
 	t.Run("next state", func(t *testing.T) {
@@ -51,13 +51,13 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 							Status: metav1.ConditionTrue,
 						},
 					},
-					EventPublisherProxyURL: "test-event-URL",
-					TraceCollectorURL:      v1alpha1.DefaultTraceCollectorURL,
+					EventingEndpoint: "test-event-URL",
+					TracingEndpoint:  v1alpha1.DefaultTraceCollectorURL,
 				},
 			},
 			snapshot: v1alpha1.ServerlessStatus{
-				EventPublisherProxyURL: "test-event-URL",
-				TraceCollectorURL:      v1alpha1.DefaultTraceCollectorURL,
+				EventingEndpoint: "test-event-URL",
+				TracingEndpoint:  v1alpha1.DefaultTraceCollectorURL,
 			},
 			chartConfig: &chart.Config{
 				Release: chart.Release{
