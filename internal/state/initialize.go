@@ -29,7 +29,16 @@ func sFnInitialize() stateFn {
 		}
 
 		// default instance and create necessary essentials
-		err := s.Setup(ctx, r)
+		s.setup(ctx, r)
+
+		// in case instance is being deleted and has finalizer - delete all resources
+		if instanceIsBeingDeleted {
+			return nextState(
+				sFnDeleteResources(),
+			)
+		}
+
+		err := s.setConfigFlags(ctx, r)
 		if err != nil {
 			return nextState(
 				sFnUpdateErrorState(
@@ -37,13 +46,6 @@ func sFnInitialize() stateFn {
 					v1alpha1.ConditionReasonConfigurationErr,
 					err,
 				),
-			)
-		}
-
-		// in case instance is being deleted and has finalizer - delete all resources
-		if instanceIsBeingDeleted {
-			return nextState(
-				sFnDeleteResources(),
 			)
 		}
 
