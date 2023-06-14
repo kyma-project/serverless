@@ -81,7 +81,7 @@ const (
 )
 
 type ServerlessStatus struct {
-	// Used the Publisher Proxy and the Trace Collector URLs.
+	// Used the Eventing endpoint and the Tracing endpoint.
 	EventingEndpoint string `json:"eventingEndpoint,omitempty"`
 	TracingEndpoint  string `json:"tracingEndpoint,omitempty"`
 

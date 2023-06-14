@@ -151,7 +151,7 @@ spec:
                   type: object
                 type: array
               eventingEndpoint:
-                description: Used the Publisher Proxy and the Trace Collector URLs.
+                description: Used the Eventing endpoint and the Tracing endpoint.
                 type: string
               served:
                 description: Served signifies that current Serverless is managed.
