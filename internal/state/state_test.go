@@ -57,6 +57,7 @@ func testEmptyManifestCache() chart.ManifestCache {
 func requireEqualFunc(t *testing.T, expected, actual stateFn) {
 	expectedValueOf := reflect.ValueOf(expected)
 	actualValueOf := reflect.ValueOf(actual)
+
 	require.True(t, expectedValueOf.Pointer() == actualValueOf.Pointer(),
 		fmt.Sprintf("expected '%s', got '%s", getFnName(expected), getFnName(actual)))
 }

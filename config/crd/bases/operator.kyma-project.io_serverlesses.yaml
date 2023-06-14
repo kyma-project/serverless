@@ -64,10 +64,20 @@ spec:
                   secretName:
                     type: string
                 type: object
-              eventPublisherProxyURL:
-                type: string
-              traceCollectorURL:
-                type: string
+              eventing:
+                properties:
+                  endpoint:
+                    type: string
+                required:
+                - endpoint
+                type: object
+              tracing:
+                properties:
+                  endpoint:
+                    type: string
+                required:
+                - endpoint
+                type: object
             type: object
           status:
             properties:
@@ -140,7 +150,7 @@ spec:
                   - type
                   type: object
                 type: array
-              eventPublisherProxyURL:
+              eventingEndpoint:
                 description: Used the Publisher Proxy and the Trace Collector URLs.
                 type: string
               served:
@@ -159,7 +169,7 @@ spec:
                 - Ready
                 - Error
                 type: string
-              traceCollectorURL:
+              tracingEndpoint:
                 type: string
             required:
             - served

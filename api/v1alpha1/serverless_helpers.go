@@ -38,11 +38,11 @@ func (s *ServerlessSpec) Default() {
 		s.DockerRegistry.EnableInternal = pointer.Bool(DefaultEnableInternal)
 	}
 
-	if s.EventPublisherProxyURL == nil {
-		s.EventPublisherProxyURL = pointer.String(DefaultPublisherProxyURL)
+	if s.Eventing == nil {
+		s.Eventing = &Endpoint{Endpoint: DefaultPublisherProxyURL}
 	}
-	if s.TraceCollectorURL == nil {
-		s.TraceCollectorURL = pointer.String(DefaultTraceCollectorURL)
+	if s.Tracing == nil {
+		s.Tracing = &Endpoint{Endpoint: DefaultTraceCollectorURL}
 	}
 }
 

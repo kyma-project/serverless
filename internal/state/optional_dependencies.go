@@ -16,18 +16,18 @@ func sFnOptionalDependencies() stateFn {
 		// checking these URLs manually is not possible because of lack of istio-sidecar in the serverless-manager
 
 		// update status and condition if status is not up-to-date
-		if s.instance.Status.EventPublisherProxyURL != *s.instance.Spec.EventPublisherProxyURL ||
-			s.instance.Status.TraceCollectorURL != *s.instance.Spec.TraceCollectorURL {
+		if s.instance.Status.EventingEndpoint != s.instance.Spec.Eventing.Endpoint ||
+			s.instance.Status.TracingEndpoint != s.instance.Spec.Tracing.Endpoint {
 
-			s.instance.Status.EventPublisherProxyURL = *s.instance.Spec.EventPublisherProxyURL
-			s.instance.Status.TraceCollectorURL = *s.instance.Spec.TraceCollectorURL
+			s.instance.Status.EventingEndpoint = s.instance.Spec.Eventing.Endpoint
+			s.instance.Status.TracingEndpoint = s.instance.Spec.Tracing.Endpoint
 			return nextState(
 				sFnUpdateProcessingTrueState(
 					v1alpha1.ConditionTypeConfigured,
 					v1alpha1.ConditionReasonConfigured,
 					fmt.Sprintf("Configured with %s Publisher Proxy URL and %s Trace Collector URL.",
-						dependencyState(s.instance.Status.EventPublisherProxyURL, v1alpha1.DefaultPublisherProxyURL),
-						dependencyState(s.instance.Status.TraceCollectorURL, v1alpha1.DefaultTraceCollectorURL),
+						dependencyState(s.instance.Status.EventingEndpoint, v1alpha1.DefaultPublisherProxyURL),
+						dependencyState(s.instance.Status.TracingEndpoint, v1alpha1.DefaultTraceCollectorURL),
 					),
 				),
 			)
@@ -35,8 +35,8 @@ func sFnOptionalDependencies() stateFn {
 
 		s.chartConfig.Release.Flags = chart.AppendContainersFlags(
 			s.chartConfig.Release.Flags,
-			s.instance.Status.EventPublisherProxyURL,
-			s.instance.Status.TraceCollectorURL,
+			s.instance.Status.EventingEndpoint,
+			s.instance.Status.TracingEndpoint,
 		)
 
 		return nextState(
