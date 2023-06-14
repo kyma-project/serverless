@@ -10,7 +10,7 @@ import (
 // TODO: cover case when user change enableInternal
 
 func Install(config *Config) error {
-	manifest, err := getManifest(config)
+	manifest, err := getOrRenderManifest(config)
 	if err != nil {
 		return fmt.Errorf("could not render manifest from chart: %s", err.Error())
 	}
@@ -23,6 +23,9 @@ func Install(config *Config) error {
 	for i := range objs {
 		u := objs[i]
 		config.Log.Debugf("creating %s %s/%s", u.GetKind(), u.GetNamespace(), u.GetName())
+
+		// TODO: what if Path returns error in the middle of manifest?
+		// maybe we should in this case translate applied objs into manifest and set it into cache?
 		err := config.Cluster.Client.Patch(config.Ctx, &u, client.Apply, &client.PatchOptions{
 			Force:        pointer.Bool(true),
 			FieldManager: "serverless-manager",
@@ -32,5 +35,5 @@ func Install(config *Config) error {
 		}
 	}
 
-	return nil
+	return config.Cache.Set(config.Ctx, config.CacheKey, config.Release.Flags, manifest)
 }

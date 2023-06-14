@@ -36,7 +36,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		s := &systemState{
 			instance: testInstalledServerless,
 			chartConfig: &chart.Config{
-				Cache: testEmptyManifestCache(),
+				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
 					Name:      testInstalledServerless.GetName(),
 					Namespace: testInstalledServerless.GetNamespace(),
@@ -68,10 +68,10 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		s := &systemState{
 			instance: testInstalledServerless,
 			chartConfig: &chart.Config{
-				Cache: testEmptyManifestCache(),
+				Cache: fixManifestCache("\t"),
 				CacheKey: types.NamespacedName{
-					Name:      "does-not-exist",
-					Namespace: "test",
+					Name:      testInstalledServerless.GetName(),
+					Namespace: testInstalledServerless.GetNamespace(),
 				},
 			},
 		}
