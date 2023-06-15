@@ -205,20 +205,24 @@ func TestManifestCache_Set(t *testing.T) {
 		).Build()
 
 		cache := NewSecretManifestCache(client)
-
-		err := cache.Set(ctx, key, ServerlessSpecManifest{
+		expectedSpec := ServerlessSpecManifest{
 			Manifest: "schmetterling",
 			CustomFlags: map[string]interface{}{
 				"flag1": "val1",
 				"flag2": "val2",
 			},
-		})
+		}
+		err := cache.Set(ctx, key, expectedSpec)
 		require.NoError(t, err)
 
 		var secret corev1.Secret
 		require.NoError(t, client.Get(ctx, key, &secret))
-		require.Equal(t, []byte("schmetterling"), secret.Data["manifest"])
-		require.Equal(t, []byte("{\"flag1\":\"val1\",\"flag2\":\"val2\"}"), secret.Data["customFlags"])
+
+		actualSpec := ServerlessSpecManifest{}
+		err = json.Unmarshal(secret.Data["spec"], &actualSpec)
+		require.NoError(t, err)
+
+		require.Equal(t, expectedSpec, actualSpec)
 	})
 
 	t.Run("marshal error", func(t *testing.T) {
