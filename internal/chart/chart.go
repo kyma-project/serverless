@@ -83,8 +83,8 @@ func getOrRenderManifest(config *Config) (string, error) {
 		return "", err
 	}
 
-	if reflect.DeepEqual(specManifest.customFlags, config.Release.Flags) {
-		return specManifest.manifest, nil
+	if reflect.DeepEqual(specManifest.CustomFlags, config.Release.Flags) {
+		return specManifest.Manifest, nil
 	}
 
 	release, err := renderChart(config)

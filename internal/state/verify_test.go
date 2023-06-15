@@ -121,7 +121,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 					cache.Set(context.Background(), types.NamespacedName{
 						Name:      testInstalledServerless.GetName(),
 						Namespace: testInstalledServerless.GetNamespace(),
-					}, nil, testDeployManifest)
+					}, chart.ServerlessSpecManifest{Manifest: testDeployManifest})
 					return cache
 				}(),
 				CacheKey: types.NamespacedName{

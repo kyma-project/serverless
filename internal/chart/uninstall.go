@@ -15,7 +15,7 @@ func Uninstall(config *Config, filterFunc ...FilterFunc) error {
 		return fmt.Errorf("could not render manifest from chart: %s", err.Error())
 	}
 
-	objs, err := parseManifest(spec.manifest)
+	objs, err := parseManifest(spec.Manifest)
 	if err != nil {
 		return fmt.Errorf("could not parse chart manifest: %s", err.Error())
 	}

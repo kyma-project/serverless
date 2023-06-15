@@ -55,11 +55,16 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 	}
 
 	cache := NewInMemoryManifestCache()
-	cache.Set(context.Background(), noCRDManifestKey, nil, fmt.Sprint(testDeploy))
-	cache.Set(context.Background(), noOrphanManifestKey, nil, fmt.Sprint(testCRD, separator, testDeploy))
-	cache.Set(context.Background(), oneOrphanManifestKey, nil, fmt.Sprint(testCRD, separator, testOrphanCR))
-	cache.Set(context.Background(), emptyManifestKey, nil, "")
-	cache.Set(context.Background(), wrongManifestKey, nil, "api: test\n\tversion: test")
+	cache.Set(context.Background(), noCRDManifestKey,
+		ServerlessSpecManifest{Manifest: fmt.Sprint(testDeploy)})
+	cache.Set(context.Background(), noOrphanManifestKey,
+		ServerlessSpecManifest{Manifest: fmt.Sprint(testCRD, separator, testDeploy)})
+	cache.Set(context.Background(), oneOrphanManifestKey,
+		ServerlessSpecManifest{Manifest: fmt.Sprint(testCRD, separator, testOrphanCR)})
+	cache.Set(context.Background(), emptyManifestKey,
+		ServerlessSpecManifest{Manifest: ""})
+	cache.Set(context.Background(), wrongManifestKey,
+		ServerlessSpecManifest{Manifest: "api: test\n\tversion: test"})
 
 	type args struct {
 		config *Config

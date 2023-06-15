@@ -77,9 +77,12 @@ func Test_install(t *testing.T) {
 	}
 
 	cache := NewInMemoryManifestCache()
-	cache.Set(context.Background(), testManifestKey, nil, fmt.Sprint(testCRD, separator, testDeploy))
-	cache.Set(context.Background(), emptyManifestKey, nil, "")
-	cache.Set(context.Background(), wrongManifestKey, nil, "api: test\n\tversion: test")
+	cache.Set(context.Background(), testManifestKey,
+		ServerlessSpecManifest{Manifest: fmt.Sprint(testCRD, separator, testDeploy)})
+	cache.Set(context.Background(), emptyManifestKey,
+		ServerlessSpecManifest{Manifest: ""})
+	cache.Set(context.Background(), wrongManifestKey,
+		ServerlessSpecManifest{Manifest: "api: test\n\tversion: test"})
 
 	type args struct {
 		config *Config
