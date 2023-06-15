@@ -12,6 +12,7 @@ import (
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/json"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
@@ -25,7 +26,7 @@ func TestManifestCache_Delete(t *testing.T) {
 		}
 		ctx := context.TODO()
 		client := fake.NewClientBuilder().WithRuntimeObjects(
-			fixSecretCache(key, nil),
+			fixSecretCache(t, key, emptyServerlessSpecManifest),
 		).Build()
 
 		cache := NewSecretManifestCache(client)
@@ -79,9 +80,12 @@ func TestManifestCache_Get(t *testing.T) {
 		}
 		ctx := context.TODO()
 		client := fake.NewClientBuilder().WithRuntimeObjects(
-			fixSecretCache(key, map[string][]byte{
-				"customFlags": []byte("{\"flag1\": \"val1\", \"flag2\": \"val2\"}"),
-				"manifest":    []byte("schmetterling"),
+			fixSecretCache(t, key, ServerlessSpecManifest{
+				CustomFlags: map[string]interface{}{
+					"flag1": "val1",
+					"flag2": "val2",
+				},
+				Manifest: "schmetterling",
 			}),
 		).Build()
 
@@ -91,11 +95,11 @@ func TestManifestCache_Get(t *testing.T) {
 		require.NoError(t, err)
 
 		expectedResult := ServerlessSpecManifest{
-			customFlags: map[string]interface{}{
+			CustomFlags: map[string]interface{}{
 				"flag1": "val1",
 				"flag2": "val2",
 			},
-			manifest: "schmetterling",
+			Manifest: "schmetterling",
 		}
 		require.Equal(t, expectedResult, result)
 	})
@@ -141,11 +145,15 @@ func TestManifestCache_Get(t *testing.T) {
 		}
 		ctx := context.TODO()
 		client := fake.NewClientBuilder().WithRuntimeObjects(
-			fixSecretCache(key, map[string][]byte{
-				"customFlags": []byte("{UNEXPECTED}"),
-				"manifest":    []byte("schmetterling"),
-			}),
-		).Build()
+			&corev1.Secret{
+				ObjectMeta: v1.ObjectMeta{
+					Name:      key.Name,
+					Namespace: key.Namespace,
+				},
+				Data: map[string][]byte{
+					"spec": []byte("{UNEXPECTED}"),
+				},
+			}).Build()
 
 		cache := NewSecretManifestCache(client)
 
@@ -163,21 +171,27 @@ func TestManifestCache_Set(t *testing.T) {
 		}
 		ctx := context.TODO()
 		client := fake.NewClientBuilder().Build()
-		manifest := "schmetterling"
-		flags := map[string]interface{}{
-			"flag1": "val1",
-			"flag2": "val2",
-		}
 
 		cache := NewSecretManifestCache(client)
+		expectedSpec := ServerlessSpecManifest{
+			Manifest: "schmetterling",
+			CustomFlags: map[string]interface{}{
+				"flag1": "val1",
+				"flag2": "val2",
+			},
+		}
 
-		err := cache.Set(ctx, key, flags, manifest)
+		err := cache.Set(ctx, key, expectedSpec)
 		require.NoError(t, err)
 
 		var secret corev1.Secret
 		require.NoError(t, client.Get(ctx, key, &secret))
-		require.Equal(t, []byte("schmetterling"), secret.Data["manifest"])
-		require.Equal(t, []byte("{\"flag1\":\"val1\",\"flag2\":\"val2\"}"), secret.Data["customFlags"])
+
+		actualSpec := ServerlessSpecManifest{}
+		err = json.Unmarshal(secret.Data["spec"], &actualSpec)
+		require.NoError(t, err)
+
+		require.Equal(t, expectedSpec, actualSpec)
 	})
 
 	t.Run("update secret", func(t *testing.T) {
@@ -187,23 +201,28 @@ func TestManifestCache_Set(t *testing.T) {
 		}
 		ctx := context.TODO()
 		client := fake.NewClientBuilder().WithRuntimeObjects(
-			fixSecretCache(key, nil),
+			fixSecretCache(t, key, emptyServerlessSpecManifest),
 		).Build()
-		manifest := "schmetterling"
-		flags := map[string]interface{}{
-			"flag1": "val1",
-			"flag2": "val2",
-		}
 
 		cache := NewSecretManifestCache(client)
-
-		err := cache.Set(ctx, key, flags, manifest)
+		expectedSpec := ServerlessSpecManifest{
+			Manifest: "schmetterling",
+			CustomFlags: map[string]interface{}{
+				"flag1": "val1",
+				"flag2": "val2",
+			},
+		}
+		err := cache.Set(ctx, key, expectedSpec)
 		require.NoError(t, err)
 
 		var secret corev1.Secret
 		require.NoError(t, client.Get(ctx, key, &secret))
-		require.Equal(t, []byte("schmetterling"), secret.Data["manifest"])
-		require.Equal(t, []byte("{\"flag1\":\"val1\",\"flag2\":\"val2\"}"), secret.Data["customFlags"])
+
+		actualSpec := ServerlessSpecManifest{}
+		err = json.Unmarshal(secret.Data["spec"], &actualSpec)
+		require.NoError(t, err)
+
+		require.Equal(t, expectedSpec, actualSpec)
 	})
 
 	t.Run("marshal error", func(t *testing.T) {
@@ -219,17 +238,25 @@ func TestManifestCache_Set(t *testing.T) {
 
 		cache := NewSecretManifestCache(client)
 
-		err := cache.Set(ctx, key, wrongFlags, "")
+		err := cache.Set(ctx, key, ServerlessSpecManifest{
+			Manifest:    "",
+			CustomFlags: wrongFlags,
+		})
 		require.Error(t, err)
 	})
 }
 
-func fixSecretCache(key types.NamespacedName, data map[string][]byte) *corev1.Secret {
+func fixSecretCache(t *testing.T, key types.NamespacedName, spec ServerlessSpecManifest) *corev1.Secret {
+	byteSpec, err := json.Marshal(&spec)
+	require.NoError(t, err)
+
 	return &corev1.Secret{
 		ObjectMeta: v1.ObjectMeta{
 			Name:      key.Name,
 			Namespace: key.Namespace,
 		},
-		Data: data,
+		Data: map[string][]byte{
+			"spec": byteSpec,
+		},
 	}
 }

@@ -15,7 +15,7 @@ func Verify(config *Config) (bool, error) {
 		return false, fmt.Errorf("could not render manifest from chart: %s", err.Error())
 	}
 
-	objs, err := parseManifest(spec.manifest)
+	objs, err := parseManifest(spec.Manifest)
 	if err != nil {
 		return false, fmt.Errorf("could not parse chart manifest: %s", err.Error())
 	}

@@ -22,7 +22,7 @@ var (
 )
 
 type ManifestCache interface {
-	Set(context.Context, client.ObjectKey, map[string]interface{}, string) error
+	Set(context.Context, client.ObjectKey, ServerlessSpecManifest) error
 	Get(context.Context, client.ObjectKey) (ServerlessSpecManifest, error)
 	Delete(context.Context, client.ObjectKey) error
 }
@@ -53,11 +53,8 @@ func (r *inMemoryManifestCache) Get(_ context.Context, key client.ObjectKey) (Se
 }
 
 // Set saves the passed flags and manifest into inMemoryManifestCache for the client.ObjectKey.
-func (r *inMemoryManifestCache) Set(_ context.Context, key client.ObjectKey, customFlags map[string]interface{}, manifest string) error {
-	r.processor.Store(key, &ServerlessSpecManifest{
-		customFlags: customFlags,
-		manifest:    manifest,
-	})
+func (r *inMemoryManifestCache) Set(_ context.Context, key client.ObjectKey, spec ServerlessSpecManifest) error {
+	r.processor.Store(key, &spec)
 
 	return nil
 }
@@ -76,8 +73,8 @@ type secretManifestCache struct {
 }
 
 type ServerlessSpecManifest struct {
-	customFlags map[string]interface{}
-	manifest    string
+	CustomFlags map[string]interface{}
+	Manifest    string
 }
 
 // NewSecretManifestCache - returns a new instance of SecretManifestCache.
@@ -110,21 +107,18 @@ func (m *secretManifestCache) Get(ctx context.Context, key client.ObjectKey) (Se
 		return emptyServerlessSpecManifest, err
 	}
 
-	customFlags := map[string]interface{}{}
-	err = json.Unmarshal(secret.Data["customFlags"], &customFlags)
+	spec := ServerlessSpecManifest{}
+	err = json.Unmarshal(secret.Data["spec"], &spec)
 	if err != nil {
 		return emptyServerlessSpecManifest, err
 	}
 
-	return ServerlessSpecManifest{
-		customFlags: customFlags,
-		manifest:    string(secret.Data["manifest"]),
-	}, nil
+	return spec, nil
 }
 
 // Set - saves the passed flags and manifest into Secret based on the client.ObjectKey.
-func (m *secretManifestCache) Set(ctx context.Context, key client.ObjectKey, customFlags map[string]interface{}, manifest string) error {
-	byteFlags, err := json.Marshal(&customFlags)
+func (m *secretManifestCache) Set(ctx context.Context, key client.ObjectKey, spec ServerlessSpecManifest) error {
+	byteSpec, err := json.Marshal(&spec)
 	if err != nil {
 		return err
 	}
@@ -135,8 +129,7 @@ func (m *secretManifestCache) Set(ctx context.Context, key client.ObjectKey, cus
 			Namespace: key.Namespace,
 		},
 		Data: map[string][]byte{
-			"manifest":    []byte(manifest),
-			"customFlags": []byte(byteFlags),
+			"spec": byteSpec,
 		},
 	}
 
