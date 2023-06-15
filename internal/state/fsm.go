@@ -28,9 +28,10 @@ var (
 type stateFn func(context.Context, *reconciler, *systemState) (stateFn, *ctrl.Result, error)
 
 type cfg struct {
-	finalizer string
-	chartPath string
-	namespace string
+	finalizer     string
+	chartPath     string
+	namespace     string
+	managerPodUID string
 }
 
 type systemState struct {

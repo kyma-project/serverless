@@ -27,9 +27,10 @@ func NewMachine(client client.Client, config *rest.Config, recorder record.Event
 		cache: cache,
 		log:   log,
 		cfg: cfg{
-			finalizer: v1alpha1.Finalizer,
-			chartPath: chartPath,
-			namespace: getEnvNamespace(),
+			finalizer:     v1alpha1.Finalizer,
+			chartPath:     chartPath,
+			namespace:     getEnvNamespace(),
+			managerPodUID: os.Getenv("SERVERLESS_MANAGER_UID"),
 		},
 		k8s: k8s{
 			client:        client,
