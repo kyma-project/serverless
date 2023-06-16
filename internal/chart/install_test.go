@@ -3,8 +3,10 @@ package chart
 import (
 	"context"
 	"fmt"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"testing"
 
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -39,6 +41,15 @@ metadata:
   name: test-deploy
   namespace: default
 `
+	testServiceAccount = `
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: test-service-account
+  namespace: test-namespace
+  labels:
+    label-key: 'label-val'
+`
 )
 
 var (
@@ -62,6 +73,43 @@ var (
 		},
 	}
 )
+
+func Test_install_delete(t *testing.T) {
+	t.Run("should delete all unused resources", func(t *testing.T) {
+		testManifestKey := types.NamespacedName{
+			Name: "test", Namespace: "testnamespace",
+		}
+		cache := NewInMemoryManifestCache()
+		cache.Set(context.Background(), testManifestKey,
+			ServerlessSpecManifest{Manifest: fmt.Sprint(testCRD, separator, testDeploy)})
+		client := fake.NewClientBuilder().WithObjects(testDeployCR).WithObjects(testCRDObj).Build()
+		config := &Config{
+			Cache:    cache,
+			CacheKey: testManifestKey,
+			Release: Release{
+				Flags: map[string]interface{}{
+					"flag1": "val1",
+				},
+			},
+			Cluster: Cluster{
+				Client: client,
+			},
+			Log: zap.NewNop().Sugar(),
+		}
+		err := install(config, fixManifestRenderFunc(""))
+		require.NoError(t, err)
+
+		deploymentList := appsv1.DeploymentList{}
+		err = client.List(context.Background(), &deploymentList)
+		require.NoError(t, err)
+		require.Empty(t, deploymentList.Items)
+
+		crdList := apiextensionsv1.CustomResourceDefinitionList{}
+		err = client.List(context.Background(), &crdList)
+		require.NoError(t, err)
+		require.Empty(t, crdList.Items)
+	})
+}
 
 func Test_install(t *testing.T) {
 	log := zap.NewNop().Sugar()
@@ -135,6 +183,66 @@ func Test_install(t *testing.T) {
 			if err := Install(tt.args.config); (err != nil) != tt.wantErr {
 				t.Errorf("install() error = %v, wantErr %v", err, tt.wantErr)
 			}
+		})
+	}
+}
+
+func Test_unusedOldObjects(t *testing.T) {
+	firstManifest := fmt.Sprint(testCRD, separator, testDeploy)
+	firstObjs, _ := parseManifest(firstManifest)
+	differentManifest := fmt.Sprint(testServiceAccount)
+	differentObjs, _ := parseManifest(differentManifest)
+	withCommonPartManifest := fmt.Sprint(testServiceAccount, separator, testDeploy)
+	withCommonPartObjs, _ := parseManifest(withCommonPartManifest)
+	firstWithoutCommonPartManifest := fmt.Sprint(testCRD)
+	firstWithoutCommonPartObjs, _ := parseManifest(firstWithoutCommonPartManifest)
+
+	type args struct {
+		old []unstructured.Unstructured
+		new []unstructured.Unstructured
+	}
+	tests := []struct {
+		name string
+		args args
+		want []unstructured.Unstructured
+	}{
+		{
+			name: "empty minus empty should be empty",
+			args: args{
+				old: []unstructured.Unstructured{},
+				new: []unstructured.Unstructured{},
+			},
+			want: []unstructured.Unstructured{},
+		},
+		{
+			name: "list minus empty should return the same list",
+			args: args{
+				old: firstObjs,
+				new: []unstructured.Unstructured{},
+			},
+			want: firstObjs,
+		},
+		{
+			name: "list minus list with different elements should return first list",
+			args: args{
+				old: firstObjs,
+				new: differentObjs,
+			},
+			want: firstObjs,
+		},
+		{
+			name: "list minus list with common part should return first list without common part",
+			args: args{
+				old: firstObjs,
+				new: withCommonPartObjs,
+			},
+			want: firstWithoutCommonPartObjs,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := unusedOldObjects(tt.args.old, tt.args.new)
+			require.Equal(t, tt.want, got)
 		})
 	}
 }

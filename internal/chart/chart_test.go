@@ -74,13 +74,13 @@ func Test_getOrRenderManifestWithRenderer(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := getOrRenderManifestWithRenderer(tt.args.config, tt.args.renderChartFunc)
+			_, gotCurrent, err := getCachedAndCurrentManifest(tt.args.config, tt.args.renderChartFunc)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("getOrRenderManifestWithRenderer() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("getCachedAndCurrentManifest() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if got != tt.want {
-				t.Errorf("getOrRenderManifestWithRenderer() = %v, want %v", got, tt.want)
+			if gotCurrent != tt.want {
+				t.Errorf("getCachedAndCurrentManifest() = %v, want %v", gotCurrent, tt.want)
 			}
 		})
 	}

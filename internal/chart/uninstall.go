@@ -20,6 +20,15 @@ func Uninstall(config *Config, filterFunc ...FilterFunc) error {
 		return fmt.Errorf("could not parse chart manifest: %s", err.Error())
 	}
 
+	err2 := uninstallObjects(config, objs, filterFunc...)
+	if err2 != nil {
+		return err2
+	}
+
+	return config.Cache.Delete(config.Ctx, config.CacheKey)
+}
+
+func uninstallObjects(config *Config, objs []unstructured.Unstructured, filterFunc ...FilterFunc) error {
 	for i := range objs {
 		u := objs[i]
 		if !fitToFilters(u, filterFunc...) {
@@ -36,8 +45,7 @@ func Uninstall(config *Config, filterFunc ...FilterFunc) error {
 			return fmt.Errorf("could not uninstall object %s/%s: %s", u.GetNamespace(), u.GetName(), err.Error())
 		}
 	}
-
-	return config.Cache.Delete(config.Ctx, config.CacheKey)
+	return nil
 }
 
 func WithoutCRDFilter(u unstructured.Unstructured) bool {
