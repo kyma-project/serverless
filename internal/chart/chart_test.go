@@ -1,0 +1,95 @@
+package chart
+
+import (
+	"context"
+	"testing"
+
+	"helm.sh/helm/v3/pkg/release"
+	"k8s.io/apimachinery/pkg/types"
+)
+
+func Test_getOrRenderManifestWithRenderer(t *testing.T) {
+	noCRDManifestKey := types.NamespacedName{
+		Name: "no", Namespace: "crd",
+	}
+
+	cache := NewInMemoryManifestCache()
+	cache.Set(context.Background(), noCRDManifestKey,
+		ServerlessSpecManifest{Manifest: testDeploy})
+
+	type args struct {
+		config          *Config
+		renderChartFunc func(config *Config) (*release.Release, error)
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{
+			name: "return manifest when flags and managerUID are not changed",
+			args: args{
+				config: &Config{
+					Ctx:      context.Background(),
+					Cache:    cache,
+					CacheKey: noCRDManifestKey,
+				},
+			},
+			want:    testDeploy,
+			wantErr: false,
+		},
+		{
+			name: "render manifest when flags are changed",
+			args: args{
+				renderChartFunc: fixManifestRenderFunc("test-new-manifest"),
+				config: &Config{
+					Ctx:      context.Background(),
+					Cache:    cache,
+					CacheKey: noCRDManifestKey,
+					Release: Release{
+						Flags: map[string]interface{}{
+							"flag1": "val1",
+						},
+					},
+				},
+			},
+			want:    "test-new-manifest",
+			wantErr: false,
+		},
+		{
+			name: "render manifest when managerUID is changed",
+			args: args{
+				renderChartFunc: fixManifestRenderFunc("test-new-manifest-2"),
+				config: &Config{
+					Ctx:        context.Background(),
+					Cache:      cache,
+					CacheKey:   noCRDManifestKey,
+					ManagerUID: "new-UID",
+				},
+			},
+			want:    "test-new-manifest-2",
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := getOrRenderManifestWithRenderer(tt.args.config, tt.args.renderChartFunc)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("getOrRenderManifestWithRenderer() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("getOrRenderManifestWithRenderer() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func fixManifestRenderFunc(manifest string) func(config *Config) (*release.Release, error) {
+	return func(config *Config) (*release.Release, error) {
+		return &release.Release{
+			Manifest: manifest,
+		}, nil
+	}
+}
