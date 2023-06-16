@@ -28,9 +28,10 @@ var (
 type stateFn func(context.Context, *reconciler, *systemState) (stateFn, *ctrl.Result, error)
 
 type cfg struct {
-	finalizer string
-	chartPath string
-	namespace string
+	finalizer     string
+	chartPath     string
+	namespace     string
+	managerPodUID string
 }
 
 type systemState struct {
@@ -75,10 +76,11 @@ func chartConfig(ctx context.Context, r *reconciler, s *systemState) (*chart.Con
 	}
 
 	return &chart.Config{
-		Ctx:      ctx,
-		Log:      r.log,
-		Cache:    r.cache,
-		CacheKey: secretCache,
+		Ctx:        ctx,
+		Log:        r.log,
+		Cache:      r.cache,
+		CacheKey:   secretCache,
+		ManagerUID: r.cfg.managerPodUID,
 		Cluster: chart.Cluster{
 			Client: r.client,
 			Config: r.config,

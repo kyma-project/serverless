@@ -22,12 +22,13 @@ import (
 )
 
 type Config struct {
-	Ctx      context.Context
-	Log      *zap.SugaredLogger
-	Cache    ManifestCache
-	CacheKey types.NamespacedName
-	Cluster  Cluster
-	Release  Release
+	Ctx        context.Context
+	Log        *zap.SugaredLogger
+	Cache      ManifestCache
+	CacheKey   types.NamespacedName
+	ManagerUID string
+	Cluster    Cluster
+	Release    Release
 }
 
 type Release struct {
@@ -78,21 +79,31 @@ func parseManifest(manifest string) ([]unstructured.Unstructured, error) {
 }
 
 func getOrRenderManifest(config *Config) (string, error) {
+	return getOrRenderManifestWithRenderer(config, renderChart)
+}
+
+func getOrRenderManifestWithRenderer(config *Config, renderChartFunc func(config *Config) (*release.Release, error)) (string, error) {
 	specManifest, err := config.Cache.Get(config.Ctx, config.CacheKey)
 	if err != nil {
 		return "", err
 	}
 
-	if reflect.DeepEqual(specManifest.CustomFlags, config.Release.Flags) {
+	if !shouldRenderAgain(specManifest, config) {
 		return specManifest.Manifest, nil
 	}
 
-	release, err := renderChart(config)
+	release, err := renderChartFunc(config)
 	if err != nil {
 		return "", err
 	}
 
 	return release.Manifest, nil
+}
+
+func shouldRenderAgain(spec ServerlessSpecManifest, config *Config) bool {
+	// spec is up-to-date only if flags used to render and manager is the same one who rendered it before
+	return !(spec.ManagerUID == config.ManagerUID &&
+		reflect.DeepEqual(spec.CustomFlags, config.Release.Flags))
 }
 
 func renderChart(config *Config) (*release.Release, error) {
