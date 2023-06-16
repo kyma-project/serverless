@@ -73,6 +73,7 @@ type secretManifestCache struct {
 }
 
 type ServerlessSpecManifest struct {
+	ManagerUID  string
 	CustomFlags map[string]interface{}
 	Manifest    string
 }

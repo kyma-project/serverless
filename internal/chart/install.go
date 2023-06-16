@@ -36,6 +36,7 @@ func Install(config *Config) error {
 	}
 
 	return config.Cache.Set(config.Ctx, config.CacheKey, ServerlessSpecManifest{
+		ManagerUID:  config.ManagerUID,
 		CustomFlags: config.Release.Flags,
 		Manifest:    manifest,
 	})
