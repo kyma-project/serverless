@@ -56,25 +56,12 @@ func (s *systemState) setServed(served v1alpha1.Served) {
 	s.instance.Status.Served = served
 }
 
-func (s *systemState) Setup(ctx context.Context, r *reconciler) error {
+func (s *systemState) setup(ctx context.Context, r *reconciler) {
 	s.instance.Spec.Default()
-
-	chartConfig, err := chartConfig(ctx, r, s)
-	if err != nil {
-		r.log.Errorf("error while preparing chart config: %s", err.Error())
-		return err
-	}
-
-	s.chartConfig = chartConfig
-	return nil
+	s.chartConfig = chartConfig(ctx, r, s)
 }
 
-func chartConfig(ctx context.Context, r *reconciler, s *systemState) (*chart.Config, error) {
-	flags, err := chart.BuildFlags(ctx, r.client, &s.instance)
-	if err != nil {
-		return nil, fmt.Errorf("resolving manifest failed: %w", err)
-	}
-
+func chartConfig(ctx context.Context, r *reconciler, s *systemState) *chart.Config {
 	return &chart.Config{
 		Ctx:        ctx,
 		Log:        r.log,
@@ -86,12 +73,21 @@ func chartConfig(ctx context.Context, r *reconciler, s *systemState) (*chart.Con
 			Config: r.config,
 		},
 		Release: chart.Release{
-			Flags:     flags,
 			ChartPath: r.chartPath,
 			Namespace: s.instance.GetNamespace(),
 			Name:      "serverless",
 		},
-	}, nil
+	}
+}
+
+func (s *systemState) setConfigFlags(ctx context.Context, r *reconciler) error {
+	flags, err := chart.BuildFlags(ctx, r.client, &s.instance)
+	if err != nil {
+		return fmt.Errorf("resolving manifest failed: %w", err)
+	}
+
+	s.chartConfig.Release.Flags = flags
+	return nil
 }
 
 type k8s struct {
