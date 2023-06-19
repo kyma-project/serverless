@@ -25,16 +25,28 @@ func sFnVerifyResources() stateFn {
 			)
 		}
 
-		if ready {
-			return nextState(
-				sFnUpdateReadyState(
-					v1alpha1.ConditionTypeInstalled,
-					v1alpha1.ConditionReasonInstalled,
-					"Serverless installed",
-				),
-			)
+		if !ready {
+			return requeueAfter(requeueDuration)
 		}
 
-		return requeueAfter(requeueDuration)
+		//TODO check secrets
+
+		// if err != nil {
+		// return nextState(
+		// 	sFnUpdateWarningState(
+		// 		v1alpha1.ConditionTypeInstalled,
+		// 		v1alpha1.ConditionReasonInstalled,
+		// 		fmt.Sprintf("Warning: %s", err.Error()),
+		// 	),
+		// )
+		// }
+
+		return nextState(
+			sFnUpdateReadyState(
+				v1alpha1.ConditionTypeInstalled,
+				v1alpha1.ConditionReasonInstalled,
+				"Serverless installed",
+			),
+		)
 	}
 }
