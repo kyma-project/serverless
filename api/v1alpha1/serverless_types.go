@@ -51,6 +51,7 @@ type ConditionType string
 const (
 	StateReady      State = "Ready"
 	StateProcessing State = "Processing"
+	StateWarning    State = "Warning"
 	StateError      State = "Error"
 	StateDeleting   State = "Deleting"
 
