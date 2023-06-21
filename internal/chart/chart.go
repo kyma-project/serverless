@@ -78,26 +78,22 @@ func parseManifest(manifest string) ([]unstructured.Unstructured, error) {
 	return results, nil
 }
 
-func getOrRenderManifest(config *Config) (string, error) {
-	return getOrRenderManifestWithRenderer(config, renderChart)
-}
-
-func getOrRenderManifestWithRenderer(config *Config, renderChartFunc func(config *Config) (*release.Release, error)) (string, error) {
-	specManifest, err := config.Cache.Get(config.Ctx, config.CacheKey)
+func getCachedAndCurrentManifest(config *Config, renderChartFunc func(config *Config) (*release.Release, error)) (string, string, error) {
+	cachedSpecManifest, err := config.Cache.Get(config.Ctx, config.CacheKey)
 	if err != nil {
-		return "", err
+		return "", "", fmt.Errorf("could not get manifest from cache : %s", err.Error())
 	}
 
-	if !shouldRenderAgain(specManifest, config) {
-		return specManifest.Manifest, nil
+	if !shouldRenderAgain(cachedSpecManifest, config) {
+		return cachedSpecManifest.Manifest, cachedSpecManifest.Manifest, nil
 	}
 
-	release, err := renderChartFunc(config)
+	currentRelease, err := renderChartFunc(config)
 	if err != nil {
-		return "", err
+		return cachedSpecManifest.Manifest, "", fmt.Errorf("could not render manifest : %s", err.Error())
 	}
 
-	return release.Manifest, nil
+	return cachedSpecManifest.Manifest, currentRelease.Manifest, nil
 }
 
 func shouldRenderAgain(spec ServerlessSpecManifest, config *Config) bool {

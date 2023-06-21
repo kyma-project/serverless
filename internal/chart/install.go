@@ -2,24 +2,57 @@ package chart
 
 import (
 	"fmt"
-
+	"helm.sh/helm/v3/pkg/release"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/utils/pointer"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// TODO: cover case when user change enableInternal
-
 func Install(config *Config) error {
-	manifest, err := getOrRenderManifest(config)
+	return install(config, renderChart)
+}
+
+func install(config *Config, renderChartFunc func(config *Config) (*release.Release, error)) error {
+	cachedManifest, currentManifest, err := getCachedAndCurrentManifest(config, renderChartFunc)
 	if err != nil {
-		return fmt.Errorf("could not render manifest from chart: %s", err.Error())
+		return err
 	}
 
-	objs, err := parseManifest(manifest)
+	objs, unusedObjs, err := getObjectsToUpdateAndRemove(cachedManifest, currentManifest)
 	if err != nil {
-		return fmt.Errorf("could not parse chart manifest: %s", err.Error())
+		return err
 	}
 
+	err = updateObjects(config, objs)
+	if err != nil {
+		return err
+	}
+
+	uninstallObjects(config, unusedObjs)
+
+	return config.Cache.Set(config.Ctx, config.CacheKey, ServerlessSpecManifest{
+		ManagerUID:  config.ManagerUID,
+		CustomFlags: config.Release.Flags,
+		Manifest:    currentManifest,
+	})
+}
+
+func getObjectsToUpdateAndRemove(cachedManifest string, currentManifest string) ([]unstructured.Unstructured, []unstructured.Unstructured, error) {
+	objs, err := parseManifest(currentManifest)
+	if err != nil {
+		return nil, nil, fmt.Errorf("could not parse chart manifest: %s", err.Error())
+	}
+
+	oldObjs, err := parseManifest(cachedManifest)
+	if err != nil {
+		return nil, nil, fmt.Errorf("could not parse chart manifest: %s", err.Error())
+	}
+
+	unusedObjs := unusedOldObjects(oldObjs, objs)
+	return objs, unusedObjs, nil
+}
+
+func updateObjects(config *Config, objs []unstructured.Unstructured) error {
 	for i := range objs {
 		u := objs[i]
 		config.Log.Debugf("creating %s %s/%s", u.GetKind(), u.GetNamespace(), u.GetName())
@@ -34,10 +67,21 @@ func Install(config *Config) error {
 			return fmt.Errorf("could not install object %s/%s: %s", u.GetNamespace(), u.GetName(), err.Error())
 		}
 	}
+	return nil
+}
 
-	return config.Cache.Set(config.Ctx, config.CacheKey, ServerlessSpecManifest{
-		ManagerUID:  config.ManagerUID,
-		CustomFlags: config.Release.Flags,
-		Manifest:    manifest,
-	})
+func unusedOldObjects(previousObjs []unstructured.Unstructured, currentObjs []unstructured.Unstructured) []unstructured.Unstructured {
+	currentNames := make(map[string]struct{}, len(currentObjs))
+	for _, obj := range currentObjs {
+		objFullName := fmt.Sprintf("%s/%s/%s", obj.GetKind(), obj.GetNamespace(), obj.GetName())
+		currentNames[objFullName] = struct{}{}
+	}
+	result := []unstructured.Unstructured{}
+	for _, obj := range previousObjs {
+		objFullName := fmt.Sprintf("%s/%s/%s", obj.GetKind(), obj.GetNamespace(), obj.GetName())
+		if _, found := currentNames[objFullName]; !found {
+			result = append(result, obj)
+		}
+	}
+	return result
 }
