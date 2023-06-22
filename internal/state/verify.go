@@ -26,6 +26,8 @@ func sFnVerifyResources() stateFn {
 		}
 
 		if ready {
+			//TODO: To be discussed how to do it in the proper way
+			s.instance.UpdateConditionTrue(v1alpha1.ConditionTypeConfigured, v1alpha1.ConditionReasonConfigured, "Serverless configured")
 			return nextState(
 				sFnUpdateReadyState(
 					v1alpha1.ConditionTypeInstalled,
