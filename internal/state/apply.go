@@ -14,13 +14,12 @@ func sFnApplyResources() stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		// check if condition exists
 		if !s.instance.IsCondition(v1alpha1.ConditionTypeInstalled) {
-			return nextState(
-				sFnUpdateProcessingState(
-					v1alpha1.ConditionTypeInstalled,
-					v1alpha1.ConditionReasonInstallation,
-					"Installing for configuration",
-				),
-			)
+			s.setState(v1alpha1.StateProcessing)
+			s.instance.UpdateConditionUnknown(v1alpha1.ConditionTypeInstalled, v1alpha1.ConditionReasonInstallation,
+				"Installing for configuration")
+
+			err := updateServerlessStatus(ctx, r, s)
+			return sFnRequeue(), nil, err
 		}
 
 		// install component

@@ -2,6 +2,8 @@ package state
 
 import (
 	"context"
+	"k8s.io/client-go/tools/record"
+	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
@@ -13,19 +15,25 @@ import (
 
 func Test_buildSFnApplyResources(t *testing.T) {
 	t.Run("switch state when condition is missing", func(t *testing.T) {
+		eventRecorder := record.NewFakeRecorder(5)
 		s := &systemState{
 			instance: v1alpha1.Serverless{},
+		}
+		r := &reconciler{
+			cfg: cfg{
+				finalizer: v1alpha1.Finalizer,
+			},
+			k8s: k8s{
+				client:        fake.NewClientBuilder().Build(),
+				EventRecorder: eventRecorder,
+			},
 		}
 
 		// return sFnUpdateProcessingState when condition is missing
 		stateFn := sFnApplyResources()
-		next, result, err := stateFn(nil, nil, s)
+		next, result, err := stateFn(nil, r, s)
 
-		expected := sFnUpdateProcessingState(
-			v1alpha1.ConditionTypeInstalled,
-			v1alpha1.ConditionReasonInstallation,
-			"Installing for configuration",
-		)
+		expected := sFnRequeue()
 
 		requireEqualFunc(t, expected, next)
 		require.Nil(t, result)

@@ -12,15 +12,15 @@ var (
 	requeueDuration = time.Second * 3
 )
 
-func sFnUpdateProcessingState(condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) stateFn {
-	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		s.setState(v1alpha1.StateProcessing)
-		s.instance.UpdateConditionUnknown(condition, reason, msg)
-
-		err := updateServerlessStatus(ctx, r, s)
-		return sFnRequeue(), nil, err
-	}
-}
+//func sFnUpdateProcessingState(condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) stateFn {
+//	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+//		s.setState(v1alpha1.StateProcessing)
+//		s.instance.UpdateConditionUnknown(condition, reason, msg)
+//
+//		err := updateServerlessStatus(ctx, r, s)
+//		return sFnRequeue(), nil, err
+//	}
+//}
 
 func sFnUpdateProcessingTrueState(condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
