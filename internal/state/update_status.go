@@ -90,8 +90,8 @@ func sFnUpdateWarningState(condition v1alpha1.ConditionType, reason v1alpha1.Con
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		s.setState(v1alpha1.StateWarning)
 		s.instance.UpdateConditionTrue(condition, reason, msg)
-
-		return updateServerlessStatus(buildSFnEmitEvent(sFnStop(), nil, nil), ctx, r, s)
+		err := updateServerlessStatus(ctx, r, s)
+		return sFnStop(), nil, err
 	}
 
 }
