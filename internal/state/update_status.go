@@ -18,7 +18,7 @@ func sFnUpdateProcessingState(condition v1alpha1.ConditionType, reason v1alpha1.
 		s.instance.UpdateConditionUnknown(condition, reason, msg)
 
 		err := updateServerlessStatus(ctx, r, s)
-		return buildSFnEmitEvent(sFnRequeue(), nil, nil), nil, err
+		return sFnRequeue(), nil, err
 	}
 }
 
@@ -28,7 +28,7 @@ func sFnUpdateProcessingTrueState(condition v1alpha1.ConditionType, reason v1alp
 		s.instance.UpdateConditionTrue(condition, reason, msg)
 
 		err := updateServerlessStatus(ctx, r, s)
-		return buildSFnEmitEvent(sFnRequeue(), nil, nil), nil, err
+		return sFnRequeue(), nil, err
 	}
 }
 
@@ -38,7 +38,7 @@ func sFnUpdateReadyState(condition v1alpha1.ConditionType, reason v1alpha1.Condi
 		s.instance.UpdateConditionTrue(condition, reason, msg)
 
 		err := updateServerlessStatus(ctx, r, s)
-		return buildSFnEmitEvent(sFnStop(), nil, nil), nil, err
+		return sFnStop(), nil, err
 	}
 }
 
@@ -48,7 +48,7 @@ func sFnUpdateErrorState(condition v1alpha1.ConditionType, reason v1alpha1.Condi
 		s.instance.UpdateConditionFalse(condition, reason, err)
 
 		err := updateServerlessStatus(ctx, r, s)
-		return buildSFnEmitEvent(nil, nil, err), nil, err
+		return nil, nil, err
 	}
 }
 
@@ -58,7 +58,7 @@ func sFnUpdateDeletingState(condition v1alpha1.ConditionType, reason v1alpha1.Co
 		s.instance.UpdateConditionUnknown(condition, reason, msg)
 
 		err := updateServerlessStatus(ctx, r, s)
-		return buildSFnEmitEvent(sFnRequeue(), nil, nil), nil, err
+		return sFnRequeue(), nil, err
 	}
 }
 
@@ -68,7 +68,7 @@ func sFnUpdateDeletingTrueState(condition v1alpha1.ConditionType, reason v1alpha
 		s.instance.UpdateConditionTrue(condition, reason, msg)
 
 		err := updateServerlessStatus(ctx, r, s)
-		return buildSFnEmitEvent(sFnRequeue(), nil, nil), nil, err
+		return sFnRequeue(), nil, err
 	}
 }
 
@@ -106,5 +106,6 @@ func sFnUpdateServedFalse(condition v1alpha1.ConditionType, reason v1alpha1.Cond
 func updateServerlessStatus(ctx context.Context, r *reconciler, s *systemState) error {
 	instance := s.instance.DeepCopy()
 	err := r.client.Status().Update(ctx, instance)
+	emitEvent(r, s)
 	return err
 }

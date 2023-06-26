@@ -1,8 +1,6 @@
 package state
 
 import (
-	"context"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
@@ -50,29 +48,27 @@ var (
 	}
 )
 
-func Test_sFnEmitEventfunc(t *testing.T) {
+func Test_emitEvent(t *testing.T) {
 	t.Run("don't emit event", func(t *testing.T) {
+		eventRecorder := record.NewFakeRecorder(5)
 		s := &systemState{
 			instance: testServerlessConditions1,
 			snapshot: *testServerlessConditions1.Status.DeepCopy(),
 		}
-
-		expectedNext := func(context.Context, *reconciler, *systemState) (stateFn, *ctrl.Result, error) {
-			return nil, nil, nil
+		r := &reconciler{
+			k8s: k8s{
+				EventRecorder: eventRecorder,
+			},
 		}
-		// build emitEventFunc
-		stateFn := buildSFnEmitEvent(expectedNext, nil, nil)
+
+		emitEvent(r, s)
 
 		// check conditions, don't emit event
-		next, result, err := stateFn(nil, nil, s)
-
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
+		require.Len(t, eventRecorder.Events, 0)
 	})
 
 	t.Run("emit events", func(t *testing.T) {
-		eventRecorder := record.NewFakeRecorder(2)
+		eventRecorder := record.NewFakeRecorder(5)
 
 		s := &systemState{
 			instance: testServerlessConditions2,
@@ -85,19 +81,16 @@ func Test_sFnEmitEventfunc(t *testing.T) {
 			},
 		}
 
-		expectedNext := func(context.Context, *reconciler, *systemState) (stateFn, *ctrl.Result, error) {
-			return nil, nil, nil
-		}
 		// build emitEventFunc
-		stateFn := buildSFnEmitEvent(expectedNext, nil, nil)
+		emitEvent(r, s)
 
 		// check conditions, don't emit event
-		next, result, err := stateFn(nil, r, s)
-
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
-
 		require.Len(t, eventRecorder.Events, 2)
+
+		expectedEvents := []string{"Warning test-reason test message 2", "Normal test-reason test message 2"}
+		close(eventRecorder.Events)
+		for v := range eventRecorder.Events {
+			require.Contains(t, expectedEvents, v)
+		}
 	})
 }
