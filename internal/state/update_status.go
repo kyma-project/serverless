@@ -17,7 +17,8 @@ func sFnUpdateProcessingState(condition v1alpha1.ConditionType, reason v1alpha1.
 		s.setState(v1alpha1.StateProcessing)
 		s.instance.UpdateConditionUnknown(condition, reason, msg)
 
-		return updateServerlessStatus(buildSFnEmitEvent(sFnRequeue(), nil, nil), ctx, r, s)
+		err := updateServerlessStatus(ctx, r, s)
+		return buildSFnEmitEvent(sFnRequeue(), nil, nil), nil, err
 	}
 }
 
@@ -26,7 +27,8 @@ func sFnUpdateProcessingTrueState(condition v1alpha1.ConditionType, reason v1alp
 		s.setState(v1alpha1.StateProcessing)
 		s.instance.UpdateConditionTrue(condition, reason, msg)
 
-		return updateServerlessStatus(buildSFnEmitEvent(sFnRequeue(), nil, nil), ctx, r, s)
+		err := updateServerlessStatus(ctx, r, s)
+		return buildSFnEmitEvent(sFnRequeue(), nil, nil), nil, err
 	}
 }
 
@@ -35,7 +37,8 @@ func sFnUpdateReadyState(condition v1alpha1.ConditionType, reason v1alpha1.Condi
 		s.setState(v1alpha1.StateReady)
 		s.instance.UpdateConditionTrue(condition, reason, msg)
 
-		return updateServerlessStatus(buildSFnEmitEvent(sFnStop(), nil, nil), ctx, r, s)
+		err := updateServerlessStatus(ctx, r, s)
+		return buildSFnEmitEvent(sFnStop(), nil, nil), nil, err
 	}
 }
 
@@ -44,7 +47,8 @@ func sFnUpdateErrorState(condition v1alpha1.ConditionType, reason v1alpha1.Condi
 		s.setState(v1alpha1.StateError)
 		s.instance.UpdateConditionFalse(condition, reason, err)
 
-		return updateServerlessStatus(buildSFnEmitEvent(nil, nil, err), ctx, r, s)
+		err := updateServerlessStatus(ctx, r, s)
+		return buildSFnEmitEvent(nil, nil, err), nil, err
 	}
 }
 
@@ -53,7 +57,8 @@ func sFnUpdateDeletingState(condition v1alpha1.ConditionType, reason v1alpha1.Co
 		s.setState(v1alpha1.StateDeleting)
 		s.instance.UpdateConditionUnknown(condition, reason, msg)
 
-		return updateServerlessStatus(buildSFnEmitEvent(sFnRequeue(), nil, nil), ctx, r, s)
+		err := updateServerlessStatus(ctx, r, s)
+		return buildSFnEmitEvent(sFnRequeue(), nil, nil), nil, err
 	}
 }
 
@@ -62,7 +67,8 @@ func sFnUpdateDeletingTrueState(condition v1alpha1.ConditionType, reason v1alpha
 		s.setState(v1alpha1.StateDeleting)
 		s.instance.UpdateConditionTrue(condition, reason, msg)
 
-		return updateServerlessStatus(buildSFnEmitEvent(sFnRequeue(), nil, nil), ctx, r, s)
+		err := updateServerlessStatus(ctx, r, s)
+		return buildSFnEmitEvent(sFnRequeue(), nil, nil), nil, err
 	}
 }
 
@@ -75,7 +81,8 @@ func sFnUpdateServerless() stateFn {
 func sFnUpdateServedTrue() stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		s.setServed(v1alpha1.ServedTrue)
-		return updateServerlessStatus(sFnRequeue(), ctx, r, s)
+		err := updateServerlessStatus(ctx, r, s)
+		return sFnRequeue(), nil, err
 	}
 }
 
@@ -96,11 +103,7 @@ func sFnUpdateServedFalse(condition v1alpha1.ConditionType, reason v1alpha1.Cond
 	}
 }
 
-func updateServerlessStatus(next stateFn, ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func updateServerlessStatus(ctx context.Context, r *reconciler, s *systemState) error {
 	instance := s.instance.DeepCopy()
-	err := r.client.Status().Update(ctx, instance)
-	if err != nil {
-		return stopWithError(err)
-	}
-	return nextState(next)
+	r.client.Status().Update(ctx, instance)
 }
