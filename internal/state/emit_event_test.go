@@ -48,30 +48,30 @@ var (
 	}
 )
 
-func Test_sFnEmitEventfunc(t *testing.T) {
+func Test_emitEvent(t *testing.T) {
 	t.Run("don't emit event", func(t *testing.T) {
+		eventRecorder := record.NewFakeRecorder(5)
 		s := &systemState{
-			instance: testServerlessConditions1,
+			instance: *testServerlessConditions1.DeepCopy(),
 			snapshot: *testServerlessConditions1.Status.DeepCopy(),
 		}
+		r := &reconciler{
+			k8s: k8s{
+				EventRecorder: eventRecorder,
+			},
+		}
 
-		// build emitEventFunc
-		stateFn := buildSFnEmitEvent(nil, nil, nil)
+		emitEvent(r, s)
 
 		// check conditions, don't emit event
-		next, result, err := stateFn(nil, nil, s)
-
-		expectedNext := sFnTakeSnapshot(nil, nil, nil)
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
+		require.Len(t, eventRecorder.Events, 0)
 	})
 
 	t.Run("emit events", func(t *testing.T) {
-		eventRecorder := record.NewFakeRecorder(2)
+		eventRecorder := record.NewFakeRecorder(5)
 
 		s := &systemState{
-			instance: testServerlessConditions2,
+			instance: *testServerlessConditions2.DeepCopy(),
 			snapshot: *testServerlessConditions1.Status.DeepCopy(),
 		}
 
@@ -82,16 +82,15 @@ func Test_sFnEmitEventfunc(t *testing.T) {
 		}
 
 		// build emitEventFunc
-		stateFn := buildSFnEmitEvent(nil, nil, nil)
+		emitEvent(r, s)
 
 		// check conditions, don't emit event
-		next, result, err := stateFn(nil, r, s)
-
-		expectedNext := sFnTakeSnapshot(nil, nil, nil)
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
-
 		require.Len(t, eventRecorder.Events, 2)
+
+		expectedEvents := []string{"Warning test-reason test message 2", "Normal test-reason test message 2"}
+		close(eventRecorder.Events)
+		for v := range eventRecorder.Events {
+			require.Contains(t, expectedEvents, v)
+		}
 	})
 }

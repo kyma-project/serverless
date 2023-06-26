@@ -33,29 +33,29 @@ func Test_sFnDeleteResources(t *testing.T) {
 			instance: v1alpha1.Serverless{},
 		}
 
-		stateFn := sFnDeleteResources()
-		next, result, err := stateFn(nil, nil, s)
+		next, result, err := sFnDeleteResources(nil, nil, s)
 
-		expectedNext := sFnUpdateDeletingState(
+		expectedNext := sFnUpdateStatusAndRequeue
+		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateDeleting, status.State)
+		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeDeleted,
 			v1alpha1.ConditionReasonDeletion,
 			"Uninstalling",
 		)
-
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
 	})
 	t.Run("choose deletion strategy", func(t *testing.T) {
 		s := &systemState{
-			instance: testDeletingServerless,
+			instance: *testDeletingServerless.DeepCopy(),
 		}
 
-		stateFn := sFnDeleteResources()
-		next, result, err := stateFn(nil, nil, s)
+		next, result, err := sFnDeleteResources(nil, nil, s)
 
 		expectedNext := deletionStrategyBuilder(defaultDeletionStrategy)
-
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
@@ -64,7 +64,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		stateFn := deletionStrategyBuilder(cascadeDeletionStrategy)
 
 		s := &systemState{
-			instance: testDeletingServerless,
+			instance: *testDeletingServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
@@ -78,22 +78,25 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnUpdateDeletingTrueState(
+		expectedNext := sFnUpdateStatusAndRequeue
+		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateDeleting, status.State)
+		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeDeleted,
 			v1alpha1.ConditionReasonDeleted,
 			"Serverless module deleted",
 		)
-
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
 	})
 
 	t.Run("upstream deletion error", func(t *testing.T) {
 		stateFn := deletionStrategyBuilder(upstreamDeletionStrategy)
 
 		s := &systemState{
-			instance: testDeletingServerless,
+			instance: *testDeletingServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixManifestCache("\t"),
 				CacheKey: types.NamespacedName{
@@ -109,15 +112,18 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnUpdateErrorState(
-			v1alpha1.ConditionTypeDeleted,
-			v1alpha1.ConditionReasonDeletionErr,
-			errors.New("test error"),
-		)
-
+		expectedNext := sFnUpdateStatusWithError(errors.New("anything"))
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateError, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeletionErr,
+			"could not parse chart manifest: yaml: found character that cannot start any token",
+		)
 	})
 
 	t.Run("safe deletion error while checking orphan resources", func(t *testing.T) {
@@ -125,7 +131,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		stateFn := deletionStrategyBuilder(wrongStrategy)
 
 		s := &systemState{
-			instance: testDeletingServerless,
+			instance: *testDeletingServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixManifestCache("\t"),
 				CacheKey: types.NamespacedName{
@@ -141,15 +147,18 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnUpdateErrorState(
-			v1alpha1.ConditionTypeDeleted,
-			v1alpha1.ConditionReasonDeletionErr,
-			errors.New("test error"),
-		)
-
+		expectedNext := sFnUpdateStatusWithError(errors.New("anything"))
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateError, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeletionErr,
+			"could not parse chart manifest: yaml: found character that cannot start any token",
+		)
 	})
 
 	t.Run("safe deletion", func(t *testing.T) {
@@ -157,7 +166,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		stateFn := deletionStrategyBuilder(wrongStrategy)
 
 		s := &systemState{
-			instance: testDeletingServerless,
+			instance: *testDeletingServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
@@ -173,14 +182,17 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnUpdateDeletingTrueState(
+		expectedNext := sFnUpdateStatusAndRequeue
+		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateDeleting, status.State)
+		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeDeleted,
 			v1alpha1.ConditionReasonDeleted,
 			"Serverless module deleted",
 		)
-
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
 	})
 }

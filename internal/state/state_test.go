@@ -68,3 +68,16 @@ func requireEqualFunc(t *testing.T, expected, actual stateFn) {
 func getFnName(fn stateFn) string {
 	return runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
 }
+
+func requireContainsCondition(t *testing.T, status v1alpha1.ServerlessStatus,
+	conditionType v1alpha1.ConditionType, conditionReason v1alpha1.ConditionReason, conditionMessage string) {
+	hasExpectedCondition := false
+	for _, condition := range status.Conditions {
+		if condition.Type == string(conditionType) {
+			require.Equal(t, string(conditionReason), condition.Reason)
+			require.Equal(t, conditionMessage, condition.Message)
+			hasExpectedCondition = true
+		}
+	}
+	require.True(t, hasExpectedCondition)
+}

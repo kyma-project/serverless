@@ -37,7 +37,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				"enableInternal": true,
 			},
 		}
-		expectedNext := sFnUpdateStatusWithRequeue
+		expectedNext := sFnUpdateStatusAndRequeue
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), nil, s)
 		require.Nil(t, result)
@@ -98,7 +98,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				"serverAddress":   string(secret.Data["serverAddress"]),
 			},
 		}
-		expectedNext := sFnOptionalDependencies()
+		expectedNext := sFnOptionalDependencies
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
 		require.Nil(t, result)
@@ -133,7 +133,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				"serverAddress":   v1alpha1.DefaultRegistryAddress,
 			},
 		}
-		expectedNext := sFnUpdateStatusWithRequeue
+		expectedNext := sFnUpdateStatusAndRequeue
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), nil, s)
 		require.Nil(t, result)
@@ -159,15 +159,19 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				client: fake.NewClientBuilder().Build(),
 			},
 		}
-		expectedNext := sFnUpdateErrorState(
-			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonConfigurationErr,
-			errors.New("test error"),
-		)
+		expectedNext := sFnUpdateStatusWithError(errors.New("test error"))
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
 		require.Nil(t, result)
 		require.NoError(t, err)
 		requireEqualFunc(t, expectedNext, next)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateError, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonConfigurationErr,
+			"secrets \"test-secret-not-found\" not found",
+		)
 	})
 }

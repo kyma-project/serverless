@@ -42,7 +42,7 @@ func Test_sFnServedFilter(t *testing.T) {
 		nextFn, result, err := sFnServedFilter(context.TODO(), nil, s)
 
 		require.Nil(t, err)
-		requireEqualFunc(t, sFnTakePreInitSnapshot, nextFn)
+		requireEqualFunc(t, sFnInitialize, nextFn)
 		require.Nil(t, result)
 	})
 
@@ -76,8 +76,9 @@ func Test_sFnServedFilter(t *testing.T) {
 		nextFn, result, err := sFnServedFilter(context.TODO(), r, s)
 
 		require.Nil(t, err)
-		requireEqualFunc(t, sFnUpdateServedTrue(), nextFn)
+		requireEqualFunc(t, sFnUpdateStatusAndRequeue, nextFn)
 		require.Nil(t, result)
+		require.Equal(t, v1alpha1.ServedTrue, s.instance.Status.Served)
 	})
 
 	t.Run("set served value from nil to false and set condition to error when there is at lease one served serverless on cluster", func(t *testing.T) {
@@ -109,14 +110,19 @@ func Test_sFnServedFilter(t *testing.T) {
 
 		nextFn, result, err := sFnServedFilter(context.TODO(), r, s)
 
+		expectedNext := sFnUpdateStatusWithError(errors.New("anything"))
 		require.Nil(t, err)
-		requireEqualFunc(t,
-			sFnUpdateServedFalse(
-				v1alpha1.ConditionTypeConfigured,
-				v1alpha1.ConditionReasonServerlessDuplicated,
-				errors.New("only one instance of Serverless is allowed (current served instance: serverless-test/test-2)")),
-			nextFn)
+		requireEqualFunc(t, expectedNext, nextFn)
 		require.Nil(t, result)
+		require.Equal(t, v1alpha1.ServedFalse, s.instance.Status.Served)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateError, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonServerlessDuplicated,
+			"only one instance of Serverless is allowed (current served instance: serverless-test/test-2)",
+		)
 	})
 }
 

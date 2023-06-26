@@ -17,27 +17,23 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 	case s.instance.Spec.DockerRegistry.SecretName != nil:
 		err := setExternalRegistry(ctx, r, s)
 		if err != nil {
-			return nextState(
-				sFnUpdateErrorState(
-					v1alpha1.ConditionTypeConfigured,
-					v1alpha1.ConditionReasonConfigurationErr,
-					err,
-				),
+			s.setState(v1alpha1.StateError)
+			s.instance.UpdateConditionFalse(
+				v1alpha1.ConditionTypeConfigured,
+				v1alpha1.ConditionReasonConfigurationErr,
+				err,
 			)
+			return nextState(sFnUpdateStatusWithError(err))
 		}
 	default:
 		setK3dRegistry(s)
 	}
 
 	if s.snapshot.DockerRegistry != s.instance.Status.DockerRegistry {
-		return nextState(
-			sFnUpdateStatusWithRequeue,
-		)
+		return nextState(sFnUpdateStatusAndRequeue)
 	}
 
-	return nextState(
-		sFnOptionalDependencies(),
-	)
+	return nextState(sFnOptionalDependencies)
 }
 
 func setInternalRegistry(s *systemState) {
