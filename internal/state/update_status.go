@@ -79,6 +79,16 @@ func sFnUpdateServedTrue() stateFn {
 	}
 }
 
+func sFnUpdateWarningState(condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) stateFn {
+	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+		s.setState(v1alpha1.StateWarning)
+		s.instance.UpdateConditionTrue(condition, reason, msg)
+
+		return updateServerlessStatus(buildSFnEmitEvent(sFnStop(), nil, nil), ctx, r, s)
+	}
+
+}
+
 func sFnUpdateServedFalse(condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, err error) stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		s.setServed(v1alpha1.ServedFalse)

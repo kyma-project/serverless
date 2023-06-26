@@ -31,6 +31,19 @@ var (
 			},
 		},
 	}
+	testRegistryFilledSecret = &corev1.Secret{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "secret",
+			APIVersion: "v1",
+		},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "test-secret",
+			Namespace: "kyma-test",
+			Labels: map[string]string{
+				"serverless.kyma-project.io/remote-registry": "config",
+			},
+		},
+	}
 )
 
 const (
@@ -58,6 +71,9 @@ func Test_sFnVerifyResources(t *testing.T) {
 
 		r := &reconciler{
 			log: zap.NewNop().Sugar(),
+			k8s: k8s{
+				client: fake.NewClientBuilder().Build(),
+			},
 		}
 
 		// build stateFn
@@ -70,6 +86,42 @@ func Test_sFnVerifyResources(t *testing.T) {
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstalled,
 			"Serverless installed",
+		)
+
+		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		require.Nil(t, err)
+	})
+
+	t.Run("warning", func(t *testing.T) {
+		s := &systemState{
+			instance: testInstalledServerless,
+			chartConfig: &chart.Config{
+				Cache: fixEmptyManifestCache(),
+				CacheKey: types.NamespacedName{
+					Name:      testInstalledServerless.GetName(),
+					Namespace: testInstalledServerless.GetNamespace(),
+				},
+			},
+		}
+
+		r := &reconciler{
+			log: zap.NewNop().Sugar(),
+			k8s: k8s{
+				client: fake.NewClientBuilder().WithRuntimeObjects(testRegistryFilledSecret).Build(),
+			},
+		}
+
+		// build stateFn
+		stateFn := sFnVerifyResources()
+
+		// verify and return update condition state
+		next, result, err := stateFn(context.Background(), r, s)
+
+		expectedNext := sFnUpdateWarningState(
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstalled,
+			"Warning: Test Warning",
 		)
 
 		requireEqualFunc(t, expectedNext, next)

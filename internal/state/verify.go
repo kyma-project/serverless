@@ -2,6 +2,8 @@ package state
 
 import (
 	"context"
+	"fmt"
+	"github.com/kyma-project/serverless-manager/internal/registry"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
@@ -25,16 +27,27 @@ func sFnVerifyResources() stateFn {
 			)
 		}
 
-		if ready {
+		if !ready {
+			return requeueAfter(requeueDuration)
+		}
+
+		err = registry.DetectExternalRegistrySecrets(ctx, r.client)
+		if err != nil {
 			return nextState(
-				sFnUpdateReadyState(
+				sFnUpdateWarningState(
 					v1alpha1.ConditionTypeInstalled,
 					v1alpha1.ConditionReasonInstalled,
-					"Serverless installed",
+					fmt.Sprintf("Warning: %s", err.Error()),
 				),
 			)
 		}
 
-		return requeueAfter(requeueDuration)
+		return nextState(
+			sFnUpdateReadyState(
+				v1alpha1.ConditionTypeInstalled,
+				v1alpha1.ConditionReasonInstalled,
+				"Serverless installed",
+			),
+		)
 	}
 }
