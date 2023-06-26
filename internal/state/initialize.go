@@ -11,6 +11,8 @@ import (
 // choose right scenario to start (installation/deletion)
 func sFnInitialize() stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+		s.saveServerlessStatus()
+
 		instanceIsBeingDeleted := !s.instance.GetDeletionTimestamp().IsZero()
 		instanceHasFinalizer := controllerutil.ContainsFinalizer(&s.instance, r.finalizer)
 		if !instanceHasFinalizer {

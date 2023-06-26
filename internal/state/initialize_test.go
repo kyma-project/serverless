@@ -103,7 +103,7 @@ func Test_sFnInitialize(t *testing.T) {
 		require.Nil(t, err)
 	})
 
-	t.Run("setup and return next step", func(t *testing.T) {
+	t.Run("setup and return next step sFnOptionalDependencies", func(t *testing.T) {
 		r := &reconciler{
 			cfg: cfg{
 				finalizer: v1alpha1.Finalizer,
@@ -135,7 +135,7 @@ func Test_sFnInitialize(t *testing.T) {
 		require.Nil(t, err)
 	})
 
-	t.Run("setup and return next step", func(t *testing.T) {
+	t.Run("setup and return next step sFnDeleteResources", func(t *testing.T) {
 		r := &reconciler{
 			cfg: cfg{
 				finalizer: v1alpha1.Finalizer,
@@ -168,4 +168,46 @@ func Test_sFnInitialize(t *testing.T) {
 		require.Nil(t, result)
 		require.Nil(t, err)
 	})
+
+	t.Run("take snapshot", func(t *testing.T) {
+		r := &reconciler{
+			cfg: cfg{
+				finalizer: v1alpha1.Finalizer,
+			},
+			k8s: k8s{
+				client: fake.NewFakeClient(),
+			},
+		}
+		serverless := v1alpha1.Serverless{
+			ObjectMeta: metav1.ObjectMeta{
+				Finalizers: []string{
+					r.cfg.finalizer,
+				},
+			},
+			Status: v1alpha1.ServerlessStatus{
+				Conditions: []metav1.Condition{
+					{
+						Type:               "test-type",
+						Status:             "test-status",
+						Reason:             "test-reason",
+						Message:            "test-message",
+						ObservedGeneration: 1,
+						LastTransitionTime: metav1.Now(),
+					},
+				},
+				State: v1alpha1.StateError,
+			},
+		}
+		s := &systemState{
+			instance: serverless,
+		}
+
+		sFn := sFnInitialize()
+		_, _, err := sFn(nil, r, s)
+		require.NoError(t, err)
+
+		// check status
+		require.Equal(t, serverless.Status, s.snapshot)
+	})
+
 }

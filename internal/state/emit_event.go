@@ -30,9 +30,9 @@ func buildSFnEmitEvent(next stateFn, result *ctrl.Result, err error) stateFn {
 		}
 
 		// take a snapshot to not repeat lastly emitted events
-		return nextState(
-			sFnTakeSnapshot(next, result, err),
-		)
+		s.saveServerlessStatus()
+
+		return next, result, err
 	}
 }
 

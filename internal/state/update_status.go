@@ -105,5 +105,6 @@ func sFnUpdateServedFalse(condition v1alpha1.ConditionType, reason v1alpha1.Cond
 
 func updateServerlessStatus(ctx context.Context, r *reconciler, s *systemState) error {
 	instance := s.instance.DeepCopy()
-	return r.client.Status().Update(ctx, instance)
+	err := r.client.Status().Update(ctx, instance)
+	return err
 }

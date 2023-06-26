@@ -1,6 +1,8 @@
 package state
 
 import (
+	"context"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
@@ -55,13 +57,15 @@ func Test_sFnEmitEventfunc(t *testing.T) {
 			snapshot: *testServerlessConditions1.Status.DeepCopy(),
 		}
 
+		expectedNext := func(context.Context, *reconciler, *systemState) (stateFn, *ctrl.Result, error) {
+			return nil, nil, nil
+		}
 		// build emitEventFunc
-		stateFn := buildSFnEmitEvent(nil, nil, nil)
+		stateFn := buildSFnEmitEvent(expectedNext, nil, nil)
 
 		// check conditions, don't emit event
 		next, result, err := stateFn(nil, nil, s)
 
-		expectedNext := sFnTakeSnapshot(nil, nil, nil)
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
@@ -81,13 +85,15 @@ func Test_sFnEmitEventfunc(t *testing.T) {
 			},
 		}
 
+		expectedNext := func(context.Context, *reconciler, *systemState) (stateFn, *ctrl.Result, error) {
+			return nil, nil, nil
+		}
 		// build emitEventFunc
-		stateFn := buildSFnEmitEvent(nil, nil, nil)
+		stateFn := buildSFnEmitEvent(expectedNext, nil, nil)
 
 		// check conditions, don't emit event
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnTakeSnapshot(nil, nil, nil)
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
