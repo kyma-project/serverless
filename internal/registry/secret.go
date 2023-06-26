@@ -21,8 +21,8 @@ func DetectExternalRegistrySecrets(ctx context.Context, c client.Client) error {
 
 	var errMsgs []string
 	for _, secret := range secrets.Items {
-		errMsgs = append(errMsgs, fmt.Sprintf("name:%s, namespace %s", secret.Name, secret.Namespace))
+		errMsgs = append(errMsgs, fmt.Sprintf("found %s/%s secret", secret.Namespace, secret.Name))
 	}
 
-	return errors.Errorf("Secrets found: %s", strings.Join(errMsgs, ";"))
+	return errors.Errorf("additional registry configuration detected: %s", strings.Join(errMsgs, "; "))
 }
