@@ -17,33 +17,7 @@ import (
 
 func Test_buildSFnApplyResources(t *testing.T) {
 	t.Run("switch state and add condition when condition is missing", func(t *testing.T) {
-		scheme := apiruntime.NewScheme()
-		require.NoError(t, v1alpha1.AddToScheme(scheme))
-		eventRecorder := record.NewFakeRecorder(5)
-		serverless := v1alpha1.Serverless{
-			ObjectMeta: v1.ObjectMeta{
-				Name:            "test",
-				Namespace:       "test-namespace",
-				ResourceVersion: "777",
-			},
-			Status: v1alpha1.ServerlessStatus{},
-		}
-		s := &systemState{
-			instance: serverless,
-		}
-		r := &reconciler{
-			cfg: cfg{
-				finalizer: v1alpha1.Finalizer,
-			},
-			k8s: k8s{
-				client: fake.
-					NewClientBuilder().
-					WithScheme(scheme).
-					WithObjects(serverless.DeepCopy()).
-					Build(),
-				EventRecorder: eventRecorder,
-			},
-		}
+		s, r := fixSimpleFsmState(t)
 
 		// return sFnUpdateProcessingState when condition is missing
 		stateFn := sFnApplyResources()
@@ -129,4 +103,35 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		require.Nil(t, result)
 		require.Nil(t, err)
 	})
+}
+
+func fixSimpleFsmState(t *testing.T) (*systemState, *reconciler) {
+	scheme := apiruntime.NewScheme()
+	require.NoError(t, v1alpha1.AddToScheme(scheme))
+	eventRecorder := record.NewFakeRecorder(5)
+	serverless := v1alpha1.Serverless{
+		ObjectMeta: v1.ObjectMeta{
+			Name:            "some-name",
+			Namespace:       "some-namespace",
+			ResourceVersion: "777",
+		},
+		Status: v1alpha1.ServerlessStatus{},
+	}
+	s := &systemState{
+		instance: serverless,
+	}
+	r := &reconciler{
+		cfg: cfg{
+			finalizer: v1alpha1.Finalizer,
+		},
+		k8s: k8s{
+			client: fake.
+				NewClientBuilder().
+				WithScheme(scheme).
+				WithObjects(serverless.DeepCopy()).
+				Build(),
+			EventRecorder: eventRecorder,
+		},
+	}
+	return s, r
 }

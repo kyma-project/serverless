@@ -21,16 +21,17 @@ func sFnOptionalDependencies() stateFn {
 
 			s.instance.Status.EventingEndpoint = s.instance.Spec.Eventing.Endpoint
 			s.instance.Status.TracingEndpoint = s.instance.Spec.Tracing.Endpoint
-			return nextState(
-				sFnUpdateProcessingTrueState(
-					v1alpha1.ConditionTypeConfigured,
-					v1alpha1.ConditionReasonConfigured,
-					fmt.Sprintf("Configured with %s Publisher Proxy URL and %s Trace Collector URL.",
-						dependencyState(s.instance.Status.EventingEndpoint, v1alpha1.DefaultPublisherProxyURL),
-						dependencyState(s.instance.Status.TracingEndpoint, v1alpha1.DefaultTraceCollectorURL),
-					),
-				),
+
+			s.setState(v1alpha1.StateProcessing)
+			s.instance.UpdateConditionTrue(
+				v1alpha1.ConditionTypeConfigured,
+				v1alpha1.ConditionReasonConfigured,
+				fmt.Sprintf("Configured with %s Publisher Proxy URL and %s Trace Collector URL.",
+					dependencyState(s.instance.Status.EventingEndpoint, v1alpha1.DefaultPublisherProxyURL),
+					dependencyState(s.instance.Status.TracingEndpoint, v1alpha1.DefaultTraceCollectorURL)),
 			)
+			err := updateServerlessStatus(ctx, r, s)
+			return sFnRequeue(), nil, err
 		}
 
 		s.chartConfig.Release.Flags = chart.AppendContainersFlags(
