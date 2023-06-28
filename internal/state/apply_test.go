@@ -25,9 +25,10 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		require.Nil(t, result)
 		require.Nil(t, err)
 
-		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
-		require.Len(t, s.instance.Status.Conditions, 1)
-		condition := s.instance.Status.Conditions[0]
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateProcessing, status.State)
+		require.Len(t, status.Conditions, 1)
+		condition := status.Conditions[0]
 		require.Equal(t, string(v1alpha1.ConditionTypeInstalled), condition.Type)
 		require.Equal(t, string(v1alpha1.ConditionReasonInstallation), condition.Reason)
 		require.Equal(t, "Installing for configuration", condition.Message)
@@ -54,8 +55,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		// run installation process and return verificating state
 		next, result, err := sFnApplyResources(context.Background(), r, s)
 
-		expectedNext := sFnVerifyResources()
-
+		expectedNext := sFnVerifyResources
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)

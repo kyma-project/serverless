@@ -76,21 +76,22 @@ func Test_sFnVerifyResources(t *testing.T) {
 			},
 		}
 
-		// build stateFn
-		stateFn := sFnVerifyResources()
-
 		// verify and return update condition state
-		next, result, err := stateFn(context.Background(), r, s)
+		next, result, err := sFnVerifyResources(context.Background(), r, s)
 
-		expectedNext := sFnUpdateReadyState(
+		expectedNext := sFnUpdateStatusAndStop
+		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateReady, status.State)
+		require.Len(t, status.Conditions, 2)
+		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstalled,
 			"Serverless installed",
 		)
-
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
 	})
 
 	t.Run("warning", func(t *testing.T) {
@@ -113,7 +114,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 		}
 
 		// build stateFn
-		stateFn := sFnVerifyResources()
+		stateFn := sFnVerifyResources
 
 		// verify and return update condition state
 		next, result, err := stateFn(context.Background(), r, s)
@@ -146,7 +147,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 		}
 
 		// build stateFn
-		stateFn := sFnVerifyResources()
+		stateFn := sFnVerifyResources
 
 		// handle verify err and update condition with err
 		next, result, err := stateFn(context.Background(), r, s)
@@ -189,7 +190,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 		r := &reconciler{}
 
 		// build stateFn
-		stateFn := sFnVerifyResources()
+		stateFn := sFnVerifyResources
 
 		// return requeue on verification failed
 		next, result, err := stateFn(context.Background(), r, s)
@@ -200,4 +201,17 @@ func Test_sFnVerifyResources(t *testing.T) {
 		require.Equal(t, expectedResult, result)
 		require.Equal(t, expectedErr, err)
 	})
+}
+
+func requireContainsCondition(t *testing.T, status v1alpha1.ServerlessStatus,
+	conditionType v1alpha1.ConditionType, conditionReason v1alpha1.ConditionReason, conditionMessage string) {
+	hasExpectedCondition := false
+	for _, condition := range status.Conditions {
+		if condition.Type == string(conditionType) {
+			require.Equal(t, string(conditionReason), condition.Reason)
+			require.Equal(t, conditionMessage, condition.Message)
+			hasExpectedCondition = true
+		}
+	}
+	require.True(t, hasExpectedCondition)
 }

@@ -17,14 +17,9 @@ func sFnUpdateStatusAndRequeue(ctx context.Context, r *reconciler, s *systemStat
 	return sFnRequeue(), nil, err
 }
 
-func sFnUpdateReadyState(condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) stateFn {
-	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		s.setState(v1alpha1.StateReady)
-		s.instance.UpdateConditionTrue(condition, reason, msg)
-
-		err := updateServerlessStatus(ctx, r, s)
-		return sFnStop(), nil, err
-	}
+func sFnUpdateStatusAndStop(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+	err := updateServerlessStatus(ctx, r, s)
+	return sFnStop(), nil, err
 }
 
 func sFnUpdateErrorState(condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, err error) stateFn {

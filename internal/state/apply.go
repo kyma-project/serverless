@@ -34,7 +34,5 @@ func sFnApplyResources(ctx context.Context, r *reconciler, s *systemState) (stat
 	}
 
 	// switch state verify
-	return nextState(
-		sFnVerifyResources(),
-	)
+	return nextState(sFnVerifyResources)
 }
