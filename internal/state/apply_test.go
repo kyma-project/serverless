@@ -17,16 +17,16 @@ import (
 
 func Test_buildSFnApplyResources(t *testing.T) {
 	t.Run("switch state and add condition when condition is missing", func(t *testing.T) {
-		s, r := fixSimpleFsmState(t)
+		s := &systemState{
+			instance: v1alpha1.Serverless{},
+		}
 
 		// return sFnUpdateProcessingState when condition is missing
 		stateFn := sFnApplyResources()
-		next, result, err := stateFn(nil, r, s)
+		next, result, err := stateFn(nil, nil, s)
 
-		//TODO: I don't know how to check next function. Nethods below don't work.
-		//expected := sFnRequeue()
-		//requireEqualFunc(t, expected, next)
-		require.NotNil(t, next)
+		expected := sFnUpdateStatusAndRequeue
+		requireEqualFunc(t, expected, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
 

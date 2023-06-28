@@ -18,8 +18,7 @@ func sFnApplyResources() stateFn {
 			s.instance.UpdateConditionUnknown(v1alpha1.ConditionTypeInstalled, v1alpha1.ConditionReasonInstallation,
 				"Installing for configuration")
 
-			err := updateServerlessStatus(ctx, r, s)
-			return sFnRequeue(), nil, err
+			return nextState(sFnUpdateStatusAndRequeue)
 		}
 
 		// install component
