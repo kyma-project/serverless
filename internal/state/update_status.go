@@ -63,13 +63,13 @@ func sFnUpdateServerless() stateFn {
 	}
 }
 
-func sFnUpdateServedTrue() stateFn {
-	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		s.setServed(v1alpha1.ServedTrue)
-		err := updateServerlessStatus(ctx, r, s)
-		return sFnRequeue(), nil, err
-	}
-}
+//func sFnUpdateServedTrue() stateFn {
+//	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+//		s.setServed(v1alpha1.ServedTrue)
+//		err := updateServerlessStatus(ctx, r, s)
+//		return sFnRequeue(), nil, err
+//	}
+//}
 
 func sFnUpdateWarningState(condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {

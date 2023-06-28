@@ -76,8 +76,9 @@ func Test_sFnServedFilter(t *testing.T) {
 		nextFn, result, err := sFnServedFilter(context.TODO(), r, s)
 
 		require.Nil(t, err)
-		requireEqualFunc(t, sFnUpdateServedTrue(), nextFn)
+		requireEqualFunc(t, sFnUpdateStatusAndRequeue, nextFn)
 		require.Nil(t, result)
+		require.Equal(t, v1alpha1.ServedTrue, s.instance.Status.Served)
 	})
 
 	t.Run("set served value from nil to false and set condition to error when there is at lease one served serverless on cluster", func(t *testing.T) {

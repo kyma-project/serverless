@@ -17,7 +17,8 @@ func sFnServedFilter(ctx context.Context, r *reconciler, s *systemState) (stateF
 		}
 
 		if servedServerless == nil {
-			return nextState(sFnUpdateServedTrue())
+			s.setServed(v1alpha1.ServedTrue)
+			return nextState(sFnUpdateStatusAndRequeue)
 		}
 		return nextState(
 			sFnUpdateServedFalse(
