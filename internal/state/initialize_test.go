@@ -28,8 +28,7 @@ func Test_sFnInitialize(t *testing.T) {
 		}
 
 		// set finalizer
-		stateFn := sFnInitialize()
-		next, result, err := stateFn(nil, r, s)
+		next, result, err := sFnInitialize(nil, r, s)
 		require.Nil(t, next) // expected because client is not fully setup
 		require.Equal(t, &ctrl.Result{Requeue: true}, result)
 		require.Error(t, err)
@@ -55,8 +54,7 @@ func Test_sFnInitialize(t *testing.T) {
 		}
 
 		// stop
-		stateFn := sFnInitialize()
-		next, result, err := stateFn(nil, r, s)
+		next, result, err := sFnInitialize(nil, r, s)
 		require.Nil(t, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
@@ -89,8 +87,7 @@ func Test_sFnInitialize(t *testing.T) {
 		}
 
 		// stop
-		stateFn := sFnInitialize()
-		next, result, err := stateFn(nil, r, s)
+		next, result, err := sFnInitialize(nil, r, s)
 
 		expectedNext := sFnUpdateErrorState(
 			v1alpha1.ConditionTypeConfigured,
@@ -125,8 +122,7 @@ func Test_sFnInitialize(t *testing.T) {
 		}
 
 		// setup and return buildSFnPrerequisites
-		stateFn := sFnInitialize()
-		next, result, err := stateFn(nil, r, s)
+		next, result, err := sFnInitialize(nil, r, s)
 
 		expectedNext := sFnOptionalDependencies
 
@@ -159,8 +155,7 @@ func Test_sFnInitialize(t *testing.T) {
 		}
 
 		// setup and return buildSFnDeleteResources
-		stateFn := sFnInitialize()
-		next, result, err := stateFn(nil, r, s)
+		next, result, err := sFnInitialize(nil, r, s)
 
 		expectedNext := sFnDeleteResources()
 
@@ -202,8 +197,7 @@ func Test_sFnInitialize(t *testing.T) {
 			instance: serverless,
 		}
 
-		sFn := sFnInitialize()
-		_, _, err := sFn(nil, r, s)
+		_, _, err := sFnInitialize(nil, r, s)
 		require.NoError(t, err)
 
 		// check status

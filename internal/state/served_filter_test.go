@@ -42,7 +42,7 @@ func Test_sFnServedFilter(t *testing.T) {
 		nextFn, result, err := sFnServedFilter(context.TODO(), nil, s)
 
 		require.Nil(t, err)
-		requireEqualFunc(t, sFnInitialize(), nextFn)
+		requireEqualFunc(t, sFnInitialize, nextFn)
 		require.Nil(t, result)
 	})
 

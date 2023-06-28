@@ -31,7 +31,7 @@ func sFnServedFilter(ctx context.Context, r *reconciler, s *systemState) (stateF
 		return nil, nil, nil
 	}
 
-	return nextState(sFnInitialize())
+	return nextState(sFnInitialize)
 }
 
 func findServedServerless(ctx context.Context, c client.Client) (*v1alpha1.Serverless, error) {
