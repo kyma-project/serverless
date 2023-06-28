@@ -2,10 +2,6 @@ package state
 
 import (
 	"context"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	apiruntime "k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/tools/record"
-	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
@@ -103,35 +99,4 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		require.Nil(t, result)
 		require.Nil(t, err)
 	})
-}
-
-func fixSimpleFsmState(t *testing.T) (*systemState, *reconciler) {
-	scheme := apiruntime.NewScheme()
-	require.NoError(t, v1alpha1.AddToScheme(scheme))
-	eventRecorder := record.NewFakeRecorder(5)
-	serverless := v1alpha1.Serverless{
-		ObjectMeta: v1.ObjectMeta{
-			Name:            "some-name",
-			Namespace:       "some-namespace",
-			ResourceVersion: "777",
-		},
-		Status: v1alpha1.ServerlessStatus{},
-	}
-	s := &systemState{
-		instance: serverless,
-	}
-	r := &reconciler{
-		cfg: cfg{
-			finalizer: v1alpha1.Finalizer,
-		},
-		k8s: k8s{
-			client: fake.
-				NewClientBuilder().
-				WithScheme(scheme).
-				WithObjects(serverless.DeepCopy()).
-				Build(),
-			EventRecorder: eventRecorder,
-		},
-	}
-	return s, r
 }

@@ -30,8 +30,7 @@ func sFnOptionalDependencies() stateFn {
 					dependencyState(s.instance.Status.EventingEndpoint, v1alpha1.DefaultPublisherProxyURL),
 					dependencyState(s.instance.Status.TracingEndpoint, v1alpha1.DefaultTraceCollectorURL)),
 			)
-			err := updateServerlessStatus(ctx, r, s)
-			return sFnRequeue(), nil, err
+			return nextState(sFnUpdateStatusAndRequeue)
 		}
 
 		s.chartConfig.Release.Flags = chart.AppendContainersFlags(
