@@ -68,13 +68,6 @@ func sFnUpdateWarningState(condition v1alpha1.ConditionType, reason v1alpha1.Con
 
 }
 
-//func sFnUpdateServedFalse(condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, err error) stateFn {
-//	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-//		s.setServed(v1alpha1.ServedFalse)
-//		return nextState(sFnUpdateErrorState(condition, reason, err))
-//	}
-//}
-
 func updateServerlessStatus(ctx context.Context, r *reconciler, s *systemState) error {
 	instance := s.instance.DeepCopy()
 	err := r.client.Status().Update(ctx, instance)
