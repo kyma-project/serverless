@@ -32,13 +32,13 @@ func sFnVerifyResources(ctx context.Context, r *reconciler, s *systemState) (sta
 
 	err = registry.DetectExternalRegistrySecrets(ctx, r.client)
 	if err != nil {
-		return nextState(
-			sFnUpdateWarningState(
-				v1alpha1.ConditionTypeInstalled,
-				v1alpha1.ConditionReasonInstalled,
-				fmt.Sprintf("Warning: %s", err.Error()),
-			),
+		s.setState(v1alpha1.StateWarning)
+		s.instance.UpdateConditionTrue(
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstalled,
+			fmt.Sprintf("Warning: %s", err.Error()),
 		)
+		return nextState(sFnUpdateStatusAndStop)
 	}
 
 	s.setState(v1alpha1.StateReady)

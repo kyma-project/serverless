@@ -113,21 +113,21 @@ func Test_sFnVerifyResources(t *testing.T) {
 			},
 		}
 
-		// build stateFn
-		stateFn := sFnVerifyResources
-
 		// verify and return update condition state
-		next, result, err := stateFn(context.Background(), r, s)
+		next, result, err := sFnVerifyResources(context.Background(), r, s)
 
-		expectedNext := sFnUpdateWarningState(
-			v1alpha1.ConditionTypeInstalled,
-			v1alpha1.ConditionReasonInstalled,
-			"Warning: Test Warning",
-		)
-
+		expectedNext := sFnUpdateStatusAndStop
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateWarning, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstalled,
+			"Warning: additional registry configuration detected: found kyma-test/test-secret secret",
+		)
 	})
 
 	t.Run("verify error", func(t *testing.T) {
