@@ -153,6 +153,10 @@ spec:
               eventingEndpoint:
                 description: Used the Eventing endpoint and the Tracing endpoint.
                 type: string
+              registry:
+                description: Used registry configuration. Contains registry URL or
+                  "internal"
+                type: string
               served:
                 description: Served signifies that current Serverless is managed.
                   Value can be one of ("True", "False").

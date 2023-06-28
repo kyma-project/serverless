@@ -96,6 +96,10 @@ func sFnUpdateServedFalse(condition v1alpha1.ConditionType, reason v1alpha1.Cond
 	}
 }
 
+func sFnUpdateStatusWithRequeue(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+	return updateServerlessStatus(sFnRequeue(), ctx, r, s)
+}
+
 func updateServerlessStatus(next stateFn, ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	instance := s.instance.DeepCopy()
 	err := r.client.Status().Update(ctx, instance)
