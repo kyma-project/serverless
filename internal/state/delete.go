@@ -91,13 +91,13 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 	}
 
 	if !s.instance.IsConditionTrue(v1alpha1.ConditionTypeDeleted) {
-		return nextState(
-			sFnUpdateDeletingTrueState(
-				v1alpha1.ConditionTypeDeleted,
-				v1alpha1.ConditionReasonDeleted,
-				"Serverless module deleted",
-			),
+		s.setState(v1alpha1.StateDeleting)
+		s.instance.UpdateConditionTrue(
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeleted,
+			"Serverless module deleted",
 		)
+		return nextState(sFnUpdateStatusAndRequeue)
 	}
 
 	// if resources are ready to be deleted, remove finalizer

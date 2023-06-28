@@ -50,7 +50,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 	})
 	t.Run("choose deletion strategy", func(t *testing.T) {
 		s := &systemState{
-			instance: testDeletingServerless,
+			instance: *testDeletingServerless.DeepCopy(),
 		}
 
 		next, result, err := sFnDeleteResources(nil, nil, s)
@@ -65,7 +65,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		stateFn := deletionStrategyBuilder(cascadeDeletionStrategy)
 
 		s := &systemState{
-			instance: testDeletingServerless,
+			instance: *testDeletingServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
@@ -79,22 +79,25 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnUpdateDeletingTrueState(
+		expectedNext := sFnUpdateStatusAndRequeue
+		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateDeleting, status.State)
+		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeDeleted,
 			v1alpha1.ConditionReasonDeleted,
 			"Serverless module deleted",
 		)
-
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
 	})
 
 	t.Run("upstream deletion error", func(t *testing.T) {
 		stateFn := deletionStrategyBuilder(upstreamDeletionStrategy)
 
 		s := &systemState{
-			instance: testDeletingServerless,
+			instance: *testDeletingServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixManifestCache("\t"),
 				CacheKey: types.NamespacedName{
@@ -126,7 +129,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		stateFn := deletionStrategyBuilder(wrongStrategy)
 
 		s := &systemState{
-			instance: testDeletingServerless,
+			instance: *testDeletingServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixManifestCache("\t"),
 				CacheKey: types.NamespacedName{
@@ -158,7 +161,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		stateFn := deletionStrategyBuilder(wrongStrategy)
 
 		s := &systemState{
-			instance: testDeletingServerless,
+			instance: *testDeletingServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
@@ -174,14 +177,17 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnUpdateDeletingTrueState(
+		expectedNext := sFnUpdateStatusAndRequeue
+		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateDeleting, status.State)
+		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeDeleted,
 			v1alpha1.ConditionReasonDeleted,
 			"Serverless module deleted",
 		)
-
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
 	})
 }
