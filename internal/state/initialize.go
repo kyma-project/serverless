@@ -23,9 +23,7 @@ func sFnInitialize(ctx context.Context, r *reconciler, s *systemState) (stateFn,
 
 	// in case instance is being deleted and has finalizer - delete all resources
 	if instanceIsBeingDeleted {
-		return nextState(
-			sFnDeleteResources(),
-		)
+		return nextState(sFnDeleteResources)
 	}
 
 	err := s.setConfigFlags(ctx, r)

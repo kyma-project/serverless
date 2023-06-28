@@ -32,16 +32,6 @@ func sFnUpdateErrorState(condition v1alpha1.ConditionType, reason v1alpha1.Condi
 	}
 }
 
-func sFnUpdateDeletingState(condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) stateFn {
-	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		s.setState(v1alpha1.StateDeleting)
-		s.instance.UpdateConditionUnknown(condition, reason, msg)
-
-		err := updateServerlessStatus(ctx, r, s)
-		return sFnRequeue(), nil, err
-	}
-}
-
 func sFnUpdateDeletingTrueState(condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, msg string) stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 		s.setState(v1alpha1.StateDeleting)

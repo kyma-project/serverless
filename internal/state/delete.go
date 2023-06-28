@@ -22,23 +22,22 @@ const (
 )
 
 // delete serverless based on previously installed resources
-func sFnDeleteResources() stateFn {
-	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		if !s.instance.IsCondition(v1alpha1.ConditionTypeDeleted) {
-			return nextState(
-				sFnUpdateDeletingState(
-					v1alpha1.ConditionTypeDeleted,
-					v1alpha1.ConditionReasonDeletion,
-					"Uninstalling",
-				),
-			)
-		}
-
-		// TODO: thinkg about deletion configuration
-		return nextState(
-			deletionStrategyBuilder(defaultDeletionStrategy),
+func sFnDeleteResources(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+	if !s.instance.IsCondition(v1alpha1.ConditionTypeDeleted) {
+		s.setState(v1alpha1.StateDeleting)
+		s.instance.UpdateConditionUnknown(
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeletion,
+			"Uninstalling",
 		)
+
+		return nextState(sFnUpdateStatusAndRequeue)
 	}
+
+	// TODO: thinkg about deletion configuration
+	return nextState(
+		deletionStrategyBuilder(defaultDeletionStrategy),
+	)
 }
 
 func deletionStrategyBuilder(strategy deletionStrategy) stateFn {

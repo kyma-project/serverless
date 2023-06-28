@@ -157,8 +157,7 @@ func Test_sFnInitialize(t *testing.T) {
 		// setup and return buildSFnDeleteResources
 		next, result, err := sFnInitialize(nil, r, s)
 
-		expectedNext := sFnDeleteResources()
-
+		expectedNext := sFnDeleteResources
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
