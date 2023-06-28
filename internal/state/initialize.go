@@ -9,7 +9,7 @@ import (
 )
 
 // choose right scenario to start (installation/deletion)
-var sFnInitialize = func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func sFnInitialize(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	s.saveServerlessStatus()
 
 	instanceIsBeingDeleted := !s.instance.GetDeletionTimestamp().IsZero()

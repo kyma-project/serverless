@@ -9,7 +9,7 @@ import (
 )
 
 // run serverless chart installation
-var sFnApplyResources = func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func sFnApplyResources(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	// check if condition exists
 	if !s.instance.IsCondition(v1alpha1.ConditionTypeInstalled) {
 		s.setState(v1alpha1.StateProcessing)

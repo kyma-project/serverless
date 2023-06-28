@@ -12,7 +12,7 @@ var (
 	requeueDuration = time.Second * 3
 )
 
-var sFnUpdateStatusAndRequeue = func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func sFnUpdateStatusAndRequeue(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	err := updateServerlessStatus(ctx, r, s)
 	return sFnRequeue(), nil, err
 }
