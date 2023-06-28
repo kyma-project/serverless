@@ -20,8 +20,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			},
 		}
 
-		stateFn := sFnOptionalDependencies()
-		next, result, err := stateFn(nil, nil, s)
+		next, result, err := sFnOptionalDependencies(nil, nil, s)
 
 		expectedNext := sFnUpdateStatusAndRequeue
 		requireEqualFunc(t, expectedNext, next)
@@ -69,8 +68,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			},
 		}
 
-		stateFn := sFnOptionalDependencies()
-		next, result, err := stateFn(nil, nil, s)
+		next, result, err := sFnOptionalDependencies(nil, nil, s)
 
 		expectedNext := sFnApplyResources
 		requireEqualFunc(t, expectedNext, next)

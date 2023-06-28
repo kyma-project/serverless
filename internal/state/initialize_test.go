@@ -128,7 +128,7 @@ func Test_sFnInitialize(t *testing.T) {
 		stateFn := sFnInitialize()
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnOptionalDependencies()
+		expectedNext := sFnOptionalDependencies
 
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
