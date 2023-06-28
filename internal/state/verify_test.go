@@ -59,7 +59,7 @@ metadata:
 func Test_sFnVerifyResources(t *testing.T) {
 	t.Run("ready", func(t *testing.T) {
 		s := &systemState{
-			instance: testInstalledServerless,
+			instance: *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
@@ -96,7 +96,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 
 	t.Run("warning", func(t *testing.T) {
 		s := &systemState{
-			instance: testInstalledServerless,
+			instance: *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
@@ -132,7 +132,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 
 	t.Run("verify error", func(t *testing.T) {
 		s := &systemState{
-			instance: testInstalledServerless,
+			instance: *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixManifestCache("\t"),
 				CacheKey: types.NamespacedName{
@@ -167,7 +167,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 		client := fake.NewFakeClient(testDeployCR)
 
 		s := &systemState{
-			instance: testInstalledServerless,
+			instance: *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: func() chart.ManifestCache {
 					cache := chart.NewInMemoryManifestCache()

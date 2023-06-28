@@ -36,7 +36,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 
 	t.Run("apply resources", func(t *testing.T) {
 		s := &systemState{
-			instance: testInstalledServerless,
+			instance: *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
@@ -63,7 +63,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 
 	t.Run("install chart error", func(t *testing.T) {
 		s := &systemState{
-			instance: testInstalledServerless,
+			instance: *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixManifestCache("\t"),
 				CacheKey: types.NamespacedName{

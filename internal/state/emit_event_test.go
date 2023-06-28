@@ -52,7 +52,7 @@ func Test_emitEvent(t *testing.T) {
 	t.Run("don't emit event", func(t *testing.T) {
 		eventRecorder := record.NewFakeRecorder(5)
 		s := &systemState{
-			instance: testServerlessConditions1,
+			instance: *testServerlessConditions1.DeepCopy(),
 			snapshot: *testServerlessConditions1.Status.DeepCopy(),
 		}
 		r := &reconciler{
@@ -71,7 +71,7 @@ func Test_emitEvent(t *testing.T) {
 		eventRecorder := record.NewFakeRecorder(5)
 
 		s := &systemState{
-			instance: testServerlessConditions2,
+			instance: *testServerlessConditions2.DeepCopy(),
 			snapshot: *testServerlessConditions1.Status.DeepCopy(),
 		}
 
