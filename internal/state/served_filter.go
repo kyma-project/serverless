@@ -20,8 +20,9 @@ func sFnServedFilter(ctx context.Context, r *reconciler, s *systemState) (stateF
 			s.setServed(v1alpha1.ServedTrue)
 			return nextState(sFnUpdateStatusAndRequeue)
 		}
+		s.setServed(v1alpha1.ServedFalse)
 		return nextState(
-			sFnUpdateServedFalse(
+			sFnUpdateErrorState(
 				v1alpha1.ConditionTypeConfigured,
 				v1alpha1.ConditionReasonServerlessDuplicated,
 				fmt.Errorf("only one instance of Serverless is allowed (current served instance: %s/%s)",

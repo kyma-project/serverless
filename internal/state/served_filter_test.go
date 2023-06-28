@@ -112,12 +112,13 @@ func Test_sFnServedFilter(t *testing.T) {
 
 		require.Nil(t, err)
 		requireEqualFunc(t,
-			sFnUpdateServedFalse(
+			sFnUpdateErrorState(
 				v1alpha1.ConditionTypeConfigured,
 				v1alpha1.ConditionReasonServerlessDuplicated,
 				errors.New("only one instance of Serverless is allowed (current served instance: serverless-test/test-2)")),
 			nextFn)
 		require.Nil(t, result)
+		require.Equal(t, v1alpha1.ServedFalse, s.instance.Status.Served)
 	})
 }
 
