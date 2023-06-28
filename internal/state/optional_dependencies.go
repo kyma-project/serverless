@@ -40,7 +40,7 @@ func sFnOptionalDependencies() stateFn {
 		)
 
 		return nextState(
-			sFnApplyResources(),
+			sFnApplyResources,
 		)
 	}
 }

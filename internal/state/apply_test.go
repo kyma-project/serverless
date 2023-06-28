@@ -18,8 +18,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		}
 
 		// return sFnUpdateProcessingState when condition is missing
-		stateFn := sFnApplyResources()
-		next, result, err := stateFn(nil, nil, s)
+		next, result, err := sFnApplyResources(nil, nil, s)
 
 		expected := sFnUpdateStatusAndRequeue
 		requireEqualFunc(t, expected, next)
@@ -52,12 +51,8 @@ func Test_buildSFnApplyResources(t *testing.T) {
 
 		r := &reconciler{}
 
-		// return sFnApplyResources
-		stateFn := sFnApplyResources()
-		requireEqualFunc(t, sFnApplyResources(), stateFn)
-
 		// run installation process and return verificating state
-		next, result, err := stateFn(context.Background(), r, s)
+		next, result, err := sFnApplyResources(context.Background(), r, s)
 
 		expectedNext := sFnVerifyResources()
 
@@ -82,12 +77,8 @@ func Test_buildSFnApplyResources(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 		}
 
-		// return sFnApplyResources
-		stateFn := sFnApplyResources()
-		requireEqualFunc(t, sFnApplyResources(), stateFn)
-
 		// handle error and return update condition state
-		next, result, err := stateFn(context.Background(), r, s)
+		next, result, err := sFnApplyResources(context.Background(), r, s)
 
 		expectedNext := sFnUpdateErrorState(
 			v1alpha1.ConditionTypeInstalled,

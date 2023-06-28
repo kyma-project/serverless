@@ -72,8 +72,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		stateFn := sFnOptionalDependencies()
 		next, result, err := stateFn(nil, nil, s)
 
-		expectedNext := sFnApplyResources()
-
+		expectedNext := sFnApplyResources
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
