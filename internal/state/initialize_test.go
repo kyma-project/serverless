@@ -128,7 +128,6 @@ func Test_sFnInitialize(t *testing.T) {
 		next, result, err := sFnInitialize(nil, r, s)
 
 		expectedNext := sFnOptionalDependencies
-
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
@@ -205,5 +204,4 @@ func Test_sFnInitialize(t *testing.T) {
 		// check status
 		require.Equal(t, serverless.Status, s.snapshot)
 	})
-
 }

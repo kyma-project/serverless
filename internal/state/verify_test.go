@@ -198,7 +198,6 @@ func Test_sFnVerifyResources(t *testing.T) {
 		next, result, err := stateFn(context.Background(), r, s)
 
 		expectedNext, expectedResult, expectedErr := requeueAfter(requeueDuration)
-
 		requireEqualFunc(t, expectedNext, next)
 		require.Equal(t, expectedResult, result)
 		require.Equal(t, expectedErr, err)

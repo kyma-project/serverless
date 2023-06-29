@@ -22,6 +22,7 @@ func sFnUpdateStatusAndStop(ctx context.Context, r *reconciler, s *systemState) 
 	return nil, nil, err
 }
 
+// TODO: can we refactor this?
 func sFnUpdateServerless(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	return stopWithError(r.client.Update(ctx, &s.instance))
 }

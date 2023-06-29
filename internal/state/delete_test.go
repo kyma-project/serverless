@@ -55,7 +55,6 @@ func Test_sFnDeleteResources(t *testing.T) {
 		next, result, err := sFnDeleteResources(nil, nil, s)
 
 		expectedNext := deletionStrategyBuilder(defaultDeletionStrategy)
-
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
