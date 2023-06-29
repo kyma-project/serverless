@@ -1,29 +1,66 @@
 package chart
 
 import (
+	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-var (
-	testRegistrySecret = corev1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "test",
-			Namespace: "test",
-		},
-		Data: map[string][]byte{
-			"username":        []byte("test-username"),
-			"password":        []byte("test-password"),
-			"registryAddress": []byte("test-registryAddress"),
-			"serverAddress":   []byte("test-serverAddress"),
-		},
-	}
-)
+func TestAppendInternalRegistryFlags(t *testing.T) {
+	t.Run("append internal registry flags", func(t *testing.T) {
 
-// TODO: add tests
+		flags := AppendInternalRegistryFlags(map[string]interface{}{}, true)
+
+		require.Equal(t, map[string]interface{}{
+			"dockerRegistry": map[string]interface{}{
+				"enableInternal": true,
+			},
+		}, flags)
+	})
+}
+
+func TestAppendK3dRegistryFlags(t *testing.T) {
+	t.Run("append k3d registry flags", func(t *testing.T) {
+
+		flags := AppendK3dRegistryFlags(map[string]interface{}{},
+			false,
+			v1alpha1.DefaultRegistryAddress,
+			v1alpha1.DefaultRegistryAddress,
+		)
+
+		require.Equal(t, map[string]interface{}{
+			"dockerRegistry": map[string]interface{}{
+				"enableInternal":  false,
+				"registryAddress": v1alpha1.DefaultRegistryAddress,
+				"serverAddress":   v1alpha1.DefaultRegistryAddress,
+			},
+		}, flags)
+	})
+}
+
+func TestAppendExternalRegistryFlags(t *testing.T) {
+	t.Run("append external registry flags", func(t *testing.T) {
+
+		flags := AppendExternalRegistryFlags(map[string]interface{}{},
+			false,
+			"username",
+			"password",
+			"registryAddress",
+			"serverAddress",
+		)
+
+		require.Equal(t, map[string]interface{}{
+			"dockerRegistry": map[string]interface{}{
+				"enableInternal":  false,
+				"username":        "username",
+				"password":        "password",
+				"registryAddress": "registryAddress",
+				"serverAddress":   "serverAddress",
+			},
+		}, flags)
+	})
+}
 
 func TestAppendContainersFlags(t *testing.T) {
 	t.Run("append flags", func(t *testing.T) {

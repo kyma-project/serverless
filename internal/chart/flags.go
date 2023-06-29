@@ -29,7 +29,7 @@ func AppendInternalRegistryFlags(flags map[string]interface{}, enableInternal bo
 	return flags
 }
 
-func ApendK3dRegistryFlags(flags map[string]interface{}, enableInternal bool, registryAddress, serverAddress string) map[string]interface{} {
+func AppendK3dRegistryFlags(flags map[string]interface{}, enableInternal bool, registryAddress, serverAddress string) map[string]interface{} {
 	flags["dockerRegistry"] = map[string]interface{}{
 		"enableInternal":  enableInternal,
 		"registryAddress": registryAddress,

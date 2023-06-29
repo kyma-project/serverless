@@ -88,7 +88,7 @@ type ServerlessStatus struct {
 
 	// Used registry configuration.
 	// Contains registry URL or "internal"
-	Registry string `json:"registry,omitempty"`
+	DockerRegistry string `json:"dockerRegistry,omitempty"`
 
 	// State signifies current state of Serverless.
 	// Value can be one of ("Ready", "Processing", "Error", "Deleting").

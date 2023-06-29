@@ -27,7 +27,7 @@ func sFnInitialize() stateFn {
 		}
 
 		return nextState(
-			sFnRegistryConfiguration(),
+			sFnRegistryConfiguration,
 		)
 	}
 }
