@@ -104,8 +104,21 @@ uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified 
 
 .PHONY: deploy
 deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
+	kubectl create namespace kyma-system || true
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
 	$(KUSTOMIZE) build config/default | kubectl apply -f -
+
+.PHONY: deploy-k3d
+deploy-k3d: manifests kustomize ## Build and deploy controller to the K3d cluster specified in ~/.kube/config.
+	$(eval IMG=$(MODULE_NAME)-operator)
+	docker build -t $(IMG) -f ./Dockerfile .
+
+	$(eval HASH_TAG=$(shell docker images $(IMG):latest --quiet))
+	docker tag $(IMG) $(IMG):$(HASH_TAG)
+
+	k3d image import $(IMG):$(HASH_TAG) -c kyma
+
+	@$(MAKE) IMG=$(IMG) deploy
 
 .PHONY: render-manifest
 render-manifest: manifests kustomize ## Render keda-manager.yaml manifest.

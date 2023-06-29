@@ -1,9 +1,5 @@
 package chart
 
-var (
-	EmptyFlags = map[string]interface{}{}
-)
-
 func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceCollectorURL string) map[string]interface{} {
 	flags["containers"] = map[string]interface{}{
 		"manager": map[string]interface{}{
@@ -18,6 +14,17 @@ func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceColl
 		},
 	}
 
+	return flags
+}
+
+/*
+AppendNodePortFlag
+nodePort must be int64, because when we compare old Flags with new flags, by default all integers are int64
+*/
+func AppendNodePortFlag(flags map[string]interface{}, nodePort int64) map[string]interface{} {
+	flags["global"] = map[string]interface{}{
+		"registryNodePort": nodePort,
+	}
 	return flags
 }
 
@@ -49,4 +56,8 @@ func AppendExternalRegistryFlags(flags map[string]interface{}, enableInternal bo
 	}
 
 	return flags
+}
+
+func EmptyFlags() map[string]interface{} {
+	return map[string]interface{}{}
 }

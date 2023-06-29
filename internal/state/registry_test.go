@@ -6,6 +6,7 @@ import (
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/pointer"
@@ -28,23 +29,32 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			},
 			chartConfig: &chart.Config{
 				Release: chart.Release{
-					Flags: chart.EmptyFlags,
+					Flags: chart.EmptyFlags(),
 				},
 			},
 		}
+
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().Build()},
+			log: zap.NewNop().Sugar(),
+		}
+
 		expectedFlags := map[string]interface{}{
 			"dockerRegistry": map[string]interface{}{
 				"enableInternal": true,
 			},
+			"global": map[string]interface{}{
+				"registryNodePort": int64(32_137),
+			},
 		}
 		expectedNext := sFnUpdateStatusAndRequeue
 
-		next, result, err := sFnRegistryConfiguration(context.Background(), nil, s)
+		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
 		require.Nil(t, result)
 		require.NoError(t, err)
 		requireEqualFunc(t, expectedNext, next)
 
-		require.Equal(t, expectedFlags, s.chartConfig.Release.Flags)
+		require.EqualValues(t, expectedFlags, s.chartConfig.Release.Flags)
 		require.Equal(t, "internal", s.instance.Status.DockerRegistry)
 	})
 	t.Run("external registry and go to next state", func(t *testing.T) {
@@ -78,7 +88,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			},
 			chartConfig: &chart.Config{
 				Release: chart.Release{
-					Flags: chart.EmptyFlags,
+					Flags: chart.EmptyFlags(),
 				},
 			},
 		}
@@ -122,7 +132,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			},
 			chartConfig: &chart.Config{
 				Release: chart.Release{
-					Flags: chart.EmptyFlags,
+					Flags: chart.EmptyFlags(),
 				},
 			},
 		}

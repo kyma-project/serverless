@@ -98,8 +98,8 @@ func getCachedAndCurrentManifest(config *Config, renderChartFunc func(config *Co
 
 func shouldRenderAgain(spec ServerlessSpecManifest, config *Config) bool {
 	// spec is up-to-date only if flags used to render and manager is the same one who rendered it before
-	return !(spec.ManagerUID == config.ManagerUID &&
-		reflect.DeepEqual(spec.CustomFlags, config.Release.Flags))
+	equalFlags := reflect.DeepEqual(spec.CustomFlags, config.Release.Flags)
+	return !(spec.ManagerUID == config.ManagerUID && equalFlags)
 }
 
 func renderChart(config *Config) (*release.Release, error) {
