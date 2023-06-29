@@ -1,6 +1,6 @@
 package chart
 
-var(
+var (
 	EmptyFlags = map[string]interface{}{}
 )
 
