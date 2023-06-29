@@ -1,7 +1,6 @@
 package state
 
 import (
-	"context"
 	"time"
 
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -26,19 +25,17 @@ func stop() (stateFn, *ctrl.Result, error) {
 }
 
 func requeue() (stateFn, *ctrl.Result, error) {
-	return nil, &ctrl.Result{
+	return nil, requeueResult(), nil
+}
+
+func requeueResult() *ctrl.Result {
+	return &ctrl.Result{
 		Requeue: true,
-	}, nil
+	}
 }
 
 func requeueAfter(duration time.Duration) (stateFn, *ctrl.Result, error) {
 	return nil, &ctrl.Result{
 		RequeueAfter: duration,
 	}, nil
-}
-
-func sFnRequeue() stateFn {
-	return func(_ context.Context, _ *reconciler, _ *systemState) (stateFn, *ctrl.Result, error) {
-		return requeue()
-	}
 }

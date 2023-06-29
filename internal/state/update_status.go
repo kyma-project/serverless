@@ -14,7 +14,7 @@ var (
 
 func sFnUpdateStatusAndRequeue(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	err := updateServerlessStatus(ctx, r, s)
-	return sFnRequeue(), nil, err
+	return nil, requeueResult(), err
 }
 
 func sFnUpdateStatusAndStop(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
