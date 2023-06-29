@@ -19,7 +19,7 @@ func sFnUpdateStatusAndRequeue(ctx context.Context, r *reconciler, s *systemStat
 
 func sFnUpdateStatusAndStop(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	err := updateServerlessStatus(ctx, r, s)
-	return sFnStop(), nil, err
+	return nil, nil, err
 }
 
 func sFnUpdateErrorState(condition v1alpha1.ConditionType, reason v1alpha1.ConditionReason, err error) stateFn {

@@ -37,12 +37,6 @@ func requeueAfter(duration time.Duration) (stateFn, *ctrl.Result, error) {
 	}, nil
 }
 
-func sFnStop() stateFn {
-	return func(_ context.Context, _ *reconciler, _ *systemState) (stateFn, *ctrl.Result, error) {
-		return stop()
-	}
-}
-
 func sFnRequeue() stateFn {
 	return func(_ context.Context, _ *reconciler, _ *systemState) (stateFn, *ctrl.Result, error) {
 		return requeue()
