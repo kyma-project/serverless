@@ -14,7 +14,7 @@ func sFnRemoveFinalizer() stateFn {
 		}
 
 		return nextState(
-			sFnUpdateServerless(),
+			sFnUpdateServerless,
 		)
 	}
 }
