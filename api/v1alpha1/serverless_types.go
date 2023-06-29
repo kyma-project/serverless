@@ -86,6 +86,10 @@ type ServerlessStatus struct {
 	EventingEndpoint string `json:"eventingEndpoint,omitempty"`
 	TracingEndpoint  string `json:"tracingEndpoint,omitempty"`
 
+	// Used registry configuration.
+	// Contains registry URL or "internal"
+	DockerRegistry string `json:"dockerRegistry,omitempty"`
+
 	// State signifies current state of Serverless.
 	// Value can be one of ("Ready", "Processing", "Error", "Deleting").
 	// +kubebuilder:validation:Required

@@ -1,123 +1,65 @@
 package chart
 
 import (
-	"context"
-	"reflect"
+	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"testing"
 
-	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/stretchr/testify/require"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/utils/pointer"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
-var (
-	testRegistrySecret = corev1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "test",
-			Namespace: "test",
-		},
-		Data: map[string][]byte{
-			"username":        []byte("test-username"),
-			"password":        []byte("test-password"),
-			"registryAddress": []byte("test-registryAddress"),
-			"serverAddress":   []byte("test-serverAddress"),
-		},
-	}
-)
+func TestAppendInternalRegistryFlags(t *testing.T) {
+	t.Run("append internal registry flags", func(t *testing.T) {
 
-func TestBuildFlags(t *testing.T) {
-	type args struct {
-		ctx        context.Context
-		client     client.Client
-		serverless *v1alpha1.Serverless
-	}
-	tests := []struct {
-		name    string
-		args    args
-		want    map[string]interface{}
-		wantErr bool
-	}{
-		{
-			name: "build from resource",
-			args: args{
-				serverless: &v1alpha1.Serverless{
-					Spec: v1alpha1.ServerlessSpec{
-						DockerRegistry: &v1alpha1.DockerRegistry{
-							EnableInternal: pointer.Bool(true),
-						},
-					},
-				},
+		flags := AppendInternalRegistryFlags(map[string]interface{}{}, true)
+
+		require.Equal(t, map[string]interface{}{
+			"dockerRegistry": map[string]interface{}{
+				"enableInternal": true,
 			},
-			want: map[string]interface{}{
-				"dockerRegistry": map[string]interface{}{
-					"enableInternal": true,
-				},
+		}, flags)
+	})
+}
+
+func TestAppendK3dRegistryFlags(t *testing.T) {
+	t.Run("append k3d registry flags", func(t *testing.T) {
+
+		flags := AppendK3dRegistryFlags(map[string]interface{}{},
+			false,
+			v1alpha1.DefaultRegistryAddress,
+			v1alpha1.DefaultRegistryAddress,
+		)
+
+		require.Equal(t, map[string]interface{}{
+			"dockerRegistry": map[string]interface{}{
+				"enableInternal":  false,
+				"registryAddress": v1alpha1.DefaultRegistryAddress,
+				"serverAddress":   v1alpha1.DefaultRegistryAddress,
 			},
-		},
-		{
-			name: "with secretName",
-			args: args{
-				ctx:    context.Background(),
-				client: fake.NewFakeClient(&testRegistrySecret),
-				serverless: &v1alpha1.Serverless{
-					ObjectMeta: metav1.ObjectMeta{
-						Namespace: testRegistrySecret.Namespace,
-					},
-					Spec: v1alpha1.ServerlessSpec{
-						DockerRegistry: &v1alpha1.DockerRegistry{
-							EnableInternal: pointer.Bool(true),
-							SecretName:     pointer.String(testRegistrySecret.Name),
-						},
-					},
-				},
+		}, flags)
+	})
+}
+
+func TestAppendExternalRegistryFlags(t *testing.T) {
+	t.Run("append external registry flags", func(t *testing.T) {
+
+		flags := AppendExternalRegistryFlags(map[string]interface{}{},
+			false,
+			"username",
+			"password",
+			"registryAddress",
+			"serverAddress",
+		)
+
+		require.Equal(t, map[string]interface{}{
+			"dockerRegistry": map[string]interface{}{
+				"enableInternal":  false,
+				"username":        "username",
+				"password":        "password",
+				"registryAddress": "registryAddress",
+				"serverAddress":   "serverAddress",
 			},
-			want: map[string]interface{}{
-				"dockerRegistry": map[string]interface{}{
-					"enableInternal":  true,
-					"username":        "test-username",
-					"password":        "test-password",
-					"registryAddress": "test-registryAddress",
-					"serverAddress":   "test-serverAddress",
-				},
-			},
-		},
-		{
-			name: "secret not found",
-			args: args{
-				ctx:    context.Background(),
-				client: fake.NewFakeClient(),
-				serverless: &v1alpha1.Serverless{
-					ObjectMeta: metav1.ObjectMeta{
-						Namespace: testRegistrySecret.Namespace,
-					},
-					Spec: v1alpha1.ServerlessSpec{
-						DockerRegistry: &v1alpha1.DockerRegistry{
-							EnableInternal: pointer.Bool(true),
-							SecretName:     pointer.String(testRegistrySecret.Name),
-						},
-					},
-				},
-			},
-			wantErr: true,
-			want:    nil,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := BuildFlags(tt.args.ctx, tt.args.client, tt.args.serverless)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("BuildFlags() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("BuildFlags() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+		}, flags)
+	})
 }
 
 func TestAppendContainersFlags(t *testing.T) {

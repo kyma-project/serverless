@@ -3,10 +3,10 @@ package state
 import (
 	"context"
 	"fmt"
-	"github.com/kyma-project/serverless-manager/internal/registry"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
+	"github.com/kyma-project/serverless-manager/internal/registry"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )

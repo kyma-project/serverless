@@ -76,18 +76,9 @@ func chartConfig(ctx context.Context, r *reconciler, s *systemState) *chart.Conf
 			ChartPath: r.chartPath,
 			Namespace: s.instance.GetNamespace(),
 			Name:      "serverless",
+			Flags:     chart.EmptyFlags,
 		},
 	}
-}
-
-func (s *systemState) setConfigFlags(ctx context.Context, r *reconciler) error {
-	flags, err := chart.BuildFlags(ctx, r.client, &s.instance)
-	if err != nil {
-		return fmt.Errorf("resolving manifest failed: %w", err)
-	}
-
-	s.chartConfig.Release.Flags = flags
-	return nil
 }
 
 type k8s struct {

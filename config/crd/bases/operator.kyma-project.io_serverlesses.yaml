@@ -150,6 +150,10 @@ spec:
                   - type
                   type: object
                 type: array
+              dockerRegistry:
+                description: Used registry configuration. Contains registry URL or
+                  "internal"
+                type: string
               eventingEndpoint:
                 description: Used the Eventing endpoint and the Tracing endpoint.
                 type: string

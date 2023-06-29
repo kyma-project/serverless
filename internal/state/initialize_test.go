@@ -5,9 +5,7 @@ import (
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/utils/pointer"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
@@ -62,47 +60,6 @@ func Test_sFnInitialize(t *testing.T) {
 		require.Nil(t, err)
 	})
 
-	t.Run("setup error", func(t *testing.T) {
-		r := &reconciler{
-			log: zap.NewNop().Sugar(),
-			cfg: cfg{
-				finalizer: v1alpha1.Finalizer,
-			},
-			k8s: k8s{
-				client: fake.NewFakeClient(),
-			},
-		}
-
-		s := &systemState{
-			instance: v1alpha1.Serverless{
-				ObjectMeta: metav1.ObjectMeta{
-					Finalizers: []string{
-						r.cfg.finalizer,
-					},
-				},
-				Spec: v1alpha1.ServerlessSpec{
-					DockerRegistry: &v1alpha1.DockerRegistry{
-						SecretName: pointer.String("does-not-exist"),
-					},
-				},
-			},
-		}
-
-		// stop
-		stateFn := sFnInitialize()
-		next, result, err := stateFn(nil, r, s)
-
-		expectedNext := sFnUpdateErrorState(
-			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonConfigurationErr,
-			err,
-		)
-
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
-	})
-
 	t.Run("setup and return next step", func(t *testing.T) {
 		r := &reconciler{
 			cfg: cfg{
@@ -128,7 +85,7 @@ func Test_sFnInitialize(t *testing.T) {
 		stateFn := sFnInitialize()
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnOptionalDependencies()
+		expectedNext := sFnRegistryConfiguration
 
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)

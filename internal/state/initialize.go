@@ -3,7 +3,6 @@ package state
 import (
 	"context"
 
-	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
@@ -27,19 +26,8 @@ func sFnInitialize() stateFn {
 			)
 		}
 
-		err := s.setConfigFlags(ctx, r)
-		if err != nil {
-			return nextState(
-				sFnUpdateErrorState(
-					v1alpha1.ConditionTypeConfigured,
-					v1alpha1.ConditionReasonConfigurationErr,
-					err,
-				),
-			)
-		}
-
 		return nextState(
-			sFnOptionalDependencies(),
+			sFnRegistryConfiguration,
 		)
 	}
 }
