@@ -36,9 +36,7 @@ func sFnInitialize(ctx context.Context, r *reconciler, s *systemState) (stateFn,
 		return nextState(sFnUpdateStatusAndStop)
 	}
 
-	return nextState(
-		sFnOptionalDependencies,
-	)
+	return nextState(sFnOptionalDependencies)
 }
 
 func noFinalizerStep(ctx context.Context, r *reconciler, s *systemState, instanceIsBeingDeleted bool) (stateFn, *ctrl.Result, error) {

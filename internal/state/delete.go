@@ -30,7 +30,6 @@ func sFnDeleteResources(ctx context.Context, r *reconciler, s *systemState) (sta
 			v1alpha1.ConditionReasonDeletion,
 			"Uninstalling",
 		)
-
 		return nextState(sFnUpdateStatusAndRequeue)
 	}
 
@@ -99,7 +98,5 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 	}
 
 	// if resources are ready to be deleted, remove finalizer
-	return nextState(
-		sFnRemoveFinalizer(),
-	)
+	return nextState(sFnRemoveFinalizer)
 }

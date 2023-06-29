@@ -38,10 +38,7 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 		s.instance.Status.TracingEndpoint,
 	)
 
-	return nextState(
-		sFnApplyResources,
-	)
-
+	return nextState(sFnApplyResources)
 }
 
 // returns "default", "custom" or "no" based on args

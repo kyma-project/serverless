@@ -15,7 +15,6 @@ func sFnApplyResources(ctx context.Context, r *reconciler, s *systemState) (stat
 		s.setState(v1alpha1.StateProcessing)
 		s.instance.UpdateConditionUnknown(v1alpha1.ConditionTypeInstalled, v1alpha1.ConditionReasonInstallation,
 			"Installing for configuration")
-
 		return nextState(sFnUpdateStatusAndRequeue)
 	}
 
