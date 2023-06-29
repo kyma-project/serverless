@@ -27,11 +27,11 @@ func Test_buildSFnApplyResources(t *testing.T) {
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
-		require.Len(t, status.Conditions, 1)
-		condition := status.Conditions[0]
-		require.Equal(t, string(v1alpha1.ConditionTypeInstalled), condition.Type)
-		require.Equal(t, string(v1alpha1.ConditionReasonInstallation), condition.Reason)
-		require.Equal(t, "Installing for configuration", condition.Message)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstallation,
+			"Installing for configuration",
+		)
 	})
 
 	t.Run("apply resources", func(t *testing.T) {

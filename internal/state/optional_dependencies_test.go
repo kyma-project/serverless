@@ -32,11 +32,11 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		require.Equal(t, "test-trace-URL", status.TracingEndpoint)
 
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
-		require.Len(t, status.Conditions, 1)
-		condition := status.Conditions[0]
-		require.Equal(t, string(v1alpha1.ConditionTypeConfigured), condition.Type)
-		require.Equal(t, string(v1alpha1.ConditionReasonConfigured), condition.Reason)
-		require.Equal(t, "Configured with custom Publisher Proxy URL and custom Trace Collector URL.", condition.Message)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonConfigured,
+			"Configured with custom Publisher Proxy URL and custom Trace Collector URL.",
+		)
 	})
 
 	t.Run("next state", func(t *testing.T) {
