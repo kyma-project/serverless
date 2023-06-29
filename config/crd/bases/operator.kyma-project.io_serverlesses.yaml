@@ -150,12 +150,12 @@ spec:
                   - type
                   type: object
                 type: array
-              eventingEndpoint:
-                description: Used the Eventing endpoint and the Tracing endpoint.
-                type: string
-              registry:
+              dockerRegistry:
                 description: Used registry configuration. Contains registry URL or
                   "internal"
+                type: string
+              eventingEndpoint:
+                description: Used the Eventing endpoint and the Tracing endpoint.
                 type: string
               served:
                 description: Served signifies that current Serverless is managed.
