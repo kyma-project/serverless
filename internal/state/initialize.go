@@ -28,13 +28,12 @@ func sFnInitialize(ctx context.Context, r *reconciler, s *systemState) (stateFn,
 
 	err := s.setConfigFlags(ctx, r)
 	if err != nil {
-		return nextState(
-			sFnUpdateErrorState(
-				v1alpha1.ConditionTypeConfigured,
-				v1alpha1.ConditionReasonConfigurationErr,
-				err,
-			),
+		setErrorState(s,
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonConfigurationErr,
+			err,
 		)
+		return nextState(sFnUpdateStatusAndStop)
 	}
 
 	return nextState(

@@ -21,12 +21,13 @@ func sFnServedFilter(ctx context.Context, r *reconciler, s *systemState) (stateF
 			return nextState(sFnUpdateStatusAndRequeue)
 		}
 		s.setServed(v1alpha1.ServedFalse)
-		return nextState(
-			sFnUpdateErrorState(
-				v1alpha1.ConditionTypeConfigured,
-				v1alpha1.ConditionReasonServerlessDuplicated,
-				fmt.Errorf("only one instance of Serverless is allowed (current served instance: %s/%s)",
-					servedServerless.GetNamespace(), servedServerless.GetName())))
+		setErrorState(s,
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonServerlessDuplicated,
+			fmt.Errorf("only one instance of Serverless is allowed (current served instance: %s/%s)",
+				servedServerless.GetNamespace(), servedServerless.GetName()),
+		)
+		return nextState(sFnUpdateStatusAndStop)
 	}
 
 	if s.instance.Status.Served == v1alpha1.ServedFalse {

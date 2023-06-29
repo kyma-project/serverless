@@ -1,7 +1,6 @@
 package state
 
 import (
-	"errors"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
@@ -113,15 +112,18 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnUpdateErrorState(
-			v1alpha1.ConditionTypeDeleted,
-			v1alpha1.ConditionReasonDeletionErr,
-			errors.New("test error"),
-		)
-
+		expectedNext := sFnUpdateStatusAndStop
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateError, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeletionErr,
+			"could not parse chart manifest: yaml: found character that cannot start any token",
+		)
 	})
 
 	t.Run("safe deletion error while checking orphan resources", func(t *testing.T) {
@@ -145,15 +147,18 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnUpdateErrorState(
-			v1alpha1.ConditionTypeDeleted,
-			v1alpha1.ConditionReasonDeletionErr,
-			errors.New("test error"),
-		)
-
+		expectedNext := sFnUpdateStatusAndStop
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateError, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeletionErr,
+			"could not parse chart manifest: yaml: found character that cannot start any token",
+		)
 	})
 
 	t.Run("safe deletion", func(t *testing.T) {

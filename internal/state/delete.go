@@ -64,13 +64,12 @@ func sFnUpstreamDeletionState(_ context.Context, r *reconciler, s *systemState) 
 func sFnSafeDeletionState(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	if err := chart.CheckCRDOrphanResources(s.chartConfig); err != nil {
 		// stop state machine with an error and requeue reconciliation in 1min
-		return nextState(
-			sFnUpdateErrorState(
-				v1alpha1.ConditionTypeDeleted,
-				v1alpha1.ConditionReasonDeletionErr,
-				err,
-			),
+		setErrorState(s,
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeletionErr,
+			err,
 		)
+		return nextState(sFnUpdateStatusAndStop)
 	}
 
 	return deleteResourcesWithFilter(r, s)
@@ -81,13 +80,12 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 	if err != nil {
 		r.log.Warnf("error while uninstalling resource %s: %s",
 			client.ObjectKeyFromObject(&s.instance), err.Error())
-		return nextState(
-			sFnUpdateErrorState(
-				v1alpha1.ConditionTypeDeleted,
-				v1alpha1.ConditionReasonDeletionErr,
-				err,
-			),
+		setErrorState(s,
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeletionErr,
+			err,
 		)
+		return nextState(sFnUpdateStatusAndStop)
 	}
 
 	if !s.instance.IsConditionTrue(v1alpha1.ConditionTypeDeleted) {

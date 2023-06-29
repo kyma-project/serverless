@@ -80,14 +80,17 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		// handle error and return update condition state
 		next, result, err := sFnApplyResources(context.Background(), r, s)
 
-		expectedNext := sFnUpdateErrorState(
-			v1alpha1.ConditionTypeInstalled,
-			v1alpha1.ConditionReasonInstallationErr,
-			err,
-		)
-
+		expectedNext := sFnUpdateStatusAndStop
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateError, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstallationErr,
+			"could not parse chart manifest: yaml: found character that cannot start any token",
+		)
 	})
 }

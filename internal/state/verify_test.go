@@ -2,7 +2,6 @@ package state
 
 import (
 	"context"
-	"errors"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
@@ -152,15 +151,18 @@ func Test_sFnVerifyResources(t *testing.T) {
 		// handle verify err and update condition with err
 		next, result, err := stateFn(context.Background(), r, s)
 
-		expectedNext := sFnUpdateErrorState(
-			v1alpha1.ConditionTypeInstalled,
-			v1alpha1.ConditionReasonInstallationErr,
-			errors.New("test err"),
-		)
-
+		expectedNext := sFnUpdateStatusAndStop
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateError, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstallationErr,
+			"could not parse chart manifest: yaml: found character that cannot start any token",
+		)
 	})
 
 	t.Run("requeue when resources are not ready", func(t *testing.T) {

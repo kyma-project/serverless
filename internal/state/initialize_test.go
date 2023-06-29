@@ -89,15 +89,18 @@ func Test_sFnInitialize(t *testing.T) {
 		// stop
 		next, result, err := sFnInitialize(nil, r, s)
 
-		expectedNext := sFnUpdateErrorState(
-			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonConfigurationErr,
-			err,
-		)
-
+		expectedNext := sFnUpdateStatusAndStop
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateError, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonConfigurationErr,
+			"resolving manifest failed: secrets \"does-not-exist\" not found",
+		)
 	})
 
 	t.Run("setup and return next step sFnOptionalDependencies", func(t *testing.T) {

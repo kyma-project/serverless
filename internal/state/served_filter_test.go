@@ -2,7 +2,6 @@ package state
 
 import (
 	"context"
-	"errors"
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"testing"
 
@@ -110,15 +109,19 @@ func Test_sFnServedFilter(t *testing.T) {
 
 		nextFn, result, err := sFnServedFilter(context.TODO(), r, s)
 
+		expectedNext := sFnUpdateStatusAndStop
 		require.Nil(t, err)
-		requireEqualFunc(t,
-			sFnUpdateErrorState(
-				v1alpha1.ConditionTypeConfigured,
-				v1alpha1.ConditionReasonServerlessDuplicated,
-				errors.New("only one instance of Serverless is allowed (current served instance: serverless-test/test-2)")),
-			nextFn)
+		requireEqualFunc(t, expectedNext, nextFn)
 		require.Nil(t, result)
 		require.Equal(t, v1alpha1.ServedFalse, s.instance.Status.Served)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateError, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonServerlessDuplicated,
+			"only one instance of Serverless is allowed (current served instance: serverless-test/test-2)",
+		)
 	})
 }
 
