@@ -61,8 +61,9 @@ var _ = Describe("Serverless controller", func() {
 				EnableInternal: pointer.Bool(v1alpha1.DefaultEnableInternal),
 				registrySecretData: registrySecretData{
 					Username:        pointer.String("blekota"),
+					Password:        pointer.String(""),
 					ServerAddress:   pointer.String("testserveraddress:5002"),
-					RegistryAddress: pointer.String(v1alpha1.DefaultRegistryAddress),
+					RegistryAddress: pointer.String(""),
 				},
 			}
 			serverlessDataExternalWithoutSecret = serverlessData{
