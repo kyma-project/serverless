@@ -38,10 +38,10 @@ If you're interested in learning more about the Serverless area, follow these li
 
 - Perform some simple and more advances tasks:
 
-  - Create an [inline](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-01-create-inline-function.md) or a [Git](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-02-create-git-function.md) Function
-  - [Expose the Function](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-03-expose-function.md)
-  - [Manage Functions through Kyma CLI](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-04-manage-functions-with-kyma-cli.md)
-  - [Debug a Function](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-05-debug-function.md)
+  - Create an [inline](/docs/user/03-10-create-inline-function.md) or a [Git](/docs/user/03-11-create-git-function.md) Function
+  - [Expose the Function](/docs/user/03-20-expose-function.md)
+  - [Manage Functions through Kyma CLI](/docs/user/03-30-manage-functions-with-kyma-cli.md)
+  - [Debug a Function](/docs/user/03-40-debug-function.md)
   - [Synchronize Functions in a GitOps fashion](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-06-sync-function-with-gitops.md)
   - [Set an external Docker registry](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-07-set-external-registry.md) for your Function images and [switch between registries at runtime](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-08-switch-to-external-registry.md)
   - [Log into a private package registry](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-09-log-into-private-packages-registry.md)
