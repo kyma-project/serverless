@@ -14,12 +14,12 @@ var (
 
 func sFnUpdateStatusAndRequeue(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	err := updateServerlessStatus(ctx, r, s)
-	return nil, requeueResult(), err
+	return stopWithErrorOrRequeue(err)
 }
 
 func sFnUpdateStatusAndStop(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	err := updateServerlessStatus(ctx, r, s)
-	return nil, nil, err
+	return stopWithError(err)
 }
 
 // TODO: can we refactor this?
