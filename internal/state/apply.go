@@ -23,7 +23,8 @@ func sFnApplyResources(ctx context.Context, r *reconciler, s *systemState) (stat
 	if err != nil {
 		r.log.Warnf("error while installing resource %s: %s",
 			client.ObjectKeyFromObject(&s.instance), err.Error())
-		setErrorState(s,
+		s.setState(v1alpha1.StateError)
+		s.instance.UpdateConditionFalse(
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstallationErr,
 			err,

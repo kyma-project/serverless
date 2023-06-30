@@ -18,7 +18,8 @@ func sFnVerifyResources(ctx context.Context, r *reconciler, s *systemState) (sta
 		r.log.Warnf("error while verifying resource %s: %s",
 			client.ObjectKeyFromObject(&s.instance), err.Error())
 		s.setServed(v1alpha1.ServedFalse)
-		setErrorState(s,
+		s.setState(v1alpha1.StateError)
+		s.instance.UpdateConditionFalse(
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstallationErr,
 			err,

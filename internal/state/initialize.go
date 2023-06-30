@@ -28,7 +28,8 @@ func sFnInitialize(ctx context.Context, r *reconciler, s *systemState) (stateFn,
 
 	err := s.setConfigFlags(ctx, r)
 	if err != nil {
-		setErrorState(s,
+		s.setState(v1alpha1.StateError)
+		s.instance.UpdateConditionFalse(
 			v1alpha1.ConditionTypeConfigured,
 			v1alpha1.ConditionReasonConfigurationErr,
 			err,

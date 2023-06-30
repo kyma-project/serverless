@@ -63,7 +63,8 @@ func sFnUpstreamDeletionState(_ context.Context, r *reconciler, s *systemState) 
 func sFnSafeDeletionState(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	if err := chart.CheckCRDOrphanResources(s.chartConfig); err != nil {
 		// stop state machine with an error and requeue reconciliation in 1min
-		setErrorState(s,
+		s.setState(v1alpha1.StateError)
+		s.instance.UpdateConditionFalse(
 			v1alpha1.ConditionTypeDeleted,
 			v1alpha1.ConditionReasonDeletionErr,
 			err,
@@ -79,7 +80,8 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 	if err != nil {
 		r.log.Warnf("error while uninstalling resource %s: %s",
 			client.ObjectKeyFromObject(&s.instance), err.Error())
-		setErrorState(s,
+		s.setState(v1alpha1.StateError)
+		s.instance.UpdateConditionFalse(
 			v1alpha1.ConditionTypeDeleted,
 			v1alpha1.ConditionReasonDeletionErr,
 			err,
