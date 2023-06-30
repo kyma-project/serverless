@@ -56,7 +56,7 @@ module-chart-test: ## Generate module-chart-test dir.
 
 .PHONY: remove-serverless
 remove-serverless: ## Remove Serverless CR
-	kubectl delete serverless -n kyma-system default --timeout 1m || (kubectl get serverless -n kyma-system -oyaml && false)
+	kubectl delete serverless -n kyma-system default --timeout 10m || (kubectl get serverless -n kyma-system -oyaml && false)
 
 ### Internal Dependencies
 
