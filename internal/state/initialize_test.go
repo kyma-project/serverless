@@ -21,7 +21,7 @@ func Test_sFnInitialize(t *testing.T) {
 				finalizer: v1alpha1.Finalizer,
 			},
 			k8s: k8s{
-				client: fake.NewFakeClient(),
+				client: fake.NewClientBuilder().Build(),
 			},
 		}
 
@@ -64,7 +64,7 @@ func Test_sFnInitialize(t *testing.T) {
 				finalizer: v1alpha1.Finalizer,
 			},
 			k8s: k8s{
-				client: fake.NewFakeClient(),
+				client: fake.NewClientBuilder().Build(),
 			},
 		}
 
@@ -94,7 +94,7 @@ func Test_sFnInitialize(t *testing.T) {
 				finalizer: v1alpha1.Finalizer,
 			},
 			k8s: k8s{
-				client: fake.NewFakeClient(),
+				client: fake.NewClientBuilder().Build(),
 			},
 		}
 
@@ -126,7 +126,7 @@ func Test_sFnInitialize(t *testing.T) {
 				finalizer: v1alpha1.Finalizer,
 			},
 			k8s: k8s{
-				client: fake.NewFakeClient(),
+				client: fake.NewClientBuilder().Build(),
 			},
 		}
 		serverless := v1alpha1.Serverless{

@@ -69,7 +69,7 @@ func Test_Uninstall(t *testing.T) {
 					Cache:    cache,
 					CacheKey: testManifestKey,
 					Cluster: Cluster{
-						Client: fake.NewFakeClientWithScheme(apiextensionsscheme.Scheme),
+						Client: fake.NewClientBuilder().WithScheme(apiextensionsscheme.Scheme).Build(),
 					},
 				},
 			},

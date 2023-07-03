@@ -167,7 +167,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 	})
 
 	t.Run("requeue when resources are not ready", func(t *testing.T) {
-		client := fake.NewFakeClient(testDeployCR)
+		client := fake.NewClientBuilder().WithObjects(testDeployCR).Build()
 
 		s := &systemState{
 			instance: *testInstalledServerless.DeepCopy(),
