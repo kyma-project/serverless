@@ -22,7 +22,7 @@ const (
 )
 
 // delete serverless based on previously installed resources
-func sFnDeleteResources(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func sFnDeleteResources(_ context.Context, __ *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	if !s.instance.IsCondition(v1alpha1.ConditionTypeDeleted) {
 		s.setState(v1alpha1.StateDeleting)
 		s.instance.UpdateConditionUnknown(
