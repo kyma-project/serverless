@@ -169,7 +169,7 @@ func Test_install(t *testing.T) {
 					Cache:    cache,
 					CacheKey: testManifestKey,
 					Cluster: Cluster{
-						Client: fake.NewFakeClientWithScheme(apiextensionsscheme.Scheme),
+						Client: fake.NewClientBuilder().WithScheme(apiextensionsscheme.Scheme).Build(),
 					},
 				},
 			},

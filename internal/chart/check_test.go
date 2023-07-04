@@ -112,7 +112,10 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 					CacheKey: noOrphanManifestKey,
 					Ctx:      context.Background(),
 					Cluster: Cluster{
-						Client: fake.NewFakeClientWithScheme(apiextensionsscheme.Scheme, testCRDObj),
+						Client: fake.NewClientBuilder().
+							WithScheme(apiextensionsscheme.Scheme).
+							WithObjects(testCRDObj).
+							Build(),
 					},
 				},
 			},
@@ -133,8 +136,11 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 								Version: "v1alpha2",
 							}, &testOrphanObj)
 							apiextensionsscheme.AddToScheme(scheme)
-							c := fake.NewFakeClientWithScheme(scheme, &testOrphanObj, testCRDObj)
-
+							c := fake.NewClientBuilder().
+								WithScheme(scheme).
+								WithObjects(&testOrphanObj).
+								WithObjects(testCRDObj).
+								Build()
 							return c
 						}(),
 					},
@@ -153,8 +159,7 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 						Client: func() client.Client {
 							scheme := runtime.NewScheme()
 							apiextensionsscheme.AddToScheme(scheme)
-							c := fake.NewFakeClientWithScheme(scheme)
-
+							c := fake.NewClientBuilder().WithScheme(scheme).Build()
 							return c
 						}(),
 					},

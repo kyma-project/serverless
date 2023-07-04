@@ -26,7 +26,7 @@ func emitEvent(m *reconciler, s *systemState) {
 	}
 
 	// take a snapshot to not repeat lastly emitted events
-	s.saveServerlessStatus()
+	s.saveSnapshot()
 }
 
 func eventType(condition metav1.Condition) string {

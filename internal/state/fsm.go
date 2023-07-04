@@ -40,7 +40,7 @@ type systemState struct {
 	chartConfig *chart.Config
 }
 
-func (s *systemState) saveServerlessStatus() {
+func (s *systemState) saveSnapshot() {
 	result := s.instance.Status.DeepCopy()
 	if result == nil {
 		result = &v1alpha1.ServerlessStatus{}
