@@ -27,9 +27,9 @@ func Test_sFnRemoveFinalizer(t *testing.T) {
 		}
 
 		// remove finalizer
-		next, result, err := sFnRemoveFinalizer()(nil, r, s)
+		next, result, err := sFnRemoveFinalizer(nil, r, s)
 
-		expectedNext := sFnUpdateServerless()
+		expectedNext := sFnUpdateServerless
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
@@ -48,7 +48,7 @@ func Test_sFnRemoveFinalizer(t *testing.T) {
 		}
 
 		// remove finalizer
-		next, result, err := sFnRemoveFinalizer()(nil, r, s)
+		next, result, err := sFnRemoveFinalizer(nil, r, s)
 
 		require.Nil(t, next)
 		require.Equal(t, &ctrl.Result{Requeue: true}, result)

@@ -59,7 +59,7 @@ metadata:
 func Test_sFnVerifyResources(t *testing.T) {
 	t.Run("ready", func(t *testing.T) {
 		s := &systemState{
-			instance: testInstalledServerless,
+			instance: *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
@@ -76,26 +76,27 @@ func Test_sFnVerifyResources(t *testing.T) {
 			},
 		}
 
-		// build stateFn
-		stateFn := sFnVerifyResources()
-
 		// verify and return update condition state
-		next, result, err := stateFn(context.Background(), r, s)
+		next, result, err := sFnVerifyResources(context.Background(), r, s)
 
-		expectedNext := sFnUpdateReadyState(
+		expectedNext := sFnUpdateStatusAndStop
+		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateReady, status.State)
+		require.Len(t, status.Conditions, 2)
+		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstalled,
 			"Serverless installed",
 		)
-
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
 	})
 
 	t.Run("warning", func(t *testing.T) {
 		s := &systemState{
-			instance: testInstalledServerless,
+			instance: *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
@@ -112,26 +113,26 @@ func Test_sFnVerifyResources(t *testing.T) {
 			},
 		}
 
-		// build stateFn
-		stateFn := sFnVerifyResources()
-
 		// verify and return update condition state
-		next, result, err := stateFn(context.Background(), r, s)
+		next, result, err := sFnVerifyResources(context.Background(), r, s)
 
-		expectedNext := sFnUpdateWarningState(
-			v1alpha1.ConditionTypeInstalled,
-			v1alpha1.ConditionReasonInstalled,
-			"Warning: Test Warning",
-		)
-
+		expectedNext := sFnUpdateStatusAndStop
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateWarning, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstalled,
+			"Warning: additional registry configuration detected: found kyma-test/test-secret secret",
+		)
 	})
 
 	t.Run("verify error", func(t *testing.T) {
 		s := &systemState{
-			instance: testInstalledServerless,
+			instance: *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixManifestCache("\t"),
 				CacheKey: types.NamespacedName{
@@ -146,27 +147,30 @@ func Test_sFnVerifyResources(t *testing.T) {
 		}
 
 		// build stateFn
-		stateFn := sFnVerifyResources()
+		stateFn := sFnVerifyResources
 
 		// handle verify err and update condition with err
 		next, result, err := stateFn(context.Background(), r, s)
 
-		expectedNext := sFnUpdateErrorState(
-			v1alpha1.ConditionTypeInstalled,
-			v1alpha1.ConditionReasonInstallationErr,
-			errors.New("test err"),
-		)
-
+		expectedNext := sFnUpdateStatusWithError(errors.New("anything"))
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateError, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstallationErr,
+			"could not parse chart manifest: yaml: found character that cannot start any token",
+		)
 	})
 
 	t.Run("requeue when resources are not ready", func(t *testing.T) {
 		client := fake.NewFakeClient(testDeployCR)
 
 		s := &systemState{
-			instance: testInstalledServerless,
+			instance: *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: func() chart.ManifestCache {
 					cache := chart.NewInMemoryManifestCache()
@@ -189,13 +193,12 @@ func Test_sFnVerifyResources(t *testing.T) {
 		r := &reconciler{}
 
 		// build stateFn
-		stateFn := sFnVerifyResources()
+		stateFn := sFnVerifyResources
 
 		// return requeue on verification failed
 		next, result, err := stateFn(context.Background(), r, s)
 
 		expectedNext, expectedResult, expectedErr := requeueAfter(requeueDuration)
-
 		requireEqualFunc(t, expectedNext, next)
 		require.Equal(t, expectedResult, result)
 		require.Equal(t, expectedErr, err)

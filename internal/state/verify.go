@@ -12,42 +12,41 @@ import (
 )
 
 // verify if all workloads are in ready state
-func sFnVerifyResources() stateFn {
-	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		ready, err := chart.Verify(s.chartConfig)
-		if err != nil {
-			r.log.Warnf("error while verifying resource %s: %s",
-				client.ObjectKeyFromObject(&s.instance), err.Error())
-			return nextState(
-				sFnUpdateErrorState(
-					v1alpha1.ConditionTypeInstalled,
-					v1alpha1.ConditionReasonInstallationErr,
-					err,
-				),
-			)
-		}
-
-		if !ready {
-			return requeueAfter(requeueDuration)
-		}
-
-		err = registry.DetectExternalRegistrySecrets(ctx, r.client)
-		if err != nil {
-			return nextState(
-				sFnUpdateWarningState(
-					v1alpha1.ConditionTypeInstalled,
-					v1alpha1.ConditionReasonInstalled,
-					fmt.Sprintf("Warning: %s", err.Error()),
-				),
-			)
-		}
-
-		return nextState(
-			sFnUpdateReadyState(
-				v1alpha1.ConditionTypeInstalled,
-				v1alpha1.ConditionReasonInstalled,
-				"Serverless installed",
-			),
+func sFnVerifyResources(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+	ready, err := chart.Verify(s.chartConfig)
+	if err != nil {
+		r.log.Warnf("error while verifying resource %s: %s",
+			client.ObjectKeyFromObject(&s.instance), err.Error())
+		s.setServed(v1alpha1.ServedFalse)
+		s.setState(v1alpha1.StateError)
+		s.instance.UpdateConditionFalse(
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstallationErr,
+			err,
 		)
+		return nextState(sFnUpdateStatusWithError(err))
 	}
+
+	if !ready {
+		return requeueAfter(requeueDuration)
+	}
+
+	err = registry.DetectExternalRegistrySecrets(ctx, r.client)
+	if err != nil {
+		s.setState(v1alpha1.StateWarning)
+		s.instance.UpdateConditionTrue(
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstalled,
+			fmt.Sprintf("Warning: %s", err.Error()),
+		)
+		return nextState(sFnUpdateStatusAndStop)
+	}
+
+	s.setState(v1alpha1.StateReady)
+	s.instance.UpdateConditionTrue(
+		v1alpha1.ConditionTypeInstalled,
+		v1alpha1.ConditionReasonInstalled,
+		"Serverless installed",
+	)
+	return nextState(sFnUpdateStatusAndStop)
 }

@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
@@ -12,29 +13,31 @@ import (
 )
 
 func Test_buildSFnApplyResources(t *testing.T) {
-	t.Run("switch state when condition is missing", func(t *testing.T) {
+	t.Run("switch state and add condition when condition is missing", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{},
 		}
 
 		// return sFnUpdateProcessingState when condition is missing
-		stateFn := sFnApplyResources()
-		next, result, err := stateFn(nil, nil, s)
+		next, result, err := sFnApplyResources(nil, nil, s)
 
-		expected := sFnUpdateProcessingState(
+		expected := sFnUpdateStatusAndRequeue
+		requireEqualFunc(t, expected, next)
+		require.Nil(t, result)
+		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateProcessing, status.State)
+		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstallation,
 			"Installing for configuration",
 		)
-
-		requireEqualFunc(t, expected, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
 	})
 
 	t.Run("apply resources", func(t *testing.T) {
 		s := &systemState{
-			instance: testInstalledServerless,
+			instance: *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
@@ -50,15 +53,10 @@ func Test_buildSFnApplyResources(t *testing.T) {
 
 		r := &reconciler{}
 
-		// return sFnApplyResources
-		stateFn := sFnApplyResources()
-		requireEqualFunc(t, sFnApplyResources(), stateFn)
-
 		// run installation process and return verificating state
-		next, result, err := stateFn(context.Background(), r, s)
+		next, result, err := sFnApplyResources(context.Background(), r, s)
 
-		expectedNext := sFnVerifyResources()
-
+		expectedNext := sFnVerifyResources
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
@@ -66,7 +64,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 
 	t.Run("install chart error", func(t *testing.T) {
 		s := &systemState{
-			instance: testInstalledServerless,
+			instance: *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixManifestCache("\t"),
 				CacheKey: types.NamespacedName{
@@ -80,21 +78,20 @@ func Test_buildSFnApplyResources(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 		}
 
-		// return sFnApplyResources
-		stateFn := sFnApplyResources()
-		requireEqualFunc(t, sFnApplyResources(), stateFn)
-
 		// handle error and return update condition state
-		next, result, err := stateFn(context.Background(), r, s)
+		next, result, err := sFnApplyResources(context.Background(), r, s)
 
-		expectedNext := sFnUpdateErrorState(
-			v1alpha1.ConditionTypeInstalled,
-			v1alpha1.ConditionReasonInstallationErr,
-			err,
-		)
-
+		expectedNext := sFnUpdateStatusWithError(errors.New("anything"))
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateError, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstallationErr,
+			"could not parse chart manifest: yaml: found character that cannot start any token",
+		)
 	})
 }

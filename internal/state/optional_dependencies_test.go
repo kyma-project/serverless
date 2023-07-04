@@ -20,21 +20,23 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			},
 		}
 
-		stateFn := sFnOptionalDependencies()
-		next, result, err := stateFn(nil, nil, s)
+		next, result, err := sFnOptionalDependencies(nil, nil, s)
 
-		expectedNext := sFnUpdateProcessingTrueState(
-			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonConfigured,
-			"",
-		)
-
+		expectedNext := sFnUpdateStatusAndRequeue
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
 
-		require.Equal(t, "test-event-URL", s.instance.Status.EventingEndpoint)
-		require.Equal(t, "test-trace-URL", s.instance.Status.TracingEndpoint)
+		status := s.instance.Status
+		require.Equal(t, "test-event-URL", status.EventingEndpoint)
+		require.Equal(t, "test-trace-URL", status.TracingEndpoint)
+
+		require.Equal(t, v1alpha1.StateProcessing, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonConfigured,
+			"Configured with custom Publisher Proxy URL and custom Trace Collector URL.",
+		)
 	})
 
 	t.Run("next state", func(t *testing.T) {
@@ -66,11 +68,9 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			},
 		}
 
-		stateFn := sFnOptionalDependencies()
-		next, result, err := stateFn(nil, nil, s)
+		next, result, err := sFnOptionalDependencies(nil, nil, s)
 
-		expectedNext := sFnApplyResources()
-
+		expectedNext := sFnApplyResources
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)

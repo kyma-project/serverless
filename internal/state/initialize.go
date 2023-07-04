@@ -8,28 +8,24 @@ import (
 )
 
 // choose right scenario to start (installation/deletion)
-func sFnInitialize() stateFn {
-	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-		instanceIsBeingDeleted := !s.instance.GetDeletionTimestamp().IsZero()
-		instanceHasFinalizer := controllerutil.ContainsFinalizer(&s.instance, r.finalizer)
-		if !instanceHasFinalizer {
-			return noFinalizerStep(ctx, r, s, instanceIsBeingDeleted)
-		}
+func sFnInitialize(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+	s.saveServerlessStatus()
 
-		// default instance and create necessary essentials
-		s.setup(ctx, r)
-
-		// in case instance is being deleted and has finalizer - delete all resources
-		if instanceIsBeingDeleted {
-			return nextState(
-				sFnDeleteResources(),
-			)
-		}
-
-		return nextState(
-			sFnRegistryConfiguration,
-		)
+	instanceIsBeingDeleted := !s.instance.GetDeletionTimestamp().IsZero()
+	instanceHasFinalizer := controllerutil.ContainsFinalizer(&s.instance, r.finalizer)
+	if !instanceHasFinalizer {
+		return noFinalizerStep(ctx, r, s, instanceIsBeingDeleted)
 	}
+
+	// default instance and create necessary essentials
+	s.setup(ctx, r)
+
+	// in case instance is being deleted and has finalizer - delete all resources
+	if instanceIsBeingDeleted {
+		return nextState(sFnDeleteResources)
+	}
+
+	return nextState(sFnRegistryConfiguration)
 }
 
 func noFinalizerStep(ctx context.Context, r *reconciler, s *systemState, instanceIsBeingDeleted bool) (stateFn, *ctrl.Result, error) {
