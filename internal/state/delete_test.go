@@ -44,6 +44,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		require.Equal(t, v1alpha1.StateDeleting, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeDeleted,
+			metav1.ConditionUnknown,
 			v1alpha1.ConditionReasonDeletion,
 			"Uninstalling",
 		)
@@ -87,6 +88,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		require.Equal(t, v1alpha1.StateDeleting, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeDeleted,
+			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonDeleted,
 			"Serverless module deleted",
 		)
@@ -121,6 +123,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		require.Equal(t, v1alpha1.StateError, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeDeleted,
+			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonDeletionErr,
 			"could not parse chart manifest: yaml: found character that cannot start any token",
 		)
@@ -156,6 +159,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		require.Equal(t, v1alpha1.StateError, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeDeleted,
+			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonDeletionErr,
 			"could not parse chart manifest: yaml: found character that cannot start any token",
 		)
@@ -191,6 +195,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		require.Equal(t, v1alpha1.StateDeleting, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeDeleted,
+			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonDeleted,
 			"Serverless module deleted",
 		)

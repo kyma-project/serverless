@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
@@ -30,6 +31,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeInstalled,
+			metav1.ConditionUnknown,
 			v1alpha1.ConditionReasonInstallation,
 			"Installing for configuration",
 		)
@@ -90,6 +92,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		require.Equal(t, v1alpha1.StateError, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeInstalled,
+			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonInstallationErr,
 			"could not parse chart manifest: yaml: found character that cannot start any token",
 		)
