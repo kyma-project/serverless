@@ -1,15 +1,20 @@
 package annotation
 
 import (
-	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	appsv1 "k8s.io/api/apps/v1"
+	"k8s.io/apimachinery/pkg/api/meta"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
@@ -40,28 +45,38 @@ func TestAddDoNotEditDisclaimer(t *testing.T) {
 }
 
 func TestDeleteReconcilerDisclaimer(t *testing.T) {
-	t.Run("remove annotation", func(t *testing.T) {
-		scheme := runtime.NewScheme()
-		appsv1.AddToScheme(scheme)
+	t.Run("prepare good request", func(t *testing.T) {
+		mapper := meta.NewDefaultRESTMapper([]schema.GroupVersion{})
+		mapper.Add(appsv1.SchemeGroupVersion.WithKind("Deployment"), meta.RESTScopeNamespace)
+
+		server := fixTestPatchServer(t)
+		defer server.Close()
 
 		client := fake.NewClientBuilder().
-			WithScheme(scheme).
-			WithObjects(testDeployCR).
+			WithRESTMapper(mapper).
 			Build()
 
 		obj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(testDeployCR)
 		require.NoError(t, err)
 
-		err = DeleteReconcilerDisclaimer(client, rest.Config{}, unstructured.Unstructured{Object: obj})
+		err = DeleteReconcilerDisclaimer(client, rest.Config{
+			Host: server.URL,
+		}, unstructured.Unstructured{Object: obj})
+		require.NoError(t, err)
+	})
+}
+
+func fixTestPatchServer(t *testing.T) *httptest.Server {
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		require.Equal(t, "PATCH", r.Method)
+		bodyBytes, err := io.ReadAll(r.Body)
+		require.NoError(t, err)
+		require.Equal(t, reconcilerPatch, string(bodyBytes))
+
+		jsonDeploy, err := json.Marshal(testDeployCR)
 		require.NoError(t, err)
 
-		var expected appsv1.Deployment
-		err = client.Get(context.Background(),
-			types.NamespacedName{
-				Namespace: testDeployCR.Namespace,
-				Name:      testDeployCR.Name,
-			}, &expected)
-		require.NoError(t, err)
-		require.Len(t, expected.Annotations, 0)
-	})
+		w.Header().Add("Content-Type", "application/json")
+		fmt.Fprint(w, string(jsonDeploy))
+	}))
 }
