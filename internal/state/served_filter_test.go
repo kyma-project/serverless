@@ -120,6 +120,7 @@ func Test_sFnServedFilter(t *testing.T) {
 		require.Equal(t, v1alpha1.StateError, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeConfigured,
+			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonServerlessDuplicated,
 			"only one instance of Serverless is allowed (current served instance: serverless-test/test-2)",
 		)

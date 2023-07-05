@@ -170,6 +170,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		require.Equal(t, v1alpha1.StateError, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeConfigured,
+			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonConfigurationErr,
 			"secrets \"test-secret-not-found\" not found",
 		)
@@ -225,6 +226,10 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		require.NoError(t, err)
 		requireEqualFunc(t, expectedNext, next)
-		requireContainsConditionWithStatus(t, s.instance.Status, v1alpha1.ConditionTypeConfigured, metav1.ConditionTrue, v1alpha1.ConditionReasonConfigured, "Configured")
+		requireContainsCondition(t, s.instance.Status,
+			v1alpha1.ConditionTypeConfigured,
+			metav1.ConditionTrue,
+			v1alpha1.ConditionReasonConfigured,
+			"Configured")
 	})
 }

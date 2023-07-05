@@ -89,6 +89,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 		require.Len(t, status.Conditions, 2)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeInstalled,
+			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonInstalled,
 			"Serverless installed",
 		)
@@ -125,6 +126,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 		require.Equal(t, v1alpha1.StateWarning, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeInstalled,
+			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonInstalled,
 			"Warning: additional registry configuration detected: found kyma-test/test-secret secret",
 		)
@@ -161,6 +163,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 		require.Equal(t, v1alpha1.StateError, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeInstalled,
+			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonInstallationErr,
 			"could not parse chart manifest: yaml: found character that cannot start any token",
 		)

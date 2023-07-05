@@ -34,6 +34,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeConfigured,
+			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonConfigured,
 			"Configured with custom Publisher Proxy URL and custom Trace Collector URL.",
 		)
