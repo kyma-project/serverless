@@ -2,6 +2,7 @@ package chart
 
 import (
 	"fmt"
+
 	"github.com/kyma-project/serverless-manager/internal/annotation"
 	"helm.sh/helm/v3/pkg/release"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -68,6 +69,15 @@ func updateObjects(config *Config, objs []unstructured.Unstructured) error {
 		})
 		if err != nil {
 			return fmt.Errorf("could not install object %s/%s: %s", u.GetNamespace(), u.GetName(), err.Error())
+		}
+
+		// remove old reconciler "DO NOT EDIT" disclaimer
+		// TODO: remove this functionality when all clusters are migrated to the serverless-manager
+		err = annotation.DeleteReconcilerDisclaimer(
+			config.Cluster.Client, *config.Cluster.Config, u)
+		if err != nil {
+			return fmt.Errorf("could not remove old reconciler annotation for object %s/%s: %s",
+				u.GetNamespace(), u.GetName(), err.Error())
 		}
 	}
 	return nil
