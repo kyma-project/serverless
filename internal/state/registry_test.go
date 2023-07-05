@@ -174,4 +174,57 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			"secrets \"test-secret-not-found\" not found",
 		)
 	})
+	t.Run("reconcile from configurationError", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.Serverless{
+				Status: v1alpha1.ServerlessStatus{
+					Conditions: []metav1.Condition{
+						{
+							Type:   string(v1alpha1.ConditionTypeConfigured),
+							Status: metav1.ConditionFalse,
+							Reason: string(v1alpha1.ConditionReasonConfigurationErr),
+						},
+						{
+							Type:   string(v1alpha1.ConditionTypeInstalled),
+							Status: metav1.ConditionTrue,
+							Reason: string(v1alpha1.ConditionReasonInstallation),
+						},
+					},
+					State: v1alpha1.StateReady,
+				},
+				Spec: v1alpha1.ServerlessSpec{
+					DockerRegistry: &v1alpha1.DockerRegistry{
+						EnableInternal: pointer.Bool(false),
+						SecretName:     pointer.String("boo"),
+					},
+				},
+			},
+			snapshot: v1alpha1.ServerlessStatus{
+				DockerRegistry: "",
+			},
+			chartConfig: &chart.Config{
+				Release: chart.Release{
+					Flags: chart.EmptyFlags,
+				},
+			},
+		}
+		secret := &corev1.Secret{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "boo",
+			},
+		}
+		r := &reconciler{
+			k8s: k8s{
+				client: fake.NewClientBuilder().WithObjects(secret).Build(),
+			},
+		}
+
+		expectedNext := sFnUpdateStatusAndRequeue
+
+		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
+		require.Nil(t, result)
+		require.NoError(t, err)
+		requireEqualFunc(t, expectedNext, next)
+		requireContainsConditionWithStatus(t, s.instance.Status, v1alpha1.ConditionTypeConfigured, metav1.ConditionTrue, v1alpha1.ConditionReasonConfigured, "Configured")
+	})
 }
