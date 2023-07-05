@@ -14,7 +14,20 @@ import (
 func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	switch {
 	case *s.instance.Spec.DockerRegistry.EnableInternal:
+		changed := false
+		if s.instance.Status.DockerRegistry != "internal" {
+			changed = true
+		}
 		setInternalRegistry(s)
+		if changed {
+			s.setState(v1alpha1.StateProcessing)
+			s.instance.UpdateConditionUnknown(
+				v1alpha1.ConditionTypeConfigured,
+				v1alpha1.ConditionReasonConfigurationCheck,
+				"makapaka",
+			)
+			return nextState(sFnUpdateStatusAndRequeue)
+		}
 	case s.instance.Spec.DockerRegistry.SecretName != nil:
 		err := setExternalRegistry(ctx, r, s)
 		if err != nil {
