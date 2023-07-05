@@ -81,3 +81,17 @@ func requireContainsCondition(t *testing.T, status v1alpha1.ServerlessStatus,
 	}
 	require.True(t, hasExpectedCondition)
 }
+
+func requireContainsConditionWithStatus(t *testing.T, status v1alpha1.ServerlessStatus,
+	conditionType v1alpha1.ConditionType, conditionStatus metav1.ConditionStatus, conditionReason v1alpha1.ConditionReason, conditionMessage string) {
+	hasExpectedCondition := false
+	for _, condition := range status.Conditions {
+		if condition.Type == string(conditionType) {
+			require.Equal(t, string(conditionReason), condition.Reason)
+			require.Equal(t, conditionStatus, condition.Status)
+			require.Equal(t, conditionMessage, condition.Message)
+			hasExpectedCondition = true
+		}
+	}
+	require.True(t, hasExpectedCondition)
+}

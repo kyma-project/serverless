@@ -16,6 +16,15 @@ func (s *Serverless) IsCondition(conditionType ConditionType) bool {
 	) != nil
 }
 
+func (s *Serverless) GetCondition(conditionType ConditionType) (metav1.Condition, bool) {
+	for _, condition := range s.Status.Conditions {
+		if condition.Type == string(conditionType) {
+			return condition, true
+		}
+	}
+	return metav1.Condition{}, false
+}
+
 func (s *Serverless) IsConditionTrue(conditionType ConditionType) bool {
 	condition := meta.FindStatusCondition(s.Status.Conditions, string(conditionType))
 	return condition != nil && condition.Status == metav1.ConditionTrue
