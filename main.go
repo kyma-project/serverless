@@ -18,6 +18,7 @@ package main
 
 import (
 	"flag"
+	"github.com/kyma-project/serverless-manager/internal/config"
 	"os"
 	"time"
 
@@ -70,6 +71,12 @@ func main() {
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
 
+	cfg, err := config.GetConfig("")
+	if err != nil {
+		setupLog.Error(err, "while getting config")
+		os.Exit(1)
+	}
+
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
@@ -100,7 +107,8 @@ func main() {
 		mgr.GetClient(), mgr.GetConfig(),
 		mgr.GetEventRecorderFor("serverless-manager"),
 		reconcilerLogger.Sugar(),
-		"/module-chart")
+		cfg.ChartPath,
+		cfg.ServerlessManagerNamespace)
 
 	if err = reconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Serverless")

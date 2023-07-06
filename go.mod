@@ -3,9 +3,11 @@ module github.com/kyma-project/serverless-manager
 go 1.19
 
 require (
+	github.com/go-errors/errors v1.4.2
 	github.com/onsi/ginkgo/v2 v2.5.0
 	github.com/onsi/gomega v1.24.1
 	github.com/stretchr/testify v1.8.0
+	github.com/vrischmann/envconfig v1.3.0
 	helm.sh/helm/v3 v3.10.1
 	k8s.io/apimachinery v0.25.4
 	k8s.io/client-go v0.25.4
@@ -34,7 +36,6 @@ require (
 	github.com/evanphx/json-patch v5.6.0+incompatible // indirect
 	github.com/exponent-io/jsonpath v0.0.0-20210407135951-1de76d718b3f // indirect
 	github.com/fatih/color v1.13.0 // indirect
-	github.com/go-errors/errors v1.4.2 // indirect
 	github.com/go-gorp/gorp/v3 v3.0.2 // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/google/btree v1.1.2 // indirect
