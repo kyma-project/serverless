@@ -78,7 +78,7 @@ const (
 	ConditionReasonDeletionErr          = ConditionReason("DeletionErr")
 	ConditionReasonDeleted              = ConditionReason("Deleted")
 
-	Finalizer = "serverless-manager.kyma-project.io/deletion-hook"
+	Finalizer = "serverless-operator.kyma-project.io/deletion-hook"
 )
 
 type ServerlessStatus struct {
