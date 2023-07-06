@@ -74,7 +74,7 @@ func main() {
 	cfg, err := config.GetConfig("")
 	if err != nil {
 		setupLog.Error(err, "while getting config")
-		return
+		os.Exit(1)
 	}
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
