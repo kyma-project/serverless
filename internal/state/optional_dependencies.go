@@ -3,6 +3,8 @@ package state
 import (
 	"context"
 	"fmt"
+	"k8s.io/apimachinery/pkg/api/meta"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
@@ -16,7 +18,8 @@ func sFnOptionalDependencies(_ context.Context, __ *reconciler, s *systemState) 
 
 	// update status and condition if status is not up-to-date
 	if s.instance.Status.EventingEndpoint != s.instance.Spec.Eventing.Endpoint ||
-		s.instance.Status.TracingEndpoint != s.instance.Spec.Tracing.Endpoint {
+		s.instance.Status.TracingEndpoint != s.instance.Spec.Tracing.Endpoint ||
+		!meta.IsStatusConditionPresentAndEqual(s.instance.Status.Conditions, string(v1alpha1.ConditionTypeConfigured), metav1.ConditionTrue) {
 
 		s.instance.Status.EventingEndpoint = s.instance.Spec.Eventing.Endpoint
 		s.instance.Status.TracingEndpoint = s.instance.Spec.Tracing.Endpoint

@@ -2,8 +2,6 @@ package state
 
 import (
 	"context"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	corev1 "k8s.io/api/core/v1"
@@ -28,18 +26,6 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 		}
 	default:
 		setK3dRegistry(s)
-	}
-
-	if condition, ok := s.instance.GetCondition(v1alpha1.ConditionTypeConfigured); ok {
-		if condition.Status == metav1.ConditionFalse {
-			s.setState(v1alpha1.StateReady)
-			s.instance.UpdateConditionTrue(
-				v1alpha1.ConditionTypeConfigured,
-				v1alpha1.ConditionReasonConfigured,
-				"Configured",
-			)
-			return nextState(sFnUpdateStatusAndRequeue)
-		}
 	}
 
 	if s.snapshot.DockerRegistry != s.instance.Status.DockerRegistry {
