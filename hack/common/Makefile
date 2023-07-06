@@ -125,4 +125,15 @@ module-build:
 .PHONY: deploy
 deploy:
 	@make -C ${PROJECT_ROOT} deploy \
-		IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${MANAGER_IMAGE_NAME}:${MANAGER_IMAGE_TAG}
+  IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${MANAGER_IMAGE_NAME}:${MANAGER_IMAGE_TAG}
+
+.PHONY: deploy-k3d
+deploy-k3d: module-image
+	$(eval HASH_TAG=$(shell docker images localhost:${REGISTRY_PORT}/${MANAGER_IMAGE_NAME}:${MANAGER_IMAGE_TAG} --quiet))
+	docker tag localhost:${REGISTRY_PORT}/${MANAGER_IMAGE_NAME}:${MANAGER_IMAGE_TAG} localhost:${REGISTRY_PORT}/${MANAGER_IMAGE_NAME}:${HASH_TAG}
+	docker push localhost:${REGISTRY_PORT}/${MANAGER_IMAGE_NAME}:${HASH_TAG}
+	#k3d image import localhost:${REGISTRY_PORT}/${MANAGER_IMAGE_NAME}:${HASH_TAG} -c kyma
+
+	@make -C ${PROJECT_ROOT} deploy \
+  IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${MANAGER_IMAGE_NAME}:${HASH_TAG}
+
