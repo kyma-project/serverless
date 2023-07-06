@@ -94,6 +94,7 @@ var _ = BeforeSuite(func() {
 		record.NewFakeRecorder(100),
 		reconcilerLogger.Sugar(),
 		chartPath,
+		"",
 	)).SetupWithManager(k8sManager)
 	Expect(err).ToNot(HaveOccurred())
 

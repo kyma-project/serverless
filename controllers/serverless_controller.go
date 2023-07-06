@@ -39,12 +39,12 @@ type serverlessReconciler struct {
 	log              *zap.SugaredLogger
 }
 
-func NewServerlessReconciler(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, chartPath string) *serverlessReconciler {
+func NewServerlessReconciler(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, chartPath string, ns string) *serverlessReconciler {
 	cache := chart.NewSecretManifestCache(client)
 
 	return &serverlessReconciler{
 		initStateMachine: func(log *zap.SugaredLogger) state.StateReconciler {
-			return state.NewMachine(client, config, recorder, log, cache, chartPath)
+			return state.NewMachine(client, config, recorder, log, cache, chartPath, ns)
 		},
 		client: client,
 		log:    log,
