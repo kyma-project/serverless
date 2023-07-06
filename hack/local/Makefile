@@ -21,7 +21,3 @@ run-without-lifecycle-manager: ## Create k3d cluster with module.
 .PHONY: stop
 stop: ## Delete k3d cluster and registry.
 	@make -C ${PROJECT_COMMON} delete-k3d
-
-.PHONY: deploy-k3d
-deploy-k3d:
-	@make -C ${PROJECT_COMMON} deploy-k3d
