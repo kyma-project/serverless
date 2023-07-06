@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
-	k8sErrors "k8s.io/apimachinery/pkg/api/errors"
 	"math/rand"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -99,10 +98,7 @@ func getNodePort(svc *corev1.Service) int32 {
 func getService(ctx context.Context, k8sClient client.Client, namespace, name string) (*corev1.Service, error) {
 	svc := corev1.Service{}
 	err := k8sClient.Get(ctx, client.ObjectKey{Namespace: namespace, Name: name}, &svc)
-	if err != nil {
-		if k8sErrors.IsNotFound(err) {
-			return nil, nil
-		}
+	if client.IgnoreNotFound(err) != nil {
 		return nil, errors.Wrap(err, fmt.Sprintf("while getting %s servicce", name))
 	}
 	return &svc, nil

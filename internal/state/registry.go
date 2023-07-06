@@ -60,7 +60,7 @@ func setInternalRegistry(ctx context.Context, r *reconciler, s *systemState) err
 	if err != nil {
 		return errors.Wrap(err, "while resolving registry node port")
 	}
-	r.log.Infof("docker registry node port: %d", nodePort)
+	r.log.Debugf("docker registry node port: %d", nodePort)
 	s.chartConfig.Release.Flags = chart.AppendNodePortFlag(s.chartConfig.Release.Flags, int64(nodePort))
 	return nil
 }

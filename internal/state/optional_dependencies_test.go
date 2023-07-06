@@ -114,7 +114,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			},
 			chartConfig: &chart.Config{
 				Release: chart.Release{
-					Flags: chart.EmptyFlags,
+					Flags: chart.EmptyFlags(),
 				},
 			},
 		}
