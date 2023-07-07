@@ -6,8 +6,8 @@ metadata:
     app.kubernetes.io/name: clusterrole
     app.kubernetes.io/instance: serverless-viewer-role
     app.kubernetes.io/component: rbac
-    app.kubernetes.io/created-by: serverless-manager
-    app.kubernetes.io/part-of: serverless-manager
+    app.kubernetes.io/created-by: serverless-operator
+    app.kubernetes.io/part-of: serverless-operator
     app.kubernetes.io/managed-by: kustomize
   name: serverless-viewer-role
 rules:
