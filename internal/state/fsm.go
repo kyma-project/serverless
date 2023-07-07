@@ -76,7 +76,7 @@ func chartConfig(ctx context.Context, r *reconciler, s *systemState) *chart.Conf
 			ChartPath: r.chartPath,
 			Namespace: s.instance.GetNamespace(),
 			Name:      "serverless",
-			Flags:     chart.EmptyFlags,
+			Flags:     chart.EmptyFlags(),
 		},
 	}
 }

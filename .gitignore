@@ -42,3 +42,4 @@ vendor
 
 serverless-manager.yaml
 manifests/serverless/rendered.yaml
+serverless.yaml
