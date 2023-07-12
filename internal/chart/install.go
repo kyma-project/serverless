@@ -65,7 +65,7 @@ func updateObjects(config *Config, objs []unstructured.Unstructured) error {
 		// maybe we should in this case translate applied objs into manifest and set it into cache?
 		err := config.Cluster.Client.Patch(config.Ctx, &u, client.Apply, &client.PatchOptions{
 			Force:        pointer.Bool(true),
-			FieldManager: "serverless-manager",
+			FieldManager: "serverless-operator",
 		})
 		if err != nil {
 			return fmt.Errorf("could not install object %s/%s: %s", u.GetNamespace(), u.GetName(), err.Error())

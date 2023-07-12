@@ -12,19 +12,19 @@
     kyma provision k3d
     ```
 
-3. Build and push the Serverless Manager image.
+3. Build and push the Serverless Operator image.
 
     ```bash
-    make module-image IMG_REGISTRY=localhost:5001/unsigned/operator-images IMG=localhost:5001/serverless-manager-dev-local:0.0.1
+    make module-image IMG_REGISTRY=localhost:5001/unsigned/operator-images IMG=localhost:5001/serverless-operator-dev-local:0.0.1
     ```
 
 4. Build and push the Serverless module.
 
     ```bash
-    make module-build IMG=k3d-kyma-registry:5001/serverless-manager-dev-local:0.0.1 MODULE_REGISTRY=localhost:5001/unsigned
+    make module-build IMG=k3d-kyma-registry:5001/serverless-operator-dev-local:0.0.1 MODULE_REGISTRY=localhost:5001/unsigned
     ```
 
-5. Verify if the module and the manager's image are pushed to the local registry.
+5. Verify if the module and the operator's image are pushed to the local registry.
 
     ```bash
     curl localhost:5001/v2/_catalog
@@ -33,7 +33,7 @@
     You should get a result similar to this example:
 
     ```json
-    {"repositories":["serverless-manager-dev-local","unsigned/component-descriptors/kyma.project.io/module/serverless"]}
+    {"repositories":["serverless-operator-dev-local","unsigned/component-descriptors/kyma.project.io/module/serverless"]}
     ```
 
 6. Inspect the generated module template.

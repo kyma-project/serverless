@@ -16,4 +16,4 @@ commonLabels:
 resources:
 - ../crd
 - ../rbac
-- ../manager
+- ../operator

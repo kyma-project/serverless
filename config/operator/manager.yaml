@@ -66,5 +66,5 @@ spec:
           requests:
             cpu: 10m
             memory: 64Mi
-      serviceAccountName: controller-manager
+      serviceAccountName: serverless-operator
       terminationGracePeriodSeconds: 10

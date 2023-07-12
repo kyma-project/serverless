@@ -6,8 +6,8 @@ KYMA_SOURCE ?= main
 REGISTRY_PORT ?= 5001
 REGISTRY_NAME ?= ${CLUSTER_NAME}-registry
 
-MANAGER_IMAGE_NAME ?= serverless-manager-dev-local
-MANAGER_IMAGE_TAG ?= $(MODULE_VERSION)
+OPERATOR_IMAGE_NAME ?= serverless-operator-dev-local
+OPERATOR_IMAGE_TAG ?= $(MODULE_VERSION)
 
 
 TEMPLATE_PATH ?= ${PROJECT_ROOT}/template.yaml

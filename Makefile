@@ -55,7 +55,7 @@ help: ## Display this help.
 
 .PHONY: manifests
 manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
-	$(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
+	$(CONTROLLER_GEN) rbac:roleName=operator-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
 
 .PHONY: generate
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
@@ -76,19 +76,19 @@ test: manifests generate fmt vet envtest module-chart ## Run unit tests.
 ##@ Build
 
 .PHONY: build
-build: generate fmt vet module-chart ## Build manager binary.
-	go build -o bin/manager main.go
+build: generate fmt vet module-chart ## Build operator binary.
+	go build -o bin/operator main.go
 
 .PHONY: run
 run: manifests generate fmt vet module-chart ## Run a controller from your host.
 	go run ./main.go
 
 .PHONY: docker-build
-docker-build: manifests generate module-chart ## Build docker image with the manager.
+docker-build: manifests generate module-chart ## Build docker image with the operator.
 	docker build -t ${IMG} .
 
 .PHONY: docker-push
-docker-push: ## Push docker image with the manager.
+docker-push: ## Push docker image with the operator.
 	docker push ${IMG}
 
 ##@ Deployment
@@ -105,13 +105,13 @@ uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified 
 .PHONY: deploy
 deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
 	kubectl create namespace kyma-system || true
-	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
+	cd config/operator && $(KUSTOMIZE) edit set image controller=${IMG}
 	$(KUSTOMIZE) build config/default | kubectl apply -f -
 
 .PHONY: render-manifest
-render-manifest: manifests kustomize ## Render keda-manager.yaml manifest.
-	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
-	$(KUSTOMIZE) build config/default > serverless-manager.yaml
+render-manifest: manifests kustomize ## Render keda-operator.yaml manifest.
+	cd config/operator && $(KUSTOMIZE) edit set image controller=${IMG}
+	$(KUSTOMIZE) build config/default > serverless-operator.yaml
 
 .PHONY: undeploy
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with IGNORE_NOT_FOUND=true to ignore resource not found errors during deletion.
@@ -125,7 +125,7 @@ module-image: docker-build docker-push ## Build the Module Image and push it to 
 
 .PHONY: module-build
 module-build: kyma kustomize ## Build the Module and push it to a registry defined in MODULE_REGISTRY.
-	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
+	cd config/operator && $(KUSTOMIZE) edit set image controller=${IMG}
 	@$(KYMA) alpha create module --default-cr=config/samples/operator_v1alpha1_serverless.yaml \
 		--channel=${MODULE_CHANNEL} --name kyma.project.io/module/$(MODULE_NAME) \
 		--version $(MODULE_VERSION) --path . $(MODULE_CREATION_FLAGS) \

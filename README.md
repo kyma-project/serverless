@@ -1,15 +1,15 @@
-# Serverless Manager
+# Serverless Operator
 
 ## Overview
 
-Serverless Manager allows deploying the [Serverless](https://kyma-project.io/docs/kyma/latest/01-overview/serverless/) component on the Kyma cluster in compatibility with the [Lifecycle Manager](https://github.com/kyma-project/lifecycle-manager).
+Serverless Operator allows deploying the [Serverless](https://kyma-project.io/docs/kyma/latest/01-overview/serverless/) component on the Kyma cluster in compatibility with the [Lifecycle Manager](https://github.com/kyma-project/lifecycle-manager).
 
 ## Install
 
-To install serverless-manager simply apply the following script:
+To install serverless-operator simply apply the following script:
 
 ```bash
-kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/serverless-manager.yaml
+kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/serverless-operator.yaml
 ```
 
 To get Serverless installed, apply the sample Serverless CR:
@@ -38,10 +38,10 @@ kubectl apply -f config/samples/operator_v1alpha1_serverless.yaml
     git clone https://github.com/kyma-project/serverless-manager.git && cd serverless-manager/
     ```
 
-2. Set the `serverless-manager` image name.
+2. Set the `serverless-operator` image name.
 
     ```bash
-    export IMG=<DOCKER_USERNAME>/custom-serverless-manager:0.0.1
+    export IMG=<DOCKER_USERNAME>/custom-serverless-operator:0.0.1
     ```
 
 3. Verify the compability.
@@ -70,7 +70,7 @@ kubectl apply -f config/samples/operator_v1alpha1_serverless.yaml
     git clone https://github.com/kyma-project/serverless-manager.git && cd serverless-manager/
     ```
 
-2. Build the manager locally and run it on the k3d cluster.
+2. Build the operator locally and run it on the k3d cluster.
 
     ```bash
     make -C hack/local run-with-lifecycle-manager
@@ -79,7 +79,7 @@ kubectl apply -f config/samples/operator_v1alpha1_serverless.yaml
 > **NOTE:** To clean up the k3d cluster, use the `make -C hack/local stop` make target.
 
 
-## Using `serverless-manager`
+## Using `serverless-operator`
 
 - Create a Serverless instance.
 
@@ -124,7 +124,7 @@ kubectl apply -f config/samples/operator_v1alpha1_serverless.yaml
     ```
 ## Testing Strategy
 
-Each pull request to the repository triggers CI/CD jobs that verify the serverless-manager reconciliation logic and run integration tests of the Serverless module.
+Each pull request to the repository triggers CI/CD jobs that verify the serverless-operator reconciliation logic and run integration tests of the Serverless module.
 
 - `pre-serverless-manager-operator-build` - Compiling the serverless-manager code and pushing its docker image.
 - `pre-serverless-manager-operator-tests` - Testing the serverless-manager reconciliation code (Serverless CR CRUD operations).
