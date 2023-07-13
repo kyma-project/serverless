@@ -26,3 +26,27 @@ func DetectExternalRegistrySecrets(ctx context.Context, c client.Client) error {
 
 	return errors.Errorf("additional registry configuration detected: %s", strings.Join(errMsgs, "; "))
 }
+
+func GetExternalRegistrySecret(ctx context.Context, c client.Client, namespace string) (*corev1.Secret, error) {
+	secret := corev1.Secret{}
+	key := client.ObjectKey{
+		Namespace: namespace,
+		Name:      "serverless-registry-config",
+	}
+	err := c.Get(ctx, key, &secret)
+	if err != nil {
+		return nil, client.IgnoreNotFound(err)
+	}
+
+	if secret.Type != corev1.SecretTypeDockerConfigJson {
+		return nil, nil
+	}
+	if val, ok := secret.GetLabels()["serverless.kyma-project.io/remote-registry"]; !ok || val != "config" {
+		return nil, nil
+	}
+	if val, ok := secret.GetLabels()["serverless.kyma-project.io/config"]; !ok || val != "credentials" {
+		return nil, nil
+	}
+
+	return &secret, nil
+}
