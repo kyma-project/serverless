@@ -49,7 +49,7 @@ func TestListExternalRegistrySecrets(t *testing.T) {
 
 		err := DetectExternalRegistrySecrets(ctx, client)
 		require.Error(t, err)
-		require.ErrorContains(t, err, "test-secret")
+		require.ErrorContains(t, err, testRegistryFilledSecret.Name)
 	})
 }
 
