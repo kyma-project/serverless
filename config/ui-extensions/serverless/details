@@ -1,0 +1,64 @@
+header:
+  - name: Ready  
+    source: status.state
+    widget: Badge
+    highlights:
+      positive:
+        - 'Ready'
+body:
+  - name: Desired Specification
+    widget: Panel
+    children:
+      - name: Docker Registry
+        visibility: $root.spec.dockerRegistry.enableInternal = true
+        source: spec.dockerRegistry.enableInternal?"INTERNAL":""
+      - name: Docker Registry
+        visibility: '$exists($value)'
+        source: spec.dockerRegistry.secretName
+        widget: ResourceLink
+        resource:
+          name: spec.dockerRegistry.secretName
+          namespace: $root.metadata.namespace
+          kind: "'Secret'"
+      - name: Eventing Endpoint
+        source: spec.eventing.endpoint
+        visibility: '$exists($value)'
+      - name: Tracing Endpoint
+        source: spec.tracing.endpoint
+        visibility: '$exists($value)'
+  - name: Status
+    widget: Panel
+    children:
+    - name: Docker Registry
+      source: status.dockerRegistry
+    - name: Eventing Endpoint
+      source: status.eventingEndpoint
+    - name: Tracing Endpoint
+      source: status.tracingEndpoint
+
+  - source: status.conditions
+    widget: Table
+    name: Reconciliation Conditions
+    children:
+      - source: type
+        name: Type
+      - source: status
+        name: Status
+        widget: Badge
+        highlights:
+          positive:
+            - 'True'
+          negative:
+            - 'False'
+      - source: reason
+        name: Reason
+      - source: message
+        name: Message
+      - source: '$readableTimestamp(lastTransitionTime)'
+        name: Last transition
+        sort: true
+
+  - widget: EventList
+    filter: '$matchEvents($$, $root.kind, $root.metadata.name)'
+    name: events
+    defaultType: information
