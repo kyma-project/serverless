@@ -121,6 +121,9 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 	t.Run("k3d registry and update", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "some-namespace",
+				},
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
 						EnableInternal: pointer.Bool(false),
@@ -136,6 +139,11 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				},
 			},
 		}
+		r := &reconciler{
+			k8s: k8s{
+				client: fake.NewClientBuilder().Build(),
+			},
+		}
 		expectedFlags := map[string]interface{}{
 			"dockerRegistry": map[string]interface{}{
 				"enableInternal":  false,
@@ -145,7 +153,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		}
 		expectedNext := sFnUpdateStatusAndRequeue
 
-		next, result, err := sFnRegistryConfiguration(context.Background(), nil, s)
+		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
 		require.Nil(t, result)
 		require.NoError(t, err)
 		requireEqualFunc(t, expectedNext, next)
@@ -156,6 +164,9 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 	t.Run("external registry secret not found error", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "some-namespace",
+				},
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
 						EnableInternal: pointer.Bool(false),
@@ -184,5 +195,54 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			v1alpha1.ConditionReasonConfigurationErr,
 			"secrets \"test-secret-not-found\" not found",
 		)
+	})
+	t.Run("overwrite docker registry status when exists serverless cluster-wide external registry secret", func(t *testing.T) {
+		serverlessClusterWideExternalRegistrySecret := fixServerlessClusterWideExternalRegistrySecret()
+		s := &systemState{
+			instance: v1alpha1.Serverless{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: serverlessClusterWideExternalRegistrySecret.Namespace,
+				},
+				Spec: v1alpha1.ServerlessSpec{
+					DockerRegistry: &v1alpha1.DockerRegistry{
+						EnableInternal: pointer.Bool(true),
+					},
+				},
+			},
+			snapshot: v1alpha1.ServerlessStatus{
+				DockerRegistry: "",
+			},
+			chartConfig: &chart.Config{
+				Release: chart.Release{
+					Flags: chart.EmptyFlags(),
+				},
+			},
+		}
+
+		client := fake.NewClientBuilder().
+			WithObjects(serverlessClusterWideExternalRegistrySecret).
+			Build()
+		r := &reconciler{
+			k8s: k8s{client: client},
+			log: zap.NewNop().Sugar(),
+		}
+
+		expectedFlags := map[string]interface{}{
+			"dockerRegistry": map[string]interface{}{
+				"enableInternal": true,
+			},
+			"global": map[string]interface{}{
+				"registryNodePort": int64(32_137),
+			},
+		}
+		expectedNext := sFnUpdateStatusAndRequeue
+
+		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
+		require.Nil(t, result)
+		require.NoError(t, err)
+		requireEqualFunc(t, expectedNext, next)
+
+		require.EqualValues(t, expectedFlags, s.chartConfig.Release.Flags)
+		require.Equal(t, string(serverlessClusterWideExternalRegistrySecret.Data["registryAddress"]), s.instance.Status.DockerRegistry)
 	})
 }
