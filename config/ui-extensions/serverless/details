@@ -42,12 +42,6 @@ body:
     children:
       - source: type
         name: Type
-      - source: reason
-        name: Reason
-      - source: message
-        name: Message
-      - source: '$readableTimestamp(lastTransitionTime)'
-        name: Time
       - source: status
         name: Status
         widget: Badge
@@ -56,6 +50,13 @@ body:
             - 'True'
           negative:
             - 'False'
+      - source: reason
+        name: Reason
+      - source: message
+        name: Message
+      - source: '$readableTimestamp(lastTransitionTime)'
+        name: Last transition
+        sort: true
 
   - widget: EventList
     filter: '$matchEvents($$, $root.kind, $root.metadata.name)'
