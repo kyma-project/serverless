@@ -3,7 +3,6 @@ package registry
 import (
 	"context"
 	"fmt"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -13,21 +12,7 @@ import (
 
 var (
 	testRegistryEmptySecret  = &corev1.Secret{}
-	testRegistryFilledSecret = &corev1.Secret{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Secret",
-			APIVersion: "v1",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "serverless-registry-config",
-			Namespace: "kyma-test",
-			Labels: map[string]string{
-				"serverless.kyma-project.io/remote-registry": "config",
-				"serverless.kyma-project.io/config":          "credentials",
-			},
-		},
-		Type: corev1.SecretTypeDockerConfigJson,
-	}
+	testRegistryFilledSecret = FixServerlessClusterWideExternalRegistrySecret()
 )
 
 func TestListExternalRegistrySecrets(t *testing.T) {
@@ -60,7 +45,7 @@ func Test_GetExternalRegistrySecret(t *testing.T) {
 			Build()
 		namespace := "some-namespace"
 
-		secret, err := GetExternalRegistrySecret(ctx, client, namespace)
+		secret, err := GetServerlessExternalRegistrySecret(ctx, client, namespace)
 		require.NoError(t, err)
 		require.Nil(t, secret)
 	})
@@ -72,7 +57,7 @@ func Test_GetExternalRegistrySecret(t *testing.T) {
 			Build()
 		namespace := testRegistryFilledSecret.Namespace
 
-		secret, err := GetExternalRegistrySecret(ctx, client, namespace)
+		secret, err := GetServerlessExternalRegistrySecret(ctx, client, namespace)
 		require.NoError(t, err)
 		require.NotNil(t, secret)
 		require.Equal(t, testRegistryFilledSecret, secret)
@@ -102,7 +87,7 @@ func Test_GetExternalRegistrySecret(t *testing.T) {
 			name: "without label remote-registry",
 			secretInEnvironment: func() *corev1.Secret {
 				secret := testRegistryFilledSecret.DeepCopy()
-				delete(secret.Labels, "serverless.kyma-project.io/remote-registry")
+				delete(secret.Labels, ServerlessExternalRegistryLabelRemoteRegistryKey)
 				return secret
 			}(),
 		},
@@ -110,7 +95,7 @@ func Test_GetExternalRegistrySecret(t *testing.T) {
 			name: "without label config",
 			secretInEnvironment: func() *corev1.Secret {
 				secret := testRegistryFilledSecret.DeepCopy()
-				delete(secret.Labels, "serverless.kyma-project.io/config")
+				delete(secret.Labels, ServerlessExternalRegistryLabelConfigKey)
 				return secret
 			}(),
 		},
@@ -123,7 +108,7 @@ func Test_GetExternalRegistrySecret(t *testing.T) {
 				Build()
 			namespace := testRegistryFilledSecret.Namespace
 
-			secret, err := GetExternalRegistrySecret(ctx, client, namespace)
+			secret, err := GetServerlessExternalRegistrySecret(ctx, client, namespace)
 			require.NoError(t, err)
 			require.Nil(t, secret)
 		})

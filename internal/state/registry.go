@@ -52,13 +52,13 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 
 func setExternalRegistrySecretNameInDockerRegistryStatus(ctx context.Context, r *reconciler, s *systemState) {
 	// doc: https://kyma-project.io/docs/kyma/latest/05-technical-reference/svls-03-switching-registries#cluster-wide-external-registry
-	secret, err := registry.GetExternalRegistrySecret(ctx, r.client, s.instance.GetNamespace())
+	secret, err := registry.GetServerlessExternalRegistrySecret(ctx, r.client, s.instance.GetNamespace())
 	// ignore errors because it only set status
 	if err != nil || secret == nil {
 		return
 	}
-	if registryAddress, ok := secret.Data["registryAddress"]; ok {
-		s.instance.Status.DockerRegistry = string(registryAddress)
+	if address, ok := secret.Data["serverAddress"]; ok {
+		s.instance.Status.DockerRegistry = string(address)
 	}
 	return
 }

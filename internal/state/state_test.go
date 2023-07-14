@@ -3,7 +3,6 @@ package state
 import (
 	"context"
 	"fmt"
-	corev1 "k8s.io/api/core/v1"
 	"reflect"
 	"runtime"
 	"testing"
@@ -82,25 +81,4 @@ func requireContainsCondition(t *testing.T, status v1alpha1.ServerlessStatus,
 		}
 	}
 	require.True(t, hasExpectedCondition)
-}
-
-func fixServerlessClusterWideExternalRegistrySecret() *corev1.Secret {
-	return &corev1.Secret{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "Secret",
-			APIVersion: "v1",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "serverless-registry-config",
-			Namespace: "kyma-test",
-			Labels: map[string]string{
-				"serverless.kyma-project.io/remote-registry": "config",
-				"serverless.kyma-project.io/config":          "credentials",
-			},
-		},
-		Type: corev1.SecretTypeDockerConfigJson,
-		Data: map[string][]byte{
-			"registryAddress": []byte("test-registry-address"),
-		},
-	}
 }

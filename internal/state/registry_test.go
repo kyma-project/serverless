@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
+	"github.com/kyma-project/serverless-manager/internal/registry"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
@@ -197,7 +198,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		)
 	})
 	t.Run("overwrite docker registry status when exists serverless cluster-wide external registry secret", func(t *testing.T) {
-		serverlessClusterWideExternalRegistrySecret := fixServerlessClusterWideExternalRegistrySecret()
+		serverlessClusterWideExternalRegistrySecret := registry.FixServerlessClusterWideExternalRegistrySecret()
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				ObjectMeta: metav1.ObjectMeta{
@@ -243,6 +244,6 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		requireEqualFunc(t, expectedNext, next)
 
 		require.EqualValues(t, expectedFlags, s.chartConfig.Release.Flags)
-		require.Equal(t, string(serverlessClusterWideExternalRegistrySecret.Data["registryAddress"]), s.instance.Status.DockerRegistry)
+		require.Equal(t, string(serverlessClusterWideExternalRegistrySecret.Data["serverAddress"]), s.instance.Status.DockerRegistry)
 	})
 }
