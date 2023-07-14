@@ -1,0 +1,15 @@
+resource:
+  kind: Serverless
+  group: operator.kyma-project.io
+  version: v1alpha1
+urlPath: serverlesses
+category: Kyma
+name: Serverless
+scope: namespace
+features:
+  actions:
+    disableCreate: true
+    disableDelete: true
+description: >-
+  {{[Serverless CR](https://github.com/kyma-project/serverless-manager/blob/main/config/samples/operator_v1alpha1_serverless.yaml)}}
+  specifies serverless module.

@@ -1,0 +1,25 @@
+- path: spec.dockerRegistry.enableInternal
+  simple: true
+  name: Enable Internal Docker Registry
+- simple: true
+  widget: Alert
+  severity: warning
+  alert: "'Internal Docker Registry is not recommended for production grade installations'"
+  visibility: "$root.spec.dockerRegistry.enableInternal = true"
+- path: spec.dockerRegistry.secretName
+  visibility: $root.spec.dockerRegistry.enableInternal != true
+  simple: true
+  widget: Resource
+  name: External Docker Registry Configuration
+  resource:
+    kind: Secret
+    version: v1
+    scope: namespace
+- path: spec.tracing.endpoint
+  name: Trace Collector Endpoint
+  simple: true
+  required: false
+- path: spec.eventing.endpoint
+  name: Eventing Endpoint
+  simple: true
+  required: false
