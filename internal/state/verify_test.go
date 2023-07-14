@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"errors"
+	"github.com/kyma-project/serverless-manager/internal/registry"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
@@ -31,19 +32,7 @@ var (
 			},
 		},
 	}
-	testRegistryFilledSecret = &corev1.Secret{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       "secret",
-			APIVersion: "v1",
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "test-secret",
-			Namespace: "kyma-test",
-			Labels: map[string]string{
-				"serverless.kyma-project.io/remote-registry": "config",
-			},
-		},
-	}
+	testRegistryFilledSecret = registry.FixServerlessClusterWideExternalRegistrySecret()
 )
 
 const (
@@ -128,7 +117,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 			v1alpha1.ConditionTypeInstalled,
 			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonInstalled,
-			"Warning: additional registry configuration detected: found kyma-test/test-secret secret",
+			"Warning: additional registry configuration detected: found kyma-test/serverless-registry-config secret",
 		)
 	})
 

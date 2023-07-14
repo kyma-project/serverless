@@ -40,12 +40,27 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 	default:
 		setK3dRegistry(s)
 	}
+	// overwrite registryStatus when there is serverless (not serverless-manager) cluster-wide external registry secret
+	setExternalRegistrySecretNameInDockerRegistryStatus(ctx, r, s)
 
 	if s.snapshot.DockerRegistry != s.instance.Status.DockerRegistry {
 		return nextState(sFnUpdateStatusAndRequeue)
 	}
 
 	return nextState(sFnOptionalDependencies)
+}
+
+func setExternalRegistrySecretNameInDockerRegistryStatus(ctx context.Context, r *reconciler, s *systemState) {
+	// doc: https://kyma-project.io/docs/kyma/latest/05-technical-reference/svls-03-switching-registries#cluster-wide-external-registry
+	secret, err := registry.GetServerlessExternalRegistrySecret(ctx, r.client, s.instance.GetNamespace())
+	// ignore errors because it only set status
+	if err != nil || secret == nil {
+		return
+	}
+	if address, ok := secret.Data["serverAddress"]; ok {
+		s.instance.Status.DockerRegistry = string(address)
+	}
+	return
 }
 
 func setInternalRegistry(ctx context.Context, r *reconciler, s *systemState) error {

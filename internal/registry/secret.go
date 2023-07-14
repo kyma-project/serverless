@@ -9,9 +9,17 @@ import (
 	"strings"
 )
 
+const (
+	ServerlessExternalRegistrySecretName             = "serverless-registry-config"
+	ServerlessExternalRegistryLabelRemoteRegistryKey = "serverless.kyma-project.io/remote-registry"
+	ServerlessExternalRegistryLabelRemoteRegistryVal = "config"
+	ServerlessExternalRegistryLabelConfigKey         = "serverless.kyma-project.io/config"
+	ServerlessExternalRegistryLabelConfigVal         = "credentials"
+)
+
 func DetectExternalRegistrySecrets(ctx context.Context, c client.Client) error {
 	secrets := corev1.SecretList{}
-	err := c.List(ctx, &secrets, client.MatchingLabels{"serverless.kyma-project.io/remote-registry": "config"})
+	err := c.List(ctx, &secrets, client.MatchingLabels{ServerlessExternalRegistryLabelRemoteRegistryKey: ServerlessExternalRegistryLabelRemoteRegistryVal})
 	if err != nil {
 		return err
 	}
@@ -25,4 +33,28 @@ func DetectExternalRegistrySecrets(ctx context.Context, c client.Client) error {
 	}
 
 	return errors.Errorf("additional registry configuration detected: %s", strings.Join(errMsgs, "; "))
+}
+
+func GetServerlessExternalRegistrySecret(ctx context.Context, c client.Client, namespace string) (*corev1.Secret, error) {
+	secret := corev1.Secret{}
+	key := client.ObjectKey{
+		Namespace: namespace,
+		Name:      ServerlessExternalRegistrySecretName,
+	}
+	err := c.Get(ctx, key, &secret)
+	if err != nil {
+		return nil, client.IgnoreNotFound(err)
+	}
+
+	if secret.Type != corev1.SecretTypeDockerConfigJson {
+		return nil, nil
+	}
+	if val, ok := secret.GetLabels()[ServerlessExternalRegistryLabelRemoteRegistryKey]; !ok || val != ServerlessExternalRegistryLabelRemoteRegistryVal {
+		return nil, nil
+	}
+	if val, ok := secret.GetLabels()[ServerlessExternalRegistryLabelConfigKey]; !ok || val != ServerlessExternalRegistryLabelConfigVal {
+		return nil, nil
+	}
+
+	return &secret, nil
 }
