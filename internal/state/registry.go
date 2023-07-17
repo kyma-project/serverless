@@ -2,9 +2,9 @@ package state
 
 import (
 	"context"
-	"github.com/pkg/errors"
-
+	"fmt"
 	"github.com/kyma-project/serverless-manager/internal/registry"
+	"github.com/pkg/errors"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
@@ -14,9 +14,23 @@ import (
 )
 
 func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+
+	secret, err := registry.GetServerlessExternalRegistrySecret(ctx, r.client, s.instance.GetNamespace())
+	if err != nil {
+		s.setState(v1alpha1.StateError)
+		s.instance.UpdateConditionFalse(
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonConfigurationErr,
+			err,
+		)
+		return nextState(sFnUpdateStatusWithError(err))
+	}
+
 	switch {
-	case *s.instance.Spec.DockerRegistry.EnableInternal:
-		err := setInternalRegistry(ctx, r, s)
+	case secret != nil:
+		setExternalRegistrySecretNameInDockerRegistryStatus(secret, s)
+	case s.instance.Spec.DockerRegistry.SecretName != nil:
+		err := setExternalRegistry(ctx, r, s)
 		if err != nil {
 			s.setState(v1alpha1.StateError)
 			s.instance.UpdateConditionFalse(
@@ -26,8 +40,8 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 			)
 			return nextState(sFnUpdateStatusWithError(err))
 		}
-	case s.instance.Spec.DockerRegistry.SecretName != nil:
-		err := setExternalRegistry(ctx, r, s)
+	case *s.instance.Spec.DockerRegistry.EnableInternal:
+		err := setInternalRegistry(ctx, r, s)
 		if err != nil {
 			s.setState(v1alpha1.StateError)
 			s.instance.UpdateConditionFalse(
@@ -40,8 +54,8 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 	default:
 		setK3dRegistry(s)
 	}
-	// overwrite registryStatus when there is serverless (not serverless-manager) cluster-wide external registry secret
-	setExternalRegistrySecretNameInDockerRegistryStatus(ctx, r, s)
+
+	setRegistryConfigurationWarnings(secret, s)
 
 	if s.snapshot.DockerRegistry != s.instance.Status.DockerRegistry {
 		return nextState(sFnUpdateStatusAndRequeue)
@@ -50,11 +64,21 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 	return nextState(sFnOptionalDependencies)
 }
 
-func setExternalRegistrySecretNameInDockerRegistryStatus(ctx context.Context, r *reconciler, s *systemState) {
+func setRegistryConfigurationWarnings(secret *corev1.Secret, s *systemState) {
+	if secret != nil && (s.instance.Spec.DockerRegistry.SecretName == nil || secret.Name != *s.instance.Spec.DockerRegistry.SecretName) {
+		s.addWarning(fmt.Sprintf("used registry coming from secret %s/%s, please fill the field spec.dockerRegistry.secretName to match configured secret ", secret.Name, secret.Namespace))
+	}
+	if secret != nil && *s.instance.Spec.DockerRegistry.EnableInternal == true {
+		s.addWarning(fmt.Sprintf("used registry coming from secret %s/%s, spec.dockerRegistry.enableInternal is enabled but not used - edit spec or delete secret to match desired state ", secret.Name, secret.Namespace))
+	}
+	if *s.instance.Spec.DockerRegistry.EnableInternal == true && s.instance.Spec.DockerRegistry.SecretName != nil {
+		s.addWarning("both spec.dockerRegistry.enableInternal is enabled & spec.dockerRegistry.secretName exists - delete secretName field or set enableInternal value to false ")
+	}
+}
+
+func setExternalRegistrySecretNameInDockerRegistryStatus(secret *corev1.Secret, s *systemState) {
 	// doc: https://kyma-project.io/docs/kyma/latest/05-technical-reference/svls-03-switching-registries#cluster-wide-external-registry
-	secret, err := registry.GetServerlessExternalRegistrySecret(ctx, r.client, s.instance.GetNamespace())
-	// ignore errors because it only set status
-	if err != nil || secret == nil {
+	if secret == nil {
 		return
 	}
 	if address, ok := secret.Data["serverAddress"]; ok {

@@ -15,29 +15,6 @@ var (
 	testRegistryFilledSecret = FixServerlessClusterWideExternalRegistrySecret()
 )
 
-func TestListExternalRegistrySecrets(t *testing.T) {
-	t.Run("returns nil when  external registry secret not found", func(t *testing.T) {
-		ctx := context.Background()
-		client := fake.NewClientBuilder().
-			WithRuntimeObjects(testRegistryEmptySecret).
-			Build()
-
-		err := DetectExternalRegistrySecrets(ctx, client)
-		require.NoError(t, err)
-	})
-
-	t.Run("returns error when found secrets", func(t *testing.T) {
-		ctx := context.Background()
-		client := fake.NewClientBuilder().
-			WithRuntimeObjects(testRegistryFilledSecret).
-			Build()
-
-		err := DetectExternalRegistrySecrets(ctx, client)
-		require.Error(t, err)
-		require.ErrorContains(t, err, testRegistryFilledSecret.Name)
-	})
-}
-
 func Test_GetExternalRegistrySecret(t *testing.T) {
 	t.Run("returns nil when external registry secret not found", func(t *testing.T) {
 		ctx := context.Background()

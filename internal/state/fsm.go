@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"fmt"
+	"github.com/pkg/errors"
 	"reflect"
 	"runtime"
 	"strings"
@@ -38,6 +39,14 @@ type systemState struct {
 	instance    v1alpha1.Serverless
 	snapshot    v1alpha1.ServerlessStatus
 	chartConfig *chart.Config
+	warning     error
+}
+
+func (s *systemState) addWarning(message string) {
+	if s.warning != nil {
+		message = fmt.Sprintf("%s; %s", s.warning.Error(), message)
+	}
+	s.warning = errors.New(message)
 }
 
 func (s *systemState) saveSnapshot() {

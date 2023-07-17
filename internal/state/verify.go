@@ -6,7 +6,6 @@ import (
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
-	"github.com/kyma-project/serverless-manager/internal/registry"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -30,13 +29,12 @@ func sFnVerifyResources(ctx context.Context, r *reconciler, s *systemState) (sta
 		return requeueAfter(requeueDuration)
 	}
 
-	err = registry.DetectExternalRegistrySecrets(ctx, r.client)
-	if err != nil {
+	if s.warning != nil {
 		s.setState(v1alpha1.StateWarning)
 		s.instance.UpdateConditionTrue(
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstalled,
-			fmt.Sprintf("Warning: %s", err.Error()),
+			fmt.Sprintf("Warning: %s", s.warning.Error()),
 		)
 		return nextState(sFnUpdateStatusAndStop)
 	}
