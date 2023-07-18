@@ -34,7 +34,7 @@ func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (state
 		s.instance.UpdateConditionTrue(
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstalled,
-			fmt.Sprintf("Warning: %s", s.warning.Error()),
+			fmt.Sprintf("%s: %s", warningMessagePrefix, s.warning.Error()),
 		)
 		return nextState(sFnUpdateStatusAndStop)
 	}
