@@ -11,7 +11,7 @@ import (
 )
 
 // verify if all workloads are in ready state
-func sFnVerifyResources(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	ready, err := chart.Verify(s.chartConfig)
 	if err != nil {
 		r.log.Warnf("error while verifying resource %s: %s",
