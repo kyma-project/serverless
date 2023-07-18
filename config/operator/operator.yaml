@@ -66,5 +66,5 @@ spec:
           requests:
             cpu: 10m
             memory: 64Mi
-      serviceAccountName: serverless-operator
+      serviceAccountName: operator
       terminationGracePeriodSeconds: 10

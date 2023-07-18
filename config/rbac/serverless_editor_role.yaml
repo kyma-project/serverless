@@ -4,7 +4,7 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: clusterrole
-    app.kubernetes.io/instance: serverless-editor-role
+    app.kubernetes.io/instance: serverless-operator-editor-role
     app.kubernetes.io/component: rbac
     app.kubernetes.io/created-by: serverless-operator
     app.kubernetes.io/part-of: serverless-operator

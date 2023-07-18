@@ -4,7 +4,7 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: clusterrole
-    app.kubernetes.io/instance: serverless-viewer-role
+    app.kubernetes.io/instance: serverless-operator-viewer-role
     app.kubernetes.io/component: rbac
     app.kubernetes.io/created-by: serverless-operator
     app.kubernetes.io/part-of: serverless-operator
