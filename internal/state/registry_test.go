@@ -3,6 +3,8 @@ package state
 import (
 	"context"
 	"errors"
+	"testing"
+
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/kyma-project/serverless-manager/internal/registry"
@@ -12,7 +14,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/pointer"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
-	"testing"
 )
 
 func Test_sFnRegistryConfiguration(t *testing.T) {
@@ -228,14 +229,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 		}
 
-		expectedFlags := map[string]interface{}{
-			"dockerRegistry": map[string]interface{}{
-				"enableInternal": true,
-			},
-			"global": map[string]interface{}{
-				"registryNodePort": int64(32_137),
-			},
-		}
+		expectedFlags := map[string]interface{}{}
 		expectedNext := sFnUpdateStatusAndRequeue
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)

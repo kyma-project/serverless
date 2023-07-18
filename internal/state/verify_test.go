@@ -3,8 +3,10 @@ package state
 import (
 	"context"
 	"errors"
-	"github.com/kyma-project/serverless-manager/internal/registry"
+	"fmt"
 	"testing"
+
+	"github.com/kyma-project/serverless-manager/internal/registry"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
@@ -86,6 +88,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 
 	t.Run("warning", func(t *testing.T) {
 		s := &systemState{
+			warning:  errors.New("test warning"),
 			instance: *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
@@ -98,9 +101,6 @@ func Test_sFnVerifyResources(t *testing.T) {
 
 		r := &reconciler{
 			log: zap.NewNop().Sugar(),
-			k8s: k8s{
-				client: fake.NewClientBuilder().WithRuntimeObjects(testRegistryFilledSecret).Build(),
-			},
 		}
 
 		// verify and return update condition state
@@ -117,7 +117,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 			v1alpha1.ConditionTypeInstalled,
 			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonInstalled,
-			"Warning: additional registry configuration detected: found kyma-test/serverless-registry-config secret",
+			fmt.Sprintf("Warning: %s", s.warning),
 		)
 	})
 
