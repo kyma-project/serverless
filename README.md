@@ -70,7 +70,7 @@ kubectl apply -f config/samples/operator_v1alpha1_serverless.yaml
     git clone https://github.com/kyma-project/serverless-manager.git && cd serverless-manager/
     ```
 
-2. Build the operator locally and run it on the k3d cluster.
+2. Build the serverless operator locally and run it on the k3d cluster.
 
     ```bash
     make -C hack/local run-with-lifecycle-manager
