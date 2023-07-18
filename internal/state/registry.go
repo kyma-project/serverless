@@ -67,21 +67,26 @@ func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error
 }
 
 func addRegistryConfigurationWarnings(secret *corev1.Secret, s *systemState) {
-	if secret != nil && (s.instance.Spec.DockerRegistry.SecretName == nil || secret.Name != *s.instance.Spec.DockerRegistry.SecretName) {
-		s.addWarning(fmt.Sprintf("used registry coming from secret %s/%s, please fill the field spec.dockerRegistry.secretName to match configured secret", secret.Name, secret.Namespace))
+	// runtime secret exist and it's other than this under secretName
+	if secret != nil &&
+		s.instance.Spec.DockerRegistry.SecretName != nil &&
+		secret.Name != *s.instance.Spec.DockerRegistry.SecretName {
+		s.addWarning(fmt.Sprintf("actual registry configuration comes from %s/%s and it's different from spec.dockerRegistry.secretName. Reflect the %s secret in the secretName field or delete it", secret.Name, secret.Namespace, secret.Name))
 	}
-	if secret != nil && *s.instance.Spec.DockerRegistry.EnableInternal {
-		s.addWarning(fmt.Sprintf("used registry coming from secret %s/%s, spec.dockerRegistry.enableInternal is enabled but not used - edit spec or delete secret to match desired state", secret.Name, secret.Namespace))
+
+	// runtime secret exist and secretName field is empty
+	if secret != nil && s.instance.Spec.DockerRegistry.SecretName == nil {
+		s.addWarning(fmt.Sprintf("actual registry configuration comes from %s/%s and it's different from spec.dockerRegistry.secretName. Reflect %s secret in the secretName field", secret.Name, secret.Namespace, secret.Name))
 	}
+
+	// enableInternal is true and secretName is used
 	if *s.instance.Spec.DockerRegistry.EnableInternal && s.instance.Spec.DockerRegistry.SecretName != nil {
-		s.addWarning("both spec.dockerRegistry.enableInternal is enabled & spec.dockerRegistry.secretName is used - delete secretName field or set enableInternal value to false")
+		s.addWarning("spec.dockerRegistry.enableInternal is true and spec.dockerRegistry.secretName is used. Delete the secretName field or set the enableInternal value to false")
 	}
 }
 
 func setRuntimeRegistryConfig(secret *corev1.Secret, s *systemState) {
-	if address, ok := secret.Data["serverAddress"]; ok {
-		s.instance.Status.DockerRegistry = string(address)
-	}
+	s.instance.Status.DockerRegistry = string(secret.Data["serverAddress"])
 }
 
 func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemState) error {
