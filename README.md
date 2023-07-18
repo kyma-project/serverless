@@ -126,15 +126,15 @@ kubectl apply -f config/samples/operator_v1alpha1_serverless.yaml
 
 Each pull request to the repository triggers CI/CD jobs that verify the serverless-operator reconciliation logic and run integration tests of the Serverless module.
 
-- `pre-serverless-manager-operator-build` - Compiling the serverless-manager code and pushing its docker image.
-- `pre-serverless-manager-operator-tests` - Testing the serverless-manager reconciliation code (Serverless CR CRUD operations).
-- `pre-main-serverless-manager-verify` - Integration testing for the Serverless module installed by serverless-manager (**not using lifecycle-manager**).
+- `pre-serverless-operator-operator-build` - Compiling the serverless-operator code and pushing its docker image.
+- `pre-serverless-operator-operator-tests` - Testing the serverless-operator reconciliation code (Serverless CR CRUD operations).
+- `pre-main-serverless-operator-verify` - Integration testing for the Serverless module installed by serverless-operator (**not using lifecycle-manager**).
 - `pull-serverless-module-build` - Bundling a module template manifest that allows testing it against lifecycle-manager manually. 
 
 After the pull request is merged, the following CI/CD jobs are executed:
 
- - `post-main-serverless-manager-verify` - Installs the Serverless module (**using lifecycle-manager**) and runs integration tests of Serverless.
- - `post-serverless-manager-operator-build` - rebuilds the Serverless module and the module template manifest file that can be submitted to modular Kyma.
+ - `post-main-serverless-operator-verify` - Installs the Serverless module (**using lifecycle-manager**) and runs integration tests of Serverless.
+ - `post-serverless-operator-build` - rebuilds  the Serverless module and the module template manifest file that can be submitted to modular Kyma.
  
 ## Troubleshooting
 
