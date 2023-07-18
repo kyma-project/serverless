@@ -16,7 +16,7 @@
     version: v1
     scope: namespace
 - path: spec.tracing.endpoint
-  name: Trace Collector Endpoint
+  name: OTLP Trace Endpoint
   simple: true
   required: false
 - path: spec.eventing.endpoint

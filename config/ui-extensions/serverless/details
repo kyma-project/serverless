@@ -23,7 +23,7 @@ body:
       - name: Eventing Endpoint
         source: spec.eventing.endpoint
         visibility: '$exists($value)'
-      - name: Tracing Endpoint
+      - name: OTLP Trace Endpoint
         source: spec.tracing.endpoint
         visibility: '$exists($value)'
   - name: Status
@@ -33,7 +33,7 @@ body:
       source: status.dockerRegistry
     - name: Eventing Endpoint
       source: status.eventingEndpoint
-    - name: Tracing Endpoint
+    - name: OTLP Trace Endpoint
       source: status.tracingEndpoint
 
   - source: status.conditions
