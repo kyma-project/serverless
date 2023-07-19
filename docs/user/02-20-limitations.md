@@ -89,12 +89,12 @@ Obviously, the bigger the runtime profile, the more resources are available to s
 ### Scaling
 
 Function runtime Pods can be scaled horizontally from zero up to the limits of the available resources at the Kubernetes worker nodes.
-See the [Use external scalers](../../../03-tutorials/00-serverless/svls-15-use-external-scalers.md) tutorial for more information.
+See the [Use external scalers](/docs/user/03-130-use-external-scalers.md) tutorial for more information.
 
 ## In-cluster Docker registry limitations
 
 Serverless comes with an in-cluster Docker registry for the Function images.
-This registry is only suitable for development because of its [limitations](../../main-areas/serverless/svls-03-container-registries.md), that is:
+This registry is only suitable for development because of its [limitations](/docs/user/00-20-container-registries.md), that is:
  - Registry capacity is limited to 20GB
  - There is no image lifecycle management. Once an image is stored in the registry, it stays there until it is manually removed.
 

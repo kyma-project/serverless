@@ -59,7 +59,7 @@ Follow these steps:
     EOF
     ```
 
-   >**NOTE:** Read more about [creating Functions](svls-01-create-inline-function.md).
+   >**NOTE:** Read more about [creating Functions](/docs/user/03-10-create-inline-function.md).
 
 4. Create an APIRule:
 
@@ -91,7 +91,7 @@ Follow these steps:
     EOF
     ```
 
-   >**NOTE:** Read more about [exposing Functions](svls-03-expose-function.md).
+   >**NOTE:** Read more about [exposing Functions](/docs/user/03-20-expose-function.md).
 
 5. Call Function:
 

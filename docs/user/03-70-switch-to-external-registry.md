@@ -47,7 +47,7 @@ After this change, any Function deployed in the `default` Namespace will store i
 
 ### Create required cloud resources
 
-To create cloud resources required for a given registry provider, follow the steps described in the [Set an external Docker registry](./svls-07-set-external-registry.md) tutorial.
+To create cloud resources required for a given registry provider, follow the steps described in the [Set an external Docker registry](/docs/user/03-60-set-external-registry.md) tutorial.
 
 ### Create a Secret CR
 
@@ -75,7 +75,7 @@ EOF
 
 ### Test the registry switch
 
-[Create a Function](./svls-01-create-inline-function.md) in the `default` Namespace and check if the Function's Deployment points to the external registry using this command:
+[Create a Function](/docs/user/03-10-create-inline-function.md) in the `default` Namespace and check if the Function's Deployment points to the external registry using this command:
 
 ```bash
 kubectl get pods -n default -l serverless.kyma-project.io/resource=deployment -o jsonpath='{ ...image }'

@@ -16,7 +16,7 @@ Before you start, make sure you have these tools installed:
 
 The following code samples illustrate how to enrich the default trace with custom spans, events, and tags:
 
-1. [Create an inline Function](./svls-01-create-inline-function.md) with the following body:
+1. [Create an inline Function](/docs/user/03-10-create-inline-function.md) with the following body:
 
    <div tabs name="code" group="functions-code">
    <details>
@@ -107,6 +107,6 @@ The following code samples illustrate how to enrich the default trace with custo
    </details>
    </div>
 
-2. [Expose your Function](./svls-03-expose-function.md).
+2. [Expose your Function](/docs/user/03-20-expose-function.md).
 
 3. Find the traces for the Function in the trace backend.
