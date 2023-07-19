@@ -36,21 +36,21 @@ When you enable the Serverless module, Serverless Manager takes care of installa
 
 If you're interested in learning more about the Serverless area, follow these links to:
 
-- Perform some simple and more advances tasks:
+- Perform some simple and more advanced tasks:
 
   - Create an [inline](/docs/user/03-10-create-inline-function.md) or a [Git](/docs/user/03-11-create-git-function.md) Function
   - [Expose the Function](/docs/user/03-20-expose-function.md)
   - [Manage Functions through Kyma CLI](/docs/user/03-30-manage-functions-with-kyma-cli.md)
   - [Debug a Function](/docs/user/03-40-debug-function.md)
-  - [Synchronize Functions in a GitOps fashion](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-06-sync-function-with-gitops.md)
-  - [Set an external Docker registry](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-07-set-external-registry.md) for your Function images and [switch between registries at runtime](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-08-switch-to-external-registry.md)
-  - [Log into a private package registry](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-09-log-into-private-packages-registry.md)
-  - [Set asynchronous communication between Functions](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-11-set-asynchronous-connection-of-functions.md)
-  - [Customize Function traces](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-12-customize-function-traces.md)
-  - [Override runtime image](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-13-override-runtime-image.md)
-  - [Inject environment variables](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-14-inject-envs.md)
-  - [Use external scalers](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-15-use-external-scalers.md)
-  - [Access to Secrets mounted as Volume](https://github.com/kyma-project/kyma/blob/main/docs/03-tutorials/00-serverless/svls-16-use-secret-mounts.md)
+  - [Synchronize Functions in a GitOps fashion](/docs/user/03-50-sync-function-with-gitops.md)
+  - [Set an external Docker registry](/docs/user/03-60-set-external-registry.md) for your Function images and [switch between registries at runtime](/docs/user/03-70-switch-to-external-registry.md)
+  - [Log into a private package registry](/docs/user/03-80-log-into-private-packages-registry.md)
+  - [Set asynchronous communication between Functions](/docs/user/03-90-set-asynchronous-connection)
+  - [Customize Function traces](/docs/user/03-100-customize-function-traces.md)
+  - [Override runtime image](/docs/user/03-110-override-runtime-image.md)
+  - [Inject environment variables](/docs/user/03-120-inject-envs.md)
+  - [Use external scalers](/docs/user/03-130-use-external-scalers.md)
+  - [Access to Secrets mounted as Volume](/docs/user/03-140-use-secret-mounts.md)
 
 - Troubleshoot Serverless-related issues when:
 
