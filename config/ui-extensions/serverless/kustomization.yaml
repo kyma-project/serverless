@@ -1,5 +1,5 @@
 configMapGenerator:
-- name: serverlesses.operator.kyma-project.io
+- name: operator.kyma-project.io
   namespace: kube-public
   files:
   - general

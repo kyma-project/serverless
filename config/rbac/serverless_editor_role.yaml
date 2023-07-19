@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/created-by: serverless-operator
     app.kubernetes.io/part-of: serverless-operator
     app.kubernetes.io/managed-by: kustomize
-  name: serverless-editor-role
+  name: operator-editor-role
 rules:
 - apiGroups:
   - operator.kyma-project.io
