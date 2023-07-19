@@ -3,7 +3,7 @@ kind: RoleBinding
 metadata:
   labels:
     app.kubernetes.io/name: rolebinding
-    app.kubernetes.io/instance: operator-leader-election-rolebinding
+    app.kubernetes.io/instance: serverless-operator-leader-election-rolebinding
     app.kubernetes.io/component: rbac
     app.kubernetes.io/created-by: serverless-operator
     app.kubernetes.io/part-of: serverless-operator
