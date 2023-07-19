@@ -34,7 +34,7 @@ Follow these steps:
     cd {FOLDER_NAME}
     ```
 
-    b. Create initial scaffolding for the Function using the dedicated CLI command:
+    b. Create initial scaffolding for the Function:
 
     ```bash
     kyma init function --name $NAME --namespace $NAMESPACE
@@ -125,7 +125,7 @@ Follow these steps:
     Kyma Dashboard
     </summary>
 
->**NOTE:** Kyma Dashboard uses Busola, which is not installed by default. Follow the [instructions](https://github.com/kyma-project/busola#installation) to install it.
+>**NOTE:** Kyma Dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola#installation).
 
 1.  Create a Namespace or select one from the drop-down list in the top navigation panel.
 

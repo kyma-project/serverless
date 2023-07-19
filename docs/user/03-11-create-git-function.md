@@ -112,7 +112,7 @@ Follow these steps:
     Kyma Dashboard
     </summary>
 
->**NOTE:** Kyma Dashboard uses Busola, which is not installed by default. Follow the [instructions](https://github.com/kyma-project/busola#installation) to install it.
+>**NOTE:** Kyma Dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola#installation).
 
 1. Create a Namespace or select one from the drop-down list in the top navigation panel.
 
@@ -140,9 +140,12 @@ Follow these steps:
 
 4. Go to **Advanced**, change **Source Type** from **Inline** to **Git Repository**.
 
-5. Click on the **Git Repository** section and enter `https://github.com/kyma-project/examples.git` as repository **URL**, `orders-service/function` as **Base Dir**,  and `main` as **Reference**.
+5. Click on the **Git Repository** section and enter the following values:
+   - Repository **URL**: `https://github.com/kyma-project/examples.git`
+   - **Base Dir**:`orders-service/function`
+   - **Reference**:`main`
 
-    > **NOTE:** If you want to connect a secured repository instead of a public one, toggle the **Auth** switch. In the **Auth** section choose **Secret** from the list and choose the preffered type.
+    > **NOTE:** If you want to connect a secured repository instead of a public one, toggle the **Auth** switch. In the **Auth** section, choose **Secret** from the list and choose the preferred type.
 6. Click **Create**.
 
     After a while, a message confirms that the Function has been created.

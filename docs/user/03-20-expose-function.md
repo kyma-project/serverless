@@ -35,7 +35,7 @@ Follow these steps:
       export NAMESPACE={NAMESPACE_NAME}
       ```
    >**NOTE:** The Function takes the name from the Function CR name. The APIRule CR can have a different name but for the purpose of this tutorial, all related resources share a common name defined under the **NAME** variable.
-2. Download the latest configuration of the Function from the cluster. This way you will update the local `config.yaml` file with the Function's code.
+2. Download the latest configuration of the Function from the cluster. This way, you update the local `config.yaml` file with the Function's code.
 
   ```bash
   kyma sync function $NAME -n $NAMESPACE
@@ -96,9 +96,9 @@ Follow these steps:
     export NAMESPACE={FUNCTION_NAMESPACE}
     ```
 
-    >**NOTE:** Function takes the name from the Function CR name. The APIRule CR can have a different name but for the purpose of this tutorial, all related resources share a common name defined under the **NAME** variable.
+    >**NOTE:** The Function takes the name from the Function CR name. The APIRule CR can have a different name but for the purpose of this tutorial, all related resources share a common name defined under the **NAME** variable.
 
-2. Create an APIRule CR for your Function. It is exposed on port `80` that is the default port of the [Service Placeholder](../../05-technical-reference/00-architecture/svls-01-architecture.md).
+2. Create an APIRule CR for your Function. It is exposed on port `80`, which is the default port of the [Service Placeholder](../../05-technical-reference/00-architecture/svls-01-architecture.md).
 
     ```yaml
     cat <<EOF | kubectl apply -f -
@@ -144,7 +144,7 @@ Follow these steps:
     Kyma Dashboard
     </summary>
 
->**NOTE:** Kyma Dashboard uses Busola, which is not installed by default. Follow the [instructions](https://github.com/kyma-project/busola#installation) to install it.
+>**NOTE:** Kyma Dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola#installation).
 
 1. Select a Namespace from the drop-down list in the top navigation panel. Make sure the Namespace includes the Function that you want to expose through an APIRule.
 
@@ -158,7 +158,7 @@ Follow these steps:
 
     - **Service Name** matching the Function's name.
 
-    - **Host** to determine the host on which you want to expose your Function. It is required to change the `*` symbol at the beggining to the subdomain name you want.
+    - **Host** to determine the host on which you want to expose your Function. You must change the `*` symbol at the beginning to the subdomain name you want.
 
 5. In the **Rules > Access Strategies > Config**  section, change the handler from `allow` to `noop` and select all the methods below.
 

@@ -3,7 +3,7 @@
 This tutorial shows how to use an external IDE to debug a Function in Kyma CLI.
 
 ## Steps
-Follows these steps:
+Learn how to debug a Function with Visual Studio Code for Node.js or Python, or GoLand:
 
 <div tabs name="steps" group="debug-function">
   <details>
