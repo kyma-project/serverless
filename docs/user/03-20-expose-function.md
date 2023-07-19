@@ -19,7 +19,7 @@ This tutorial is based on an existing Function. To create one, follow the [Creat
 
 ## Steps
 
-Follow these steps:
+You can expose a Function with Kyma Dashboard, Kyma CLI, or kubectl:
 
 <div tabs name="steps" group="expose-function">
   <details>
@@ -43,11 +43,11 @@ Follow these steps:
 
     - **Host** to determine the host on which you want to expose your Function. You must change the `*` symbol at the beginning to the subdomain name you want.
 
-5. In the **Rules > Access Strategies > Config**  section, change the handler from `allow` to `noop` and select all the methods below.
+4. In the **Rules > Access Strategies > Config**  section, change the handler from `allow` to `noop` and select all the methods below.
 
-6. Select **Create** to confirm your changes.
+5. Select **Create** to confirm your changes.
 
-7. Check if you can access the Function by selecting the HTTPS link under the **Host** column for the newly created APIRule.
+6. Check if you can access the Function by selecting the HTTPS link under the **Host** column for the newly created APIRule.
 
   </details>
   <details>

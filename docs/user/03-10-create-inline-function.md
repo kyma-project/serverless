@@ -9,7 +9,7 @@ To learn more about Function's signature, `event` and `context` objects, and cus
 
 ## Steps
 
-You can create a Function with Kyma CLI, kubectl, or Kyma Dashboard:
+You can create a Function with Kyma Dashboard, Kyma CLI, or kubectl:
 
 <div tabs name="steps" group="create-function">
   <details>
@@ -40,7 +40,7 @@ You can create a Function with Kyma CLI, kubectl, or Kyma Dashboard:
    ```
 The dialog box closes. Wait for the **Status** field to change into `RUNNING`, confirming that the Function was created successfully.
 
-4. If you decide to modify it, click **Edit** and confirm changes afterward by selecting the **Update** button. You will see the message at the bottom of the screen confirming the Function was updated.
+1. If you decide to modify it, click **Edit** and confirm changes afterward by selecting the **Update** button. You will see the message at the bottom of the screen confirming the Function was updated.
 
   </details>
   <details>
