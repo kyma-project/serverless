@@ -24,13 +24,11 @@ Follow these steps:
 
 1. To create local files with the default configuration for a Python Function, go to the folder in which you want to initiate the workspace content and run the `init` Kyma CLI command:
 
-  >**NOTE:** Learn why you want sidecar and how to enabled them. Follow [Istio sidecars in Kyma and why you want them](../../01-overview/service-mesh/smsh-03-istio-sidecars-in-kyma.md), [Default Istio setup in Kyma](../../01-overview/service-mesh/smsh-02-default-istio-setup-in-kyma.md) and [Enable automatic Istio sidecar proxy injection](../../04-operation-guides/operations/smsh-01-istio-enable-sidecar-injection.md)
-
   ```bash
   kyma init function --runtime python39 --name {FUNCTION_NAME}
   ```
 
-  Alternatively, use the `--dir {FULL_FOLDER_PATH}` flag to point to the directory where you want to create the Function's source files.
+  You can also use the `--dir {FULL_FOLDER_PATH}` flag to point to the directory where you want to create the Function's source files.
 
   >**NOTE:** Python 3.9 is only one of the available runtimes. Read about all [supported runtimes and sample Functions to run on them](../../05-technical-reference/svls-01-sample-functions.md).
 
@@ -43,7 +41,7 @@ Follow these steps:
   - `handler.py` with the Function's code and the simple "Hello World" logic
   - `requirements.txt` with an empty file for your Function's custom dependencies
 
-  This command also sets **sourcePath** in the `config.yaml` file to the full path of the workspace folder:
+  The `kyma init` command also sets **sourcePath** in the `config.yaml` file to the full path of the workspace folder:
 
   ```yaml
   name: my-function
@@ -54,7 +52,7 @@ Follow these steps:
       sourcePath: {FULL_PATH_TO_WORKSPACE_FOLDER}
   ```
 
-2. Run the `apply` Kyma CLI command to create a Function CR in the YAML format on your cluster:
+1. Run the `apply` Kyma CLI command to create a Function CR in the YAML format on your cluster:
 
   ```bash
   kyma apply function
