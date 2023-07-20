@@ -13,6 +13,12 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+const (
+	extRegSecDiffThanSpecFormat             = "actual registry configuration comes from %s/%s and it's different from spec.dockerRegistry.secretName. Reflect the %s secret in the secretName field or delete it"
+	extRegSecNotInSpecFormat                = "actual registry configuration comes from %s/%s and it's different from spec.dockerRegistry.secretName. Reflect %s secret in the secretName field"
+	internalEnabledAndSecretNameUsedMessage = "spec.dockerRegistry.enableInternal is true and spec.dockerRegistry.secretName is used. Delete the secretName field or set the enableInternal value to false"
+)
+
 func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	// setup status.dockerRegistry and set possible warnings
 	err := configureRegistry(ctx, r, s)
@@ -35,16 +41,16 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 }
 
 func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error {
-	secret, err := registry.GetServerlessExternalRegistrySecret(ctx, r.client, s.instance.GetNamespace())
+	extRegSecert, err := registry.GetServerlessExternalRegistrySecret(ctx, r.client, s.instance.GetNamespace())
 	if err != nil {
 		return err
 	}
 
 	switch {
-	case secret != nil:
+	case extRegSecert != nil:
 		// case: use runtime secret (with labels)
 		// doc: https://kyma-project.io/docs/kyma/latest/05-technical-reference/svls-03-switching-registries#cluster-wide-external-registry
-		setRuntimeRegistryConfig(secret, s)
+		setRuntimeRegistryConfig(extRegSecert, s)
 	case s.instance.Spec.DockerRegistry.SecretName != nil:
 		// case: use secret from secretName field
 		err := setExternalRegistryConfig(ctx, r, s)
@@ -62,26 +68,26 @@ func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error
 		setK3dRegistryConfig(s)
 	}
 
-	addRegistryConfigurationWarnings(secret, s)
+	addRegistryConfigurationWarnings(extRegSecert, s)
 	return nil
 }
 
-func addRegistryConfigurationWarnings(secret *corev1.Secret, s *systemState) {
+func addRegistryConfigurationWarnings(extRegSecert *corev1.Secret, s *systemState) {
 	// runtime secret exist and it's other than this under secretName
-	if secret != nil &&
+	if extRegSecert != nil &&
 		s.instance.Spec.DockerRegistry.SecretName != nil &&
-		secret.Name != *s.instance.Spec.DockerRegistry.SecretName {
-		s.addWarning(fmt.Sprintf("actual registry configuration comes from %s/%s and it's different from spec.dockerRegistry.secretName. Reflect the %s secret in the secretName field or delete it", secret.Name, secret.Namespace, secret.Name))
+		extRegSecert.Name != *s.instance.Spec.DockerRegistry.SecretName {
+		s.addWarning(fmt.Sprintf(extRegSecDiffThanSpecFormat, extRegSecert.Name, extRegSecert.Namespace, extRegSecert.Name))
 	}
 
 	// runtime secret exist and secretName field is empty
-	if secret != nil && s.instance.Spec.DockerRegistry.SecretName == nil {
-		s.addWarning(fmt.Sprintf("actual registry configuration comes from %s/%s and it's different from spec.dockerRegistry.secretName. Reflect %s secret in the secretName field", secret.Name, secret.Namespace, secret.Name))
+	if extRegSecert != nil && s.instance.Spec.DockerRegistry.SecretName == nil {
+		s.addWarning(fmt.Sprintf(extRegSecNotInSpecFormat, extRegSecert.Name, extRegSecert.Namespace, extRegSecert.Name))
 	}
 
 	// enableInternal is true and secretName is used
 	if *s.instance.Spec.DockerRegistry.EnableInternal && s.instance.Spec.DockerRegistry.SecretName != nil {
-		s.addWarning("spec.dockerRegistry.enableInternal is true and spec.dockerRegistry.secretName is used. Delete the secretName field or set the enableInternal value to false")
+		s.addWarning(internalEnabledAndSecretNameUsedMessage)
 	}
 }
 

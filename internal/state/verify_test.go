@@ -88,8 +88,8 @@ func Test_sFnVerifyResources(t *testing.T) {
 
 	t.Run("warning", func(t *testing.T) {
 		s := &systemState{
-			warning:  errors.New("test warning"),
-			instance: *testInstalledServerless.DeepCopy(),
+			warningMsg: "test warning",
+			instance:   *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
@@ -117,7 +117,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 			v1alpha1.ConditionTypeInstalled,
 			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonInstalled,
-			fmt.Sprintf("Warning: %s", s.warning),
+			fmt.Sprintf("Warning: %s", s.warningMsg),
 		)
 	})
 

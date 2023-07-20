@@ -29,12 +29,12 @@ func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (state
 		return requeueAfter(requeueDuration)
 	}
 
-	if s.warning != nil {
+	if s.warningMsg != "" {
 		s.setState(v1alpha1.StateWarning)
 		s.instance.UpdateConditionTrue(
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstalled,
-			fmt.Sprintf("%s: %s", warningMessagePrefix, s.warning.Error()),
+			fmt.Sprintf("%s: %s", warningMessagePrefix, s.warningMsg),
 		)
 		return nextState(sFnUpdateStatusAndStop)
 	}

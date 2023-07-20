@@ -7,8 +7,6 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/pkg/errors"
-
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"go.uber.org/zap"
@@ -40,14 +38,14 @@ type systemState struct {
 	instance    v1alpha1.Serverless
 	snapshot    v1alpha1.ServerlessStatus
 	chartConfig *chart.Config
-	warning     error
+	warningMsg  string
 }
 
 func (s *systemState) addWarning(message string) {
-	if s.warning != nil {
-		message = fmt.Sprintf("%s; %s", s.warning.Error(), message)
+	if s.warningMsg != "" {
+		message = fmt.Sprintf("%s; %s", s.warningMsg, message)
 	}
-	s.warning = errors.New(message)
+	s.warningMsg = message
 }
 
 func (s *systemState) saveSnapshot() {
