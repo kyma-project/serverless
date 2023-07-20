@@ -8,12 +8,14 @@ Learn how to debug a Function with Visual Studio Code for Node.js or Python, or 
 <div tabs name="steps" group="debug-function">
   <details>
   <summary label="vsc_node">
-  Visual Studio Code (Node.js)
+  Visual Studio Code
   </summary>
 
 1. In VSC, navigate to the location of the file with the Function definition.
 2. Create the `.vscode` directory.
-3. In the `.vscode` directory, create the `launch.json` file with this content:
+3. In the `.vscode` directory, create the `launch.json` file with the following content:
+
+   For Node.js:
    ```json
    {
      "version": "0.2.0",
@@ -33,20 +35,7 @@ Learn how to debug a Function with Visual Studio Code for Node.js or Python, or 
      ]
    }
     ```
-4. Run the Function with the `--debug` flag.
-    ```bash
-    kyma run function --debug
-    ```
-
-</details>
-<details>
-<summary label="vsc_python">
-Visual Studio Code (Python)
-</summary>
-
-1. In VSC, navigate to the location of the file with the Function definition.
-2. Create the `.vscode` directory.
-3. In the `.vscode` directory, create the `launch.json` file with this content:
+    For Python:
    ```json
    {
       "version": "0.2.0",
@@ -69,26 +58,10 @@ Visual Studio Code (Python)
       ]
    }
     ```
+
 4. Run the Function with the `--debug` flag.
     ```bash
     kyma run function --debug
     ```
 
 </details>
-<details>
-<summary label="goland">
-GoLand
-</summary>
-
-1. In GoLand, navigate to the location of the file with the Function definition.
-2. Choose the **Add Configuration...** option.
-3. Add new **Attach to Node.js/Chrome** configuration with these options:
-    - Host: `localhost`
-    - Port: `9229`
-4. Run the Function with the `--debug` flag.
-    ```bash
-    kyma run function --debug
-    ```
-
-    </details>
-</div>
