@@ -17,7 +17,7 @@ The following Serverless custom resource (CR) shows configuration of Serverless 
    kind: Serverless
    metadata:
      finalizers:
-     - serverless-manager.kyma-project.io/deletion-hook
+     - serverless-operator.kyma-project.io/deletion-hook
      name: default
      namespace: kyma-system
    spec:

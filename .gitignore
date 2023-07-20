@@ -40,6 +40,6 @@ docs/.DS_Store
 __debug_bin
 vendor
 
-serverless-manager.yaml
+serverless-operator.yaml
 manifests/serverless/rendered.yaml
 serverless.yaml

@@ -1,8 +1,8 @@
 # Overview
 
 Following the motivation of [kyma modularisation](https://github.com/kyma-project/community/tree/main/concepts/modularization), serverless should become a module that can be enabled/disabled by the user. 
-Serverless should have its own operator (`serverless-manager`) that should be installed in the target kyma runtime by an infrastructure operators based on the module descriptor (a.k.a `Module Template`).
-`Serverless-manager` watches `Serverless` Custom Resource to re-configure (reconcile) serverless instalation.
+Serverless should have its own operator (`serverless-operator`) that should be installed in the target kyma runtime by an infrastructure operators based on the module descriptor (a.k.a `Module Template`).
+`Serverless-operator` watches `Serverless` Custom Resource to re-configure (reconcile) serverless instalation.
 
 ## Serverless CR
 
@@ -56,7 +56,7 @@ status:
 
 ## Dependencies
 
-There are other kyma modules that are watched by serverless manager:
+There are other kyma modules that are watched by serverless operator:
  - Eventing (soft dependency)
  - Telemetry (soft dependency)
 
@@ -66,9 +66,9 @@ The detected and used endpoints should be part of the Serverless CR status.
 
 ![deps](./assets/modular-serverless.drawio.svg)
 
->NOTE: Until the dependant modules are discoverable in the modular fashion the serverless manager can test the availibility of the endpoints directly
+>NOTE: Until the dependant modules are discoverable in the modular fashion the serverless operator can test the availibility of the endpoints directly
 
 ## Propagating configuration to the Function runtime
 
-When a dependant module is discovered OR when a user overrides the Serverless CR manually the serverless manager should reconcile the serverless controller.
+When a dependant module is discovered OR when a user overrides the Serverless CR manually the serverless operator should reconcile the serverless controller.
 If the change affect the function runtime (i.e otlpEndpoint), the serverless controller should automatically change the ENVs in the pod templates of the function deployments. This should restart functions and new ENV values should be consumed.

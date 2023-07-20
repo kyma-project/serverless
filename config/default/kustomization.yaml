@@ -16,5 +16,5 @@ commonLabels:
 resources:
 - ../crd
 - ../rbac
-- ../manager
+- ../operator
 - ../ui-extensions

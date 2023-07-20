@@ -28,7 +28,7 @@ spec:
         runAsNonRoot: true
       containers:
       - command:
-        - /manager
+        - /operator
         args:
         - --leader-elect
         image: controller:latest
@@ -66,5 +66,5 @@ spec:
           requests:
             cpu: 10m
             memory: 64Mi
-      serviceAccountName: controller-manager
+      serviceAccountName: operator
       terminationGracePeriodSeconds: 10
