@@ -39,8 +39,11 @@ k3d-lm-integration-test: run-with-lifecycle-manager integration-test
 k3d-integration-test: run-without-lifecycle-manager integration-test remove-serverless
 
 .PHONY: k3d-upgrade-test
-k3d-upgrade-test: ## Upgrade tests not implemented yet.
-	@echo "upgrade tests not implemented yet"
+k3d-upgrade-test: ## Installs Keda from latest and upgrades to local.
+k3d-upgrade-test: \
+	install-latest-serverless \
+	reinstall-serverless \
+	integration-test
 
 .PHONY: k3d-k8s-compatibility-test
 k3d-k8s-compatibility-test: ## K8s compatibility tests not implemented yet.
@@ -59,6 +62,25 @@ remove-serverless: ## Remove Serverless CR
 	kubectl delete serverless -n kyma-system default --timeout 2m || (kubectl get serverless -n kyma-system -oyaml && false)
 
 ### Internal Dependencies
+
+.PHONY: install-latest-serverless
+install-latest-serverless:
+	@make -C ${PROJECT_COMMON} kyma create-k3d
+	curl -LJ -s https://github.com/kyma-project/serverless-manager/releases/latest/download/moduletemplate.yaml > ${PROJECT_ROOT}/template-k3d.yaml
+	@make -C ${PROJECT_COMMON} install-kyma-with-lm patch-mod-mgr-role install-module-template enable-module verify-kyma
+
+.PHONY: reinstall-serverless
+reinstall-serverless:
+	@make -C ${PROJECT_COMMON} kyma \
+	  module-image \
+	  module-build \
+	  fix-template \
+	  install-module-template
+	
+	# wait some time to make sure lm starts the reconciliation first
+	sleep 5
+
+	@make -C ${PROJECT_COMMON} verify-kyma
 
 .PHONY: run-with-lifecycle-manager
 run-with-lifecycle-manager:
