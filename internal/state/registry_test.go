@@ -267,7 +267,7 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 		addRegistryConfigurationWarnings(&extRegSecret, s)
 		require.Equal(t,
 			fmt.Sprintf(
-				fmt.Sprintf("Warning: %s", extRegSecDiffThanSpecFormat), extRegSecret.Name, extRegSecret.Namespace, extRegSecret.Name),
+				fmt.Sprintf("Warning: %s", extRegSecDiffThanSpecFormat), extRegSecret.Namespace, extRegSecret.Name, extRegSecret.Name),
 			s.warningBuilder.Build())
 	})
 	t.Run("external registry secret exists and secretName field is not filled", func(t *testing.T) {
@@ -290,7 +290,7 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 		addRegistryConfigurationWarnings(&extRegSecret, s)
 		require.Equal(t,
 			fmt.Sprintf(
-				fmt.Sprintf("Warning: %s", extRegSecNotInSpecFormat), extRegSecret.Name, extRegSecret.Namespace, extRegSecret.Name),
+				fmt.Sprintf("Warning: %s", extRegSecNotInSpecFormat), extRegSecret.Namespace, extRegSecret.Name, extRegSecret.Name),
 			s.warningBuilder.Build())
 	})
 	t.Run("enable internal is true and secret name exists", func(t *testing.T) {
