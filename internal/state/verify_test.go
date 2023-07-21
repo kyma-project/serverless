@@ -3,7 +3,7 @@ package state
 import (
 	"context"
 	"errors"
-	"fmt"
+	"github.com/kyma-project/serverless-manager/internal/warning"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/internal/registry"
@@ -50,7 +50,8 @@ metadata:
 func Test_sFnVerifyResources(t *testing.T) {
 	t.Run("ready", func(t *testing.T) {
 		s := &systemState{
-			instance: *testInstalledServerless.DeepCopy(),
+			warningBuilder: warning.NewBuilder(),
+			instance:       *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
@@ -88,8 +89,8 @@ func Test_sFnVerifyResources(t *testing.T) {
 
 	t.Run("warning", func(t *testing.T) {
 		s := &systemState{
-			warningMsg: "test warning",
-			instance:   *testInstalledServerless.DeepCopy(),
+			warningBuilder: warning.NewBuilder().With("test warning"),
+			instance:       *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
@@ -117,7 +118,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 			v1alpha1.ConditionTypeInstalled,
 			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonInstalled,
-			fmt.Sprintf("Warning: %s", s.warningMsg),
+			s.warningBuilder.Build(),
 		)
 	})
 

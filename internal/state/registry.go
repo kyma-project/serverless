@@ -77,17 +77,17 @@ func addRegistryConfigurationWarnings(extRegSecert *corev1.Secret, s *systemStat
 	if extRegSecert != nil &&
 		s.instance.Spec.DockerRegistry.SecretName != nil &&
 		extRegSecert.Name != *s.instance.Spec.DockerRegistry.SecretName {
-		s.addWarning(fmt.Sprintf(extRegSecDiffThanSpecFormat, extRegSecert.Name, extRegSecert.Namespace, extRegSecert.Name))
+		s.warningBuilder.With(fmt.Sprintf(extRegSecDiffThanSpecFormat, extRegSecert.Name, extRegSecert.Namespace, extRegSecert.Name))
 	}
 
 	// runtime secret exist and secretName field is empty
 	if extRegSecert != nil && s.instance.Spec.DockerRegistry.SecretName == nil {
-		s.addWarning(fmt.Sprintf(extRegSecNotInSpecFormat, extRegSecert.Name, extRegSecert.Namespace, extRegSecert.Name))
+		s.warningBuilder.With(fmt.Sprintf(extRegSecNotInSpecFormat, extRegSecert.Name, extRegSecert.Namespace, extRegSecert.Name))
 	}
 
 	// enableInternal is true and secretName is used
 	if *s.instance.Spec.DockerRegistry.EnableInternal && s.instance.Spec.DockerRegistry.SecretName != nil {
-		s.addWarning(internalEnabledAndSecretNameUsedMessage)
+		s.warningBuilder.With(internalEnabledAndSecretNameUsedMessage)
 	}
 }
 

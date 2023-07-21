@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"fmt"
+	"github.com/kyma-project/serverless-manager/internal/warning"
 	"reflect"
 	"runtime"
 	"strings"
@@ -35,17 +36,10 @@ type cfg struct {
 }
 
 type systemState struct {
-	instance    v1alpha1.Serverless
-	snapshot    v1alpha1.ServerlessStatus
-	chartConfig *chart.Config
-	warningMsg  string
-}
-
-func (s *systemState) addWarning(message string) {
-	if s.warningMsg != "" {
-		message = fmt.Sprintf("%s; %s", s.warningMsg, message)
-	}
-	s.warningMsg = message
+	instance       v1alpha1.Serverless
+	snapshot       v1alpha1.ServerlessStatus
+	chartConfig    *chart.Config
+	warningBuilder *warning.Builder
 }
 
 func (s *systemState) saveSnapshot() {

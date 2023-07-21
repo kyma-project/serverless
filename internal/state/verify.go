@@ -2,8 +2,6 @@ package state
 
 import (
 	"context"
-	"fmt"
-
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -29,12 +27,13 @@ func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (state
 		return requeueAfter(requeueDuration)
 	}
 
-	if s.warningMsg != "" {
+	warning := s.warningBuilder.Build()
+	if warning != "" {
 		s.setState(v1alpha1.StateWarning)
 		s.instance.UpdateConditionTrue(
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstalled,
-			fmt.Sprintf("%s: %s", warningMessagePrefix, s.warningMsg),
+			warning,
 		)
 		return nextState(sFnUpdateStatusAndStop)
 	}

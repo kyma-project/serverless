@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/kyma-project/serverless-manager/internal/warning"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
@@ -202,6 +203,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 	t.Run("overwrite docker registry status when exists serverless cluster-wide external registry secret", func(t *testing.T) {
 		serverlessClusterWideExternalRegistrySecret := registry.FixServerlessClusterWideExternalRegistrySecret()
 		s := &systemState{
+			warningBuilder: warning.NewBuilder(),
 			instance: v1alpha1.Serverless{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: serverlessClusterWideExternalRegistrySecret.Namespace,
@@ -246,6 +248,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 func Test_addRegistryConfigurationWarnings(t *testing.T) {
 	t.Run("external registry secret exists and it doesn't match the one set in spec", func(t *testing.T) {
 		s := &systemState{
+			warningBuilder: warning.NewBuilder(),
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
@@ -262,10 +265,14 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 			},
 		}
 		addRegistryConfigurationWarnings(&extRegSecret, s)
-		require.Equal(t, fmt.Sprintf(extRegSecDiffThanSpecFormat, extRegSecret.Name, extRegSecret.Namespace, extRegSecret.Name), s.warningMsg)
+		require.Equal(t,
+			fmt.Sprintf(
+				fmt.Sprintf("Warning: %s", extRegSecDiffThanSpecFormat), extRegSecret.Name, extRegSecret.Namespace, extRegSecret.Name),
+			s.warningBuilder.Build())
 	})
 	t.Run("external registry secret exists and secretName field is not filled", func(t *testing.T) {
 		s := &systemState{
+			warningBuilder: warning.NewBuilder(),
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
@@ -281,10 +288,14 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 			},
 		}
 		addRegistryConfigurationWarnings(&extRegSecret, s)
-		require.Equal(t, fmt.Sprintf(extRegSecNotInSpecFormat, extRegSecret.Name, extRegSecret.Namespace, extRegSecret.Name), s.warningMsg)
+		require.Equal(t,
+			fmt.Sprintf(
+				fmt.Sprintf("Warning: %s", extRegSecNotInSpecFormat), extRegSecret.Name, extRegSecret.Namespace, extRegSecret.Name),
+			s.warningBuilder.Build())
 	})
 	t.Run("enable internal is true and secret name exists", func(t *testing.T) {
 		s := &systemState{
+			warningBuilder: warning.NewBuilder(),
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
@@ -295,10 +306,11 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 			},
 		}
 		addRegistryConfigurationWarnings(nil, s)
-		require.Equal(t, internalEnabledAndSecretNameUsedMessage, s.warningMsg)
+		require.Equal(t, fmt.Sprintf("Warning: %s", internalEnabledAndSecretNameUsedMessage), s.warningBuilder.Build())
 	})
 	t.Run("do not build error", func(t *testing.T) {
 		s := &systemState{
+			warningBuilder: warning.NewBuilder(),
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
@@ -315,6 +327,6 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 			},
 		}
 		addRegistryConfigurationWarnings(&extRegSecret, s)
-		require.Equal(t, "", s.warningMsg)
+		require.Equal(t, "", s.warningBuilder.Build())
 	})
 }
