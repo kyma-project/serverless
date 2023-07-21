@@ -65,3 +65,20 @@ Learn how to debug a Function with Visual Studio Code for Node.js or Python, or 
     ```
 
 </details>
+<details>
+<summary label="goland">
+GoLand
+</summary>
+
+1. In GoLand, navigate to the location of the file with the Function definition.
+2. Choose the **Add Configuration...** option.
+3. Add new **Attach to Node.js/Chrome** configuration with these options:
+    - Host: `localhost`
+    - Port: `9229`
+4. Run the Function with the `--debug` flag.
+    ```bash
+    kyma run function --debug
+    ```
+
+    </details>
+</div>
