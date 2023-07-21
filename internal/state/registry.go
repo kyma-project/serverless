@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	extRegSecDiffThanSpecFormat             = "actual registry configuration comes from %s/%s and it's different from spec.dockerRegistry.secretName. Reflect the %s secret in the secretName field or delete it"
-	extRegSecNotInSpecFormat                = "actual registry configuration comes from %s/%s and it's different from spec.dockerRegistry.secretName. Reflect %s secret in the secretName field"
+	extRegSecDiffThanSpecFormat             = "actual registry configuration comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect the %s secret in the secretName field or delete it"
+	extRegSecNotInSpecFormat                = "actual registry configuration comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect %s secret in the secretName field"
 	internalEnabledAndSecretNameUsedMessage = "spec.dockerRegistry.enableInternal is true and spec.dockerRegistry.secretName is used. Delete the secretName field or set the enableInternal value to false"
 )
 
@@ -77,12 +77,12 @@ func addRegistryConfigurationWarnings(extRegSecert *corev1.Secret, s *systemStat
 	if extRegSecert != nil &&
 		s.instance.Spec.DockerRegistry.SecretName != nil &&
 		extRegSecert.Name != *s.instance.Spec.DockerRegistry.SecretName {
-		s.warningBuilder.With(fmt.Sprintf(extRegSecDiffThanSpecFormat, extRegSecert.Name, extRegSecert.Namespace, extRegSecert.Name))
+		s.warningBuilder.With(fmt.Sprintf(extRegSecDiffThanSpecFormat, extRegSecert.Name, extRegSecert.Name, extRegSecert.Namespace))
 	}
 
 	// runtime secret exist and secretName field is empty
 	if extRegSecert != nil && s.instance.Spec.DockerRegistry.SecretName == nil {
-		s.warningBuilder.With(fmt.Sprintf(extRegSecNotInSpecFormat, extRegSecert.Name, extRegSecert.Namespace, extRegSecert.Name))
+		s.warningBuilder.With(fmt.Sprintf(extRegSecNotInSpecFormat, extRegSecert.Name, extRegSecert.Name, extRegSecert.Namespace))
 	}
 
 	// enableInternal is true and secretName is used
