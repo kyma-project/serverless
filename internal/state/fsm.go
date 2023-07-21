@@ -7,6 +7,8 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/kyma-project/serverless-manager/internal/warning"
+
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"go.uber.org/zap"
@@ -35,9 +37,10 @@ type cfg struct {
 }
 
 type systemState struct {
-	instance    v1alpha1.Serverless
-	snapshot    v1alpha1.ServerlessStatus
-	chartConfig *chart.Config
+	instance       v1alpha1.Serverless
+	snapshot       v1alpha1.ServerlessStatus
+	chartConfig    *chart.Config
+	warningBuilder *warning.Builder
 }
 
 func (s *systemState) saveSnapshot() {
@@ -109,7 +112,10 @@ func (m *reconciler) stateFnName() string {
 }
 
 func (m *reconciler) Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl.Result, error) {
-	state := systemState{instance: v}
+	state := systemState{
+		instance:       v,
+		warningBuilder: warning.NewBuilder(),
+	}
 	var err error
 	var result *ctrl.Result
 loop:

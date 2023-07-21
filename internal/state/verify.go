@@ -2,17 +2,14 @@ package state
 
 import (
 	"context"
-	"fmt"
-
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
-	"github.com/kyma-project/serverless-manager/internal/registry"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // verify if all workloads are in ready state
-func sFnVerifyResources(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	ready, err := chart.Verify(s.chartConfig)
 	if err != nil {
 		r.log.Warnf("error while verifying resource %s: %s",
@@ -30,13 +27,13 @@ func sFnVerifyResources(ctx context.Context, r *reconciler, s *systemState) (sta
 		return requeueAfter(requeueDuration)
 	}
 
-	err = registry.DetectExternalRegistrySecrets(ctx, r.client)
-	if err != nil {
+	warning := s.warningBuilder.Build()
+	if warning != "" {
 		s.setState(v1alpha1.StateWarning)
 		s.instance.UpdateConditionTrue(
 			v1alpha1.ConditionTypeInstalled,
 			v1alpha1.ConditionReasonInstalled,
-			fmt.Sprintf("Warning: %s", err.Error()),
+			warning,
 		)
 		return nextState(sFnUpdateStatusAndStop)
 	}

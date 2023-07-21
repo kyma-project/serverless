@@ -3,16 +3,16 @@ package state
 import (
 	"context"
 	"fmt"
-	"k8s.io/apimachinery/pkg/api/meta"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
+	"k8s.io/apimachinery/pkg/api/meta"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 )
 
 // enable or disable serverless optional dependencies based on the Serverless Spec and installed module on the cluster
-func sFnOptionalDependencies(_ context.Context, __ *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
+func sFnOptionalDependencies(_ context.Context, _ *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
 	// TODO: add functionality of auto-detecting these dependencies by checking Eventing and Tracing CRs if user does not override these values.
 	// checking these URLs manually is not possible because of lack of istio-sidecar in the serverless-operator
 

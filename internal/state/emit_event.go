@@ -1,8 +1,14 @@
 package state
 
 import (
+	"strings"
+
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
+const (
+	warningMessagePrefix = "Warning"
 )
 
 func emitEvent(m *reconciler, s *systemState) {
@@ -19,7 +25,7 @@ func emitEvent(m *reconciler, s *systemState) {
 		}
 		m.Event(
 			&s.instance,
-			eventType(condition),
+			eventType(condition, condition.Message),
 			condition.Reason,
 			condition.Message,
 		)
@@ -29,9 +35,9 @@ func emitEvent(m *reconciler, s *systemState) {
 	s.saveSnapshot()
 }
 
-func eventType(condition metav1.Condition) string {
+func eventType(condition metav1.Condition, message string) string {
 	eventType := "Normal"
-	if condition.Status == metav1.ConditionFalse {
+	if condition.Status == metav1.ConditionFalse || strings.HasPrefix(message, warningMessagePrefix) {
 		eventType = "Warning"
 	}
 	return eventType
