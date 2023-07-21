@@ -3,10 +3,11 @@ package state
 import (
 	"context"
 	"fmt"
-	"github.com/kyma-project/serverless-manager/internal/warning"
 	"reflect"
 	"runtime"
 	"strings"
+
+	"github.com/kyma-project/serverless-manager/internal/warning"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
@@ -111,7 +112,10 @@ func (m *reconciler) stateFnName() string {
 }
 
 func (m *reconciler) Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl.Result, error) {
-	state := systemState{instance: v}
+	state := systemState{
+		instance:       v,
+		warningBuilder: warning.NewBuilder(),
+	}
 	var err error
 	var result *ctrl.Result
 loop:
