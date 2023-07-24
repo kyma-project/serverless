@@ -26,7 +26,7 @@ Serverless in Kyma allows you to reduce the implementation and operation effort 
 
 ## Serverless module
 
-The Serverless module allows you to install, uninstall and configure Kyma's Serverless on  your Kubernetes cluster, using Serverless Operator.
+The Serverless module allows you to install, uninstall and configure Kyma's Serverless on your Kubernetes cluster, using Serverless Operator.
 
 ## Serverless Operator
 
