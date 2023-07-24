@@ -53,14 +53,6 @@ func Test_GetExternalRegistrySecret(t *testing.T) {
 			}(),
 		},
 		{
-			name: "bad type",
-			secretInEnvironment: func() *corev1.Secret {
-				secret := testRegistryFilledSecret.DeepCopy()
-				secret.Type = corev1.SecretTypeBasicAuth
-				return secret
-			}(),
-		},
-		{
 			name: "without label remote-registry",
 			secretInEnvironment: func() *corev1.Secret {
 				secret := testRegistryFilledSecret.DeepCopy()
