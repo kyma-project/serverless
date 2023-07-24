@@ -1,6 +1,6 @@
 # Exposing Functions
 
-To access a Function within the cluster, use the `{function-name}.{namespace}.svc.cluster.local` endpoint, such as `test-function.default.svc.cluster.local`. To expose a Function outside the cluster, you must create an [APIRule custom resource (CR)](./00-custom-resources/apix-01-apirule.md):
+To access a Function within the cluster, use the `{function-name}.{namespace}.svc.cluster.local` endpoint, such as `test-function.default.svc.cluster.local`. To expose a Function outside the cluster, you must create an [APIRule custom resource (CR)](https://kyma-project.io/docs/kyma/latest/05-technical-reference/00-custom-resources/apix-01-apirule/):
 
 ![Expose a Function service](./assets/svls-api-rules.svg)
 
@@ -12,4 +12,4 @@ To access a Function within the cluster, use the `{function-name}.{namespace}.sv
 
 This way you can specify multiple APIRules with different authentication methods for a single Function service.
 
->**TIP:** See the [tutorial](../03-tutorials/00-serverless/svls-03-expose-function.md) for a detailed example.
+>**TIP:** See the [tutorial](/docs/user/03-20-expose-function.md) for a detailed example.

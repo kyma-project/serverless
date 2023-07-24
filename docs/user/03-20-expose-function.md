@@ -7,15 +7,15 @@ When you complete this tutorial, you get a Function that:
 - Is available on an unsecured endpoint (**handler** set to `noop` in the APIRule CR).
 - Accepts the `GET`, `POST`, `PUT`, and `DELETE` methods.
 
-To learn more about securing your Function, see the [Expose and secure a workload with OAuth2](../00-api-exposure/apix-05-expose-and-secure-a-workload/apix-05-01-expose-and-secure-workload-oauth2.md) or [Expose and secure a workload with JWT](../00-api-exposure/apix-05-expose-and-secure-a-workload/apix-05-03-expose-and-secure-workload-jwt.md) tutorials.
+To learn more about securing your Function, see the [Expose and secure a workload with OAuth2](https://kyma-project.io/docs/kyma/latest/03-tutorials/00-api-exposure/apix-05-expose-and-secure-a-workload/apix-05-01-expose-and-secure-workload-oauth2/) or [Expose and secure a workload with JWT](https://kyma-project.io/docs/kyma/latest/03-tutorials/00-api-exposure/apix-05-expose-and-secure-a-workload/apix-05-03-expose-and-secure-workload-jwt/) tutorials.
 
-Read also about [Function’s specification](../../05-technical-reference/svls-08-function-specification.md) if you are interested in its signature, `event` and `context` objects, and custom HTTP responses the Function returns.
+Read also about [Function’s specification](/docs/user/07-70-function-specification.md) if you are interested in its signature, `event` and `context` objects, and custom HTTP responses the Function returns.
 
 ## Prerequisites
 
 This tutorial is based on an existing Function. To create one, follow the [Create a Function](/docs/user/03-10-create-inline-function.md) tutorial.
 
->**NOTE:** Read about [Istio sidecars in Kyma and why you want them](../../01-overview/service-mesh/smsh-03-istio-sidecars-in-kyma.md). Then, check how to [enable automatic Istio sidecar proxy injection](../../04-operation-guides/operations/smsh-01-istio-enable-sidecar-injection.md). For more details, see [Default Istio setup in Kyma](../../01-overview/service-mesh/smsh-02-default-istio-setup-in-kyma.md).
+>**NOTE:** Read about [Istio sidecars in Kyma and why you want them](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-03-istio-sidecars-in-kyma/). Then, check how to [enable automatic Istio sidecar proxy injection](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/smsh-01-istio-enable-sidecar-injection/). For more details, see [Default Istio setup in Kyma](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-02-default-istio-setup-in-kyma/).
 
 ## Steps
 
@@ -126,7 +126,7 @@ You can expose a Function with Kyma Dashboard, Kyma CLI, or kubectl:
 
     >**NOTE:** The Function takes the name from the Function CR name. The APIRule CR can have a different name but for the purpose of this tutorial, all related resources share a common name defined under the **NAME** variable.
 
-2. Create an APIRule CR for your Function. It is exposed on port `80`, which is the default port of the [Service Placeholder](../../05-technical-reference/00-architecture/svls-01-architecture.md).
+2. Create an APIRule CR for your Function. It is exposed on port `80`, which is the default port of the [Service Placeholder](/docs/user/04-10-architecture.md).
 
     ```yaml
     cat <<EOF | kubectl apply -f -

@@ -3,13 +3,13 @@
 This tutorial shows how to use the build-in OpenTelemetry tracer object to send custom trace data to the trace backend.
 
 Kyma Functions are instrumented to handle trace headers. This means that every time you call your Function, the executed logic is traceable using a dedicated span visible in the trace backend (i.e. start time and duration).
-Additionally, you can extend the default trace context and create your own custom spans whenever you feel it is helpful (i.e. when calling a remote service in your distributed application) or add additional information to the tracing context by introducing events and tags. This tutorial shows you how to do it using tracer client that is available as part of the [event](../../05-technical-reference/svls-08-function-specification.md#event-object) object.
+Additionally, you can extend the default trace context and create your own custom spans whenever you feel it is helpful (i.e. when calling a remote service in your distributed application) or add additional information to the tracing context by introducing events and tags. This tutorial shows you how to do it using tracer client that is available as part of the [event](/docs/user/07-70-function-specification.md#event-object) object.
 
 ## Prerequisites
 
 Before you start, make sure you have these tools installed:
 
-- [Kyma installed](../../04-operation-guides/operations/02-install-kyma.md) on a cluster
+- [Kyma installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/02-install-kyma/) on a cluster
 - Trace backend configured to collect traces from the cluster. You can bring your own trace backend or deploy [Jaeger](https://github.com/kyma-project/examples/tree/main/jaeger).
 
 ## Steps

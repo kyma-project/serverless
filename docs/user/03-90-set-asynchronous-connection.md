@@ -2,7 +2,7 @@
 
 This tutorial demonstrates how to connect two Functions asynchronously. It is based on the [in-cluster Eventing example](https://github.com/kyma-project/examples/tree/main/incluster_eventing).
 
-The example provides a very simple scenario of asynchronous communication between two Functions. The first Function accepts the incoming traffic via HTTP, sanitizes the payload, and publishes the content as an in-cluster event using [Kyma Eventing](../../01-overview/eventing).
+The example provides a very simple scenario of asynchronous communication between two Functions. The first Function accepts the incoming traffic via HTTP, sanitizes the payload, and publishes the content as an in-cluster event using [Kyma Eventing](https://kyma-project.io/docs/kyma/latest/01-overview/eventing/).
 The second Function is a message receiver. It subscribes to the given event type and stores the payload.
 
 This tutorial shows only one possible use case. There are many more use cases on how to orchestrate your application logic into specialized Functions and benefit from decoupled, re-usable components and event-driven architecture.
@@ -11,8 +11,8 @@ This tutorial shows only one possible use case. There are many more use cases on
 
 
 - [Kyma CLI](https://github.com/kyma-project/cli)
-- [Kyma installed](../../04-operation-guides/operations/02-install-kyma.md) locally or on a cluster
-- [Istio sidecar injection enabled](../../04-operation-guides/operations/smsh-01-istio-enable-sidecar-injection.md) in the Namespace in which you want to deploy the Functions
+- [Kyma installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/02-install-kyma/) locally or on a cluster
+- [Istio sidecar injection enabled](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/smsh-01-istio-enable-sidecar-injection/) in the Namespace in which you want to deploy the Functions
 ## Steps
 
 1. Export the `KUBECONFIG` variable:
@@ -33,13 +33,13 @@ This tutorial shows only one possible use case. There are many more use cases on
 
   - `config.yaml`	with the Function's configuration
 
-      >**NOTE:** See the detailed description of all fields available in the [`config.yaml` file](../../05-technical-reference/svls-06-function-configuration-file.md).
+      >**NOTE:** See the detailed description of all fields available in the [`config.yaml` file](/docs/user/07-60-function-configuration-file.md).
 
   - `handler.js` with the Function's code and the simple "Hello Serverless" logic
   
   - `package.json` with the Function's dependencies
 
-2. In the `config.yaml` file, configure an APIRule to expose your Function to the incoming traffic over HTTP. Provide the subdomain name in the `host` property:
+1. In the `config.yaml` file, configure an APIRule to expose your Function to the incoming traffic over HTTP. Provide the subdomain name in the `host` property:
 
     ```yaml
     apiRules:
@@ -53,7 +53,7 @@ This tutorial shows only one possible use case. There are many more use cases on
               - handler: allow
     ```
 
-3. Provide your Function logic in the `handler.js` file:
+2. Provide your Function logic in the `handler.js` file:
 >**NOTE:** In this example, there's no sanitization logic. The `sanitize` Function is just a placeholder.
 
    ```js
@@ -79,19 +79,19 @@ This tutorial shows only one possible use case. There are many more use cases on
       return data
    }
    ```
-   The `sap.kyma.custom.acme.payload.sanitised.v1` is a sample event type declared by the emitter Function when publishing events. You can choose a different one that better suits your use case. Keep in mind the constraints described on the [Event names](../../05-technical-reference/evnt-01-event-names.md) page. The receiver subscribes to the event type to consume the events.
+   The `sap.kyma.custom.acme.payload.sanitised.v1` is a sample event type declared by the emitter Function when publishing events. You can choose a different one that better suits your use case. Keep in mind the constraints described on the [Event names](https://kyma-project.io/docs/kyma/latest/05-technical-reference/evnt-01-event-names/) page. The receiver subscribes to the event type to consume the events.
 
-   The event object provides convenience functions to build and publish events. To send the event, build the Cloud Event. To learn more, read [Function's specification](../../05-technical-reference/svls-08-function-specification.md#event-object-sdk). In addition, your **eventOut.source** key must point to `“kyma”` to use Kyma in-cluster Eventing.
+   The event object provides convenience functions to build and publish events. To send the event, build the Cloud Event. To learn more, read [Function's specification](/docs/user/07-70-function-specification.md#event-object-sdk). In addition, your **eventOut.source** key must point to `“kyma”` to use Kyma in-cluster Eventing.
    There is a `require('axios')` line even though the Function code is not using it directly. This is needed for the auto-instrumentation to properly handle the outgoing requests sent using the `publishCloudEvent` method (which uses `axios` library under the hood). Without the `axios` import the Function still works, but the published events are not reflected in the trace backend.
 
-4. Apply your emitter Function:
+1. Apply your emitter Function:
 
     ```bash
     kyma apply function
     ```
    Your Function is now built and deployed in Kyma runtime. Kyma exposes it through the APIRule. The incoming payloads are processed by your emitter Function. It then sends the sanitized content to the workload that subscribes to the selected event type. In our case, it's the receiver Function.
 
-5. Test the first Function. Send the payload and see if your HTTP traffic is accepted:
+2. Test the first Function. Send the payload and see if your HTTP traffic is accepted:
 
       ```bash
       export KYMA_DOMAIN={KYMA_DOMAIN_VARIABLE}

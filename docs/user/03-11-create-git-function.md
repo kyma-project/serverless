@@ -2,9 +2,9 @@
 
 This tutorial shows how you can build a Function from code and dependencies stored in a Git repository, which is an alternative way to keeping the code in the Function CR. The tutorial is based on the Function from the [`orders service` example](https://github.com/kyma-project/examples/tree/main/orders-service). It describes steps required to fetch the Function's source code and dependencies from a public Git repository that does not need any authentication method. However, it also provides additional guidance on how to secure it if you are using a private repository.
 
-To learn more about Git repository sources for Functions and different ways of securing your repository, read about the [Git source type](../../05-technical-reference/svls-04-git-source-type.md).
+To learn more about Git repository sources for Functions and different ways of securing your repository, read about the [Git source type](/docs/user/07-40-git-source-type.md).
 
->**NOTE:** Read about [Istio sidecars in Kyma and why you want them](../../01-overview/service-mesh/smsh-03-istio-sidecars-in-kyma.md). Then, check how to [enable automatic Istio sidecar proxy injection](../../04-operation-guides/operations/smsh-01-istio-enable-sidecar-injection.md). For more details, see [Default Istio setup in Kyma](../../01-overview/service-mesh/smsh-02-default-istio-setup-in-kyma.md).
+>**NOTE:** Read about [Istio sidecars in Kyma and why you want them](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-03-istio-sidecars-in-kyma/). Then, check how to [enable automatic Istio sidecar proxy injection](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/smsh-01-istio-enable-sidecar-injection/). For more details, see [Default Istio setup in Kyma](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-02-default-istio-setup-in-kyma/).
 
 ## Steps
 
@@ -34,7 +34,7 @@ You can create a Function either with kubectl or Kyma Dashboard:
 
         - SSH key: `key: {SSH_KEY}`
 
-        >**NOTE:** Read more about the [supported authentication methods](../../05-technical-reference/svls-04-git-source-type.md).
+        >**NOTE:** Read more about the [supported authentication methods](/docs/user/07-40-git-source-type.md).
 
     - Confirm by selecting **Create**.
 
@@ -103,7 +103,7 @@ You can create a Function either with kubectl or Kyma Dashboard:
     EOF
     ```
 
-    >**NOTE:** Read more about the [supported authentication methods](../../05-technical-reference/svls-04-git-source-type.md).
+    >**NOTE:** Read more about the [supported authentication methods](/docs/user/07-40-git-source-type.md).
 
 3. Create a Function CR that specifies the Function's logic and points to the directory with code and dependencies in the given repository. It also specifies the Git repository metadata:
 
@@ -134,7 +134,7 @@ You can create a Function either with kubectl or Kyma Dashboard:
         secretName: # "git-creds-basic" or "git-creds-key"
     ```
    
-    >**NOTE:** To avoid performance degradation caused by large Git repositories and large monorepos, [Function Controller](https://kyma-project.io/docs/kyma/latest/05-technical-reference/00-custom-resources/svls-01-function/#related-resources-and-components) implements a configurable backoff period for the source checkout based on `APP_FUNCTION_REQUEUE_DURATION`. This behavior can be disabled, allowing the controller to perform the source checkout with every reconciliation loop by marking the Function CR with the annotation `serverless.kyma-project.io/continuousGitCheckout: true`
+    >**NOTE:** To avoid performance degradation caused by large Git repositories and large monorepos, [Function Controller](/docs/user/06-10-function.md#related-resources-and-components) implements a configurable backoff period for the source checkout based on `APP_FUNCTION_REQUEUE_DURATION`. This behavior can be disabled, allowing the controller to perform the source checkout with every reconciliation loop by marking the Function CR with the annotation `serverless.kyma-project.io/continuousGitCheckout: true`
 
     >**NOTE:** See this [Function's code and dependencies](https://github.com/kyma-project/examples/tree/main/orders-service/function).
 

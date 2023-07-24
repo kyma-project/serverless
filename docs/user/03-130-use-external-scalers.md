@@ -8,7 +8,7 @@ Keep in mind that the Serverless Functions implement the [scale subresource](htt
 
 Before you start, make sure you have these tools installed:
 
-- [Kyma installed](../../04-operation-guides/operations/02-install-kyma.md) on a cluster
+- [Kyma installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/02-install-kyma/) on a cluster
 
 ## Steps
 
@@ -116,7 +116,7 @@ Follow these steps:
     EOF
     ```
 
-    >**NOTE:** This tutorial uses the `cpu` trigger because of its simple configuration. If you want to use another trigger check the official [list of supported triggers](https://keda.sh/docs/2.8/scalers/).
+    >**NOTE:** This tutorial uses the `cpu` trigger because of its simple configuration. If you want to use another trigger check the official [list of supported triggers](https://keda.sh/docs/scalers/).
 
 4. After a few seconds ScaledObject should be up to date and contain information about the actual replicas:
 
@@ -137,7 +137,7 @@ Follow these steps:
   Keda Prometheus
   </summary>
 
-1. Install [Keda](https://keda.sh/docs/2.8/deploy/) if it is not present on your cluster.
+1. Install [Keda](https://keda.sh/docs/deploy/) if it is not present on your cluster.
 
 2. Create your Function with the `replicas` value set to 1, to prevent the internal Serverless HPA creation:
 
@@ -187,7 +187,7 @@ Follow these steps:
     EOF
     ```
 
-    >**NOTE:** This tutorial uses the `prometheus` trigger because of its simple configuration. If you want to use another trigger check the official [list of supported triggers](https://keda.sh/docs/2.8/scalers/).
+    >**NOTE:** This tutorial uses the `prometheus` trigger because of its simple configuration. If you want to use another trigger check the official [list of supported triggers](https://keda.sh/docs/scalers/).
   
 4. After a few seconds ScaledObject should be up to date and contain information about the actual replicas:
 

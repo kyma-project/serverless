@@ -8,7 +8,7 @@ You can specify environment variables in the Function definition, or define refe
 
 Before you start, make sure you have these tools installed:
 
-- [Kyma installed](../../04-operation-guides/operations/02-install-kyma.md) on a cluster
+- [Kyma installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/02-install-kyma/) on a cluster
 
 ## Steps
 
