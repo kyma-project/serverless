@@ -2,6 +2,7 @@ package registry
 
 import (
 	"context"
+
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -25,9 +26,6 @@ func GetServerlessExternalRegistrySecret(ctx context.Context, c client.Client, n
 		return nil, client.IgnoreNotFound(err)
 	}
 
-	if secret.Type != corev1.SecretTypeDockerConfigJson {
-		return nil, nil
-	}
 	if val, ok := secret.GetLabels()[ServerlessExternalRegistryLabelRemoteRegistryKey]; !ok || val != ServerlessExternalRegistryLabelRemoteRegistryVal {
 		return nil, nil
 	}
