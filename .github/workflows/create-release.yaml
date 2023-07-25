@@ -7,6 +7,9 @@ on:
         description: 'Create release'
         default: ""
         required: true
+  push:
+    branches:
+      - "automate-release-process"
 
 jobs:
   verify-main-status:
