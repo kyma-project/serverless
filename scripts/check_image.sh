@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-BRANCH="${$1:-"main"}"
+BRANCH="${1:-"main"}"
 RAW_EXPECTED_TAG=$(git log "${BRANCH}" --max-count 1 --skip 1 --format=format:%H)
 SHORT_EXPECTED_TAG=${RAW_EXPECTED_TAG:0:8}
 DATE="v$(git log main --max-count 1 --skip 1 --format=format:%ad --date=format:'%Y%m%d')"
