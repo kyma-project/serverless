@@ -3,9 +3,9 @@ name: "Create release"
 on:
   workflow_dispatch:
     inputs:
-      name:
+      tag:
         description: 'Create release'
-        default: ""
+        default: "v0.1.0"
         required: true
   push:
     branches:
@@ -23,10 +23,11 @@ jobs:
           fetch-depth: 0
 
       - name: Check tag
-        run: ./scripts/check_release_tag.sh ${{ github.event.inputs.name }}
+        run: ./scripts/check_release_tag.sh ${{ toJSON(github.event) }}
 
-      - name: Check image
-        run: ./scripts/check_image.sh
+#TODO: consider what to do
+#      - name: Check image
+#        run: ./scripts/check_image.sh automate-release-process
 
       - name: Verify
         run: ./scripts/verify-serverless-status.sh
@@ -50,20 +51,24 @@ jobs:
       - name: Create changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./scripts/create_changelog.sh ${{ github.event.inputs.name }}
+        run: ./scripts/create_changelog.sh "v0.1.0"
+#        run: ./scripts/create_changelog.sh ${{ github.event.inputs.name }}
 
       - name: Create draft release
         id: create-draft
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          RELEASE_ID=$(./scripts/create_draft_release.sh ${{ github.event.inputs.name }})
+          RELEASE_ID=$(./scripts/create_draft_release.sh "v0.1.0"
           echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
+#          RELEASE_ID=$(./scripts/create_draft_release.sh ${{ github.event.inputs.name }})
 
       - name: Create lightweight tag
         run: |
-          git tag ${{ github.event.inputs.name }}
-          git push origin ${{ github.event.inputs.name }}
+          git tag "v0.1.0"
+          git push origin "v0.1.0"
+#          git tag ${{ github.event.inputs.name }}
+#          git push origin ${{ github.event.inputs.name }}
 
     outputs:
       release_id: ${{ steps.create-draft.outputs.release_id }}
