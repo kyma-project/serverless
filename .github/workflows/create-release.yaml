@@ -10,6 +10,11 @@ on:
   push:
     branches:
       - "automate-release-process"
+    inputs:
+      name:
+        description: 'Create release'
+        default: "v0.1.0"
+        required: false
 
 jobs:
   verify-main-status:
