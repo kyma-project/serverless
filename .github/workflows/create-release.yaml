@@ -7,7 +7,12 @@ on:
         description: 'Create release'
         default: "v0.1.0"
         required: true
-#        TODO: we can remove push section
+  workflow_call:
+    inputs:
+      name:
+        description: 'Create release'
+        default: "v0.1.0"
+        required: true
   push:
     branches:
       - "automate-release-process"
