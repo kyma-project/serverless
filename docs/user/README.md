@@ -4,7 +4,7 @@
 
 "Serverless" refers to an architecture in which the infrastructure of your applications is managed by cloud providers. Contrary to its name, a serverless application does require a server but it doesn't require you to run and manage it on your own. Instead, you subscribe to a given cloud provider, such as AWS, Azure, or GCP, and pay a subscription fee only for the resources you actually use. Because the resource allocation can be dynamic and depends on your current needs, the serverless model is particularly cost-effective when you want to implement a certain logic that is triggered on demand. Simply, you get your things done and don't pay for the infrastructure that stays idle.
 
-Kyma offers a service (known as "functions-as-a-service" or "FaaS") that provides a platform on which you can build, run, and manage serverless applications in Kubernetes. These applications are called **Functions** and they are based on the[Function custom resource (CR)](https://github.com/kyma-project/kyma/blob/main/docs/05-technical-reference/00-custom-resources/svls-01-function.md) objects. They contain simple code snippets that implement a specific business logic. For example, you can define that you want to use a Function as a proxy that saves all incoming event details to an external database.
+Kyma offers a service (known as "functions-as-a-service" or "FaaS") that provides a platform on which you can build, run, and manage serverless applications in Kubernetes. These applications are called **Functions** and they are based on the[Function custom resource (CR)](/docs/user/06-10-function.md) objects. They contain simple code snippets that implement a specific business logic. For example, you can define that you want to use a Function as a proxy that saves all incoming event details to an external database.
 
 Such a Function can be:
 
@@ -54,21 +54,21 @@ If you're interested in learning more about the Serverless area, follow these li
 
 - Troubleshoot Serverless-related issues when:
 
-   - [Functions won't build](https://github.com/kyma-project/kyma/blob/main/docs/04-operation-guides/troubleshooting/serverless/svls-01-cannot-build-functions.md)
-   - [Container fails](https://github.com/kyma-project/kyma/blob/main/docs/04-operation-guides/troubleshooting/serverless/svls-02-failing-function-container.md)
-   - [Debugger stops](https://github.com/kyma-project/kyma/blob/main/docs/04-operation-guides/troubleshooting/serverless/svls-03-function-debugger-in-strange-location.md)
+   - [Functions won't build](/docs/user/03-10-cannot-build-functions.md)
+   - [Container fails](/docs/user/03-20-failing-function-container.md)
+   - [Debugger stops](/docs/user/03-30-function-debugger-strange-location.md)
 
 - Analyze Function specification and configuration files:
 
-  - [Function](../../../05-technical-reference/00-custom-resources/svls-01-function.md) custom resource
-  - [`config.yaml` file](../../../05-technical-reference/svls-06-function-configuration-file.md) in Kyma CLI
-  - [Function specification details](../../../05-technical-reference/svls-08-function-specification.md)
+  - [Function](/docs/user/06-10-function.md) custom resource
+  - [`config.yaml` file](/docs/user/07-60-function-configuration-file.md) in Kyma CLI
+  - [Function specification details](/docs/user/07-70-function-specification.md)
 
 - Understand technicalities behind Serverless implementation:
 
-  - [Serverless architecture](../../../05-technical-reference/00-architecture/svls-01-architecture.md) and [Function processing](../../../05-technical-reference/svls-02-function-processing-stages.md)
-  - [Switching registries](../../../05-technical-reference/svls-03-switching-registries.md)
-  - [Git source type](../../../05-technical-reference/svls-04-git-source-type.md)
-  - [Exposing Functions](../../../05-technical-reference/svls-05-exposing-functions.md)
-  - [Available presets](../../../05-technical-reference/svls-09-available-presets.md)
-  - [Environment variables in Functions](../../../05-technical-reference/00-configuration-parameters/svls-02-environment-variables.md)
+  - [Serverless architecture](/docs/user/04-10-architecture.md) and [Function processing](/docs/user/07-20-function-processing-stages.md)
+  - [Switching registries](/docs/user/07-30-switching-registries.md)
+  - [Git source type](/docs/user/07-40-git-source-type.md)
+  - [Exposing Functions](/docs/user/07-50-exposing-functions.md)
+  - [Available presets](/docs/user/07-80-available-presets.md)
+  - [Environment variables in Functions](/docs/user/05-20-env-variables.md)
