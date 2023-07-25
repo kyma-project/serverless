@@ -58,20 +58,24 @@ jobs:
       - name: Create changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./scripts/create_changelog.sh ${{ github.event.inputs.name }}
+#        run: ./scripts/create_changelog.sh ${{ github.event.inputs.name }}
+        run: ./scripts/create_changelog.sh "v0.1.0"
 
       - name: Create draft release
         id: create-draft
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          RELEASE_ID=$(./scripts/create_draft_release.sh ${{ github.event.inputs.name }})
+          RELEASE_ID=$(./scripts/create_draft_release.sh "v0.1.0"
+#          RELEASE_ID=$(./scripts/create_draft_release.sh ${{ github.event.inputs.name }})
           echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
 
       - name: Create lightweight tag
         run: |
-          git tag ${{ github.event.inputs.name }}
-          git push origin ${{ github.event.inputs.name }}
+          git tag "v0.1.0"
+#          git tag ${{ github.event.inputs.name }}
+          git push origin "v0.1.0"
+#          git push origin ${{ github.event.inputs.name }}
 
     outputs:
       release_id: ${{ steps.create-draft.outputs.release_id }}
