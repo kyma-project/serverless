@@ -7,6 +7,7 @@ on:
         description: 'Create release'
         default: ""
         required: true
+#        TODO: we can remove push section
   push:
     branches:
       - "automate-release-process"
@@ -28,7 +29,8 @@ jobs:
           fetch-depth: 0
 
       - name: Check tag
-        run: ./scripts/check_release_tag.sh ${{ github.event.inputs.name }}
+#        run: ./scripts/check_release_tag.sh ${{ github.event.inputs.name }} TODO: remove hardcoded value
+        run: ./scripts/check_release_tag.sh "v0.1.0"
 
       - name: Check image
         run: ./scripts/check_image.sh
