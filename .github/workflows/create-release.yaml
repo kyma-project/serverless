@@ -3,17 +3,10 @@ name: "Create release"
 on:
   workflow_dispatch:
     inputs:
-      name:
+      tag:
         description: 'Create release'
         default: "v0.1.0"
         required: true
-  workflow_call:
-    inputs:
-      name:
-        description: 'Create release'
-        default: "v0.1.0"
-        required: true
-        type: string
   push:
     branches:
       - "automate-release-process"
@@ -30,7 +23,7 @@ jobs:
           fetch-depth: 0
 
       - name: Check tag
-        run: ./scripts/check_release_tag.sh ${{ github.event.inputs.name }}
+        run: ./scripts/check_release_tag.sh ${{ inputs.tag }}
 
 #TODO: consider what to do
 #      - name: Check image
