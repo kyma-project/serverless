@@ -23,7 +23,7 @@ The diagrams illustrate all three core status changes in the Function processing
 
 This initial phase starts when you create a Function CR with configuration specifying the Function's setup. It ends with creating a ConfigMap that is used as a building block for a Function image.
 
-![Function configured](./assets/svls-configured.svg)
+![Function configured](../assets/svls-configured.svg)
 
 ## Built
 
@@ -33,7 +33,7 @@ Updating an existing Function requires an image rebuild only if you change the F
 
 >**NOTE:** Each time you update Function's configuration, the Function Controller deletes all previous Job CRs for the given Function's **UID**.
 
-![Function built](./assets/svls-built.svg)
+![Function built](../assets/svls-built.svg)
 
 ## Running
 
@@ -45,4 +45,4 @@ Thanks to the implemented reconciliation loop, the Function Controller constantl
 
 The Function Controller observes the status of the underlying Deployment. If the minimum availability condition for the replicas is not satisfied, the Function Controller sets the **Running** status to `Unknown` with reason `MinimumReplicasUnavailable`. Such a Function should be considered unhealthy and the runtime profile or number of Replicas must be adjusted.
 
-![Function running](./assets/svls-running.svg)
+![Function running](../assets/svls-running.svg)

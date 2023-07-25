@@ -2,7 +2,7 @@
 
 To access a Function within the cluster, use the `{function-name}.{namespace}.svc.cluster.local` endpoint, such as `test-function.default.svc.cluster.local`. To expose a Function outside the cluster, you must create an [APIRule custom resource (CR)](https://kyma-project.io/docs/kyma/latest/05-technical-reference/00-custom-resources/apix-01-apirule/):
 
-![Expose a Function service](./assets/svls-api-rules.svg)
+![Expose a Function service](../assets/svls-api-rules.svg)
 
 1. Create the APIRule CR where you specify the Function to expose, define an Oathkeeper Access Rule to secure it, and list which HTTP request methods you want to enable for it.
 
