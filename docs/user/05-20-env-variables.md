@@ -78,7 +78,6 @@ To configure the Function with the Node.js runtime, override the default values 
 | **REQ_MB_LIMIT**                 | Specifies the payload body size limit in megabytes.                                                                          | Number  | `1`           |
 | **KYMA_INTERNAL_LOGGER_ENABLED** | Enables the default HTTP request logger which uses the standard Apache combined log output. To enable it, set its value to `true`.  | Boolean | `false`       |
 
-See [`kubeless.js`](https://github.com/kubeless/runtimes/blob/master/stable/nodejs/kubeless.js) to get a deeper understanding of how the Express server, that acts as a runtime, uses these values internally to run Node.js Functions.
 
 See the example of a Function with these environment variables set:
 

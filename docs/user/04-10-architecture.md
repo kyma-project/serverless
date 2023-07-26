@@ -4,9 +4,8 @@ Serverless relies heavily on Kubernetes resources. It uses [Deployments](https:/
 
 ![Serverless architecture](../assets/svls-architecture.svg)
 
-**CAUTION:** Serverless imposes some requirements on the setup of Namespaces. For example, if you create a new Namespace you have to enable sidecar injection in it, as Serverless needs Istio for other resources to communicate with Functions correctly. Also, if you apply custom [LimitRanges](https://kubernetes.io/docs/concepts/policy/limit-range/) for a new Namespace, they must be higher than or equal to the [limits for building Jobs' resources](/docs/user/05-10-chart.md).
+**CAUTION:** Serverless imposes some requirements on the setup of Namespaces. For example, if you apply custom [LimitRanges](https://kubernetes.io/docs/concepts/policy/limit-range/) for a new Namespace, they must be higher than or equal to the limits for building Jobs' resources.
 
-**NOTE:** To enable Istio sidecar proxy injection, which is disabled on the Kyma clusters by default, set the `istio-injection=enabled` flag at the Namespace level.
 
 1. Create a Function either through the UI or by applying a Function custom resource (CR). This CR contains the Function definition (business logic that you want to execute) and information on the environment on which it should run.
 

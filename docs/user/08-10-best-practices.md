@@ -51,7 +51,7 @@ Use `--dry-run` option of the `kyma apply function` command to generate Kubernet
    ```  
 
 The generated manifest should be a part of all the manifests that define your application and pushed to the git repository.
-Deploy everything in a consistent way either using CI/CD or GitOps operators (e.g. [fluxcd](/docs/user/01-50-sync-function-with-gitops.md)) installed on your Kyma runtime.
+Deploy everything in a consistent way either using CI/CD or GitOps operators (e.g. `fluxcd` or `argocd`) installed on your Kyma runtime.
 
 >**NOTE:** Kyma Functions come in two types: `git` and `inline`. The [Git type](/docs/user/01-11-create-git-function.md) allows you to configure a Git repository as a source of your Function code instead of creating it `inline`.
 This allows you to skip rendering of the Kubernetes manifests and deploying them each time you made a change in the Function code or dependencies. Simply push the changes to the referenced Git repository, and the Serverless controller will rebuild the Function deployed in your Kyma runtime. 
