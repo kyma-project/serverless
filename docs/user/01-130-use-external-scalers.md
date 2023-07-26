@@ -8,7 +8,7 @@ Keep in mind that the Serverless Functions implement the [scale subresource](htt
 
 Before you start, make sure you have these tools installed:
 
-- [Kyma installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/02-install-kyma/) on a cluster
+- [Keda module enabled](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/08-install-uninstall-upgrade-kyma-module/)
 
 ## Steps
 
@@ -68,9 +68,7 @@ Follow these steps:
   Keda CPU
   </summary>
 
-1. Install [Keda](https://keda.sh/docs/2.8/deploy/) if it is not present on your cluster.
-
-2. Create your Function with the `replicas` value set to 1, to prevent the internal Serverless HPA creation:
+1. Create your Function with the `replicas` value set to 1, to prevent the internal Serverless HPA creation:
 
     ```yaml
     cat <<EOF | kubectl apply -f -
@@ -93,7 +91,7 @@ Follow these steps:
     EOF
     ```
 
-3. Create the ScaledObject resource:
+2. Create the ScaledObject resource:
 
     ```yaml
     cat <<EOF | kubectl apply -f -
@@ -118,7 +116,7 @@ Follow these steps:
 
     >**NOTE:** This tutorial uses the `cpu` trigger because of its simple configuration. If you want to use another trigger check the official [list of supported triggers](https://keda.sh/docs/scalers/).
 
-4. After a few seconds ScaledObject should be up to date and contain information about the actual replicas:
+3. After a few seconds ScaledObject should be up to date and contain information about the actual replicas:
 
     ```bash
     kubectl get scaledobject scaled-function
@@ -137,9 +135,7 @@ Follow these steps:
   Keda Prometheus
   </summary>
 
-1. Install [Keda](https://keda.sh/docs/deploy/) if it is not present on your cluster.
-
-2. Create your Function with the `replicas` value set to 1, to prevent the internal Serverless HPA creation:
+1. Create your Function with the `replicas` value set to 1, to prevent the internal Serverless HPA creation:
 
     ```yaml
     cat <<EOF | kubectl apply -f -
@@ -162,7 +158,7 @@ Follow these steps:
     EOF
     ```
 
-3. Create the ScaledObject resource based on the `istio_requests_total` metric, exposed by the Istio:
+2. Create the ScaledObject resource based on the `istio_requests_total` metric, exposed by the Istio:
 
     ```yaml
     cat <<EOF | kubectl apply -f -
@@ -189,7 +185,7 @@ Follow these steps:
 
     >**NOTE:** This tutorial uses the `prometheus` trigger because of its simple configuration. If you want to use another trigger check the official [list of supported triggers](https://keda.sh/docs/scalers/).
   
-4. After a few seconds ScaledObject should be up to date and contain information about the actual replicas:
+3. After a few seconds ScaledObject should be up to date and contain information about the actual replicas:
 
     ```bash
     kubectl get scaledobject scaled-function

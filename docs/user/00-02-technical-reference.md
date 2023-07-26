@@ -4,7 +4,6 @@ In the following documents, you'll find the architecture documents, the configur
 
 - [Serverless architecture](/docs/user/04-10-architecture.md)
 - [Internal Docker registry](/docs/user/04-20-internal-registry.md)
-- [Serverless chart](/docs/user/05-10-chart.md)
 - [Environment variables in Functions](/docs/user/05-20-env-variables.md)
 - [Function CR](/docs/user/06-10-function.md)
 - [Sample Functions](/docs/user/07-10-sample-functions.md)

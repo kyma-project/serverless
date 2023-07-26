@@ -23,12 +23,6 @@ Every runtime provides its own unique environment configuration which can be rea
 
 There are a few environments that occur only for a specific runtimes. The following list includes all of them:
 
-#### Node.js runtimes-specific environments
-
-| Environment | Default | Description |
-|---------------|-----------|-------------|
-| **NODE_PATH** | `$(KUBELESS_INSTALL_VOLUME)/node_modules` | Full path to fetched users dependencies. |
-
 #### Python runtime-specific environment variables
 
 | Environment | Default | Description |

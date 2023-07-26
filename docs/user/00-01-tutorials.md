@@ -5,8 +5,6 @@
 - [Expose the Function](/docs/user/01-20-expose-function.md)
 - [Manage Functions through Kyma CLI](/docs/user/01-30-manage-functions-with-kyma-cli.md)
 - [Debug a Function](/docs/user/01-40-debug-function.md)
-- [Synchronize Functions in a GitOps fashion](/docs/user/01-50-sync-function-with-gitops.md)
-- [Set an external Docker registry](/docs/user/01-60-set-external-registry.md) 
 - [Switch between registries at runtime](/docs/user/01-70-switch-to-external-registry.md)
 - [Log into a private package registry](/docs/user/01-80-log-into-private-packages-registry.md)
 - [Set asynchronous communication between Functions](/docs/user/01-90-set-asynchronous-connection)

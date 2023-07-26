@@ -1,6 +1,6 @@
 # Expose a Function with an API Rule
 
-This tutorial shows how you can expose your Function to access it outside the cluster, through an HTTP proxy. To expose it, use an APIRule custom resource (CR) managed by the in-house API Gateway Controller. This controller reacts to an instance of the APIRule CR and, based on its details, it creates an Istio VirtualService and Oathkeeper Access Rules that specify your permissions for the exposed Function.
+This tutorial shows how you can expose your Function to access it outside the cluster, through an HTTP proxy. To expose it, use an [APIRule custom resource (CR)](https://kyma-project.io/docs/kyma/latest/05-technical-reference/00-custom-resources/apix-01-apirule/). This controller reacts to an instance of the APIRule CR and, based on its details, it creates an Istio VirtualService and Oathkeeper Access Rules that specify your permissions for the exposed Function.
 
 When you complete this tutorial, you get a Function that:
 
@@ -13,9 +13,8 @@ Read also about [Function’s specification](/docs/user/07-70-function-specifica
 
 ## Prerequisites
 
-This tutorial is based on an existing Function. To create one, follow the [Create a Function](/docs/user/03-10-create-inline-function.md) tutorial.
-
->**NOTE:** Read about [Istio sidecars in Kyma and why you want them](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-03-istio-sidecars-in-kyma/). Then, check how to [enable automatic Istio sidecar proxy injection](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/smsh-01-istio-enable-sidecar-injection/). For more details, see [Default Istio setup in Kyma](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-02-default-istio-setup-in-kyma/).
+- [Existing Function](/docs/user/03-10-create-inline-function.md)
+- [API Gateway module enabled](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/08-install-uninstall-upgrade-kyma-module/) 
 
 ## Steps
 
