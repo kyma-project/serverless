@@ -34,41 +34,8 @@ When you enable the Serverless module, Serverless Operator takes care of install
 
 ## Useful links
 
-If you're interested in learning more about the Serverless area, follow these links to:
+If you want to perform some simple and more advanced tasks, check [Serverless tutorials](/docs/user/00-01-tutorials.md).
 
-- Perform some simple and more advanced tasks:
+To troubleshoot Serverless-related issues, see the [troubleshooting guides](/docs/user/00-03-troubleshooting-guides.md)
 
-  - Create an [inline](/docs/user/03-10-create-inline-function.md) or a [Git](/docs/user/03-11-create-git-function.md) Function
-  - [Expose the Function](/docs/user/03-20-expose-function.md)
-  - [Manage Functions through Kyma CLI](/docs/user/03-30-manage-functions-with-kyma-cli.md)
-  - [Debug a Function](/docs/user/03-40-debug-function.md)
-  - [Synchronize Functions in a GitOps fashion](/docs/user/03-50-sync-function-with-gitops.md)
-  - [Set an external Docker registry](/docs/user/03-60-set-external-registry.md) for your Function images and [switch between registries at runtime](/docs/user/03-70-switch-to-external-registry.md)
-  - [Log into a private package registry](/docs/user/03-80-log-into-private-packages-registry.md)
-  - [Set asynchronous communication between Functions](/docs/user/03-90-set-asynchronous-connection)
-  - [Customize Function traces](/docs/user/03-100-customize-function-traces.md)
-  - [Override runtime image](/docs/user/03-110-override-runtime-image.md)
-  - [Inject environment variables](/docs/user/03-120-inject-envs.md)
-  - [Use external scalers](/docs/user/03-130-use-external-scalers.md)
-  - [Access to Secrets mounted as Volume](/docs/user/03-140-use-secret-mounts.md)
-
-- Troubleshoot Serverless-related issues when:
-
-   - [Functions won't build](/docs/user/03-10-cannot-build-functions.md)
-   - [Container fails](/docs/user/03-20-failing-function-container.md)
-   - [Debugger stops](/docs/user/03-30-function-debugger-strange-location.md)
-
-- Analyze Function specification and configuration files:
-
-  - [Function](/docs/user/06-10-function.md) custom resource
-  - [`config.yaml` file](/docs/user/07-60-function-configuration-file.md) in Kyma CLI
-  - [Function specification details](/docs/user/07-70-function-specification.md)
-
-- Understand technicalities behind Serverless implementation:
-
-  - [Serverless architecture](/docs/user/04-10-architecture.md) and [Function processing](/docs/user/07-20-function-processing-stages.md)
-  - [Switching registries](/docs/user/07-30-switching-registries.md)
-  - [Git source type](/docs/user/07-40-git-source-type.md)
-  - [Exposing Functions](/docs/user/07-50-exposing-functions.md)
-  - [Available presets](/docs/user/07-80-available-presets.md)
-  - [Environment variables in Functions](/docs/user/05-20-env-variables.md)
+To analyze Function specification and configuration files and to understand technicalities behind Serverless implementation, visit [technical reference](/docs/user/00-02-technical-reference.md):
