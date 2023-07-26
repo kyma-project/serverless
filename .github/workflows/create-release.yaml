@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 0
 
       - name: Check tag
-        run: ./scripts/check_release_tag.sh ${{ inputs.tag }}
+        run: ./scripts/check_release_tag.sh ${{ toJSON(github.event) }}
 
 #TODO: consider what to do
 #      - name: Check image
