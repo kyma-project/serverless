@@ -1,5 +1,8 @@
 # Serverless Operator
 
+## Status
+![GitHub tag checks state](https://img.shields.io/github/checks-status/kyma-project/serverless-manager/main?label=serverless-operator&link=https%3A%2F%2Fgithub.com%2Fkyma-project%2Fserverless-manager%2Fcommits%2Fmain)
+
 ## Overview
 
 Serverless Operator allows deploying the [Serverless](https://kyma-project.io/docs/kyma/latest/01-overview/serverless/) component on the Kyma cluster in compatibility with the [Lifecycle Manager](https://github.com/kyma-project/lifecycle-manager).
