@@ -38,12 +38,6 @@ func (s *ServerlessSpec) Default() {
 		s.DockerRegistry.EnableInternal = pointer.Bool(DefaultEnableInternal)
 	}
 
-	if s.Eventing == nil {
-		s.Eventing = &Endpoint{Endpoint: DefaultPublisherProxyURL}
-	}
-	if s.Tracing == nil {
-		s.Tracing = &Endpoint{}
-	}
 }
 
 func (dr *DockerRegistry) IsInternalEnabled() bool {

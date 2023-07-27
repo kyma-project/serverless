@@ -15,23 +15,25 @@ import (
 	controllerruntime "sigs.k8s.io/controller-runtime"
 )
 
+const Disabled = "disabled"
+
 // enable or disable serverless optional dependencies based on the Serverless Spec and installed module on the cluster
 func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
 	// TODO: add functionality of auto-detecting these dependencies by checking Eventing CRs if user does not override these values.
 	// checking these URLs manually is not possible because of lack of istio-sidecar in the serverless-operator
 
-	tracingUrl, err := getTracingUrl(ctx, r.log, r.client, s.instance.Spec)
+	tracingURL, err := getTracingUrl(ctx, r.log, r.client, s.instance.Spec)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "while fetching tracing URL")
 	}
-
+	eventingURL := getEventingURL(s.instance.Spec)
 	// update status and condition if status is not up-to-date
-	if s.instance.Status.EventingEndpoint != s.instance.Spec.Eventing.Endpoint ||
-		s.instance.Status.TracingEndpoint != tracingUrl ||
+	if s.instance.Status.EventingEndpoint != eventingURL ||
+		s.instance.Status.TracingEndpoint != tracingURL ||
 		!meta.IsStatusConditionPresentAndEqual(s.instance.Status.Conditions, string(v1alpha1.ConditionTypeConfigured), metav1.ConditionTrue) {
 
-		s.instance.Status.EventingEndpoint = s.instance.Spec.Eventing.Endpoint
-		s.instance.Status.TracingEndpoint = tracingUrl
+		s.instance.Status.EventingEndpoint = eventingURL
+		s.instance.Status.TracingEndpoint = tracingURL
 
 		s.setState(v1alpha1.StateProcessing)
 		s.instance.UpdateConditionTrue(
@@ -47,7 +49,7 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 	s.chartConfig.Release.Flags = chart.AppendContainersFlags(
 		s.chartConfig.Release.Flags,
 		s.instance.Status.EventingEndpoint,
-		tracingUrl,
+		s.instance.Status.TracingEndpoint,
 	)
 
 	return nextState(sFnApplyResources)
@@ -77,6 +79,13 @@ func getTracingUrl(ctx context.Context, log *zap.SugaredLogger, client client.Cl
 	}
 
 	return otlp.Endpoint.Value, nil
+}
+
+func getEventingURL(spec v1alpha1.ServerlessSpec) string {
+	if spec.Eventing != nil {
+		return spec.Eventing.Endpoint
+	}
+	return ""
 }
 
 // returns "default", "custom" or "no" based on args

@@ -24,8 +24,9 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 	customTracingURL := "tracing-pipeline-url"
 	customEventingURL := "eventing-url"
 
-	configuredhMsg := "Configured with custom Publisher Proxy URL and custom Trace Collector URL."
+	configuredMsg := "Configured with custom Publisher Proxy URL and custom Trace Collector URL."
 	noConfigurationMsg := "Configured with no Publisher Proxy URL and no Trace Collector URL."
+	traceConfiguredMsg := "Configured with no Publisher Proxy URL and custom Trace Collector URL."
 
 	testCases := map[string]struct {
 		tracing               *v1alpha1.Endpoint
@@ -40,15 +41,18 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			eventing:              &v1alpha1.Endpoint{Endpoint: customEventingURL},
 			expectedEventingURL:   customEventingURL,
 			expectedTracingURL:    customTracingURL,
-			expectedStatusMessage: configuredhMsg,
+			expectedStatusMessage: configuredMsg,
 		},
 		"Tracing is not set and configured by Trace Pipeline": {
-			extraCR:            []client.Object{fixTracePipeline(customTracingURL)},
-			expectedTracingURL: customTracingURL,
+			extraCR:               []client.Object{fixTracePipeline(customTracingURL)},
+			eventing:              &v1alpha1.Endpoint{Endpoint: ""},
+			expectedTracingURL:    customTracingURL,
+			expectedStatusMessage: traceConfiguredMsg,
 		},
-		"Tracing is not set and disabled": {
-			expectedEventingURL: "",
-			expectedTracingURL:  "",
+		"Tracing is not set, trace pipeline is not available and tracing is disabled": {
+			expectedEventingURL:   "",
+			expectedTracingURL:    "",
+			expectedStatusMessage: noConfigurationMsg,
 		},
 		"Tracing and eventing is disabled": {
 			tracing:               &v1alpha1.Endpoint{Endpoint: ""},
@@ -61,6 +65,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
+			ctx := context.TODO()
 			s := &systemState{
 				instance: v1alpha1.Serverless{
 					Spec: v1alpha1.ServerlessSpec{
@@ -71,8 +76,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			}
 			c := fake.NewClientBuilder().WithScheme(scheme).WithObjects(testCase.extraCR...).Build()
 			r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c}}
-
-			next, result, err := sFnOptionalDependencies(nil, r, s)
+			next, result, err := sFnOptionalDependencies(ctx, r, s)
 
 			expectedNext := sFnUpdateStatusAndRequeue
 			requireEqualFunc(t, expectedNext, next)
@@ -157,7 +161,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 
-	t.Run("set flags if status is set correctly", func(t *testing.T) {
+	t.Run("configure chart flags in release if status is up-to date", func(t *testing.T) {
 		tracingURL := "tracing-pipeline-url"
 
 		s := &systemState{
