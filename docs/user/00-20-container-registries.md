@@ -13,5 +13,3 @@ Serverless supports two ways of connecting to an external registry:
 - [You can switch to an external registry at runtime](/docs/user/03-70-switch-to-external-registry.md).
 
   In this scenario, you can change the registry on the fly, with Kyma already installed on your cluster. This option gives you way more flexibility and control over the choice of an external registry for your Functions.
-
->**TIP:** For details, read about [switching registries at runtime](/docs/user/07-30-switching-registries.md)
