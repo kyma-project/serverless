@@ -2,8 +2,13 @@ package state
 
 import (
 	"context"
+	telemetryv1alpha1 "github.com/kyma-project/telemetry-manager/apis/telemetry/v1alpha1"
+	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/utils/pointer"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"testing"
 
@@ -14,72 +19,80 @@ import (
 )
 
 func Test_sFnOptionalDependencies(t *testing.T) {
-	t.Run("update status with endpoints info", func(t *testing.T) {
-		s := &systemState{
-			instance: v1alpha1.Serverless{
-				Spec: v1alpha1.ServerlessSpec{
-					Eventing: &v1alpha1.Endpoint{Endpoint: "test-event-URL"},
-					Tracing:  &v1alpha1.Endpoint{Endpoint: "test-trace-URL"},
-				},
-			},
-		}
+	scheme := runtime.NewScheme()
+	require.NoError(t, telemetryv1alpha1.AddToScheme(scheme))
+	customTracingURL := "tracing-pipeline-url"
+	customEventingURL := "eventing-url"
 
-		next, result, err := sFnOptionalDependencies(nil, nil, s)
+	configuredhMsg := "Configured with custom Publisher Proxy URL and custom Trace Collector URL."
+	noConfigurationMsg := "Configured with no Publisher Proxy URL and no Trace Collector URL."
 
-		expectedNext := sFnUpdateStatusAndRequeue
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
+	testCases := map[string]struct {
+		tracing               *v1alpha1.Endpoint
+		eventing              *v1alpha1.Endpoint
+		extraCR               []client.Object
+		expectedTracingURL    string
+		expectedEventingURL   string
+		expectedStatusMessage string
+	}{
+		"Eventing and tracing is set manually": {
+			tracing:               &v1alpha1.Endpoint{Endpoint: customTracingURL},
+			eventing:              &v1alpha1.Endpoint{Endpoint: customEventingURL},
+			expectedEventingURL:   customEventingURL,
+			expectedTracingURL:    customTracingURL,
+			expectedStatusMessage: configuredhMsg,
+		},
+		"Tracing is not set and configured by Trace Pipeline": {
+			extraCR:            []client.Object{fixTracePipeline(customTracingURL)},
+			expectedTracingURL: customTracingURL,
+		},
+		"Tracing is not set and disabled": {
+			expectedEventingURL: "",
+			expectedTracingURL:  "",
+		},
+		"Tracing and eventing is disabled": {
+			tracing:               &v1alpha1.Endpoint{Endpoint: ""},
+			eventing:              &v1alpha1.Endpoint{Endpoint: ""},
+			expectedEventingURL:   "",
+			expectedTracingURL:    "",
+			expectedStatusMessage: noConfigurationMsg,
+		},
+	}
 
-		status := s.instance.Status
-		require.Equal(t, "test-event-URL", status.EventingEndpoint)
-		require.Equal(t, "test-trace-URL", status.TracingEndpoint)
-
-		require.Equal(t, v1alpha1.StateProcessing, status.State)
-		requireContainsCondition(t, status,
-			v1alpha1.ConditionTypeConfigured,
-			metav1.ConditionTrue,
-			v1alpha1.ConditionReasonConfigured,
-			"Configured with custom Publisher Proxy URL and custom Trace Collector URL.",
-		)
-	})
-
-	t.Run("next state", func(t *testing.T) {
-		s := &systemState{
-			instance: v1alpha1.Serverless{
-				Spec: v1alpha1.ServerlessSpec{
-					Eventing: &v1alpha1.Endpoint{Endpoint: "test-event-URL"},
-					Tracing:  &v1alpha1.Endpoint{Endpoint: v1alpha1.DefaultTraceCollectorURL},
-				},
-				Status: v1alpha1.ServerlessStatus{
-					Conditions: []metav1.Condition{
-						{
-							Type:   string(v1alpha1.ConditionTypeConfigured),
-							Status: metav1.ConditionTrue,
-						},
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			s := &systemState{
+				instance: v1alpha1.Serverless{
+					Spec: v1alpha1.ServerlessSpec{
+						Eventing: testCase.eventing,
+						Tracing:  testCase.tracing,
 					},
-					EventingEndpoint: "test-event-URL",
-					TracingEndpoint:  v1alpha1.DefaultTraceCollectorURL,
 				},
-			},
-			snapshot: v1alpha1.ServerlessStatus{
-				EventingEndpoint: "test-event-URL",
-				TracingEndpoint:  v1alpha1.DefaultTraceCollectorURL,
-			},
-			chartConfig: &chart.Config{
-				Release: chart.Release{
-					Flags: map[string]interface{}{},
-				},
-			},
-		}
+			}
+			c := fake.NewClientBuilder().WithScheme(scheme).WithObjects(testCase.extraCR...).Build()
+			r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c}}
 
-		next, result, err := sFnOptionalDependencies(nil, nil, s)
+			next, result, err := sFnOptionalDependencies(nil, r, s)
 
-		expectedNext := sFnApplyResources
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
-		require.Nil(t, err)
-	})
+			expectedNext := sFnUpdateStatusAndRequeue
+			requireEqualFunc(t, expectedNext, next)
+			require.Nil(t, result)
+			require.Nil(t, err)
+
+			status := s.instance.Status
+			assert.Equal(t, testCase.expectedEventingURL, status.EventingEndpoint)
+			assert.Equal(t, testCase.expectedTracingURL, status.TracingEndpoint)
+
+			assert.Equal(t, v1alpha1.StateProcessing, status.State)
+			requireContainsCondition(t, status,
+				v1alpha1.ConditionTypeConfigured,
+				metav1.ConditionTrue,
+				v1alpha1.ConditionReasonConfigured,
+				testCase.expectedStatusMessage,
+			)
+		})
+	}
+
 	t.Run("reconcile from configurationError", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
@@ -124,6 +137,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			},
 		}
 		r := &reconciler{
+			log: zap.NewNop().Sugar(),
 			k8s: k8s{
 				client: fake.NewClientBuilder().WithObjects(secret).Build(),
 			},
@@ -142,4 +156,69 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			"Configured with custom Publisher Proxy URL and default Trace Collector URL.")
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
+
+	t.Run("set flags if status is set correctly", func(t *testing.T) {
+		tracingURL := "tracing-pipeline-url"
+
+		s := &systemState{
+			instance: v1alpha1.Serverless{
+				Spec: v1alpha1.ServerlessSpec{Eventing: &v1alpha1.Endpoint{Endpoint: v1alpha1.DefaultPublisherProxyURL}},
+				Status: v1alpha1.ServerlessStatus{
+					Conditions: []metav1.Condition{
+						{
+							Type:   string(v1alpha1.ConditionTypeConfigured),
+							Status: metav1.ConditionTrue,
+						},
+					},
+					EventingEndpoint: v1alpha1.DefaultPublisherProxyURL,
+					TracingEndpoint:  tracingURL,
+				},
+			},
+			chartConfig: &chart.Config{
+				Release: chart.Release{
+					Flags: map[string]interface{}{},
+				},
+			},
+		}
+
+		client := fake.NewClientBuilder().WithScheme(scheme).WithObjects(fixTracePipeline(tracingURL)).Build()
+		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: client}}
+
+		_, _, err := sFnOptionalDependencies(context.Background(), r, s)
+		require.NoError(t, err)
+
+		//TODO: consider to check status instead of flag
+		require.NotNil(t, s.chartConfig)
+		overrideURL, found := getFlagByPath(s.chartConfig.Release.Flags, "containers", "manager", "envs", "functionTraceCollectorEndpoint", "value")
+		require.True(t, found)
+		require.Equal(t, tracingURL, overrideURL)
+	})
+}
+
+func fixTracePipeline(tracingURL string) *telemetryv1alpha1.TracePipeline {
+	return &telemetryv1alpha1.TracePipeline{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "jaeger",
+		},
+		Spec: telemetryv1alpha1.TracePipelineSpec{Output: telemetryv1alpha1.TracePipelineOutput{Otlp: &telemetryv1alpha1.OtlpOutput{Endpoint: telemetryv1alpha1.ValueType{Value: tracingURL}}}},
+	}
+}
+
+func getFlagByPath(flags map[string]interface{}, path ...string) (string, bool) {
+	value := flags
+	var item interface{}
+	for _, pathItem := range path {
+		var ok bool
+		item, ok = value[pathItem]
+		if !ok {
+			return "", false
+		}
+		value, ok = item.(map[string]interface{})
+		if !ok {
+			break
+		}
+	}
+
+	out, ok := item.(string)
+	return out, ok
 }

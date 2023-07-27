@@ -42,7 +42,7 @@ func (s *ServerlessSpec) Default() {
 		s.Eventing = &Endpoint{Endpoint: DefaultPublisherProxyURL}
 	}
 	if s.Tracing == nil {
-		s.Tracing = &Endpoint{Endpoint: DefaultTraceCollectorURL}
+		s.Tracing = &Endpoint{}
 	}
 }
 
