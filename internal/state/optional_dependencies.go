@@ -57,6 +57,9 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 
 func getTracingUrl(ctx context.Context, log *zap.SugaredLogger, client client.Client, spec v1alpha1.ServerlessSpec) (string, error) {
 	if spec.Tracing != nil {
+		if spec.Tracing.Endpoint == "" {
+			return Disabled, nil
+		}
 		return spec.Tracing.Endpoint, nil
 	}
 
@@ -70,7 +73,7 @@ func getTracingUrl(ctx context.Context, log *zap.SugaredLogger, client client.Cl
 		log.Warnf("Cluster has %d TracePipelines, it should have only one", tracePipelinesLen)
 	}
 	if tracePipelinesLen == 0 {
-		return "", nil
+		return Disabled, nil
 	}
 	otlp := tracePipelines.Items[0].Spec.Output.Otlp
 	if otlp == nil {
@@ -83,9 +86,12 @@ func getTracingUrl(ctx context.Context, log *zap.SugaredLogger, client client.Cl
 
 func getEventingURL(spec v1alpha1.ServerlessSpec) string {
 	if spec.Eventing != nil {
+		if spec.Eventing.Endpoint == "" {
+			return Disabled
+		}
 		return spec.Eventing.Endpoint
 	}
-	return ""
+	return Disabled
 }
 
 // returns "default", "custom" or "no" based on args
@@ -93,7 +99,7 @@ func dependencyState(url, defaultUrl string) string {
 	switch {
 	case url == defaultUrl:
 		return "default"
-	case url == "":
+	case url == "" || url == Disabled:
 		return "no"
 	default:
 		return "custom"

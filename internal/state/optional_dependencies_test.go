@@ -43,22 +43,23 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			expectedTracingURL:    customTracingURL,
 			expectedStatusMessage: configuredMsg,
 		},
-		"Tracing is not set and configured by Trace Pipeline": {
+		"Tracing is not set, TracePipeline is available": {
 			extraCR:               []client.Object{fixTracePipeline(customTracingURL)},
 			eventing:              &v1alpha1.Endpoint{Endpoint: ""},
 			expectedTracingURL:    customTracingURL,
+			expectedEventingURL:   Disabled,
 			expectedStatusMessage: traceConfiguredMsg,
 		},
-		"Tracing is not set, trace pipeline is not available and tracing is disabled": {
-			expectedEventingURL:   "",
-			expectedTracingURL:    "",
+		"Tracing is not set, TracePipeline is not available": {
+			expectedEventingURL:   Disabled,
+			expectedTracingURL:    Disabled,
 			expectedStatusMessage: noConfigurationMsg,
 		},
 		"Tracing and eventing is disabled": {
 			tracing:               &v1alpha1.Endpoint{Endpoint: ""},
 			eventing:              &v1alpha1.Endpoint{Endpoint: ""},
-			expectedEventingURL:   "",
-			expectedTracingURL:    "",
+			expectedEventingURL:   Disabled,
+			expectedTracingURL:    Disabled,
 			expectedStatusMessage: noConfigurationMsg,
 		},
 	}
