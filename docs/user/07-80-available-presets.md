@@ -5,10 +5,6 @@ Function's resources and replicas as well as resources for image-building Jobs a
 - Function's resources
 - Image-building Job's resources
 
-## Configuration
-
-To add a new preset to the Serverless configuration for the defaulting webhook to set it on all Function CRs, update the `values.yaml` file in the Serverless chart. To do it, change the configuration for the **webhook.values.function.resources.presets** or **webhook.values.buildJob.resources.presets** parameters. Read the [Serverless chart configuration](/docs/user/05-10-chart.md) to find out more.
-
 ## Usage
 
 If you want to apply values from a preset to a single Function, override the existing values for a given preset in the Function CR. To do it, first remove the relevant fields from the Function CR and then add the relevant preset labels. For example, to modify the default values for **buildResources**, remove all its entries from the Function CR and add an appropriate **serverless.kyma-project.io/build-resources-preset: {PRESET}** label to the Function CR.

@@ -71,8 +71,6 @@ data:
 EOF
 ```
 
->**CAUTION:** If you want to create a cluster-wide Secret, you must create it in the `kyma-system` Namespace and add the `serverless.kyma-project.io/config: credentials` label. Read more about [requirements for Secret CRs](/docs/user/07-30-switching-registries.md).
-
 ### Test the registry switch
 
 [Create a Function](/docs/user/03-10-create-inline-function.md) in the `default` Namespace and check if the Function's Deployment points to the external registry using this command:
