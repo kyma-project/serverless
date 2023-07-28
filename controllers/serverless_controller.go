@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"github.com/kyma-project/serverless-manager/internal/tools"
 	"github.com/pkg/errors"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -58,11 +59,11 @@ func NewServerlessReconciler(client client.Client, config *rest.Config, recorder
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (sr *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.Serverless{}, builder.WithPredicates(predicate.NoStatusChangePredicate{})).
 		Watches(&source.Kind{Type: &telemetryv1alpha1.TracePipeline{}}, &handler.EnqueueRequestForObject{}).
-		Complete(r)
+		Complete(sr)
 }
 
 func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -71,42 +72,52 @@ func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	log := sr.log.With("request", req)
 	log.Info("reconciliation started")
 
-	if err := sr.client.Get(ctx, req.NamespacedName, &instance); err != nil {
-		if k8serrors.IsNotFound(err) {
-			//We are called because Watch was fired
-			//TODO: refactor this
-			var deeperErr error
-			instance, deeperErr = sr.getServerless(ctx, log)
-			if deeperErr != nil {
-				log.Warnf("while getting serverless list, got error: %s", deeperErr.Error())
-				return ctrl.Result{}, client.IgnoreNotFound(deeperErr)
-			}
-		} else {
-			log.Warnf("while getting serverless, got error: %s", err.Error())
-			return ctrl.Result{}, err
-		}
+	var err error
+	instance, err = sr.getServerless(ctx, log)
+	if err != nil {
+		log.Warnf("while getting serverless, got error: %s", err.Error())
+		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
 	r := sr.initStateMachine(log)
 	return r.Reconcile(ctx, instance)
 }
 
+/*
+This method list all serverless in cluster, because reconcile loop can be launched with request created by watch
+*/
 func (sr *serverlessReconciler) getServerless(ctx context.Context, log *zap.SugaredLogger) (v1alpha1.Serverless, error) {
-	serverlesses := v1alpha1.ServerlessList{}
-	err := sr.client.List(ctx, &serverlesses, &client.ListOptions{})
+	serverlessList := v1alpha1.ServerlessList{}
+	err := sr.client.List(ctx, &serverlessList, &client.ListOptions{})
 	if err != nil {
-		return v1alpha1.Serverless{}, errors.Wrap(err, "while getting list of serverlesses")
+		return v1alpha1.Serverless{}, errors.Wrap(err, "while getting list of serverlessList")
 	}
-	serverlessAmount := len(serverlesses.Items)
-	if serverlessAmount > 1 {
-		log.Warn("Cluster has more than one serverless")
-		return v1alpha1.Serverless{}, nil //TODO: think what to do in such scenario
-	} else if serverlessAmount == 0 {
-		//Is it possible? yes
+	serverlessAmount := len(serverlessList.Items)
+	if serverlessAmount == 0 {
 		return v1alpha1.Serverless{}, k8serrors.NewNotFound(schema.GroupResource{
 			Group:    v1alpha1.ServerlessGroup,
 			Resource: v1alpha1.ServerlessKind,
 		}, "")
+	} else if serverlessAmount > 1 {
+		log.Warn("Cluster has more than one serverless")
+		err := updateAllServerlessInstancesWithError(ctx, sr.client, serverlessList)
+		return v1alpha1.Serverless{}, errors.Wrap(err, "while setting errors on all serverless instances.")
 	}
-	return serverlesses.Items[0], nil
+
+	return serverlessList.Items[0], nil
+}
+
+func updateAllServerlessInstancesWithError(ctx context.Context, c client.Client, list v1alpha1.ServerlessList) error {
+	errList := tools.NewErrorList()
+	for _, item := range list.Items {
+		item.Status.State = v1alpha1.StateError
+		item.UpdateConditionFalse(
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonServerlessDuplicated,
+			errors.New("Found more than one Serverless CR. To fix please remove redundant serverless CRs"),
+		)
+		err := c.Update(ctx, &item, &client.UpdateOptions{})
+		errList.Append(err)
+	}
+	return errList.ToError()
 }
