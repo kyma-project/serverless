@@ -9,7 +9,6 @@ In the following documents, you'll find the architecture documents, the configur
 - [Sample Functions](/docs/user/07-10-sample-functions.md)
 - [Function processing](/docs/user/07-20-function-processing-stages.md)
 - [Git source type](/docs/user/07-40-git-source-type.md)
-- [Exposing Functions](/docs/user/07-50-exposing-functions.md)
 - [Function configuration file](/docs/user/07-60-function-configuration-file.md)
 - [Function's specification](/docs/user/07-70-function-specification.md)
 - [Available presets](/docs/user/07-80-available-presets.md)
