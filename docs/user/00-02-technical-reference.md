@@ -1,6 +1,6 @@
 # Technical reference
 
-In the following documents, you'll find the architecture documents, the configuration parameters, custom resources (CRs) and any other useful references:
+In the following documentation, you'll find the architecture documents, the configuration parameters, custom resources (CRs) and any other useful references:
 
 - [Serverless architecture](/docs/user/04-10-architecture.md)
 - [Internal Docker registry](/docs/user/04-20-internal-registry.md)
