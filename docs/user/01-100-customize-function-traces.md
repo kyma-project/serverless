@@ -11,7 +11,6 @@ Before you start, make sure you have these tools installed:
 
 - [Telemetry module enabled](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/08-install-uninstall-upgrade-kyma-module/)
 - [Trace pipeline configured](https://github.com/kyma-project/telemetry-manager/blob/main/docs/user/03-traces.md#setting-up-a-tracepipeline)
-- Trace backend configured to collect traces from the cluster. You can bring your own trace backend or deploy [Jaeger](https://github.com/kyma-project/examples/tree/main/jaeger).
 
 ## Steps
 

@@ -1,11 +1,12 @@
 # Tutorials
 
+The following tutorials will help you understand how the Serverless Function work and how to use it different scenarios:
+
 - [Create an inline Function](/docs/user/01-10-create-inline-function.md) 
 - [Create a Git Function](/docs/user/01-11-create-git-function.md)
 - [Expose the Function](/docs/user/01-20-expose-function.md)
 - [Manage Functions through Kyma CLI](/docs/user/01-30-manage-functions-with-kyma-cli.md)
 - [Debug a Function](/docs/user/01-40-debug-function.md)
-- [Switch between registries at runtime](/docs/user/01-70-switch-to-external-registry.md)
 - [Log into a private package registry](/docs/user/01-80-log-into-private-packages-registry.md)
 - [Set asynchronous communication between Functions](/docs/user/01-90-set-asynchronous-connection)
 - [Customize Function traces](/docs/user/01-100-customize-function-traces.md)
