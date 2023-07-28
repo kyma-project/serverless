@@ -69,7 +69,7 @@ func getTracingUrl(ctx context.Context, log *zap.SugaredLogger, client client.Cl
 	}
 
 	tracePipelinesLen := len(tracePipelines.Items)
-	if tracePipelinesLen != 1 {
+	if tracePipelinesLen > 1 {
 		log.Warnf("Cluster has %d TracePipelines, it should have only one", tracePipelinesLen)
 	}
 	if tracePipelinesLen == 0 {

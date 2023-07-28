@@ -18,6 +18,9 @@ package controllers
 
 import (
 	"context"
+	"github.com/pkg/errors"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
@@ -69,10 +72,41 @@ func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	log.Info("reconciliation started")
 
 	if err := sr.client.Get(ctx, req.NamespacedName, &instance); err != nil {
-		log.Info("empty request handled - stoping reconciliation")
-		return ctrl.Result{}, client.IgnoreNotFound(err)
+		if k8serrors.IsNotFound(err) {
+			//We are called because Watch was fired
+			//TODO: refactor this
+			var deeperErr error
+			instance, deeperErr = sr.getServerless(ctx, log)
+			if deeperErr != nil {
+				log.Warnf("while getting serverless list, got error: %s", deeperErr.Error())
+				return ctrl.Result{}, client.IgnoreNotFound(deeperErr)
+			}
+		} else {
+			log.Warnf("while getting serverless, got error: %s", err.Error())
+			return ctrl.Result{}, err
+		}
 	}
 
 	r := sr.initStateMachine(log)
 	return r.Reconcile(ctx, instance)
+}
+
+func (sr *serverlessReconciler) getServerless(ctx context.Context, log *zap.SugaredLogger) (v1alpha1.Serverless, error) {
+	serverlesses := v1alpha1.ServerlessList{}
+	err := sr.client.List(ctx, &serverlesses, &client.ListOptions{})
+	if err != nil {
+		return v1alpha1.Serverless{}, errors.Wrap(err, "while getting list of serverlesses")
+	}
+	serverlessAmount := len(serverlesses.Items)
+	if serverlessAmount > 1 {
+		log.Warn("Cluster has more than one serverless")
+		return v1alpha1.Serverless{}, nil //TODO: think what to do in such scenario
+	} else if serverlessAmount == 0 {
+		//Is it possible? yes
+		return v1alpha1.Serverless{}, k8serrors.NewNotFound(schema.GroupResource{
+			Group:    v1alpha1.ServerlessGroup,
+			Resource: v1alpha1.ServerlessKind,
+		}, "")
+	}
+	return serverlesses.Items[0], nil
 }
