@@ -67,13 +67,10 @@ func (sr *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
 }
 
 func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	var instance v1alpha1.Serverless
-
 	log := sr.log.With("request", req)
 	log.Info("reconciliation started")
 
-	var err error
-	instance, err = sr.getServerless(ctx, log)
+	instance, err := sr.getServerless(ctx, log)
 	if err != nil {
 		log.Warnf("while getting serverless, got error: %s", err.Error())
 		return ctrl.Result{}, client.IgnoreNotFound(err)
@@ -101,23 +98,33 @@ func (sr *serverlessReconciler) getServerless(ctx context.Context, log *zap.Suga
 	} else if serverlessAmount > 1 {
 		log.Warn("Cluster has more than one serverless")
 		err := updateAllServerlessInstancesWithError(ctx, sr.client, serverlessList)
-		return v1alpha1.Serverless{}, errors.Wrap(err, "while setting errors on all serverless instances.")
+		if err != nil {
+			return v1alpha1.Serverless{}, errors.Wrap(err, "while setting errors on all serverless instances.")
+		}
+		//TODO: fix reconciliation requeue
+		return v1alpha1.Serverless{}, errors.New("Found more that one serverless CR")
 	}
 
 	return serverlessList.Items[0], nil
 }
 
 func updateAllServerlessInstancesWithError(ctx context.Context, c client.Client, list v1alpha1.ServerlessList) error {
+	//coonsider use errors.join from std lib
 	errList := tools.NewErrorList()
 	for _, item := range list.Items {
-		item.Status.State = v1alpha1.StateError
-		item.UpdateConditionFalse(
+		instance := item.DeepCopy()
+		//TODO: Why serverd is required and what should be the real value
+		instance.Status.Served = v1alpha1.ServedFalse
+		instance.Status.State = v1alpha1.StateError
+		instance.UpdateConditionFalse(
 			v1alpha1.ConditionTypeConfigured,
 			v1alpha1.ConditionReasonServerlessDuplicated,
 			errors.New("Found more than one Serverless CR. To fix please remove redundant serverless CRs"),
 		)
-		err := c.Update(ctx, &item, &client.UpdateOptions{})
-		errList.Append(err)
+		err := c.Status().Update(ctx, instance)
+		if err != nil {
+			errList.Append(err)
+		}
 	}
 	return errList.ToError()
 }
