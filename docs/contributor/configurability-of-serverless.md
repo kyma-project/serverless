@@ -9,46 +9,42 @@ Serverless Operator watches Serverless custom resource (CR) to re-configure (rec
 Reconciliation of the Serverless components is driven by the content of the Serverless CR.
 
 You can use Serverless CR for the Serverless configuration with the provided API, for example:
-- override tracing backend (if available, Jaeger is used by default) or override metrics backend (if available, Prometheus is used by default)
+ - override trace endpoint
+ - override eventing endpoint
  - enable/disable internal docker registry
- - configure external docker registry configuration
- - override the default [build-time container resources](/docs/user/07-80-available-presets.md)
- - override the default [function runtime container resources](https://kyma-project.io/docs/kyma/latest/05-technical-reference/svls-09-available-presets/)
- - configure max simultaneous build jobs
- - set maximum body size accepted by Functions
- - modify log level of the serverless components (for example, controller, webhook)
+ - configure external docker registry
 
- You can also see the status of serverless module using Serverless CR, for example:
+You can also see the status of the Serverless module using Serverless CR, for example:
  - health of the Serverless workloads (for example, controller, webhook, Docker registry)
  - URL of the detected event publisher proxy
  - URL of the detected/configured OpenTelemetry protocol (OTLP) endpoints
  - indication whether internal Docker registry is used or URL of the configured Docker registry
 
-```yaml
-apiVersion: operator.kyma-project.io/v1alpha1
-kind: Serverless
-  name: serverless-sample
-spec:
-  dockerRegistry:
-    enableInternal: true
-    secretName: xxxx 
-  eventingPublisherProxy: http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish
-  otlpTracesEndpoint: http://tracing-jaeger-collector.kyma-system.svc.cluster.local:2342/v1/metrics ##<-- this is a dummy example
-  otlpMetricsEndpoint: http://tracing-jaeger-collector.kyma-system.svc.cluster.local:4318/v1/trace
-  defaultFunctionRuntimePreset: M
-  defaultFunctionBuildPreset: S
-  maxParallelFunctionBuilds: 5
-  controllerLogLevel: debug
-  webhookLogLevel: debug
-  ## runtime config
-  maxRequestPayloadSize: 2MB
-  functionTimeoutSeconds: 180
-status:
- # health of serverless workloads (i.e controller, webhook, docker registry installed)
- # url of the detected event publisher proxy
- # url of the detected/configured otlp endpoints
- # indication whether internal docker registry is used / url of configured docker registry
-```
+   ```yaml
+   apiVersion: operator.kyma-project.io/v1alpha1
+   kind: Serverless
+     name: serverless-sample
+   spec:
+     dockerRegistry:
+       enableInternal: true
+       secretName: xxxx 
+     eventingPublisherProxy: http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish
+     otlpTracesEndpoint: http://tracing-jaeger-collector.kyma-system.svc.cluster.local:2342/v1/metrics ##<-- this is a dummy example
+     otlpMetricsEndpoint: http://tracing-jaeger-collector.kyma-system.svc.cluster.local:4318/v1/trace
+     defaultFunctionRuntimePreset: M
+     defaultFunctionBuildPreset: S
+     maxParallelFunctionBuilds: 5
+     controllerLogLevel: debug
+     webhookLogLevel: debug
+     ## runtime config
+     maxRequestPayloadSize: 2MB
+     functionTimeoutSeconds: 180
+   status:
+    # health of serverless workloads (i.e controller, webhook, docker registry installed)
+    # url of the detected event publisher proxy
+    # url of the detected/configured otlp endpoints
+    # indication whether internal docker registry is used / url of configured docker registry
+   ```
 
 ## Dependencies
 

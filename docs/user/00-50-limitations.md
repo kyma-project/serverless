@@ -48,9 +48,6 @@ The shortest build time (the limit) is approximately 15 seconds and requires no 
 
 Running multiple Function build jobs at once (especially with no limits) may drain the cluster resources. To mitigate such risk, there is an additional limit of 5 simultaneous Function builds. If a sixth one is scheduled, it is built once there is a vacancy in the build queue.
 
-This limitation is configurable using [`containers.manager.envs.functionBuildMaxSimultaneousJobs`](/docs/user/05-10-chart.md#configurable-parameters).
-
-
 ## Runtime phase limitations
 In the runtime, the Functions serve user-provided logic wrapped in the WEB framework (`express` for Node.js and `bottle` for Python). Taking the user logic aside, those frameworks have limitations and depend on the selected [runtime profile](/docs/user/07-80-available-presets.md#functions-resources) and the Kubernetes nodes specification (see the note with reference specification at the end of this article).
 
