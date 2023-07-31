@@ -18,10 +18,8 @@ package controllers
 
 import (
 	"context"
-	"github.com/kyma-project/serverless-manager/internal/tools"
 	"github.com/pkg/errors"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
@@ -70,61 +68,51 @@ func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	log := sr.log.With("request", req)
 	log.Info("reconciliation started")
 
-	instance, err := sr.getServerless(ctx, log)
+	instance, err := sr.getServerless(ctx, req)
 	if err != nil {
 		log.Warnf("while getting serverless, got error: %s", err.Error())
-		return ctrl.Result{}, client.IgnoreNotFound(err)
+		return ctrl.Result{}, errors.Wrap(err, "while fetching serverless instance")
+	}
+	if instance == nil {
+		log.Info("Couldn't find proper instance of serverless")
+		return ctrl.Result{}, nil
 	}
 
 	r := sr.initStateMachine(log)
-	return r.Reconcile(ctx, instance)
+	return r.Reconcile(ctx, *instance)
 }
 
-/*
-This method list all serverless in cluster, because reconcile loop can be launched with request created by watch
-*/
-func (sr *serverlessReconciler) getServerless(ctx context.Context, log *zap.SugaredLogger) (v1alpha1.Serverless, error) {
-	serverlessList := v1alpha1.ServerlessList{}
-	err := sr.client.List(ctx, &serverlessList, &client.ListOptions{})
+func (sr *serverlessReconciler) getServerless(ctx context.Context, req ctrl.Request) (*v1alpha1.Serverless, error) {
+	instance := &v1alpha1.Serverless{}
+	err := sr.client.Get(ctx, req.NamespacedName, instance)
+	if err == nil {
+		return instance, nil
+	}
+	if !k8serrors.IsNotFound(err) {
+		return nil, errors.Wrap(err, "while fetching serverless instance")
+	}
+
+	instance, err = findServedServerless(ctx, sr.client)
 	if err != nil {
-		return v1alpha1.Serverless{}, errors.Wrap(err, "while getting list of serverlessList")
+		return nil, errors.Wrap(err, "while fetching served serverless instance")
 	}
-	serverlessAmount := len(serverlessList.Items)
-	if serverlessAmount == 0 {
-		return v1alpha1.Serverless{}, k8serrors.NewNotFound(schema.GroupResource{
-			Group:    v1alpha1.ServerlessGroup,
-			Resource: v1alpha1.ServerlessKind,
-		}, "")
-	} else if serverlessAmount > 1 {
-		log.Warn("Cluster has more than one serverless")
-		err := updateAllServerlessInstancesWithError(ctx, sr.client, serverlessList)
-		if err != nil {
-			return v1alpha1.Serverless{}, errors.Wrap(err, "while setting errors on all serverless instances.")
-		}
-		//TODO: fix reconciliation requeue
-		return v1alpha1.Serverless{}, errors.New("Found more that one serverless CR")
-	}
-
-	return serverlessList.Items[0], nil
+	return instance, nil
 }
 
-func updateAllServerlessInstancesWithError(ctx context.Context, c client.Client, list v1alpha1.ServerlessList) error {
-	//coonsider use errors.join from std lib
-	errList := tools.NewErrorList()
-	for _, item := range list.Items {
-		instance := item.DeepCopy()
-		//TODO: Why serverd is required and what should be the real value
-		instance.Status.Served = v1alpha1.ServedFalse
-		instance.Status.State = v1alpha1.StateError
-		instance.UpdateConditionFalse(
-			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonServerlessDuplicated,
-			errors.New("Found more than one Serverless CR. To fix please remove redundant serverless CRs"),
-		)
-		err := c.Status().Update(ctx, instance)
-		if err != nil {
-			errList.Append(err)
+func findServedServerless(ctx context.Context, c client.Client) (*v1alpha1.Serverless, error) {
+	var serverlessList v1alpha1.ServerlessList
+
+	err := c.List(ctx, &serverlessList)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range serverlessList.Items {
+		if !item.IsServedEmpty() && item.Status.Served == v1alpha1.ServedTrue {
+			return &item, nil
 		}
 	}
-	return errList.ToError()
+
+	return nil, nil
 }
