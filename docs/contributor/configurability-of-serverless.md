@@ -2,7 +2,7 @@
 
 Following the motivation of [Kyma modularization](https://kyma-project.io/docs/kyma/latest/01-overview/#kyma-modules), Serverless is now a module that you can enable and disable. 
 Serverless has its own Serverless Operator which is installed in the target Kyma runtime by infrastructure operators based on the module descriptor (`Module Template`).
-Serverless Operator watches Serverless custom resource (CR) to re-configure (reconcile) the Serverless instalation.
+Serverless Operator watches Serverless custom resource (CR) to re-configure (reconcile) the Serverless installation.
 
 ## Serverless CR
 
@@ -41,11 +41,11 @@ You can also see the status of the Serverless module using Serverless CR, for ex
 
 ## Dependencies
 
-There are other Kyma modules that are watched by Serverless Operator:
+Serverless Operator also watches other Kyma modules, such as:
  - Telemetry (soft dependency)
 
-The Telementry module is not required to install Serverless module. If it is identified, it may deliver default values for the trace endpoint in the Serverless configuration.
-The detected and used endpoints is a part of the Serverless CR status.
+You are not required to install the Telemetry module in order to install the Serverless module. If the Telemetry module is identified, it may deliver default values for the trace endpoint in the Serverless configuration.
+The detected and used endpoints are a part of the Serverless CR status.
 
 
 ![deps](../assets/modular-serverless.drawio.svg)
@@ -54,5 +54,5 @@ The detected and used endpoints is a part of the Serverless CR status.
 
 ## Propagating configuration to the Function runtime
 
-When a dependant module is discovered or when you override the Serverless CR manually, the Serverless Operator reconciles the Serverless Controller.
-If the change affect the Function runtime (for example, `otlpEndpoint`), the Serverless Controller automatically changes the ENVs in the Pod templates of the Function deployments. This restarts the Functions and new ENV values are consumed.
+When a dependent module is discovered or when you override the Serverless CR manually, Serverless Operator reconciles Serverless Controller.
+If the change affects the Function runtime (for example, `otlpEndpoint`), Serverless Controller automatically changes the ENVs in the Pod templates of the Function deployments. This restarts the Functions, and new ENV values are consumed.

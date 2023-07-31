@@ -11,12 +11,12 @@ Every runtime provides its own unique environment configuration which can be rea
 | Environment | Default | Description                                                                                                                                                           |
 |---------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **FUNC_HANDLER** | `main` | The name of the exported Function inside the `MOD_NAME` file.                                                                                                         |
-| **MOD_NAME** | `handler` | The name of the main exported file. The extension must be added on the server side and must be equal to `.py` for the Python runtimes and `.js` for the Node.js ones. |
-| **FUNC_PORT** | `8080` | The right port, a server listens to.                                                                                                                                  |
+| **MOD_NAME** | `handler` | The name of the main exported file. It must have an extension of `.py` for the Python runtimes and `.js` for the Node.js ones. The extension must be added on the server side. |
+| **FUNC_PORT** | `8080` | The right port a server listens to.                                                                                                                                  |
 | **SERVICE_NAMESPACE** | | The Namespace where the right Function exists on a cluster.                                                                                                           |
 | **KUBELESS_INSTALL_VOLUME** | `/kubeless` | Full path to volume mount with users source code.                                                                                                                     |
 | **FUNC_RUNTIME** | | The name of the actual runtime. Possible values: `nodejs16` - deprecated, `nodejs18`, `python39`.                                                                               |
-| **TRACE_COLLECTOR_ENDPOINT** | | Full address of the OpenTelemetry Trace Collector is exported if trace collector endpoint is present                                                                  |
+| **TRACE_COLLECTOR_ENDPOINT** | | Full address of OpenTelemetry Trace Collector is exported if the trace collector's endpoint is present.                                                                  |
 | **PUBLISHER_PROXY_ADDRESS** | `http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish` | Full address of the Publisher Proxy service.                                                                                                                          |
 
 ### Specific environments
@@ -104,11 +104,11 @@ To configure a Function with the Python runtime, override the default values of 
 
 | Environment variable             |            Description                                                                                                     | Unit    | Default value   |
 | -------------------------------- |---------------------------------------------------------------------------------------------------------------------------- | ------- | --------------- |
- FUNC_MEMFILE_MAX|for the HTTP request body in bytes.                                                            | Number  | `100*1024*1024` | <!-- https://bottlepy.org/docs/dev/api.html#bottle.BaseRequest.MEMFILE_MAX --> |
+ **FUNC_MEMFILE_MAX**|for the HTTP request body in bytes.                                                            | Number  | `100*1024*1024` | <!-- https://bottlepy.org/docs/dev/api.html#bottle.BaseRequest.MEMFILE_MAX --> |
 | **CHERRYPY_NUMTHREADS**          | Specifies the number of requests that can be handled in parallel                                                                           | Number  | `50`              |
 | **KYMA_INTERNAL_LOGGER_ENABLED** | Enables the default HTTP request logger which uses the standard Apache combined log output. To enable it, set its value to `true`. | Boolean | `false`         |
 
-See [`kubeless.py`](https://github.com/kubeless/runtimes/blob/master/stable/python/_kubeless.py) to get a deeper understanding of how the Bottle server, that acts as a runtime, uses these values internally to run Python Functions.
+See [`kubeless.py`](https://github.com/kubeless/runtimes/blob/master/stable/python/_kubeless.py) to get a deeper understanding of how the Bottle server, which acts as a runtime, uses these values internally to run Python Functions.
 
 ```yaml
 apiVersion: serverless.kyma-project.io/v1alpha2

@@ -34,7 +34,7 @@ As a workaround, increase the default capacity up to a maximum of 100 GB by edit
   kubectl get pvc serverless-docker-registry -n kyma-system
   ```
 
-  You will get this result:
+  You should get the following result:
 
   ```bash
   NAME                        STATUS   VOLUME                                    CAPACITY   ACCESS MODES   STORAGECLASS   AGE

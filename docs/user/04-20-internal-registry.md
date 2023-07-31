@@ -13,7 +13,7 @@ See the following diagram to learn how it works:
 1. Build job pushes the Function image to the Docker registry using the in-cluster URL.
 2. The Kubernetes DNS resolves the internal Docker registry URL to the actual IP address.
 3. [kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/) fetches the image using the URL: `localhost:{node_port}/{image}`.
-4. NodePort allows kubelet to get into the cluster network and translate `localhost` to `internal-registry.kyma-system.svc.cluster.local` and ask the Kubernetes DNS to resolve the name.
+4. NodePort allows kubelet to get into the cluster network, translate `localhost` to `internal-registry.kyma-system.svc.cluster.local`, and ask the Kubernetes DNS to resolve the name.
 5. The Kubernetes DNS service resolves the name and provides the IP of the internal Docker registry.
 
 **NOTE:** kubelet cannot resolve the in-cluster URL. That's why Serverless uses the NodePort service. 

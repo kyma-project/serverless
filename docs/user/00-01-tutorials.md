@@ -1,6 +1,6 @@
 # Tutorials
 
-The following tutorials will help you, among other things, understand how the Serverless Function work and how to use it in different scenarios:
+The following tutorials will help you, among other things, understand how the Serverless Function works and how to use it in different scenarios:
 
 - [Create an inline Function](/docs/user/01-10-create-inline-function.md) 
 - [Create a Git Function](/docs/user/01-11-create-git-function.md)

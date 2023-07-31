@@ -12,4 +12,4 @@ Functions support multiple languages by using the underlying execution environme
 
 You can also choose where you want to keep your Function's source code and dependencies. You can either place them directly in the Function CR under the **spec.source** and **spec.deps** fields as an **inline Function**, or store the code and dependencies in a public or private Git repository (**Git Functions**). Choosing the second option ensures your Function is versioned and gives you more development freedom in the choice of a project structure or an IDE.
 
->**TIP:** Read more about [Git Functions](/docs/user/07-40-git-source-type.md)
+>**TIP:** Read more about [Git Functions](/docs/user/07-40-git-source-type.md).
