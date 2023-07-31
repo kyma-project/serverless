@@ -55,12 +55,6 @@ spec:
                 properties:
                   enableInternal:
                     type: boolean
-                  gateway:
-                    type: string
-                  gatewayCert:
-                    type: string
-                  internalServerAddress:
-                    type: string
                   secretName:
                     type: string
                 type: object

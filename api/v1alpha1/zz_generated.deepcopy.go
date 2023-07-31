@@ -34,23 +34,8 @@ func (in *DockerRegistry) DeepCopyInto(out *DockerRegistry) {
 		*out = new(bool)
 		**out = **in
 	}
-	if in.InternalServerAddress != nil {
-		in, out := &in.InternalServerAddress, &out.InternalServerAddress
-		*out = new(string)
-		**out = **in
-	}
 	if in.SecretName != nil {
 		in, out := &in.SecretName, &out.SecretName
-		*out = new(string)
-		**out = **in
-	}
-	if in.Gateway != nil {
-		in, out := &in.Gateway, &out.Gateway
-		*out = new(string)
-		**out = **in
-	}
-	if in.GatewayCert != nil {
-		in, out := &in.GatewayCert, &out.GatewayCert
 		*out = new(string)
 		**out = **in
 	}

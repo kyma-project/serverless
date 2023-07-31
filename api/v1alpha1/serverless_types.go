@@ -22,11 +22,8 @@ import (
 )
 
 type DockerRegistry struct {
-	EnableInternal        *bool   `json:"enableInternal,omitempty"`
-	InternalServerAddress *string `json:"internalServerAddress,omitempty"`
-	SecretName            *string `json:"secretName,omitempty"`
-	Gateway               *string `json:"gateway,omitempty"`
-	GatewayCert           *string `json:"gatewayCert,omitempty"`
+	EnableInternal *bool   `json:"enableInternal,omitempty"`
+	SecretName     *string `json:"secretName,omitempty"`
 }
 
 type Endpoint struct {
