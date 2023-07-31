@@ -51,7 +51,7 @@ Running multiple Function build jobs at once (especially with no limits) may dra
 ## Runtime phase limitations
 In the runtime, the Functions serve user-provided logic wrapped in the WEB framework (`express` for Node.js and `bottle` for Python). Taking the user logic aside, those frameworks have limitations and depend on the selected [runtime profile](/docs/user/07-80-available-presets.md#functions-resources) and the Kubernetes nodes specification (see the note with reference specification at the end of this document).
 
-The following describes the response times of the selected runtime profiles for a "hello world" Function requested at 50 requests/second. This describes the overhead of the serving framework itself. Any user logic added on top of that will add extra milliseconds and must be profiled separately.
+The following describes the response times of the selected runtime profiles for a "Hello World" Function requested at 50 requests/second. This describes the overhead of the serving framework itself. Any user logic added on top of that will add extra milliseconds and must be profiled separately.
 
 
 <div tabs name="steps" group="function-response-times">
