@@ -1,10 +1,10 @@
 # Function configuration file
 
-When you initialize a Function (with the `init` command), CLI creates the `config.yaml` file in your workspace folder. This file contains the whole Function's configuration and specification not only for the Function custom resource but also any other related resources you create for it, such as Subscriptions and APIRules.
+When you initialize a Function (with the `init` command), Kyma CLI creates the `config.yaml` file in your workspace folder. This file contains the whole Function's configuration and specification not only for the Function custom resource (CR) but also any other related resources you create for it, such as Subscriptions and APIRules.
 
 ## Specification for an inline Function
 
-See the sample `config.yaml` for an inline Function for which code and dependencies are stored in the Function custom resource (CR) under the **spec.source** and **spec.deps** fields. This specification also contains the definition of a sample Subscription and APIRules for the Function:
+See the sample `config.yaml` for an inline Function for which code and dependencies are stored in the Function CR under the **spec.source** and **spec.deps** fields. This specification also contains the definition of a sample Subscription and APIRules for the Function:
 
 ```yaml
 name: function-practical-filip5
