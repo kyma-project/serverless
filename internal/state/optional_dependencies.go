@@ -22,11 +22,12 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 	// TODO: add functionality of auto-detecting these dependencies by checking Eventing CRs if user does not override these values.
 	// checking these URLs manually is not possible because of lack of istio-sidecar in the serverless-operator
 
-	tracingURL, err := getTracingUrl(ctx, r.log, r.client, s.instance.Spec)
+	tracingURL, err := getTracingURL(ctx, r.log, r.client, s.instance.Spec)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "while fetching tracing URL")
 	}
 	eventingURL := getEventingURL(s.instance.Spec)
+
 	// update status and condition if status is not up-to-date
 	if s.instance.Status.EventingEndpoint != eventingURL ||
 		s.instance.Status.TracingEndpoint != tracingURL ||
@@ -55,7 +56,7 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 	return nextState(sFnApplyResources)
 }
 
-func getTracingUrl(ctx context.Context, log *zap.SugaredLogger, client client.Client, spec v1alpha1.ServerlessSpec) (string, error) {
+func getTracingURL(ctx context.Context, log *zap.SugaredLogger, client client.Client, spec v1alpha1.ServerlessSpec) (string, error) {
 	if spec.Tracing != nil {
 		if spec.Tracing.Endpoint == "" {
 			return Disabled, nil
