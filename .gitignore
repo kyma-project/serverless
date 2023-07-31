@@ -43,3 +43,4 @@ vendor
 serverless-operator.yaml
 manifests/serverless/rendered.yaml
 serverless.yaml
+template-latest.yaml
