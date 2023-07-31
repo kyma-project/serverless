@@ -1,8 +1,8 @@
 # Customize Function traces
 
-This tutorial shows how to use the build-in OpenTelemetry tracer object to send custom trace data to the trace backend.
+This tutorial shows how to use the built-in OpenTelemetry tracer object to send custom trace data to the trace backend.
 
-Kyma Functions are instrumented to handle trace headers. This means that every time you call your Function, the executed logic is traceable using a dedicated span visible in the trace backend (i.e. start time and duration).
+Kyma Functions are instrumented to handle trace headers. This means that every time you call your Function, the executed logic is traceable using a dedicated span visible in the trace backend (that is, start time and duration).
 Additionally, you can extend the default trace context and create your own custom spans as you wish (that is, when calling a remote service in your distributed application) or add additional information to the tracing context by introducing events and tags. The following tutorial shows you how to do it using tracer client that is available as part of the [event](/docs/user/07-70-function-specification.md#event-object) object.
 
 ## Prerequisites
