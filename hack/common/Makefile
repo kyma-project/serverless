@@ -1,5 +1,5 @@
 PROJECT_ROOT ?= ../..
-include ${PROJECT_ROOT}/.env
+include ${PROJECT_ROOT}/.version
 CLUSTER_NAME ?= kyma
 KYMA_PROFILE ?= production
 KYMA_SOURCE ?= main
