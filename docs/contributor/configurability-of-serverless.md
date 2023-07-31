@@ -1,24 +1,24 @@
 # Overview
 
 Following the motivation of [Kyma modularization](https://kyma-project.io/docs/kyma/latest/01-overview/#kyma-modules), Serverless is now a module that you can enable and disable. 
-Serverless has its own Serverless Operator which is installed in the target Kyma runtime by infrastructure operators based on the module descriptor (`Module Template`).
-Serverless Operator watches Serverless custom resource (CR) to re-configure (reconcile) the Serverless installation.
+Serverless has its own Serverless Operator, which is installed in the target Kyma runtime by infrastructure operators based on the module descriptor (`Module Template`).
+Serverless Operator watches the Serverless custom resource (CR) to reconfigure (reconcile) the Serverless installation.
 
 ## Serverless CR
 
 Reconciliation of the Serverless components is driven by the content of the Serverless CR.
 
-You can use Serverless CR for the Serverless configuration with the provided API, for example:
+You can use the Serverless CR for the Serverless configuration with the provided API, for example:
  - override trace endpoint
  - override eventing endpoint
- - enable/disable internal docker registry
- - configure external docker registry
+ - enable/disable internal Docker registry
+ - configure external Docker registry
 
 You can also see the status of the Serverless module using Serverless CR, for example:
  - health of the Serverless workloads (for example, controller, webhook, Docker registry)
  - URL of the currently configured eventing endpoint
  - URL of the currently configured trace endpoint
- - indication whether internal Docker registry is used or URL of the configured Docker registry
+ - indication whether an internal Docker registry is used, or the URL of the configured Docker registry
 
    ```yaml
    apiVersion: operator.kyma-project.io/v1alpha1
@@ -50,7 +50,7 @@ The detected and used endpoints are a part of the Serverless CR status.
 
 ![deps](../assets/modular-serverless.drawio.svg)
 
->NOTE: Until the dependant modules are discoverable in the modular fashion the Serverless Operator can test the availibility of the endpoints directly.
+> **NOTE:** Until the dependent modules are discoverable in the modular way, the Serverless Operator can test the availability of the endpoints directly.
 
 ## Propagating configuration to the Function runtime
 

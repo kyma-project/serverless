@@ -1,6 +1,6 @@
 # Function's specification
 
-Serverless in Kyma allows you to create Functions in both Node.js and Python. Although the Function's interface is unified, its specification differs depending on the runtime used to run the Function.
+With the Serverless module, you can create Functions in both Node.js and Python. Although the Function's interface is unified, its specification differs depending on the runtime used to run the Function.
 
 ## Signature
 
@@ -173,15 +173,18 @@ You can use the **event.extensions.request** object to access properties and met
 
 ## Custom HTTP responses
 
+By default, a failing Function simply throws an error to tell the Event Service to reinject the event at a later point. Such an HTTP-based Function returns the HTTP status code `500`.  If you manage to invoke a Function successfully, the system returns the default HTTP status code `200`.
+
+Apart from these two default codes, you can define custom responses. Learn how to do that in Node.js and Python:
+
 <div tabs name="custom-http-response" group="function-specification">
 <details>
 <summary label="Node.js">
 Node.js
 </summary>
 
-By default, a failing Function simply throws an error to tell the Event Service to reinject the event at a later point. Such an HTTP-based Function returns the HTTP status code `500`. On the contrary, if you manage to invoke a Function successfully, the system returns the default HTTP status code `200`.
 
-Apart from these two default codes, you can define custom responses in all Node.js runtimes using the **event.extensions.response** object.
+To define custom responses in all Node.js runtimes, use the **event.extensions.response** object.
 
 This object is created by the Express framework and can be customized. For more information, read [Node.js API documentation](https://nodejs.org/docs/latest-v12.x/api/http.html#http_class_http_serverresponse).
 
@@ -206,11 +209,10 @@ module.exports = {
 Python
 </summary>
 
-By default, a failing Function simply throws an error to tell the Event Service to reinject the event at a later point. Such an HTTP-based Function returns the HTTP status code `500`. In case you manage to invoke a Function successfully, the system returns the default HTTP status code `200`.
 
-Apart from these two default codes, you can define custom responses in all Python runtimes using the **HTTPResponse** object available in Bottle.
+To define custom responses in all Python runtimes, use the **HTTPResponse** object available in Bottle.
 
-This object will need to be instantiated and can be customized. For more information, read [Bottle API documentation](https://bottlepy.org/docs/dev/api.html#the-response-object).
+This object must be instantiated and can be customized. For more information, read [Bottle API documentation](https://bottlepy.org/docs/dev/api.html#the-response-object).
 
 The following example shows how to set such a custom response in Python for the HTTP status code `400`:
 
@@ -251,4 +253,4 @@ You can use a custom runtime image to override the existing one. Your image must
 
 > Note: For better understanding, you can look at [main dockerfiles](https://github.com/kyma-project/kyma/blob/main/resources/serverless/templates/runtimes.yaml) which are responsible for building the final image based on the `base_image` argument which you as a user can override and what we are doing in [this tutorial](/docs/user/03-110-override-runtime-image.md).
 
-Every Function's Pods container have the same system environments which helps you configure the Functions server. For more information, read the [Environment variables](/docs/user/05-20-env-variables.md) page.
+Every Function's Pods container has the same system environments, which helps you configure the Functions server. For more information, read the [Environment variables](/docs/user/05-20-env-variables.md) page.

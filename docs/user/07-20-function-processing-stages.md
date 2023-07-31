@@ -29,9 +29,9 @@ This initial phase starts when you create a Function CR with configuration speci
 
 This phase involves creating and processing the Job CR. It ends successfully when the Function image is built and sent to the Docker registry. If the image already exists and only an update is required, the Docker image receives a new tag.
 
-Updating an existing Function requires an image rebuild only if you change the Function's body (**source**) or dependencies (**deps**). An update of Function's other configuration details, such as environment variables, replicas, resources, or labels, does not require image rebuild as it only affects the Deployment.
+Updating an existing Function requires an image rebuild only if you change the Function's body (**source**) or dependencies (**deps**). An update of a Function's other configuration details, such as environment variables, replicas, resources, or labels, does not require image rebuild because it only affects the Deployment.
 
->**NOTE:** Each time you update Function's configuration, the Function Controller deletes all previous Job CRs for the given Function's **UID**.
+>**NOTE:** Each time you update a Function's configuration, the Function Controller deletes all previous Job CRs for the given Function's **UID**.
 
 ![Function built](../assets/svls-built.svg)
 

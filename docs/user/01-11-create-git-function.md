@@ -134,7 +134,7 @@ You can create a Function either with kubectl or Kyma Dashboard:
         secretName: # "git-creds-basic" or "git-creds-key"
     ```
    
-    >**NOTE:** To avoid performance degradation caused by large Git repositories and large monorepos, [Function Controller](/docs/user/06-10-function.md#related-resources-and-components) implements a configurable backoff period for the source checkout based on `APP_FUNCTION_REQUEUE_DURATION`. This behavior can be disabled, allowing the controller to perform the source checkout with every reconciliation loop by marking the Function CR with the annotation `serverless.kyma-project.io/continuousGitCheckout: true`
+    >**NOTE:** To avoid performance degradation caused by large Git repositories and large monorepos, [Function Controller](/docs/user/06-10-function.md#related-resources-and-components) implements a configurable backoff period for the source checkout based on `APP_FUNCTION_REQUEUE_DURATION`. If you want to allow the controller to perform the source checkout with every reconciliation loop, disable the backoff period by marking the Function CR with the annotation `serverless.kyma-project.io/continuousGitCheckout: true`
 
     >**NOTE:** See this [Function's code and dependencies](https://github.com/kyma-project/examples/tree/main/orders-service/function).
 

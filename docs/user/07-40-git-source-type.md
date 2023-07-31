@@ -18,12 +18,12 @@ You can have various setups for your Function's Git source with different:
 
 - Directory structures
 
-  You can specify the location of your code dependencies with the **baseDir** parameter in the Function CR. For example, use `"/"` if you keep the source files at the root of your repository.
+  To specify the location of your code dependencies, use the **baseDir** parameter in the Function CR. For example, use `"/"` if you keep the source files at the root of your repository.
 
 - Authentication methods
 
-  You can define with the **spec.source.gitRepository.auth** parameter in the Function CR that you must authenticate to the repository with a password or token (`basic`), or an SSH key (`key`).
+  To define that you must authenticate to the repository with a password or token (`basic`), or an SSH key (`key`), use the **spec.source.gitRepository.auth** parameter in the Function CR.
 
 - Function's rebuild triggers
 
-  You can use the **spec.source.gitRepository.reference** parameter in the Function CR to define whether the Function Controller must monitor a given branch or commit in the Git repository to rebuild the Function upon their changes.
+  To define whether the Function Controller must monitor a given branch or commit in the Git repository to rebuild the Function upon their changes, use the **spec.source.gitRepository.reference** parameter in the Function CR.

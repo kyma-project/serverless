@@ -116,7 +116,7 @@ Follow these steps:
 
     >**NOTE:** This tutorial uses the `cpu` trigger because of its simple configuration. If you want to use another trigger, check the official [list of supported triggers](https://keda.sh/docs/scalers/).
 
-3. After a few seconds ScaledObject should be up to date and contain information about the actual replicas:
+3. After a few seconds, ScaledObject should be up to date and contain information about the actual replicas:
 
     ```bash
     kubectl get scaledobject scaled-function
@@ -185,7 +185,7 @@ Follow these steps:
 
     >**NOTE:** This tutorial uses the `prometheus` trigger because of its simple configuration. If you want to use another trigger, check the official [list of supported triggers](https://keda.sh/docs/scalers/).
   
-3. After a few seconds ScaledObject should be up to date and contain information about the actual replicas:
+3. After a few seconds, ScaledObject should be up to date and contain information about the actual replicas:
 
     ```bash
     kubectl get scaledobject scaled-function
