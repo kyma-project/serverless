@@ -11,7 +11,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 
 
 - [Kyma CLI](https://github.com/kyma-project/cli)
-- [Eventing and Istio modules enabled](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/08-install-uninstall-upgrade-kyma-module/)
+- [Eventing and Istio components installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/02-install-kyma/#install-specific-components)
   
 ## Steps
 
