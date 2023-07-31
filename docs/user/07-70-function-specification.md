@@ -255,6 +255,6 @@ You can use a custom runtime image to override the existing one. Your image must
 - Fetch sources from the path under the `KUBELESS_INSTALL_VOLUME` environment
 - Security support. Kyma runtimes are secure by default. You only need to protect your images.
 
-> Note: For better understanding, you can look at [main dockerfiles](https://github.com/kyma-project/kyma/blob/main/resources/serverless/templates/runtimes.yaml) which are responsible for building the final image based on the `base_image` argument which you as a user can override and what we are doing in [this tutorial](/docs/user/03-110-override-runtime-image.md).
+> **NOTE:** For better understanding, you can look at the [main Docker files](https://github.com/kyma-project/kyma/blob/main/resources/serverless/templates/runtimes.yaml). They are responsible for building the final image based on the `base_image` argument. You, as a user, can override it and what we are doing in [this tutorial](/docs/user/03-110-override-runtime-image.md).
 
 Every Function's Pods container has the same system environments, which helps you configure the Functions server. For more information, read the [Environment variables](/docs/user/05-20-env-variables.md) page.

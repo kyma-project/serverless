@@ -17,7 +17,7 @@ There is no upper limit of Functions that can be run on Kyma (similar to Kuberne
 The time necessary to build Function depends on:
  - selected [build profile](/docs/user/07-80-available-presets.md#build-jobs-resources) that determines the requested resources (and their limits) for the build phase 
  - number and size of dependencies that must be downloaded and bundled into the Function image
- - cluster nodes specification (see the note with reference specification at the end of the article)
+ - cluster Nodes specification (see the note with reference specification at the end of this document)
 
 <div tabs name="build" group="function-build-times">
   <details>
@@ -49,9 +49,9 @@ The shortest build time (the limit) is approximately 15 seconds and requires no 
 Running multiple Function build jobs at once (especially with no limits) may drain the cluster resources. To mitigate such risk, there is an additional limit of 5 simultaneous Function builds. If a sixth one is scheduled, it is built once there is a vacancy in the build queue.
 
 ## Runtime phase limitations
-In the runtime, the Functions serve user-provided logic wrapped in the WEB framework (`express` for Node.js and `bottle` for Python). Taking the user logic aside, those frameworks have limitations and depend on the selected [runtime profile](/docs/user/07-80-available-presets.md#functions-resources) and the Kubernetes nodes specification (see the note with reference specification at the end of this article).
+In the runtime, the Functions serve user-provided logic wrapped in the WEB framework (`express` for Node.js and `bottle` for Python). Taking the user logic aside, those frameworks have limitations and depend on the selected [runtime profile](/docs/user/07-80-available-presets.md#functions-resources) and the Kubernetes nodes specification (see the note with reference specification at the end of this document).
 
-The following describes the response times of the selected runtime profiles for a "Hello World" Function requested at 50 requests/second. This describes the overhead of the serving framework itself. Any user logic added on top of that will add extra milliseconds and must be profiled separately.
+The following describes the response times of the selected runtime profiles for a "hello world" Function requested at 50 requests/second. This describes the overhead of the serving framework itself. Any user logic added on top of that will add extra milliseconds and must be profiled separately.
 
 
 <div tabs name="steps" group="function-response-times">

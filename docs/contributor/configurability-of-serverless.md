@@ -10,13 +10,13 @@ Reconciliation of the Serverless components is driven by the content of the Serv
 
 You can use the Serverless CR for the Serverless configuration with the provided API, for example:
  - override trace endpoint
- - override eventing endpoint
+ - override Eventing endpoint
  - enable/disable internal Docker registry
  - configure external Docker registry
 
 You can also see the status of the Serverless module using Serverless CR, for example:
  - health of the Serverless workloads (for example, controller, webhook, Docker registry)
- - URL of the currently configured eventing endpoint
+ - URL of the currently configured Eventing endpoint
  - URL of the currently configured trace endpoint
  - indication whether an internal Docker registry is used, or the URL of the configured Docker registry
 
@@ -44,7 +44,7 @@ You can also see the status of the Serverless module using Serverless CR, for ex
 Serverless Operator also watches other Kyma modules, such as:
  - Telemetry (soft dependency)
 
-You are not required to install the Telemetry module in order to install the Serverless module. If the Telemetry module is identified, it may deliver default values for the trace endpoint in the Serverless configuration.
+You don't need to install the Telemetry module in order to install the Serverless module. But if the Telemetry module is identified, it delivers default values for the trace endpoint in the Serverless configuration.
 The detected and used endpoints are a part of the Serverless CR status.
 
 
@@ -55,4 +55,4 @@ The detected and used endpoints are a part of the Serverless CR status.
 ## Propagating configuration to the Function runtime
 
 When a dependent module is discovered or when you override the Serverless CR manually, Serverless Operator reconciles Serverless Controller.
-If the change affects the Function runtime (for example, `otlpEndpoint`), Serverless Controller automatically changes the ENVs in the Pod templates of the Function deployments. This restarts the Functions, and new ENV values are consumed.
+If the change affects the Function runtime (for example, `otlpEndpoint`), Serverless Controller automatically changes the environment values in the Pod templates of the Function deployments. This restarts the Functions, and new environment values are consumed.
