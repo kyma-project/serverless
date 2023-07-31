@@ -177,6 +177,10 @@ By default, a failing Function simply throws an error to tell the Event Service 
 
 Apart from these two default codes, you can define custom responses. Learn how to do that in Node.js and Python:
 
+By default, a failing Function simply throws an error to tell the Event Service to reinject the event at a later point. Such an HTTP-based Function returns the HTTP status code `500`.  If you manage to invoke a Function successfully, the system returns the default HTTP status code `200`.
+
+Apart from these two default codes, you can define custom responses. Learn how to do that in Node.js and Python:
+
 <div tabs name="custom-http-response" group="function-specification">
 <details>
 <summary label="Node.js">
