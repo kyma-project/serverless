@@ -33,16 +33,16 @@ echo "PULL_BASE_REF ${PULL_BASE_REF}"
 
 MODULE_VERSION=${PULL_BASE_REF} make render-manifest
 
-echo "Generated keda-manager.yaml:"
-cat keda-manager.yaml
+echo "Generated serverless-manager.yaml:"
+cat serverless-manager.yaml
 
-echo "Updating github release with keda-manager.yaml"
+echo "Updating github release with serverless-manager.yaml"
 
 echo "Finding release id for: ${PULL_BASE_REF}"
 CURL_RESPONSE=$(curl -w "%{http_code}" -sL \
                 -H "Accept: application/vnd.github+json" \
                 -H "Authorization: Bearer $BOT_GITHUB_TOKEN"\
-                https://api.github.com/repos/kyma-project/keda-manager/releases)
+                https://api.github.com/repos/kyma-project/serverless-manager/releases)
 JSON_RESPONSE=$(sed '$ d' <<< "${CURL_RESPONSE}")
 HTTP_CODE=$(tail -n1 <<< "${CURL_RESPONSE}")
 if [[ "${HTTP_CODE}" != "200" ]]; then
@@ -57,6 +57,6 @@ then
   exit 1
 fi
 
-UPLOAD_URL="https://uploads.github.com/repos/kyma-project/keda-manager/releases/${RELEASE_ID}/assets"
+UPLOAD_URL="https://uploads.github.com/repos/kyma-project/serverless-manager/releases/${RELEASE_ID}/assets"
 
-uploadFile "keda-manager.yaml" "${UPLOAD_URL}?name=keda-manager.yaml"
+uploadFile "serverless-manager.yaml" "${UPLOAD_URL}?name=serverless-manager.yaml"

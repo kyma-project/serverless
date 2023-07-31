@@ -39,7 +39,7 @@ k3d-lm-integration-test: run-with-lifecycle-manager integration-test
 k3d-integration-test: run-without-lifecycle-manager integration-test remove-serverless
 
 .PHONY: k3d-upgrade-test
-k3d-upgrade-test: ## Installs Keda from latest and upgrades to local.
+k3d-upgrade-test: ## Installs Serverless from latest and upgrades to local.
 k3d-upgrade-test: \
 	install-latest-serverless \
 	reinstall-serverless \

@@ -111,7 +111,7 @@ deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in
 	$(KUSTOMIZE) build config/default | kubectl apply -f -
 
 .PHONY: render-manifest
-render-manifest: manifests kustomize ## Render keda-operator.yaml manifest.
+render-manifest: manifests kustomize ## Render serverless-operator.yaml manifest.
 	cd config/operator && $(KUSTOMIZE) edit set image controller=${IMG}
 	$(KUSTOMIZE) build config/default > serverless-operator.yaml
 

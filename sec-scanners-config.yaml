@@ -1,6 +1,6 @@
-module-name: keda-manager
+module-name: serverless-manager
 protecode:
-  - europe-docker.pkg.dev/kyma-project/prod/serverless-manager:v20230725-ec8646bc
+  - europe-docker.pkg.dev/kyma-project/prod/serverless-manager:v20230731-fae6b3f8
 whitesource:
   language: golang-mod
   subprojects: false

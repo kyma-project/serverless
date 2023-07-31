@@ -10,7 +10,7 @@ set -o pipefail # prevents errors in a pipeline from being masked
 
 RELEASE_TAG=$1
 
-REPOSITORY=${REPOSITORY:-kyma-project/keda-manager}
+REPOSITORY=${REPOSITORY:-kyma-project/serverless-manager}
 GITHUB_URL=https://api.github.com/repos/${REPOSITORY}
 GITHUB_AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
 CHANGELOG_FILE="CHANGELOG.md"
