@@ -15,7 +15,7 @@ import (
 	controllerruntime "sigs.k8s.io/controller-runtime"
 )
 
-const Disabled = "disabled"
+const FeatureDisabled = "disabled"
 
 // enable or disable serverless optional dependencies based on the Serverless Spec and installed module on the cluster
 func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
@@ -59,7 +59,7 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 func getTracingURL(ctx context.Context, log *zap.SugaredLogger, client client.Client, spec v1alpha1.ServerlessSpec) (string, error) {
 	if spec.Tracing != nil {
 		if spec.Tracing.Endpoint == "" {
-			return Disabled, nil
+			return FeatureDisabled, nil
 		}
 		return spec.Tracing.Endpoint, nil
 	}
@@ -74,7 +74,7 @@ func getTracingURL(ctx context.Context, log *zap.SugaredLogger, client client.Cl
 		log.Warnf("Cluster has %d TracePipelines, it should have only one", tracePipelinesLen)
 	}
 	if tracePipelinesLen == 0 {
-		return Disabled, nil
+		return FeatureDisabled, nil
 	}
 	otlp := tracePipelines.Items[0].Spec.Output.Otlp
 	if otlp == nil {
@@ -88,11 +88,11 @@ func getTracingURL(ctx context.Context, log *zap.SugaredLogger, client client.Cl
 func getEventingURL(spec v1alpha1.ServerlessSpec) string {
 	if spec.Eventing != nil {
 		if spec.Eventing.Endpoint == "" {
-			return Disabled
+			return FeatureDisabled
 		}
 		return spec.Eventing.Endpoint
 	}
-	return Disabled
+	return FeatureDisabled
 }
 
 // returns "default", "custom" or "no" based on args
@@ -100,7 +100,7 @@ func dependencyState(url, defaultUrl string) string {
 	switch {
 	case url == defaultUrl:
 		return "default"
-	case url == "" || url == Disabled:
+	case url == "" || url == FeatureDisabled:
 		return "no"
 	default:
 		return "custom"
