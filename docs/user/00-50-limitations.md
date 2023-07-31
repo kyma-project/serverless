@@ -7,7 +7,7 @@ It reconciles Function custom resources (CR), stored at the Kubernetes API Serve
 Serverless controller doesn't build or serve Functions using its allocated runtime resources. It delegates this work to the dedicated Kubernetes workloads. It schedules (build-time) jobs to build the Function Docker image and (runtime) Pods to serve them once they are built. 
 Refer to the [architecture](/docs/user/04-10-architecture.md) diagram for more details.
 
-Having this in mind Serverless controller does not require horizontal scaling.
+Having this in mind Serverless Controller does not require horizontal scaling.
 It scales vertically up to the `160Mi` of memory and `500m` of CPU time.
 
 ## Limitation for the number of Functions
