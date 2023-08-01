@@ -74,10 +74,10 @@ The following Serverless custom resource (CR) shows configuration of Serverless 
 | **conditions.&#x200b;status** (required) | string | status of the condition, one of `True`, `False`, `Unknown`. |
 | **conditions.&#x200b;type** (required) | string | type of condition in camelCase or in `foo.example.com/CamelCase`. --- Many **.condition.type** values are consistent across resources like `Available`, but because arbitrary conditions can be useful (see **.node.status.conditions**), the ability to deconflict is important. The regex it matches is `(dns1123SubdomainFmt/)?(qualifiedNameFmt)` |
 | **dockerRegistry**  | string | Used registry configuration. Contains registry URL or "internal" |
-| **eventingEndpoint**  | string | Used the Eventing endpoint and the Tracing endpoint. |
+| **eventingEndpoint**  | string | Used Eventing endpoint. |
 | **served** (required) | string | Served signifies that current Serverless is managed. Value can be one of `True`, or `False`. |
 | **state**  | string | Signifies the current state of Serverless. Value can be one of `Ready`, `Processing`, `Error`, or `Deleting`. |
-| **tracingEndpoint**  | string |  |
+| **tracingEndpoint**  | string | Used Tracing endpoint. |
 
 <!-- TABLE-END -->
 
