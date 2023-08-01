@@ -3,9 +3,9 @@
 This tutorial shows how you can create a simple "Hello World" Function in Node.js. The Function's code and dependencies are defined as an inline code in the Function's **spec**.
 
 Serverless also allows you to store the Function's code and dependencies as sources in a Git repository. To learn more, read how to [Create a Git Function](/docs/user/03-11-create-git-function.md).
-To learn more about Function's signature, `event` and `context` objects, and custom HTTP responses the Function returns, read [Function’s specification](../../05-technical-reference/svls-08-function-specification.md)
+To learn more about Function's signature, `event` and `context` objects, and custom HTTP responses the Function returns, read [Function’s specification](/docs/user/07-70-function-specification.md).
 
->**NOTE:** Read about [Istio sidecars in Kyma and why you want them](../../01-overview/service-mesh/smsh-03-istio-sidecars-in-kyma.md). Then, check how to [enable automatic Istio sidecar proxy injection](../../04-operation-guides/operations/smsh-01-istio-enable-sidecar-injection.md). For more details, see [Default Istio setup in Kyma](../../01-overview/service-mesh/smsh-02-default-istio-setup-in-kyma.md).
+>**NOTE:** Read about [Istio sidecars in Kyma and why you want them](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-03-istio-sidecars-in-kyma/). Then, check how to [enable automatic Istio sidecar proxy injection](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/smsh-01-istio-enable-sidecar-injection/). For more details, see [Default Istio setup in Kyma](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-02-default-istio-setup-in-kyma/).
 
 ## Steps
 

@@ -5,9 +5,9 @@ Serverless controller does not serve time-critical requests from users.
 It reconciles Function custom resources (CR), stored at the Kubernetes API Server, and has no persistent state on its own.
 
 Serverless controller doesn't build or serve Functions using its allocated runtime resources. It delegates this work to the dedicated Kubernetes workloads. It schedules (build-time) jobs to build the Function Docker image and (runtime) Pods to serve them once they are built. 
-Refer to the [architecture](../../../05-technical-reference/00-architecture/svls-01-architecture.md) diagram for more details.
+Refer to the [architecture](/docs/user/04-10-architecture.md) diagram for more details.
 
-Having this in mind Serverless controller does not require horizontal scaling.
+Having this in mind Serverless Controller does not require horizontal scaling.
 It scales vertically up to the `160Mi` of memory and `500m` of CPU time.
 
 ## Limitation for the number of Functions
@@ -15,9 +15,9 @@ There is no upper limit of Functions that can be run on Kyma (similar to Kuberne
 
 ## Build phase limitation:
 The time necessary to build Function depends on:
- - selected [build profile](../../../05-technical-reference/svls-09-available-presets.md#build-jobs-resources) that determines the requested resources (and their limits) for the build phase 
+ - selected [build profile](/docs/user/07-80-available-presets.md#build-jobs-resources) that determines the requested resources (and their limits) for the build phase 
  - number and size of dependencies that must be downloaded and bundled into the Function image
- - cluster nodes specification (see the note with reference specification at the end of the article)
+ - cluster Nodes specification (see the note with reference specification at the end of this document)
 
 <div tabs name="build" group="function-build-times">
   <details>
@@ -48,13 +48,10 @@ The shortest build time (the limit) is approximately 15 seconds and requires no 
 
 Running multiple Function build jobs at once (especially with no limits) may drain the cluster resources. To mitigate such risk, there is an additional limit of 5 simultaneous Function builds. If a sixth one is scheduled, it is built once there is a vacancy in the build queue.
 
-This limitation is configurable using [`containers.manager.envs.functionBuildMaxSimultaneousJobs`](../../../05-technical-reference/00-configuration-parameters/svls-01-serverless-chart.md#configurable-parameters).
-
-
 ## Runtime phase limitations
-In the runtime, the Functions serve user-provided logic wrapped in the WEB framework (`express` for Node.js and `bottle` for Python). Taking the user logic aside, those frameworks have limitations and depend on the selected [runtime profile](../../../05-technical-reference/svls-09-available-presets.md#functions-resources) and the Kubernetes nodes specification (see the note with reference specification at the end of this article).
+In the runtime, the Functions serve user-provided logic wrapped in the WEB framework (`express` for Node.js and `bottle` for Python). Taking the user logic aside, those frameworks have limitations and depend on the selected [runtime profile](/docs/user/07-80-available-presets.md#functions-resources) and the Kubernetes nodes specification (see the note with reference specification at the end of this document).
 
-The following describes the response times of the selected runtime profiles for a "hello world" Function requested at 50 requests/second. This describes the overhead of the serving framework itself. Any user logic added on top of that will add extra milliseconds and must be profiled separately.
+The following describes the response times of the selected runtime profiles for a "Hello World" Function requested at 50 requests/second. This describes the overhead of the serving framework itself. Any user logic added on top of that will add extra milliseconds and must be profiled separately.
 
 
 <div tabs name="steps" group="function-response-times">
