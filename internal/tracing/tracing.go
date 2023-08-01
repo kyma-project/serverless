@@ -2,16 +2,31 @@ package tracing
 
 import (
 	"context"
-	telemetryv1alpha1 "github.com/kyma-project/telemetry-manager/apis/telemetry/v1alpha1"
+	"fmt"
 	"github.com/pkg/errors"
+	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func GetTracePipeline(ctx context.Context, client client.Client) (*telemetryv1alpha1.TracePipelineList, error) {
-	tracePipelines := &telemetryv1alpha1.TracePipelineList{}
-	err := client.List(ctx, tracePipelines)
+func GetTraceCollectorURL(ctx context.Context, c client.Client) (string, error) {
+	svcs := &corev1.ServiceList{}
+	err := c.List(ctx, svcs, &client.ListOptions{})
 	if err != nil {
-		return nil, errors.Wrap(err, "while listing tracing pipelines")
+		return "", errors.Wrap(err, "while listing services")
 	}
-	return tracePipelines, nil
+	svc := findService(tracingOTLPService, svcs)
+	if svc == nil {
+		return "", nil
+	}
+
+	return fmt.Sprintf("%s.%s.svc.cluster.local:%d", svc.Name, svc.Namespace, tracingOTLServiceHTTPPort), nil
+}
+
+func findService(name string, svcs *corev1.ServiceList) *corev1.Service {
+	for _, svc := range svcs.Items {
+		if svc.Name == name {
+			return &svc
+		}
+	}
+	return nil
 }

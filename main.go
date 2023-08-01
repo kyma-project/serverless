@@ -19,7 +19,6 @@ package main
 import (
 	"flag"
 	"github.com/kyma-project/serverless-manager/internal/config"
-	telemetryv1alpha1 "github.com/kyma-project/telemetry-manager/apis/telemetry/v1alpha1"
 	"os"
 	"time"
 
@@ -55,7 +54,6 @@ func init() {
 
 	utilruntime.Must(apiextensionsscheme.AddToScheme(scheme))
 
-	utilruntime.Must(telemetryv1alpha1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
 }
 

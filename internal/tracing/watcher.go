@@ -1,13 +1,8 @@
 package tracing
 
 import (
-	"context"
-	"fmt"
-	"github.com/pkg/errors"
-	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/util/workqueue"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
@@ -61,27 +56,4 @@ var _ handler.EventHandler = eventHandler{}
 
 func ServiceCollectorWatcher() handler.EventHandler {
 	return &eventHandler{}
-}
-
-func GetTraceCollectorURL(ctx context.Context, c client.Client) (string, error) {
-	svcs := &corev1.ServiceList{}
-	err := c.List(ctx, svcs, &client.ListOptions{})
-	if err != nil {
-		return "", errors.Wrap(err, "while listing services")
-	}
-	svc := findService(tracingOTLPService, svcs)
-	if svc == nil {
-		return "", nil
-	}
-
-	return fmt.Sprintf("%s.%s.svc.cluster.local:%d", svc.Name, svc.Namespace, tracingOTLServiceHTTPPort), nil
-}
-
-func findService(name string, svcs *corev1.ServiceList) *corev1.Service {
-	for _, svc := range svcs.Items {
-		if svc.Name == name {
-			return &svc
-		}
-	}
-	return nil
 }

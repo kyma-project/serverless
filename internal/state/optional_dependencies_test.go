@@ -2,7 +2,6 @@ package state
 
 import (
 	"context"
-	telemetryv1alpha1 "github.com/kyma-project/telemetry-manager/apis/telemetry/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
@@ -20,8 +19,8 @@ import (
 
 func Test_sFnOptionalDependencies(t *testing.T) {
 	scheme := runtime.NewScheme()
-	require.NoError(t, telemetryv1alpha1.AddToScheme(scheme))
-	customTracingURL := "tracing-pipeline-url"
+	require.NoError(t, corev1.AddToScheme(scheme))
+	tracingCollectorURL := "telemetry-otlp-traces..svc.cluster.local:4318"
 	customEventingURL := "eventing-url"
 
 	configuredMsg := "Configured with custom Publisher Proxy URL and custom Trace Collector URL."
@@ -37,20 +36,20 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		expectedStatusMessage string
 	}{
 		"Eventing and tracing is set manually": {
-			tracing:               &v1alpha1.Endpoint{Endpoint: customTracingURL},
+			tracing:               &v1alpha1.Endpoint{Endpoint: tracingCollectorURL},
 			eventing:              &v1alpha1.Endpoint{Endpoint: customEventingURL},
 			expectedEventingURL:   customEventingURL,
-			expectedTracingURL:    customTracingURL,
+			expectedTracingURL:    tracingCollectorURL,
 			expectedStatusMessage: configuredMsg,
 		},
-		"Tracing is not set, TracePipeline is available": {
-			extraCR:               []client.Object{fixTracePipeline(customTracingURL)},
+		"Tracing is not set, TracePipeline svc is available": {
+			extraCR:               []client.Object{fixTracingSvc()},
 			eventing:              &v1alpha1.Endpoint{Endpoint: ""},
-			expectedTracingURL:    customTracingURL,
+			expectedTracingURL:    tracingCollectorURL,
 			expectedEventingURL:   FeatureDisabled,
 			expectedStatusMessage: traceConfiguredMsg,
 		},
-		"Tracing is not set, TracePipeline is not available": {
+		"Tracing is not set, TracePipeline svc is not available": {
 			expectedEventingURL:   FeatureDisabled,
 			expectedTracingURL:    FeatureDisabled,
 			expectedStatusMessage: noConfigurationMsg,
@@ -163,8 +162,6 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 	})
 
 	t.Run("configure chart flags in release if status is up-to date", func(t *testing.T) {
-		tracingURL := "tracing-pipeline-url"
-
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{Eventing: &v1alpha1.Endpoint{Endpoint: v1alpha1.DefaultPublisherProxyURL}},
@@ -176,7 +173,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 						},
 					},
 					EventingEndpoint: v1alpha1.DefaultPublisherProxyURL,
-					TracingEndpoint:  tracingURL,
+					TracingEndpoint:  tracingCollectorURL,
 				},
 			},
 			chartConfig: &chart.Config{
@@ -186,7 +183,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			},
 		}
 
-		client := fake.NewClientBuilder().WithScheme(scheme).WithObjects(fixTracePipeline(tracingURL)).Build()
+		client := fake.NewClientBuilder().WithScheme(scheme).WithObjects(fixTracingSvc()).Build()
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: client}}
 
 		_, _, err := sFnOptionalDependencies(context.Background(), r, s)
@@ -196,16 +193,15 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		require.NotNil(t, s.chartConfig)
 		overrideURL, found := getFlagByPath(s.chartConfig.Release.Flags, "containers", "manager", "envs", "functionTraceCollectorEndpoint", "value")
 		require.True(t, found)
-		require.Equal(t, tracingURL, overrideURL)
+		require.Equal(t, tracingCollectorURL, overrideURL)
 	})
 }
 
-func fixTracePipeline(tracingURL string) *telemetryv1alpha1.TracePipeline {
-	return &telemetryv1alpha1.TracePipeline{
+func fixTracingSvc() *corev1.Service {
+	return &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "jaeger",
+			Name: "telemetry-otlp-traces",
 		},
-		Spec: telemetryv1alpha1.TracePipelineSpec{Output: telemetryv1alpha1.TracePipelineOutput{Otlp: &telemetryv1alpha1.OtlpOutput{Endpoint: telemetryv1alpha1.ValueType{Value: tracingURL}}}},
 	}
 }
 
