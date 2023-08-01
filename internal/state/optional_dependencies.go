@@ -64,25 +64,14 @@ func getTracingURL(ctx context.Context, log *zap.SugaredLogger, client client.Cl
 		return spec.Tracing.Endpoint, nil
 	}
 
-	tracePipelines, err := tracing.GetTracePipeline(ctx, client)
+	tracingURL, err := tracing.GetTraceCollectorURL(ctx, client)
 	if err != nil {
 		return "", errors.Wrap(err, "while getting trace pipeline")
 	}
-
-	tracePipelinesLen := len(tracePipelines.Items)
-	if tracePipelinesLen > 1 {
-		log.Warnf("Cluster has %d TracePipelines, it should have only one", tracePipelinesLen)
-	}
-	if tracePipelinesLen == 0 {
+	if tracingURL == "" {
 		return FeatureDisabled, nil
 	}
-	otlp := tracePipelines.Items[0].Spec.Output.Otlp
-	if otlp == nil {
-		log.Warn("Trace pipeline is misconfigured, couldn't find otlp")
-		return "", nil
-	}
-
-	return otlp.Endpoint.Value, nil
+	return tracingURL, nil
 }
 
 func getEventingURL(spec v1alpha1.ServerlessSpec) string {

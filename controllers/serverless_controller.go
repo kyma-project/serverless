@@ -58,7 +58,7 @@ func NewServerlessReconciler(client client.Client, config *rest.Config, recorder
 func (sr *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.Serverless{}, builder.WithPredicates(predicate.NoStatusChangePredicate{})).
-		Watches(&source.Kind{Type: &corev1.Service{}}, tracing.TracingServiceCollectorWatcher()).
+		Watches(&source.Kind{Type: &corev1.Service{}}, tracing.ServiceCollectorWatcher()).
 		Complete(sr)
 }
 
