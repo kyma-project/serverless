@@ -86,4 +86,19 @@ The following Serverless custom resource (CR) shows configuration of Serverless 
 Processing of a Serverless CR can succeed, continue, or fail for one of these reasons:
 
 
-//TODO Provide description of Serverless CR conditions here
+# Serverless CR conditions
+
+This section describes the possible states of the Serverless CR. Three condition types, `Installed`, `Configured` and `Deleted`, are used.
+
+| No | CR State   | Condition type | Condition status | Condition reason      | Remark                                        |
+|----|------------|----------------|------------------|-----------------------|-----------------------------------------------|
+| 1  | Ready      | Configured     | true             | Configured            | Serverless configuration verified             |
+| 2  | Processing | Configured     | unknown          | ConfigurationCheck    | Serverless configuration verification ongoing |
+| 3  | Error      | Configured     | false            | ConfigurationCheckErr | Serverless configuration verification error   |
+| 4  | Ready      | Installed      | true             | Installed             | Serverless workloads deployed                 |
+| 5  | Processing | Installed      | unknown          | Installation          | Deploying serverless workloads                |
+| 6  | Error      | Installed      | false            | InstallationErr       | Deployment error                              |
+| 7  | Error      | Installed      | false            | ServerlessDuplicated  | Only one Serverless CR is allowed             |
+| 8  | Deleting   | Deleted        | unknown          | Deletion              | Deletion in progress                          |
+| 9  | Deleting   | Deleted        | true             | Deleted               | Serverless module deleted                     |
+| 10 | Error      | Deleted        | false            | DeletionErr           | Deletion failed                               |
