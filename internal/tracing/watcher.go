@@ -1,56 +1,58 @@
 package tracing
 
 import (
-	telemetryv1alpha1 "github.com/kyma-project/telemetry-manager/apis/telemetry/v1alpha1"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/util/workqueue"
 	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/source"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+)
+
+const (
+	tracingOTLPService = "telemetry-otlp-traces"
 )
 
 type eventHandler struct {
 }
 
-func (e eventHandler) Create(event event.CreateEvent, limitingInterface workqueue.RateLimitingInterface) {
-	//TODO implement me
-	panic("implement me")
+func (e eventHandler) Create(event event.CreateEvent, q workqueue.RateLimitingInterface) {
+	if event.Object == nil {
+		return
+	}
+	svcName := event.Object.GetName()
+	if svcName != tracingOTLPService {
+		return
+	}
+	q.Add(reconcile.Request{NamespacedName: types.NamespacedName{
+		Name:      event.Object.GetName(),
+		Namespace: event.Object.GetNamespace(),
+	}})
 }
 
-func (e eventHandler) Update(event event.UpdateEvent, limitingInterface workqueue.RateLimitingInterface) {
-	//TODO implement me
-	panic("implement me")
+func (e eventHandler) Update(_ event.UpdateEvent, _ workqueue.RateLimitingInterface) {
+	return
 }
 
-func (e eventHandler) Delete(event event.DeleteEvent, limitingInterface workqueue.RateLimitingInterface) {
-	//TODO implement me
-	panic("implement me")
+func (e eventHandler) Delete(event event.DeleteEvent, q workqueue.RateLimitingInterface) {
+	if event.Object == nil {
+		return
+	}
+	svcName := event.Object.GetName()
+	if svcName != tracingOTLPService {
+		return
+	}
+	q.Add(reconcile.Request{NamespacedName: types.NamespacedName{
+		Name:      event.Object.GetName(),
+		Namespace: event.Object.GetNamespace(),
+	}})
 }
 
-func (e eventHandler) Generic(event event.GenericEvent, limitingInterface workqueue.RateLimitingInterface) {
-	//TODO implement me
-	panic("implement me")
+func (e eventHandler) Generic(_ event.GenericEvent, _ workqueue.RateLimitingInterface) {
+	return
 }
 
 var _ handler.EventHandler = eventHandler{}
 
-func GetSource() source.Source {
-	return &source.Kind{Type: &telemetryv1alpha1.TracePipeline{}}
+func TracingServiceCollectorWatcher() handler.EventHandler {
+	return &eventHandler{}
 }
-
-func EventWatcher() handler.EventHandler {
-	return nil
-}
-
-//
-//func ConfigureWatcher() {
-//	gvkExternal := schema.GroupVersionKind{
-//		Group:   "some.group.io",
-//		Version: "v1",
-//		Kind:    "External",
-//	}
-//
-//	restClient, err := apiutil.RESTClientForGVK(gvkExternal, false, mgr.GetConfig(), serializer.NewCodecFactory(mgr.GetScheme()))
-//	if err != nil {
-//		setupLog.Error(err, "unable to create REST client")
-//	}
-//}
