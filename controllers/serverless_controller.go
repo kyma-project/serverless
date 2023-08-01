@@ -18,23 +18,18 @@ package controllers
 
 import (
 	"context"
+	"github.com/kyma-project/serverless-manager/api/v1alpha1"
+	"github.com/kyma-project/serverless-manager/internal/chart"
+	"github.com/kyma-project/serverless-manager/internal/predicate"
+	"github.com/kyma-project/serverless-manager/internal/state"
 	"github.com/pkg/errors"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-	"sigs.k8s.io/controller-runtime/pkg/handler"
-	"sigs.k8s.io/controller-runtime/pkg/source"
-
 	"go.uber.org/zap"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	"github.com/kyma-project/serverless-manager/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/internal/chart"
-	"github.com/kyma-project/serverless-manager/internal/predicate"
-	"github.com/kyma-project/serverless-manager/internal/state"
-	telemetryv1alpha1 "github.com/kyma-project/telemetry-manager/apis/telemetry/v1alpha1"
 )
 
 // serverlessReconciler reconciles a Serverless object
@@ -60,7 +55,6 @@ func NewServerlessReconciler(client client.Client, config *rest.Config, recorder
 func (sr *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.Serverless{}, builder.WithPredicates(predicate.NoStatusChangePredicate{})).
-		Watches(&source.Kind{Type: &telemetryv1alpha1.TracePipeline{}}, &handler.EnqueueRequestForObject{}).
 		Complete(sr)
 }
 
