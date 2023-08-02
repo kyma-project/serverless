@@ -73,7 +73,7 @@ The following Serverless custom resource (CR) shows configuration of Serverless 
 | **conditions.&#x200b;reason** (required) | string | Contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field and whether the values are considered a guaranteed API. The value should be a camelCase string. This field may not be empty. |
 | **conditions.&#x200b;status** (required) | string | Specifies the status of the condition. The value is either `True`, `False`, or `Unknown`. |
 | **conditions.&#x200b;type** (required) | string | Specifies the condition type in camelCase or in `foo.example.com/CamelCase`. Many **.conditions.type** values are consistent across resources like `Available`, but because arbitrary conditions can be useful (see **.node.status.conditions**), the ability to deconflict is important. The regex it matches is `(dns1123SubdomainFmt/)?(qualifiedNameFmt)`. |
-| **dockerRegistry**  | string | Used registry configuration. Contains registry URL or "internal" |
+| **dockerRegistry**  | string | Used registry configuration. Contains registry URL or "internal". |
 | **eventingEndpoint**  | string | Used Eventing endpoint. |
 | **served** (required) | string | Served signifies that current Serverless is managed. Value can be one of `True`, or `False`. |
 | **state**  | string | Signifies the current state of Serverless. Value can be one of `Ready`, `Processing`, `Error`, or `Deleting`. |
