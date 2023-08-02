@@ -307,12 +307,12 @@ func (h *testHelper) createCheckOptionalDependenciesFunc(deploymentName string, 
 			return ok, err
 		}
 
-		eventProxyURL := v1alpha1.DefaultPublisherProxyURL
+		eventProxyURL := v1alpha1.FeatureDisabled
 		if expected.EventPublisherProxyURL != nil {
 			eventProxyURL = *expected.EventPublisherProxyURL
 		}
 
-		traceCollectorURL := v1alpha1.DefaultTraceCollectorURL
+		traceCollectorURL := v1alpha1.FeatureDisabled
 		if expected.TraceCollectorURL != nil {
 			traceCollectorURL = *expected.TraceCollectorURL
 		}

@@ -46,19 +46,19 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			extraCR:               []client.Object{fixTracingSvc()},
 			eventing:              &v1alpha1.Endpoint{Endpoint: ""},
 			expectedTracingURL:    tracingCollectorURL,
-			expectedEventingURL:   FeatureDisabled,
+			expectedEventingURL:   v1alpha1.FeatureDisabled,
 			expectedStatusMessage: traceConfiguredMsg,
 		},
 		"Tracing is not set, TracePipeline svc is not available": {
-			expectedEventingURL:   FeatureDisabled,
-			expectedTracingURL:    FeatureDisabled,
+			expectedEventingURL:   v1alpha1.FeatureDisabled,
+			expectedTracingURL:    v1alpha1.FeatureDisabled,
 			expectedStatusMessage: noConfigurationMsg,
 		},
 		"Tracing and eventing is disabled": {
 			tracing:               &v1alpha1.Endpoint{Endpoint: ""},
 			eventing:              &v1alpha1.Endpoint{Endpoint: ""},
-			expectedEventingURL:   FeatureDisabled,
-			expectedTracingURL:    FeatureDisabled,
+			expectedEventingURL:   v1alpha1.FeatureDisabled,
+			expectedTracingURL:    v1alpha1.FeatureDisabled,
 			expectedStatusMessage: noConfigurationMsg,
 		},
 	}
@@ -115,11 +115,11 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 					},
 					State:            v1alpha1.StateError,
 					EventingEndpoint: "test-event-URL",
-					TracingEndpoint:  v1alpha1.DefaultTraceCollectorURL,
+					TracingEndpoint:  v1alpha1.FeatureDisabled,
 				},
 				Spec: v1alpha1.ServerlessSpec{
 					Eventing: &v1alpha1.Endpoint{Endpoint: "test-event-URL"},
-					Tracing:  &v1alpha1.Endpoint{Endpoint: v1alpha1.DefaultTraceCollectorURL},
+					Tracing:  &v1alpha1.Endpoint{Endpoint: v1alpha1.FeatureDisabled},
 					DockerRegistry: &v1alpha1.DockerRegistry{
 						EnableInternal: pointer.Bool(false),
 						SecretName:     pointer.String("boo"),
@@ -157,14 +157,14 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			v1alpha1.ConditionTypeConfigured,
 			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonConfigured,
-			"Configured with custom Publisher Proxy URL and default Trace Collector URL.")
+			"Configured with custom Publisher Proxy URL and no Trace Collector URL.")
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 
 	t.Run("configure chart flags in release if status is up-to date", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
-				Spec: v1alpha1.ServerlessSpec{Eventing: &v1alpha1.Endpoint{Endpoint: v1alpha1.DefaultPublisherProxyURL}},
+				Spec: v1alpha1.ServerlessSpec{Eventing: &v1alpha1.Endpoint{Endpoint: customEventingURL}},
 				Status: v1alpha1.ServerlessStatus{
 					Conditions: []metav1.Condition{
 						{
@@ -172,7 +172,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 							Status: metav1.ConditionTrue,
 						},
 					},
-					EventingEndpoint: v1alpha1.DefaultPublisherProxyURL,
+					EventingEndpoint: customEventingURL,
 					TracingEndpoint:  tracingCollectorURL,
 				},
 			},

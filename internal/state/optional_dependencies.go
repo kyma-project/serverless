@@ -15,8 +15,6 @@ import (
 	controllerruntime "sigs.k8s.io/controller-runtime"
 )
 
-const FeatureDisabled = "disabled"
-
 // enable or disable serverless optional dependencies based on the Serverless Spec and installed module on the cluster
 func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
 	// TODO: add functionality of auto-detecting these dependencies by checking Eventing CRs if user does not override these values.
@@ -41,8 +39,8 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 			v1alpha1.ConditionTypeConfigured,
 			v1alpha1.ConditionReasonConfigured,
 			fmt.Sprintf("Configured with %s Publisher Proxy URL and %s Trace Collector URL.",
-				dependencyState(s.instance.Status.EventingEndpoint, v1alpha1.DefaultPublisherProxyURL),
-				dependencyState(s.instance.Status.TracingEndpoint, v1alpha1.DefaultTraceCollectorURL)),
+				dependencyState(s.instance.Status.EventingEndpoint),
+				dependencyState(s.instance.Status.TracingEndpoint)),
 		)
 		return nextState(sFnUpdateStatusAndRequeue)
 	}
@@ -59,7 +57,7 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 func getTracingURL(ctx context.Context, log *zap.SugaredLogger, client client.Client, spec v1alpha1.ServerlessSpec) (string, error) {
 	if spec.Tracing != nil {
 		if spec.Tracing.Endpoint == "" {
-			return FeatureDisabled, nil
+			return v1alpha1.FeatureDisabled, nil
 		}
 		return spec.Tracing.Endpoint, nil
 	}
@@ -69,7 +67,7 @@ func getTracingURL(ctx context.Context, log *zap.SugaredLogger, client client.Cl
 		return "", errors.Wrap(err, "while getting trace pipeline")
 	}
 	if tracingURL == "" {
-		return FeatureDisabled, nil
+		return v1alpha1.FeatureDisabled, nil
 	}
 	return tracingURL, nil
 }
@@ -77,19 +75,17 @@ func getTracingURL(ctx context.Context, log *zap.SugaredLogger, client client.Cl
 func getEventingURL(spec v1alpha1.ServerlessSpec) string {
 	if spec.Eventing != nil {
 		if spec.Eventing.Endpoint == "" {
-			return FeatureDisabled
+			return v1alpha1.FeatureDisabled
 		}
 		return spec.Eventing.Endpoint
 	}
-	return FeatureDisabled
+	return v1alpha1.FeatureDisabled
 }
 
 // returns "default", "custom" or "no" based on args
-func dependencyState(url, defaultUrl string) string {
+func dependencyState(url string) string {
 	switch {
-	case url == defaultUrl:
-		return "default"
-	case url == "" || url == FeatureDisabled:
+	case url == "" || url == v1alpha1.FeatureDisabled:
 		return "no"
 	default:
 		return "custom"
