@@ -3,7 +3,7 @@
 BRANCH="${1:-"main"}"
 RAW_EXPECTED_TAG=$(git log "${BRANCH}" --max-count 1 --skip 1 --format=format:%H)
 SHORT_EXPECTED_TAG=${RAW_EXPECTED_TAG:0:8}
-DATE="v$(git log main --max-count 1 --skip 1 --format=format:%ad --date=format:'%Y%m%d')"
+DATE="v$(git log "${BRANCH}" --max-count 1 --skip 1 --format=format:%ad --date=format:'%Y%m%d')"
 EXPECTED_TAG="${DATE}-${SHORT_EXPECTED_TAG}"
 
 IMAGE_TO_CHECK="${1:-europe-docker.pkg.dev/kyma-project/prod/serverless-manager}"
