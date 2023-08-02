@@ -19,7 +19,7 @@ func GetTraceCollectorURL(ctx context.Context, c client.Client) (string, error) 
 		return "", nil
 	}
 
-	return fmt.Sprintf("%s.%s.svc.cluster.local:%d", svc.Name, svc.Namespace, tracingOTLServiceHTTPPort), nil
+	return fmt.Sprintf("%s://%s.%s.svc.cluster.local:%d/%s", tracingOTLPProtocol, svc.Name, svc.Namespace, tracingOTLServiceHTTPPort, tracingOTLPPath), nil
 }
 
 func findService(name string, svcs *corev1.ServiceList) *corev1.Service {

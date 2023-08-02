@@ -9,8 +9,10 @@ import (
 )
 
 const (
+	tracingOTLPProtocol       = "http"
 	tracingOTLPService        = "telemetry-otlp-traces"
 	tracingOTLServiceHTTPPort = 4318
+	tracingOTLPPath           = "v1/traces"
 )
 
 type eventHandler struct {

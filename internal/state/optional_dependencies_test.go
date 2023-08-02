@@ -20,7 +20,7 @@ import (
 func Test_sFnOptionalDependencies(t *testing.T) {
 	scheme := runtime.NewScheme()
 	require.NoError(t, corev1.AddToScheme(scheme))
-	tracingCollectorURL := "telemetry-otlp-traces..svc.cluster.local:4318"
+	tracingCollectorURL := "http://telemetry-otlp-traces.some-ns.svc.cluster.local:4318/v1/traces"
 	customEventingURL := "eventing-url"
 
 	configuredMsg := "Configured with custom Publisher Proxy URL and custom Trace Collector URL."
@@ -200,7 +200,8 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 func fixTracingSvc() *corev1.Service {
 	return &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "telemetry-otlp-traces",
+			Name:      "telemetry-otlp-traces",
+			Namespace: "some-ns",
 		},
 	}
 }
