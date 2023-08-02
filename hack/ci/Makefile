@@ -3,7 +3,9 @@ PROJECT_COMMON ?= ${PROJECT_ROOT}/hack/common
 
 MODULECHARTTEST ?= ${PROJECT_ROOT}/module-chart-test
 
-include ${PROJECT_ROOT}/.version
+ifndef MODULE_VERSION
+    include ${PROJECT_ROOT}/.version
+endif
 
 ifndef MODULE_SHA
     MODULE_SHA = ${shell git rev-parse --short HEAD}
