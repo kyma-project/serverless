@@ -3,7 +3,9 @@ PROJECT_COMMON ?= ${PROJECT_ROOT}/hack/common
 
 MODULECHARTTEST ?= ${PROJECT_ROOT}/module-chart-test
 
-include ${PROJECT_ROOT}/.env
+ifndef MODULE_VERSION
+    include ${PROJECT_ROOT}/.version
+endif
 
 ifndef MODULE_SHA
     MODULE_SHA = ${shell git rev-parse --short HEAD}
@@ -39,7 +41,7 @@ k3d-lm-integration-test: run-with-lifecycle-manager integration-test
 k3d-integration-test: run-without-lifecycle-manager integration-test remove-serverless
 
 .PHONY: k3d-upgrade-test
-k3d-upgrade-test: ## Installs Keda from latest and upgrades to local.
+k3d-upgrade-test: ## Installs Serverless from latest and upgrades to local.
 k3d-upgrade-test: \
 	install-latest-serverless \
 	reinstall-serverless \
