@@ -18,18 +18,20 @@ package controllers
 
 import (
 	"context"
-
+	"github.com/kyma-project/serverless-manager/api/v1alpha1"
+	"github.com/kyma-project/serverless-manager/internal/chart"
+	"github.com/kyma-project/serverless-manager/internal/predicate"
+	"github.com/kyma-project/serverless-manager/internal/state"
+	"github.com/kyma-project/serverless-manager/internal/tracing"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	"github.com/kyma-project/serverless-manager/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/internal/chart"
-	"github.com/kyma-project/serverless-manager/internal/predicate"
-	"github.com/kyma-project/serverless-manager/internal/state"
+	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
 // serverlessReconciler reconciles a Serverless object
@@ -52,23 +54,27 @@ func NewServerlessReconciler(client client.Client, config *rest.Config, recorder
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (sr *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.Serverless{}, builder.WithPredicates(predicate.NoStatusChangePredicate{})).
-		Complete(r)
+		Watches(&source.Kind{Type: &corev1.Service{}}, tracing.ServiceCollectorWatcher()).
+		Complete(sr)
 }
 
 func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	var instance v1alpha1.Serverless
-
 	log := sr.log.With("request", req)
 	log.Info("reconciliation started")
 
-	if err := sr.client.Get(ctx, req.NamespacedName, &instance); err != nil {
-		log.Info("empty request handled - stoping reconciliation")
-		return ctrl.Result{}, client.IgnoreNotFound(err)
+	instance, err := state.GetServerlessOrServed(ctx, req, sr.client)
+	if err != nil {
+		log.Warnf("while getting serverless, got error: %s", err.Error())
+		return ctrl.Result{}, errors.Wrap(err, "while fetching serverless instance")
+	}
+	if instance == nil {
+		log.Info("Couldn't find proper instance of serverless")
+		return ctrl.Result{}, nil
 	}
 
 	r := sr.initStateMachine(log)
-	return r.Reconcile(ctx, instance)
+	return r.Reconcile(ctx, *instance)
 }

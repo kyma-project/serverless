@@ -22,11 +22,10 @@ func (s *Serverless) IsConditionTrue(conditionType ConditionType) bool {
 }
 
 const (
-	DefaultEnableInternal    = false
-	DefaultRegistryAddress   = "k3d-kyma-registry:5000"
-	DefaultServerAddress     = "k3d-kyma-registry:5000"
-	DefaultPublisherProxyURL = "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
-	DefaultTraceCollectorURL = "http://telemetry-otlp-traces.kyma-system.svc.cluster.local:4318/v1/traces"
+	DefaultEnableInternal  = false
+	DefaultRegistryAddress = "k3d-kyma-registry:5000"
+	DefaultServerAddress   = "k3d-kyma-registry:5000"
+	FeatureDisabled        = "disabled"
 )
 
 func (s *ServerlessSpec) Default() {
@@ -38,12 +37,6 @@ func (s *ServerlessSpec) Default() {
 		s.DockerRegistry.EnableInternal = pointer.Bool(DefaultEnableInternal)
 	}
 
-	if s.Eventing == nil {
-		s.Eventing = &Endpoint{Endpoint: DefaultPublisherProxyURL}
-	}
-	if s.Tracing == nil {
-		s.Tracing = &Endpoint{Endpoint: DefaultTraceCollectorURL}
-	}
 }
 
 func (dr *DockerRegistry) IsInternalEnabled() bool {
