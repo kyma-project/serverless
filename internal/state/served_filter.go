@@ -4,14 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
 func sFnServedFilter(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	if s.instance.IsServedEmpty() {
-		servedServerless, err := findServedServerless(ctx, r.k8s.client)
+		servedServerless, err := GetServedServerless(ctx, r.k8s.client)
 		if err != nil {
 			return stopWithError(err)
 		}
@@ -37,22 +35,4 @@ func sFnServedFilter(ctx context.Context, r *reconciler, s *systemState) (stateF
 	}
 
 	return nextState(sFnInitialize)
-}
-
-func findServedServerless(ctx context.Context, c client.Client) (*v1alpha1.Serverless, error) {
-	var serverlessList v1alpha1.ServerlessList
-
-	err := c.List(ctx, &serverlessList)
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range serverlessList.Items {
-		if !item.IsServedEmpty() && item.Status.Served == v1alpha1.ServedTrue {
-			return &item, nil
-		}
-	}
-
-	return nil, nil
 }

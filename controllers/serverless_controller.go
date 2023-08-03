@@ -26,7 +26,6 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -66,7 +65,7 @@ func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	log := sr.log.With("request", req)
 	log.Info("reconciliation started")
 
-	instance, err := sr.getServerless(ctx, req)
+	instance, err := state.GetServerlessOrServed(ctx, req, sr.client)
 	if err != nil {
 		log.Warnf("while getting serverless, got error: %s", err.Error())
 		return ctrl.Result{}, errors.Wrap(err, "while fetching serverless instance")
@@ -78,39 +77,4 @@ func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 
 	r := sr.initStateMachine(log)
 	return r.Reconcile(ctx, *instance)
-}
-
-func (sr *serverlessReconciler) getServerless(ctx context.Context, req ctrl.Request) (*v1alpha1.Serverless, error) {
-	instance := &v1alpha1.Serverless{}
-	err := sr.client.Get(ctx, req.NamespacedName, instance)
-	if err == nil {
-		return instance, nil
-	}
-	if !k8serrors.IsNotFound(err) {
-		return nil, errors.Wrap(err, "while fetching serverless instance")
-	}
-
-	instance, err = findServedServerless(ctx, sr.client)
-	if err != nil {
-		return nil, errors.Wrap(err, "while fetching served serverless instance")
-	}
-	return instance, nil
-}
-
-func findServedServerless(ctx context.Context, c client.Client) (*v1alpha1.Serverless, error) {
-	var serverlessList v1alpha1.ServerlessList
-
-	err := c.List(ctx, &serverlessList)
-
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range serverlessList.Items {
-		if !item.IsServedEmpty() && item.Status.Served == v1alpha1.ServedTrue {
-			return &item, nil
-		}
-	}
-
-	return nil, nil
 }
