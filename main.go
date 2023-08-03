@@ -53,6 +53,7 @@ func init() {
 	utilruntime.Must(operatorv1alpha1.AddToScheme(scheme))
 
 	utilruntime.Must(apiextensionsscheme.AddToScheme(scheme))
+
 	//+kubebuilder:scaffold:scheme
 }
 

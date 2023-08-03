@@ -24,9 +24,15 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/scheme"
 )
 
+const (
+	ServerlessGroup   = "operator.kyma-project.io"
+	ServerlessVersion = "v1alpha1"
+	ServerlessKind    = "Serverless"
+)
+
 var (
 	// GroupVersion is group version used to register these objects
-	GroupVersion = schema.GroupVersion{Group: "operator.kyma-project.io", Version: "v1alpha1"}
+	GroupVersion = schema.GroupVersion{Group: ServerlessGroup, Version: ServerlessVersion}
 
 	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
 	SchemeBuilder = &scheme.Builder{GroupVersion: GroupVersion}
