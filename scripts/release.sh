@@ -59,4 +59,4 @@ fi
 
 UPLOAD_URL="https://uploads.github.com/repos/kyma-project/serverless-manager/releases/${RELEASE_ID}/assets"
 
-uploadFile "serverless-manager.yaml" "${UPLOAD_URL}?name=serverless-manager.yaml"
+uploadFile "serverless-operator.yaml" "${UPLOAD_URL}?name=serverless-operator.yaml"
