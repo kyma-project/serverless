@@ -82,7 +82,7 @@ func getEventingURL(spec v1alpha1.ServerlessSpec) string {
 	return v1alpha1.FeatureDisabled
 }
 
-// returns "default", "custom" or "no" based on args
+// returns "custom" or "no" based on args
 func dependencyState(url string) string {
 	switch {
 	case url == "" || url == v1alpha1.FeatureDisabled:

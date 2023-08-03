@@ -189,11 +189,14 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		_, _, err := sFnOptionalDependencies(context.Background(), r, s)
 		require.NoError(t, err)
 
-		//TODO: consider to check status instead of flag
 		require.NotNil(t, s.chartConfig)
 		overrideURL, found := getFlagByPath(s.chartConfig.Release.Flags, "containers", "manager", "envs", "functionTraceCollectorEndpoint", "value")
 		require.True(t, found)
-		require.Equal(t, tracingCollectorURL, overrideURL)
+		assert.Equal(t, tracingCollectorURL, overrideURL)
+
+		overrideURL, found = getFlagByPath(s.chartConfig.Release.Flags, "containers", "manager", "envs", "functionPublisherProxyAddress", "value")
+		require.True(t, found)
+		assert.Equal(t, customEventingURL, overrideURL)
 	})
 }
 

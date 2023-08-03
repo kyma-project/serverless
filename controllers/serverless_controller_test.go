@@ -33,8 +33,8 @@ var _ = Describe("Serverless controller", func() {
 				},
 			}
 			serverlessDataWithChangedDependencies = serverlessData{
-				EventPublisherProxyURL: pointer.String("test-address"),
-				TraceCollectorURL:      pointer.String("test-address"),
+				EventPublisherProxyURL: pointer.String("test-eventing-address"),
+				TraceCollectorURL:      pointer.String("test-tracing-address"),
 				EnableInternal:         pointer.Bool(v1alpha1.DefaultEnableInternal),
 				registrySecretData: registrySecretData{
 					ServerAddress:   pointer.String(v1alpha1.DefaultServerAddress),
