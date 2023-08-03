@@ -33,8 +33,8 @@ echo "PULL_BASE_REF ${PULL_BASE_REF}"
 
 MODULE_VERSION=${PULL_BASE_REF} make render-manifest
 
-echo "Generated serverless-manager.yaml:"
-cat serverless-manager.yaml
+echo "Generated serverless-operator.yaml:"
+cat serverless-operator.yaml
 
 echo "Updating github release with serverless-manager.yaml"
 
