@@ -30,13 +30,13 @@ Follow these steps:
 
   You can also use the `--dir {FULL_FOLDER_PATH}` flag to point to the directory where you want to create the Function's source files.
 
-  >**NOTE:** Python 3.9 is only one of the available runtimes. Read about all [supported runtimes and sample Functions to run on them](/docs/user/07-10-sample-functions.md).
+  >**NOTE:** Python 3.9 is only one of the available runtimes. Read about all [supported runtimes and sample Functions to run on them](07-10-sample-functions.md).
 
   The `init` command creates these files in your workspace folder:
 
   - `config.yaml`	with the Function's configuration
 
-   >**NOTE:** See the detailed description of all fields available in the [`config.yaml` file](/docs/user/07-60-function-configuration-file.md).
+   >**NOTE:** See the detailed description of all fields available in the [`config.yaml` file](07-60-function-configuration-file.md).
 
   - `handler.py` with the Function's code and the simple "Hello World" logic
   - `requirements.txt` with an empty file for your Function's custom dependencies
