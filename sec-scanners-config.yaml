@@ -1,6 +1,6 @@
 module-name: serverless-manager
 protecode:
-  - europe-docker.pkg.dev/kyma-project/prod/serverless-manager:v20230731-fae6b3f8
+  - europe-docker.pkg.dev/kyma-project/prod/serverless-manager:v20230803-d0da2e88
 whitesource:
   language: golang-mod
   subprojects: false
