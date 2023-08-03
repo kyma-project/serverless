@@ -3,7 +3,7 @@ name: "Create release"
 on:
   workflow_dispatch:
     inputs:
-      tag:
+      name:
         description: 'Create release'
         default: ""
         required: true
