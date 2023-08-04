@@ -36,6 +36,8 @@ When you enable the Serverless module, Serverless Operator takes care of install
 
 If you want to perform some simple and more advanced tasks, check the [Serverless tutorials](tutorials/README.md).
 
-To troubleshoot Serverless-related issues, see the [troubleshooting guides](troubleshooting-guides/README.md)
+To troubleshoot Serverless-related issues, see the [troubleshooting guides](troubleshooting-guides/README.md).
 
-To analyze Function specification and configuration files and to understand technicalities behind Serverless implementation, visit [technical reference](technical-reference/README.md):
+To analyze Function specification and configuration files and to understand technicalities behind Serverless implementation, visit [technical reference](technical-reference/README.md).
+
+For more information on the Serverless custom resources, see [Resources](resources/README.md)
