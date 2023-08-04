@@ -1,7 +1,5 @@
 * [Home](/)
 * [Serverless module](README.md)
-* [Function CR](resources/06-10-function-cr.md)
-* [Serverless CR](resources/06-20-serverless-cr.md)
 * [From code to Function](00-10-from-code-to-function.md)
 * [Serverless configuration](00-20-configure-serverless.md)
 * [Development toolkit](00-30-development-toolkit.md)
