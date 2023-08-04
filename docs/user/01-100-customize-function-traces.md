@@ -3,20 +3,20 @@
 This tutorial shows how to use the built-in OpenTelemetry tracer object to send custom trace data to the trace backend.
 
 Kyma Functions are instrumented to handle trace headers. This means that every time you call your Function, the executed logic is traceable using a dedicated span visible in the trace backend (that is, start time and duration).
-Additionally, you can extend the default trace context and create your own custom spans as you wish (that is, when calling a remote service in your distributed application) or add additional information to the tracing context by introducing events and tags. The following tutorial shows you how to do it using tracer client that is available as part of the [event](/docs/user/07-70-function-specification.md#event-object) object.
+Additionally, you can extend the default trace context and create your own custom spans as you wish (that is, when calling a remote service in your distributed application) or add additional information to the tracing context by introducing events and tags. The following tutorial shows you how to do it using tracer client that is available as part of the [event](07-70-function-specification.md#event-object) object.
 
 ## Prerequisites
 
 Before you start, make sure you have these tools installed:
 
-- [Telemetry module enabled](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/08-install-uninstall-upgrade-kyma-module/)
+- [Telemetry component installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/02-install-kyma/#install-specific-components)
 - [Trace pipeline configured](https://github.com/kyma-project/telemetry-manager/blob/main/docs/user/03-traces.md#setting-up-a-tracepipeline)
 
 ## Steps
 
 The following code samples illustrate how to enrich the default trace with custom spans, events, and tags:
 
-1. [Create an inline Function](/docs/user/03-10-create-inline-function.md) with the following body:
+1. [Create an inline Function](01-10-create-inline-function.md) with the following body:
 
    <div tabs name="code" group="functions-code">
    <details>
@@ -107,6 +107,6 @@ The following code samples illustrate how to enrich the default trace with custo
    </details>
    </div>
 
-2. [Expose your Function](/docs/user/03-20-expose-function.md).
+2. [Expose your Function](01-20-expose-function.md).
 
 3. Find the traces for the Function in the trace backend.

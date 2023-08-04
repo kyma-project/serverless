@@ -7,7 +7,7 @@ It's based on a simple Function in Python 3.9. The Function reads data from Secr
 
 Before you start, make sure you have these tools installed:
 
-- [Kyma installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/02-install-kyma/) on a cluster
+- [Serverless module installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/08-install-uninstall-upgrade-kyma-module/) on a cluster
 
 ## Steps
 
@@ -59,7 +59,7 @@ Follow these steps:
     EOF
     ```
 
-   >**NOTE:** Read more about [creating Functions](/docs/user/03-10-create-inline-function.md).
+   >**NOTE:** Read more about [creating Functions](01-10-create-inline-function.md).
 
 4. Create an APIRule:
 
@@ -91,7 +91,7 @@ Follow these steps:
     EOF
     ```
 
-   >**NOTE:** Read more about [exposing Functions](/docs/user/03-20-expose-function.md).
+   >**NOTE:** Read more about [exposing Functions](01-20-expose-function.md).
 
 5. Call Function:
 

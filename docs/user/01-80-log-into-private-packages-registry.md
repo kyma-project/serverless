@@ -113,7 +113,7 @@ EOF
 
 ### Test the package registry switch
 
-[Create a Function](/docs/user/03-10-create-inline-function.md) with dependencies from the external registry. Check if your Function was created and all conditions are set to `True`:
+[Create a Function](01-10-create-inline-function.md) with dependencies from the external registry. Check if your Function was created and all conditions are set to `True`:
 
 ```bash
 kubectl get functions -n $NAMESPACE
