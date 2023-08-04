@@ -33,7 +33,7 @@ Updating an existing Function requires an image rebuild only if you change the F
 
 >**NOTE:** Each time you update a Function's configuration, the Function Controller deletes all previous Job CRs for the given Function's **UID**.
 
-![Function built](../assets/svls-built.svg)
+![Function built](../../assets/svls-built.svg)
 
 ## Running
 
@@ -45,4 +45,4 @@ Thanks to the implemented reconciliation loop, the Function Controller constantl
 
 The Function Controller observes the status of the underlying Deployment. If the minimum availability condition for the replicas is not satisfied, the Function Controller sets the **Running** status to `Unknown` with reason `MinimumReplicasUnavailable`. Such a Function should be considered unhealthy and the runtime profile or number of Replicas must be adjusted.
 
-![Function running](../assets/svls-running.svg)
+![Function running](../../assets/svls-running.svg)

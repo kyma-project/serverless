@@ -63,7 +63,7 @@ These sections will lead you through the whole installation, configuration, and 
   kyma init function --runtime python39 --dir $PWD/{WORKSPACE_FOLDER}
   ```
 
-  >**TIP:** Python 3.9 is only one of the available runtimes. Read about all [supported runtimes and sample Functions to run on them](07-10-sample-functions.md).
+  >**TIP:** Python 3.9 is only one of the available runtimes. Read about all [supported runtimes and sample Functions to run on them](../technical-reference/07-10-sample-functions.md).
 
   This command will download the following files to your workspace folder:
 
@@ -147,15 +147,15 @@ You can now install the Flux operator, connect it with a specific Git repository
 
 8. Go to **Settings** in your GitHub account:
 
-  ![GitHub account settings](../assets/svls-settings.png)
+  ![GitHub account settings](../../assets/svls-settings.png)
 
 1. Go to the **SSH and GPG keys** section and select the **New SSH key** button:
 
-  ![Create a new SSH key](../assets/svls-create-ssh-key.png)
+  ![Create a new SSH key](../../assets/svls-create-ssh-key.png)
 
 10. Provide the new key name, paste the previously copied SSH key, and confirm changes by selecting the **Add SSH Key** button:
 
-  ![Add a new SSH key](../assets/svls-add-ssh-key.png)
+  ![Add a new SSH key](../../assets/svls-add-ssh-key.png)
 
 ### Create a Function
 

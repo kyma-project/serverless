@@ -8,7 +8,7 @@ Still, it is very convenient for development and getting first-time experience w
 
 See the following diagram to learn how it works:
 
-![Serverless architecture](../assets/svls-internal-registry.svg)
+![Serverless architecture](../../assets/svls-internal-registry.svg)
 
 1. Build job pushes the Function image to the Docker registry using the in-cluster URL.
 2. The Kubernetes DNS resolves the internal Docker registry URL to the actual IP address.

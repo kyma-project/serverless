@@ -1,0 +1,6 @@
+* [Serverless module](../README.md)
+* [Troubleshooting guides](README.md)
+  * [Functions won't build](03-10-cannot-build-functions.md)
+  * [Container fails](03-20-failing-function-container.md)
+  * [Functions failing to build on k3d](03-40-function-build-failing-k3d.md)
+  * [Serverless periodically restarting](03-50-serverless-periodically-restaring.md)
