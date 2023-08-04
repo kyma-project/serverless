@@ -2,7 +2,7 @@
 
 To eliminate potential security risks when using Functions, bear in mind these few facts:
 
-- Kyma provides base images for serverless runtimes. Those default runtimes are maintained with regards to commonly known security advisories. It is possible to use a custom runtime image (see this [tutorial](/docs/user/03-110-override-runtime-image.md)). In such a case, you are responsible for security compliance and assessment of exploitability of any potential vulnerabilities of the custom runtime image.
+- Kyma provides base images for serverless runtimes. Those default runtimes are maintained with regards to commonly known security advisories. It is possible to use a custom runtime image (see this [tutorial](tutorials/01-110-override-runtime-image.md)). In such a case, you are responsible for security compliance and assessment of exploitability of any potential vulnerabilities of the custom runtime image.
 
 - Kyma does not run any security scans against Functions and their images. Before you store any sensitive data in Functions, consider the potential risk of data leakage.
 

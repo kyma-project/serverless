@@ -4,7 +4,7 @@
 
 "Serverless" refers to an architecture in which the infrastructure of your applications is managed by cloud providers. Contrary to its name, a serverless application does require a server but it doesn't require you to run and manage it on your own. Instead, you subscribe to a given cloud provider, such as AWS, Azure, or GCP, and pay a subscription fee only for the resources you actually use. Because the resource allocation can be dynamic and depends on your current needs, the serverless model is particularly cost-effective when you want to implement a certain logic that is triggered on demand. Simply, you get your things done and don't pay for the infrastructure that stays idle.
 
-Kyma Serverless Module offers a Kubernetes-based platform on which you can build, run, and manage serverless applications in Kubernetes. These applications are called **Functions**, and they are based on the [Function custom resource (CR)](/docs/user/06-10-function.md) objects. They contain simple code snippets that implement specific business logic. For example, you can define that you want to use a Function as a proxy that saves all incoming event details to an external database.
+Kyma Serverless Module offers a Kubernetes-based platform on which you can build, run, and manage serverless applications in Kubernetes. These applications are called **Functions**, and they are based on the [Function custom resource (CR)](resources/06-10-function-cr.md) objects. They contain simple code snippets that implement specific business logic. For example, you can define that you want to use a Function as a proxy that saves all incoming event details to an external database.
 
 Such a Function can be:
 
@@ -34,8 +34,10 @@ When you enable the Serverless module, Serverless Operator takes care of install
 
 ## Useful links
 
-If you want to perform some simple and more advanced tasks, check the [Serverless tutorials](/docs/user/00-01-tutorials.md).
+If you want to perform some simple and more advanced tasks, check the [Serverless tutorials](tutorials/README.md).
 
-To troubleshoot Serverless-related issues, see the [troubleshooting guides](/docs/user/00-03-troubleshooting-guides.md)
+To troubleshoot Serverless-related issues, see the [troubleshooting guides](troubleshooting-guides/README.md).
 
-To analyze Function specification and configuration files and to understand technicalities behind Serverless implementation, visit [technical reference](/docs/user/00-02-technical-reference.md):
+To analyze Function specification and configuration files and to understand technicalities behind Serverless implementation, visit [technical reference](technical-reference/README.md).
+
+For more information on the Serverless custom resources, see [Resources](resources/README.md)

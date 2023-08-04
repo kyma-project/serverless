@@ -17,7 +17,7 @@ Every runtime provides its own unique environment configuration which can be rea
 | **KUBELESS_INSTALL_VOLUME** | `/kubeless` | Full path to volume mount with users source code.                                                                                                                     |
 | **FUNC_RUNTIME** | None | The name of the actual runtime. Possible values: `nodejs16` - deprecated, `nodejs18`, `python39`.                                                                               |
 | **TRACE_COLLECTOR_ENDPOINT** | None | Full address of OpenTelemetry Trace Collector is exported if the trace collector's endpoint is present.                                                                  |
-| **PUBLISHER_PROXY_ADDRESS** | `http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish` | Full address of the Publisher Proxy service.                                                                                                                          |
+| **PUBLISHER_PROXY_ADDRESS** | `http://eventing-publisher-proxy.kyma-system.svc&nbsp;.cluster.local/publish` | Full address of the Publisher Proxy service.                                                                                                                          |
 
 ### Specific environments
 
@@ -27,7 +27,7 @@ There are a few environments that occur only for a specific runtimes. The follow
 
 | Environment | Default | Description |
 |---------------|-----------|-------------|
-| **PYTHONPATH** | `$(KUBELESS_INSTALL_VOLUME)/lib.python3.9/site-packages:$(KUBELESS_INSTALL_VOLUME)` | List of directories that Python must add to the sys.path directory list. |
+| **PYTHONPATH** | `$(KUBELESS_INSTALL_VOLUME)/lib.python3.9/site-packages&nbsp;:$(KUBELESS_INSTALL_VOLUME)` | List of directories that Python must add to the sys.path directory list. |
 | **PYTHONUNBUFFERED** | `TRUE` | Defines if Python's logs must be buffered before printing them out. |
 
 ## Configure runtime

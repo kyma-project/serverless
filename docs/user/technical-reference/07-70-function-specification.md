@@ -107,7 +107,7 @@ See the detailed descriptions of these fields:
 | **ce-id** | Unique identifier of the event |
 | **ce-time** | Time at which the event was sent |
 | **data** | Either JSON or a string, depending on the request type. Read more about [Buffer](https://nodejs.org/api/buffer.html) in Node.js and [bytes literals](https://docs.python.org/3/reference/lexical_analysis.html#string-and-bytes-literals) in Python. |
-| **tracer** | Fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) object that allows you to communicate with the user-defined trace backend service to share tracing data. For more information on how to use the tracer object see [Customize Function traces](/docs/user/03-100-customize-function-traces.md) |
+| **tracer** | Fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) object that allows you to communicate with the user-defined trace backend service to share tracing data. For more information on how to use the tracer object see [Customize Function traces](../tutorials/01-100-customize-function-traces.md) |
 | **extensions** | JSON object that can contain event payload, a Function's incoming request, or an outgoing response |
 
 
@@ -255,6 +255,6 @@ You can use a custom runtime image to override the existing one. Your image must
 - Fetch sources from the path under the `KUBELESS_INSTALL_VOLUME` environment
 - Security support. Kyma runtimes are secure by default. You only need to protect your images.
 
-> **NOTE:** For better understanding, you can look at the [main Docker files](https://github.com/kyma-project/kyma/blob/main/resources/serverless/templates/runtimes.yaml). They are responsible for building the final image based on the `base_image` argument. You, as a user, can override it and what we are doing in [this tutorial](/docs/user/03-110-override-runtime-image.md).
+> **NOTE:** For better understanding, you can look at the [main Docker files](https://github.com/kyma-project/kyma/blob/main/resources/serverless/templates/runtimes.yaml). They are responsible for building the final image based on the `base_image` argument. You, as a user, can override it and what we are doing in [this tutorial](../tutorials/01-110-override-runtime-image.md).
 
-Every Function's Pods container has the same system environments, which helps you configure the Functions server. For more information, read the [Environment variables](/docs/user/05-20-env-variables.md) page.
+Every Function's Pods container has the same system environments, which helps you configure the Functions server. For more information, read the [Environment variables](05-20-env-variables.md) page.

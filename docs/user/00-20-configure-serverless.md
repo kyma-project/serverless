@@ -1,4 +1,6 @@
-# Overview
+# Serverless configuration
+
+## Overview
 
 The Serverless module has its own operator (Serverless operator). It watches the Serverless custom resource (CR) and reconfigures (reconciles) the Serverless workloads.
 

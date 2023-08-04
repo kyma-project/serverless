@@ -1,6 +1,6 @@
 # Synchronize Git resources with the cluster using a GitOps operator
 
-This tutorial shows how you can automate the deployment of local Kyma resources on a cluster using the GitOps logic. You will use [Kyma CLI](https://github.com/kyma-project/cli) to create an inline Python Function. You will later push the resource to a GitHub repository of your choice and set up a GitOps operator to monitor the given repository folder and synchronize any changes in it with your cluster. For the purpose of this tutorial, you will install and use the [Flux](https://docs.fluxcd.io/en/1.17.1/tutorials/get-started.html) GitOps operator and a lightweight [k3d](https://k3d.io/) cluster.
+This tutorial shows how you can automate the deployment of local Kyma resources on a cluster using the GitOps logic. You will use [Kyma CLI](https://github.com/kyma-project/cli) to create an inline Python Function. You will later push the resource to a GitHub repository of your choice and set up a GitOps operator to monitor the given repository folder and synchronize any changes in it with your cluster. For the purpose of this tutorial, you will install and use the [Flux](https://fluxcd.io/flux/get-started/) GitOps operator and a lightweight [k3d](https://k3d.io/) cluster.
 
 >**TIP:** Although this tutorial uses Flux to synchronize Git resources with the cluster, you can use an alternative GitOps operator for this purpose, such as [Argo](https://argoproj.github.io/argo-cd/).
 
@@ -63,7 +63,7 @@ These sections will lead you through the whole installation, configuration, and 
   kyma init function --runtime python39 --dir $PWD/{WORKSPACE_FOLDER}
   ```
 
-  >**TIP:** Python 3.9 is only one of the available runtimes. Read about all [supported runtimes and sample Functions to run on them](/docs/user/07-10-sample-functions.md).
+  >**TIP:** Python 3.9 is only one of the available runtimes. Read about all [supported runtimes and sample Functions to run on them](../technical-reference/07-10-sample-functions.md).
 
   This command will download the following files to your workspace folder:
 
@@ -147,15 +147,15 @@ You can now install the Flux operator, connect it with a specific Git repository
 
 8. Go to **Settings** in your GitHub account:
 
-  ![GitHub account settings](./assets/svls-settings.png)
+  ![GitHub account settings](../../assets/svls-settings.png)
 
-9. Go to the **SSH and GPG keys** section and select the **New SSH key** button:
+1. Go to the **SSH and GPG keys** section and select the **New SSH key** button:
 
-  ![Create a new SSH key](./assets/svls-create-ssh-key.png)
+  ![Create a new SSH key](../../assets/svls-create-ssh-key.png)
 
 10. Provide the new key name, paste the previously copied SSH key, and confirm changes by selecting the **Add SSH Key** button:
 
-  ![Add a new SSH key](./assets/svls-add-ssh-key.png)
+  ![Add a new SSH key](../../assets/svls-add-ssh-key.png)
 
 ### Create a Function
 

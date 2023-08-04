@@ -9,11 +9,11 @@ When you complete this tutorial, you get a Function that:
 
 To learn more about securing your Function, see the [Expose and secure a workload with OAuth2](https://kyma-project.io/docs/kyma/latest/03-tutorials/00-api-exposure/apix-05-expose-and-secure-a-workload/apix-05-01-expose-and-secure-workload-oauth2/) or [Expose and secure a workload with JWT](https://kyma-project.io/docs/kyma/latest/03-tutorials/00-api-exposure/apix-05-expose-and-secure-a-workload/apix-05-03-expose-and-secure-workload-jwt/) tutorials.
 
-Read also about [Function’s specification](/docs/user/07-70-function-specification.md) if you are interested in its signature, `event` and `context` objects, and custom HTTP responses the Function returns.
+Read also about [Function’s specification](../technical-reference/07-70-function-specification.md) if you are interested in its signature, `event` and `context` objects, and custom HTTP responses the Function returns.
 
 ## Prerequisites
 
-- [Existing Function](/docs/user/03-10-create-inline-function.md)
+- [Existing Function](01-10-create-inline-function.md)
 - [API Gateway component installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/02-install-kyma/#install-specific-components) 
 
 ## Steps
@@ -125,7 +125,7 @@ You can expose a Function with Kyma Dashboard, Kyma CLI, or kubectl:
 
     >**NOTE:** The Function takes the name from the Function CR name. The APIRule CR can have a different name but for the purpose of this tutorial, all related resources share a common name defined under the **NAME** variable.
 
-2. Create an APIRule CR for your Function. It is exposed on port `80`, which is the default port of the [Service Placeholder](/docs/user/04-10-architecture.md).
+2. Create an APIRule CR for your Function. It is exposed on port `80`, which is the default port of the [Service Placeholder](../technical-reference/04-10-architecture.md).
 
     ```yaml
     cat <<EOF | kubectl apply -f -
