@@ -17,6 +17,16 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const (
+	cpuUtilizationTest         = "test-CPU-utilization-percentage"
+	requeueDurationTest        = "test-requeue-duration"
+	executorArgsTest           = "test-build-executor-args"
+	maxSimultaneousJobsTest    = "test-max-simultaneous-jobs"
+	healthzLivenessTimeoutTest = "test-healthz-liveness-timeout"
+	requestBodyLimitMbTest     = "test-request-body-limit-mb"
+	timeoutSecTest             = "test-timeout-sec"
+)
+
 func Test_sFnOptionalDependencies(t *testing.T) {
 	scheme := runtime.NewScheme()
 	require.NoError(t, corev1.AddToScheme(scheme))
@@ -97,6 +107,46 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			)
 		})
 	}
+
+	t.Run("update status additional configuration overrides", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.Serverless{
+				Spec: v1alpha1.ServerlessSpec{
+					CPUUtilizationPercentage: &v1alpha1.AdditionalConfig{AdditionalConfig: cpuUtilizationTest},
+					RequeueDuration:          &v1alpha1.AdditionalConfig{AdditionalConfig: requeueDurationTest},
+					BuildExecutorArgs:        &v1alpha1.AdditionalConfig{AdditionalConfig: executorArgsTest},
+					BuildMaxSimultaneousJobs: &v1alpha1.AdditionalConfig{AdditionalConfig: maxSimultaneousJobsTest},
+					HealthzLivenessTimeout:   &v1alpha1.AdditionalConfig{AdditionalConfig: healthzLivenessTimeoutTest},
+					RequestBodyLimitMb:       &v1alpha1.AdditionalConfig{AdditionalConfig: requestBodyLimitMbTest},
+					TimeoutSec:               &v1alpha1.AdditionalConfig{AdditionalConfig: timeoutSecTest},
+				},
+			},
+		}
+
+		next, result, err := sFnOptionalDependencies(nil, nil, s)
+
+		expectedNext := sFnUpdateStatusAndRequeue
+		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		require.Nil(t, err)
+
+		status := s.instance.Status
+		require.Equal(t, cpuUtilizationTest, status.CPUUtilizationPercentage)
+		require.Equal(t, requeueDurationTest, status.RequeueDuration)
+		require.Equal(t, executorArgsTest, status.BuildExecutorArgs)
+		require.Equal(t, maxSimultaneousJobsTest, status.BuildMaxSimultaneousJobs)
+		require.Equal(t, healthzLivenessTimeoutTest, status.HealthzLivenessTimeout)
+		require.Equal(t, requestBodyLimitMbTest, status.RequestBodyLimitMb)
+		require.Equal(t, timeoutSecTest, status.TimeoutSec)
+
+		require.Equal(t, v1alpha1.StateProcessing, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeConfigured,
+			metav1.ConditionTrue,
+			v1alpha1.ConditionReasonConfigured,
+			"Configured with custom CPU utilization, custom function requeue duration, custom function build executor args, custom max number of simultaneous jobs, custom duration of health check, custom max size of request body and custom timeout.",
+		)
+	})
 
 	t.Run("reconcile from configurationError", func(t *testing.T) {
 		s := &systemState{
@@ -184,8 +234,8 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			},
 		}
 
-		client := fake.NewClientBuilder().WithScheme(scheme).WithObjects(fixTracingSvc()).Build()
-		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: client}}
+		c := fake.NewClientBuilder().WithScheme(scheme).WithObjects(fixTracingSvc()).Build()
+		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c}}
 
 		_, _, err := sFnOptionalDependencies(context.Background(), r, s)
 		require.NoError(t, err)
