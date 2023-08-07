@@ -26,6 +26,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 	configuredMsg := "Configured with custom Publisher Proxy URL and custom Trace Collector URL."
 	noConfigurationMsg := "Configured with no Publisher Proxy URL and no Trace Collector URL."
 	traceConfiguredMsg := "Configured with no Publisher Proxy URL and custom Trace Collector URL."
+	defaultEventingConfigurationMsg := "Configured with default Publisher Proxy URL and no Trace Collector URL."
 
 	testCases := map[string]struct {
 		tracing               *v1alpha1.Endpoint
@@ -50,9 +51,9 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			expectedStatusMessage: traceConfiguredMsg,
 		},
 		"Tracing is not set, TracePipeline svc is not available": {
-			expectedEventingURL:   v1alpha1.FeatureDisabled,
+			expectedEventingURL:   v1alpha1.DefaultEventingEndpoint,
 			expectedTracingURL:    v1alpha1.FeatureDisabled,
-			expectedStatusMessage: noConfigurationMsg,
+			expectedStatusMessage: defaultEventingConfigurationMsg,
 		},
 		"Tracing and eventing is disabled": {
 			tracing:               &v1alpha1.Endpoint{Endpoint: ""},
