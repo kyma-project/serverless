@@ -307,7 +307,7 @@ func (h *testHelper) createCheckOptionalDependenciesFunc(deploymentName string, 
 			return ok, err
 		}
 
-		eventProxyURL := v1alpha1.FeatureDisabled
+		eventProxyURL := v1alpha1.DefaultEventingEndpoint
 		if expected.EventPublisherProxyURL != nil {
 			eventProxyURL = *expected.EventPublisherProxyURL
 		}

@@ -22,10 +22,11 @@ func (s *Serverless) IsConditionTrue(conditionType ConditionType) bool {
 }
 
 const (
-	DefaultEnableInternal  = false
-	DefaultRegistryAddress = "k3d-kyma-registry:5000"
-	DefaultServerAddress   = "k3d-kyma-registry:5000"
-	FeatureDisabled        = "disabled"
+	DefaultEnableInternal   = false
+	DefaultRegistryAddress  = "k3d-kyma-registry:5000"
+	DefaultServerAddress    = "k3d-kyma-registry:5000"
+	FeatureDisabled         = ""
+	DefaultEventingEndpoint = "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
 )
 
 func (s *ServerlessSpec) Default() {
