@@ -64,9 +64,6 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 
 func getTracingURL(ctx context.Context, log *zap.SugaredLogger, client client.Client, spec v1alpha1.ServerlessSpec) (string, error) {
 	if spec.Tracing != nil {
-		if spec.Tracing.Endpoint == "" {
-			return v1alpha1.FeatureDisabled, nil
-		}
 		return spec.Tracing.Endpoint, nil
 	}
 
@@ -74,32 +71,14 @@ func getTracingURL(ctx context.Context, log *zap.SugaredLogger, client client.Cl
 	if err != nil {
 		return "", errors.Wrap(err, "while getting trace pipeline")
 	}
-	if tracingURL == "" {
-		return v1alpha1.FeatureDisabled, nil
-	}
 	return tracingURL, nil
 }
 
 func getEventingURL(spec v1alpha1.ServerlessSpec) string {
 	if spec.Eventing != nil {
-		if spec.Eventing.Endpoint == "" {
-			return v1alpha1.FeatureDisabled
-		}
 		return spec.Eventing.Endpoint
 	}
 	return v1alpha1.DefaultEventingEndpoint
-}
-
-// returns "custom" or "no" based on args
-func dependencyState(url string) string {
-	switch {
-	case url == "" || url == v1alpha1.FeatureDisabled:
-		return "no"
-	case url == v1alpha1.DefaultEventingEndpoint:
-		return "default"
-	default:
-		return "custom"
-	}
 }
 
 func updateStatus(instance *v1alpha1.Serverless, eventingURL, tracingURL string) (bool, string) {

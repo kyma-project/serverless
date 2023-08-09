@@ -22,17 +22,11 @@ func (s *Serverless) IsConditionTrue(conditionType ConditionType) bool {
 }
 
 const (
-	DefaultEnableInternal           = false
-	DefaultRegistryAddress          = "k3d-kyma-registry:5000"
-	DefaultServerAddress            = "k3d-kyma-registry:5000"
-	FeatureDisabled                 = ""
-	DefaultEventingEndpoint         = "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
-	DefaultCPUUtilizationPercentage = "50"
-	DefaultRequeueDuration          = "5m"
-	DefaultBuildExecutorArgs        = "--insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true"
-	DefaultBuildMaxSimultaneousJobs = "5"
-	DefaultHealthzLivenessTimeout   = "10s"
-	DefaultTimeoutSec               = "180"
+	DefaultEnableInternal   = false
+	DefaultRegistryAddress  = "k3d-kyma-registry:5000"
+	DefaultServerAddress    = "k3d-kyma-registry:5000"
+	EndpointDisabled        = ""
+	DefaultEventingEndpoint = "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
 )
 
 func (s *ServerlessSpec) Default() {

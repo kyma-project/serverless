@@ -51,6 +51,12 @@ spec:
           spec:
             description: ServerlessSpec defines the desired state of Serverless
             properties:
+              CPUUtilizationPercentage:
+                type: string
+              buildExecutorArgs:
+                type: string
+              buildMaxSimultaneousJobs:
+                type: string
               dockerRegistry:
                 properties:
                   enableInternal:
@@ -65,6 +71,14 @@ spec:
                 required:
                 - endpoint
                 type: object
+              healthzLivenessTimeout:
+                type: string
+              requestBodyLimitMb:
+                type: string
+              requeueDuration:
+                type: string
+              timeoutSec:
+                type: string
               tracing:
                 properties:
                   endpoint:
@@ -151,6 +165,18 @@ spec:
               eventingEndpoint:
                 description: Used the Eventing endpoint and the Tracing endpoint.
                 type: string
+              functionBuildExecutorArgs:
+                type: string
+              functionBuildMaxSimultaneousJobs:
+                type: string
+              functionRequestBodyLimitMb:
+                type: string
+              functionRequeueDuration:
+                type: string
+              functionTimeoutSec:
+                type: string
+              healthzLivenessTimeout:
+                type: string
               served:
                 description: Served signifies that current Serverless is managed.
                   Value can be one of ("True", "False").
@@ -167,6 +193,8 @@ spec:
                 - Ready
                 - Error
                 - Warning
+                type: string
+              targetCPUUtilizationPercentage:
                 type: string
               tracingEndpoint:
                 type: string

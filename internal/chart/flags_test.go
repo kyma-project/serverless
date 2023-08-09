@@ -66,8 +66,15 @@ func TestAppendContainersFlags(t *testing.T) {
 	t.Run("append flags", func(t *testing.T) {
 		publisherURL := "test-proxy-url"
 		collectorURL := "test-trace-url"
+		CPUUtilizationPercentage := "test-CPU-utilization-percentage"
+		requeueDuration := "test-requeue-duration"
+		buildExecutorArgs := "test-build-executor-args"
+		maxSimultaneousJobs := "test-max-simultaneous-jobs"
+		healthzLivenessTimeout := "test-healthz-liveness-timeout"
+		requestBodyLimitMb := "test-request-body-limit-mb"
+		timeoutSec := "test-timeout-sec"
 
-		flags := AppendContainersFlags(map[string]interface{}{}, publisherURL, collectorURL)
+		flags := AppendContainersFlags(map[string]interface{}{}, publisherURL, collectorURL, CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout, requestBodyLimitMb, timeoutSec)
 
 		require.Equal(t, map[string]interface{}{
 			"containers": map[string]interface{}{
@@ -78,6 +85,27 @@ func TestAppendContainersFlags(t *testing.T) {
 						},
 						"functionPublisherProxyAddress": map[string]interface{}{
 							"value": publisherURL,
+						},
+						"targetCPUUtilizationPercentage": map[string]interface{}{
+							"value": CPUUtilizationPercentage,
+						},
+						"functionRequeueDuration": map[string]interface{}{
+							"value": requeueDuration,
+						},
+						"functionBuildExecutorArgs": map[string]interface{}{
+							"value": buildExecutorArgs,
+						},
+						"functionBuildMaxSimultaneousJobs": map[string]interface{}{
+							"value": maxSimultaneousJobs,
+						},
+						"healthzLivenessTimeout": map[string]interface{}{
+							"value": healthzLivenessTimeout,
+						},
+						"functionRequestBodyLimitMb": map[string]interface{}{
+							"value": requestBodyLimitMb,
+						},
+						"functionTimeoutSec": map[string]interface{}{
+							"value": timeoutSec,
 						},
 					},
 				},

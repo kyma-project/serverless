@@ -58,19 +58,19 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			extraCR:               []client.Object{fixTracingSvc()},
 			eventing:              &v1alpha1.Endpoint{Endpoint: ""},
 			expectedTracingURL:    tracingCollectorURL,
-			expectedEventingURL:   v1alpha1.FeatureDisabled,
+			expectedEventingURL:   v1alpha1.EndpointDisabled,
 			expectedStatusMessage: traceConfiguredMsg,
 		},
 		"Tracing is not set, TracePipeline svc is not available": {
 			expectedEventingURL:   v1alpha1.DefaultEventingEndpoint,
-			expectedTracingURL:    v1alpha1.FeatureDisabled,
+			expectedTracingURL:    v1alpha1.EndpointDisabled,
 			expectedStatusMessage: defaultEventingConfigurationMsg,
 		},
 		"Tracing and eventing is disabled": {
 			tracing:               &v1alpha1.Endpoint{Endpoint: ""},
 			eventing:              &v1alpha1.Endpoint{Endpoint: ""},
-			expectedEventingURL:   v1alpha1.FeatureDisabled,
-			expectedTracingURL:    v1alpha1.FeatureDisabled,
+			expectedEventingURL:   v1alpha1.EndpointDisabled,
+			expectedTracingURL:    v1alpha1.EndpointDisabled,
 			expectedStatusMessage: noConfigurationMsg,
 		},
 	}
@@ -169,11 +169,11 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 					},
 					State:            v1alpha1.StateError,
 					EventingEndpoint: "test-event-URL",
-					TracingEndpoint:  v1alpha1.FeatureDisabled,
+					TracingEndpoint:  v1alpha1.EndpointDisabled,
 				},
 				Spec: v1alpha1.ServerlessSpec{
 					Eventing: &v1alpha1.Endpoint{Endpoint: "test-event-URL"},
-					Tracing:  &v1alpha1.Endpoint{Endpoint: v1alpha1.FeatureDisabled},
+					Tracing:  &v1alpha1.Endpoint{Endpoint: v1alpha1.EndpointDisabled},
 					DockerRegistry: &v1alpha1.DockerRegistry{
 						EnableInternal: pointer.Bool(false),
 						SecretName:     pointer.String("boo"),
