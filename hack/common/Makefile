@@ -92,7 +92,6 @@ install-kyma-with-lm:
 .PHONY: install-module-template
 install-module-template: ## Apply k3d-ready moduletemplate.
 	kubectl apply -f ${PROJECT_ROOT}/template-k3d.yaml
-	kubectl label -n kcp-system moduletemplate moduletemplate-serverless operator.kyma-project.io/use-local-template=true
 
 
 .PHONY: fix-template
