@@ -3,16 +3,15 @@ package state
 import (
 	"context"
 	"fmt"
+	"github.com/kyma-project/serverless-manager/api/v1alpha1"
+	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/kyma-project/serverless-manager/internal/tracing"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
-	"github.com/kyma-project/serverless-manager/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/internal/chart"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	controllerruntime "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // enable or disable serverless optional dependencies based on the Serverless Spec and installed module on the cluster
@@ -26,26 +25,7 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 	}
 	eventingURL := getEventingURL(s.instance.Spec)
 
-	// update status and condition if status is not up-to-date
-	if eventingURL != v1alpha1.FeatureDisabled && tracingURL != v1alpha1.FeatureDisabled && (s.instance.Status.EventingEndpoint != eventingURL ||
-		s.instance.Status.TracingEndpoint != tracingURL ||
-		!meta.IsStatusConditionPresentAndEqual(s.instance.Status.Conditions, string(v1alpha1.ConditionTypeConfigured), metav1.ConditionTrue)) {
-
-		s.instance.Status.EventingEndpoint = eventingURL
-		s.instance.Status.TracingEndpoint = tracingURL
-
-		s.setState(v1alpha1.StateProcessing)
-		s.instance.UpdateConditionTrue(
-			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonConfigured,
-			fmt.Sprintf("Configured with %s Publisher Proxy URL and %s Trace Collector URL.",
-				dependencyState(s.instance.Status.EventingEndpoint),
-				dependencyState(s.instance.Status.TracingEndpoint)),
-		)
-		return nextState(sFnUpdateStatusAndRequeue)
-	}
-
-	if isConfigChanged(&s.instance) {
+	if statusChanged := updateStatus(&s.instance, eventingURL, tracingURL); statusChanged {
 		s.setState(v1alpha1.StateProcessing)
 		s.instance.UpdateConditionTrue(
 			v1alpha1.ConditionTypeConfigured,
@@ -118,7 +98,7 @@ func dependencyState(url string) string {
 	}
 }
 
-func isConfigChanged(instance *v1alpha1.Serverless) bool {
+func updateStatus(instance *v1alpha1.Serverless, eventingURL, tracingURL string) bool {
 	spec := instance.Spec
 	status := instance.Status
 
@@ -135,6 +115,8 @@ func isConfigChanged(instance *v1alpha1.Serverless) bool {
 		{spec.HealthzLivenessTimeout, &status.HealthzLivenessTimeout},
 		{spec.RequestBodyLimitMb, &status.RequestBodyLimitMb},
 		{spec.TimeoutSec, &status.TimeoutSec},
+		{eventingURL, &status.EventingEndpoint},
+		{tracingURL, &status.TracingEndpoint},
 	}
 
 	for _, field := range fields {
@@ -142,6 +124,9 @@ func isConfigChanged(instance *v1alpha1.Serverless) bool {
 			*field.statusField = field.specField
 			hasChanged = true
 		}
+	}
+	if !meta.IsStatusConditionPresentAndEqual(instance.Status.Conditions, string(v1alpha1.ConditionTypeConfigured), metav1.ConditionTrue) {
+		hasChanged = true
 	}
 	instance.Status = status
 	return hasChanged
