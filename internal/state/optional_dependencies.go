@@ -12,6 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"strings"
 )
 
 // enable or disable serverless optional dependencies based on the Serverless Spec and installed module on the cluster
@@ -25,19 +26,12 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 	}
 	eventingURL := getEventingURL(s.instance.Spec)
 
-	if statusChanged := updateStatus(&s.instance, eventingURL, tracingURL); statusChanged {
+	if statusChanged, serverlessConfigurationMsg := updateStatus(&s.instance, eventingURL, tracingURL); statusChanged {
 		s.setState(v1alpha1.StateProcessing)
 		s.instance.UpdateConditionTrue(
 			v1alpha1.ConditionTypeConfigured,
 			v1alpha1.ConditionReasonConfigured,
-			fmt.Sprintf("Configured with %s CPU utilization, %s function requeue duration, %s function build executor args, %s max number of simultaneous jobs, %s duration of health check, %s max size of request body and %s timeout.",
-				dependencyState(s.instance.Status.CPUUtilizationPercentage),
-				dependencyState(s.instance.Status.RequeueDuration),
-				dependencyState(s.instance.Status.BuildExecutorArgs),
-				dependencyState(s.instance.Status.BuildMaxSimultaneousJobs),
-				dependencyState(s.instance.Status.HealthzLivenessTimeout),
-				dependencyState(s.instance.Status.RequestBodyLimitMb),
-				dependencyState(s.instance.Status.TimeoutSec)),
+			fmt.Sprintf(serverlessConfigurationMsg),
 		)
 		return nextState(sFnUpdateStatusAndRequeue)
 	}
@@ -98,7 +92,7 @@ func dependencyState(url string) string {
 	}
 }
 
-func updateStatus(instance *v1alpha1.Serverless, eventingURL, tracingURL string) bool {
+func updateStatus(instance *v1alpha1.Serverless, eventingURL, tracingURL string) (bool, string) {
 	spec := instance.Spec
 	status := instance.Status
 
@@ -107,21 +101,31 @@ func updateStatus(instance *v1alpha1.Serverless, eventingURL, tracingURL string)
 	fields := []struct {
 		specField   string
 		statusField *string
+		cfgMsg      string
 	}{
-		{spec.CPUUtilizationPercentage, &status.CPUUtilizationPercentage},
-		{spec.RequeueDuration, &status.RequeueDuration},
-		{spec.BuildExecutorArgs, &status.BuildExecutorArgs},
-		{spec.BuildMaxSimultaneousJobs, &status.BuildMaxSimultaneousJobs},
-		{spec.HealthzLivenessTimeout, &status.HealthzLivenessTimeout},
-		{spec.RequestBodyLimitMb, &status.RequestBodyLimitMb},
-		{spec.TimeoutSec, &status.TimeoutSec},
-		{eventingURL, &status.EventingEndpoint},
-		{tracingURL, &status.TracingEndpoint},
+		{spec.CPUUtilizationPercentage, &status.CPUUtilizationPercentage, "CPU utilization: %s"},
+		{spec.RequeueDuration, &status.RequeueDuration, "function requeue duration: %s"},
+		{spec.BuildExecutorArgs, &status.BuildExecutorArgs, "function build executor args: %s"},
+		{spec.BuildMaxSimultaneousJobs, &status.BuildMaxSimultaneousJobs, "max number of simultaneous jobs: %s"},
+		{spec.HealthzLivenessTimeout, &status.HealthzLivenessTimeout, "duration of health check: %s"},
+		{spec.RequestBodyLimitMb, &status.RequestBodyLimitMb, "max size of request body: %s"},
+		{spec.TimeoutSec, &status.TimeoutSec, "timeout: %s"},
+		{eventingURL, &status.EventingEndpoint, "eventing endpoint: %s"},
+		{tracingURL, &status.TracingEndpoint, "tracing endpoint: %s"},
 	}
+
+	sb := strings.Builder{}
+	sb.WriteString("Serverless configuration changes: ")
+	separator := false
 
 	for _, field := range fields {
 		if field.specField != *field.statusField {
+			if separator {
+				sb.WriteString(", ")
+			}
 			*field.statusField = field.specField
+			sb.WriteString(fmt.Sprintf(field.cfgMsg, field.specField))
+			separator = true
 			hasChanged = true
 		}
 	}
@@ -129,5 +133,5 @@ func updateStatus(instance *v1alpha1.Serverless, eventingURL, tracingURL string)
 		hasChanged = true
 	}
 	instance.Status = status
-	return hasChanged
+	return hasChanged, sb.String()
 }
