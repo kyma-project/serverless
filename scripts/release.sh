@@ -41,7 +41,7 @@ cat serverless-operator.yaml
 make module-build \
 		IMG=${IMG} \
 		MODULE_REGISTRY=${MODULE_REGISTRY} \
-		MODULE_VERSION=${MODULE_VERSION}-${MODULE_SHA}
+		MODULE_VERSION=${PULL_BASE_REF}-${MODULE_SHA}
 
 echo "Generated template.yaml:"
 cat template.yaml
