@@ -34,6 +34,13 @@ type AdditionalConfig struct {
 	AdditionalConfig string `json:"additional_config"`
 }
 
+func GetValue(config *AdditionalConfig) string {
+	if config != nil && config.AdditionalConfig != "" {
+		return config.AdditionalConfig
+	}
+	return ""
+}
+
 // ServerlessSpec defines the desired state of Serverless
 type ServerlessSpec struct {
 	Tracing                  *Endpoint         `json:"tracing,omitempty"`

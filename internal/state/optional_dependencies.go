@@ -27,15 +27,9 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 	eventingURL := getEventingURL(s.instance.Spec)
 
 	// update status and condition if status is not up-to-date
-<<<<<<< HEAD
-	if s.instance.Status.EventingEndpoint != eventingURL ||
+	if eventingURL != v1alpha1.FeatureDisabled && tracingURL != v1alpha1.FeatureDisabled && (s.instance.Status.EventingEndpoint != eventingURL ||
 		s.instance.Status.TracingEndpoint != tracingURL ||
-		!meta.IsStatusConditionPresentAndEqual(s.instance.Status.Conditions, string(v1alpha1.ConditionTypeConfigured), metav1.ConditionTrue) {
-=======
-	if s.instance.Spec.Eventing != nil && s.instance.Spec.Tracing != nil && (s.instance.Status.EventingEndpoint != s.instance.Spec.Eventing.Endpoint ||
-		s.instance.Status.TracingEndpoint != s.instance.Spec.Tracing.Endpoint ||
 		!meta.IsStatusConditionPresentAndEqual(s.instance.Status.Conditions, string(v1alpha1.ConditionTypeConfigured), metav1.ConditionTrue)) {
->>>>>>> 9e05a5a (add test to test cr additional)
 
 		s.instance.Status.EventingEndpoint = eventingURL
 		s.instance.Status.TracingEndpoint = tracingURL
@@ -51,41 +45,19 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 		return nextState(sFnUpdateStatusAndRequeue)
 	}
 
-	if (s.instance.Spec.CPUUtilizationPercentage != nil &&
-		s.instance.Spec.RequeueDuration != nil &&
-		s.instance.Spec.BuildExecutorArgs != nil &&
-		s.instance.Spec.BuildMaxSimultaneousJobs != nil &&
-		s.instance.Spec.HealthzLivenessTimeout != nil &&
-		s.instance.Spec.RequestBodyLimitMb != nil &&
-		s.instance.Spec.TimeoutSec != nil) &&
-		(s.instance.Status.CPUUtilizationPercentage != s.instance.Spec.CPUUtilizationPercentage.AdditionalConfig ||
-			s.instance.Status.RequeueDuration != s.instance.Spec.RequeueDuration.AdditionalConfig ||
-			s.instance.Status.BuildExecutorArgs != s.instance.Spec.BuildExecutorArgs.AdditionalConfig ||
-			s.instance.Status.BuildMaxSimultaneousJobs != s.instance.Spec.BuildMaxSimultaneousJobs.AdditionalConfig ||
-			s.instance.Status.HealthzLivenessTimeout != s.instance.Spec.HealthzLivenessTimeout.AdditionalConfig ||
-			s.instance.Status.RequestBodyLimitMb != s.instance.Spec.RequestBodyLimitMb.AdditionalConfig ||
-			s.instance.Status.TimeoutSec != s.instance.Spec.TimeoutSec.AdditionalConfig) {
-
-		s.instance.Status.CPUUtilizationPercentage = s.instance.Spec.CPUUtilizationPercentage.AdditionalConfig
-		s.instance.Status.RequeueDuration = s.instance.Spec.RequeueDuration.AdditionalConfig
-		s.instance.Status.BuildExecutorArgs = s.instance.Spec.BuildExecutorArgs.AdditionalConfig
-		s.instance.Status.BuildMaxSimultaneousJobs = s.instance.Spec.BuildMaxSimultaneousJobs.AdditionalConfig
-		s.instance.Status.HealthzLivenessTimeout = s.instance.Spec.HealthzLivenessTimeout.AdditionalConfig
-		s.instance.Status.RequestBodyLimitMb = s.instance.Spec.RequestBodyLimitMb.AdditionalConfig
-		s.instance.Status.TimeoutSec = s.instance.Spec.TimeoutSec.AdditionalConfig
-
+	if isConfigChanged(&s.instance) {
 		s.setState(v1alpha1.StateProcessing)
 		s.instance.UpdateConditionTrue(
 			v1alpha1.ConditionTypeConfigured,
 			v1alpha1.ConditionReasonConfigured,
 			fmt.Sprintf("Configured with %s CPU utilization, %s function requeue duration, %s function build executor args, %s max number of simultaneous jobs, %s duration of health check, %s max size of request body and %s timeout.",
-				dependencyState(s.instance.Status.CPUUtilizationPercentage, v1alpha1.DefaultCPUUtilizationPercentage),
-				dependencyState(s.instance.Status.RequeueDuration, v1alpha1.DefaultRequeueDuration),
-				dependencyState(s.instance.Status.BuildExecutorArgs, v1alpha1.DefaultBuildExecutorArgs),
-				dependencyState(s.instance.Status.BuildMaxSimultaneousJobs, v1alpha1.DefaultBuildMaxSimultaneousJobs),
-				dependencyState(s.instance.Status.HealthzLivenessTimeout, v1alpha1.DefaultHealthzLivenessTimeout),
-				dependencyState(s.instance.Status.RequestBodyLimitMb, v1alpha1.DefaultRequestBodyLimitMb),
-				dependencyState(s.instance.Status.TimeoutSec, v1alpha1.DefaultTimeoutSec)),
+				dependencyState(s.instance.Status.CPUUtilizationPercentage),
+				dependencyState(s.instance.Status.RequeueDuration),
+				dependencyState(s.instance.Status.BuildExecutorArgs),
+				dependencyState(s.instance.Status.BuildMaxSimultaneousJobs),
+				dependencyState(s.instance.Status.HealthzLivenessTimeout),
+				dependencyState(s.instance.Status.RequestBodyLimitMb),
+				dependencyState(s.instance.Status.TimeoutSec)),
 		)
 		return nextState(sFnUpdateStatusAndRequeue)
 	}
@@ -144,4 +116,33 @@ func dependencyState(url string) string {
 	default:
 		return "custom"
 	}
+}
+
+func isConfigChanged(instance *v1alpha1.Serverless) bool {
+	spec := instance.Spec
+	status := instance.Status
+
+	hasChanged := false
+
+	fields := []struct {
+		specField   string
+		statusField *string
+	}{
+		{v1alpha1.GetValue(spec.CPUUtilizationPercentage), &status.CPUUtilizationPercentage},
+		{v1alpha1.GetValue(spec.RequeueDuration), &status.RequeueDuration},
+		{v1alpha1.GetValue(spec.BuildExecutorArgs), &status.BuildExecutorArgs},
+		{v1alpha1.GetValue(spec.BuildMaxSimultaneousJobs), &status.BuildMaxSimultaneousJobs},
+		{v1alpha1.GetValue(spec.HealthzLivenessTimeout), &status.HealthzLivenessTimeout},
+		{v1alpha1.GetValue(spec.RequestBodyLimitMb), &status.RequestBodyLimitMb},
+		{v1alpha1.GetValue(spec.TimeoutSec), &status.TimeoutSec},
+	}
+
+	for _, field := range fields {
+		if field.specField != *field.statusField {
+			*field.statusField = field.specField
+			hasChanged = true
+		}
+	}
+	instance.Status = status
+	return hasChanged
 }

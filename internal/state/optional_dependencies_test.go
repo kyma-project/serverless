@@ -2,9 +2,11 @@ package state
 
 import (
 	"context"
+	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/utils/pointer"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -12,9 +14,7 @@ import (
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/stretchr/testify/require"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
@@ -123,7 +123,9 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			},
 		}
 
-		next, result, err := sFnOptionalDependencies(nil, nil, s)
+		c := fake.NewClientBuilder().WithScheme(scheme).Build()
+		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c}}
+		next, result, err := sFnOptionalDependencies(context.TODO(), r, s)
 
 		expectedNext := sFnUpdateStatusAndRequeue
 		requireEqualFunc(t, expectedNext, next)
