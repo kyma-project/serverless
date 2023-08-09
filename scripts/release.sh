@@ -10,6 +10,8 @@ set -o pipefail # prevents errors in a pipeline from being masked
 #   PULL_BASE_REF - name of the tag
 #   BOT_GITHUB_TOKEN - github token used to upload the template yaml
 
+MODULE_SHA=$(git rev-parse --short HEAD)
+
 uploadFile() {
   filePath=${1}
   ghAsset=${2}
@@ -30,6 +32,14 @@ uploadFile() {
 }
 
 echo "PULL_BASE_REF ${PULL_BASE_REF}"
+
+make module-build \
+		IMG=${IMG} \
+		MODULE_REGISTRY=${MODULE_REGISTRY} \
+		MODULE_VERSION=${MODULE_VERSION}-${MODULE_SHA}
+
+echo "Generated template.yaml:"
+cat template.yaml
 
 MODULE_VERSION=${PULL_BASE_REF} make render-manifest
 
@@ -60,3 +70,7 @@ fi
 UPLOAD_URL="https://uploads.github.com/repos/kyma-project/serverless-manager/releases/${RELEASE_ID}/assets"
 
 uploadFile "serverless-operator.yaml" "${UPLOAD_URL}?name=serverless-operator.yaml"
+uploadFile "template.yaml" "${UPLOAD_URL}?name=template.yaml"
+uploadFile "config/samples/operator_v1alpha1_serverless.yaml" "${UPLOAD_URL}?name=operator_v1alpha1_serverless.yaml"
+
+
