@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+	"fmt"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
@@ -33,10 +34,10 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 	tracingCollectorURL := "http://telemetry-otlp-traces.some-ns.svc.cluster.local:4318/v1/traces"
 	customEventingURL := "eventing-url"
 
-	configuredMsg := "Configured with custom Publisher Proxy URL and custom Trace Collector URL."
-	noConfigurationMsg := "Configured with no Publisher Proxy URL and no Trace Collector URL."
-	traceConfiguredMsg := "Configured with no Publisher Proxy URL and custom Trace Collector URL."
-	defaultEventingConfigurationMsg := "Configured with default Publisher Proxy URL and no Trace Collector URL."
+	configuredMsg := "Serverless configuration changes: eventing endpoint: eventing-url, tracing endpoint: http://telemetry-otlp-traces.some-ns.svc.cluster.local:4318/v1/traces"
+	noConfigurationMsg := "Configuration ready"
+	traceConfiguredMsg := "Serverless configuration changes: tracing endpoint: http://telemetry-otlp-traces.some-ns.svc.cluster.local:4318/v1/traces"
+	defaultEventingConfigurationMsg := "Serverless configuration changes: eventing endpoint: http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
 
 	testCases := map[string]struct {
 		tracing               *v1alpha1.Endpoint
@@ -146,7 +147,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			v1alpha1.ConditionTypeConfigured,
 			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonConfigured,
-			"Configured with custom CPU utilization, custom function requeue duration, custom function build executor args, custom max number of simultaneous jobs, custom duration of health check, custom max size of request body and custom timeout.",
+			fmt.Sprintf("Serverless configuration changes: CPU utilization: %s, function requeue duration: %s, function build executor args: %s, max number of simultaneous jobs: %s, duration of health check: %s, max size of request body: %s, timeout: %s, eventing endpoint: http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish", cpuUtilizationTest, requeueDurationTest, executorArgsTest, maxSimultaneousJobsTest, healthzLivenessTimeoutTest, requestBodyLimitMbTest, timeoutSecTest),
 		)
 	})
 
@@ -210,7 +211,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			v1alpha1.ConditionTypeConfigured,
 			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonConfigured,
-			"Configured with custom Publisher Proxy URL and no Trace Collector URL.")
+			"Configuration ready")
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 

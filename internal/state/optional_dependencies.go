@@ -36,6 +36,16 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 		return nextState(sFnUpdateStatusAndRequeue)
 	}
 
+	if !meta.IsStatusConditionPresentAndEqual(s.instance.Status.Conditions, string(v1alpha1.ConditionTypeConfigured), metav1.ConditionTrue) {
+		s.setState(v1alpha1.StateProcessing)
+		s.instance.UpdateConditionTrue(
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonConfigured,
+			"Configuration ready",
+		)
+		return nextState(sFnUpdateStatusAndRequeue)
+	}
+
 	s.chartConfig.Release.Flags = chart.AppendContainersFlags(
 		s.chartConfig.Release.Flags,
 		s.instance.Status.EventingEndpoint,
@@ -129,9 +139,10 @@ func updateStatus(instance *v1alpha1.Serverless, eventingURL, tracingURL string)
 			hasChanged = true
 		}
 	}
-	if !meta.IsStatusConditionPresentAndEqual(instance.Status.Conditions, string(v1alpha1.ConditionTypeConfigured), metav1.ConditionTrue) {
-		hasChanged = true
+	if !hasChanged {
+		sb.WriteString("no changes")
 	}
 	instance.Status = status
+
 	return hasChanged, sb.String()
 }
