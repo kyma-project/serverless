@@ -30,29 +30,18 @@ type Endpoint struct {
 	Endpoint string `json:"endpoint"`
 }
 
-type AdditionalConfig struct {
-	AdditionalConfig string `json:"additional_config"`
-}
-
-func GetValue(config *AdditionalConfig) string {
-	if config != nil && config.AdditionalConfig != "" {
-		return config.AdditionalConfig
-	}
-	return ""
-}
-
 // ServerlessSpec defines the desired state of Serverless
 type ServerlessSpec struct {
-	Tracing                  *Endpoint         `json:"tracing,omitempty"`
-	Eventing                 *Endpoint         `json:"eventing,omitempty"`
-	DockerRegistry           *DockerRegistry   `json:"dockerRegistry,omitempty"`
-	CPUUtilizationPercentage *AdditionalConfig `json:"CPUUtilizationPercentage,omitempty"`
-	RequeueDuration          *AdditionalConfig `json:"requeueDuration,omitempty"`
-	BuildExecutorArgs        *AdditionalConfig `json:"buildExecutorArgs,omitempty"`
-	BuildMaxSimultaneousJobs *AdditionalConfig `json:"buildMaxSimultaneousJobs,omitempty"`
-	HealthzLivenessTimeout   *AdditionalConfig `json:"healthzLivenessTimeout,omitempty"`
-	RequestBodyLimitMb       *AdditionalConfig `json:"requestBodyLimitMb,omitempty"`
-	TimeoutSec               *AdditionalConfig `json:"timeoutSec,omitempty"`
+	Tracing                  *Endpoint       `json:"tracing,omitempty"`
+	Eventing                 *Endpoint       `json:"eventing,omitempty"`
+	DockerRegistry           *DockerRegistry `json:"dockerRegistry,omitempty"`
+	CPUUtilizationPercentage string          `json:"CPUUtilizationPercentage,omitempty"`
+	RequeueDuration          string          `json:"requeueDuration,omitempty"`
+	BuildExecutorArgs        string          `json:"buildExecutorArgs,omitempty"`
+	BuildMaxSimultaneousJobs string          `json:"buildMaxSimultaneousJobs,omitempty"`
+	HealthzLivenessTimeout   string          `json:"healthzLivenessTimeout,omitempty"`
+	RequestBodyLimitMb       string          `json:"requestBodyLimitMb,omitempty"`
+	TimeoutSec               string          `json:"timeoutSec,omitempty"`
 }
 
 type State string

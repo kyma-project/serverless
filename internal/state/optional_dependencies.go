@@ -128,13 +128,13 @@ func isConfigChanged(instance *v1alpha1.Serverless) bool {
 		specField   string
 		statusField *string
 	}{
-		{v1alpha1.GetValue(spec.CPUUtilizationPercentage), &status.CPUUtilizationPercentage},
-		{v1alpha1.GetValue(spec.RequeueDuration), &status.RequeueDuration},
-		{v1alpha1.GetValue(spec.BuildExecutorArgs), &status.BuildExecutorArgs},
-		{v1alpha1.GetValue(spec.BuildMaxSimultaneousJobs), &status.BuildMaxSimultaneousJobs},
-		{v1alpha1.GetValue(spec.HealthzLivenessTimeout), &status.HealthzLivenessTimeout},
-		{v1alpha1.GetValue(spec.RequestBodyLimitMb), &status.RequestBodyLimitMb},
-		{v1alpha1.GetValue(spec.TimeoutSec), &status.TimeoutSec},
+		{spec.CPUUtilizationPercentage, &status.CPUUtilizationPercentage},
+		{spec.RequeueDuration, &status.RequeueDuration},
+		{spec.BuildExecutorArgs, &status.BuildExecutorArgs},
+		{spec.BuildMaxSimultaneousJobs, &status.BuildMaxSimultaneousJobs},
+		{spec.HealthzLivenessTimeout, &status.HealthzLivenessTimeout},
+		{spec.RequestBodyLimitMb, &status.RequestBodyLimitMb},
+		{spec.TimeoutSec, &status.TimeoutSec},
 	}
 
 	for _, field := range fields {

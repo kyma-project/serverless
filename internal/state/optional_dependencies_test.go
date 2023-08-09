@@ -112,13 +112,13 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{
-					CPUUtilizationPercentage: &v1alpha1.AdditionalConfig{AdditionalConfig: cpuUtilizationTest},
-					RequeueDuration:          &v1alpha1.AdditionalConfig{AdditionalConfig: requeueDurationTest},
-					BuildExecutorArgs:        &v1alpha1.AdditionalConfig{AdditionalConfig: executorArgsTest},
-					BuildMaxSimultaneousJobs: &v1alpha1.AdditionalConfig{AdditionalConfig: maxSimultaneousJobsTest},
-					HealthzLivenessTimeout:   &v1alpha1.AdditionalConfig{AdditionalConfig: healthzLivenessTimeoutTest},
-					RequestBodyLimitMb:       &v1alpha1.AdditionalConfig{AdditionalConfig: requestBodyLimitMbTest},
-					TimeoutSec:               &v1alpha1.AdditionalConfig{AdditionalConfig: timeoutSecTest},
+					CPUUtilizationPercentage: cpuUtilizationTest,
+					RequeueDuration:          requeueDurationTest,
+					BuildExecutorArgs:        executorArgsTest,
+					BuildMaxSimultaneousJobs: maxSimultaneousJobsTest,
+					HealthzLivenessTimeout:   healthzLivenessTimeoutTest,
+					RequestBodyLimitMb:       requestBodyLimitMbTest,
+					TimeoutSec:               timeoutSecTest,
 				},
 			},
 		}
