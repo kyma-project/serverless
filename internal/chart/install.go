@@ -20,7 +20,7 @@ func install(config *Config, renderChartFunc func(config *Config) (*release.Rele
 		return err
 	}
 
-	objs, unusedObjs, err := getObjectsToUpdateAndRemove(cachedManifest, currentManifest)
+	objs, unusedObjs, err := getObjectsToInstallAndRemove(cachedManifest, currentManifest)
 	if err != nil {
 		return err
 	}
@@ -39,7 +39,7 @@ func install(config *Config, renderChartFunc func(config *Config) (*release.Rele
 	})
 }
 
-func getObjectsToUpdateAndRemove(cachedManifest string, currentManifest string) ([]unstructured.Unstructured, []unstructured.Unstructured, error) {
+func getObjectsToInstallAndRemove(cachedManifest string, currentManifest string) ([]unstructured.Unstructured, []unstructured.Unstructured, error) {
 	objs, err := parseManifest(currentManifest)
 	if err != nil {
 		return nil, nil, fmt.Errorf("could not parse chart manifest: %s", err.Error())
