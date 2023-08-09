@@ -2,6 +2,7 @@ package chart
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 
 	"github.com/kyma-project/serverless-manager/internal/annotation"
 	"helm.sh/helm/v3/pkg/release"
@@ -60,6 +61,13 @@ func updateObjects(config *Config, objs []unstructured.Unstructured) error {
 		config.Log.Debugf("creating %s %s/%s", u.GetKind(), u.GetNamespace(), u.GetName())
 
 		u = annotation.AddDoNotEditDisclaimer(u)
+		if IsPVC(u.GroupVersionKind()) {
+			modifiedObj, err := AdjustToClusterSize(config.Ctx, config.Cluster.Client, u)
+			if err != nil {
+				return errors.Wrap(err, "while adjusting pvc size")
+			}
+			u = modifiedObj
+		}
 
 		// TODO: what if Path returns error in the middle of manifest?
 		// maybe we should in this case translate applied objs into manifest and set it into cache?

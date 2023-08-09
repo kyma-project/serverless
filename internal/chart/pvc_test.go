@@ -9,12 +9,13 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"testing"
 )
 
-func TestPVC(t *testing.T) {
+func TestAdjustToClusterSize(t *testing.T) {
 	testCases := map[string]struct {
 		rawPVCToInstall *corev1.PersistentVolumeClaim
 		clusterPVC      []client.Object
@@ -72,5 +73,57 @@ func fixPVC(size int) *corev1.PersistentVolumeClaim {
 				},
 			},
 		},
+	}
+}
+
+func TestIsPVC(t *testing.T) {
+	testCases := map[string]struct {
+		input    schema.GroupVersionKind
+		expected bool
+	}{
+		"Equal": {
+			input: schema.GroupVersionKind{
+				Group:   "core",
+				Version: "v1",
+				Kind:    "PersistentVolumeClaim",
+			},
+			expected: true,
+		},
+		"Different kind": {
+			input: schema.GroupVersionKind{
+				Group:   "core",
+				Version: "v1",
+				Kind:    "Pod",
+			},
+			expected: false,
+		},
+		"Different version": {
+			input: schema.GroupVersionKind{
+				Group:   "core",
+				Version: "v2alpha1",
+				Kind:    "PersistentVolumeClaim",
+			},
+			expected: false,
+		},
+		"Different group": {
+			input: schema.GroupVersionKind{
+				Group:   "networking",
+				Version: "v1",
+				Kind:    "NetworkPolicy",
+			},
+			expected: false,
+		},
+	}
+
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+
+			//GIVEN
+
+			//WHEN
+			equal := IsPVC(testCase.input)
+			//THEN
+			require.Equal(t, testCase.expected, equal)
+		})
 	}
 }
