@@ -1,6 +1,6 @@
 package chart
 
-func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceCollectorURL string) map[string]interface{} {
+func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceCollectorURL, CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout, requestBodyLimitMb, timeoutSec string) map[string]interface{} {
 	flags["containers"] = map[string]interface{}{
 		"manager": map[string]interface{}{
 			"envs": map[string]interface{}{
@@ -9,6 +9,27 @@ func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceColl
 				},
 				"functionPublisherProxyAddress": map[string]interface{}{
 					"value": publisherURL,
+				},
+				"targetCPUUtilizationPercentage": map[string]interface{}{
+					"value": CPUUtilizationPercentage,
+				},
+				"functionRequeueDuration": map[string]interface{}{
+					"value": requeueDuration,
+				},
+				"functionBuildExecutorArgs": map[string]interface{}{
+					"value": buildExecutorArgs,
+				},
+				"functionBuildMaxSimultaneousJobs": map[string]interface{}{
+					"value": maxSimultaneousJobs,
+				},
+				"healthzLivenessTimeout": map[string]interface{}{
+					"value": healthzLivenessTimeout,
+				},
+				"functionRequestBodyLimitMb": map[string]interface{}{
+					"value": requestBodyLimitMb,
+				},
+				"functionTimeoutSec": map[string]interface{}{
+					"value": timeoutSec,
 				},
 			},
 		},

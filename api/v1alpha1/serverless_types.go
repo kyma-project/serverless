@@ -30,11 +30,22 @@ type Endpoint struct {
 	Endpoint string `json:"endpoint"`
 }
 
+type AdditionalConfig struct {
+	AdditionalConfig string `json:"additional_config"`
+}
+
 // ServerlessSpec defines the desired state of Serverless
 type ServerlessSpec struct {
-	Tracing        *Endpoint       `json:"tracing,omitempty"`
-	Eventing       *Endpoint       `json:"eventing,omitempty"`
-	DockerRegistry *DockerRegistry `json:"dockerRegistry,omitempty"`
+	Tracing                  *Endpoint         `json:"tracing,omitempty"`
+	Eventing                 *Endpoint         `json:"eventing,omitempty"`
+	DockerRegistry           *DockerRegistry   `json:"dockerRegistry,omitempty"`
+	CPUUtilizationPercentage *AdditionalConfig `json:"CPUUtilizationPercentage,omitempty"`
+	RequeueDuration          *AdditionalConfig `json:"requeueDuration,omitempty"`
+	BuildExecutorArgs        *AdditionalConfig `json:"buildExecutorArgs,omitempty"`
+	BuildMaxSimultaneousJobs *AdditionalConfig `json:"buildMaxSimultaneousJobs,omitempty"`
+	HealthzLivenessTimeout   *AdditionalConfig `json:"healthzLivenessTimeout,omitempty"`
+	RequestBodyLimitMb       *AdditionalConfig `json:"requestBodyLimitMb,omitempty"`
+	TimeoutSec               *AdditionalConfig `json:"timeoutSec,omitempty"`
 }
 
 type State string
@@ -82,6 +93,14 @@ type ServerlessStatus struct {
 	// Used the Eventing endpoint and the Tracing endpoint.
 	EventingEndpoint string `json:"eventingEndpoint,omitempty"`
 	TracingEndpoint  string `json:"tracingEndpoint,omitempty"`
+
+	CPUUtilizationPercentage string `json:"targetCPUUtilizationPercentage,omitempty"`
+	RequeueDuration          string `json:"functionRequeueDuration,omitempty"`
+	BuildExecutorArgs        string `json:"functionBuildExecutorArgs,omitempty"`
+	BuildMaxSimultaneousJobs string `json:"functionBuildMaxSimultaneousJobs,omitempty"`
+	HealthzLivenessTimeout   string `json:"healthzLivenessTimeout,omitempty"`
+	RequestBodyLimitMb       string `json:"functionRequestBodyLimitMb,omitempty"`
+	TimeoutSec               string `json:"functionTimeoutSec,omitempty"`
 
 	// Used registry configuration.
 	// Contains registry URL or "internal"

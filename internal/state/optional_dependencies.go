@@ -45,10 +45,34 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 		return nextState(sFnUpdateStatusAndRequeue)
 	}
 
+	if s.instance.Status.CPUUtilizationPercentage != s.instance.Spec.CPUUtilizationPercentage.AdditionalConfig ||
+		s.instance.Status.RequeueDuration != s.instance.Spec.RequeueDuration.AdditionalConfig ||
+		s.instance.Status.BuildExecutorArgs != s.instance.Spec.BuildExecutorArgs.AdditionalConfig ||
+		s.instance.Status.BuildMaxSimultaneousJobs != s.instance.Spec.BuildMaxSimultaneousJobs.AdditionalConfig ||
+		s.instance.Status.HealthzLivenessTimeout != s.instance.Spec.HealthzLivenessTimeout.AdditionalConfig ||
+		s.instance.Status.RequestBodyLimitMb != s.instance.Spec.RequestBodyLimitMb.AdditionalConfig ||
+		s.instance.Status.TimeoutSec != s.instance.Spec.TimeoutSec.AdditionalConfig {
+
+		s.instance.Status.CPUUtilizationPercentage = s.instance.Spec.CPUUtilizationPercentage.AdditionalConfig
+		s.instance.Status.RequeueDuration = s.instance.Spec.RequeueDuration.AdditionalConfig
+		s.instance.Status.BuildExecutorArgs = s.instance.Spec.BuildExecutorArgs.AdditionalConfig
+		s.instance.Status.BuildMaxSimultaneousJobs = s.instance.Spec.BuildMaxSimultaneousJobs.AdditionalConfig
+		s.instance.Status.HealthzLivenessTimeout = s.instance.Spec.HealthzLivenessTimeout.AdditionalConfig
+		s.instance.Status.RequestBodyLimitMb = s.instance.Spec.RequestBodyLimitMb.AdditionalConfig
+		s.instance.Status.TimeoutSec = s.instance.Spec.TimeoutSec.AdditionalConfig
+	}
+
 	s.chartConfig.Release.Flags = chart.AppendContainersFlags(
 		s.chartConfig.Release.Flags,
 		s.instance.Status.EventingEndpoint,
 		s.instance.Status.TracingEndpoint,
+		s.instance.Status.CPUUtilizationPercentage,
+		s.instance.Status.RequeueDuration,
+		s.instance.Status.BuildExecutorArgs,
+		s.instance.Status.BuildMaxSimultaneousJobs,
+		s.instance.Status.HealthzLivenessTimeout,
+		s.instance.Status.RequestBodyLimitMb,
+		s.instance.Status.TimeoutSec,
 	)
 
 	return nextState(sFnApplyResources)
