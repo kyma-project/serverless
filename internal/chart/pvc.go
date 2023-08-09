@@ -11,9 +11,13 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func AdjustToClusterSize(ctx context.Context, c client.Client, obj unstructured.Unstructured) (unstructured.Unstructured, error) {
-	clusterPVC := corev1.PersistentVolumeClaim{}
+const dockerRegistryPVCName = "serverless-docker-registry"
 
+func AdjustDockerRegToClusterPVCSize(ctx context.Context, c client.Client, obj unstructured.Unstructured) (unstructured.Unstructured, error) {
+	if obj.GetName() != dockerRegistryPVCName {
+		return obj, nil
+	}
+	clusterPVC := corev1.PersistentVolumeClaim{}
 	err := c.Get(ctx, client.ObjectKey{
 		Namespace: obj.GetNamespace(),
 		Name:      obj.GetName(),

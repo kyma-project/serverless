@@ -22,18 +22,22 @@ func TestAdjustToClusterSize(t *testing.T) {
 		expectedPVC     *corev1.PersistentVolumeClaim
 	}{
 		"pvc not exists in cluster": {
-			rawPVCToInstall: fixPVC(20),
-			expectedPVC:     fixPVC(20),
+			rawPVCToInstall: fixPVC(dockerRegistryPVCName, 20),
+			expectedPVC:     fixPVC(dockerRegistryPVCName, 20),
+		},
+		"pvc is not docker registry": {
+			rawPVCToInstall: fixPVC("random-pvc", 20),
+			expectedPVC:     fixPVC("random-pvc", 20),
 		},
 		"pvc exists with the same size": {
-			rawPVCToInstall: fixPVC(20),
-			clusterPVC:      []client.Object{fixPVC(20)},
-			expectedPVC:     fixPVC(20),
+			rawPVCToInstall: fixPVC(dockerRegistryPVCName, 20),
+			clusterPVC:      []client.Object{fixPVC(dockerRegistryPVCName, 20)},
+			expectedPVC:     fixPVC(dockerRegistryPVCName, 20),
 		},
 		"pvc exists with bigger size": {
-			rawPVCToInstall: fixPVC(20),
-			clusterPVC:      []client.Object{fixPVC(30)},
-			expectedPVC:     fixPVC(30),
+			rawPVCToInstall: fixPVC(dockerRegistryPVCName, 20),
+			clusterPVC:      []client.Object{fixPVC(dockerRegistryPVCName, 30)},
+			expectedPVC:     fixPVC(dockerRegistryPVCName, 30),
 		},
 	}
 
@@ -47,7 +51,7 @@ func TestAdjustToClusterSize(t *testing.T) {
 			c := fake.NewClientBuilder().WithObjects(testCase.clusterPVC...).Build()
 
 			//WHEN
-			finalObj, err := AdjustToClusterSize(context.TODO(), c, obj)
+			finalObj, err := AdjustDockerRegToClusterPVCSize(context.TODO(), c, obj)
 
 			//THEN
 			require.NoError(t, err)
@@ -60,10 +64,10 @@ func TestAdjustToClusterSize(t *testing.T) {
 	}
 }
 
-func fixPVC(size int) *corev1.PersistentVolumeClaim {
+func fixPVC(name string, size int) *corev1.PersistentVolumeClaim {
 	return &corev1.PersistentVolumeClaim{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "registry-rawPVCToInstall",
+			Name:      name,
 			Namespace: "kyma-system",
 		},
 		Spec: corev1.PersistentVolumeClaimSpec{

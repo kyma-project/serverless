@@ -62,7 +62,7 @@ func updateObjects(config *Config, objs []unstructured.Unstructured) error {
 
 		u = annotation.AddDoNotEditDisclaimer(u)
 		if IsPVC(u.GroupVersionKind()) {
-			modifiedObj, err := AdjustToClusterSize(config.Ctx, config.Cluster.Client, u)
+			modifiedObj, err := AdjustDockerRegToClusterPVCSize(config.Ctx, config.Cluster.Client, u)
 			if err != nil {
 				return errors.Wrap(err, "while adjusting pvc size")
 			}
