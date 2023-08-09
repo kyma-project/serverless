@@ -71,4 +71,6 @@ UPLOAD_URL="https://uploads.github.com/repos/kyma-project/serverless-manager/rel
 
 uploadFile "serverless-operator.yaml" "${UPLOAD_URL}?name=serverless-operator.yaml"
 uploadFile "template.yaml" "${UPLOAD_URL}?name=template.yaml"
+uploadFile "config/samples/operator_v1alpha1_serverless.yaml" "${UPLOAD_URL}?name=operator_v1alpha1_serverless.yaml"
+
 
