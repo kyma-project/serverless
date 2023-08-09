@@ -83,7 +83,7 @@ func TestIsPVC(t *testing.T) {
 	}{
 		"Equal": {
 			input: schema.GroupVersionKind{
-				Group:   "core",
+				Group:   "",
 				Version: "v1",
 				Kind:    "PersistentVolumeClaim",
 			},
@@ -91,7 +91,7 @@ func TestIsPVC(t *testing.T) {
 		},
 		"Different kind": {
 			input: schema.GroupVersionKind{
-				Group:   "core",
+				Group:   "",
 				Version: "v1",
 				Kind:    "Pod",
 			},
@@ -99,7 +99,7 @@ func TestIsPVC(t *testing.T) {
 		},
 		"Different version": {
 			input: schema.GroupVersionKind{
-				Group:   "core",
+				Group:   "",
 				Version: "v2alpha1",
 				Kind:    "PersistentVolumeClaim",
 			},
@@ -117,7 +117,6 @@ func TestIsPVC(t *testing.T) {
 
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
-
 			//GIVEN
 
 			//WHEN

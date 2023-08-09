@@ -44,8 +44,11 @@ func AdjustToClusterSize(ctx context.Context, c client.Client, obj unstructured.
 }
 
 func IsPVC(objKind schema.GroupVersionKind) bool {
-	claim := corev1.PersistentVolumeClaim{}
-	expected := claim.GroupVersionKind()
+	expected := schema.GroupVersionKind{
+		Group:   "",
+		Version: "v1",
+		Kind:    "PersistentVolumeClaim",
+	}
 
 	return expected.Group == objKind.Group && expected.Kind == objKind.Kind && expected.Version == objKind.Version
 }
