@@ -11,7 +11,12 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-const dockerRegistryPVCName = "serverless-docker-registry"
+const (
+	dockerRegistryPVCName = "serverless-docker-registry"
+	pvcKind               = "PersistentVolumeClaim"
+	pvcVersion            = "v1"
+	pvcGroup              = ""
+)
 
 func AdjustDockerRegToClusterPVCSize(ctx context.Context, c client.Client, obj unstructured.Unstructured) (unstructured.Unstructured, error) {
 	if obj.GetName() != dockerRegistryPVCName {
@@ -26,6 +31,7 @@ func AdjustDockerRegToClusterPVCSize(ctx context.Context, c client.Client, obj u
 		if k8serrors.IsNotFound(err) {
 			return obj, nil
 		}
+		return obj, errors.Wrap(err, "while getting pvc from cluster")
 	}
 	objPVC := corev1.PersistentVolumeClaim{}
 	if err := runtime.DefaultUnstructuredConverter.FromUnstructured(obj.Object, &objPVC); err != nil {
@@ -36,7 +42,6 @@ func AdjustDockerRegToClusterPVCSize(ctx context.Context, c client.Client, obj u
 		return obj, nil
 	}
 	objPVCcopy := objPVC.DeepCopy()
-
 	objPVCcopy.Spec.Resources.Requests[corev1.ResourceStorage] = *clusterPVC.Spec.Resources.Requests.Storage()
 
 	out, err := runtime.DefaultUnstructuredConverter.ToUnstructured(objPVCcopy)
@@ -49,9 +54,9 @@ func AdjustDockerRegToClusterPVCSize(ctx context.Context, c client.Client, obj u
 
 func IsPVC(objKind schema.GroupVersionKind) bool {
 	expected := schema.GroupVersionKind{
-		Group:   "",
-		Version: "v1",
-		Kind:    "PersistentVolumeClaim",
+		Group:   pvcGroup,
+		Version: pvcVersion,
+		Kind:    pvcKind,
 	}
 
 	return expected.Group == objKind.Group && expected.Kind == objKind.Kind && expected.Version == objKind.Version
