@@ -33,6 +33,11 @@ uploadFile() {
 
 echo "PULL_BASE_REF ${PULL_BASE_REF}"
 
+MODULE_VERSION=${PULL_BASE_REF} make render-manifest
+
+echo "Generated serverless-operator.yaml:"
+cat serverless-operator.yaml
+
 make module-build \
 		IMG=${IMG} \
 		MODULE_REGISTRY=${MODULE_REGISTRY} \
@@ -41,12 +46,7 @@ make module-build \
 echo "Generated template.yaml:"
 cat template.yaml
 
-MODULE_VERSION=${PULL_BASE_REF} make render-manifest
-
-echo "Generated serverless-operator.yaml:"
-cat serverless-operator.yaml
-
-echo "Updating github release with serverless-manager.yaml"
+echo "Updating github release with assets"
 
 echo "Finding release id for: ${PULL_BASE_REF}"
 CURL_RESPONSE=$(curl -w "%{http_code}" -sL \

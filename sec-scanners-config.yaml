@@ -1,6 +1,6 @@
 module-name: serverless-manager
 protecode:
-  - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:v20230809-ddcf17d0
+  - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:v20230809-4b255656
   - europe-docker.pkg.dev/kyma-project/prod/function-controller:v20230628-61d97068
   - europe-docker.pkg.dev/kyma-project/prod/function-webhook:v20230628-61d97068
   - europe-docker.pkg.dev/kyma-project/prod/tpi/registry:2.8.1-1b099a1d
