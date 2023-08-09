@@ -38,10 +38,7 @@ MODULE_VERSION=${PULL_BASE_REF} make render-manifest
 echo "Generated serverless-operator.yaml:"
 cat serverless-operator.yaml
 
-make module-build \
-		IMG=${IMG} \
-		MODULE_REGISTRY=${MODULE_REGISTRY} \
-		MODULE_VERSION=${PULL_BASE_REF}-${MODULE_SHA}
+MODULE_VERSION=${PULL_BASE_REF} make module-build
 
 echo "Generated template.yaml:"
 cat template.yaml
