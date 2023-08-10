@@ -36,7 +36,7 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 		return nextState(sFnUpdateStatusAndRequeue)
 	}
 
-	if !meta.IsStatusConditionPresentAndEqual(s.instance.Status.Conditions, string(v1alpha1.ConditionTypeConfigured), metav1.ConditionTrue) {
+	if configurationStatusIsNotReady(s.instance.Status.Conditions) {
 		s.setState(v1alpha1.StateProcessing)
 		s.instance.UpdateConditionTrue(
 			v1alpha1.ConditionTypeConfigured,
@@ -60,6 +60,13 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 	)
 
 	return nextState(sFnApplyResources)
+}
+
+func configurationStatusIsNotReady(conditions []metav1.Condition) bool {
+	if !meta.IsStatusConditionPresentAndEqual(conditions, string(v1alpha1.ConditionTypeConfigured), metav1.ConditionTrue) {
+		return true
+	}
+	return false
 }
 
 func getTracingURL(ctx context.Context, log *zap.SugaredLogger, client client.Client, spec v1alpha1.ServerlessSpec) (string, error) {
@@ -92,13 +99,13 @@ func updateStatus(instance *v1alpha1.Serverless, eventingURL, tracingURL string)
 		statusField *string
 		cfgMsg      string
 	}{
-		{spec.CPUUtilizationPercentage, &status.CPUUtilizationPercentage, "CPU utilization: %s"},
-		{spec.RequeueDuration, &status.RequeueDuration, "function requeue duration: %s"},
-		{spec.BuildExecutorArgs, &status.BuildExecutorArgs, "function build executor args: %s"},
-		{spec.BuildMaxSimultaneousJobs, &status.BuildMaxSimultaneousJobs, "max number of simultaneous jobs: %s"},
+		{spec.TargetCPUUtilizationPercentage, &status.CPUUtilizationPercentage, "CPU utilization: %s"},
+		{spec.FunctionRequeueDuration, &status.RequeueDuration, "function requeue duration: %s"},
+		{spec.FunctionBuildExecutorArgs, &status.BuildExecutorArgs, "function build executor args: %s"},
+		{spec.FunctionBuildMaxSimultaneousJobs, &status.BuildMaxSimultaneousJobs, "max number of simultaneous jobs: %s"},
 		{spec.HealthzLivenessTimeout, &status.HealthzLivenessTimeout, "duration of health check: %s"},
-		{spec.RequestBodyLimitMb, &status.RequestBodyLimitMb, "max size of request body: %s"},
-		{spec.TimeoutSec, &status.TimeoutSec, "timeout: %s"},
+		{spec.FunctionRequestBodyLimitMb, &status.RequestBodyLimitMb, "max size of request body: %s"},
+		{spec.FunctionTimeoutSec, &status.TimeoutSec, "timeout: %s"},
 		{eventingURL, &status.EventingEndpoint, "eventing endpoint: %s"},
 		{tracingURL, &status.TracingEndpoint, "tracing endpoint: %s"},
 	}

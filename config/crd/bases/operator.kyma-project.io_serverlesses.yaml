@@ -51,12 +51,6 @@ spec:
           spec:
             description: ServerlessSpec defines the desired state of Serverless
             properties:
-              CPUUtilizationPercentage:
-                type: string
-              buildExecutorArgs:
-                type: string
-              buildMaxSimultaneousJobs:
-                type: string
               dockerRegistry:
                 properties:
                   enableInternal:
@@ -71,13 +65,19 @@ spec:
                 required:
                 - endpoint
                 type: object
+              functionBuildExecutorArgs:
+                type: string
+              functionBuildMaxSimultaneousJobs:
+                type: string
+              functionRequestBodyLimitMb:
+                type: string
+              functionRequeueDuration:
+                type: string
+              functionTimeoutSec:
+                type: string
               healthzLivenessTimeout:
                 type: string
-              requestBodyLimitMb:
-                type: string
-              requeueDuration:
-                type: string
-              timeoutSec:
+              targetCPUUtilizationPercentage:
                 type: string
               tracing:
                 properties:

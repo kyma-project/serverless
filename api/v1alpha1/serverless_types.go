@@ -32,16 +32,16 @@ type Endpoint struct {
 
 // ServerlessSpec defines the desired state of Serverless
 type ServerlessSpec struct {
-	Tracing                  *Endpoint       `json:"tracing,omitempty"`
-	Eventing                 *Endpoint       `json:"eventing,omitempty"`
-	DockerRegistry           *DockerRegistry `json:"dockerRegistry,omitempty"`
-	CPUUtilizationPercentage string          `json:"CPUUtilizationPercentage,omitempty"`
-	RequeueDuration          string          `json:"requeueDuration,omitempty"`
-	BuildExecutorArgs        string          `json:"buildExecutorArgs,omitempty"`
-	BuildMaxSimultaneousJobs string          `json:"buildMaxSimultaneousJobs,omitempty"`
-	HealthzLivenessTimeout   string          `json:"healthzLivenessTimeout,omitempty"`
-	RequestBodyLimitMb       string          `json:"requestBodyLimitMb,omitempty"`
-	TimeoutSec               string          `json:"timeoutSec,omitempty"`
+	Tracing                          *Endpoint       `json:"tracing,omitempty"`
+	Eventing                         *Endpoint       `json:"eventing,omitempty"`
+	DockerRegistry                   *DockerRegistry `json:"dockerRegistry,omitempty"`
+	TargetCPUUtilizationPercentage   string          `json:"targetCPUUtilizationPercentage,omitempty"`
+	FunctionRequeueDuration          string          `json:"functionRequeueDuration,omitempty"`
+	FunctionBuildExecutorArgs        string          `json:"functionBuildExecutorArgs,omitempty"`
+	FunctionBuildMaxSimultaneousJobs string          `json:"functionBuildMaxSimultaneousJobs,omitempty"`
+	HealthzLivenessTimeout           string          `json:"healthzLivenessTimeout,omitempty"`
+	FunctionRequestBodyLimitMb       string          `json:"functionRequestBodyLimitMb,omitempty"`
+	FunctionTimeoutSec               string          `json:"functionTimeoutSec,omitempty"`
 }
 
 type State string

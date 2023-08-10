@@ -10,32 +10,25 @@ func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceColl
 				"functionPublisherProxyAddress": map[string]interface{}{
 					"value": publisherURL,
 				},
-				"targetCPUUtilizationPercentage": map[string]interface{}{
-					"value": CPUUtilizationPercentage,
-				},
-				"functionRequeueDuration": map[string]interface{}{
-					"value": requeueDuration,
-				},
-				"functionBuildExecutorArgs": map[string]interface{}{
-					"value": buildExecutorArgs,
-				},
-				"functionBuildMaxSimultaneousJobs": map[string]interface{}{
-					"value": maxSimultaneousJobs,
-				},
-				"healthzLivenessTimeout": map[string]interface{}{
-					"value": healthzLivenessTimeout,
-				},
-				"functionRequestBodyLimitMb": map[string]interface{}{
-					"value": requestBodyLimitMb,
-				},
-				"functionTimeoutSec": map[string]interface{}{
-					"value": timeoutSec,
-				},
+				"targetCPUUtilizationPercentage":   getValueOrEmpty(CPUUtilizationPercentage),
+				"functionRequeueDuration":          getValueOrEmpty(requeueDuration),
+				"functionBuildExecutorArgs":        getValueOrEmpty(buildExecutorArgs),
+				"functionBuildMaxSimultaneousJobs": getValueOrEmpty(maxSimultaneousJobs),
+				"healthzLivenessTimeout":           getValueOrEmpty(healthzLivenessTimeout),
+				"functionRequestBodyLimitMb":       getValueOrEmpty(requestBodyLimitMb),
+				"functionTimeoutSec":               getValueOrEmpty(timeoutSec),
 			},
 		},
 	}
 
 	return flags
+}
+
+func getValueOrEmpty(value string) map[string]interface{} {
+	if value == "" {
+		return map[string]interface{}{}
+	}
+	return map[string]interface{}{"value": value}
 }
 
 /*
