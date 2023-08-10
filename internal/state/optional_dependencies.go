@@ -26,7 +26,7 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 	}
 	eventingURL := getEventingURL(s.instance.Spec)
 
-	if statusChanged, serverlessConfigurationMsg := updateStatus(&s.instance, eventingURL, tracingURL); statusChanged {
+	if statusChanged, svlsCfgMsg := updateStatus(&s.instance, eventingURL, tracingURL); statusChanged {
 		s.setState(v1alpha1.StateProcessing)
 		s.instance.UpdateConditionTrue(
 			v1alpha1.ConditionTypeConfigured,
