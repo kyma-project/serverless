@@ -11,5 +11,5 @@ features:
     disableCreate: true
     disableDelete: true
 description: >-
-  {{[Serverless CR](https://github.com/kyma-project/serverless-manager/blob/main/config/samples/operator_v1alpha1_serverless.yaml)}}
+  {{[Serverless CR](https://github.com/kyma-project/serverless-manager/blob/main/config/samples/default_serverless_cr.yaml)}}
   specifies serverless module.

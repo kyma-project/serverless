@@ -13,7 +13,7 @@ OPERATOR_IMAGE_NAME ?= serverless-operator-dev-local
 OPERATOR_IMAGE_TAG ?= $(MODULE_VERSION)
 
 
-TEMPLATE_PATH ?= ${PROJECT_ROOT}/template.yaml
+TEMPLATE_PATH ?= ${PROJECT_ROOT}/moduletemplate.yaml
 
 KYMA ?= ${PROJECT_ROOT}/bin/kyma-unstable
 
@@ -91,21 +91,21 @@ install-kyma-with-lm:
 
 .PHONY: install-module-template
 install-module-template: ## Apply k3d-ready moduletemplate.
-	kubectl apply -f ${PROJECT_ROOT}/template-k3d.yaml
+	kubectl apply -f ${PROJECT_ROOT}/moduletemplate-k3d.yaml
 
 
 .PHONY: fix-template
-fix-template: ## Create template-k3d.yaml based on template.yaml with right URLs.
-	@cat ${PROJECT_ROOT}/template.yaml \
+fix-template: ## Create moduletemplate-k3d.yaml based on moduletemplate.yaml with right URLs.
+	@cat ${PROJECT_ROOT}/moduletemplate.yaml \
 	| sed -e 's/remote/control-plane/g' \
 		-e 's/${REGISTRY_PORT}/5000/g' \
 	      	-e 's/localhost/k3d-${REGISTRY_NAME}.localhost/g' \
-	> ${PROJECT_ROOT}/template-k3d.yaml
+	> ${PROJECT_ROOT}/moduletemplate-k3d.yaml
 
 .PHONY: apply-serverless
 apply-serverless: ## Apply the k3d serverless CR.
 	kubectl apply -n kyma-system \
-		-f ${PROJECT_ROOT}/config/samples/operator_v1alpha1_serverless.yaml
+		-f ${PROJECT_ROOT}/config/samples/default_serverless_cr.yaml
 
 ### Internal Dependencies
 
