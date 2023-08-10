@@ -1,6 +1,6 @@
 package chart
 
-func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceCollectorURL, CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout, requestBodyLimitMb, timeoutSec string) map[string]interface{} {
+func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceCollectorURL, CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout, requestBodyLimitMb, timeoutSec, defaultBuildJobPreset, defaultRuntimePodPreset string) map[string]interface{} {
 	flags["containers"] = map[string]interface{}{
 		"manager": map[string]interface{}{
 			"envs": map[string]interface{}{
@@ -17,6 +17,8 @@ func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceColl
 				"healthzLivenessTimeout":           getValueOrEmpty(healthzLivenessTimeout),
 				"functionRequestBodyLimitMb":       getValueOrEmpty(requestBodyLimitMb),
 				"functionTimeoutSec":               getValueOrEmpty(timeoutSec),
+				"defaultBuildJobPreset":            getValueOrEmpty(defaultBuildJobPreset),
+				"defaultRuntimePodPreset":          getValueOrEmpty(defaultRuntimePodPreset),
 			},
 		},
 	}

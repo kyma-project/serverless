@@ -19,13 +19,15 @@ import (
 )
 
 const (
-	cpuUtilizationTest         = "test-CPU-utilization-percentage"
-	requeueDurationTest        = "test-requeue-duration"
-	executorArgsTest           = "test-build-executor-args"
-	maxSimultaneousJobsTest    = "test-max-simultaneous-jobs"
-	healthzLivenessTimeoutTest = "test-healthz-liveness-timeout"
-	requestBodyLimitMbTest     = "test-request-body-limit-mb"
-	timeoutSecTest             = "test-timeout-sec"
+	cpuUtilizationTest          = "test-CPU-utilization-percentage"
+	requeueDurationTest         = "test-requeue-duration"
+	executorArgsTest            = "test-build-executor-args"
+	maxSimultaneousJobsTest     = "test-max-simultaneous-jobs"
+	healthzLivenessTimeoutTest  = "test-healthz-liveness-timeout"
+	requestBodyLimitMbTest      = "test-request-body-limit-mb"
+	timeoutSecTest              = "test-timeout-sec"
+	defaultBuildJobPresetTest   = "test=default-build-job-preset"
+	defaultRuntimePodPresetTest = "test-default-runtime-pod-preset"
 )
 
 func Test_sFnOptionalDependencies(t *testing.T) {
@@ -120,6 +122,8 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 					HealthzLivenessTimeout:           healthzLivenessTimeoutTest,
 					FunctionRequestBodyLimitMb:       requestBodyLimitMbTest,
 					FunctionTimeoutSec:               timeoutSecTest,
+					DefaultBuildJobPreset:            defaultBuildJobPresetTest,
+					DefaultRuntimePodPreset:          defaultRuntimePodPresetTest,
 				},
 			},
 		}
@@ -141,13 +145,15 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		require.Equal(t, healthzLivenessTimeoutTest, status.HealthzLivenessTimeout)
 		require.Equal(t, requestBodyLimitMbTest, status.RequestBodyLimitMb)
 		require.Equal(t, timeoutSecTest, status.TimeoutSec)
+		require.Equal(t, defaultBuildJobPresetTest, status.DefaultBuildJobPreset)
+		require.Equal(t, defaultRuntimePodPresetTest, status.DefaultRuntimePodPreset)
 
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeConfigured,
 			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonConfigured,
-			fmt.Sprintf("Serverless configuration changes: CPU utilization: %s, function requeue duration: %s, function build executor args: %s, max number of simultaneous jobs: %s, duration of health check: %s, max size of request body: %s, timeout: %s, eventing endpoint: http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish", cpuUtilizationTest, requeueDurationTest, executorArgsTest, maxSimultaneousJobsTest, healthzLivenessTimeoutTest, requestBodyLimitMbTest, timeoutSecTest),
+			fmt.Sprintf("Serverless configuration changes: CPU utilization: %s, function requeue duration: %s, function build executor args: %s, max number of simultaneous jobs: %s, duration of health check: %s, max size of request body: %s, timeout: %s, default build job preset: %s, default runtime pod preset: %s, eventing endpoint: http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish", cpuUtilizationTest, requeueDurationTest, executorArgsTest, maxSimultaneousJobsTest, healthzLivenessTimeoutTest, requestBodyLimitMbTest, timeoutSecTest, defaultBuildJobPresetTest, defaultRuntimePodPresetTest),
 		)
 	})
 

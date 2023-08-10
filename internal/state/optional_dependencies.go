@@ -31,7 +31,7 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 		s.instance.UpdateConditionTrue(
 			v1alpha1.ConditionTypeConfigured,
 			v1alpha1.ConditionReasonConfigured,
-			fmt.Sprintf(serverlessConfigurationMsg),
+			fmt.Sprintf(svlsCfgMsg),
 		)
 		return nextState(sFnUpdateStatusAndRequeue)
 	}
@@ -57,6 +57,8 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 		s.instance.Status.HealthzLivenessTimeout,
 		s.instance.Status.RequestBodyLimitMb,
 		s.instance.Status.TimeoutSec,
+		s.instance.Status.DefaultBuildJobPreset,
+		s.instance.Status.DefaultRuntimePodPreset,
 	)
 
 	return nextState(sFnApplyResources)
@@ -106,6 +108,8 @@ func updateStatus(instance *v1alpha1.Serverless, eventingURL, tracingURL string)
 		{spec.HealthzLivenessTimeout, &status.HealthzLivenessTimeout, "duration of health check: %s"},
 		{spec.FunctionRequestBodyLimitMb, &status.RequestBodyLimitMb, "max size of request body: %s"},
 		{spec.FunctionTimeoutSec, &status.TimeoutSec, "timeout: %s"},
+		{spec.DefaultBuildJobPreset, &status.DefaultBuildJobPreset, "default build job preset: %s"},
+		{spec.DefaultRuntimePodPreset, &status.DefaultRuntimePodPreset, "default runtime pod preset: %s"},
 		{eventingURL, &status.EventingEndpoint, "eventing endpoint: %s"},
 		{tracingURL, &status.TracingEndpoint, "tracing endpoint: %s"},
 	}

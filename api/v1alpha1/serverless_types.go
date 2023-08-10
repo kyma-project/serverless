@@ -42,6 +42,8 @@ type ServerlessSpec struct {
 	HealthzLivenessTimeout           string          `json:"healthzLivenessTimeout,omitempty"`
 	FunctionRequestBodyLimitMb       string          `json:"functionRequestBodyLimitMb,omitempty"`
 	FunctionTimeoutSec               string          `json:"functionTimeoutSec,omitempty"`
+	DefaultBuildJobPreset            string          `json:"defaultBuildJobPreset,omitempty"`
+	DefaultRuntimePodPreset          string          `json:"defaultRuntimePodPreset,omitempty"`
 }
 
 type State string
@@ -97,6 +99,8 @@ type ServerlessStatus struct {
 	HealthzLivenessTimeout   string `json:"healthzLivenessTimeout,omitempty"`
 	RequestBodyLimitMb       string `json:"functionRequestBodyLimitMb,omitempty"`
 	TimeoutSec               string `json:"functionTimeoutSec,omitempty"`
+	DefaultBuildJobPreset    string `json:"defaultBuildJobPreset,omitempty"`
+	DefaultRuntimePodPreset  string `json:"defaultRuntimePodPreset,omitempty"`
 
 	// Used registry configuration.
 	// Contains registry URL or "internal"

@@ -51,6 +51,10 @@ spec:
           spec:
             description: ServerlessSpec defines the desired state of Serverless
             properties:
+              defaultBuildJobPreset:
+                type: string
+              defaultRuntimePodPreset:
+                type: string
               dockerRegistry:
                 properties:
                   enableInternal:
@@ -158,6 +162,10 @@ spec:
                   - type
                   type: object
                 type: array
+              defaultBuildJobPreset:
+                type: string
+              defaultRuntimePodPreset:
+                type: string
               dockerRegistry:
                 description: Used registry configuration. Contains registry URL or
                   "internal"
