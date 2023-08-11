@@ -18,7 +18,7 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
 To get Serverless installed, apply the sample Serverless CR:
 
 ```bash
-kubectl apply -f config/samples/operator_v1alpha1_serverless.yaml
+kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default_serverless_cr.yaml
 ```
 
 ## Development
@@ -87,13 +87,13 @@ kubectl apply -f config/samples/operator_v1alpha1_serverless.yaml
 - Create a Serverless instance.
 
     ```bash
-    kubectl apply -f config/samples/operator_v1alpha1_serverless.yaml
+    kubectl apply -f config/samples/default_serverless_cr.yaml
     ```
 
 - Delete a Serverless instance.
 
     ```bash
-    kubectl delete -f config/samples/operator_v1alpha1_serverless.yaml
+    kubectl delete -f config/samples/default_serverless_cr.yaml
     ```
 
 - Use external registry.

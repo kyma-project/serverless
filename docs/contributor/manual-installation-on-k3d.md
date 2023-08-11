@@ -40,7 +40,7 @@
 
     > **NOTE:** The following sub-steps are temporary workarounds.
 
-    Edit `template.yaml` under the `config/moduletemplates` folder and:
+    Edit `moduletemplate.yaml` under the `config/moduletemplates` folder and:
 
     - change `target` to `control-plane`
 
@@ -69,7 +69,7 @@
     Use the `--template` flag to deploy the Serverless module manifest from the beginning, or apply it using kubectl later.
 
     ```bash
-    kyma alpha deploy --templates=./config/moduletemplates/template.yaml
+    kyma alpha deploy --templates=./config/moduletemplates/moduletemplate.yaml
     ```
 
     Kyma installation is ready, but the module is not yet activated.

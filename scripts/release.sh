@@ -38,8 +38,8 @@ cat serverless-operator.yaml
 
 MODULE_VERSION=${PULL_BASE_REF} make module-build
 
-echo "Generated template.yaml:"
-cat template.yaml
+echo "Generated moduletemplate.yaml:"
+cat moduletemplate.yaml
 
 echo "Updating github release with assets"
 
@@ -65,7 +65,9 @@ fi
 UPLOAD_URL="https://uploads.github.com/repos/kyma-project/serverless-manager/releases/${RELEASE_ID}/assets"
 
 uploadFile "serverless-operator.yaml" "${UPLOAD_URL}?name=serverless-operator.yaml"
-uploadFile "template.yaml" "${UPLOAD_URL}?name=template.yaml"
-uploadFile "config/samples/operator_v1alpha1_serverless.yaml" "${UPLOAD_URL}?name=operator_v1alpha1_serverless.yaml"
+uploadFile "moduletemplate.yaml" "${UPLOAD_URL}?name=moduletemplate.yaml"
+uploadFile "config/samples/default_serverless_cr.yaml" "${UPLOAD_URL}?name=default_serverless_cr.yaml"
+uploadFile "config/samples/default_serverless_cr_k3d.yaml" "${UPLOAD_URL}?name=default_serverless_cr_k3d.yaml"
+
 
 

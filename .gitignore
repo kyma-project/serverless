@@ -33,8 +33,8 @@ module-chart-test
 mod
 charts
 default.yaml
-template.yaml
-template-k3d.yaml
+moduletemplate.yaml
+moduletemplate-k3d.yaml
 docs/.DS_Store
 .DS_Store
 __debug_bin
@@ -43,4 +43,4 @@ vendor
 serverless-operator.yaml
 manifests/serverless/rendered.yaml
 serverless.yaml
-template-latest.yaml
+moduletemplate-latest.yaml
