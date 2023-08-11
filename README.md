@@ -18,7 +18,7 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
 To get Serverless installed, apply the sample Serverless CR:
 
 ```bash
-kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default-serverless-cr.yaml
+kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default_serverless_cr.yaml
 ```
 
 ## Development
