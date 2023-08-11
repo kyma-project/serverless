@@ -61,27 +61,3 @@ func TestAppendExternalRegistryFlags(t *testing.T) {
 		}, flags)
 	})
 }
-
-func TestAppendContainersFlags(t *testing.T) {
-	t.Run("append flags", func(t *testing.T) {
-		publisherURL := "test-proxy-url"
-		collectorURL := "test-trace-url"
-
-		flags := AppendContainersFlags(map[string]interface{}{}, publisherURL, collectorURL)
-
-		require.Equal(t, map[string]interface{}{
-			"containers": map[string]interface{}{
-				"manager": map[string]interface{}{
-					"envs": map[string]interface{}{
-						"functionTraceCollectorEndpoint": map[string]interface{}{
-							"value": collectorURL,
-						},
-						"functionPublisherProxyAddress": map[string]interface{}{
-							"value": publisherURL,
-						},
-					},
-				},
-			},
-		}, flags)
-	})
-}

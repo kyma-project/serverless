@@ -51,6 +51,10 @@ spec:
           spec:
             description: ServerlessSpec defines the desired state of Serverless
             properties:
+              defaultBuildJobPreset:
+                type: string
+              defaultRuntimePodPreset:
+                type: string
               dockerRegistry:
                 properties:
                   enableInternal:
@@ -65,6 +69,20 @@ spec:
                 required:
                 - endpoint
                 type: object
+              functionBuildExecutorArgs:
+                type: string
+              functionBuildMaxSimultaneousJobs:
+                type: string
+              functionRequestBodyLimitMb:
+                type: string
+              functionRequeueDuration:
+                type: string
+              functionTimeoutSec:
+                type: string
+              healthzLivenessTimeout:
+                type: string
+              targetCPUUtilizationPercentage:
+                type: string
               tracing:
                 properties:
                   endpoint:
@@ -144,12 +162,28 @@ spec:
                   - type
                   type: object
                 type: array
+              defaultBuildJobPreset:
+                type: string
+              defaultRuntimePodPreset:
+                type: string
               dockerRegistry:
                 description: Used registry configuration. Contains registry URL or
                   "internal"
                 type: string
               eventingEndpoint:
                 description: Used the Eventing endpoint and the Tracing endpoint.
+                type: string
+              functionBuildExecutorArgs:
+                type: string
+              functionBuildMaxSimultaneousJobs:
+                type: string
+              functionRequestBodyLimitMb:
+                type: string
+              functionRequeueDuration:
+                type: string
+              functionTimeoutSec:
+                type: string
+              healthzLivenessTimeout:
                 type: string
               served:
                 description: Served signifies that current Serverless is managed.
@@ -167,6 +201,8 @@ spec:
                 - Ready
                 - Error
                 - Warning
+                type: string
+              targetCPUUtilizationPercentage:
                 type: string
               tracingEndpoint:
                 type: string

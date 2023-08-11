@@ -25,7 +25,7 @@ const (
 	DefaultEnableInternal   = false
 	DefaultRegistryAddress  = "k3d-kyma-registry:5000"
 	DefaultServerAddress    = "k3d-kyma-registry:5000"
-	FeatureDisabled         = ""
+	EndpointDisabled        = ""
 	DefaultEventingEndpoint = "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
 )
 
