@@ -9,7 +9,7 @@ The Serverless CR becomes an API to configure the Serverless module. You can use
  - configure the external Docker registry 
  - override endpoint for traces collected by the Serverless Functions
  - override endpoint for eventing
- - override target CPU utilization percentage
+ - override the target CPU utilization percentage
  - override the Function requeue duration
  - override the Function build executor arguments
  - override the Function build max simultaneous jobs
