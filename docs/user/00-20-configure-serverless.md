@@ -12,7 +12,7 @@ The Serverless CR becomes an API to configure the Serverless module. You can use
  - override target CPU utilization percentage
  - override the Function requeue duration
  - override the Function build executor arguments
- - override function build max simultaneous jobs
+ - override the Function build max simultaneous jobs
  - override healthz liveness timeout
  - override function request body limit 
  - override function timeout
