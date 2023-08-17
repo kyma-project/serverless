@@ -13,7 +13,7 @@ The Serverless CR becomes an API to configure the Serverless module. You can use
  - override function requeue duration
  - override function build executor arguments
  - override function build max simultaneous jobs
- - override healhz liveness timeout
+ - override healthz liveness timeout
  - override function request body limit 
  - override function timeout
  - override default build job preset
@@ -127,7 +127,7 @@ You can set a custom maximum number of simultaneous jobs which can be running at
       functionBuildMaxSimultaneousJobs: 5
 ```
 
-## Configure healhz liveness timeout
+## Configure healthz liveness timeout
 
 By default, the function will be considered unhealthy if the liveness health check endpoint does not respond within 10 seconds.
 
