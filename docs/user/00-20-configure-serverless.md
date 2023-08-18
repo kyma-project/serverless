@@ -9,6 +9,15 @@ The Serverless CR becomes an API to configure the Serverless module. You can use
  - configure the external Docker registry 
  - override endpoint for traces collected by the Serverless Functions
  - override endpoint for eventing
+ - override the target CPU utilization percentage
+ - override the Function requeue duration
+ - override the Function build executor arguments
+ - override the Function build max simultaneous jobs
+ - override the healthz liveness timeout
+ - override the Function request body limit 
+ - override the Function timeout
+ - override the default build Job preset
+ - override the default runtime Pod preset
 
 The default configuration of the Serverless Module is following:
 
@@ -76,3 +85,89 @@ By default `http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publis
      eventing:
        endpoint: http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish
    ```
+
+## Configure target CPU utilization percentage
+
+You can set a custom target threshold for CPU utilization. The default value is set to `50%`.
+
+```yaml
+   spec:
+      targetCPUUtilizationPercentage: 50
+```
+
+## Configure the Function requeue duration
+
+By default, the Function associated with the default configuration will be requeued every 5 minutes.  
+
+```yaml
+   spec:
+      functionRequeueDuration: 5m
+```
+
+## Configure the Function build executor arguments
+
+Use this label to choose the arguments passed to the Function build executor, for example: 
+- `--insecure` - executor operates in an insecure mode
+- `--skip-tls-verify` - executor skips the TLS certificate verification
+- `--skip-unused-stages` - executor skips any stages that aren't used for the current execution
+- `--log-format=text` - executor uses logs in a given format
+- `--cache=true` - enables caching for the executor
+
+```yaml
+   spec:
+      functionBuildExecutorArgs: "--insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true"
+```
+
+## Configure the Function build max simultaneous jobs
+
+You can set a custom maximum number of simultaneous jobs which can run at the same time. The default value is set to `5`.
+
+```yaml
+   spec:
+      functionBuildMaxSimultaneousJobs: 5
+```
+
+## Configure the healthz liveness timeout
+
+By default, the Function is considered unhealthy if the liveness health check endpoint does not respond within 10 seconds.
+
+```yaml
+   spec:
+      healthzLivenessTimeout: "10s"
+```
+
+## Configure the Function request body limit
+
+Use this field to configure the maximum size limit for the request body of a Function. The default value is set to `1` megabyte.
+
+```yaml
+   spec:
+      functionRequestBodyLimitMb: 1
+```
+
+## Configure the Function timeout
+
+By default, the maximum execution time limit for a Function is set to `180` seconds.
+
+```yaml
+   spec:
+      functionTimeoutSec: 180
+```
+
+## Configure the default build Job preset
+
+You can configure the default build Job preset to be used. 
+
+```yaml
+   spec:
+      defaultBuildJobPreset: "normal"
+```
+
+## Configure the default runtime Pod preset
+
+You can configure the default runtime Pod preset to be used.
+
+```yaml
+   spec:
+      defaultRuntimePodPreset: "M"
+```
