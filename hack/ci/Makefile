@@ -34,6 +34,13 @@ module-build: ## Build the Module, push it to a registry and print it based on t
 integration-test: module-chart-test  ## Run integration tests on self-prepared k3d cluster.
 	cd ${MODULECHARTTEST} && make serverless-integration
 
+.PHONY: gardener-lm-integration-test
+gardener-lm-integration-test: ## Provision gardener cluster and run integration test with lifecycle-manager on it.
+gardener-lm-integration-test: \
+	provision-gardener \
+	deprovision-gardener
+## install-main-serverless integration-test
+
 .PHONY: k3d-lm-integration-test ## Run integration tests on self-prepared k3d cluster with lifecycle-manager.
 k3d-lm-integration-test: run-with-lifecycle-manager integration-test
 
@@ -84,6 +91,14 @@ reinstall-serverless:
 	sleep 5
 
 	@make -C ${PROJECT_COMMON} verify-kyma
+
+.PHONY: provision-gardener
+provision-gardener:
+	@make -C ${PROJECT_COMMON} provision-gardener
+
+.PHONY: deprovision-gardener
+deprovision-gardener:
+	@make -C ${PROJECT_COMMON} deprovision-gardener
 
 .PHONY: run-with-lifecycle-manager
 run-with-lifecycle-manager:
