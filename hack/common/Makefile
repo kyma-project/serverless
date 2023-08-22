@@ -13,7 +13,6 @@ OPERATOR_IMAGE_NAME ?= serverless-operator-dev-local
 OPERATOR_IMAGE_TAG ?= $(MODULE_VERSION)
 
 GARDENER_INFRASTRUCTURE ?= az
-COMMIT_SHA ?= ${RANDOM}
 
 TEMPLATE_PATH ?= ${PROJECT_ROOT}/moduletemplate.yaml
 
@@ -68,13 +67,13 @@ delete-k3d-cluster: ## Delete k3d kyma cluster.
 ##@ Gardener
 
 .PHONY: provision-gardener
-provision-gardener: ## Provision gardener cluster
+provision-gardener: kyma ## Provision gardener cluster
 	${KYMA} provision gardener ${GARDENER_INFRASTRUCTURE} -c ${GARDENER_SA_PATH} -n test-${COMMIT_SHA} -p ${GARDENER_PROJECT} -s ${GARDENER_SECRET_NAME}
 
 .PHONY: deprovision-gardener
-deprovision-gardener: ## Deprovision gardener cluster
+deprovision-gardener: kyma ## Deprovision gardener cluster
 	kubectl --kubeconfig=${GARDENER_SA_PATH} annotate shoot test-${COMMIT_SHA} confirmation.gardener.cloud/deletion=true
-	kubectl --kubeconfig=${GARDENER_SA_PATH} delete shoot test-${COMMIT_SHA}
+	kubectl --kubeconfig=${GARDENER_SA_PATH} delete shoot test-${COMMIT_SHA} --wait=false
 
 ##@ Module management
 
