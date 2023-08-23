@@ -50,6 +50,19 @@ func AppendInternalRegistryFlags(flags map[string]interface{}, enableInternal bo
 	return flags
 }
 
+func AppendExistingInternalRegistryCredentialsFlags(flags map[string]interface{}, username, password, registryHttpSecret string) map[string]interface{} {
+	flags["dockerRegistry"] = map[string]interface{}{
+		"username": username,
+		"password": password,
+	}
+	flags["docker-registry"] = map[string]interface{}{
+		"rollme":             "dontrollplease",
+		"registryHTTPSecret": registryHttpSecret,
+	}
+
+	return flags
+}
+
 func AppendK3dRegistryFlags(flags map[string]interface{}, enableInternal bool, registryAddress, serverAddress string) map[string]interface{} {
 	flags["dockerRegistry"] = map[string]interface{}{
 		"enableInternal":  enableInternal,

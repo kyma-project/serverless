@@ -131,7 +131,7 @@ module-build: kyma kustomize ## Build the Module and push it to a registry defin
 	@$(KYMA) alpha create module --default-cr=config/samples/default_serverless_cr.yaml \
 		--channel=${MODULE_CHANNEL} --name kyma.project.io/module/$(MODULE_NAME) \
 		--version $(MODULE_VERSION) --path . $(MODULE_CREATION_FLAGS) \
-		--output=moduletemplate.yaml
+		--output=moduletemplate.yaml --kubebuilder-project
 
 ##@ Build Dependencies
 
