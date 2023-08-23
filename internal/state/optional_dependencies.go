@@ -3,6 +3,8 @@ package state
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/kyma-project/serverless-manager/internal/tracing"
@@ -12,7 +14,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"strings"
 )
 
 // enable or disable serverless optional dependencies based on the Serverless Spec and installed module on the cluster
@@ -57,6 +58,10 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 		s.instance.Status.HealthzLivenessTimeout,
 		s.instance.Status.RequestBodyLimitMb,
 		s.instance.Status.TimeoutSec,
+	)
+
+	s.chartConfig.Release.Flags = chart.AppendDefaultPresetFlags(
+		s.chartConfig.Release.Flags,
 		s.instance.Status.DefaultBuildJobPreset,
 		s.instance.Status.DefaultRuntimePodPreset,
 	)

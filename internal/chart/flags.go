@@ -1,6 +1,6 @@
 package chart
 
-func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceCollectorURL, CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout, requestBodyLimitMb, timeoutSec, defaultBuildJobPreset, defaultRuntimePodPreset string) map[string]interface{} {
+func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceCollectorURL, CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout, requestBodyLimitMb, timeoutSec string) map[string]interface{} {
 	flags["containers"] = map[string]interface{}{
 		"manager": map[string]interface{}{
 			"envs": map[string]interface{}{
@@ -17,8 +17,6 @@ func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceColl
 				"healthzLivenessTimeout":           getValueOrEmpty(healthzLivenessTimeout),
 				"functionRequestBodyLimitMb":       getValueOrEmpty(requestBodyLimitMb),
 				"functionTimeoutSec":               getValueOrEmpty(timeoutSec),
-				"defaultBuildJobPreset":            getValueOrEmpty(defaultBuildJobPreset),
-				"defaultRuntimePodPreset":          getValueOrEmpty(defaultRuntimePodPreset),
 			},
 		},
 	}
@@ -69,6 +67,33 @@ func AppendExternalRegistryFlags(flags map[string]interface{}, enableInternal bo
 		"password":        password,
 		"registryAddress": registryAddress,
 		"serverAddress":   serverAddress,
+	}
+
+	return flags
+}
+
+func AppendDefaultPresetFlags(flags map[string]interface{}, defaultBuildJobPreset, defaultRuntimePodPreset string) map[string]interface{} {
+
+	values := map[string]interface{}{}
+
+	if defaultRuntimePodPreset != "" {
+		values["function"] = map[string]interface{}{
+			"resources": map[string]interface{}{
+				"defaultPreset": defaultRuntimePodPreset,
+			},
+		}
+	}
+
+	if defaultBuildJobPreset != "" {
+		values["buildJob"] = map[string]interface{}{
+			"resources": map[string]interface{}{
+				"defaultPreset": defaultBuildJobPreset,
+			},
+		}
+	}
+
+	flags["webhook"] = map[string]interface{}{
+		"values": values,
 	}
 
 	return flags
