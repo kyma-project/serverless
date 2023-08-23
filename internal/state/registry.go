@@ -96,7 +96,6 @@ func setRuntimeRegistryConfig(secret *corev1.Secret, s *systemState) {
 }
 
 func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemState) error {
-	r.log.Debugf("configuring internal docker registry")
 	s.instance.Status.DockerRegistry = "internal"
 	s.chartConfig.Release.Flags = chart.AppendInternalRegistryFlags(
 		s.chartConfig.Release.Flags,
