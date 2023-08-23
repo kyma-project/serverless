@@ -96,11 +96,25 @@ func setRuntimeRegistryConfig(secret *corev1.Secret, s *systemState) {
 }
 
 func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemState) error {
+	r.log.Debugf("configuring internal docker registry")
 	s.instance.Status.DockerRegistry = "internal"
 	s.chartConfig.Release.Flags = chart.AppendInternalRegistryFlags(
 		s.chartConfig.Release.Flags,
 		*s.instance.Spec.DockerRegistry.EnableInternal,
 	)
+
+	existingIntRegSecret, err := registry.GetServerlessInternalRegistrySecret(ctx, r.client, s.instance.Namespace)
+	if err != nil {
+		return err
+	}
+	if existingIntRegSecret != nil {
+		r.log.Debugf("reusing existing credentials for internal docker registry to avoiding docker registry  rollout")
+		registryHttpSecretEnvValue, err := registry.GetRegistryHTTPSecretEnvValue(ctx, r.client, s.instance.Namespace)
+		if err != nil {
+			return err
+		}
+		s.chartConfig.Release.Flags = chart.AppendExistingInternalRegistryCredentialsFlags(s.chartConfig.Release.Flags, string(existingIntRegSecret.Data["username"]), string(existingIntRegSecret.Data["password"]), registryHttpSecretEnvValue)
+	}
 
 	resolver := registry.NewNodePortResolver(registry.RandomNodePort)
 	nodePort, err := resolver.ResolveDockerRegistryNodePortFn(ctx, r.client, s.instance.Namespace)
