@@ -71,10 +71,12 @@ delete-k3d-cluster: ## Delete k3d kyma cluster.
 	-k3d cluster delete ${CLUSTER_NAME}
 
 ##@ Gardener
+HIBERNATION_HOUR=$(shell echo $$(( ( $(shell date +%H) + 5 ) % 24 )))
 
 .PHONY: provision-gardener
 provision-gardener: kyma ## Provision gardener cluster
-	${KYMA} provision gardener ${GARDENER_INFRASTRUCTURE} -c ${GARDENER_SA_PATH} -n test-${COMMIT_SHA} -p ${GARDENER_PROJECT} -s ${GARDENER_SECRET_NAME}
+	${KYMA} provision gardener ${GARDENER_INFRASTRUCTURE} -c ${GARDENER_SA_PATH} -n test-${COMMIT_SHA} -p ${GARDENER_PROJECT} -s ${GARDENER_SECRET_NAME} \
+		--hibernation-start="00 ${HIBERNATION_HOUR} * * ?"
 
 .PHONY: deprovision-gardener
 deprovision-gardener: kyma ## Deprovision gardener cluster
