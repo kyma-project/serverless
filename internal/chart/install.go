@@ -31,7 +31,10 @@ func install(config *Config, renderChartFunc func(config *Config) (*release.Rele
 		return err
 	}
 
-	uninstallObjects(config, unusedObjs)
+	err = uninstallObjects(config, unusedObjs)
+	if err != nil {
+		return err
+	}
 
 	return config.Cache.Set(config.Ctx, config.CacheKey, ServerlessSpecManifest{
 		ManagerUID:  config.ManagerUID,
