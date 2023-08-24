@@ -36,11 +36,12 @@ integration-test: module-chart-test  ## Run integration tests on self-prepared k
 
 .PHONY: gardener-integration-test
 gardener-integration-test: ## Provision gardener cluster and run integration test on it.
-gardener-integration-test: \
-	provision-gardener \
-	run-without-lm-on-cluster \
-	integration-test \
-	deprovision-gardener
+gardener-integration-test:
+	@make provision-gardener \
+		run-without-lm-on-cluster \
+		integration-test \
+		deprovision-gardener || \
+		(make deprovision-gardener && false)
 
 .PHONY: k3d-lm-integration-test ## Run integration tests on self-prepared k3d cluster with lifecycle-manager.
 k3d-lm-integration-test: run-with-lifecycle-manager integration-test
