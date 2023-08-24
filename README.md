@@ -5,11 +5,11 @@
 
 ## Overview
 
-Serverless Operator allows deploying the [Serverless](https://kyma-project.io/docs/kyma/latest/01-overview/serverless/) component on the Kyma cluster in compatibility with the [Lifecycle Manager](https://github.com/kyma-project/lifecycle-manager).
+Serverless Operator allows deploying the [Serverless](https://kyma-project.io/docs/kyma/latest/01-overview/serverless/) component on the Kyma cluster in compatibility with [Lifecycle Manager](https://github.com/kyma-project/lifecycle-manager).
 
 ## Install
 
-To install serverless-operator simply apply the following script:
+Apply the following script to install Serverless Operator:
 
 ```bash
 kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/serverless-operator.yaml
@@ -25,7 +25,7 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
 
 ### Prerequisites
 
-- Access to a k8s cluster
+- Access to a Kubernetes (v1.24 or higher) cluster
 - [Go](https://go.dev/)
 - [k3d](https://k3d.io/)
 - [Docker](https://www.docker.com/)
@@ -41,7 +41,7 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
     git clone https://github.com/kyma-project/serverless-manager.git && cd serverless-manager/
     ```
 
-2. Set the `serverless-operator` image name.
+2. Set the Serverless Operator image name.
 
     ```bash
     export IMG=<DOCKER_USERNAME>/custom-serverless-operator:0.0.1
@@ -59,13 +59,13 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
     make module-image
     ```
 
-5. Deploy.
+5. Deploy Serverless Operator.
 
     ```bash
     make deploy
     ```
 
-### Test integration with lifecycle-manager on the k3d cluster
+### Test integration with Lifecycle Manager on the k3d cluster
 
 1. Clone the project.
 
@@ -73,7 +73,7 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
     git clone https://github.com/kyma-project/serverless-manager.git && cd serverless-manager/
     ```
 
-2. Build the serverless operator locally and run it on the k3d cluster.
+2. Build Serverless Operator locally and run it on the k3d cluster.
 
     ```bash
     make -C hack/local run-with-lifecycle-manager
@@ -82,7 +82,7 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
 > **NOTE:** To clean up the k3d cluster, use the `make -C hack/local stop` make target.
 
 
-## Using `serverless-operator`
+## Using Serverless Operator
 
 - Create a Serverless instance.
 
@@ -125,28 +125,3 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
             secretName: my-secret
     EOF
     ```
-## Testing Strategy
-
-Each pull request to the repository triggers CI/CD jobs that verify the serverless-operator reconciliation logic and run integration tests of the Serverless module.
-
-- `pre-serverless-operator-operator-build` - Compiling the serverless-operator code and pushing its docker image.
-- `pre-serverless-operator-operator-tests` - Testing the serverless-operator reconciliation code (Serverless CR CRUD operations).
-- `pre-main-serverless-operator-verify` - Integration testing for the Serverless module installed by serverless-operator (**not using lifecycle-manager**).
-- `pull-serverless-module-build` - Bundling a module template manifest that allows testing it against lifecycle-manager manually. 
-
-After the pull request is merged, the following CI/CD jobs are executed:
-
- - `post-main-serverless-operator-verify` - Installs the Serverless module (**using lifecycle-manager**) and runs integration tests of Serverless.
- - `post-serverless-operator-build` - rebuilds  the Serverless module and the module template manifest file that can be submitted to modular Kyma.
- 
-## Troubleshooting
-
-- For MacBook M1 users
-
-    Some parts of the scripts may not work because the Kyma CLI is not released for Apple Silicon users. To fix it [install Kyma CLI manually](https://github.com/kyma-project/cli#installation) and export the path to it.
-
-    ```bash
-    export KYMA=$(which kyma)
-    ```
-
-    > The example error may look like this: `Error: unsupported platform OS_TYPE: Darwin, OS_ARCH: arm64; to mitigate this problem set variable KYMA with the absolute path to kyma-cli binary compatible with your operating system and architecture.  Stop.`
