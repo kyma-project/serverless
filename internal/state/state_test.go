@@ -45,7 +45,7 @@ var (
 )
 
 func fixEmptyManifestCache() chart.ManifestCache {
-	return fixManifestCache("")
+	return fixManifestCache("---")
 }
 
 func fixManifestCache(manifest string) chart.ManifestCache {
