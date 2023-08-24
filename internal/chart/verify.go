@@ -14,6 +14,10 @@ func Verify(config *Config) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("could not render manifest from chart: %s", err.Error())
 	}
+	// sometimes cache is not created yet
+	if len(spec.Manifest) == 0 {
+		return false, nil
+	}
 
 	objs, err := parseManifest(spec.Manifest)
 	if err != nil {
@@ -59,10 +63,10 @@ func verifyDeployment(config *Config, u unstructured.Unstructured) (bool, error)
 	}
 
 	for _, cond := range deployment.Status.Conditions {
-		if cond.Type == appsv1.DeploymentAvailable && cond.Status != v1.ConditionTrue {
-			return false, nil
+		if cond.Type == appsv1.DeploymentAvailable && cond.Status == v1.ConditionTrue {
+			return true, nil
 		}
 	}
 
-	return true, nil
+	return false, nil
 }
