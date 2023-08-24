@@ -34,12 +34,13 @@ module-build: ## Build the Module, push it to a registry and print it based on t
 integration-test: module-chart-test  ## Run integration tests on self-prepared k3d cluster.
 	cd ${MODULECHARTTEST} && make serverless-integration
 
-.PHONY: gardener-lm-integration-test
-gardener-lm-integration-test: ## Provision gardener cluster and run integration test with lifecycle-manager on it.
-gardener-lm-integration-test: \
+.PHONY: gardener-integration-test
+gardener-integration-test: ## Provision gardener cluster and run integration test on it.
+gardener-integration-test: \
 	provision-gardener \
+	run-without-lm-on-cluster \
+	integration-test \
 	deprovision-gardener
-## install-main-serverless integration-test
 
 .PHONY: k3d-lm-integration-test ## Run integration tests on self-prepared k3d cluster with lifecycle-manager.
 k3d-lm-integration-test: run-with-lifecycle-manager integration-test
@@ -107,6 +108,10 @@ run-with-lifecycle-manager:
 .PHONY: run-without-lifecycle-manager
 run-without-lifecycle-manager:
 	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager
+
+.PHONY: run-without-lm-on-cluster
+run-without-lm-on-cluster:
+	@make -C ${PROJECT_COMMON} run-without-lm-on-cluster
 
 .PHONY: render-manifest
 render-manifest:

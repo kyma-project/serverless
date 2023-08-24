@@ -46,6 +46,12 @@ run-without-lifecycle-manager: kyma \
 	apply-serverless \
 	verify-serverless
 
+.PHONY: run-without-lm-on-cluster
+run-without-lm-on-cluster: ## Deploy module without the lifecycle-manager on existing cluster.
+run-without-lm-on-cluster: deploy-cluster \
+	apply-serverless \
+	verify-serverless
+
 ##@ K3D
 
 .PHONY: create-k3d
@@ -140,7 +146,7 @@ module-build:
 .PHONY: deploy
 deploy:
 	@make -C ${PROJECT_ROOT} deploy \
-  IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
+		IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
 
 .PHONY: deploy-k3d
 deploy-k3d:
@@ -148,4 +154,8 @@ deploy-k3d:
 	docker tag localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG} localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${HASH_TAG}
 	docker push localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${HASH_TAG}
 	@make -C ${PROJECT_ROOT} deploy \
-  IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${HASH_TAG}
+		IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${HASH_TAG}
+
+.PHONY: deploy-cluster
+deploy-cluster:
+	@make -C ${PROJECT_ROOT} deploy
