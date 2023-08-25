@@ -71,7 +71,7 @@ The currently used trace endpoint is visible in the Serverless CR status.
    ```yaml
    spec:
      tracing:
-       endpoint: http://tracing-jaeger-collector.kyma-system.svc.cluster.local:2342/v1/metrics 
+       endpoint: http://jaeger-collector.observability.svc.cluster.local:4318/v1/traces
    ```
 
 ## Configure Eventing endpoint
