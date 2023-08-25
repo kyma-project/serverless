@@ -47,7 +47,7 @@ func Test_verify(t *testing.T) {
 	cache.Set(context.Background(), testManifestKey,
 		ServerlessSpecManifest{Manifest: fmt.Sprint(testCRD, separator, testDeploy)})
 	cache.Set(context.Background(), emptyManifestKey,
-		ServerlessSpecManifest{Manifest: ""})
+		ServerlessSpecManifest{Manifest: "---"})
 	cache.Set(context.Background(), wrongManifestKey,
 		ServerlessSpecManifest{Manifest: "api: test\n\tversion: test"})
 
