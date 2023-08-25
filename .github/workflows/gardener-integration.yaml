@@ -3,10 +3,6 @@ name: Gardener integration
 on:
   push:
     branches: [ "main" ]
-  
-  # TODO: remove me pls
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
   build:
