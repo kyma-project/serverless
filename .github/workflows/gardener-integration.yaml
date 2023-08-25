@@ -1,0 +1,28 @@
+name: Gardener integration
+
+on:
+  push:
+    branches: [ "main" ]
+  
+  # TODO: remove me pls
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: save sa
+      run: echo ${{ secrets.GARDENER_SA }} > /tmp/gardener-sa.yaml
+
+    - name: run test
+      run: make -C hack/ci gardener-integration-test
+      env:
+        IMG: ${{ secrets.OPERATOR_PROD_REGISTRY }}:${{ github.sha }}
+        GARDENER_SECRET_NAME: ${{ secrets.GARDENER_SECRET_NAME }}
+        GARDENER_PROJECT: ${{ secrets.GARDENER_PROJECT }}
+        GARDENER_SA_PATH: /tmp/gardener-sa.yaml
