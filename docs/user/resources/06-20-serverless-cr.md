@@ -72,7 +72,7 @@ For details, see the [Serverless specification file](https://github.com/kyma-pro
 | **eventing.&#x200b;endpoint** (required)  | string  | Used Eventing endpoint            |
 | **tracing**                               | object  |             |
 | **tracing.&#x200b;endpoint** (required)   | string  | Used Tracing endpoint            |
-| **targetCPUUtilizationPercentage**        | string  | Sets a custom target threshold for CPU utilization            |
+| **targetCPUUtilizationPercentage**        | string  | Sets a custom CPU utilization threshold for scaling Function Pods            |
 | **functionRequeueDuration**               | string  | Sets the requeue duration for Function. By default, the Function associated with the default configuration will be requeued every 5 minutes            |
 | **functionBuildExecutorArgs**             | string  | Specifies the arguments passed to the Function build executor            |
 | **functionBuildMaxSimultaneousJobs**      | string  | A number of simultaneous jobs that can run at the same time. The default value is `5`            |
