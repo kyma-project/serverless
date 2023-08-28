@@ -48,7 +48,8 @@ run-without-lifecycle-manager: kyma \
 
 .PHONY: run-without-lm-on-cluster
 run-without-lm-on-cluster: ## Deploy module without the lifecycle-manager on existing cluster.
-run-without-lm-on-cluster: deploy-cluster \
+run-without-lm-on-cluster: \
+	deploy-cluster \
 	apply-serverless \
 	verify-serverless
 
