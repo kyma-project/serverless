@@ -22,7 +22,7 @@ import (
 )
 
 type DockerRegistry struct {
-	// When set to true the internal Docker registry is enabled
+	// When set to true, the internal Docker registry is enabled
 	EnableInternal *bool `json:"enableInternal,omitempty"`
 	// Secret used for configuration of the Docker registry
 	SecretName *string `json:"secretName,omitempty"`
@@ -41,7 +41,7 @@ type ServerlessSpec struct {
 	DockerRegistry *DockerRegistry `json:"dockerRegistry,omitempty"`
 	// Sets a custom CPU utilization threshold for scaling Function Pods
 	TargetCPUUtilizationPercentage string `json:"targetCPUUtilizationPercentage,omitempty"`
-	// Sets the requeue duration for Function. By default, the Function associated with the default configuration will be requeued every 5 minutes
+	// Sets the requeue duration for Function. By default, the Function associated with the default configuration is requeued every 5 minutes
 	FunctionRequeueDuration string `json:"functionRequeueDuration,omitempty"`
 	// Specifies the arguments passed to the Function build executor
 	FunctionBuildExecutorArgs string `json:"functionBuildExecutorArgs,omitempty"`
