@@ -25,13 +25,17 @@ import (
 	"github.com/kyma-project/serverless-manager/internal/tracing"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
+	"golang.org/x/time/rate"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/util/workqueue"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/source"
+	"time"
 )
 
 // serverlessReconciler reconciles a Serverless object
@@ -58,6 +62,14 @@ func (sr *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.Serverless{}, builder.WithPredicates(predicate.NoStatusChangePredicate{})).
 		Watches(&source.Kind{Type: &corev1.Service{}}, tracing.ServiceCollectorWatcher()).
+		WithOptions(controller.Options{
+			RateLimiter: workqueue.NewMaxOfRateLimiter(
+				workqueue.NewItemExponentialFailureRateLimiter(3*time.Second, 300*time.Second),
+				// 10 qps, 100 bucket size.  This is only for retry speed and its only the overall factor (not per item)
+				&workqueue.BucketRateLimiter{Limiter: rate.NewLimiter(rate.Limit(10), 100)},
+			),
+			MaxConcurrentReconciles: 1, // Build job scheduling mechanism requires this parameter to be set to 1. The mechanism is based on getting active and stateless jobs, concurrent reconciles makes it non deterministic . Value 1 removes data races while fetching list of jobs. https://github.com/kyma-project/kyma/issues/10037
+		}).
 		Complete(sr)
 }
 
