@@ -22,8 +22,10 @@ import (
 )
 
 type DockerRegistry struct {
-	EnableInternal *bool   `json:"enableInternal,omitempty"`
-	SecretName     *string `json:"secretName,omitempty"`
+	// When set to true the internal Docker registry is enabled
+	EnableInternal *bool `json:"enableInternal,omitempty"`
+	// Secret used for configuration of the Docker registry
+	SecretName *string `json:"secretName,omitempty"`
 }
 
 type Endpoint struct {
@@ -32,18 +34,29 @@ type Endpoint struct {
 
 // ServerlessSpec defines the desired state of Serverless
 type ServerlessSpec struct {
-	Tracing                          *Endpoint       `json:"tracing,omitempty"`
-	Eventing                         *Endpoint       `json:"eventing,omitempty"`
-	DockerRegistry                   *DockerRegistry `json:"dockerRegistry,omitempty"`
-	TargetCPUUtilizationPercentage   string          `json:"targetCPUUtilizationPercentage,omitempty"`
-	FunctionRequeueDuration          string          `json:"functionRequeueDuration,omitempty"`
-	FunctionBuildExecutorArgs        string          `json:"functionBuildExecutorArgs,omitempty"`
-	FunctionBuildMaxSimultaneousJobs string          `json:"functionBuildMaxSimultaneousJobs,omitempty"`
-	HealthzLivenessTimeout           string          `json:"healthzLivenessTimeout,omitempty"`
-	FunctionRequestBodyLimitMb       string          `json:"functionRequestBodyLimitMb,omitempty"`
-	FunctionTimeoutSec               string          `json:"functionTimeoutSec,omitempty"`
-	DefaultBuildJobPreset            string          `json:"defaultBuildJobPreset,omitempty"`
-	DefaultRuntimePodPreset          string          `json:"defaultRuntimePodPreset,omitempty"`
+	// Used Tracing endpoint
+	Tracing *Endpoint `json:"tracing,omitempty"`
+	// Used Eventing endpoint
+	Eventing       *Endpoint       `json:"eventing,omitempty"`
+	DockerRegistry *DockerRegistry `json:"dockerRegistry,omitempty"`
+	// Sets a custom CPU utilization threshold for scaling Function Pods
+	TargetCPUUtilizationPercentage string `json:"targetCPUUtilizationPercentage,omitempty"`
+	// Sets the requeue duration for Function. By default, the Function associated with the default configuration will be requeued every 5 minutes
+	FunctionRequeueDuration string `json:"functionRequeueDuration,omitempty"`
+	// Specifies the arguments passed to the Function build executor
+	FunctionBuildExecutorArgs string `json:"functionBuildExecutorArgs,omitempty"`
+	// A number of simultaneous jobs that can run at the same time. The default value is `5`
+	FunctionBuildMaxSimultaneousJobs string `json:"functionBuildMaxSimultaneousJobs,omitempty"`
+	// Sets the timeout for the Function health check. The default value in seconds is `10`
+	HealthzLivenessTimeout string `json:"healthzLivenessTimeout,omitempty"`
+	// Used to configure the maximum size limit for the request body of a Function. The default value is `1` megabyte
+	FunctionRequestBodyLimitMb string `json:"functionRequestBodyLimitMb,omitempty"`
+	// Sets the maximum execution time limit for a Function. By default, the value is `180` seconds
+	FunctionTimeoutSec string `json:"functionTimeoutSec,omitempty"`
+	// Configures the default build Job preset to be used
+	DefaultBuildJobPreset string `json:"defaultBuildJobPreset,omitempty"`
+	// Configures the default runtime Pod preset to be used
+	DefaultRuntimePodPreset string `json:"defaultRuntimePodPreset,omitempty"`
 }
 
 type State string
