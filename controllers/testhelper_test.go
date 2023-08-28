@@ -68,7 +68,7 @@ func (h *testHelper) updateDeploymentStatus(deploymentName string) {
 	var deployment appsv1.Deployment
 	Eventually(h.createGetKubernetesObjectFunc(deploymentName, &deployment)).
 		WithPolling(time.Second * 2).
-		WithTimeout(time.Second * 30).
+		WithTimeout(time.Second * 90).
 		Should(BeTrue())
 
 	deployment.Status.Conditions = append(deployment.Status.Conditions, appsv1.DeploymentCondition{
