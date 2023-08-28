@@ -62,14 +62,21 @@ func requireEqualFunc(t *testing.T, expected, actual stateFn) {
 	expectedFnName := getFnName(expected)
 	actualFnName := getFnName(actual)
 
+	if expectedFnName == actualFnName {
+		// return if functions are simply same
+		return
+	}
+
 	expectedElems := strings.Split(expectedFnName, "/")
 	actualElems := strings.Split(actualFnName, "/")
 
+	// check package paths (prefix)
 	require.Equal(t,
 		strings.Join(expectedElems[0:len(expectedElems)-2], "/"),
 		strings.Join(actualElems[0:len(actualElems)-2], "/"),
 	)
 
+	// check direct fn names (suffix)
 	require.Equal(t,
 		getDirectFnName(expectedElems[len(expectedElems)-1]),
 		getDirectFnName(actualElems[len(actualElems)-1]),
