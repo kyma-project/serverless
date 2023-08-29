@@ -7,12 +7,20 @@ on:
         description: 'Create release'
         default: ""
         required: true
-
+        
 jobs:
   verify-serverless-manifest-images:
     name: Verify serverless manifest images
     runs-on: ubuntu-latest
-    run: ./scripts/verify-serverless-manifest-images.sh
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Verify serverless manifest images
+        run: ./scripts/verify-serverless-manifest-images.sh
 
   verify-main-status:
     name: Verify main
