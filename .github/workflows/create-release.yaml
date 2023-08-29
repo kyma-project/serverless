@@ -9,8 +9,14 @@ on:
         required: true
 
 jobs:
+  verify-serverless-manifest-images:
+    name: Verify serverless manifest images
+    runs-on: ubuntu-latest
+    run: ./scripts/verify-serverless-manifest-images.sh
+
   verify-main-status:
     name: Verify main
+    needs: verify-serverless-manifest-images
     runs-on: ubuntu-latest
 
     steps:
