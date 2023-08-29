@@ -56,6 +56,8 @@ The following Serverless custom resource (CR) shows configuration of Serverless 
    ```
 
 ## Custom resource parameters
+
+For details, see the [Serverless specification file](https://github.com/kyma-project/serverless-manager/blob/main/api/v1alpha1/serverless_types.go).
 <!-- TABLE-START -->
 ### Serverless.operator.kyma-project.io/v1alpha1
 
@@ -64,21 +66,21 @@ The following Serverless custom resource (CR) shows configuration of Serverless 
 | Parameter                                 | Type    | Description |
 |-------------------------------------------|---------|-------------|
 | **dockerRegistry**                        | object  |             |
-| **dockerRegistry.&#x200b;enableInternal** | boolean |             |
-| **dockerRegistry.&#x200b;secretName**     | string  |             |
+| **dockerRegistry.&#x200b;enableInternal** | boolean | When set to `true`, the internal Docker registry is enabled           |
+| **dockerRegistry.&#x200b;secretName**     | string  | Secret used for configuration of the Docker registry            |
 | **eventing**                              | object  |             |
-| **eventing.&#x200b;endpoint** (required)  | string  |             |
+| **eventing.&#x200b;endpoint** (required)  | string  | Used Eventing endpoint            |
 | **tracing**                               | object  |             |
-| **tracing.&#x200b;endpoint** (required)   | string  |             |
-| **targetCPUUtilizationPercentage**        | string  |             |
-| **functionRequeueDuration**               | string  |             |
-| **functionBuildExecutorArgs**             | string  |             |
-| **functionBuildMaxSimultaneousJobs**      | string  |             |
-| **healthzLivenessTimeout**                | string  |             |
-| **functionRequestBodyLimitMb**            | string  |             |
-| **functionTimeoutSec**                    | string  |             |
-| **defaultBuildJobPreset**                 | string  |             |
-| **defaultRuntimePodPreset**               | string  |             |
+| **tracing.&#x200b;endpoint** (required)   | string  | Used Tracing endpoint            |
+| **targetCPUUtilizationPercentage**        | string  | Sets a custom CPU utilization threshold for scaling Function Pods            |
+| **functionRequeueDuration**               | string  | Sets the requeue duration for Function. By default, the Function associated with the default configuration is requeued every 5 minutes            |
+| **functionBuildExecutorArgs**             | string  | Specifies the arguments passed to the Function build executor            |
+| **functionBuildMaxSimultaneousJobs**      | string  | A number of simultaneous jobs that can run at the same time. The default value is `5`            |
+| **healthzLivenessTimeout**                | string  | Sets the timeout for the Function health check. The default value in seconds is `10`            |
+| **functionRequestBodyLimitMb**            | string  | Used to configure the maximum size limit for the request body of a Function. The default value is `1` megabyte           |
+| **functionTimeoutSec**                    | string  | Sets the maximum execution time limit for a Function. By default, the value is `180` seconds           |
+| **defaultBuildJobPreset**                 | string  | Configures the default build Job preset to be used            |
+| **defaultRuntimePodPreset**               | string  | Configures the default runtime Pod preset to be used            |
 
 
 **Status:**
