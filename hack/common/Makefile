@@ -12,6 +12,7 @@ REGISTRY_NAME ?= ${CLUSTER_NAME}-registry
 OPERATOR_IMAGE_NAME ?= serverless-operator-dev-local
 OPERATOR_IMAGE_TAG ?= $(MODULE_VERSION)
 
+GARDENER_INFRASTRUCTURE ?= az
 
 TEMPLATE_PATH ?= ${PROJECT_ROOT}/moduletemplate.yaml
 
@@ -45,6 +46,13 @@ run-without-lifecycle-manager: kyma \
 	apply-serverless \
 	verify-serverless
 
+.PHONY: run-without-lm-on-cluster
+run-without-lm-on-cluster: ## Deploy module without the lifecycle-manager on existing cluster.
+run-without-lm-on-cluster: \
+	deploy-cluster \
+	apply-serverless \
+	verify-serverless
+
 ##@ K3D
 
 .PHONY: create-k3d
@@ -62,6 +70,21 @@ delete-k3d-registry: ## Delete k3d kyma registry.
 .PHONY: delete-k3d-cluster
 delete-k3d-cluster: ## Delete k3d kyma cluster.
 	-k3d cluster delete ${CLUSTER_NAME}
+
+##@ Gardener
+
+HIBERNATION_HOUR=$(shell echo $$(( ( $(shell date +%H) + 5 ) % 24 )))
+GIT_COMMIT_SHA=$(shell git rev-parse --short=8 HEAD)
+
+.PHONY: provision-gardener
+provision-gardener: kyma ## Provision gardener cluster
+	${KYMA} provision gardener ${GARDENER_INFRASTRUCTURE} -c ${GARDENER_SA_PATH} -n test-${GIT_COMMIT_SHA} -p ${GARDENER_PROJECT} -s ${GARDENER_SECRET_NAME} \
+		--hibernation-start="00 ${HIBERNATION_HOUR} * * ?"
+
+.PHONY: deprovision-gardener
+deprovision-gardener: kyma ## Deprovision gardener cluster
+	kubectl --kubeconfig=${GARDENER_SA_PATH} annotate shoot test-${GIT_COMMIT_SHA} confirmation.gardener.cloud/deletion=true
+	kubectl --kubeconfig=${GARDENER_SA_PATH} delete shoot test-${GIT_COMMIT_SHA} --wait=false
 
 ##@ Module management
 
@@ -128,7 +151,7 @@ module-build:
 .PHONY: deploy
 deploy:
 	@make -C ${PROJECT_ROOT} deploy \
-  IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
+		IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
 
 .PHONY: deploy-k3d
 deploy-k3d:
@@ -136,4 +159,8 @@ deploy-k3d:
 	docker tag localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG} localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${HASH_TAG}
 	docker push localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${HASH_TAG}
 	@make -C ${PROJECT_ROOT} deploy \
-  IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${HASH_TAG}
+		IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${HASH_TAG}
+
+.PHONY: deploy-cluster
+deploy-cluster:
+	@make -C ${PROJECT_ROOT} deploy

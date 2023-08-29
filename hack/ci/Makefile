@@ -34,6 +34,14 @@ module-build: ## Build the Module, push it to a registry and print it based on t
 integration-test: module-chart-test  ## Run integration tests on self-prepared k3d cluster.
 	cd ${MODULECHARTTEST} && make serverless-integration
 
+.PHONY: gardener-integration-test
+gardener-integration-test: ## Provision gardener cluster and run integration test on it.
+	@make provision-gardener \
+		run-without-lm-on-cluster \
+		integration-test \
+		deprovision-gardener || \
+		(make deprovision-gardener && false)
+
 .PHONY: k3d-lm-integration-test ## Run integration tests on self-prepared k3d cluster with lifecycle-manager.
 k3d-lm-integration-test: run-with-lifecycle-manager integration-test
 
@@ -85,6 +93,14 @@ reinstall-serverless:
 
 	@make -C ${PROJECT_COMMON} verify-kyma
 
+.PHONY: provision-gardener
+provision-gardener:
+	@make -C ${PROJECT_COMMON} provision-gardener
+
+.PHONY: deprovision-gardener
+deprovision-gardener:
+	@make -C ${PROJECT_COMMON} deprovision-gardener
+
 .PHONY: run-with-lifecycle-manager
 run-with-lifecycle-manager:
 	@make -C ${PROJECT_COMMON} run-with-lifecycle-manager
@@ -92,6 +108,10 @@ run-with-lifecycle-manager:
 .PHONY: run-without-lifecycle-manager
 run-without-lifecycle-manager:
 	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager
+
+.PHONY: run-without-lm-on-cluster
+run-without-lm-on-cluster:
+	@make -C ${PROJECT_COMMON} run-without-lm-on-cluster
 
 .PHONY: render-manifest
 render-manifest:
