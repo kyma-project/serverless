@@ -120,7 +120,7 @@ module-image:
 
 .PHONY: module-build
 module-build:
-	@make -C ${PROJECT_ROOT} module-build \
+	@make -C ${PROJECT_ROOT} module-build-new \
 		PROW_JOB_ID= \
 		IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG} \
 		MODULE_REGISTRY=localhost:${REGISTRY_PORT}

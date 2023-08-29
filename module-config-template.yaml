@@ -1,0 +1,15 @@
+name: {{.Name}}            # required, the name of the Module
+channel: {{.Channel}}           # required, channel that should be used in the ModuleTemplate
+version: {{.Version}} #TODO: duplication           # required, the version of the Module
+defaultCR: config/samples/default_serverless_cr.yaml # optional, reference to a YAML file containing the default CR for the module, must be a relative file name
+#resourceName: string      # optional, default={NAME}-{CHANNEL}, the name for the ModuleTemplate that will be created
+manifest: serverless-operator.yaml          # required, reference to the manifests, can be a name of a file or whole directory
+security: sec-scanners-config.yaml          # optional, name of the security scanners config file
+
+#internal: bool            # optional, default=false, determines whether the ModuleTemplate should have the internal flag or not
+#beta: bool                # optional, default=false, determines whether the ModuleTemplate should have the beta flag or not
+
+# labels:                   # optional, additional labels for the ModuleTemplate
+#   - string
+# annotations:              # optional, additional annotations for the ModuleTemplate
+#   - operator.kyma-project.io/doc-url={DOCUMENTATION_URL} # required, the link to the Module documentation
