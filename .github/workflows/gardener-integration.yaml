@@ -14,7 +14,7 @@ jobs:
 
     - name: save sa
       shell: bash
-      run: 'echo $GARDENER_SA > /tmp/gardener-sa.yaml'
+      run: 'echo "$GARDENER_SA" > /tmp/gardener-sa.yaml'
       env:
         GARDENER_SA: ${{ secrets.GARDENER_SA }}
 

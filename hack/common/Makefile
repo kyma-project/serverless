@@ -73,7 +73,7 @@ delete-k3d-cluster: ## Delete k3d kyma cluster.
 
 ##@ Gardener
 
-HIBERNATION_HOUR=$(shell echo $$(( ( $(shell date +%H) + 5 ) % 24 )))
+HIBERNATION_HOUR=$(shell echo $$(( ( $(shell date +%H | sed s/^0//g) + 5 ) % 24 )))
 GIT_COMMIT_SHA=$(shell git rev-parse --short=8 HEAD)
 
 .PHONY: provision-gardener
