@@ -136,7 +136,8 @@ module-config-template:
 .PHONY: module-build-new
 module-build-new: kyma kustomize render-manifest module-config-template
 	cat module-config.yaml
-	$(KYMA) alpha create module --path . --output=moduletemplate.yaml --module-config-file=module-config.yaml $(MODULE_CREATION_FLAGS)
+	$(KYMA) alpha create module --path . --output=moduletemplate.yaml \
+		--module-config-file=module-config.yaml $(MODULE_CREATION_FLAGS)
 
 .PHONY: module-build
 module-build: kyma kustomize ## Build the Module and push it to a registry defined in MODULE_REGISTRY.
