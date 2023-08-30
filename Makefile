@@ -136,7 +136,7 @@ module-config-template:
 .PHONY: module-build-new
 module-build-new: kyma kustomize render-manifest module-config-template
 	pwd
-	ls -la
+	ls -la .git
 	cat module-config.yaml
 	$(KYMA) alpha create module --path . --output=moduletemplate.yaml \
 		--module-config-file=module-config.yaml $(MODULE_CREATION_FLAGS)
