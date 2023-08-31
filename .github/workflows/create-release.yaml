@@ -40,7 +40,7 @@ jobs:
         run: ./scripts/check_image.sh ${{ github.event.inputs.name }}
 
       - name: Verify
-        run: ./scripts/verify-serverless-status.sh
+        run: ./scripts/verify-serverless-status.sh ${{ github.event.inputs.name }}
 
   run-unit-tests:
     name: Unit tests
