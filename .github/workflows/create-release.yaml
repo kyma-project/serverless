@@ -39,8 +39,11 @@ jobs:
       - name: Check image
         run: ./scripts/check_image.sh ${{ github.event.inputs.name }}
 
-      - name: Verify
+      - name: Verify prow post jobs
         run: ./scripts/verify-serverless-status.sh ${{ github.event.inputs.name }}
+
+      - name: Verify github actions
+        run: ./scripts/verify-actions-status.sh ${{ github.event.inputs.name }}
 
   run-unit-tests:
     name: Unit tests
