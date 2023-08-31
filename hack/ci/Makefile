@@ -19,7 +19,7 @@ help: ## Display this help.
 
 .PHONY: module-build
 module-build: ## Build the Module, push it to a registry and print it based on the commit hash.
-	@make -C ${PROJECT_ROOT} module-build-new \
+	@make -C ${PROJECT_ROOT} module-build \
 		IMG=${IMG} \
 		MODULE_REGISTRY=${MODULE_REGISTRY} \
 		MODULE_VERSION=${MODULE_VERSION}-${MODULE_SHA}

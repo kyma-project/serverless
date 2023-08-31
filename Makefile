@@ -133,21 +133,10 @@ module-config-template:
 			-e 's/{{.Name}}/kyma.project.io\/module\/$(MODULE_NAME)/g' \
 				> module-config.yaml
 
-.PHONY: module-build-new
-module-build-new: kyma kustomize render-manifest module-config-template
-	pwd
-	ls -la .git
-	cat module-config.yaml
+.PHONY: module-build
+module-build: kyma kustomize render-manifest module-config-template
 	$(KYMA) alpha create module --path . --output=moduletemplate.yaml \
 		--module-config-file=module-config.yaml $(MODULE_CREATION_FLAGS)
-
-.PHONY: module-build
-module-build: kyma kustomize ## Build the Module and push it to a registry defined in MODULE_REGISTRY.
-	cd config/operator && $(KUSTOMIZE) edit set image controller=${IMG}
-	@$(KYMA) alpha create module --default-cr=config/samples/default_serverless_cr.yaml \
-		--channel=${MODULE_CHANNEL} --name kyma.project.io/module/$(MODULE_NAME) \
-		--version $(MODULE_VERSION) --path . $(MODULE_CREATION_FLAGS) \
-		--output=moduletemplate.yaml --kubebuilder-project
 
 ##@ Build Dependencies
 
