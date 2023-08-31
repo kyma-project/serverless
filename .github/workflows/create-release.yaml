@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       name:
-        description: 'Create release'
+        description: 'Release name'
         default: ""
         required: true
         
@@ -37,7 +37,7 @@ jobs:
         run: ./scripts/check_release_tag.sh ${{ github.event.inputs.name }}
 
       - name: Check image
-        run: ./scripts/check_image.sh
+        run: ./scripts/check_image.sh ${{ github.event.inputs.name }}
 
       - name: Verify
         run: ./scripts/verify-serverless-status.sh
