@@ -2,7 +2,7 @@
 
 function check_image() {
     local version=$1
-    if [[ $version == PR-* ]]; then
+    if [[ $version == PR-* || $version == null ]]; then
       echo "Invalid version: $version"
       exit 1
     fi
