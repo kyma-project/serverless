@@ -22,8 +22,8 @@ jobs:
       - name: Verify serverless manifest images
         run: ./scripts/verify-serverless-manifest-images.sh
 
-  verify-main-status:
-    name: Verify main
+  verify-head-status:
+    name: Verify HEAD
     needs: verify-serverless-manifest-images
     runs-on: ubuntu-latest
 
@@ -47,12 +47,12 @@ jobs:
 
   run-unit-tests:
     name: Unit tests
-    needs: verify-main-status
+    needs: verify-head-status
     uses: "./.github/workflows/run-unit-tests.yaml"
 
   create-draft:
     name: Create draft release
-    needs: verify-main-status
+    needs: verify-head-status
     runs-on: ubuntu-latest
 
     steps:
@@ -84,7 +84,7 @@ jobs:
 
   publish-release:
     name: Publish release
-    needs: [verify-main-status, create-draft, run-unit-tests]
+    needs: [verify-head-status, create-draft, run-unit-tests]
     runs-on: ubuntu-latest
 
     steps:
