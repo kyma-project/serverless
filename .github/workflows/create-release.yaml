@@ -37,13 +37,13 @@ jobs:
         run: ./scripts/check_release_tag.sh ${{ github.event.inputs.name }}
 
       - name: Check image
-        run: ./scripts/check_image.sh ${{ github.event.inputs.name }}
+        run: ./scripts/check_image.sh ${{ github.ref_name }}
 
       - name: Verify prow post jobs
-        run: ./scripts/verify-serverless-status.sh ${{ github.event.inputs.name }}
+        run: ./scripts/verify-serverless-status.sh ${{ github.ref_name }}
 
       - name: Verify github actions
-        run: ./scripts/verify-actions-status.sh ${{ github.event.inputs.name }}
+        run: ./scripts/verify-actions-status.sh ${{ github.ref_name }}
 
   run-unit-tests:
     name: Unit tests
