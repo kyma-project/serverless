@@ -52,17 +52,23 @@ spec:
             description: ServerlessSpec defines the desired state of Serverless
             properties:
               defaultBuildJobPreset:
+                description: Configures the default build Job preset to be used
                 type: string
               defaultRuntimePodPreset:
+                description: Configures the default runtime Pod preset to be used
                 type: string
               dockerRegistry:
                 properties:
                   enableInternal:
+                    description: When set to true, the internal Docker registry is
+                      enabled
                     type: boolean
                   secretName:
+                    description: Secret used for configuration of the Docker registry
                     type: string
                 type: object
               eventing:
+                description: Used Eventing endpoint
                 properties:
                   endpoint:
                     type: string
@@ -70,20 +76,36 @@ spec:
                 - endpoint
                 type: object
               functionBuildExecutorArgs:
+                description: Specifies the arguments passed to the Function build
+                  executor
                 type: string
               functionBuildMaxSimultaneousJobs:
+                description: A number of simultaneous jobs that can run at the same
+                  time. The default value is `5`
                 type: string
               functionRequestBodyLimitMb:
+                description: Used to configure the maximum size limit for the request
+                  body of a Function. The default value is `1` megabyte
                 type: string
               functionRequeueDuration:
+                description: Sets the requeue duration for Function. By default, the
+                  Function associated with the default configuration is requeued every
+                  5 minutes
                 type: string
               functionTimeoutSec:
+                description: Sets the maximum execution time limit for a Function.
+                  By default, the value is `180` seconds
                 type: string
               healthzLivenessTimeout:
+                description: Sets the timeout for the Function health check. The default
+                  value in seconds is `10`
                 type: string
               targetCPUUtilizationPercentage:
+                description: Sets a custom CPU utilization threshold for scaling Function
+                  Pods
                 type: string
               tracing:
+                description: Used Tracing endpoint
                 properties:
                   endpoint:
                     type: string
