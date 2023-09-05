@@ -3,6 +3,8 @@ name: Gardener integration
 on:
   push:
     branches: [ "main" ]
+  
+  workflow_dispatch:
 
 jobs:
   gardener-integration-test:
