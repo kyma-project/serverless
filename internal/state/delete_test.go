@@ -156,7 +156,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		require.Nil(t, err)
 
 		status := s.instance.Status
-		require.Equal(t, v1alpha1.StateError, status.State)
+		require.Equal(t, v1alpha1.StateWarning, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeDeleted,
 			metav1.ConditionFalse,
