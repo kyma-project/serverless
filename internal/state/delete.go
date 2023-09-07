@@ -62,8 +62,9 @@ func sFnUpstreamDeletionState(_ context.Context, r *reconciler, s *systemState) 
 
 func sFnSafeDeletionState(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	if err := chart.CheckCRDOrphanResources(s.chartConfig); err != nil {
-		// stop state machine with an error and requeue reconciliation in 1min
-		s.setState(v1alpha1.StateError)
+		// stop state machine with a warning and requeue reconciliation in 1min
+		// warning state indicates that user intervention would fix it. Its not reconciliation error.
+		s.setState(v1alpha1.StateWarning)
 		s.instance.UpdateConditionFalse(
 			v1alpha1.ConditionTypeDeleted,
 			v1alpha1.ConditionReasonDeletionErr,
