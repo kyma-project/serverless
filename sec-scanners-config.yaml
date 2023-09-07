@@ -1,12 +1,12 @@
 module-name: serverless-manager
 protecode:
-  - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:v20230904-fc2a17b0
-  - europe-docker.pkg.dev/kyma-project/prod/function-controller:v20230824-a02c92c2
-  - europe-docker.pkg.dev/kyma-project/prod/function-webhook:v20230824-a02c92c2
+  - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:v20230907-9a6a3b77
+  - europe-docker.pkg.dev/kyma-project/prod/function-controller:v20230905-3dd37d62
+  - europe-docker.pkg.dev/kyma-project/prod/function-webhook:v20230905-3dd37d62
   - europe-docker.pkg.dev/kyma-project/prod/tpi/registry:2.8.1-1b099a1d
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs16:v20230831-fb331fc0
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs18:v20230831-fb331fc0
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python39:v20230831-fb331fc0
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python39:v20230906-8690735f
 whitesource:
   language: golang-mod
   subprojects: false
