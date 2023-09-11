@@ -3,6 +3,8 @@ package state
 import (
 	"context"
 	"fmt"
+	"testing"
+
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
@@ -12,7 +14,6 @@ import (
 	"k8s.io/utils/pointer"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
-	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/stretchr/testify/require"
@@ -250,11 +251,11 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		require.NoError(t, err)
 
 		require.NotNil(t, s.chartConfig)
-		overrideURL, found := getFlagByPath(s.chartConfig.Release.Flags, "containers", "manager", "envs", "functionTraceCollectorEndpoint", "value")
+		overrideURL, found := getFlagByPath(s.chartConfig.Release.Flags, "containers", "manager", "configuration", "data", "functionTraceCollectorEndpoint", "value")
 		require.True(t, found)
 		assert.Equal(t, tracingCollectorURL, overrideURL)
 
-		overrideURL, found = getFlagByPath(s.chartConfig.Release.Flags, "containers", "manager", "envs", "functionPublisherProxyAddress", "value")
+		overrideURL, found = getFlagByPath(s.chartConfig.Release.Flags, "containers", "manager", "configuration", "data", "functionPublisherProxyAddress", "value")
 		require.True(t, found)
 		assert.Equal(t, customEventingURL, overrideURL)
 	})
