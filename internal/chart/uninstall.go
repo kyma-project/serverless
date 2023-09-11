@@ -2,8 +2,13 @@ package chart
 
 import (
 	"fmt"
+	v1 "k8s.io/api/coordination/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"k8s.io/apimachinery/pkg/api/errors"
+	"github.com/pkg/errors"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
@@ -25,6 +30,11 @@ func Uninstall(config *Config, filterFunc ...FilterFunc) error {
 		return err2
 	}
 
+	err3 := uninstallOrphanedResources(config)
+	if err3 != nil {
+		return err3
+	}
+
 	return config.Cache.Delete(config.Ctx, config.CacheKey)
 }
 
@@ -37,7 +47,7 @@ func uninstallObjects(config *Config, objs []unstructured.Unstructured, filterFu
 
 		config.Log.Debugf("deleting %s %s", u.GetKind(), u.GetName())
 		err := config.Cluster.Client.Delete(config.Ctx, &u)
-		if errors.IsNotFound(err) {
+		if k8serrors.IsNotFound(err) {
 			config.Log.Debugf("deletion skipped for %s %s", u.GetKind(), u.GetName())
 			continue
 		}
@@ -46,6 +56,50 @@ func uninstallObjects(config *Config, objs []unstructured.Unstructured, filterFu
 		}
 	}
 	return nil
+}
+
+func UninstallSecrets(config *Config, filterFunc ...FilterFunc) (error, bool) {
+	spec, err := config.Cache.Get(config.Ctx, config.CacheKey)
+	if err != nil {
+		return fmt.Errorf("could not render manifest from chart: %s", err.Error()), false
+	}
+
+	objs, err := parseManifest(spec.Manifest)
+	if err != nil {
+		return fmt.Errorf("could not parse chart manifest: %s", err.Error()), false
+	}
+
+	err2, done := uninstallSecrets(config, objs, filterFunc...)
+	if err2 != nil {
+		return err2, false
+	}
+
+	return nil, done
+}
+
+func uninstallSecrets(config *Config, objs []unstructured.Unstructured, filterFunc ...FilterFunc) (error, bool) {
+	done := true
+	for i := range objs {
+		u := objs[i]
+		if !fitToFilters(u, filterFunc...) {
+			continue
+		}
+		if u.GetKind() != "Secret" {
+			continue
+		}
+
+		config.Log.Debugf("deleting %s %s", u.GetKind(), u.GetName())
+		err := config.Cluster.Client.Delete(config.Ctx, &u)
+		if k8serrors.IsNotFound(err) {
+			config.Log.Debugf("deletion skipped for %s %s", u.GetKind(), u.GetName())
+			continue
+		}
+		if err != nil {
+			return fmt.Errorf("could not uninstall object %s/%s: %s", u.GetNamespace(), u.GetName(), err.Error()), false
+		}
+		done = false
+	}
+	return nil, done
 }
 
 func WithoutCRDFilter(u unstructured.Unstructured) bool {
@@ -60,4 +114,66 @@ func fitToFilters(u unstructured.Unstructured, filterFunc ...FilterFunc) bool {
 	}
 
 	return true
+}
+
+func uninstallOrphanedResources(config *Config) error {
+	//TODO: move this to finalizers logic in controller
+	var namespaces corev1.NamespaceList
+	if err := config.Cluster.Client.List(config.Ctx, &namespaces); err != nil {
+		return errors.Wrap(err, "couldn't get namespaces during Serverless uninstallation")
+	}
+
+	if err := uninstallOrphanedConfigMaps(config, namespaces); err != nil {
+		return err
+	}
+	if err := uninstallOrphanedServiceAccounts(config, namespaces); err != nil {
+		return err
+	}
+
+	if err := uninstallOperatorLease(config); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func uninstallOperatorLease(config *Config) error {
+	lease := v1.Lease{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "c9a95105.kyma-project.io", // TODO: use value from main.go
+			Namespace: "kyma-system",
+		},
+	}
+	if err := config.Cluster.Client.Delete(config.Ctx, &lease); err != nil {
+		return errors.Wrap(err, "couldn't delete Lease during Serverless uninstallation")
+	}
+	return nil
+}
+
+func uninstallOrphanedServiceAccounts(config *Config, namespaces corev1.NamespaceList) error {
+	for _, namespace := range namespaces.Items {
+		err := config.Cluster.Client.DeleteAllOf(config.Ctx, &corev1.ServiceAccount{},
+			client.InNamespace(namespace.GetName()),
+			client.MatchingLabels{"serverless.kyma-project.io/config": "service-account"})
+		if err != nil {
+			return errors.Wrapf(err,
+				"couldn't delete ServiceAccount from namespace \"%s\" during Serverless uninstallation",
+				namespace.GetName())
+		}
+	}
+	return nil
+}
+
+func uninstallOrphanedConfigMaps(config *Config, namespaces corev1.NamespaceList) error {
+	for _, namespace := range namespaces.Items {
+		err := config.Cluster.Client.DeleteAllOf(config.Ctx, &corev1.ConfigMap{},
+			client.InNamespace(namespace.GetName()),
+			client.MatchingLabels{"serverless.kyma-project.io/config": "runtime"})
+		if err != nil {
+			return errors.Wrapf(err,
+				"couldn't delete ConfigMap from namespace \"%s\" during Serverless uninstallation",
+				namespace.GetName())
+		}
+	}
+	return nil
 }

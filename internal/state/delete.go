@@ -77,8 +77,29 @@ func sFnSafeDeletionState(_ context.Context, r *reconciler, s *systemState) (sta
 }
 
 func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...chart.FilterFunc) (stateFn, *ctrl.Result, error) {
-	err := chart.Uninstall(s.chartConfig, filterFuncs...)
+	err, done := chart.UninstallSecrets(s.chartConfig, filterFuncs...)
 	if err != nil {
+		r.log.Warnf("error while uninstalling secrets %s: %s",
+			client.ObjectKeyFromObject(&s.instance), err.Error())
+		s.setState(v1alpha1.StateError)
+		s.instance.UpdateConditionFalse(
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeletionErr,
+			err,
+		)
+		return nextState(sFnUpdateStatusWithError(err))
+	}
+	if !done {
+		s.setState(v1alpha1.StateDeleting)
+		s.instance.UpdateConditionTrue(
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeletion,
+			"Deleting secrets",
+		)
+		return nextState(sFnUpdateStatusAndRequeue)
+	}
+
+	if err := chart.Uninstall(s.chartConfig, filterFuncs...); err != nil {
 		r.log.Warnf("error while uninstalling resource %s: %s",
 			client.ObjectKeyFromObject(&s.instance), err.Error())
 		s.setState(v1alpha1.StateError)
