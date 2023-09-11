@@ -3,10 +3,13 @@ package chart
 import (
 	"context"
 	"fmt"
+	v1 "k8s.io/api/coordination/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes/scheme"
 	"testing"
 
 	"go.uber.org/zap"
-	apiextensionsscheme "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/scheme"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
@@ -32,6 +35,9 @@ func Test_Uninstall(t *testing.T) {
 	cache.Set(context.Background(), wrongManifestKey,
 		ServerlessSpecManifest{Manifest: "api: test\n\tversion: test"})
 
+	ns := corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "test-namespace"}}
+	lease := v1.Lease{ObjectMeta: metav1.ObjectMeta{Name: "c9a95105.kyma-project.io", Namespace: "kyma-system"}}
+
 	type args struct {
 		config *Config
 	}
@@ -46,6 +52,13 @@ func Test_Uninstall(t *testing.T) {
 				config: &Config{
 					Cache:    cache,
 					CacheKey: emptyManifestKey,
+					Cluster: Cluster{
+						Client: fake.NewClientBuilder().
+							WithScheme(scheme.Scheme).
+							WithObjects(&ns).
+							WithObjects(&lease).
+							Build(),
+					},
 				},
 			},
 			wantErr: false,
@@ -69,7 +82,11 @@ func Test_Uninstall(t *testing.T) {
 					Cache:    cache,
 					CacheKey: testManifestKey,
 					Cluster: Cluster{
-						Client: fake.NewClientBuilder().WithScheme(apiextensionsscheme.Scheme).Build(),
+						Client: fake.NewClientBuilder().
+							WithScheme(scheme.Scheme).
+							WithObjects(&ns).
+							WithObjects(&lease).
+							Build(),
 					},
 				},
 			},
