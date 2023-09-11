@@ -3,20 +3,18 @@ package chart
 func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceCollectorURL, CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout, requestBodyLimitMb, timeoutSec string) map[string]interface{} {
 	flags["containers"] = map[string]interface{}{
 		"manager": map[string]interface{}{
-			"envs": map[string]interface{}{
-				"functionTraceCollectorEndpoint": map[string]interface{}{
-					"value": traceCollectorURL,
+			"configuration": map[string]interface{}{
+				"data": map[string]interface{}{
+					"functionTraceCollectorEndpoint":   traceCollectorURL,
+					"functionPublisherProxyAddress":    publisherURL,
+					"targetCPUUtilizationPercentage":   CPUUtilizationPercentage,
+					"functionRequeueDuration":          requeueDuration,
+					"functionBuildExecutorArgs":        buildExecutorArgs,
+					"functionBuildMaxSimultaneousJobs": maxSimultaneousJobs,
+					"healthzLivenessTimeout":           healthzLivenessTimeout,
+					"functionRequestBodyLimitMb":       requestBodyLimitMb,
+					"functionTimeoutSec":               timeoutSec,
 				},
-				"functionPublisherProxyAddress": map[string]interface{}{
-					"value": publisherURL,
-				},
-				"targetCPUUtilizationPercentage":   getValueOrEmpty(CPUUtilizationPercentage),
-				"functionRequeueDuration":          getValueOrEmpty(requeueDuration),
-				"functionBuildExecutorArgs":        getValueOrEmpty(buildExecutorArgs),
-				"functionBuildMaxSimultaneousJobs": getValueOrEmpty(maxSimultaneousJobs),
-				"healthzLivenessTimeout":           getValueOrEmpty(healthzLivenessTimeout),
-				"functionRequestBodyLimitMb":       getValueOrEmpty(requestBodyLimitMb),
-				"functionTimeoutSec":               getValueOrEmpty(timeoutSec),
 			},
 		},
 	}
