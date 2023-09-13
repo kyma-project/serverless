@@ -2,11 +2,11 @@ package state
 
 import (
 	"errors"
-	v1 "k8s.io/api/coordination/v1"
+	"testing"
+
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes/scheme"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
-	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
@@ -33,7 +33,6 @@ var (
 
 func Test_sFnDeleteResources(t *testing.T) {
 	ns := corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "test-namespace"}}
-	lease := v1.Lease{ObjectMeta: metav1.ObjectMeta{Name: "c9a95105.kyma-project.io", Namespace: "kyma-system"}}
 
 	t.Run("update condition", func(t *testing.T) {
 		s := &systemState{
@@ -83,7 +82,6 @@ func Test_sFnDeleteResources(t *testing.T) {
 					Client: fake.NewClientBuilder().
 						WithScheme(scheme.Scheme).
 						WithObjects(&ns).
-						WithObjects(&lease).
 						Build(),
 				},
 			},
@@ -195,7 +193,6 @@ func Test_sFnDeleteResources(t *testing.T) {
 					Client: fake.NewClientBuilder().
 						WithScheme(scheme.Scheme).
 						WithObjects(&ns).
-						WithObjects(&lease).
 						Build(),
 				},
 			},
