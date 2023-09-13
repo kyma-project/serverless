@@ -2,9 +2,8 @@ package chart
 
 import (
 	"fmt"
-	v1 "k8s.io/api/coordination/v1"
+
 	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/pkg/errors"
@@ -130,23 +129,6 @@ func uninstallOrphanedResources(config *Config) error {
 		return err
 	}
 
-	if err := uninstallOperatorLease(config); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func uninstallOperatorLease(config *Config) error {
-	lease := v1.Lease{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "c9a95105.kyma-project.io", // TODO: use value from main.go
-			Namespace: "kyma-system",
-		},
-	}
-	if err := config.Cluster.Client.Delete(config.Ctx, &lease); err != nil {
-		return errors.Wrap(err, "couldn't delete Lease during Serverless uninstallation")
-	}
 	return nil
 }
 

@@ -3,11 +3,11 @@ package chart
 import (
 	"context"
 	"fmt"
-	v1 "k8s.io/api/coordination/v1"
+	"testing"
+
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes/scheme"
-	"testing"
 
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/types"
@@ -36,7 +36,6 @@ func Test_Uninstall(t *testing.T) {
 		ServerlessSpecManifest{Manifest: "api: test\n\tversion: test"})
 
 	ns := corev1.Namespace{ObjectMeta: metav1.ObjectMeta{Name: "test-namespace"}}
-	lease := v1.Lease{ObjectMeta: metav1.ObjectMeta{Name: "c9a95105.kyma-project.io", Namespace: "kyma-system"}}
 
 	type args struct {
 		config *Config
@@ -56,7 +55,6 @@ func Test_Uninstall(t *testing.T) {
 						Client: fake.NewClientBuilder().
 							WithScheme(scheme.Scheme).
 							WithObjects(&ns).
-							WithObjects(&lease).
 							Build(),
 					},
 				},
@@ -85,7 +83,6 @@ func Test_Uninstall(t *testing.T) {
 						Client: fake.NewClientBuilder().
 							WithScheme(scheme.Scheme).
 							WithObjects(&ns).
-							WithObjects(&lease).
 							Build(),
 					},
 				},

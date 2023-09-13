@@ -29,8 +29,6 @@ spec:
       containers:
       - command:
         - /operator
-        args:
-        - --leader-elect
         image: controller:latest
         name: manager
         env:
