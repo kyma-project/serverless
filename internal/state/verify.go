@@ -20,7 +20,7 @@ func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (state
 			v1alpha1.ConditionReasonInstallationErr,
 			err,
 		)
-		return nextState(sFnUpdateStatusWithError(err))
+		return stopWithError(err)
 	}
 
 	if !ready {
@@ -35,7 +35,7 @@ func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (state
 			v1alpha1.ConditionReasonInstalled,
 			warning,
 		)
-		return nextState(sFnUpdateStatusAndStop)
+		return stop()
 	}
 
 	s.setState(v1alpha1.StateReady)
@@ -44,5 +44,5 @@ func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (state
 		v1alpha1.ConditionReasonInstalled,
 		"Serverless installed",
 	)
-	return nextState(sFnUpdateStatusAndStop)
+	return stop()
 }

@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -10,12 +11,11 @@ import (
 
 // run serverless chart installation
 func sFnApplyResources(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-	// check if condition exists
+	// set condition Installed if it does not exist
 	if !s.instance.IsCondition(v1alpha1.ConditionTypeInstalled) {
 		s.setState(v1alpha1.StateProcessing)
 		s.instance.UpdateConditionUnknown(v1alpha1.ConditionTypeInstalled, v1alpha1.ConditionReasonInstallation,
 			"Installing for configuration")
-		return nextState(sFnUpdateStatusAndRequeue)
 	}
 
 	// install component
@@ -29,7 +29,7 @@ func sFnApplyResources(_ context.Context, r *reconciler, s *systemState) (stateF
 			v1alpha1.ConditionReasonInstallationErr,
 			err,
 		)
-		return nextState(sFnUpdateStatusWithError(err))
+		return stopWithError(err)
 	}
 
 	// switch state verify

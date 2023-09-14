@@ -29,12 +29,7 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 			v1alpha1.ConditionReasonConfigurationErr,
 			err,
 		)
-		return nextState(sFnUpdateStatusWithError(err))
-	}
-
-	// update status if needed
-	if s.snapshot.DockerRegistry != s.instance.Status.DockerRegistry {
-		return nextState(sFnUpdateStatusAndRequeue)
+		return stopWithError(err)
 	}
 
 	return nextState(sFnOptionalDependencies)

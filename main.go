@@ -84,6 +84,7 @@ func main() {
 		Port:                   9443,
 		HealthProbeBindAddress: probeAddr,
 		SyncPeriod:             &syncPeriod,
+		// TODO: use our own logger - now eventing use logger with different message format
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")

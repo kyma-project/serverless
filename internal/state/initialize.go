@@ -9,8 +9,6 @@ import (
 
 // choose right scenario to start (installation/deletion)
 func sFnInitialize(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-	s.saveSnapshot()
-
 	instanceIsBeingDeleted := !s.instance.GetDeletionTimestamp().IsZero()
 	instanceHasFinalizer := controllerutil.ContainsFinalizer(&s.instance, r.finalizer)
 	if !instanceHasFinalizer {
@@ -37,7 +35,8 @@ func noFinalizerStep(ctx context.Context, r *reconciler, s *systemState, instanc
 
 	// in case instance does not have finalizer - add it and update instance
 	controllerutil.AddFinalizer(&s.instance, r.finalizer)
-	err := r.client.Update(ctx, &s.instance)
+	err := updateServerlessBody(ctx, r, s)
+	// TODO: there is no need to requeue
 	// stop state machine with potential error
 	return stopWithErrorOrRequeue(err)
 }

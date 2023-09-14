@@ -88,12 +88,17 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 						Tracing:  testCase.tracing,
 					},
 				},
+				chartConfig: &chart.Config{
+					Release: chart.Release{
+						Flags: chart.EmptyFlags(),
+					},
+				},
 			}
 			c := fake.NewClientBuilder().WithScheme(scheme).WithObjects(testCase.extraCR...).Build()
 			r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c}}
 			next, result, err := sFnOptionalDependencies(ctx, r, s)
 
-			expectedNext := sFnUpdateStatusAndRequeue
+			expectedNext := sFnApplyResources
 			requireEqualFunc(t, expectedNext, next)
 			require.Nil(t, result)
 			require.Nil(t, err)
@@ -127,13 +132,18 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 					DefaultRuntimePodPreset:          defaultRuntimePodPresetTest,
 				},
 			},
+			chartConfig: &chart.Config{
+				Release: chart.Release{
+					Flags: chart.EmptyFlags(),
+				},
+			},
 		}
 
 		c := fake.NewClientBuilder().WithScheme(scheme).Build()
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c}}
 		next, result, err := sFnOptionalDependencies(context.TODO(), r, s)
 
-		expectedNext := sFnUpdateStatusAndRequeue
+		expectedNext := sFnApplyResources
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
@@ -208,7 +218,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			},
 		}
 
-		expectedNext := sFnUpdateStatusAndRequeue
+		expectedNext := sFnApplyResources
 
 		next, result, err := sFnOptionalDependencies(context.Background(), r, s)
 		require.Nil(t, result)

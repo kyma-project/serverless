@@ -2,9 +2,9 @@ package state
 
 import (
 	"context"
-	"errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"testing"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
@@ -17,12 +17,22 @@ func Test_buildSFnApplyResources(t *testing.T) {
 	t.Run("switch state and add condition when condition is missing", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{},
+			chartConfig: &chart.Config{
+				Cache: fixEmptyManifestCache(),
+				CacheKey: types.NamespacedName{
+					Name:      testInstalledServerless.GetName(),
+					Namespace: testInstalledServerless.GetNamespace(),
+				},
+				Release: chart.Release{
+					Name:      testInstalledServerless.GetName(),
+					Namespace: testInstalledServerless.GetNamespace(),
+				},
+			},
 		}
 
-		// return sFnUpdateProcessingState when condition is missing
 		next, result, err := sFnApplyResources(nil, nil, s)
 
-		expected := sFnUpdateStatusAndRequeue
+		expected := sFnVerifyResources
 		requireEqualFunc(t, expected, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
@@ -83,10 +93,9 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		// handle error and return update condition state
 		next, result, err := sFnApplyResources(context.Background(), r, s)
 
-		expectedNext := sFnUpdateStatusWithError(errors.New("anything"))
-		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, next)
 		require.Nil(t, result)
-		require.Nil(t, err)
+		require.EqualError(t, err, "could not parse chart manifest: yaml: found character that cannot start any token")
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateError, status.State)
