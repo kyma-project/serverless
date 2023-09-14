@@ -125,6 +125,12 @@ undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/confi
 module-image: docker-build docker-push ## Build the Module Image and push it to a registry defined in IMG_REGISTRY.
 	echo "built and pushed module image $(IMG)"
 
+.PHONY: module-build
+module-build: ## Build the Module and push artifacts to the registry
+module-build: kyma kustomize render-manifest module-config-template configure-git-origin
+	$(KYMA) alpha create module --path . --output=moduletemplate.yaml \
+		--module-config-file=module-config.yaml $(MODULE_CREATION_FLAGS)
+
 .PHONY: module-config-template
 module-config-template:
 	@cat module-config-template.yaml \
@@ -133,10 +139,12 @@ module-config-template:
 			-e 's/{{.Name}}/kyma.project.io\/module\/$(MODULE_NAME)/g' \
 				> module-config.yaml
 
-.PHONY: module-build
-module-build: kyma kustomize render-manifest module-config-template
-	$(KYMA) alpha create module --path . --output=moduletemplate.yaml \
-		--module-config-file=module-config.yaml $(MODULE_CREATION_FLAGS)
+.PHONY: configure-git-origin
+configure-git-origin:
+#	test-infra does not include origin remote in the .git directory.
+#	the CLI is looking for the origin url in the .git dir so first we need to be sure it's not empty
+	@git remote | grep '^origin$$' -q || \
+		git remote add origin https://github.com/kyma-project/serverless-manager
 
 ##@ Build Dependencies
 
