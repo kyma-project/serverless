@@ -18,9 +18,10 @@ package main
 
 import (
 	"flag"
-	"github.com/kyma-project/serverless-manager/internal/config"
 	"os"
 	"time"
+
+	"github.com/kyma-project/serverless-manager/internal/config"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -126,7 +127,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	setupLog.Info("starting manager")
+	setupLog.Info("starting manager...")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
