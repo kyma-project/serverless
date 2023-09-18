@@ -7,6 +7,7 @@
 REPONAME=$1
 REPODIR=$2
 TARGETDIR=$3
+BRANCH="release-2.18"
 
 clone () {
   mkdir -p ${TARGETDIR}
@@ -14,9 +15,10 @@ clone () {
     --depth 1  \
     --filter=blob:none  \
     --no-checkout \
+    --branch ${BRANCH} \
     https://github.com/kyma-project/kyma ${TARGETDIR}
   git -C ${TARGETDIR} sparse-checkout set ${REPODIR}
-  git -C ${TARGETDIR} checkout bf3e338c1609ad30d19b312ac6afe6327635e175
+  git -C ${TARGETDIR} checkout ${BRANCH}
   
   rm ${TARGETDIR}/* \
     ${TARGETDIR}/.gitignore \
