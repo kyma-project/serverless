@@ -44,3 +44,4 @@ serverless-operator.yaml
 manifests/serverless/rendered.yaml
 serverless.yaml
 moduletemplate-latest.yaml
+module-config.yaml

@@ -1,0 +1,6 @@
+name: {{.Name}}
+channel: {{.Channel}}
+version: {{.Version}}
+defaultCR: config/samples/default_serverless_cr.yaml
+manifest: serverless-operator.yaml
+security: sec-scanners-config.yaml
