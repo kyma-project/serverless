@@ -197,7 +197,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 					},
 				},
 			},
-			snapshot: v1alpha1.ServerlessStatus{
+			statusSnapshot: v1alpha1.ServerlessStatus{
 				DockerRegistry: "",
 			},
 			chartConfig: &chart.Config{

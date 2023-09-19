@@ -27,7 +27,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 					},
 				},
 			},
-			snapshot: v1alpha1.ServerlessStatus{
+			statusSnapshot: v1alpha1.ServerlessStatus{
 				DockerRegistry: "",
 			},
 			chartConfig: &chart.Config{
@@ -86,7 +86,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 					},
 				},
 			},
-			snapshot: v1alpha1.ServerlessStatus{
+			statusSnapshot: v1alpha1.ServerlessStatus{
 				DockerRegistry: string(secret.Data["serverAddress"]),
 			},
 			chartConfig: &chart.Config{
@@ -133,7 +133,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 					},
 				},
 			},
-			snapshot: v1alpha1.ServerlessStatus{
+			statusSnapshot: v1alpha1.ServerlessStatus{
 				DockerRegistry: "",
 			},
 			chartConfig: &chart.Config{
@@ -212,7 +212,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 					},
 				},
 			},
-			snapshot: v1alpha1.ServerlessStatus{
+			statusSnapshot: v1alpha1.ServerlessStatus{
 				DockerRegistry: "",
 			},
 			chartConfig: &chart.Config{

@@ -15,10 +15,10 @@ func updateServerlessWithoutStatus(ctx context.Context, r *reconciler, s *system
 }
 
 func updateServerlessStatus(ctx context.Context, r *reconciler, s *systemState) error {
-	if !reflect.DeepEqual(s.instance.Status, s.snapshot) {
+	if !reflect.DeepEqual(s.instance.Status, s.statusSnapshot) {
 		err := r.client.Status().Update(ctx, &s.instance)
 		emitEvent(r, s)
-		s.saveSnapshot()
+		s.saveStatusSnapshot()
 		s.instance.Spec.Default()
 		return err
 	}

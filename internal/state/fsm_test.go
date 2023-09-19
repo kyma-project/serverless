@@ -108,10 +108,10 @@ func Test_reconciler_Reconcile(t *testing.T) {
 		})
 	}
 
-	t.Run("take snapshot", func(t *testing.T) {
+	t.Run("take status snapshot", func(t *testing.T) {
 		fn := func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 			// check status
-			require.Equal(t, s.instance.Status, s.snapshot)
+			require.Equal(t, s.instance.Status, s.statusSnapshot)
 			return nil, nil, nil
 		}
 
