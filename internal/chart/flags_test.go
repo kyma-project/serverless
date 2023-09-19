@@ -1,9 +1,9 @@
 package chart
 
 import (
-	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"testing"
 
+	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/stretchr/testify/require"
 )
 

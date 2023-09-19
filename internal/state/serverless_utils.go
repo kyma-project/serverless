@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/pkg/errors"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"

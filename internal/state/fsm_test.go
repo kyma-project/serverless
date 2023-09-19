@@ -2,16 +2,16 @@ package state
 
 import (
 	"context"
-	"github.com/stretchr/testify/require"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"reflect"
-	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
 var (
@@ -109,7 +109,7 @@ func Test_reconciler_Reconcile(t *testing.T) {
 	}
 
 	t.Run("take status snapshot", func(t *testing.T) {
-		fn := func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+		fn := func(_ context.Context, _ *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 			// check status
 			require.Equal(t, s.instance.Status, s.statusSnapshot)
 			return nil, nil, nil

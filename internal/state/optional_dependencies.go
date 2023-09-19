@@ -9,7 +9,6 @@ import (
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/kyma-project/serverless-manager/internal/tracing"
 	"github.com/pkg/errors"
-	"go.uber.org/zap"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -19,7 +18,7 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 	// TODO: add functionality of auto-detecting these dependencies by checking Eventing CRs if user does not override these values.
 	// checking these URLs manually is not possible because of lack of istio-sidecar in the serverless-operator
 
-	tracingURL, err := getTracingURL(ctx, r.log, r.client, s.instance.Spec)
+	tracingURL, err := getTracingURL(ctx, r.client, s.instance.Spec)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "while fetching tracing URL")
 	}
@@ -30,7 +29,7 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 	s.instance.UpdateConditionTrue(
 		v1alpha1.ConditionTypeConfigured,
 		v1alpha1.ConditionReasonConfigured,
-		fmt.Sprintf(svlsCfgMsg),
+		svlsCfgMsg,
 	)
 
 	s.chartConfig.Release.Flags = chart.AppendContainersFlags(
@@ -55,7 +54,7 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 	return nextState(sFnApplyResources)
 }
 
-func getTracingURL(ctx context.Context, log *zap.SugaredLogger, client client.Client, spec v1alpha1.ServerlessSpec) (string, error) {
+func getTracingURL(ctx context.Context, client client.Client, spec v1alpha1.ServerlessSpec) (string, error) {
 	if spec.Tracing != nil {
 		return spec.Tracing.Endpoint, nil
 	}

@@ -3,9 +3,10 @@ package registry
 import (
 	"context"
 	"fmt"
+	"math/rand"
+
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
-	"math/rand"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 

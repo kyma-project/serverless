@@ -11,7 +11,6 @@ import (
 )
 
 var (
-	testRegistryEmptySecret  = &corev1.Secret{}
 	testRegistryFilledSecret = FixServerlessClusterWideExternalRegistrySecret()
 )
 

@@ -2,9 +2,9 @@ package chart
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 
 	"github.com/kyma-project/serverless-manager/internal/annotation"
+	"github.com/pkg/errors"
 	"helm.sh/helm/v3/pkg/release"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/utils/pointer"
@@ -100,7 +100,7 @@ func unusedOldObjects(previousObjs []unstructured.Unstructured, currentObjs []un
 		objFullName := fmt.Sprintf("%s/%s/%s", obj.GetKind(), obj.GetNamespace(), obj.GetName())
 		currentNames[objFullName] = struct{}{}
 	}
-	result := []unstructured.Unstructured{}
+	var result []unstructured.Unstructured
 	for _, obj := range previousObjs {
 		objFullName := fmt.Sprintf("%s/%s/%s", obj.GetKind(), obj.GetNamespace(), obj.GetName())
 		if _, found := currentNames[objFullName]; !found {

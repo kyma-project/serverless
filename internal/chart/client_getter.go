@@ -36,7 +36,7 @@ func (cg *clientGetter) ToRESTMapper() (meta.RESTMapper, error) {
 	return expander, nil
 }
 
-func (s *clientGetter) ToRawKubeConfigLoader() clientcmd.ClientConfig {
+func (cg *clientGetter) ToRawKubeConfigLoader() clientcmd.ClientConfig {
 	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 	loadingRules.DefaultClientConfig = &clientcmd.DefaultClientConfig
 	overrides := &clientcmd.ConfigOverrides{ClusterDefaults: clientcmd.ClusterDefaults}

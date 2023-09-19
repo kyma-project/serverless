@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"fmt"
+
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
