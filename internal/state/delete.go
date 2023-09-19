@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+	"time"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
@@ -97,7 +98,9 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 			v1alpha1.ConditionReasonDeletion,
 			"Deleting secrets",
 		)
-		return requeue()
+
+		// wait one sec until ctrl-mngr remove finalizers from secrets
+		return requeueAfter(time.Second)
 	}
 
 	if err := chart.Uninstall(s.chartConfig, filterFuncs...); err != nil {
