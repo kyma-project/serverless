@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -20,7 +21,7 @@ func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (state
 			v1alpha1.ConditionReasonInstallationErr,
 			err,
 		)
-		return stopWithError(err)
+		return stopWithPossibleError(err)
 	}
 
 	if !ready {

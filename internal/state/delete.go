@@ -69,7 +69,7 @@ func sFnSafeDeletionState(_ context.Context, r *reconciler, s *systemState) (sta
 			v1alpha1.ConditionReasonDeletionErr,
 			err,
 		)
-		return stopWithError(err)
+		return stopWithPossibleError(err)
 	}
 
 	return deleteResourcesWithFilter(r, s)
@@ -88,7 +88,7 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 			v1alpha1.ConditionReasonDeletionErr,
 			err,
 		)
-		return stopWithError(err)
+		return stopWithPossibleError(err)
 	}
 	if !done {
 		s.setState(v1alpha1.StateDeleting)
@@ -109,7 +109,7 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 			v1alpha1.ConditionReasonDeletionErr,
 			err,
 		)
-		return stopWithError(err)
+		return stopWithPossibleError(err)
 	}
 
 	if !s.instance.IsConditionTrue(v1alpha1.ConditionTypeDeleted) {

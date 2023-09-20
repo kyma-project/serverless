@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"fmt"
+
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
@@ -11,7 +12,7 @@ func sFnServedFilter(ctx context.Context, r *reconciler, s *systemState) (stateF
 	if s.instance.IsServedEmpty() {
 		servedServerless, err := GetServedServerless(ctx, r.k8s.client)
 		if err != nil {
-			return stopWithError(err)
+			return stopWithPossibleError(err)
 		}
 
 		if servedServerless == nil {
@@ -27,7 +28,7 @@ func sFnServedFilter(ctx context.Context, r *reconciler, s *systemState) (stateF
 			v1alpha1.ConditionReasonServerlessDuplicated,
 			err,
 		)
-		return stopWithError(err)
+		return stopWithPossibleError(err)
 	}
 
 	if s.instance.Status.Served == v1alpha1.ServedFalse {
