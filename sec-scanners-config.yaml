@@ -1,4 +1,4 @@
-module-name: serverless-manager
+module-name: serverless
 rc-tag: v1.0.2
 protecode:
   - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:v20230911-9aa18881
