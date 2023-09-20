@@ -12,6 +12,6 @@ func sFnRemoveFinalizer(ctx context.Context, r *reconciler, s *systemState) (sta
 		return requeue()
 	}
 
-	err := updateServerlessBody(ctx, r, s)
+	err := updateServerlessWithoutStatus(ctx, r, s)
 	return stopWithError(err)
 }

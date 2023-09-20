@@ -35,7 +35,7 @@ func noFinalizerStep(ctx context.Context, r *reconciler, s *systemState, instanc
 
 	// in case instance does not have finalizer - add it and update instance
 	controllerutil.AddFinalizer(&s.instance, r.finalizer)
-	err := updateServerlessBody(ctx, r, s)
+	err := updateServerlessWithoutStatus(ctx, r, s)
 	// TODO: there is no need to requeue
 	// stop state machine with potential error
 	return stopWithErrorOrRequeue(err)

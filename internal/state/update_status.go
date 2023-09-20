@@ -10,7 +10,7 @@ var (
 	requeueDuration = time.Second * 3
 )
 
-func updateServerlessBody(ctx context.Context, r *reconciler, s *systemState) error {
+func updateServerlessWithoutStatus(ctx context.Context, r *reconciler, s *systemState) error {
 	return r.client.Update(ctx, &s.instance)
 }
 
