@@ -2,7 +2,6 @@ package state
 
 import (
 	"context"
-	"errors"
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"testing"
 
@@ -76,7 +75,7 @@ func Test_sFnServedFilter(t *testing.T) {
 		nextFn, result, err := sFnServedFilter(context.TODO(), r, s)
 
 		require.Nil(t, err)
-		requireEqualFunc(t, sFnUpdateStatusAndRequeue, nextFn)
+		requireEqualFunc(t, sFnInitialize, nextFn)
 		require.Nil(t, result)
 		require.Equal(t, v1alpha1.ServedTrue, s.instance.Status.Served)
 	})
@@ -110,9 +109,8 @@ func Test_sFnServedFilter(t *testing.T) {
 
 		nextFn, result, err := sFnServedFilter(context.TODO(), r, s)
 
-		expectedNext := sFnUpdateStatusWithError(errors.New("anything"))
-		require.Nil(t, err)
-		requireEqualFunc(t, expectedNext, nextFn)
+		require.EqualError(t, err, "only one instance of Serverless is allowed (current served instance: serverless-test/test-2)")
+		require.Nil(t, nextFn)
 		require.Nil(t, result)
 		require.Equal(t, v1alpha1.ServedFalse, s.instance.Status.Served)
 

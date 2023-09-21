@@ -10,8 +10,6 @@ import (
 	"github.com/kyma-project/serverless-manager/internal/tracing"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
-	"k8s.io/apimachinery/pkg/api/meta"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -27,25 +25,13 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 	}
 	eventingURL := getEventingURL(s.instance.Spec)
 
-	if statusChanged, svlsCfgMsg := updateStatus(&s.instance, eventingURL, tracingURL); statusChanged {
-		s.setState(v1alpha1.StateProcessing)
-		s.instance.UpdateConditionTrue(
-			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonConfigured,
-			fmt.Sprintf(svlsCfgMsg),
-		)
-		return nextState(sFnUpdateStatusAndRequeue)
-	}
-
-	if configurationStatusIsNotReady(s.instance.Status.Conditions) {
-		s.setState(v1alpha1.StateProcessing)
-		s.instance.UpdateConditionTrue(
-			v1alpha1.ConditionTypeConfigured,
-			v1alpha1.ConditionReasonConfigured,
-			"Configuration ready",
-		)
-		return nextState(sFnUpdateStatusAndRequeue)
-	}
+	_, svlsCfgMsg := updateStatus(&s.instance, eventingURL, tracingURL)
+	s.setState(v1alpha1.StateProcessing)
+	s.instance.UpdateConditionTrue(
+		v1alpha1.ConditionTypeConfigured,
+		v1alpha1.ConditionReasonConfigured,
+		fmt.Sprintf(svlsCfgMsg),
+	)
 
 	s.chartConfig.Release.Flags = chart.AppendContainersFlags(
 		s.chartConfig.Release.Flags,
@@ -67,13 +53,6 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 	)
 
 	return nextState(sFnApplyResources)
-}
-
-func configurationStatusIsNotReady(conditions []metav1.Condition) bool {
-	if !meta.IsStatusConditionPresentAndEqual(conditions, string(v1alpha1.ConditionTypeConfigured), metav1.ConditionTrue) {
-		return true
-	}
-	return false
 }
 
 func getTracingURL(ctx context.Context, log *zap.SugaredLogger, client client.Client, spec v1alpha1.ServerlessSpec) (string, error) {
@@ -135,7 +114,8 @@ func updateStatus(instance *v1alpha1.Serverless, eventingURL, tracingURL string)
 		}
 	}
 	if !hasChanged {
-		sb.WriteString("no changes")
+		sb = strings.Builder{}
+		sb.WriteString("Configuration ready")
 	}
 	instance.Status = status
 

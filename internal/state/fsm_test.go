@@ -2,7 +2,10 @@ package state
 
 import (
 	"context"
+	"github.com/stretchr/testify/require"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"reflect"
+	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
@@ -104,4 +107,41 @@ func Test_reconciler_Reconcile(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("take snapshot", func(t *testing.T) {
+		fn := func(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+			// check status
+			require.Equal(t, s.instance.Status, s.snapshot)
+			return nil, nil, nil
+		}
+
+		r := &reconciler{
+			fn: fn,
+			cfg: cfg{
+				finalizer: v1alpha1.Finalizer,
+			},
+			k8s: k8s{
+				client: fake.NewClientBuilder().Build(),
+			},
+			log: zap.NewNop().Sugar(),
+		}
+		serverless := v1alpha1.Serverless{
+			Status: v1alpha1.ServerlessStatus{
+				Conditions: []metav1.Condition{
+					{
+						Type:               "test-type",
+						Status:             "test-status",
+						Reason:             "test-reason",
+						Message:            "test-message",
+						ObservedGeneration: 1,
+						LastTransitionTime: metav1.Now(),
+					},
+				},
+				State: v1alpha1.StateError,
+			},
+		}
+		_, err := r.Reconcile(context.Background(), serverless)
+		require.NoError(t, err)
+
+	})
 }

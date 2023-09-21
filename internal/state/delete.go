@@ -30,7 +30,6 @@ func sFnDeleteResources(_ context.Context, _ *reconciler, s *systemState) (state
 			v1alpha1.ConditionReasonDeletion,
 			"Uninstalling",
 		)
-		return nextState(sFnUpdateStatusAndRequeue)
 	}
 
 	// TODO: thinkg about deletion configuration
@@ -70,13 +69,15 @@ func sFnSafeDeletionState(_ context.Context, r *reconciler, s *systemState) (sta
 			v1alpha1.ConditionReasonDeletionErr,
 			err,
 		)
-		return nextState(sFnUpdateStatusWithError(err))
+		return stopWithError(err)
 	}
 
 	return deleteResourcesWithFilter(r, s)
 }
 
 func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...chart.FilterFunc) (stateFn, *ctrl.Result, error) {
+	// TODO: This mode can be removed after fixing this issue
+	// https://github.com/kyma-project/serverless-manager/issues/269
 	err, done := chart.UninstallSecrets(s.chartConfig, filterFuncs...)
 	if err != nil {
 		r.log.Warnf("error while uninstalling secrets %s: %s",
@@ -87,7 +88,7 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 			v1alpha1.ConditionReasonDeletionErr,
 			err,
 		)
-		return nextState(sFnUpdateStatusWithError(err))
+		return stopWithError(err)
 	}
 	if !done {
 		s.setState(v1alpha1.StateDeleting)
@@ -96,7 +97,7 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 			v1alpha1.ConditionReasonDeletion,
 			"Deleting secrets",
 		)
-		return nextState(sFnUpdateStatusAndRequeue)
+		return requeue()
 	}
 
 	if err := chart.Uninstall(s.chartConfig, filterFuncs...); err != nil {
@@ -108,7 +109,7 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 			v1alpha1.ConditionReasonDeletionErr,
 			err,
 		)
-		return nextState(sFnUpdateStatusWithError(err))
+		return stopWithError(err)
 	}
 
 	if !s.instance.IsConditionTrue(v1alpha1.ConditionTypeDeleted) {
@@ -118,7 +119,6 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 			v1alpha1.ConditionReasonDeleted,
 			"Serverless module deleted",
 		)
-		return nextState(sFnUpdateStatusAndRequeue)
 	}
 
 	// if resources are ready to be deleted, remove finalizer

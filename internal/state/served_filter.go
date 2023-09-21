@@ -16,7 +16,7 @@ func sFnServedFilter(ctx context.Context, r *reconciler, s *systemState) (stateF
 
 		if servedServerless == nil {
 			s.setServed(v1alpha1.ServedTrue)
-			return nextState(sFnUpdateStatusAndRequeue)
+			return nextState(sFnInitialize)
 		}
 		s.setServed(v1alpha1.ServedFalse)
 		s.setState(v1alpha1.StateError)
@@ -27,7 +27,7 @@ func sFnServedFilter(ctx context.Context, r *reconciler, s *systemState) (stateF
 			v1alpha1.ConditionReasonServerlessDuplicated,
 			err,
 		)
-		return nextState(sFnUpdateStatusWithError(err))
+		return stopWithError(err)
 	}
 
 	if s.instance.Status.Served == v1alpha1.ServedFalse {

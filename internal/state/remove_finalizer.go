@@ -7,10 +7,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
-func sFnRemoveFinalizer(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func sFnRemoveFinalizer(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	if !controllerutil.RemoveFinalizer(&s.instance, r.finalizer) {
 		return requeue()
 	}
 
-	return nextState(sFnUpdateServerless)
+	err := updateServerlessWithoutStatus(ctx, r, s)
+	return stopWithError(err)
 }

@@ -2,9 +2,9 @@ package state
 
 import (
 	"context"
-	"errors"
-	"github.com/kyma-project/serverless-manager/internal/warning"
 	"testing"
+
+	"github.com/kyma-project/serverless-manager/internal/warning"
 
 	"github.com/kyma-project/serverless-manager/internal/registry"
 
@@ -71,8 +71,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 		// verify and return update condition state
 		next, result, err := sFnVerifyResources(context.Background(), r, s)
 
-		expectedNext := sFnUpdateStatusAndStop
-		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
 
@@ -107,8 +106,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 		// verify and return update condition state
 		next, result, err := sFnVerifyResources(context.Background(), r, s)
 
-		expectedNext := sFnUpdateStatusAndStop
-		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
 
@@ -144,10 +142,9 @@ func Test_sFnVerifyResources(t *testing.T) {
 		// handle verify err and update condition with err
 		next, result, err := stateFn(context.Background(), r, s)
 
-		expectedNext := sFnUpdateStatusWithError(errors.New("anything"))
-		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, next)
 		require.Nil(t, result)
-		require.Nil(t, err)
+		require.EqualError(t, err, "could not parse chart manifest: yaml: found character that cannot start any token")
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateError, status.State)

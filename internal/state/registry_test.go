@@ -2,7 +2,6 @@ package state
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/kyma-project/serverless-manager/internal/warning"
 	"testing"
@@ -51,7 +50,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				"registryNodePort": int64(32_137),
 			},
 		}
-		expectedNext := sFnUpdateStatusAndRequeue
+		expectedNext := sFnOptionalDependencies
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
 		require.Nil(t, result)
@@ -155,7 +154,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				"serverAddress":   v1alpha1.DefaultRegistryAddress,
 			},
 		}
-		expectedNext := sFnUpdateStatusAndRequeue
+		expectedNext := sFnOptionalDependencies
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
 		require.Nil(t, result)
@@ -184,12 +183,11 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				client: fake.NewClientBuilder().Build(),
 			},
 		}
-		expectedNext := sFnUpdateStatusWithError(errors.New("test error"))
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
 		require.Nil(t, result)
-		require.NoError(t, err)
-		requireEqualFunc(t, expectedNext, next)
+		require.EqualError(t, err, "secrets \"test-secret-not-found\" not found")
+		require.Nil(t, next)
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateError, status.State)
@@ -233,7 +231,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		}
 
 		expectedFlags := map[string]interface{}{}
-		expectedNext := sFnUpdateStatusAndRequeue
+		expectedNext := sFnOptionalDependencies
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
 		require.Nil(t, result)

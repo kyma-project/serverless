@@ -1,7 +1,6 @@
 package state
 
 import (
-	"errors"
 	"testing"
 
 	corev1 "k8s.io/api/core/v1"
@@ -41,7 +40,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := sFnDeleteResources(nil, nil, s)
 
-		expectedNext := sFnUpdateStatusAndRequeue
+		expectedNext := sFnSafeDeletionState
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
@@ -91,7 +90,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnUpdateStatusAndRequeue
+		expectedNext := sFnRemoveFinalizer
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
@@ -126,10 +125,9 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnUpdateStatusWithError(errors.New("anything"))
-		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, next)
 		require.Nil(t, result)
-		require.Nil(t, err)
+		require.EqualError(t, err, "could not parse chart manifest: yaml: found character that cannot start any token")
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateError, status.State)
@@ -162,10 +160,9 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnUpdateStatusWithError(errors.New("anything"))
-		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, next)
 		require.Nil(t, result)
-		require.Nil(t, err)
+		require.EqualError(t, err, "could not parse chart manifest: yaml: found character that cannot start any token")
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateWarning, status.State)
@@ -204,7 +201,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		next, result, err := stateFn(nil, r, s)
 
-		expectedNext := sFnUpdateStatusAndRequeue
+		expectedNext := sFnRemoveFinalizer
 		requireEqualFunc(t, expectedNext, next)
 		require.Nil(t, result)
 		require.Nil(t, err)

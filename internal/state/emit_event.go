@@ -30,9 +30,6 @@ func emitEvent(m *reconciler, s *systemState) {
 			condition.Message,
 		)
 	}
-
-	// take a snapshot to not repeat lastly emitted events
-	s.saveSnapshot()
 }
 
 func eventType(condition metav1.Condition, message string) string {
