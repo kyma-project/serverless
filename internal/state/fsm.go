@@ -38,17 +38,17 @@ type cfg struct {
 
 type systemState struct {
 	instance       v1alpha1.Serverless
-	snapshot       v1alpha1.ServerlessStatus
+	statusSnapshot v1alpha1.ServerlessStatus
 	chartConfig    *chart.Config
 	warningBuilder *warning.Builder
 }
 
-func (s *systemState) saveSnapshot() {
+func (s *systemState) saveStatusSnapshot() {
 	result := s.instance.Status.DeepCopy()
 	if result == nil {
 		result = &v1alpha1.ServerlessStatus{}
 	}
-	s.snapshot = *result
+	s.statusSnapshot = *result
 }
 
 func (s *systemState) setState(state v1alpha1.State) {
@@ -116,7 +116,7 @@ func (m *reconciler) Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl
 		instance:       v,
 		warningBuilder: warning.NewBuilder(),
 	}
-	state.saveSnapshot()
+	state.saveStatusSnapshot()
 	var err error
 	var result *ctrl.Result
 loop:

@@ -15,7 +15,7 @@ func emitEvent(m *reconciler, s *systemState) {
 	// compare if any condition change
 	for _, condition := range s.instance.Status.Conditions {
 		// check if condition exists in memento status
-		memorizedCondition := meta.FindStatusCondition(s.snapshot.Conditions, condition.Type)
+		memorizedCondition := meta.FindStatusCondition(s.statusSnapshot.Conditions, condition.Type)
 		// ignore unchanged conditions
 		if memorizedCondition != nil &&
 			memorizedCondition.Status == condition.Status &&
