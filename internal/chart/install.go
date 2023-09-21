@@ -100,7 +100,7 @@ func unusedOldObjects(previousObjs []unstructured.Unstructured, currentObjs []un
 		objFullName := fmt.Sprintf("%s/%s/%s", obj.GetKind(), obj.GetNamespace(), obj.GetName())
 		currentNames[objFullName] = struct{}{}
 	}
-	var result []unstructured.Unstructured
+	result := []unstructured.Unstructured{}
 	for _, obj := range previousObjs {
 		objFullName := fmt.Sprintf("%s/%s/%s", obj.GetKind(), obj.GetNamespace(), obj.GetName())
 		if _, found := currentNames[objFullName]; !found {
