@@ -2,9 +2,9 @@ package chart
 
 import (
 	"fmt"
-	"github.com/pkg/errors"
 
 	"github.com/kyma-project/serverless-manager/internal/annotation"
+	"github.com/pkg/errors"
 	"helm.sh/helm/v3/pkg/release"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/utils/pointer"

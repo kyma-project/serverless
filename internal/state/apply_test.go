@@ -4,12 +4,11 @@ import (
 	"context"
 	"testing"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
 
@@ -30,7 +29,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 			},
 		}
 
-		next, result, err := sFnApplyResources(nil, nil, s)
+		next, result, err := sFnApplyResources(context.Background(), nil, s)
 
 		expected := sFnVerifyResources
 		requireEqualFunc(t, expected, next)

@@ -2,6 +2,7 @@ package chart
 
 import (
 	"context"
+
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
@@ -23,11 +24,11 @@ func AdjustDockerRegToClusterPVCSize(ctx context.Context, c client.Client, obj u
 		return obj, nil
 	}
 	clusterPVC := corev1.PersistentVolumeClaim{}
-	err := c.Get(ctx, client.ObjectKey{
+	objKey := client.ObjectKey{
 		Namespace: obj.GetNamespace(),
 		Name:      obj.GetName(),
-	}, &clusterPVC)
-	if err != nil {
+	}
+	if err := c.Get(ctx, objKey, &clusterPVC); err != nil {
 		if k8serrors.IsNotFound(err) {
 			return obj, nil
 		}

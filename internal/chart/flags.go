@@ -22,13 +22,6 @@ func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceColl
 	return flags
 }
 
-func getValueOrEmpty(value string) map[string]interface{} {
-	if value == "" {
-		return map[string]interface{}{}
-	}
-	return map[string]interface{}{"value": value}
-}
-
 /*
 AppendNodePortFlag
 nodePort must be int64, because when we compare old Flags with new flags, by default all integers are int64

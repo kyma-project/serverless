@@ -103,9 +103,9 @@ func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 	}
 	if existingIntRegSecret != nil {
 		r.log.Debugf("reusing existing credentials for internal docker registry to avoiding docker registry  rollout")
-		registryHttpSecretEnvValue, err := registry.GetRegistryHTTPSecretEnvValue(ctx, r.client, s.instance.Namespace)
-		if err != nil {
-			return errors.Wrap(err, "while reading env value registryHttpSecret from serverless internal docker registry deployment")
+		registryHttpSecretEnvValue, getErr := registry.GetRegistryHTTPSecretEnvValue(ctx, r.client, s.instance.Namespace)
+		if getErr != nil {
+			return errors.Wrap(getErr, "while reading env value registryHttpSecret from serverless internal docker registry deployment")
 		}
 		s.chartConfig.Release.Flags = chart.AppendExistingInternalRegistryCredentialsFlags(s.chartConfig.Release.Flags, string(existingIntRegSecret.Data["username"]), string(existingIntRegSecret.Data["password"]), registryHttpSecretEnvValue)
 	}

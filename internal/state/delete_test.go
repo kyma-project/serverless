@@ -1,18 +1,18 @@
 package state
 
 import (
+	"context"
 	"testing"
-
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/client-go/kubernetes/scheme"
-	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/client-go/kubernetes/scheme"
+	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
 var (
@@ -38,7 +38,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 			instance: v1alpha1.Serverless{},
 		}
 
-		next, result, err := sFnDeleteResources(nil, nil, s)
+		next, result, err := sFnDeleteResources(context.Background(), nil, s)
 
 		expectedNext := sFnSafeDeletionState
 		requireEqualFunc(t, expectedNext, next)
@@ -59,7 +59,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 			instance: *testDeletingServerless.DeepCopy(),
 		}
 
-		next, result, err := sFnDeleteResources(nil, nil, s)
+		next, result, err := sFnDeleteResources(context.Background(), nil, s)
 
 		expectedNext := deletionStrategyBuilder(defaultDeletionStrategy)
 		requireEqualFunc(t, expectedNext, next)
@@ -67,7 +67,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 		require.Nil(t, err)
 	})
 	t.Run("cascade deletion", func(t *testing.T) {
-		stateFn := deletionStrategyBuilder(cascadeDeletionStrategy)
+		fn := deletionStrategyBuilder(cascadeDeletionStrategy)
 
 		s := &systemState{
 			instance: *testDeletingServerless.DeepCopy(),
@@ -88,7 +88,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 		r := &reconciler{}
 
-		next, result, err := stateFn(nil, r, s)
+		next, result, err := fn(nil, r, s)
 
 		expectedNext := sFnRemoveFinalizer
 		requireEqualFunc(t, expectedNext, next)
@@ -106,7 +106,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 	})
 
 	t.Run("upstream deletion error", func(t *testing.T) {
-		stateFn := deletionStrategyBuilder(upstreamDeletionStrategy)
+		fn := deletionStrategyBuilder(upstreamDeletionStrategy)
 
 		s := &systemState{
 			instance: *testDeletingServerless.DeepCopy(),
@@ -123,7 +123,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 		}
 
-		next, result, err := stateFn(nil, r, s)
+		next, result, err := fn(nil, r, s)
 
 		require.Nil(t, next)
 		require.Nil(t, result)
@@ -141,7 +141,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 	t.Run("safe deletion error while checking orphan resources", func(t *testing.T) {
 		wrongStrategy := deletionStrategy("test-strategy")
-		stateFn := deletionStrategyBuilder(wrongStrategy)
+		fn := deletionStrategyBuilder(wrongStrategy)
 
 		s := &systemState{
 			instance: *testDeletingServerless.DeepCopy(),
@@ -158,7 +158,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 		}
 
-		next, result, err := stateFn(nil, r, s)
+		next, result, err := fn(nil, r, s)
 
 		require.Nil(t, next)
 		require.Nil(t, result)
@@ -176,7 +176,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 	t.Run("safe deletion", func(t *testing.T) {
 		wrongStrategy := deletionStrategy("test-strategy")
-		stateFn := deletionStrategyBuilder(wrongStrategy)
+		fn := deletionStrategyBuilder(wrongStrategy)
 
 		s := &systemState{
 			instance: *testDeletingServerless.DeepCopy(),
@@ -199,7 +199,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 		}
 
-		next, result, err := stateFn(nil, r, s)
+		next, result, err := fn(nil, r, s)
 
 		expectedNext := sFnRemoveFinalizer
 		requireEqualFunc(t, expectedNext, next)

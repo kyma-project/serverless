@@ -15,8 +15,7 @@ const (
 	tracingOTLPPath           = "v1/traces"
 )
 
-type eventHandler struct {
-}
+type eventHandler struct{}
 
 func (e eventHandler) Create(event event.CreateEvent, q workqueue.RateLimitingInterface) {
 	if event.Object == nil {
@@ -32,9 +31,7 @@ func (e eventHandler) Create(event event.CreateEvent, q workqueue.RateLimitingIn
 	}})
 }
 
-func (e eventHandler) Update(_ event.UpdateEvent, _ workqueue.RateLimitingInterface) {
-	return
-}
+func (e eventHandler) Update(_ event.UpdateEvent, _ workqueue.RateLimitingInterface) {}
 
 func (e eventHandler) Delete(event event.DeleteEvent, q workqueue.RateLimitingInterface) {
 	if event.Object == nil {
@@ -50,9 +47,7 @@ func (e eventHandler) Delete(event event.DeleteEvent, q workqueue.RateLimitingIn
 	}})
 }
 
-func (e eventHandler) Generic(_ event.GenericEvent, _ workqueue.RateLimitingInterface) {
-	return
-}
+func (e eventHandler) Generic(_ event.GenericEvent, _ workqueue.RateLimitingInterface) {}
 
 var _ handler.EventHandler = eventHandler{}
 

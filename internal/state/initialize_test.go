@@ -1,6 +1,7 @@
 package state
 
 import (
+	"context"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
@@ -26,7 +27,7 @@ func Test_sFnInitialize(t *testing.T) {
 		}
 
 		// set finalizer
-		next, result, err := sFnInitialize(nil, r, s)
+		next, result, err := sFnInitialize(context.Background(), r, s)
 		require.Nil(t, next) // expected because client is not fully setup
 		require.Equal(t, &ctrl.Result{Requeue: true}, result)
 		require.Error(t, err)
@@ -52,7 +53,7 @@ func Test_sFnInitialize(t *testing.T) {
 		}
 
 		// stop
-		next, result, err := sFnInitialize(nil, r, s)
+		next, result, err := sFnInitialize(context.Background(), r, s)
 		require.Nil(t, next)
 		require.Nil(t, result)
 		require.Nil(t, err)
@@ -80,7 +81,7 @@ func Test_sFnInitialize(t *testing.T) {
 		}
 
 		// setup and return buildSFnPrerequisites
-		next, result, err := sFnInitialize(nil, r, s)
+		next, result, err := sFnInitialize(context.Background(), r, s)
 
 		expectedNext := sFnRegistryConfiguration
 		requireEqualFunc(t, expectedNext, next)
@@ -112,7 +113,7 @@ func Test_sFnInitialize(t *testing.T) {
 		}
 
 		// setup and return buildSFnDeleteResources
-		next, result, err := sFnInitialize(nil, r, s)
+		next, result, err := sFnInitialize(context.Background(), r, s)
 
 		expectedNext := sFnDeleteResources
 		requireEqualFunc(t, expectedNext, next)

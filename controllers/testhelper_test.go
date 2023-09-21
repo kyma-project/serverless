@@ -285,14 +285,16 @@ func (d *registrySecretData) toMap() map[string]string {
 func (h *testHelper) createCheckRegistrySecretFunc(serverlessRegistrySecret string, expected registrySecretData) func() (bool, error) {
 	return func() (bool, error) {
 		var configurationSecret corev1.Secret
-		ok, err := h.getKubernetesObjectFunc(serverlessRegistrySecret, &configurationSecret)
-		if !ok || err != nil {
+
+		if ok, err := h.getKubernetesObjectFunc(
+			serverlessRegistrySecret, &configurationSecret); !ok || err != nil {
 			return ok, err
 		}
-		if ok, err := secretContainsSameValues(expected.toMap(), configurationSecret); err != nil {
+		if ok, err := secretContainsSameValues(
+			expected.toMap(), configurationSecret); err != nil {
 			return ok, err
 		}
-		if ok, err = secretContainsRequired(configurationSecret); err != nil {
+		if ok, err := secretContainsRequired(configurationSecret); err != nil {
 			return ok, err
 		}
 		return true, nil
