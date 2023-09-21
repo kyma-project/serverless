@@ -212,7 +212,7 @@ func Test_unusedOldObjects(t *testing.T) {
 				old: []unstructured.Unstructured{},
 				new: []unstructured.Unstructured{},
 			},
-			want: []unstructured.Unstructured{},
+			want: nil,
 		},
 		{
 			name: "list minus empty should return the same list",
