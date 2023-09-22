@@ -12,7 +12,7 @@ func sFnServedFilter(ctx context.Context, r *reconciler, s *systemState) (stateF
 	if s.instance.IsServedEmpty() {
 		servedServerless, err := GetServedServerless(ctx, r.k8s.client)
 		if err != nil {
-			return stopWithPossibleError(err)
+			return stopWithEventualError(err)
 		}
 
 		if servedServerless == nil {
@@ -28,7 +28,7 @@ func sFnServedFilter(ctx context.Context, r *reconciler, s *systemState) (stateF
 			v1alpha1.ConditionReasonServerlessDuplicated,
 			err,
 		)
-		return stopWithPossibleError(err)
+		return stopWithEventualError(err)
 	}
 
 	if s.instance.Status.Served == v1alpha1.ServedFalse {

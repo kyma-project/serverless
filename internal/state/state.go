@@ -18,7 +18,7 @@ func nextState(next stateFn) (stateFn, *ctrl.Result, error) {
 	return next, nil, nil
 }
 
-func stopWithPossibleError(err error) (stateFn, *ctrl.Result, error) {
+func stopWithEventualError(err error) (stateFn, *ctrl.Result, error) {
 	return nil, nil, err
 }
 

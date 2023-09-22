@@ -21,7 +21,7 @@ func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (state
 			v1alpha1.ConditionReasonInstallationErr,
 			err,
 		)
-		return stopWithPossibleError(err)
+		return stopWithEventualError(err)
 	}
 
 	if !ready {
