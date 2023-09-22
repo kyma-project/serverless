@@ -29,7 +29,7 @@ func sFnApplyResources(_ context.Context, r *reconciler, s *systemState) (stateF
 			v1alpha1.ConditionReasonInstallationErr,
 			err,
 		)
-		return stopWithPossibleError(err)
+		return stopWithEventualError(err)
 	}
 
 	// switch state verify

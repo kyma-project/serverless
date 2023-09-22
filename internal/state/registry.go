@@ -29,7 +29,7 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 			v1alpha1.ConditionReasonConfigurationErr,
 			err,
 		)
-		return stopWithPossibleError(err)
+		return stopWithEventualError(err)
 	}
 
 	return nextState(sFnOptionalDependencies)
