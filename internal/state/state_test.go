@@ -59,6 +59,8 @@ func fixManifestCache(manifest string) chart.ManifestCache {
 }
 
 func requireEqualFunc(t *testing.T, expected, actual stateFn) {
+	require.NotNil(t, actual)
+
 	expectedFnName := getFnName(expected)
 	actualFnName := getFnName(actual)
 

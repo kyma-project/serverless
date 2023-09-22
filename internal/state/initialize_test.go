@@ -2,19 +2,29 @@ package state
 
 import (
 	"context"
+	"k8s.io/apimachinery/pkg/runtime"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
 func Test_sFnInitialize(t *testing.T) {
 	t.Run("set finalizer", func(t *testing.T) {
+		scheme := runtime.NewScheme()
+		require.NoError(t, v1alpha1.AddToScheme(scheme))
+
+		serverless := v1alpha1.Serverless{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:            "test-name",
+				Namespace:       "test-namespace",
+				ResourceVersion: "123",
+			},
+		}
 		s := &systemState{
-			instance: v1alpha1.Serverless{},
+			instance: serverless,
 		}
 
 		r := &reconciler{
@@ -22,15 +32,19 @@ func Test_sFnInitialize(t *testing.T) {
 				finalizer: v1alpha1.Finalizer,
 			},
 			k8s: k8s{
-				client: fake.NewClientBuilder().Build(),
+				client: fake.NewClientBuilder().
+					WithScheme(scheme).
+					WithObjects(&serverless).
+					Build(),
 			},
 		}
 
+		expectedNext := sFnRegistryConfiguration
 		// set finalizer
 		next, result, err := sFnInitialize(context.Background(), r, s)
-		require.Nil(t, next) // expected because client is not fully setup
-		require.Equal(t, &ctrl.Result{Requeue: true}, result)
-		require.Error(t, err)
+		require.Nil(t, result)
+		require.NoError(t, err)
+		requireEqualFunc(t, expectedNext, next)
 
 		// check finalizer
 		require.Contains(t, s.instance.GetFinalizers(), r.cfg.finalizer)
