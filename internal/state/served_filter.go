@@ -18,7 +18,7 @@ func sFnServedFilter(ctx context.Context, r *reconciler, s *systemState) (stateF
 	if s.instance.Status.Served == v1alpha1.ServedFalse {
 		return stop()
 	}
-	return nextState(sFnInitialize)
+	return nextState(sFnAddFinalizer)
 }
 
 func setInitialServed(ctx context.Context, r *reconciler, s *systemState) error {
