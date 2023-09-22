@@ -5,8 +5,6 @@ func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceColl
 		key   string
 		value string
 	}{
-		{"functionTraceCollectorEndpoint", traceCollectorURL},
-		{"functionPublisherProxyAddress", publisherURL},
 		{"targetCPUUtilizationPercentage", CPUUtilizationPercentage},
 		{"functionRequeueDuration", requeueDuration},
 		{"functionBuildExecutorArgs", buildExecutorArgs},
@@ -16,7 +14,10 @@ func AppendContainersFlags(flags map[string]interface{}, publisherURL, traceColl
 		{"functionTimeoutSec", timeoutSec},
 	}
 
-	data := map[string]interface{}{}
+	data := map[string]interface{}{
+		"functionTraceCollectorEndpoint": traceCollectorURL,
+		"functionPublisherProxyAddress":  publisherURL,
+	}
 
 	for _, flag := range optionalFlags {
 		if flag.value != "" {
