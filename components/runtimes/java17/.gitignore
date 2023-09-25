@@ -1,5 +1,3 @@
 target
 .idea
 opentelemetry-javaagent.jar
-
-Dockerfile-jvm-function-local
