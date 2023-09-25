@@ -70,7 +70,7 @@ You can create a Function either with kubectl or Kyma Dashboard:
     export NAMESPACE={FUNCTION_NAMESPACE}
     ```
 
-2. Set up a Function fetching code.
+2. Create a Secret (optional).
 
     If you use a secured repository, follow the sub-steps for the basic and SSH key authentication:
 
