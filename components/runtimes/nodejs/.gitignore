@@ -1,5 +1,4 @@
 #For local debugging
 function
-package.json
 package-lock.json
 node_modules
