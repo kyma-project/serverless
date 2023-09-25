@@ -31,7 +31,6 @@ Dockerfile.cross
 module-chart
 module-chart-test
 mod
-charts
 default.yaml
 moduletemplate.yaml
 moduletemplate-k3d.yaml
