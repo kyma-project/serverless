@@ -72,7 +72,7 @@ You can create a Function either with kubectl or Kyma Dashboard:
 
 2. Create a Secret (optional).
 
-    If you use a secured repository, follow the sub-steps for the basic and SSH key authentication:
+    If you use a secured repository, follow the sub-steps for the basic or SSH key authentication:
 
     - Basic authentication (username and password or token) to this repository in the same Namespace as the Function:
   
