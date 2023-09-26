@@ -2,7 +2,6 @@ package state
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
@@ -13,6 +12,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/tools/record"
 	"k8s.io/utils/pointer"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
@@ -35,11 +35,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 	require.NoError(t, corev1.AddToScheme(scheme))
 	tracingCollectorURL := "http://telemetry-otlp-traces.some-ns.svc.cluster.local:4318/v1/traces"
 	customEventingURL := "eventing-url"
-
-	configuredMsg := "Serverless configuration changes: eventing endpoint: eventing-url, tracing endpoint: http://telemetry-otlp-traces.some-ns.svc.cluster.local:4318/v1/traces"
-	noConfigurationMsg := "Configuration ready"
-	traceConfiguredMsg := "Serverless configuration changes: tracing endpoint: http://telemetry-otlp-traces.some-ns.svc.cluster.local:4318/v1/traces"
-	defaultEventingConfigurationMsg := "Serverless configuration changes: eventing endpoint: http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
+	configurationReadyMsg := "Configuration ready"
 
 	testCases := map[string]struct {
 		tracing               *v1alpha1.Endpoint
@@ -54,26 +50,26 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			eventing:              &v1alpha1.Endpoint{Endpoint: customEventingURL},
 			expectedEventingURL:   customEventingURL,
 			expectedTracingURL:    tracingCollectorURL,
-			expectedStatusMessage: configuredMsg,
+			expectedStatusMessage: configurationReadyMsg,
 		},
 		"Tracing is not set, TracePipeline svc is available": {
 			extraCR:               []client.Object{fixTracingSvc()},
 			eventing:              &v1alpha1.Endpoint{Endpoint: ""},
 			expectedTracingURL:    tracingCollectorURL,
 			expectedEventingURL:   v1alpha1.EndpointDisabled,
-			expectedStatusMessage: traceConfiguredMsg,
+			expectedStatusMessage: configurationReadyMsg,
 		},
 		"Tracing is not set, TracePipeline svc is not available": {
 			expectedEventingURL:   v1alpha1.DefaultEventingEndpoint,
 			expectedTracingURL:    v1alpha1.EndpointDisabled,
-			expectedStatusMessage: defaultEventingConfigurationMsg,
+			expectedStatusMessage: configurationReadyMsg,
 		},
 		"Tracing and eventing is disabled": {
 			tracing:               &v1alpha1.Endpoint{Endpoint: ""},
 			eventing:              &v1alpha1.Endpoint{Endpoint: ""},
 			expectedEventingURL:   v1alpha1.EndpointDisabled,
 			expectedTracingURL:    v1alpha1.EndpointDisabled,
-			expectedStatusMessage: noConfigurationMsg,
+			expectedStatusMessage: configurationReadyMsg,
 		},
 	}
 
@@ -94,7 +90,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 				},
 			}
 			c := fake.NewClientBuilder().WithScheme(scheme).WithObjects(testCase.extraCR...).Build()
-			r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c}}
+			r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: record.NewFakeRecorder(5)}}
 			next, result, err := sFnOptionalDependencies(ctx, r, s)
 
 			expectedNext := sFnApplyResources
@@ -139,7 +135,8 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		}
 
 		c := fake.NewClientBuilder().WithScheme(scheme).Build()
-		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c}}
+		eventRecorder := record.NewFakeRecorder(10)
+		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
 		next, result, err := sFnOptionalDependencies(context.TODO(), r, s)
 
 		expectedNext := sFnApplyResources
@@ -163,8 +160,25 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			v1alpha1.ConditionTypeConfigured,
 			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonConfigured,
-			fmt.Sprintf("Serverless configuration changes: CPU utilization: %s, function requeue duration: %s, function build executor args: %s, max number of simultaneous jobs: %s, duration of health check: %s, max size of request body: %s, timeout: %s, default build job preset: %s, default runtime pod preset: %s, eventing endpoint: http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish", cpuUtilizationTest, requeueDurationTest, executorArgsTest, maxSimultaneousJobsTest, healthzLivenessTimeoutTest, requestBodyLimitMbTest, timeoutSecTest, defaultBuildJobPresetTest, defaultRuntimePodPresetTest),
+			configurationReadyMsg,
 		)
+
+		expectedEvents := []string{
+			"Normal Configuration CPU utilization set from '' to 'test-CPU-utilization-percentage'",
+			"Normal Configuration Function requeue duration set from '' to 'test-requeue-duration'",
+			"Normal Configuration Function build executor args set from '' to 'test-build-executor-args'",
+			"Normal Configuration Max number of simultaneous jobs set from '' to 'test-max-simultaneous-jobs'",
+			"Normal Configuration Duration of health check set from '' to 'test-healthz-liveness-timeout'",
+			"Normal Configuration Max size of request body set from '' to 'test-request-body-limit-mb'",
+			"Normal Configuration Timeout set from '' to 'test-timeout-sec'",
+			"Normal Configuration Default build job preset set from '' to 'test=default-build-job-preset'",
+			"Normal Configuration Default runtime pod preset set from '' to 'test-default-runtime-pod-preset'",
+			"Normal Configuration Eventing endpoint set from '' to 'http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish'",
+		}
+
+		for _, expectedEvent := range expectedEvents {
+			require.Equal(t, expectedEvent, <-eventRecorder.Events)
+		}
 	})
 
 	t.Run("reconcile from configurationError", func(t *testing.T) {
@@ -227,7 +241,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			v1alpha1.ConditionTypeConfigured,
 			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonConfigured,
-			"Configuration ready")
+			configurationReadyMsg)
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 

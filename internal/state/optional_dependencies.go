@@ -2,13 +2,12 @@ package state
 
 import (
 	"context"
-	"fmt"
-	"strings"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/kyma-project/serverless-manager/internal/tracing"
 	"github.com/pkg/errors"
+	"k8s.io/client-go/tools/record"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -24,32 +23,15 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 	}
 	eventingURL := getEventingURL(s.instance.Spec)
 
-	_, svlsCfgMsg := updateStatus(&s.instance, eventingURL, tracingURL)
+	updateStatus(r.k8s, &s.instance, eventingURL, tracingURL)
 	s.setState(v1alpha1.StateProcessing)
 	s.instance.UpdateConditionTrue(
 		v1alpha1.ConditionTypeConfigured,
 		v1alpha1.ConditionReasonConfigured,
-		svlsCfgMsg,
+		"Configuration ready",
 	)
 
-	s.chartConfig.Release.Flags = chart.AppendContainersFlags(
-		s.chartConfig.Release.Flags,
-		s.instance.Status.EventingEndpoint,
-		s.instance.Status.TracingEndpoint,
-		s.instance.Status.CPUUtilizationPercentage,
-		s.instance.Status.RequeueDuration,
-		s.instance.Status.BuildExecutorArgs,
-		s.instance.Status.BuildMaxSimultaneousJobs,
-		s.instance.Status.HealthzLivenessTimeout,
-		s.instance.Status.RequestBodyLimitMb,
-		s.instance.Status.TimeoutSec,
-	)
-
-	s.chartConfig.Release.Flags = chart.AppendDefaultPresetFlags(
-		s.chartConfig.Release.Flags,
-		s.instance.Status.DefaultBuildJobPreset,
-		s.instance.Status.DefaultRuntimePodPreset,
-	)
+	configureDependenciesFlags(s)
 
 	return nextState(sFnApplyResources)
 }
@@ -73,50 +55,61 @@ func getEventingURL(spec v1alpha1.ServerlessSpec) string {
 	return v1alpha1.DefaultEventingEndpoint
 }
 
-func updateStatus(instance *v1alpha1.Serverless, eventingURL, tracingURL string) (bool, string) {
+func updateStatus(eventRecorder record.EventRecorder, instance *v1alpha1.Serverless, eventingURL, tracingURL string) {
 	spec := instance.Spec
-	status := instance.Status
-
-	hasChanged := false
 
 	fields := []struct {
 		specField   string
 		statusField *string
-		cfgMsg      string
+		fieldName   string
 	}{
-		{spec.TargetCPUUtilizationPercentage, &status.CPUUtilizationPercentage, "CPU utilization: %s"},
-		{spec.FunctionRequeueDuration, &status.RequeueDuration, "function requeue duration: %s"},
-		{spec.FunctionBuildExecutorArgs, &status.BuildExecutorArgs, "function build executor args: %s"},
-		{spec.FunctionBuildMaxSimultaneousJobs, &status.BuildMaxSimultaneousJobs, "max number of simultaneous jobs: %s"},
-		{spec.HealthzLivenessTimeout, &status.HealthzLivenessTimeout, "duration of health check: %s"},
-		{spec.FunctionRequestBodyLimitMb, &status.RequestBodyLimitMb, "max size of request body: %s"},
-		{spec.FunctionTimeoutSec, &status.TimeoutSec, "timeout: %s"},
-		{spec.DefaultBuildJobPreset, &status.DefaultBuildJobPreset, "default build job preset: %s"},
-		{spec.DefaultRuntimePodPreset, &status.DefaultRuntimePodPreset, "default runtime pod preset: %s"},
-		{eventingURL, &status.EventingEndpoint, "eventing endpoint: %s"},
-		{tracingURL, &status.TracingEndpoint, "tracing endpoint: %s"},
+		{spec.TargetCPUUtilizationPercentage, &instance.Status.CPUUtilizationPercentage, "CPU utilization"},
+		{spec.FunctionRequeueDuration, &instance.Status.RequeueDuration, "Function requeue duration"},
+		{spec.FunctionBuildExecutorArgs, &instance.Status.BuildExecutorArgs, "Function build executor args"},
+		{spec.FunctionBuildMaxSimultaneousJobs, &instance.Status.BuildMaxSimultaneousJobs, "Max number of simultaneous jobs"},
+		{spec.HealthzLivenessTimeout, &instance.Status.HealthzLivenessTimeout, "Duration of health check"},
+		{spec.FunctionRequestBodyLimitMb, &instance.Status.RequestBodyLimitMb, "Max size of request body"},
+		{spec.FunctionTimeoutSec, &instance.Status.TimeoutSec, "Timeout"},
+		{spec.DefaultBuildJobPreset, &instance.Status.DefaultBuildJobPreset, "Default build job preset"},
+		{spec.DefaultRuntimePodPreset, &instance.Status.DefaultRuntimePodPreset, "Default runtime pod preset"},
+		{eventingURL, &instance.Status.EventingEndpoint, "Eventing endpoint"},
+		{tracingURL, &instance.Status.TracingEndpoint, "Tracing endpoint"},
 	}
-
-	sb := strings.Builder{}
-	sb.WriteString("Serverless configuration changes: ")
-	separator := false
 
 	for _, field := range fields {
 		if field.specField != *field.statusField {
-			if separator {
-				sb.WriteString(", ")
-			}
+			oldStatusValue := *field.statusField
 			*field.statusField = field.specField
-			sb.WriteString(fmt.Sprintf(field.cfgMsg, field.specField))
-			separator = true
-			hasChanged = true
+			eventRecorder.Eventf(
+				instance,
+				"Normal",
+				string(v1alpha1.ConditionReasonConfiguration),
+				"%s set from '%s' to '%s'",
+				field.fieldName,
+				oldStatusValue,
+				field.specField,
+			)
 		}
 	}
-	if !hasChanged {
-		sb = strings.Builder{}
-		sb.WriteString("Configuration ready")
-	}
-	instance.Status = status
+}
 
-	return hasChanged, sb.String()
+func configureDependenciesFlags(s *systemState) {
+	s.chartConfig.Release.Flags = chart.AppendContainersFlags(
+		s.chartConfig.Release.Flags,
+		s.instance.Status.EventingEndpoint,
+		s.instance.Status.TracingEndpoint,
+		s.instance.Status.CPUUtilizationPercentage,
+		s.instance.Status.RequeueDuration,
+		s.instance.Status.BuildExecutorArgs,
+		s.instance.Status.BuildMaxSimultaneousJobs,
+		s.instance.Status.HealthzLivenessTimeout,
+		s.instance.Status.RequestBodyLimitMb,
+		s.instance.Status.TimeoutSec,
+	)
+
+	s.chartConfig.Release.Flags = chart.AppendDefaultPresetFlags(
+		s.chartConfig.Release.Flags,
+		s.instance.Status.DefaultBuildJobPreset,
+		s.instance.Status.DefaultRuntimePodPreset,
+	)
 }
