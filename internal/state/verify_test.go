@@ -178,15 +178,12 @@ func Test_sFnVerifyResources(t *testing.T) {
 
 		r := &reconciler{}
 
-		// build stateFn
-		stateFn := sFnVerifyResources
-
 		// return requeue on verification failed
-		next, result, err := stateFn(context.Background(), r, s)
+		next, result, err := sFnVerifyResources(context.Background(), r, s)
 
-		expectedNext, expectedResult, expectedErr := requeueAfter(requeueDuration)
-		requireEqualFunc(t, expectedNext, next)
+		_, expectedResult, _ := requeueAfter(requeueDuration)
 		require.Equal(t, expectedResult, result)
-		require.Equal(t, expectedErr, err)
+		require.NoError(t, err)
+		require.Nil(t, next)
 	})
 }
