@@ -86,8 +86,8 @@ const (
 	// deletion
 	ConditionTypeDeleted = ConditionType("Deleted")
 
-	ConditionReasonConfigurationCheck   = ConditionReason("ConfigurationCheck")
-	ConditionReasonConfigurationErr     = ConditionReason("ConfigurationCheckErr")
+	ConditionReasonConfiguration        = ConditionReason("Configuration")
+	ConditionReasonConfigurationErr     = ConditionReason("ConfigurationErr")
 	ConditionReasonConfigured           = ConditionReason("Configured")
 	ConditionReasonInstallation         = ConditionReason("Installation")
 	ConditionReasonInstallationErr      = ConditionReason("InstallationErr")
