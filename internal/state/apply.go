@@ -19,7 +19,7 @@ func sFnApplyResources(_ context.Context, r *reconciler, s *systemState) (stateF
 	}
 
 	// install component
-	err := chart.Install(s.chartConfig)
+	err := chart.Install(s.chartConfig, s.flagsBuilder.Build())
 	if err != nil {
 		r.log.Warnf("error while installing resource %s: %s",
 			client.ObjectKeyFromObject(&s.instance), err.Error())

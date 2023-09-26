@@ -19,7 +19,8 @@ func Test_getOrRenderManifestWithRenderer(t *testing.T) {
 
 	type args struct {
 		config          *Config
-		renderChartFunc func(config *Config) (*release.Release, error)
+		customFlags     map[string]interface{}
+		renderChartFunc func(config *Config, customFlags map[string]interface{}) (*release.Release, error)
 	}
 	tests := []struct {
 		name    string
@@ -43,15 +44,13 @@ func Test_getOrRenderManifestWithRenderer(t *testing.T) {
 			name: "render manifest when flags are changed",
 			args: args{
 				renderChartFunc: fixManifestRenderFunc("test-new-manifest"),
+				customFlags: map[string]interface{}{
+					"flag1": "val1",
+				},
 				config: &Config{
 					Ctx:      context.Background(),
 					Cache:    cache,
 					CacheKey: noCRDManifestKey,
-					Release: Release{
-						Flags: map[string]interface{}{
-							"flag1": "val1",
-						},
-					},
 				},
 			},
 			want:    "test-new-manifest",
@@ -74,7 +73,7 @@ func Test_getOrRenderManifestWithRenderer(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, gotCurrent, err := getCachedAndCurrentManifest(tt.args.config, tt.args.renderChartFunc)
+			_, gotCurrent, err := getCachedAndCurrentManifest(tt.args.config, tt.args.customFlags, tt.args.renderChartFunc)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("getCachedAndCurrentManifest() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -86,8 +85,8 @@ func Test_getOrRenderManifestWithRenderer(t *testing.T) {
 	}
 }
 
-func fixManifestRenderFunc(manifest string) func(config *Config) (*release.Release, error) {
-	return func(config *Config) (*release.Release, error) {
+func fixManifestRenderFunc(manifest string) func(config *Config, customFlags map[string]interface{}) (*release.Release, error) {
+	return func(config *Config, customFlags map[string]interface{}) (*release.Release, error) {
 		return &release.Release{
 			Manifest: manifest,
 		}, nil

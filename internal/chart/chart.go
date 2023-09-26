@@ -32,7 +32,6 @@ type Config struct {
 }
 
 type Release struct {
-	Flags     map[string]interface{}
 	ChartPath string
 	Name      string
 	Namespace string
@@ -78,17 +77,17 @@ func parseManifest(manifest string) ([]unstructured.Unstructured, error) {
 	return results, nil
 }
 
-func getCachedAndCurrentManifest(config *Config, renderChartFunc func(config *Config) (*release.Release, error)) (string, string, error) {
+func getCachedAndCurrentManifest(config *Config, customFlags map[string]interface{}, renderChartFunc func(config *Config, customFlags map[string]interface{}) (*release.Release, error)) (string, string, error) {
 	cachedSpecManifest, err := config.Cache.Get(config.Ctx, config.CacheKey)
 	if err != nil {
 		return "", "", fmt.Errorf("could not get manifest from cache : %s", err.Error())
 	}
 
-	if !shouldRenderAgain(cachedSpecManifest, config) {
+	if !shouldRenderAgain(cachedSpecManifest, config, customFlags) {
 		return cachedSpecManifest.Manifest, cachedSpecManifest.Manifest, nil
 	}
 
-	currentRelease, err := renderChartFunc(config)
+	currentRelease, err := renderChartFunc(config, customFlags)
 	if err != nil {
 		return cachedSpecManifest.Manifest, "", fmt.Errorf("could not render manifest : %s", err.Error())
 	}
@@ -96,13 +95,13 @@ func getCachedAndCurrentManifest(config *Config, renderChartFunc func(config *Co
 	return cachedSpecManifest.Manifest, currentRelease.Manifest, nil
 }
 
-func shouldRenderAgain(spec ServerlessSpecManifest, config *Config) bool {
-	// spec is up-to-date only if flags used to render and manager is the same one who rendered it before
-	equalFlags := reflect.DeepEqual(spec.CustomFlags, config.Release.Flags)
-	return !(spec.ManagerUID == config.ManagerUID && equalFlags)
+func shouldRenderAgain(cachedSpec ServerlessSpecManifest, config *Config, customFlags map[string]interface{}) bool {
+	// cachedSpec is up-to-date only if flags used to render and manager is the same one who rendered it before
+	equalFlags := reflect.DeepEqual(cachedSpec.CustomFlags, customFlags)
+	return !(cachedSpec.ManagerUID == config.ManagerUID && equalFlags)
 }
 
-func renderChart(config *Config) (*release.Release, error) {
+func renderChart(config *Config, customFlags map[string]interface{}) (*release.Release, error) {
 	chart, err := loader.Load(config.Release.ChartPath)
 	if err != nil {
 		return nil, fmt.Errorf("while loading chart from path '%s': %s", config.Release.ChartPath, err.Error())
@@ -110,7 +109,7 @@ func renderChart(config *Config) (*release.Release, error) {
 
 	installAction := newInstallAction(config)
 
-	rel, err := installAction.Run(chart, config.Release.Flags)
+	rel, err := installAction.Run(chart, customFlags)
 	if err != nil {
 		return nil, fmt.Errorf("while templating chart: %s", err.Error())
 	}

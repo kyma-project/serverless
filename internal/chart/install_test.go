@@ -83,20 +83,18 @@ func Test_install_delete(t *testing.T) {
 		cache.Set(context.Background(), testManifestKey,
 			ServerlessSpecManifest{Manifest: fmt.Sprint(testCRD, separator, testDeploy)})
 		client := fake.NewClientBuilder().WithObjects(testDeployCR).WithObjects(testCRDObj).Build()
+		customFlags := map[string]interface{}{
+			"flag1": "val1",
+		}
 		config := &Config{
 			Cache:    cache,
 			CacheKey: testManifestKey,
-			Release: Release{
-				Flags: map[string]interface{}{
-					"flag1": "val1",
-				},
-			},
 			Cluster: Cluster{
 				Client: client,
 			},
 			Log: zap.NewNop().Sugar(),
 		}
-		err := install(config, fixManifestRenderFunc(""))
+		err := install(config, customFlags, fixManifestRenderFunc(""))
 		require.NoError(t, err)
 
 		deploymentList := appsv1.DeploymentList{}
@@ -133,7 +131,8 @@ func Test_install(t *testing.T) {
 		ServerlessSpecManifest{Manifest: "api: test\n\tversion: test"})
 
 	type args struct {
-		config *Config
+		config      *Config
+		customFlags map[string]interface{}
 	}
 	tests := []struct {
 		name    string
@@ -180,7 +179,7 @@ func Test_install(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := Install(tt.args.config); (err != nil) != tt.wantErr {
+			if err := Install(tt.args.config, tt.args.customFlags); (err != nil) != tt.wantErr {
 				t.Errorf("install() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

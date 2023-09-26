@@ -53,7 +53,7 @@ func fixManifestCache(manifest string) chart.ManifestCache {
 	cache.Set(context.Background(), types.NamespacedName{
 		Name:      testInstalledServerless.GetName(),
 		Namespace: testInstalledServerless.GetNamespace(),
-	}, chart.ServerlessSpecManifest{Manifest: manifest})
+	}, chart.ServerlessSpecManifest{Manifest: manifest, CustomFlags: map[string]interface{}{}})
 
 	return cache
 }

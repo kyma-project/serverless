@@ -27,6 +27,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 					Namespace: testInstalledServerless.GetNamespace(),
 				},
 			},
+			flagsBuilder: chart.NewFlagsBuilder(),
 		}
 
 		next, result, err := sFnApplyResources(context.Background(), nil, s)
@@ -58,6 +59,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 					Namespace: testInstalledServerless.GetNamespace(),
 				},
 			},
+			flagsBuilder: chart.NewFlagsBuilder(),
 		}
 		r := &reconciler{}
 
@@ -78,6 +80,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 					Namespace: testInstalledServerless.GetNamespace(),
 				},
 			},
+			flagsBuilder: chart.NewFlagsBuilder(),
 		}
 		r := &reconciler{
 			log: zap.NewNop().Sugar(),
