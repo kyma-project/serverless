@@ -35,11 +35,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 	require.NoError(t, corev1.AddToScheme(scheme))
 	tracingCollectorURL := "http://telemetry-otlp-traces.some-ns.svc.cluster.local:4318/v1/traces"
 	customEventingURL := "eventing-url"
-
-	// configuredMsg := "Serverless configuration changes: eventing endpoint: eventing-url, tracing endpoint: http://telemetry-otlp-traces.some-ns.svc.cluster.local:4318/v1/traces"
 	configurationReadyMsg := "Configuration ready"
-	// traceConfiguredMsg := "Serverless configuration changes: tracing endpoint: http://telemetry-otlp-traces.some-ns.svc.cluster.local:4318/v1/traces"
-	// defaultEventingConfigurationMsg := "Serverless configuration changes: eventing endpoint: http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
 
 	testCases := map[string]struct {
 		tracing               *v1alpha1.Endpoint
