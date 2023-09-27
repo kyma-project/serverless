@@ -25,7 +25,6 @@ func Test_sFnAddFinalizer(t *testing.T) {
 		s := &systemState{
 			instance: serverless,
 		}
-
 		r := &reconciler{
 			cfg: cfg{
 				finalizer: v1alpha1.Finalizer,
@@ -40,8 +39,8 @@ func Test_sFnAddFinalizer(t *testing.T) {
 
 		// set finalizer
 		next, result, err := sFnAddFinalizer(context.Background(), r, s)
-		require.Nil(t, result)
 		require.NoError(t, err)
+		require.Nil(t, result)
 		requireEqualFunc(t, sFnInitialize, next)
 
 		// check finalizer
@@ -68,8 +67,8 @@ func Test_sFnAddFinalizer(t *testing.T) {
 
 		// stop
 		next, result, err := sFnAddFinalizer(context.Background(), r, s)
-		require.Nil(t, next)
-		require.Nil(t, result)
 		require.Nil(t, err)
+		require.Nil(t, result)
+		require.Nil(t, next)
 	})
 }

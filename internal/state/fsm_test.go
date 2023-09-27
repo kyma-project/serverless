@@ -114,7 +114,6 @@ func Test_reconciler_Reconcile(t *testing.T) {
 			require.Equal(t, s.instance.Status, s.statusSnapshot)
 			return nil, nil, nil
 		}
-
 		r := &reconciler{
 			fn: fn,
 			cfg: cfg{
@@ -142,6 +141,5 @@ func Test_reconciler_Reconcile(t *testing.T) {
 		}
 		_, err := r.Reconcile(context.Background(), serverless)
 		require.NoError(t, err)
-
 	})
 }
