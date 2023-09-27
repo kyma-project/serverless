@@ -122,7 +122,7 @@ If you still see the `Invalid libgit2 version` error message on macOS, follow th
    ```bash
    find / -type d -name "Cellar"
    ```
-Alternatively you can use **⌘⇧G** in Finder to search for `Cellar`.
+Alternatively, you can use **⌘⇧G** in Finder to search for `Cellar`.
 
 2. Prepare the libgit2 directory.
 
