@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"testing"
 )
@@ -43,10 +44,19 @@ func Test_sFnAddFinalizer(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnInitialize, next)
 
-		// check finalizer
+		// check finalizer in systemState
 		require.Contains(t, s.instance.GetFinalizers(), r.cfg.finalizer)
 
-		//TODO: test kubernetes object
+		// check finalizer in k8s
+		obj := v1alpha1.Serverless{}
+		err = r.k8s.client.Get(context.Background(),
+			client.ObjectKey{
+				Namespace: serverless.Namespace,
+				Name:      serverless.Name,
+			},
+			&obj)
+		require.NoError(t, err)
+		require.Contains(t, obj.GetFinalizers(), r.cfg.finalizer)
 	})
 
 	t.Run("stop when no finalizer and instance is being deleted", func(t *testing.T) {
