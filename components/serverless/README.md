@@ -115,7 +115,7 @@ Build and install the libgit2 binary required by the Function Controller on macO
    ```
 #### Alternative Remedy
 There is an alternative method for macOS that relies on [brew](https://brew.sh/). 
-If you still see the `Invalid libgit2 version` error message on macOS follow these steps:
+If you still see the `Invalid libgit2 version` error message on macOS, follow these steps:
 
 1. Locate your brew's Cellar directory.
 
