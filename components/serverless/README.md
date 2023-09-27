@@ -126,7 +126,7 @@ Alternatively, you can use **⌘⇧G** in Finder to search for `Cellar`.
 
 2. Prepare the libgit2 directory.
 
-If you already have libgit2 installed via brew you need to delete previous installations found in `libgit2` directory.
+If you already have libgit2 installed via brew you need to delete previous installations found in the `libgit2` directory.
 
 Otherwise create an empty directory named `libgit2`.
 
