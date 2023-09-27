@@ -28,7 +28,7 @@ You can create a Function either with kubectl or Kyma Dashboard:
 
     - Open the **Advanced** view and enter the Secret name and type.
 
-    - Under **Data** enter these key-value pairs with credentials:
+    - Under **Data**, enter these key-value pairs with credentials:
 
         - Basic authentication: `username: {USERNAME}` and `password: {PASSWORD_OR_TOKEN}`
 
@@ -85,12 +85,12 @@ You can create a Function either with kubectl or Kyma Dashboard:
 
     - SSH key:
 
-    1. Generate a new SSH key pair (private and public). Follow [this tutorial](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent), to learn how to do it. Alternatively, you can use the existing pair. 
+    1. Generate a new SSH key pair (private and public). Follow [this tutorial](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) to learn how to do it. Alternatively, you can use the existing pair. 
     2. Install the generated private key in Kyma, as a Kubernetes Secret that lives in the same Namespace as your Function.
        ```bash
        kubectl -n $NAMESPACE create secret generic git-creds-ssh --from-file=key={PATH_TO_THE_FILE_WITH_PRIVATE_KEY}
        ```
-    3. Configure the public key in GitHub. Follow steps described in [this tutorial](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account). 
+    3. Configure the public key in GitHub. Follow the steps described in [this tutorial](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account). 
 
     >**NOTE:** Read more about the [supported authentication methods](../technical-reference/07-40-git-source-type.md).
 
