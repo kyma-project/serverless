@@ -16,7 +16,6 @@ func Test_sFnRemoveFinalizer(t *testing.T) {
 	t.Run("remove finalizer", func(t *testing.T) {
 		scheme := scheme.Scheme
 		require.NoError(t, v1alpha1.AddToScheme(scheme))
-
 		instance := v1alpha1.Serverless{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "test",
@@ -26,7 +25,6 @@ func Test_sFnRemoveFinalizer(t *testing.T) {
 				},
 			},
 		}
-
 		r := &reconciler{
 			cfg: cfg{
 				finalizer: v1alpha1.Finalizer,
@@ -44,10 +42,9 @@ func Test_sFnRemoveFinalizer(t *testing.T) {
 
 		// remove finalizer
 		next, result, err := sFnRemoveFinalizer(context.Background(), r, s)
-
-		require.Nil(t, next)
-		require.Nil(t, result)
 		require.Nil(t, err)
+		require.Nil(t, result)
+		require.Nil(t, next)
 	})
 
 	t.Run("requeue when is no finalizer", func(t *testing.T) {
@@ -64,9 +61,8 @@ func Test_sFnRemoveFinalizer(t *testing.T) {
 
 		// remove finalizer
 		next, result, err := sFnRemoveFinalizer(context.Background(), r, s)
-
-		require.Nil(t, next)
-		require.Equal(t, &ctrl.Result{Requeue: true}, result)
 		require.Nil(t, err)
+		require.Equal(t, &ctrl.Result{Requeue: true}, result)
+		require.Nil(t, next)
 	})
 }

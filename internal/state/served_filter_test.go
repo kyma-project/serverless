@@ -23,10 +23,9 @@ func Test_sFnServedFilter(t *testing.T) {
 		}
 
 		nextFn, result, err := sFnServedFilter(context.TODO(), nil, s)
-
 		require.Nil(t, err)
-		require.Nil(t, nextFn)
 		require.Nil(t, result)
+		require.Nil(t, nextFn)
 	})
 
 	t.Run("do next step when served is true", func(t *testing.T) {
@@ -39,10 +38,9 @@ func Test_sFnServedFilter(t *testing.T) {
 		}
 
 		nextFn, result, err := sFnServedFilter(context.TODO(), nil, s)
-
 		require.Nil(t, err)
-		requireEqualFunc(t, sFnAddFinalizer, nextFn)
 		require.Nil(t, result)
+		requireEqualFunc(t, sFnAddFinalizer, nextFn)
 	})
 
 	t.Run("set served value from nil to true when there is no served serverless on cluster", func(t *testing.T) {
@@ -73,10 +71,9 @@ func Test_sFnServedFilter(t *testing.T) {
 		}
 
 		nextFn, result, err := sFnServedFilter(context.TODO(), r, s)
-
 		require.Nil(t, err)
-		requireEqualFunc(t, sFnAddFinalizer, nextFn)
 		require.Nil(t, result)
+		requireEqualFunc(t, sFnAddFinalizer, nextFn)
 		require.Equal(t, v1alpha1.ServedTrue, s.instance.Status.Served)
 	})
 
@@ -110,8 +107,8 @@ func Test_sFnServedFilter(t *testing.T) {
 		nextFn, result, err := sFnServedFilter(context.TODO(), r, s)
 
 		require.EqualError(t, err, "only one instance of Serverless is allowed (current served instance: serverless-test/test-2)")
-		require.Nil(t, nextFn)
 		require.Nil(t, result)
+		require.Nil(t, nextFn)
 		require.Equal(t, v1alpha1.ServedFalse, s.instance.Status.Served)
 
 		status := s.instance.Status

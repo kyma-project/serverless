@@ -39,11 +39,9 @@ func Test_sFnDeleteResources(t *testing.T) {
 		}
 
 		next, result, err := sFnDeleteResources(context.Background(), nil, s)
-
-		expectedNext := sFnSafeDeletionState
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
 		require.Nil(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnSafeDeletionState, next)
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateDeleting, status.State)
@@ -54,6 +52,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 			"Uninstalling",
 		)
 	})
+
 	t.Run("choose deletion strategy", func(t *testing.T) {
 		s := &systemState{
 			instance: *testDeletingServerless.DeepCopy(),
@@ -62,13 +61,13 @@ func Test_sFnDeleteResources(t *testing.T) {
 		next, result, err := sFnDeleteResources(context.Background(), nil, s)
 
 		expectedNext := deletionStrategyBuilder(defaultDeletionStrategy)
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
 		require.Nil(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, expectedNext, next)
 	})
+
 	t.Run("cascade deletion", func(t *testing.T) {
 		fn := deletionStrategyBuilder(cascadeDeletionStrategy)
-
 		s := &systemState{
 			instance: *testDeletingServerless.DeepCopy(),
 			chartConfig: &chart.Config{
@@ -85,15 +84,12 @@ func Test_sFnDeleteResources(t *testing.T) {
 				},
 			},
 		}
-
 		r := &reconciler{}
 
 		next, result, err := fn(nil, r, s)
-
-		expectedNext := sFnRemoveFinalizer
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
 		require.Nil(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnRemoveFinalizer, next)
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateDeleting, status.State)
@@ -118,16 +114,14 @@ func Test_sFnDeleteResources(t *testing.T) {
 				},
 			},
 		}
-
 		r := &reconciler{
 			log: zap.NewNop().Sugar(),
 		}
 
 		next, result, err := fn(nil, r, s)
-
-		require.Nil(t, next)
-		require.Nil(t, result)
 		require.EqualError(t, err, "could not parse chart manifest: yaml: found character that cannot start any token")
+		require.Nil(t, result)
+		require.Nil(t, next)
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateError, status.State)
@@ -142,7 +136,6 @@ func Test_sFnDeleteResources(t *testing.T) {
 	t.Run("safe deletion error while checking orphan resources", func(t *testing.T) {
 		wrongStrategy := deletionStrategy("test-strategy")
 		fn := deletionStrategyBuilder(wrongStrategy)
-
 		s := &systemState{
 			instance: *testDeletingServerless.DeepCopy(),
 			chartConfig: &chart.Config{
@@ -153,16 +146,14 @@ func Test_sFnDeleteResources(t *testing.T) {
 				},
 			},
 		}
-
 		r := &reconciler{
 			log: zap.NewNop().Sugar(),
 		}
 
 		next, result, err := fn(nil, r, s)
-
-		require.Nil(t, next)
-		require.Nil(t, result)
 		require.EqualError(t, err, "could not parse chart manifest: yaml: found character that cannot start any token")
+		require.Nil(t, result)
+		require.Nil(t, next)
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateWarning, status.State)
@@ -177,7 +168,6 @@ func Test_sFnDeleteResources(t *testing.T) {
 	t.Run("safe deletion", func(t *testing.T) {
 		wrongStrategy := deletionStrategy("test-strategy")
 		fn := deletionStrategyBuilder(wrongStrategy)
-
 		s := &systemState{
 			instance: *testDeletingServerless.DeepCopy(),
 			chartConfig: &chart.Config{
@@ -194,17 +184,14 @@ func Test_sFnDeleteResources(t *testing.T) {
 				},
 			},
 		}
-
 		r := &reconciler{
 			log: zap.NewNop().Sugar(),
 		}
 
 		next, result, err := fn(nil, r, s)
-
-		expectedNext := sFnRemoveFinalizer
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
 		require.Nil(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnRemoveFinalizer, next)
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateDeleting, status.State)

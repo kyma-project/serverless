@@ -20,7 +20,6 @@ func Test_sFnInitialize(t *testing.T) {
 				client: fake.NewClientBuilder().Build(),
 			},
 		}
-
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				ObjectMeta: metav1.ObjectMeta{
@@ -34,11 +33,9 @@ func Test_sFnInitialize(t *testing.T) {
 
 		// setup and return buildSFnPrerequisites
 		next, result, err := sFnInitialize(context.Background(), r, s)
-
-		expectedNext := sFnRegistryConfiguration
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
 		require.Nil(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnRegistryConfiguration, next)
 	})
 
 	t.Run("setup and return next step sFnDeleteResources", func(t *testing.T) {
@@ -50,15 +47,14 @@ func Test_sFnInitialize(t *testing.T) {
 				client: fake.NewClientBuilder().Build(),
 			},
 		}
-
-		metaTine := metav1.Now()
+		metaTime := metav1.Now()
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				ObjectMeta: metav1.ObjectMeta{
 					Finalizers: []string{
 						r.cfg.finalizer,
 					},
-					DeletionTimestamp: &metaTine,
+					DeletionTimestamp: &metaTime,
 				},
 				Spec: v1alpha1.ServerlessSpec{},
 			},
@@ -66,11 +62,8 @@ func Test_sFnInitialize(t *testing.T) {
 
 		// setup and return buildSFnDeleteResources
 		next, result, err := sFnInitialize(context.Background(), r, s)
-
-		expectedNext := sFnDeleteResources
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
 		require.Nil(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnDeleteResources, next)
 	})
-
 }

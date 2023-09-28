@@ -36,12 +36,10 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				},
 			},
 		}
-
 		r := &reconciler{
 			k8s: k8s{client: fake.NewClientBuilder().Build()},
 			log: zap.NewNop().Sugar(),
 		}
-
 		expectedFlags := map[string]interface{}{
 			"dockerRegistry": map[string]interface{}{
 				"enableInternal": true,
@@ -50,16 +48,16 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				"registryNodePort": int64(32_137),
 			},
 		}
-		expectedNext := sFnOptionalDependencies
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
-		require.Nil(t, result)
 		require.NoError(t, err)
-		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnOptionalDependencies, next)
 
 		require.EqualValues(t, expectedFlags, s.chartConfig.Release.Flags)
 		require.Equal(t, "internal", s.instance.Status.DockerRegistry)
 	})
+
 	t.Run("external registry and go to next state", func(t *testing.T) {
 		secret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
@@ -73,7 +71,6 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				"serverAddress":   []byte("serverAddress"),
 			},
 		}
-
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				ObjectMeta: metav1.ObjectMeta{
@@ -111,16 +108,16 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				"serverAddress":   string(secret.Data["serverAddress"]),
 			},
 		}
-		expectedNext := sFnOptionalDependencies
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
-		require.Nil(t, result)
 		require.NoError(t, err)
-		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnOptionalDependencies, next)
 
 		require.Equal(t, expectedFlags, s.chartConfig.Release.Flags)
 		require.Equal(t, string(secret.Data["serverAddress"]), s.instance.Status.DockerRegistry)
 	})
+
 	t.Run("k3d registry and update", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
@@ -154,16 +151,16 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				"serverAddress":   v1alpha1.DefaultRegistryAddress,
 			},
 		}
-		expectedNext := sFnOptionalDependencies
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
-		require.Nil(t, result)
 		require.NoError(t, err)
-		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnOptionalDependencies, next)
 
 		require.Equal(t, expectedFlags, s.chartConfig.Release.Flags)
 		require.Equal(t, v1alpha1.DefaultRegistryAddress, s.instance.Status.DockerRegistry)
 	})
+
 	t.Run("external registry secret not found error", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
@@ -185,8 +182,8 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		}
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
-		require.Nil(t, result)
 		require.EqualError(t, err, "secrets \"test-secret-not-found\" not found")
+		require.Nil(t, result)
 		require.Nil(t, next)
 
 		status := s.instance.Status
@@ -198,6 +195,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			"secrets \"test-secret-not-found\" not found",
 		)
 	})
+
 	t.Run("overwrite docker registry status when exists serverless cluster-wide external registry secret", func(t *testing.T) {
 		serverlessClusterWideExternalRegistrySecret := registry.FixServerlessClusterWideExternalRegistrySecret()
 		s := &systemState{
@@ -221,7 +219,6 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				},
 			},
 		}
-
 		client := fake.NewClientBuilder().
 			WithObjects(serverlessClusterWideExternalRegistrySecret).
 			Build()
@@ -229,14 +226,12 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			k8s: k8s{client: client},
 			log: zap.NewNop().Sugar(),
 		}
-
 		expectedFlags := map[string]interface{}{}
-		expectedNext := sFnOptionalDependencies
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
-		require.Nil(t, result)
 		require.NoError(t, err)
-		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnOptionalDependencies, next)
 
 		require.EqualValues(t, expectedFlags, s.chartConfig.Release.Flags)
 		require.Equal(t, string(serverlessClusterWideExternalRegistrySecret.Data["serverAddress"]), s.instance.Status.DockerRegistry)
@@ -268,6 +263,7 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 				fmt.Sprintf("Warning: %s", extRegSecDiffThanSpecFormat), extRegSecret.Namespace, extRegSecret.Name, extRegSecret.Name),
 			s.warningBuilder.Build())
 	})
+
 	t.Run("external registry secret exists and secretName field is not filled", func(t *testing.T) {
 		s := &systemState{
 			warningBuilder: warning.NewBuilder(),
@@ -291,6 +287,7 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 				fmt.Sprintf("Warning: %s", extRegSecNotInSpecFormat), extRegSecret.Namespace, extRegSecret.Name, extRegSecret.Name),
 			s.warningBuilder.Build())
 	})
+
 	t.Run("enable internal is true and secret name exists", func(t *testing.T) {
 		s := &systemState{
 			warningBuilder: warning.NewBuilder(),
@@ -306,6 +303,7 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 		addRegistryConfigurationWarnings(nil, s)
 		require.Equal(t, fmt.Sprintf("Warning: %s", internalEnabledAndSecretNameUsedMessage), s.warningBuilder.Build())
 	})
+
 	t.Run("do not build error", func(t *testing.T) {
 		s := &systemState{
 			warningBuilder: warning.NewBuilder(),

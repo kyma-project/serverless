@@ -56,7 +56,6 @@ func Test_sFnVerifyResources(t *testing.T) {
 				},
 			},
 		}
-
 		r := &reconciler{
 			log: zap.NewNop().Sugar(),
 			k8s: k8s{
@@ -66,10 +65,9 @@ func Test_sFnVerifyResources(t *testing.T) {
 
 		// verify and return update condition state
 		next, result, err := sFnVerifyResources(context.Background(), r, s)
-
-		require.Nil(t, next)
-		require.Nil(t, result)
 		require.Nil(t, err)
+		require.Nil(t, result)
+		require.Nil(t, next)
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateReady, status.State)
@@ -94,17 +92,15 @@ func Test_sFnVerifyResources(t *testing.T) {
 				},
 			},
 		}
-
 		r := &reconciler{
 			log: zap.NewNop().Sugar(),
 		}
 
 		// verify and return update condition state
 		next, result, err := sFnVerifyResources(context.Background(), r, s)
-
-		require.Nil(t, next)
-		require.Nil(t, result)
 		require.Nil(t, err)
+		require.Nil(t, result)
+		require.Nil(t, next)
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateWarning, status.State)
@@ -127,20 +123,15 @@ func Test_sFnVerifyResources(t *testing.T) {
 				},
 			},
 		}
-
 		r := &reconciler{
 			log: zap.NewNop().Sugar(),
 		}
 
-		// build stateFn
-		stateFn := sFnVerifyResources
-
 		// handle verify err and update condition with err
-		next, result, err := stateFn(context.Background(), r, s)
-
-		require.Nil(t, next)
-		require.Nil(t, result)
+		next, result, err := sFnVerifyResources(context.Background(), r, s)
 		require.EqualError(t, err, "could not parse chart manifest: yaml: found character that cannot start any token")
+		require.Nil(t, result)
+		require.Nil(t, next)
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateError, status.State)
@@ -154,7 +145,6 @@ func Test_sFnVerifyResources(t *testing.T) {
 
 	t.Run("requeue when resources are not ready", func(t *testing.T) {
 		client := fake.NewClientBuilder().WithObjects(testDeployCR).Build()
-
 		s := &systemState{
 			instance: *testInstalledServerless.DeepCopy(),
 			chartConfig: &chart.Config{
@@ -175,15 +165,14 @@ func Test_sFnVerifyResources(t *testing.T) {
 				},
 			},
 		}
-
 		r := &reconciler{}
 
 		// return requeue on verification failed
 		next, result, err := sFnVerifyResources(context.Background(), r, s)
 
 		_, expectedResult, _ := requeueAfter(requeueDuration)
-		require.Equal(t, expectedResult, result)
 		require.NoError(t, err)
+		require.Equal(t, expectedResult, result)
 		require.Nil(t, next)
 	})
 }

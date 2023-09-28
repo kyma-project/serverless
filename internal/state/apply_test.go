@@ -30,11 +30,9 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		}
 
 		next, result, err := sFnApplyResources(context.Background(), nil, s)
-
-		expected := sFnVerifyResources
-		requireEqualFunc(t, expected, next)
-		require.Nil(t, result)
 		require.Nil(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnVerifyResources, next)
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
@@ -61,16 +59,13 @@ func Test_buildSFnApplyResources(t *testing.T) {
 				},
 			},
 		}
-
 		r := &reconciler{}
 
 		// run installation process and return verificating state
 		next, result, err := sFnApplyResources(context.Background(), r, s)
-
-		expectedNext := sFnVerifyResources
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
 		require.Nil(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnVerifyResources, next)
 	})
 
 	t.Run("install chart error", func(t *testing.T) {
@@ -84,17 +79,15 @@ func Test_buildSFnApplyResources(t *testing.T) {
 				},
 			},
 		}
-
 		r := &reconciler{
 			log: zap.NewNop().Sugar(),
 		}
 
 		// handle error and return update condition state
 		next, result, err := sFnApplyResources(context.Background(), r, s)
-
-		require.Nil(t, next)
-		require.Nil(t, result)
 		require.EqualError(t, err, "could not parse chart manifest: yaml: found character that cannot start any token")
+		require.Nil(t, result)
+		require.Nil(t, next)
 
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateError, status.State)

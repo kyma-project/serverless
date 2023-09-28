@@ -92,11 +92,9 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			c := fake.NewClientBuilder().WithScheme(scheme).WithObjects(testCase.extraCR...).Build()
 			r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: record.NewFakeRecorder(5)}}
 			next, result, err := sFnOptionalDependencies(ctx, r, s)
-
-			expectedNext := sFnApplyResources
-			requireEqualFunc(t, expectedNext, next)
-			require.Nil(t, result)
 			require.Nil(t, err)
+			require.Nil(t, result)
+			requireEqualFunc(t, sFnApplyResources, next)
 
 			status := s.instance.Status
 			assert.Equal(t, testCase.expectedEventingURL, status.EventingEndpoint)
@@ -138,11 +136,9 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		eventRecorder := record.NewFakeRecorder(10)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
 		next, result, err := sFnOptionalDependencies(context.TODO(), r, s)
-
-		expectedNext := sFnApplyResources
-		requireEqualFunc(t, expectedNext, next)
-		require.Nil(t, result)
 		require.Nil(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
 		require.Equal(t, cpuUtilizationTest, status.CPUUtilizationPercentage)
@@ -231,12 +227,10 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			},
 		}
 
-		expectedNext := sFnApplyResources
-
 		next, result, err := sFnOptionalDependencies(context.Background(), r, s)
-		require.Nil(t, result)
 		require.NoError(t, err)
-		requireEqualFunc(t, expectedNext, next)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnApplyResources, next)
 		requireContainsCondition(t, s.instance.Status,
 			v1alpha1.ConditionTypeConfigured,
 			metav1.ConditionTrue,
@@ -266,7 +260,6 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 				},
 			},
 		}
-
 		c := fake.NewClientBuilder().WithScheme(scheme).WithObjects(fixTracingSvc()).Build()
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c}}
 
