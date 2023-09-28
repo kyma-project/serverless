@@ -90,21 +90,53 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			next, result, err := sFnOptionalDependencies(ctx, r, s)
 			require.Nil(t, err)
 			require.Nil(t, result)
-			requireEqualFunc(t, sFnApplyResources, next)
+			requireEqualFunc(t, sFnControllerConfiguration, next)
 
 			status := s.instance.Status
 			assert.Equal(t, testCase.expectedEventingURL, status.EventingEndpoint)
 			assert.Equal(t, testCase.expectedTracingURL, status.TracingEndpoint)
-
-			assert.Equal(t, v1alpha1.StateProcessing, status.State)
-			requireContainsCondition(t, status,
-				v1alpha1.ConditionTypeConfigured,
-				metav1.ConditionTrue,
-				v1alpha1.ConditionReasonConfigured,
-				testCase.expectedStatusMessage,
-			)
 		})
 	}
+
+	t.Run("configure chart flags in release if status is up-to date", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.Serverless{
+				Spec: v1alpha1.ServerlessSpec{Eventing: &v1alpha1.Endpoint{Endpoint: customEventingURL}},
+				Status: v1alpha1.ServerlessStatus{
+					Conditions: []metav1.Condition{
+						{
+							Type:   string(v1alpha1.ConditionTypeConfigured),
+							Status: metav1.ConditionTrue,
+						},
+					},
+					EventingEndpoint: customEventingURL,
+					TracingEndpoint:  tracingCollectorURL,
+				},
+			},
+			flagsBuilder: chart.NewFlagsBuilder(),
+		}
+		c := fake.NewClientBuilder().WithScheme(scheme).WithObjects(fixTracingSvc()).Build()
+		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c}}
+
+		_, _, err := sFnOptionalDependencies(context.Background(), r, s)
+		require.NoError(t, err)
+
+		currentFlags := s.flagsBuilder.Build()
+
+		overrideURL, found := getFlagByPath(currentFlags, "containers", "manager", "configuration", "data", "functionTraceCollectorEndpoint", "value")
+		require.True(t, found)
+		assert.Equal(t, tracingCollectorURL, overrideURL)
+
+		overrideURL, found = getFlagByPath(currentFlags, "containers", "manager", "configuration", "data", "functionPublisherProxyAddress", "value")
+		require.True(t, found)
+		assert.Equal(t, customEventingURL, overrideURL)
+	})
+}
+
+func Test_sFnControllerConfiguration(t *testing.T) {
+	scheme := runtime.NewScheme()
+	require.NoError(t, corev1.AddToScheme(scheme))
+	configurationReadyMsg := "Configuration ready"
 
 	t.Run("update status additional configuration overrides", func(t *testing.T) {
 		s := &systemState{
@@ -127,7 +159,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		c := fake.NewClientBuilder().WithScheme(scheme).Build()
 		eventRecorder := record.NewFakeRecorder(10)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
-		next, result, err := sFnOptionalDependencies(context.TODO(), r, s)
+		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
 		require.Nil(t, err)
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnApplyResources, next)
@@ -161,7 +193,6 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			"Normal Configuration Timeout set from '' to 'test-timeout-sec'",
 			"Normal Configuration Default build job preset set from '' to 'test=default-build-job-preset'",
 			"Normal Configuration Default runtime pod preset set from '' to 'test-default-runtime-pod-preset'",
-			"Normal Configuration Eventing endpoint set from '' to 'http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish'",
 		}
 
 		for _, expectedEvent := range expectedEvents {
@@ -215,7 +246,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			},
 		}
 
-		next, result, err := sFnOptionalDependencies(context.Background(), r, s)
+		next, result, err := sFnControllerConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnApplyResources, next)
@@ -225,40 +256,6 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			v1alpha1.ConditionReasonConfigured,
 			configurationReadyMsg)
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
-	})
-
-	t.Run("configure chart flags in release if status is up-to date", func(t *testing.T) {
-		s := &systemState{
-			instance: v1alpha1.Serverless{
-				Spec: v1alpha1.ServerlessSpec{Eventing: &v1alpha1.Endpoint{Endpoint: customEventingURL}},
-				Status: v1alpha1.ServerlessStatus{
-					Conditions: []metav1.Condition{
-						{
-							Type:   string(v1alpha1.ConditionTypeConfigured),
-							Status: metav1.ConditionTrue,
-						},
-					},
-					EventingEndpoint: customEventingURL,
-					TracingEndpoint:  tracingCollectorURL,
-				},
-			},
-			flagsBuilder: chart.NewFlagsBuilder(),
-		}
-		c := fake.NewClientBuilder().WithScheme(scheme).WithObjects(fixTracingSvc()).Build()
-		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c}}
-
-		_, _, err := sFnOptionalDependencies(context.Background(), r, s)
-		require.NoError(t, err)
-
-		currentFlags := s.flagsBuilder.Build()
-
-		overrideURL, found := getFlagByPath(currentFlags, "containers", "manager", "configuration", "data", "functionTraceCollectorEndpoint", "value")
-		require.True(t, found)
-		assert.Equal(t, tracingCollectorURL, overrideURL)
-
-		overrideURL, found = getFlagByPath(currentFlags, "containers", "manager", "configuration", "data", "functionPublisherProxyAddress", "value")
-		require.True(t, found)
-		assert.Equal(t, customEventingURL, overrideURL)
 	})
 }
 

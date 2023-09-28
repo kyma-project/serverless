@@ -52,6 +52,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
 		require.Equal(t, "internal", s.instance.Status.DockerRegistry)
+		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 
 	t.Run("external registry and go to next state", func(t *testing.T) {
@@ -108,6 +109,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 
 		require.Equal(t, expectedFlags, s.flagsBuilder.Build())
 		require.Equal(t, string(secret.Data["serverAddress"]), s.instance.Status.DockerRegistry)
+		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 
 	t.Run("k3d registry and update", func(t *testing.T) {
