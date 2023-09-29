@@ -6,8 +6,6 @@ import (
 
 	//TODO: change to "github.com/kyma-project/serverless-manager/components/operator/api/v1alpha1" after new SO structure will be on github
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
-	//TODO: change to "github.com/kyma-project/serverless-manager/components/operator/internal/chart" after new SO structure will be on github
-	"github.com/kyma-project/serverless-manager/internal/chart"
 	//TODO: change to "github.com/kyma-project/serverless-manager/components/operator/internal/registry" after new SO structure will be on github
 	"github.com/kyma-project/serverless-manager/internal/registry"
 	"github.com/pkg/errors"
