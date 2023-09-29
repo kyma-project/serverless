@@ -58,20 +58,20 @@ help: ## Display this help.
 .PHONY: manifests
 manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
     # TODO: change paths to "./..." - temporarily we exclude serverless directories
-	$(CONTROLLER_GEN) rbac:roleName=operator-role crd webhook paths="./api/..." paths="./controllers/..." output:crd:artifacts:config=config/crd/bases
+	$(CONTROLLER_GEN) rbac:roleName=operator-role crd webhook paths="./components/operator/api/..." paths="./components/operator/controllers/..." output:crd:artifacts:config=config/crd/bases
 
 .PHONY: generate
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
     # TODO: change paths to "./..." - temporarily we exclude serverless directories
-	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./api/..." paths="./controllers/..."
+	$(CONTROLLER_GEN) object:headerFile="hack/boilerplate.go.txt" paths="./components/operator/api/..." paths="./components/operator/controllers/..."
 
 .PHONY: fmt
 fmt: ## Run go fmt against code.
-	go fmt ./...
+	go fmt ./components/operator/...
 
 .PHONY: vet
 vet: ## Run go vet against code.
-	go vet ./...
+	go vet ./components/operator/...
 
 .PHONY: test
 test: manifests generate fmt vet envtest module-chart ## Run unit tests.
@@ -85,7 +85,7 @@ build: generate fmt vet module-chart ## Build operator binary.
 
 .PHONY: run
 run: manifests generate fmt vet module-chart ## Run a controller from your host.
-	go run ./main.go
+	go run ./components/operator/main.go
 
 .PHONY: docker-build
 docker-build: manifests generate module-chart ## Build docker image with the operator.
