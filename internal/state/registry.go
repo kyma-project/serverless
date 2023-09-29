@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/kyma-project/serverless-manager/internal/registry"
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
@@ -92,8 +91,7 @@ func setRuntimeRegistryConfig(secret *corev1.Secret, s *systemState) {
 
 func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemState) error {
 	s.instance.Status.DockerRegistry = "internal"
-	s.chartConfig.Release.Flags = chart.AppendInternalRegistryFlags(
-		s.chartConfig.Release.Flags,
+	s.flagsBuilder.WithRegistryEnableInternal(
 		*s.instance.Spec.DockerRegistry.EnableInternal,
 	)
 
@@ -107,7 +105,14 @@ func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 		if getErr != nil {
 			return errors.Wrap(getErr, "while reading env value registryHttpSecret from serverless internal docker registry deployment")
 		}
-		s.chartConfig.Release.Flags = chart.AppendExistingInternalRegistryCredentialsFlags(s.chartConfig.Release.Flags, string(existingIntRegSecret.Data["username"]), string(existingIntRegSecret.Data["password"]), registryHttpSecretEnvValue)
+		s.flagsBuilder.
+			WithRegistryCredentials(
+				string(existingIntRegSecret.Data["username"]),
+				string(existingIntRegSecret.Data["password"]),
+			).
+			WithRegistryHttpSecret(
+				registryHttpSecretEnvValue,
+			)
 	}
 
 	resolver := registry.NewNodePortResolver(registry.RandomNodePort)
@@ -116,7 +121,7 @@ func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 		return errors.Wrap(err, "while resolving registry node port")
 	}
 	r.log.Debugf("docker registry node port: %d", nodePort)
-	s.chartConfig.Release.Flags = chart.AppendNodePortFlag(s.chartConfig.Release.Flags, int64(nodePort))
+	s.flagsBuilder.WithNodePort(int64(nodePort))
 	return nil
 }
 
@@ -127,22 +132,27 @@ func setExternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 	}
 
 	s.instance.Status.DockerRegistry = string(secret.Data["serverAddress"])
-	s.chartConfig.Release.Flags = chart.AppendExternalRegistryFlags(
-		s.chartConfig.Release.Flags,
-		*s.instance.Spec.DockerRegistry.EnableInternal,
-		string(secret.Data["username"]),
-		string(secret.Data["password"]),
-		string(secret.Data["registryAddress"]),
-		s.instance.Status.DockerRegistry,
-	)
+	s.flagsBuilder.
+		WithRegistryEnableInternal(
+			*s.instance.Spec.DockerRegistry.EnableInternal,
+		).
+		WithRegistryCredentials(
+			string(secret.Data["username"]),
+			string(secret.Data["password"]),
+		).
+		WithRegistryAddresses(
+			string(secret.Data["registryAddress"]),
+			s.instance.Status.DockerRegistry,
+		)
+
 	return nil
 }
 
 func setK3dRegistryConfig(s *systemState) {
 	s.instance.Status.DockerRegistry = v1alpha1.DefaultServerAddress
-	s.chartConfig.Release.Flags = chart.AppendK3dRegistryFlags(
-		s.chartConfig.Release.Flags,
+	s.flagsBuilder.WithRegistryEnableInternal(
 		*s.instance.Spec.DockerRegistry.EnableInternal,
+	).WithRegistryAddresses(
 		v1alpha1.DefaultRegistryAddress,
 		s.instance.Status.DockerRegistry,
 	)

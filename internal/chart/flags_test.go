@@ -3,61 +3,129 @@ package chart
 import (
 	"testing"
 
-	"github.com/kyma-project/serverless-manager/api/v1alpha1"
 	"github.com/stretchr/testify/require"
 )
 
-func TestAppendInternalRegistryFlags(t *testing.T) {
-	t.Run("append internal registry flags", func(t *testing.T) {
-
-		flags := AppendInternalRegistryFlags(map[string]interface{}{}, true)
-
-		require.Equal(t, map[string]interface{}{
-			"dockerRegistry": map[string]interface{}{
-				"enableInternal": true,
-			},
-		}, flags)
+func Test_flagsBuilder_Build(t *testing.T) {
+	t.Run("build empty flags", func(t *testing.T) {
+		flags := NewFlagsBuilder().Build()
+		require.Equal(t, map[string]interface{}{}, flags)
 	})
-}
 
-func TestAppendK3dRegistryFlags(t *testing.T) {
-	t.Run("append k3d registry flags", func(t *testing.T) {
-
-		flags := AppendK3dRegistryFlags(map[string]interface{}{},
-			false,
-			v1alpha1.DefaultRegistryAddress,
-			v1alpha1.DefaultRegistryAddress,
-		)
-
-		require.Equal(t, map[string]interface{}{
+	t.Run("build flags", func(t *testing.T) {
+		expectedFlags := map[string]interface{}{
+			"containers": map[string]interface{}{
+				"manager": map[string]interface{}{
+					"configuration": map[string]interface{}{
+						"data": map[string]interface{}{
+							"functionBuildExecutorArgs":        "testBuildExecutorArgs",
+							"functionBuildMaxSimultaneousJobs": "testMaxSimultaneousJobs",
+							"functionPublisherProxyAddress":    "testPublisherURL",
+							"functionRequestBodyLimitMb":       "testRequestBodyLimitMb",
+							"functionRequeueDuration":          "testRequeueDuration",
+							"functionTimeoutSec":               "testTimeoutSec",
+							"functionTraceCollectorEndpoint":   "testCollectorURL",
+							"healthzLivenessTimeout":           "testHealthzLivenessTimeout",
+							"targetCPUUtilizationPercentage":   "testCPUUtilizationPercentage",
+						},
+					},
+				},
+			},
+			"docker-registry": map[string]interface{}{
+				"registryHTTPSecret": "testHttpSecret",
+				"rollme":             "dontrollplease",
+			},
 			"dockerRegistry": map[string]interface{}{
 				"enableInternal":  false,
-				"registryAddress": v1alpha1.DefaultRegistryAddress,
-				"serverAddress":   v1alpha1.DefaultRegistryAddress,
+				"password":        "testPassword",
+				"registryAddress": "testRegistryAddress",
+				"serverAddress":   "testServerAddress",
+				"username":        "testUsername"},
+			"global": map[string]interface{}{
+				"registryNodePort": int64(1234),
 			},
-		}, flags)
+			"webhook": map[string]interface{}{
+				"values": map[string]interface{}{
+					"buildJob": map[string]interface{}{
+						"resources": map[string]interface{}{
+							"defaultPreset": "testJobPreser",
+						},
+					},
+					"function": map[string]interface{}{
+						"resources": map[string]interface{}{
+							"defaultPreset": "testPodPreser",
+						},
+					},
+				},
+			},
+		}
+
+		flags := NewFlagsBuilder().
+			WithNodePort(1234).
+			WithDefaultPresetFlags("testJobPreser", "testPodPreser").
+			WithOptionalDependencies("testPublisherURL", "testCollectorURL").
+			WithRegistryAddresses("testRegistryAddress", "testServerAddress").
+			WithRegistryCredentials("testUsername", "testPassword").
+			WithRegistryEnableInternal(false).
+			WithRegistryHttpSecret("testHttpSecret").
+			WithControllerConfiguration(
+				"testCPUUtilizationPercentage",
+				"testRequeueDuration",
+				"testBuildExecutorArgs",
+				"testMaxSimultaneousJobs",
+				"testHealthzLivenessTimeout",
+				"testRequestBodyLimitMb",
+				"testTimeoutSec",
+			).Build()
+
+		require.Equal(t, expectedFlags, flags)
 	})
-}
 
-func TestAppendExternalRegistryFlags(t *testing.T) {
-	t.Run("append external registry flags", func(t *testing.T) {
-
-		flags := AppendExternalRegistryFlags(map[string]interface{}{},
-			false,
-			"username",
-			"password",
-			"registryAddress",
-			"serverAddress",
-		)
-
-		require.Equal(t, map[string]interface{}{
+	t.Run("build registry flags only", func(t *testing.T) {
+		expectedFlags := map[string]interface{}{
 			"dockerRegistry": map[string]interface{}{
-				"enableInternal":  false,
-				"username":        "username",
-				"password":        "password",
-				"registryAddress": "registryAddress",
-				"serverAddress":   "serverAddress",
+				"password":        "testPassword",
+				"registryAddress": "testRegistryAddress",
+				"serverAddress":   "testServerAddress",
+				"username":        "testUsername",
 			},
-		}, flags)
+		}
+
+		flags := NewFlagsBuilder().
+			WithRegistryAddresses("testRegistryAddress", "testServerAddress").
+			WithRegistryCredentials("testUsername", "testPassword").
+			Build()
+
+		require.Equal(t, expectedFlags, flags)
+	})
+
+	t.Run("build not empty controller configuration flags only", func(t *testing.T) {
+		expectedFlags := map[string]interface{}{
+			"containers": map[string]interface{}{
+				"manager": map[string]interface{}{
+					"configuration": map[string]interface{}{
+						"data": map[string]interface{}{
+							"functionBuildMaxSimultaneousJobs": "testMaxSimultaneousJobs",
+							"functionRequestBodyLimitMb":       "testRequestBodyLimitMb",
+							"healthzLivenessTimeout":           "testHealthzLivenessTimeout",
+							"targetCPUUtilizationPercentage":   "testCPUUtilizationPercentage",
+						},
+					},
+				},
+			},
+		}
+
+		flags := NewFlagsBuilder().
+			WithControllerConfiguration(
+				"testCPUUtilizationPercentage",
+				"",
+				"",
+				"testMaxSimultaneousJobs",
+				"testHealthzLivenessTimeout",
+				"testRequestBodyLimitMb",
+				"",
+			).Build()
+
+		require.Equal(t, expectedFlags, flags)
 	})
 }

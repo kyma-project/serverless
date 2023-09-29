@@ -11,12 +11,12 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Install(config *Config) error {
-	return install(config, renderChart)
+func Install(config *Config, customFlags map[string]interface{}) error {
+	return install(config, customFlags, renderChart)
 }
 
-func install(config *Config, renderChartFunc func(config *Config) (*release.Release, error)) error {
-	cachedManifest, currentManifest, err := getCachedAndCurrentManifest(config, renderChartFunc)
+func install(config *Config, customFlags map[string]interface{}, renderChartFunc func(config *Config, customFlags map[string]interface{}) (*release.Release, error)) error {
+	cachedManifest, currentManifest, err := getCachedAndCurrentManifest(config, customFlags, renderChartFunc)
 	if err != nil {
 		return err
 	}
@@ -38,7 +38,7 @@ func install(config *Config, renderChartFunc func(config *Config) (*release.Rele
 
 	return config.Cache.Set(config.Ctx, config.CacheKey, ServerlessSpecManifest{
 		ManagerUID:  config.ManagerUID,
-		CustomFlags: config.Release.Flags,
+		CustomFlags: customFlags,
 		Manifest:    currentManifest,
 	})
 }

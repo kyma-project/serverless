@@ -83,11 +83,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 						Tracing:  testCase.tracing,
 					},
 				},
-				chartConfig: &chart.Config{
-					Release: chart.Release{
-						Flags: chart.EmptyFlags(),
-					},
-				},
+				flagsBuilder: chart.NewFlagsBuilder(),
 			}
 			c := fake.NewClientBuilder().WithScheme(scheme).WithObjects(testCase.extraCR...).Build()
 			r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: record.NewFakeRecorder(5)}}
@@ -125,11 +121,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 					DefaultRuntimePodPreset:          defaultRuntimePodPresetTest,
 				},
 			},
-			chartConfig: &chart.Config{
-				Release: chart.Release{
-					Flags: chart.EmptyFlags(),
-				},
-			},
+			flagsBuilder: chart.NewFlagsBuilder(),
 		}
 
 		c := fake.NewClientBuilder().WithScheme(scheme).Build()
@@ -209,11 +201,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 			statusSnapshot: v1alpha1.ServerlessStatus{
 				DockerRegistry: "",
 			},
-			chartConfig: &chart.Config{
-				Release: chart.Release{
-					Flags: chart.EmptyFlags(),
-				},
-			},
+			flagsBuilder: chart.NewFlagsBuilder(),
 		}
 		secret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
@@ -254,11 +242,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 					TracingEndpoint:  tracingCollectorURL,
 				},
 			},
-			chartConfig: &chart.Config{
-				Release: chart.Release{
-					Flags: map[string]interface{}{},
-				},
-			},
+			flagsBuilder: chart.NewFlagsBuilder(),
 		}
 		c := fake.NewClientBuilder().WithScheme(scheme).WithObjects(fixTracingSvc()).Build()
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c}}
@@ -266,12 +250,13 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		_, _, err := sFnOptionalDependencies(context.Background(), r, s)
 		require.NoError(t, err)
 
-		require.NotNil(t, s.chartConfig)
-		overrideURL, found := getFlagByPath(s.chartConfig.Release.Flags, "containers", "manager", "configuration", "data", "functionTraceCollectorEndpoint", "value")
+		currentFlags := s.flagsBuilder.Build()
+
+		overrideURL, found := getFlagByPath(currentFlags, "containers", "manager", "configuration", "data", "functionTraceCollectorEndpoint", "value")
 		require.True(t, found)
 		assert.Equal(t, tracingCollectorURL, overrideURL)
 
-		overrideURL, found = getFlagByPath(s.chartConfig.Release.Flags, "containers", "manager", "configuration", "data", "functionPublisherProxyAddress", "value")
+		overrideURL, found = getFlagByPath(currentFlags, "containers", "manager", "configuration", "data", "functionPublisherProxyAddress", "value")
 		require.True(t, found)
 		assert.Equal(t, customEventingURL, overrideURL)
 	})

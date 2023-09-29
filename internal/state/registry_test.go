@@ -30,11 +30,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			statusSnapshot: v1alpha1.ServerlessStatus{
 				DockerRegistry: "",
 			},
-			chartConfig: &chart.Config{
-				Release: chart.Release{
-					Flags: chart.EmptyFlags(),
-				},
-			},
+			flagsBuilder: chart.NewFlagsBuilder(),
 		}
 		r := &reconciler{
 			k8s: k8s{client: fake.NewClientBuilder().Build()},
@@ -54,7 +50,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnOptionalDependencies, next)
 
-		require.EqualValues(t, expectedFlags, s.chartConfig.Release.Flags)
+		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
 		require.Equal(t, "internal", s.instance.Status.DockerRegistry)
 	})
 
@@ -86,11 +82,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			statusSnapshot: v1alpha1.ServerlessStatus{
 				DockerRegistry: string(secret.Data["serverAddress"]),
 			},
-			chartConfig: &chart.Config{
-				Release: chart.Release{
-					Flags: chart.EmptyFlags(),
-				},
-			},
+			flagsBuilder: chart.NewFlagsBuilder(),
 		}
 		r := &reconciler{
 			k8s: k8s{
@@ -114,7 +106,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnOptionalDependencies, next)
 
-		require.Equal(t, expectedFlags, s.chartConfig.Release.Flags)
+		require.Equal(t, expectedFlags, s.flagsBuilder.Build())
 		require.Equal(t, string(secret.Data["serverAddress"]), s.instance.Status.DockerRegistry)
 	})
 
@@ -133,11 +125,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			statusSnapshot: v1alpha1.ServerlessStatus{
 				DockerRegistry: "",
 			},
-			chartConfig: &chart.Config{
-				Release: chart.Release{
-					Flags: chart.EmptyFlags(),
-				},
-			},
+			flagsBuilder: chart.NewFlagsBuilder(),
 		}
 		r := &reconciler{
 			k8s: k8s{
@@ -157,7 +145,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnOptionalDependencies, next)
 
-		require.Equal(t, expectedFlags, s.chartConfig.Release.Flags)
+		require.Equal(t, expectedFlags, s.flagsBuilder.Build())
 		require.Equal(t, v1alpha1.DefaultRegistryAddress, s.instance.Status.DockerRegistry)
 	})
 
@@ -213,11 +201,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			statusSnapshot: v1alpha1.ServerlessStatus{
 				DockerRegistry: "",
 			},
-			chartConfig: &chart.Config{
-				Release: chart.Release{
-					Flags: chart.EmptyFlags(),
-				},
-			},
+			flagsBuilder: chart.NewFlagsBuilder(),
 		}
 		client := fake.NewClientBuilder().
 			WithObjects(serverlessClusterWideExternalRegistrySecret).
@@ -233,7 +217,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnOptionalDependencies, next)
 
-		require.EqualValues(t, expectedFlags, s.chartConfig.Release.Flags)
+		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
 		require.Equal(t, string(serverlessClusterWideExternalRegistrySecret.Data["serverAddress"]), s.instance.Status.DockerRegistry)
 	})
 }

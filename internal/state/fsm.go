@@ -40,6 +40,7 @@ type systemState struct {
 	statusSnapshot v1alpha1.ServerlessStatus
 	chartConfig    *chart.Config
 	warningBuilder *warning.Builder
+	flagsBuilder   chart.FlagsBuilder
 }
 
 func (s *systemState) saveStatusSnapshot() {
@@ -78,7 +79,6 @@ func chartConfig(ctx context.Context, r *reconciler, s *systemState) *chart.Conf
 			ChartPath: r.chartPath,
 			Namespace: s.instance.GetNamespace(),
 			Name:      "serverless",
-			Flags:     chart.EmptyFlags(),
 		},
 	}
 }
@@ -114,6 +114,7 @@ func (m *reconciler) Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl
 	state := systemState{
 		instance:       v,
 		warningBuilder: warning.NewBuilder(),
+		flagsBuilder:   chart.NewFlagsBuilder(),
 	}
 	state.saveStatusSnapshot()
 	var err error

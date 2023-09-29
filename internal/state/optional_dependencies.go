@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/kyma-project/serverless-manager/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/kyma-project/serverless-manager/internal/tracing"
 	"github.com/pkg/errors"
 	"k8s.io/client-go/tools/record"
@@ -94,22 +93,22 @@ func updateStatus(eventRecorder record.EventRecorder, instance *v1alpha1.Serverl
 }
 
 func configureDependenciesFlags(s *systemState) {
-	s.chartConfig.Release.Flags = chart.AppendContainersFlags(
-		s.chartConfig.Release.Flags,
-		s.instance.Status.EventingEndpoint,
-		s.instance.Status.TracingEndpoint,
-		s.instance.Status.CPUUtilizationPercentage,
-		s.instance.Status.RequeueDuration,
-		s.instance.Status.BuildExecutorArgs,
-		s.instance.Status.BuildMaxSimultaneousJobs,
-		s.instance.Status.HealthzLivenessTimeout,
-		s.instance.Status.RequestBodyLimitMb,
-		s.instance.Status.TimeoutSec,
-	)
-
-	s.chartConfig.Release.Flags = chart.AppendDefaultPresetFlags(
-		s.chartConfig.Release.Flags,
-		s.instance.Status.DefaultBuildJobPreset,
-		s.instance.Status.DefaultRuntimePodPreset,
-	)
+	s.flagsBuilder.
+		WithControllerConfiguration(
+			s.instance.Status.CPUUtilizationPercentage,
+			s.instance.Status.RequeueDuration,
+			s.instance.Status.BuildExecutorArgs,
+			s.instance.Status.BuildMaxSimultaneousJobs,
+			s.instance.Status.HealthzLivenessTimeout,
+			s.instance.Status.RequestBodyLimitMb,
+			s.instance.Status.TimeoutSec,
+		).
+		WithOptionalDependencies(
+			s.instance.Status.EventingEndpoint,
+			s.instance.Status.TracingEndpoint,
+		).
+		WithDefaultPresetFlags(
+			s.instance.Status.DefaultBuildJobPreset,
+			s.instance.Status.DefaultRuntimePodPreset,
+		)
 }
