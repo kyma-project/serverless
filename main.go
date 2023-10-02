@@ -66,6 +66,7 @@ func main() {
 
 	opts := zap.Options{
 		Development: true,
+		TimeEncoder: uberzapcore.TimeEncoderOfLayout("Jan 02 15:04:05.000000000"),
 	}
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
@@ -93,7 +94,8 @@ func main() {
 
 	config := uberzap.NewDevelopmentConfig()
 	config.EncoderConfig.TimeKey = "timestamp"
-	config.EncoderConfig.EncodeTime = uberzapcore.TimeEncoderOfLayout("Jan 02 15:04:05.000000000")
+	config.EncoderConfig.EncodeTime = opts.TimeEncoder
+	config.DisableCaller = true
 
 	reconcilerLogger, err := config.Build()
 	if err != nil {
