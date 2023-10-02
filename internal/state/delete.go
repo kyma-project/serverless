@@ -24,14 +24,12 @@ const (
 
 // delete serverless based on previously installed resources
 func sFnDeleteResources(_ context.Context, _ *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-	if !s.instance.IsCondition(v1alpha1.ConditionTypeDeleted) {
-		s.setState(v1alpha1.StateDeleting)
-		s.instance.UpdateConditionUnknown(
-			v1alpha1.ConditionTypeDeleted,
-			v1alpha1.ConditionReasonDeletion,
-			"Uninstalling",
-		)
-	}
+	s.setState(v1alpha1.StateDeleting)
+	s.instance.UpdateConditionUnknown(
+		v1alpha1.ConditionTypeDeleted,
+		v1alpha1.ConditionReasonDeletion,
+		"Uninstalling",
+	)
 
 	// TODO: thinkg about deletion configuration
 	return nextState(
@@ -115,14 +113,12 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 		return stopWithEventualError(err)
 	}
 
-	if !s.instance.IsConditionTrue(v1alpha1.ConditionTypeDeleted) {
-		s.setState(v1alpha1.StateDeleting)
-		s.instance.UpdateConditionTrue(
-			v1alpha1.ConditionTypeDeleted,
-			v1alpha1.ConditionReasonDeleted,
-			"Serverless module deleted",
-		)
-	}
+	s.setState(v1alpha1.StateDeleting)
+	s.instance.UpdateConditionTrue(
+		v1alpha1.ConditionTypeDeleted,
+		v1alpha1.ConditionReasonDeleted,
+		"Serverless module deleted",
+	)
 
 	// if resources are ready to be deleted, remove finalizer
 	return nextState(sFnRemoveFinalizer)
