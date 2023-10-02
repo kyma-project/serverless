@@ -18,21 +18,21 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 
 	tracingURL, err := getTracingURL(ctx, r.client, s.instance.Spec)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "while fetching tracing URL")
+		wrappedErr := errors.Wrap(err, "while fetching tracing URL")
+		s.setState(v1alpha1.StateError)
+		s.instance.UpdateConditionFalse(
+			v1alpha1.ConditionTypeConfigured,
+			v1alpha1.ConditionReasonConfigurationErr,
+			wrappedErr,
+		)
+		return nil, nil, wrappedErr
 	}
 	eventingURL := getEventingURL(s.instance.Spec)
 
-	updateStatus(r.k8s, &s.instance, eventingURL, tracingURL)
-	s.setState(v1alpha1.StateProcessing)
-	s.instance.UpdateConditionTrue(
-		v1alpha1.ConditionTypeConfigured,
-		v1alpha1.ConditionReasonConfigured,
-		"Configuration ready",
-	)
+	updateOptionalDependenciesStatus(r.k8s, &s.instance, eventingURL, tracingURL)
+	configureOptionalDependenciesFlags(s)
 
-	configureDependenciesFlags(s)
-
-	return nextState(sFnApplyResources)
+	return nextState(sFnControllerConfiguration)
 }
 
 func getTracingURL(ctx context.Context, client client.Client, spec v1alpha1.ServerlessSpec) (string, error) {
@@ -54,61 +54,19 @@ func getEventingURL(spec v1alpha1.ServerlessSpec) string {
 	return v1alpha1.DefaultEventingEndpoint
 }
 
-func updateStatus(eventRecorder record.EventRecorder, instance *v1alpha1.Serverless, eventingURL, tracingURL string) {
-	spec := instance.Spec
-
-	fields := []struct {
-		specField   string
-		statusField *string
-		fieldName   string
-	}{
-		{spec.TargetCPUUtilizationPercentage, &instance.Status.CPUUtilizationPercentage, "CPU utilization"},
-		{spec.FunctionRequeueDuration, &instance.Status.RequeueDuration, "Function requeue duration"},
-		{spec.FunctionBuildExecutorArgs, &instance.Status.BuildExecutorArgs, "Function build executor args"},
-		{spec.FunctionBuildMaxSimultaneousJobs, &instance.Status.BuildMaxSimultaneousJobs, "Max number of simultaneous jobs"},
-		{spec.HealthzLivenessTimeout, &instance.Status.HealthzLivenessTimeout, "Duration of health check"},
-		{spec.FunctionRequestBodyLimitMb, &instance.Status.RequestBodyLimitMb, "Max size of request body"},
-		{spec.FunctionTimeoutSec, &instance.Status.TimeoutSec, "Timeout"},
-		{spec.DefaultBuildJobPreset, &instance.Status.DefaultBuildJobPreset, "Default build job preset"},
-		{spec.DefaultRuntimePodPreset, &instance.Status.DefaultRuntimePodPreset, "Default runtime pod preset"},
+func updateOptionalDependenciesStatus(eventRecorder record.EventRecorder, instance *v1alpha1.Serverless, eventingURL, tracingURL string) {
+	fields := fieldsToUpdate{
 		{eventingURL, &instance.Status.EventingEndpoint, "Eventing endpoint"},
 		{tracingURL, &instance.Status.TracingEndpoint, "Tracing endpoint"},
 	}
 
-	for _, field := range fields {
-		if field.specField != *field.statusField {
-			oldStatusValue := *field.statusField
-			*field.statusField = field.specField
-			eventRecorder.Eventf(
-				instance,
-				"Normal",
-				string(v1alpha1.ConditionReasonConfiguration),
-				"%s set from '%s' to '%s'",
-				field.fieldName,
-				oldStatusValue,
-				field.specField,
-			)
-		}
-	}
+	updateStatusFields(eventRecorder, instance, fields)
 }
 
-func configureDependenciesFlags(s *systemState) {
+func configureOptionalDependenciesFlags(s *systemState) {
 	s.flagsBuilder.
-		WithControllerConfiguration(
-			s.instance.Status.CPUUtilizationPercentage,
-			s.instance.Status.RequeueDuration,
-			s.instance.Status.BuildExecutorArgs,
-			s.instance.Status.BuildMaxSimultaneousJobs,
-			s.instance.Status.HealthzLivenessTimeout,
-			s.instance.Status.RequestBodyLimitMb,
-			s.instance.Status.TimeoutSec,
-		).
 		WithOptionalDependencies(
 			s.instance.Status.EventingEndpoint,
 			s.instance.Status.TracingEndpoint,
-		).
-		WithDefaultPresetFlags(
-			s.instance.Status.DefaultBuildJobPreset,
-			s.instance.Status.DefaultRuntimePodPreset,
 		)
 }
