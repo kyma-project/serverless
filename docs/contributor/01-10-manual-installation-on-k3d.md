@@ -33,7 +33,7 @@
     You should get a result similar to this example:
 
     ```json
-    {"repositories":["serverless-operator-dev-local","unsigned/component-descriptors/kyma.project.io/module/serverless"]}
+    {"repositories":["serverless-operator-dev-local","unsigned/component-descriptors/kyma-project.io/module/serverless"]}
     ```
 
 6. Inspect the generated module template.
