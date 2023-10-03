@@ -46,6 +46,15 @@ run-without-lifecycle-manager: kyma \
 	apply-serverless \
 	verify-serverless
 
+.PHONY: run-without-lifecycle-manager-operator
+run-without-lifecycle-manager-operator: ## Create k3d cluster and deploy module without the lifecycle-manager.
+run-without-lifecycle-manager-operator: kyma \
+	create-k3d \
+	module-image-operator \
+	deploy \
+	apply-serverless \
+	verify-serverless
+
 .PHONY: run-without-lm-on-cluster
 run-without-lm-on-cluster: ## Deploy module without the lifecycle-manager on existing cluster.
 run-without-lm-on-cluster: \
@@ -144,6 +153,11 @@ kyma:
 .PHONY: module-image
 module-image:
 	@make -C ${PROJECT_ROOT} module-image \
+		IMG=localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
+
+.PHONY: module-image-operator
+module-image-operator:
+	@make -C ${PROJECT_ROOT} module-image-operator \
 		IMG=localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
 
 .PHONY: module-build
