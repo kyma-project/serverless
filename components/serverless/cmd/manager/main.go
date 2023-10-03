@@ -97,6 +97,7 @@ func main() {
 	restConfig := ctrl.GetConfigOrDie()
 
 	logWithCtx.Info("Registering Prometheus Stats Collector")
+	logWithCtx.Info("Registering Prometheus Stats Collector")
 	prometheusCollector := metrics.NewPrometheusStatsCollector()
 	prometheusCollector.Register()
 
