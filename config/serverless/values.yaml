@@ -82,7 +82,7 @@ global:
       directory: "prod"
     function_controller:
       name: "function-controller"
-      version: "PR-321"
+      version: "PR-18164"
       directory: "dev"
     function_webhook:
       name: "function-webhook"
