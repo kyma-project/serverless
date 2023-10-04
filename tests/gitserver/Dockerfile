@@ -23,3 +23,4 @@ RUN /tmp/init_repos.sh
 CMD ["/usr/sbin/httpd", "-D", "FOREGROUND", "-f", "/etc/apache2/httpd.conf"]
 
 EXPOSE 80/tcp
+
