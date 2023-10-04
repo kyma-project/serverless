@@ -91,10 +91,6 @@ run: manifests generate fmt vet module-chart ## Run a controller from your host.
 docker-build: manifests generate module-chart ## Build docker image with the operator.
 	docker build -t ${IMG} .
 
-.PHONY: docker-build-operator
-docker-build-operator: manifests generate module-chart-operator ## Build docker image with the operator.
-	docker build -t ${IMG} .
-
 .PHONY: docker-push
 docker-push: ## Push docker image with the operator.
 	docker push ${IMG}
@@ -131,10 +127,6 @@ undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/confi
 module-image: docker-build docker-push ## Build the Module Image and push it to a registry defined in IMG_REGISTRY.
 	echo "built and pushed module image $(IMG)"
 
-.PHONY: module-image-operator
-module-image-operator: docker-build-operator docker-push ## Build the Module Image and push it to a registry defined in IMG_REGISTRY.
-	echo "built and pushed module image $(IMG)"
-
 .PHONY: module-build
 module-build: ## Build the Module and push artifacts to the registry
 module-build: kyma kustomize render-manifest module-config-template configure-git-origin
@@ -157,15 +149,12 @@ configure-git-origin:
 		git remote add origin https://github.com/kyma-project/serverless-manager
 
 ##@ Build Dependencies
+MODULECHART=module-chart
 
 .PHONY: module-chart
-module-chart: ## Fetch latest serverless chart.
-	@./hack/generate_module-chart.sh
-
-.PHONY: module-chart-operator
-module-chart-operator: ## Copy serverless chart from config/serverless to module-chart
-module-chart-operator: module-chart-clean
-	cp -r config/serverless/ module-chart
+module-chart: ## Copy serverless chart from config/serverless to module-chart
+module-chart: module-chart-clean
+	cp -r config/serverless ${MODULECHART}
 
 .PHONY: module-chart-clean
 module-chart-clean: ## Remove the module-chart dir.

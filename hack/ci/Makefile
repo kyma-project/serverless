@@ -31,7 +31,8 @@ module-build: ## Build the Module, push it to a registry and print it based on t
 ##@ Tests
 
 .PHONY: integration-test
-integration-test: module-chart-test  ## Run integration tests on self-prepared k3d cluster.
+integration-test: ## Run integration tests on self-prepared k3d cluster.
+integration-test: module-chart-test
 	cd ${MODULECHARTTEST} && make serverless-integration
 
 .PHONY: gardener-integration-test
@@ -42,10 +43,12 @@ gardener-integration-test: ## Provision gardener cluster and run integration tes
 		deprovision-gardener || \
 		(make deprovision-gardener && false)
 
-.PHONY: k3d-lm-integration-test ## Run integration tests on self-prepared k3d cluster with lifecycle-manager.
+.PHONY: k3d-lm-integration-test
+k3d-lm-integration-test: ## Run integration tests on self-prepared k3d cluster with lifecycle-manager.
 k3d-lm-integration-test: run-with-lifecycle-manager integration-test
 
-.PHONY: k3d-integration-test ## Run integration tests on self-prepared k3d cluster.
+.PHONY: k3d-integration-test
+k3d-integration-test: ## Run integration tests on self-prepared k3d cluster.
 k3d-integration-test: run-without-lifecycle-manager integration-test remove-serverless
 
 .PHONY: k3d-upgrade-test
@@ -65,7 +68,12 @@ hyperscalers-compatibility-test: ## Hyperscalers compatibility tests not impleme
 
 .PHONY: module-chart-test
 module-chart-test: ## Generate module-chart-test dir.
-	@${PROJECT_ROOT}/hack/clone_dir_from_github.sh kyma tests/function-controller ${MODULECHARTTEST}
+module-chart-test: module-chart-test-cleanup
+	cp -r ${PROJECT_ROOT}/tests/function-controller ${MODULECHARTTEST}
+
+.PHONY: module-chart-test-cleanup
+module-chart-test-cleanup:
+	rm -rf ${MODULECHARTTEST}
 
 .PHONY: remove-serverless
 remove-serverless: ## Remove Serverless CR
@@ -109,9 +117,10 @@ run-with-lifecycle-manager:
 run-without-lifecycle-manager:
 	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager
 
+#TODO: remove it after change run-without-lifecycle-manager-operator->run-without-lifecycle-manager in test-infra
 .PHONY: run-without-lifecycle-manager-operator
 run-without-lifecycle-manager-operator:
-	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager-operator
+	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager
 
 .PHONY: run-without-lm-on-cluster
 run-without-lm-on-cluster:
