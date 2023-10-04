@@ -46,13 +46,13 @@ func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error
 		// case: use runtime secret (with labels)
 		// doc: https://kyma-project.io/docs/kyma/latest/05-technical-reference/svls-03-switching-registries#cluster-wide-external-registry
 		setRuntimeRegistryConfig(extRegSecert, s)
-	case s.instance.Spec.DockerRegistry.SecretName != nil:
+	case isRegistrySecretName(s.instance.Spec.DockerRegistry):
 		// case: use secret from secretName field
 		err := setExternalRegistryConfig(ctx, r, s)
 		if err != nil {
 			return err
 		}
-	case *s.instance.Spec.DockerRegistry.EnableInternal:
+	case getEnableInternal(s.instance.Spec.DockerRegistry):
 		// case: use internal registry
 		err := setInternalRegistryConfig(ctx, r, s)
 		if err != nil {
@@ -69,19 +69,18 @@ func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error
 
 func addRegistryConfigurationWarnings(extRegSecert *corev1.Secret, s *systemState) {
 	// runtime secret exist and it's other than this under secretName
-	if extRegSecert != nil &&
-		s.instance.Spec.DockerRegistry.SecretName != nil &&
+	if extRegSecert != nil && isRegistrySecretName(s.instance.Spec.DockerRegistry) &&
 		extRegSecert.Name != *s.instance.Spec.DockerRegistry.SecretName {
 		s.warningBuilder.With(fmt.Sprintf(extRegSecDiffThanSpecFormat, extRegSecert.Namespace, extRegSecert.Name, extRegSecert.Name))
 	}
 
 	// runtime secret exist and secretName field is empty
-	if extRegSecert != nil && s.instance.Spec.DockerRegistry.SecretName == nil {
+	if extRegSecert != nil && !isRegistrySecretName(s.instance.Spec.DockerRegistry) {
 		s.warningBuilder.With(fmt.Sprintf(extRegSecNotInSpecFormat, extRegSecert.Namespace, extRegSecert.Name, extRegSecert.Name))
 	}
 
 	// enableInternal is true and secretName is used
-	if *s.instance.Spec.DockerRegistry.EnableInternal && s.instance.Spec.DockerRegistry.SecretName != nil {
+	if getEnableInternal(s.instance.Spec.DockerRegistry) && isRegistrySecretName(s.instance.Spec.DockerRegistry) {
 		s.warningBuilder.With(internalEnabledAndSecretNameUsedMessage)
 	}
 }
@@ -135,7 +134,7 @@ func setExternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 	s.instance.Status.DockerRegistry = string(secret.Data["serverAddress"])
 	s.flagsBuilder.
 		WithRegistryEnableInternal(
-			*s.instance.Spec.DockerRegistry.EnableInternal,
+			getEnableInternal(s.instance.Spec.DockerRegistry),
 		).
 		WithRegistryCredentials(
 			string(secret.Data["username"]),
@@ -152,7 +151,7 @@ func setExternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 func setK3dRegistryConfig(s *systemState) {
 	s.instance.Status.DockerRegistry = v1alpha1.DefaultServerAddress
 	s.flagsBuilder.WithRegistryEnableInternal(
-		*s.instance.Spec.DockerRegistry.EnableInternal,
+		getEnableInternal(s.instance.Spec.DockerRegistry),
 	).WithRegistryAddresses(
 		v1alpha1.DefaultRegistryAddress,
 		s.instance.Status.DockerRegistry,
@@ -167,4 +166,15 @@ func getRegistrySecret(ctx context.Context, r *reconciler, s *systemState) (*cor
 	}
 	err := r.client.Get(ctx, key, &secret)
 	return &secret, err
+}
+
+func isRegistrySecretName(registry *v1alpha1.DockerRegistry) bool {
+	return registry != nil && registry.SecretName != nil
+}
+
+func getEnableInternal(registry *v1alpha1.DockerRegistry) bool {
+	if registry != nil && registry.EnableInternal != nil {
+		return *registry.EnableInternal
+	}
+	return v1alpha1.DefaultEnableInternal
 }

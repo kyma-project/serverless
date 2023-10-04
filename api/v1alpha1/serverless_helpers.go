@@ -3,7 +3,6 @@ package v1alpha1
 import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/utils/pointer"
 )
 
 func (s *Serverless) IsInState(state State) bool {
@@ -28,22 +27,3 @@ const (
 	EndpointDisabled        = ""
 	DefaultEventingEndpoint = "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
 )
-
-func (s *ServerlessSpec) Default() {
-	// if DockerRegistry struct is nil configure use of k3d registry
-	if s.DockerRegistry == nil {
-		s.DockerRegistry = &DockerRegistry{}
-	}
-	if s.DockerRegistry.EnableInternal == nil {
-		s.DockerRegistry.EnableInternal = pointer.Bool(DefaultEnableInternal)
-	}
-
-}
-
-func (dr *DockerRegistry) IsInternalEnabled() bool {
-	if dr != nil && dr.EnableInternal != nil {
-		return *dr.EnableInternal
-	}
-
-	return false
-}

@@ -19,8 +19,8 @@ import (
 )
 
 var (
-	defaultResult = ctrl.Result{}
-	secretCache   = types.NamespacedName{
+	defaultResult  = ctrl.Result{}
+	secretCacheKey = types.NamespacedName{
 		Name:      "serverless-manifest-cache",
 		Namespace: "kyma-system", // TODO: detect serverless-manager's namespace
 	}
@@ -59,25 +59,20 @@ func (s *systemState) setServed(served v1alpha1.Served) {
 	s.instance.Status.Served = served
 }
 
-func (s *systemState) setup(ctx context.Context, r *reconciler) {
-	s.instance.Spec.Default()
-	s.chartConfig = chartConfig(ctx, r, s)
-}
-
-func chartConfig(ctx context.Context, r *reconciler, s *systemState) *chart.Config {
+func chartConfig(ctx context.Context, r *reconciler, namespace string) *chart.Config {
 	return &chart.Config{
 		Ctx:        ctx,
 		Log:        r.log,
 		Cache:      r.cache,
-		CacheKey:   secretCache,
-		ManagerUID: r.cfg.managerPodUID,
+		CacheKey:   secretCacheKey,
+		ManagerUID: r.managerPodUID,
 		Cluster: chart.Cluster{
 			Client: r.client,
 			Config: r.config,
 		},
 		Release: chart.Release{
 			ChartPath: r.chartPath,
-			Namespace: s.instance.GetNamespace(),
+			Namespace: namespace,
 			Name:      "serverless",
 		},
 	}
@@ -115,6 +110,7 @@ func (m *reconciler) Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl
 		instance:       v,
 		warningBuilder: warning.NewBuilder(),
 		flagsBuilder:   chart.NewFlagsBuilder(),
+		chartConfig:    chartConfig(ctx, m, v.Namespace),
 	}
 	state.saveStatusSnapshot()
 	var err error

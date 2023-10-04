@@ -19,7 +19,6 @@ func updateServerlessStatus(ctx context.Context, r *reconciler, s *systemState) 
 		err := r.client.Status().Update(ctx, &s.instance)
 		emitEvent(r, s)
 		s.saveStatusSnapshot()
-		s.instance.Spec.Default()
 		return err
 	}
 	return nil
