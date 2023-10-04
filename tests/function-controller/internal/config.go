@@ -17,7 +17,7 @@ type Config struct {
 	MaxPollingTime                  time.Duration        `envconfig:"default=5m"`
 	InsecureSkipVerify              bool                 `envconfig:"default=true"`
 	Cleanup                         executor.CleanupMode `envconfig:"default=yes"`
-	GitServerImage                  string               `envconfig:"default=eu.gcr.io/kyma-project/gitserver:b60c3054"`
+	GitServerImage                  string               `envconfig:"default=europe-docker.pkg.dev/kyma-project/dev/gitserver:PR-325"`
 	GitServerRepoName               string               `envconfig:"default=function"`
 	IstioEnabled                    bool                 `envconfig:"default=false"`
 	PackageRegistryConfigSecretName string               `envconfig:"default=serverless-package-registry-config"`
