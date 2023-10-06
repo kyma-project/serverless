@@ -1,8 +1,11 @@
 PKG = github.com/kyma-project/kyma/components/function-controller
 ROOT :=  $(shell pwd)
+PROJECT_ROOT ?= $(ROOT)/../..
 # Image URL to use all building/pushing image targets
 APP_NAME = function-controller
 APP_PATH = components/$(APP_NAME)
+LOCALBIN ?= $(PROJECT_ROOT)/bin
+KUSTOMIZE ?= $(LOCALBIN)/kustomize
 
 override VERIFY_IGNORE := /vendor\|/automock\|/pkg/apis/serverless/v1alpha2/zz_generated.deepcopy.go\|/pkg/apis/serverless/v1alpha2/zz_generated.deepcopy.go
 
@@ -35,15 +38,16 @@ CONTROLLER_GEN_VERSION=v0.6.2
 
 .PHONY: manifests
 manifests: controller-gen-local generate-local
+	@make -C ${PROJECT_ROOT} kustomize
 	$(CONTROLLER_GEN) $(CRD_OPTIONS) rbac:roleName=serverless webhook paths="./..." \
 		object:headerFile=hack/boilerplate.go.txt \
 		output:crd:artifacts:config=config/crd/bases \
 		output:rbac:artifacts:config=config/rbac \
 		output:webhook:artifacts:config=config/webhook
-	kustomize build config/crd > config/crd/crd-serverless.yaml
-	cp config/crd/crd-serverless.yaml ../../installation/resources/crds/serverless/
-	cp config/crd/crd-serverless.yaml ../../resources/serverless/templates/crds.yaml
-	(cd ../../hack/table-gen && make serverless-docs )
+	$(KUSTOMIZE) build config/crd > config/crd/crd-serverless.yaml
+	cp config/crd/crd-serverless.yaml $(PROJECT_ROOT)/config/serverless/templates/crds.yaml
+# TODO: Fix it. Now this docu is in https://kyma-project.io/#/serverless-manager/user/resources/06-10-function-cr?id=custom-resource-parameters. Remove table-gen from kyma.
+# (cd ../../hack/table-gen && make serverless-docs )
 
 # Generate code
 .PHONY: generate-local
