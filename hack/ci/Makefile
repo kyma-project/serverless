@@ -69,7 +69,7 @@ hyperscalers-compatibility-test: ## Hyperscalers compatibility tests not impleme
 .PHONY: module-chart-test
 module-chart-test: ## Generate module-chart-test dir.
 module-chart-test: module-chart-test-cleanup
-	cp -r ${PROJECT_ROOT}/tests/function-controller ${MODULECHARTTEST}
+	cp -r ${PROJECT_ROOT}/tests/serverless ${MODULECHARTTEST}
 
 .PHONY: module-chart-test-cleanup
 module-chart-test-cleanup:
