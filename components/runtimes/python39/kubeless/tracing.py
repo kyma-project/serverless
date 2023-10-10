@@ -63,4 +63,3 @@ def set_req_context(req) -> Iterator[trace.Span]:
         yield span
     finally:
         context_api.detach(token)
-        
