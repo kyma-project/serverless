@@ -117,11 +117,6 @@ run-with-lifecycle-manager:
 run-without-lifecycle-manager:
 	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager
 
-#TODO: remove it after change run-without-lifecycle-manager-operator->run-without-lifecycle-manager in test-infra
-.PHONY: run-without-lifecycle-manager-operator
-run-without-lifecycle-manager-operator:
-	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager
-
 .PHONY: run-without-lm-on-cluster
 run-without-lm-on-cluster:
 	@make -C ${PROJECT_COMMON} run-without-lm-on-cluster
