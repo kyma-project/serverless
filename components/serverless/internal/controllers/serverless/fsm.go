@@ -137,31 +137,6 @@ func (m *reconciler) populateStatusFromSystemState(status *serverlessv1alpha2.Fu
 	}
 	status.RuntimeImageOverride = s.instance.Spec.RuntimeImageOverride
 
-	// set resource configuration
-	if s.instance.Spec.ResourceConfiguration != nil &&
-		s.instance.Spec.ResourceConfiguration.Build != nil &&
-		s.instance.Spec.ResourceConfiguration.Build.Profile != "" {
-		status.BuildJobPreset = s.instance.Spec.ResourceConfiguration.Build.Profile
-	} else if s.instance.Spec.ResourceConfiguration != nil &&
-		s.instance.Spec.ResourceConfiguration.Build != nil &&
-		s.instance.Spec.ResourceConfiguration.Build.Resources != nil {
-		status.BuildJobPreset = "custom"
-	} else {
-		status.BuildJobPreset = m.cfg.fn.ResourceConfig.BuildJob.Resources.DefaultPreset
-	}
-
-	if s.instance.Spec.ResourceConfiguration != nil &&
-		s.instance.Spec.ResourceConfiguration.Function != nil &&
-		s.instance.Spec.ResourceConfiguration.Function.Profile != "" {
-		status.FunctionPreset = s.instance.Spec.ResourceConfiguration.Function.Profile
-	} else if s.instance.Spec.ResourceConfiguration != nil &&
-		s.instance.Spec.ResourceConfiguration.Function != nil &&
-		s.instance.Spec.ResourceConfiguration.Function.Resources != nil {
-		status.FunctionPreset = "custom"
-	} else {
-		status.FunctionPreset = m.cfg.fn.ResourceConfig.BuildJob.Resources.DefaultPreset
-	}
-
 	// set scale sub-resource
 	selector, err := metav1.LabelSelectorAsSelector(&metav1.LabelSelector{MatchLabels: s.podLabels()})
 	if err != nil {
