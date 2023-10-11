@@ -153,7 +153,7 @@ func (m *reconciler) populateStatusFromSystemState(status *serverlessv1alpha2.Fu
 
 func (m *reconciler) populateStatusFromResourceConfiguration(status *serverlessv1alpha2.FunctionStatus, s *systemState) {
 	defaultJobPreset := m.cfg.fn.ResourceConfig.BuildJob.Resources.DefaultPreset
-	defaultFunctionPreset := m.cfg.fn.ResourceConfig.BuildJob.Resources.DefaultPreset
+	defaultFunctionPreset := m.cfg.fn.ResourceConfig.Function.Resources.DefaultPreset
 
 	if s.instance.Spec.ResourceConfiguration == nil {
 		status.BuildJobPreset = defaultJobPreset
