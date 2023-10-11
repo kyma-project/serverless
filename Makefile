@@ -154,7 +154,8 @@ MODULECHART=module-chart
 .PHONY: module-chart
 module-chart: ## Copy serverless chart from config/serverless to module-chart
 module-chart: module-chart-clean
-	cp -r config/serverless ${MODULECHART}
+	mkdir -p ${MODULECHART}
+	cp -r config/serverless/* ${MODULECHART}
 
 .PHONY: module-chart-clean
 module-chart-clean: ## Remove the module-chart dir.
