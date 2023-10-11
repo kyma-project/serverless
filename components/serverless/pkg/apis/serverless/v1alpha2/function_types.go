@@ -267,6 +267,10 @@ type Repository struct {
 type FunctionStatus struct {
 	// Specifies the **Runtime** type of the Function.
 	Runtime Runtime `json:"runtime,omitempty"`
+	// Specifies the presed used for the function
+	FunctionPreset string `json:"functionPreset,omitempty"`
+	// Specifies the presed used for the build job
+	BuildJobPreset string `json:"buildJobPreset,omitempty"`
 	// Specifies an array of conditions describing the status of the parser.
 	Conditions []Condition `json:"conditions,omitempty"`
 	// Specify the repository which was used to build the function.
