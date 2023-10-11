@@ -423,7 +423,7 @@ spec:
                 description: Specifies the relative path to the Git directory that
                   contains the source code from which the Function is built.
                 type: string
-              buildJobPreset:
+              buildResourceProfile:
                 description: Specifies the presed used for the build job
                 type: string
               commit:
@@ -457,7 +457,7 @@ spec:
                   - status
                   type: object
                 type: array
-              functionPreset:
+              functionResourceProfile:
                 description: Specifies the presed used for the function
                 type: string
               podSelector:

@@ -156,13 +156,13 @@ func (m *reconciler) populateStatusFromResourceConfiguration(status *serverlessv
 	defaultFunctionPreset := m.cfg.fn.ResourceConfig.Function.Resources.DefaultPreset
 
 	if s.instance.Spec.ResourceConfiguration == nil {
-		status.BuildJobPreset = defaultJobPreset
-		status.FunctionPreset = defaultFunctionPreset
+		status.BuildResourceProfile = defaultJobPreset
+		status.FunctionResourceProfile = defaultFunctionPreset
 		return
 	}
 
-	status.BuildJobPreset = getUsedResourcePreset(s.instance.Spec.ResourceConfiguration.Build, defaultJobPreset)
-	status.FunctionPreset = getUsedResourcePreset(s.instance.Spec.ResourceConfiguration.Function, defaultFunctionPreset)
+	status.BuildResourceProfile = getUsedResourcePreset(s.instance.Spec.ResourceConfiguration.Build, defaultJobPreset)
+	status.FunctionResourceProfile = getUsedResourcePreset(s.instance.Spec.ResourceConfiguration.Function, defaultFunctionPreset)
 }
 
 func getUsedResourcePreset(resourceRequirements *serverlessv1alpha2.ResourceRequirements, defaultPreset string) string {
