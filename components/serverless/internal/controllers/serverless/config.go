@@ -1,12 +1,13 @@
 package serverless
 
 import (
+	"time"
+
 	"github.com/pkg/errors"
 	"github.com/vrischmann/envconfig"
 	"gopkg.in/yaml.v2"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	"time"
 )
 
 type FunctionConfig struct {
@@ -85,8 +86,8 @@ func (p Preset) ToResourceRequirements() map[string]v1.ResourceRequirements {
 				v1.ResourceMemory: v.LimitMemory.Quantity,
 			},
 			Requests: v1.ResourceList{
-				v1.ResourceCPU:    v.LimitCPU.Quantity,
-				v1.ResourceMemory: v.LimitMemory.Quantity,
+				v1.ResourceCPU:    v.RequestCPU.Quantity,
+				v1.ResourceMemory: v.RequestMemory.Quantity,
 			},
 		}
 	}
