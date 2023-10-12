@@ -30,21 +30,36 @@ func NewFlagsBuilder() FlagsBuilder {
 func (fb *flagsBuilder) Build() map[string]interface{} {
 	flags := map[string]interface{}{}
 	for key, value := range fb.flags {
-		valuePath := strings.Split(key, ".")
-		currentPath := flags
-		for i, path := range valuePath {
-			if elem, ok := currentPath[path]; !ok {
-				elem = map[string]interface{}{}
-				currentPath[path] = elem
-			}
-			if i == len(valuePath)-1 {
-				currentPath[path] = value
-			} else {
-				currentPath = currentPath[path].(map[string]interface{})
-			}
-		}
+		flagPath := strings.Split(key, ".")
+		appendFlag(flags, flagPath, value)
 	}
 	return flags
+}
+
+func appendFlag(flags map[string]interface{}, flagPath []string, value interface{}) {
+	currentFlag := flags
+	for i, path := range flagPath {
+		createIfEmpty(currentFlag, path)
+		if lastElement(flagPath, i) {
+			currentFlag[path] = value
+		} else {
+			currentFlag = nextDeeperFlag(currentFlag, path)
+		}
+	}
+}
+
+func createIfEmpty(flags map[string]interface{}, key string) {
+	if _, ok := flags[key]; !ok {
+		flags[key] = map[string]interface{}{}
+	}
+}
+
+func lastElement(values []string, i int) bool {
+	return i == len(values)-1
+}
+
+func nextDeeperFlag(currentFlag map[string]interface{}, path string) map[string]interface{} {
+	return currentFlag[path].(map[string]interface{})
 }
 
 func (fb *flagsBuilder) WithControllerConfiguration(CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout, requestBodyLimitMb, timeoutSec string) *flagsBuilder {
