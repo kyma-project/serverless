@@ -23,8 +23,8 @@ import (
 func TestConfigMapReconciler_Reconcile(t *testing.T) {
 	//GIVEN
 	g := gomega.NewGomegaWithT(t)
-	k8sClient, testEnv := testenv.SetUpTestEnv(t)
-	defer testenv.TearDownTestEnv(t, testEnv)
+	k8sClient, testEnv := testenv_test.SetUpTestEnv(t)
+	defer testenv_test.TearDownTestEnv(t, testEnv)
 	resourceClient := resource.New(k8sClient, scheme.Scheme)
 	testCfg := setUpControllerConfig(g)
 	configMapSvc := NewConfigMapService(resourceClient, testCfg)
