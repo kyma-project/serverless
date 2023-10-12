@@ -1,5 +1,7 @@
 package chart
 
+import "strings"
+
 type FlagsBuilder interface {
 	Build() map[string]interface{}
 	WithControllerConfiguration(CPUUtilizationPercentage string, requeueDuration string, buildExecutorArgs string, maxSimultaneousJobs string, healthzLivenessTimeout string, requestBodyLimitMb string, timeoutSec string) *flagsBuilder
@@ -18,6 +20,7 @@ type flagsBuilder struct {
 	containersDataParams      map[string]interface{}
 	webhookValuesParams       map[string]interface{}
 	globalParams              map[string]interface{}
+	flags                     map[string]interface{}
 }
 
 func NewFlagsBuilder() FlagsBuilder {
@@ -27,41 +30,57 @@ func NewFlagsBuilder() FlagsBuilder {
 		containersDataParams:      map[string]interface{}{},
 		webhookValuesParams:       map[string]interface{}{},
 		globalParams:              map[string]interface{}{},
+		flags:                     map[string]interface{}{},
 	}
 }
 
 func (fb *flagsBuilder) Build() map[string]interface{} {
+	//
+	//if paramsAreNotEmpty(fb.containersDataParams) {
+	//	flags["containers"] = map[string]interface{}{
+	//		"manager": map[string]interface{}{
+	//			"configuration": map[string]interface{}{
+	//				"data": fb.containersDataParams,
+	//			},
+	//		},
+	//	}
+	//}
+	//
+	//if paramsAreNotEmpty(fb.globalParams) {
+	//	flags["global"] = fb.globalParams
+	//}
+	//
+	//if paramsAreNotEmpty(fb.webhookValuesParams) {
+	//	flags["webhook"] = map[string]interface{}{
+	//		"values": fb.webhookValuesParams,
+	//	}
+	//}
+	//
+	//if paramsAreNotEmpty(fb.dockerRegistryParams) {
+	//	flags["dockerRegistry"] = fb.dockerRegistryParams
+	//}
+	//
+	//if paramsAreNotEmpty(fb.dockerRegistryChartParams) {
+	//	flags["docker-registry"] = fb.dockerRegistryChartParams
+	//}
+
 	flags := map[string]interface{}{}
-
-	if paramsAreNotEmpty(fb.containersDataParams) {
-		flags["containers"] = map[string]interface{}{
-			"manager": map[string]interface{}{
-				"configuration": map[string]interface{}{
-					"data": fb.containersDataParams,
-				},
-			},
+	for key, value := range fb.flags {
+		valuePath := strings.Split(key, ".")
+		currentPath := flags
+		for i, path := range valuePath {
+			if elem, ok := currentPath[path]; !ok {
+				elem = map[string]interface{}{}
+				currentPath[path] = elem
+			}
+			if i == len(valuePath)-1 {
+				currentPath[path] = value
+			} else {
+				currentPath = currentPath[path].(map[string]interface{})
+			}
 		}
 	}
-
-	if paramsAreNotEmpty(fb.globalParams) {
-		flags["global"] = fb.globalParams
-	}
-
-	if paramsAreNotEmpty(fb.webhookValuesParams) {
-		flags["webhook"] = map[string]interface{}{
-			"values": fb.webhookValuesParams,
-		}
-	}
-
-	if paramsAreNotEmpty(fb.dockerRegistryParams) {
-		flags["dockerRegistry"] = fb.dockerRegistryParams
-	}
-
-	if paramsAreNotEmpty(fb.dockerRegistryChartParams) {
-		flags["docker-registry"] = fb.dockerRegistryChartParams
-	}
-
-	return flags
+	return fb.flags
 }
 
 func paramsAreNotEmpty(params map[string]interface{}) bool {
@@ -92,8 +111,8 @@ func (fb *flagsBuilder) WithControllerConfiguration(CPUUtilizationPercentage, re
 }
 
 func (fb *flagsBuilder) WithOptionalDependencies(publisherURL, traceCollectorURL string) *flagsBuilder {
-	fb.containersDataParams["functionTraceCollectorEndpoint"] = traceCollectorURL
-	fb.containersDataParams["functionPublisherProxyAddress"] = publisherURL
+	fb.flags["containers.manager.configuration.data.functionTraceCollectorEndpoint"] = traceCollectorURL
+	fb.flags["containers.manager.configuration.data.functionPublisherProxyAddress"] = publisherURL
 
 	return fb
 }
