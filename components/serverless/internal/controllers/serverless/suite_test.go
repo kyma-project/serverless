@@ -3,6 +3,7 @@ package serverless
 import (
 	"context"
 	"fmt"
+	k8sresource "k8s.io/apimachinery/pkg/api/resource"
 	"path/filepath"
 
 	corev1 "k8s.io/api/core/v1"
@@ -25,7 +26,54 @@ const (
     FROM ${base_image}
     USER root
     ENV KUBELESS_INSTALL_VOLUME=/kubeless`
-	changedFakeDockerfile = `ARG base_image=other_image`
+	changedFakeDockerfile   = `ARG base_image=other_image`
+	testFunctionPresetName  = "function-test-preset"
+	testFunctionPresetName2 = "function-test-preset-2"
+	testBuildPresetName     = "build-test-preset"
+	testBuildPresetName2    = "build-test-preset-2"
+)
+
+var (
+	testResourceConfig = ResourceConfig{
+		Function: FunctionResourceConfig{
+			Resources: Resources{
+				Presets: map[string]Resource{
+					testFunctionPresetName: {
+						RequestCPU:    Quantity{k8sresource.MustParse("50m")},
+						RequestMemory: Quantity{k8sresource.MustParse("50Mi")},
+						LimitCPU:      Quantity{k8sresource.MustParse("50m")},
+						LimitMemory:   Quantity{k8sresource.MustParse("50Mi")},
+					},
+					testFunctionPresetName2: {
+						RequestCPU:    Quantity{k8sresource.MustParse("100m")},
+						RequestMemory: Quantity{k8sresource.MustParse("100Mi")},
+						LimitCPU:      Quantity{k8sresource.MustParse("100m")},
+						LimitMemory:   Quantity{k8sresource.MustParse("100Mi")},
+					},
+				},
+				DefaultPreset: testFunctionPresetName,
+			},
+		},
+		BuildJob: BuildJobResourceConfig{
+			Resources: Resources{
+				Presets: map[string]Resource{
+					testBuildPresetName: {
+						RequestCPU:    Quantity{k8sresource.MustParse("50m")},
+						RequestMemory: Quantity{k8sresource.MustParse("50Mi")},
+						LimitCPU:      Quantity{k8sresource.MustParse("50m")},
+						LimitMemory:   Quantity{k8sresource.MustParse("50Mi")},
+					},
+					testBuildPresetName2: {
+						RequestCPU:    Quantity{k8sresource.MustParse("100m")},
+						RequestMemory: Quantity{k8sresource.MustParse("100Mi")},
+						LimitCPU:      Quantity{k8sresource.MustParse("100m")},
+						LimitMemory:   Quantity{k8sresource.MustParse("100Mi")},
+					},
+				},
+				DefaultPreset: testBuildPresetName,
+			},
+		},
+	}
 )
 
 func setUpTestEnv(g *gomega.GomegaWithT) (cl resource.Client, env *envtest.Environment) {
@@ -62,6 +110,8 @@ func setUpControllerConfig(g *gomega.GomegaWithT) FunctionConfig {
 	var testCfg FunctionConfig
 	err := envconfig.InitWithPrefix(&testCfg, "TEST")
 	g.Expect(err).To(gomega.BeNil())
+
+	testCfg.ResourceConfig = testResourceConfig
 	return testCfg
 }
 

@@ -3,6 +3,7 @@ package serverless
 import (
 	"context"
 	"fmt"
+	k8sresource "k8s.io/apimachinery/pkg/api/resource"
 	"testing"
 	"time"
 
@@ -1505,6 +1506,101 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 		function = &serverlessv1alpha2.Function{}
 		g.Expect(resourceClient.Get(context.TODO(), request.NamespacedName, function)).To(gomega.Succeed())
 		g.Expect(function.Spec.SecretMounts).To(gomega.HaveLen(0))
+	})
+	t.Run("should reflect used resource profiles in status", func(t *testing.T) {
+		//GIVEN
+		g := gomega.NewGomegaWithT(t)
+		inFunction := newFixFunction(testNamespace, "function-with-resources", 1, 2)
+		g.Expect(resourceClient.Create(context.TODO(), inFunction)).To(gomega.Succeed())
+		defer deleteFunction(g, resourceClient, inFunction)
+
+		request := ctrl.Request{NamespacedName: types.NamespacedName{Namespace: inFunction.GetNamespace(), Name: inFunction.GetName()}}
+
+		//WHEN
+		t.Log("should reflect default profiles settings")
+		_, err := reconciler.Reconcile(ctx, request)
+		g.Expect(err).To(gomega.BeNil())
+
+		function := &serverlessv1alpha2.Function{}
+		g.Expect(resourceClient.Get(context.TODO(), request.NamespacedName, function)).To(gomega.Succeed())
+		g.Expect(function.Status.FunctionResourceProfile).To(gomega.Equal(testResourceConfig.Function.Resources.DefaultPreset))
+		g.Expect(function.Status.BuildResourceProfile).To(gomega.Equal(testResourceConfig.BuildJob.Resources.DefaultPreset))
+
+		t.Log("should reflect custom settings")
+		customResourceConfiguration := serverlessv1alpha2.ResourceConfiguration{
+			Build: &serverlessv1alpha2.ResourceRequirements{
+				Resources: &corev1.ResourceRequirements{
+					Limits: corev1.ResourceList{
+						corev1.ResourceCPU:    k8sresource.MustParse("200m"),
+						corev1.ResourceMemory: k8sresource.MustParse("200Mi"),
+					},
+					Requests: corev1.ResourceList{
+						corev1.ResourceCPU:    k8sresource.MustParse("70m"),
+						corev1.ResourceMemory: k8sresource.MustParse("70Mi"),
+					},
+				},
+			},
+			Function: &serverlessv1alpha2.ResourceRequirements{
+				Resources: &corev1.ResourceRequirements{
+					Limits: corev1.ResourceList{
+						corev1.ResourceCPU:    k8sresource.MustParse("200m"),
+						corev1.ResourceMemory: k8sresource.MustParse("200Mi"),
+					},
+					Requests: corev1.ResourceList{
+						corev1.ResourceCPU:    k8sresource.MustParse("70m"),
+						corev1.ResourceMemory: k8sresource.MustParse("70Mi"),
+					},
+				},
+			},
+		}
+		function = &serverlessv1alpha2.Function{}
+		g.Expect(resourceClient.Get(context.TODO(), request.NamespacedName, function)).To(gomega.Succeed())
+		function.Spec.ResourceConfiguration = &customResourceConfiguration
+		g.Expect(resourceClient.Update(ctx, function)).To(gomega.Succeed())
+
+		_, err = reconciler.Reconcile(ctx, request)
+		g.Expect(err).To(gomega.BeNil())
+
+		function = &serverlessv1alpha2.Function{}
+		g.Expect(resourceClient.Get(context.TODO(), request.NamespacedName, function)).To(gomega.Succeed())
+		g.Expect(function.Status.FunctionResourceProfile).To(gomega.Equal("custom"))
+		g.Expect(function.Status.BuildResourceProfile).To(gomega.Equal("custom"))
+
+		t.Log("should reflect custom settings from profile")
+		customResourceConfigurationWithProfile := serverlessv1alpha2.ResourceConfiguration{
+			Build: &serverlessv1alpha2.ResourceRequirements{
+				Profile: testBuildPresetName2,
+			},
+			Function: &serverlessv1alpha2.ResourceRequirements{
+				Profile: testFunctionPresetName2,
+			},
+		}
+		function = &serverlessv1alpha2.Function{}
+		g.Expect(resourceClient.Get(context.TODO(), request.NamespacedName, function)).To(gomega.Succeed())
+		function.Spec.ResourceConfiguration = &customResourceConfigurationWithProfile
+		g.Expect(resourceClient.Update(ctx, function)).To(gomega.Succeed())
+
+		_, err = reconciler.Reconcile(ctx, request)
+		g.Expect(err).To(gomega.BeNil())
+
+		function = &serverlessv1alpha2.Function{}
+		g.Expect(resourceClient.Get(context.TODO(), request.NamespacedName, function)).To(gomega.Succeed())
+		g.Expect(function.Status.FunctionResourceProfile).To(gomega.Equal(testFunctionPresetName2))
+		g.Expect(function.Status.BuildResourceProfile).To(gomega.Equal(testBuildPresetName2))
+
+		t.Log("should reflect default resource settings after settings deletion")
+		function = &serverlessv1alpha2.Function{}
+		g.Expect(resourceClient.Get(context.TODO(), request.NamespacedName, function)).To(gomega.Succeed())
+		function.Spec.ResourceConfiguration = nil
+		g.Expect(resourceClient.Update(ctx, function)).To(gomega.Succeed())
+
+		_, err = reconciler.Reconcile(ctx, request)
+		g.Expect(err).To(gomega.BeNil())
+
+		function = &serverlessv1alpha2.Function{}
+		g.Expect(resourceClient.Get(context.TODO(), request.NamespacedName, function)).To(gomega.Succeed())
+		g.Expect(function.Status.FunctionResourceProfile).To(gomega.Equal(testResourceConfig.Function.Resources.DefaultPreset))
+		g.Expect(function.Status.BuildResourceProfile).To(gomega.Equal(testResourceConfig.BuildJob.Resources.DefaultPreset))
 	})
 }
 
