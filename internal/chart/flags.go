@@ -1,6 +1,9 @@
 package chart
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type FlagsBuilder interface {
 	Build() map[string]interface{}
@@ -15,55 +18,16 @@ type FlagsBuilder interface {
 }
 
 type flagsBuilder struct {
-	dockerRegistryChartParams map[string]interface{}
-	dockerRegistryParams      map[string]interface{}
-	containersDataParams      map[string]interface{}
-	webhookValuesParams       map[string]interface{}
-	globalParams              map[string]interface{}
-	flags                     map[string]interface{}
+	flags map[string]interface{}
 }
 
 func NewFlagsBuilder() FlagsBuilder {
 	return &flagsBuilder{
-		dockerRegistryChartParams: map[string]interface{}{},
-		dockerRegistryParams:      map[string]interface{}{},
-		containersDataParams:      map[string]interface{}{},
-		webhookValuesParams:       map[string]interface{}{},
-		globalParams:              map[string]interface{}{},
-		flags:                     map[string]interface{}{},
+		flags: map[string]interface{}{},
 	}
 }
 
 func (fb *flagsBuilder) Build() map[string]interface{} {
-	//
-	//if paramsAreNotEmpty(fb.containersDataParams) {
-	//	flags["containers"] = map[string]interface{}{
-	//		"manager": map[string]interface{}{
-	//			"configuration": map[string]interface{}{
-	//				"data": fb.containersDataParams,
-	//			},
-	//		},
-	//	}
-	//}
-	//
-	//if paramsAreNotEmpty(fb.globalParams) {
-	//	flags["global"] = fb.globalParams
-	//}
-	//
-	//if paramsAreNotEmpty(fb.webhookValuesParams) {
-	//	flags["webhook"] = map[string]interface{}{
-	//		"values": fb.webhookValuesParams,
-	//	}
-	//}
-	//
-	//if paramsAreNotEmpty(fb.dockerRegistryParams) {
-	//	flags["dockerRegistry"] = fb.dockerRegistryParams
-	//}
-	//
-	//if paramsAreNotEmpty(fb.dockerRegistryChartParams) {
-	//	flags["docker-registry"] = fb.dockerRegistryChartParams
-	//}
-
 	flags := map[string]interface{}{}
 	for key, value := range fb.flags {
 		valuePath := strings.Split(key, ".")
@@ -80,11 +44,7 @@ func (fb *flagsBuilder) Build() map[string]interface{} {
 			}
 		}
 	}
-	return fb.flags
-}
-
-func paramsAreNotEmpty(params map[string]interface{}) bool {
-	return len(params) > 0
+	return flags
 }
 
 func (fb *flagsBuilder) WithControllerConfiguration(CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout, requestBodyLimitMb, timeoutSec string) *flagsBuilder {
@@ -103,7 +63,8 @@ func (fb *flagsBuilder) WithControllerConfiguration(CPUUtilizationPercentage, re
 
 	for _, flag := range optionalFlags {
 		if flag.value != "" {
-			fb.containersDataParams[flag.key] = flag.value
+			fullPath := fmt.Sprintf("containers.manager.configuration.data.%s", flag.key)
+			fb.flags[fullPath] = flag.value
 		}
 	}
 
@@ -113,59 +74,47 @@ func (fb *flagsBuilder) WithControllerConfiguration(CPUUtilizationPercentage, re
 func (fb *flagsBuilder) WithOptionalDependencies(publisherURL, traceCollectorURL string) *flagsBuilder {
 	fb.flags["containers.manager.configuration.data.functionTraceCollectorEndpoint"] = traceCollectorURL
 	fb.flags["containers.manager.configuration.data.functionPublisherProxyAddress"] = publisherURL
-
 	return fb
 }
 
 func (fb *flagsBuilder) WithRegistryEnableInternal(enableInternal bool) *flagsBuilder {
-	fb.dockerRegistryParams["enableInternal"] = enableInternal
-
+	fb.flags["dockerRegistry.enableInternal"] = enableInternal
 	return fb
 }
 
 func (fb *flagsBuilder) WithRegistryCredentials(username, password string) *flagsBuilder {
-	fb.dockerRegistryParams["username"] = username
-	fb.dockerRegistryParams["password"] = password
-
+	fb.flags["dockerRegistry.username"] = username
+	fb.flags["dockerRegistry.password"] = password
 	return fb
 }
 
 func (fb *flagsBuilder) WithRegistryAddresses(registryAddress, serverAddress string) *flagsBuilder {
-	fb.dockerRegistryParams["registryAddress"] = registryAddress
-	fb.dockerRegistryParams["serverAddress"] = serverAddress
+	fb.flags["dockerRegistry.registryAddress"] = registryAddress
+	fb.flags["dockerRegistry.serverAddress"] = serverAddress
 
 	return fb
 }
 
 func (fb *flagsBuilder) WithRegistryHttpSecret(httpSecret string) *flagsBuilder {
-	fb.dockerRegistryChartParams["rollme"] = "dontrollplease"
-	fb.dockerRegistryChartParams["registryHTTPSecret"] = httpSecret
+	fb.flags["docker-registry.rollme"] = "dontrollplease"
+	fb.flags["docker-registry.registryHTTPSecret"] = httpSecret
 
 	return fb
 }
 
 func (fb *flagsBuilder) WithDefaultPresetFlags(defaultBuildJobPreset, defaultRuntimePodPreset string) *flagsBuilder {
 	if defaultRuntimePodPreset != "" {
-		fb.webhookValuesParams["function"] = map[string]interface{}{
-			"resources": map[string]interface{}{
-				"defaultPreset": defaultRuntimePodPreset,
-			},
-		}
+		fb.flags["webhook.values.function.resources.defaultPreset"] = defaultRuntimePodPreset
 	}
 
 	if defaultBuildJobPreset != "" {
-		fb.webhookValuesParams["buildJob"] = map[string]interface{}{
-			"resources": map[string]interface{}{
-				"defaultPreset": defaultBuildJobPreset,
-			},
-		}
+		fb.flags["webhook.values.buildJob.resources.defaultPreset"] = defaultBuildJobPreset
 	}
 
 	return fb
 }
 
 func (fb *flagsBuilder) WithNodePort(nodePort int64) *flagsBuilder {
-	fb.globalParams["registryNodePort"] = nodePort
-
+	fb.flags["global.registryNodePort"] = nodePort
 	return fb
 }
