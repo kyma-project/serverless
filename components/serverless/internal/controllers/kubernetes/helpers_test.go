@@ -1,40 +1,10 @@
 package kubernetes
 
 import (
-	"path/filepath"
-
 	"github.com/onsi/gomega"
 	"github.com/vrischmann/envconfig"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/client-go/kubernetes/scheme"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/envtest"
 )
-
-func setUpTestEnv(g *gomega.GomegaWithT) (cl client.Client, env *envtest.Environment) {
-	testEnv := &envtest.Environment{
-		CRDDirectoryPaths: []string{
-			filepath.Join("..", "..", "..", "config", "crd", "bases"),
-		},
-		ErrorIfCRDPathMissing: true,
-	}
-	cfg, err := testEnv.Start()
-	g.Expect(err).To(gomega.BeNil())
-	g.Expect(cfg).ToNot(gomega.BeNil())
-
-	err = scheme.AddToScheme(scheme.Scheme)
-	g.Expect(err).NotTo(gomega.HaveOccurred())
-
-	k8sClient, err := client.New(cfg, client.Options{Scheme: scheme.Scheme})
-	g.Expect(err).ToNot(gomega.HaveOccurred())
-	g.Expect(k8sClient).ToNot(gomega.BeNil())
-
-	return k8sClient, testEnv
-}
-
-func tearDownTestEnv(g *gomega.GomegaWithT, testEnv *envtest.Environment) {
-	g.Expect(testEnv.Stop()).To(gomega.Succeed())
-}
 
 func setUpControllerConfig(g *gomega.GomegaWithT) Config {
 	var testCfg Config
