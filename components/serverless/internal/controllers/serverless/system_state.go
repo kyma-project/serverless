@@ -2,11 +2,8 @@ package serverless
 
 import (
 	"fmt"
-	"k8s.io/apimachinery/pkg/labels"
 	"path"
 	"strings"
-
-	"k8s.io/utils/pointer"
 
 	fnRuntime "github.com/kyma-project/kyma/components/function-controller/internal/controllers/serverless/runtime"
 	"github.com/kyma-project/kyma/components/function-controller/internal/git"
@@ -17,6 +14,8 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/utils/pointer"
 )
 
 const DefaultDeploymentReplicas int32 = 1
@@ -548,6 +547,7 @@ func getDeploymentResources(instance serverlessv1alpha2.Function, resourceCfg Re
 			resourceCfg.DefaultPreset,
 			presets)
 	}
+
 	return presets[resourceCfg.DefaultPreset]
 }
 
