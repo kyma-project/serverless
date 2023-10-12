@@ -8,7 +8,7 @@ function check_image() {
     fi
 }
 
-data=$(curl -s "https://raw.githubusercontent.com/kyma-project/kyma/main/resources/serverless/values.yaml" | yq -r '.global.images.function_controller.version, .global.images.function_webhook.version, .global.images.function_registry_gc.version')
+data=$(cat ./config/serverless/values.yaml | yq -r '.global.images.function_controller.version, .global.images.function_webhook.version, .global.images.function_registry_gc.version')
 
 images=($data)
 
