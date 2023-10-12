@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
           
       - name: Verify serverless manifest images
-        run: ./scripts/verify-serverless-manifest-images.sh
+        run: ./.github/scripts/verify-serverless-manifest-images.sh
 
   verify-head-status:
     name: Verify HEAD
@@ -34,16 +34,16 @@ jobs:
           fetch-depth: 0
 
       - name: Check tag
-        run: ./scripts/check_release_tag.sh ${{ github.event.inputs.name }}
+        run: ./.github/scripts/check_release_tag.sh ${{ github.event.inputs.name }}
 
       - name: Check image
-        run: ./scripts/check_image.sh ${{ github.event.inputs.name }}
+        run: ./.github/scripts/check_image.sh ${{ github.event.inputs.name }}
 
       - name: Verify prow post jobs
-        run: ./scripts/verify-serverless-status.sh ${{ github.ref_name }}
+        run: ./.github/scripts/verify-serverless-status.sh ${{ github.ref_name }}
 
       - name: Verify github actions
-        run: ./scripts/verify-actions-status.sh ${{ github.ref_name }}
+        run: ./.github/scripts/verify-actions-status.sh ${{ github.ref_name }}
 
   run-unit-tests:
     name: Unit tests
@@ -64,14 +64,14 @@ jobs:
       - name: Create changelog
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./scripts/create_changelog.sh ${{ github.event.inputs.name }}
+        run: ./.github/scripts/create_changelog.sh ${{ github.event.inputs.name }}
 
       - name: Create draft release
         id: create-draft
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          RELEASE_ID=$(./scripts/create_draft_release.sh ${{ github.event.inputs.name }})
+          RELEASE_ID=$(./.github/scripts/create_draft_release.sh ${{ github.event.inputs.name }})
           echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
 
       - name: Create lightweight tag
@@ -96,4 +96,4 @@ jobs:
       - name: Publish release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./scripts/publish_release.sh ${{ needs.create-draft.outputs.release_id }}
+        run: ./.github/scripts/publish_release.sh ${{ needs.create-draft.outputs.release_id }}
