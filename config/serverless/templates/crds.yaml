@@ -423,7 +423,7 @@ spec:
                   contains the source code from which the Function is built.
                 type: string
               buildResourceProfile:
-                description: Specifies the presed used for the build job
+                description: Specifies the preset used for the build job
                 type: string
               commit:
                 description: Specifies the commit hash used to build the Function.
@@ -457,7 +457,7 @@ spec:
                   type: object
                 type: array
               functionResourceProfile:
-                description: Specifies the presed used for the function
+                description: Specifies the preset used for the function
                 type: string
               podSelector:
                 description: Specifies the Pod selector used to match Pods in the
