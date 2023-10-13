@@ -32,8 +32,8 @@ func Test_XKubernetesValidations(t *testing.T) {
 		"Resource and Profiles used together in function": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test",
-					Namespace: "test",
+					GenerateName: "test",
+					Namespace:    "test",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
@@ -49,8 +49,8 @@ func Test_XKubernetesValidations(t *testing.T) {
 		"Profile set only for function": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test",
-					Namespace: "test",
+					GenerateName: "test",
+					Namespace:    "test",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
@@ -62,8 +62,8 @@ func Test_XKubernetesValidations(t *testing.T) {
 		"Resource set only for function": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test",
-					Namespace: "test",
+					GenerateName: "test",
+					Namespace:    "test",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
@@ -75,8 +75,8 @@ func Test_XKubernetesValidations(t *testing.T) {
 		"Resource and Profiles used together in buildJob": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test",
-					Namespace: "test",
+					GenerateName: "test",
+					Namespace:    "test",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
@@ -92,8 +92,8 @@ func Test_XKubernetesValidations(t *testing.T) {
 		"Profile set only for buildJob": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test",
-					Namespace: "test",
+					GenerateName: "test",
+					Namespace:    "test",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
@@ -105,8 +105,8 @@ func Test_XKubernetesValidations(t *testing.T) {
 		"Resource set only for buildJob": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test",
-					Namespace: "test",
+					GenerateName: "test",
+					Namespace:    "test",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
