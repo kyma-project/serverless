@@ -23,8 +23,8 @@ import (
 func TestServiceAccountReconciler_Reconcile(t *testing.T) {
 	g := gomega.NewGomegaWithT(t)
 
-	k8sClient, testEnv := testenv_test.SetUpTestEnv(t)
-	defer testenv_test.TearDownTestEnv(t, testEnv)
+	k8sClient, testEnv := testenv.Start(t)
+	defer testenv.Stop(t, testEnv)
 	resourceClient := resource.New(k8sClient, scheme.Scheme)
 	testCfg := setUpControllerConfig(g)
 	serviceAccountSvc := NewServiceAccountService(resourceClient, testCfg)

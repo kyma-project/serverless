@@ -21,8 +21,8 @@ import (
 func TestSecretReconciler_Reconcile(t *testing.T) {
 	t.Parallel()
 	g := gomega.NewGomegaWithT(t)
-	k8sClient, testEnv := testenv_test.SetUpTestEnv(t)
-	defer testenv_test.TearDownTestEnv(t, testEnv)
+	k8sClient, testEnv := testenv.Start(t)
+	defer testenv.Stop(t, testEnv)
 	resourceClient := resource.New(k8sClient, scheme.Scheme)
 	testCfg := setUpControllerConfig(g)
 

@@ -1,4 +1,4 @@
-package testenv_test
+package testenv
 
 import (
 	serverlessv1alpha2 "github.com/kyma-project/kyma/components/function-controller/pkg/apis/serverless/v1alpha2"
@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-func SetUpTestEnv(t *testing.T) (cl client.Client, env *envtest.Environment) {
+func Start(t *testing.T) (cl client.Client, env *envtest.Environment) {
 	wdPath, err := os.Getwd()
 	require.NoError(t, err)
 	crdPath := buildCrdPath(wdPath)
@@ -35,7 +35,7 @@ func SetUpTestEnv(t *testing.T) (cl client.Client, env *envtest.Environment) {
 	return k8sClient, testEnv
 }
 
-func TearDownTestEnv(t *testing.T, testEnv *envtest.Environment) {
+func Stop(t *testing.T, testEnv *envtest.Environment) {
 	require.NoError(t, testEnv.Stop())
 }
 
