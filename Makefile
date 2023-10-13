@@ -54,11 +54,12 @@ help: ## Display this help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
 ##@ Development
+CONFIGOPERATOR = config/operator
 
 .PHONY: manifests
 manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
     # TODO: change paths to "./..." - temporarily we exclude serverless directories
-	$(CONTROLLER_GEN) rbac:roleName=operator-role crd webhook paths="./api/..." paths="./controllers/..." output:crd:artifacts:config=config/crd/bases
+	$(CONTROLLER_GEN) rbac:roleName=operator-role crd webhook paths="./api/..." paths="./controllers/..." output:crd:artifacts:config=$(CONFIGOPERATOR)/crd/bases output:rbac:artifacts:config=$(CONFIGOPERATOR)/rbac
 
 .PHONY: generate
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
@@ -100,26 +101,26 @@ IGNORE_NOT_FOUND ?= false
 
 .PHONY: install
 install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
-	$(KUSTOMIZE) build config/crd | kubectl apply -f -
+	$(KUSTOMIZE) build $(CONFIGOPERATOR)/crd | kubectl apply -f -
 
 .PHONY: uninstall
 uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config. Call with IGNORE_NOT_FOUND=true to ignore resource not found errors during deletion.
-	$(KUSTOMIZE) build config/crd | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
+	$(KUSTOMIZE) build $(CONFIGOPERATOR)/crd | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
 
 .PHONY: deploy
 deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
 	kubectl create namespace kyma-system || true
-	cd config/operator && $(KUSTOMIZE) edit set image controller=${IMG}
-	$(KUSTOMIZE) build config/default | kubectl apply -f -
+	cd $(CONFIGOPERATOR)/operator && $(KUSTOMIZE) edit set image controller=${IMG}
+	$(KUSTOMIZE) build $(CONFIGOPERATOR)/default | kubectl apply -f -
 
 .PHONY: render-manifest
 render-manifest: manifests kustomize ## Render serverless-operator.yaml manifest.
-	cd config/operator && $(KUSTOMIZE) edit set image controller=${IMG}
-	$(KUSTOMIZE) build config/default > serverless-operator.yaml
+	cd $(CONFIGOPERATOR)/operator && $(KUSTOMIZE) edit set image controller=${IMG}
+	$(KUSTOMIZE) build $(CONFIGOPERATOR)/default > serverless-operator.yaml
 
 .PHONY: undeploy
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with IGNORE_NOT_FOUND=true to ignore resource not found errors during deletion.
-	$(KUSTOMIZE) build config/default | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
+	$(KUSTOMIZE) build $(CONFIGOPERATOR)/default | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
 
 ##@ Module
 

@@ -35,17 +35,18 @@ test-local:
 
 # Generate manifests e.g. CRD, RBAC etc.
 CONTROLLER_GEN_VERSION=v0.6.2
+CONFIGOPERATOR = config/operator
 
 .PHONY: manifests
 manifests: controller-gen-local generate-local
 	@make -C ${PROJECT_ROOT} kustomize
 	$(CONTROLLER_GEN) $(CRD_OPTIONS) rbac:roleName=serverless webhook paths="./..." \
 		object:headerFile=hack/boilerplate.go.txt \
-		output:crd:artifacts:config=config/crd/bases \
-		output:rbac:artifacts:config=config/rbac \
-		output:webhook:artifacts:config=config/webhook
-	$(KUSTOMIZE) build config/crd > config/crd/crd-serverless.yaml
-	cp config/crd/crd-serverless.yaml $(PROJECT_ROOT)/config/serverless/templates/crds.yaml
+		output:crd:artifacts:config=$(CONFIGOPERATOR)/crd/bases \
+		output:rbac:artifacts:config=$(CONFIGOPERATOR)/rbac \
+		output:webhook:artifacts:config=$(CONFIGOPERATOR)/webhook
+	$(KUSTOMIZE) build $(CONFIGOPERATOR)/crd > $(CONFIGOPERATOR)/crd/crd-serverless.yaml
+	cp $(CONFIGOPERATOR)/crd/crd-serverless.yaml $(PROJECT_ROOT)/config/serverless/templates/crds.yaml
 # TODO: Fix it. Now this docu is in https://kyma-project.io/#/serverless-manager/user/resources/06-10-function-cr?id=custom-resource-parameters. Remove table-gen from kyma.
 # (cd ../../hack/table-gen && make serverless-docs )
 
