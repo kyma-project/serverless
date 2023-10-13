@@ -38,12 +38,12 @@ func (fb *flagsBuilder) Build() map[string]interface{} {
 
 func appendFlag(flags map[string]interface{}, flagPath []string, value interface{}) {
 	currentFlag := flags
-	for i, path := range flagPath {
-		createIfEmpty(currentFlag, path)
+	for i, pathPart := range flagPath {
+		createIfEmpty(currentFlag, pathPart)
 		if lastElement(flagPath, i) {
-			currentFlag[path] = value
+			currentFlag[pathPart] = value
 		} else {
-			currentFlag = nextDeeperFlag(currentFlag, path)
+			currentFlag = nextDeeperFlag(currentFlag, pathPart)
 		}
 	}
 }
