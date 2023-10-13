@@ -14,8 +14,8 @@ import (
 
 func Test_XKubernetesValidations(t *testing.T) {
 	ctx := context.TODO()
-	k8sClient, testEnv := testenv.SetUpTestEnv(t)
-	defer testenv.TearDownTestEnv(t, testEnv)
+	k8sClient, testEnv := testenv.Start(t)
+	defer testenv.Stop(t, testEnv)
 
 	testNs := corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{Name: "test"},
