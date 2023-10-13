@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"context"
+	"github.com/kyma-project/kyma/components/function-controller/internal/testenv"
 	"testing"
 
 	"go.uber.org/zap"
@@ -22,8 +23,8 @@ import (
 func TestConfigMapReconciler_Reconcile(t *testing.T) {
 	//GIVEN
 	g := gomega.NewGomegaWithT(t)
-	k8sClient, testEnv := setUpTestEnv(g)
-	defer tearDownTestEnv(g, testEnv)
+	k8sClient, testEnv := testenv.Start(t)
+	defer testenv.Stop(t, testEnv)
 	resourceClient := resource.New(k8sClient, scheme.Scheme)
 	testCfg := setUpControllerConfig(g)
 	configMapSvc := NewConfigMapService(resourceClient, testCfg)
