@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/kyma-project/serverless-manager/api/v1alpha1"
+	"github.com/kyma-project/serverless-manager/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"github.com/kyma-project/serverless-manager/internal/warning"
 	"github.com/stretchr/testify/require"

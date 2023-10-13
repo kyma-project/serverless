@@ -3,7 +3,7 @@ package state
 import (
 	"context"
 
-	"github.com/kyma-project/serverless-manager/api/v1alpha1"
+	"github.com/kyma-project/serverless-manager/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/tracing"
 	"github.com/pkg/errors"
 	"k8s.io/client-go/tools/record"
