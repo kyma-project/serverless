@@ -469,7 +469,7 @@ func (s *systemState) buildDeployment(cfg buildDeploymentArgs, resourceConfig Re
 					Second thing is setting that probe which continuously
 				*/
 				StartupProbe: &corev1.Probe{
-					Handler: corev1.Handler{
+					ProbeHandler: corev1.ProbeHandler{
 						HTTPGet: &corev1.HTTPGetAction{
 							Path: "/healthz",
 							Port: svcTargetPort,
@@ -481,7 +481,7 @@ func (s *systemState) buildDeployment(cfg buildDeploymentArgs, resourceConfig Re
 					FailureThreshold:    30, // FailureThreshold * PeriodSeconds = 150s in this case, this should be enough for any function pod to start up
 				},
 				ReadinessProbe: &corev1.Probe{
-					Handler: corev1.Handler{
+					ProbeHandler: corev1.ProbeHandler{
 						HTTPGet: &corev1.HTTPGetAction{
 							Path: "/healthz",
 							Port: svcTargetPort,
@@ -493,7 +493,7 @@ func (s *systemState) buildDeployment(cfg buildDeploymentArgs, resourceConfig Re
 					TimeoutSeconds:      2,
 				},
 				LivenessProbe: &corev1.Probe{
-					Handler: corev1.Handler{
+					ProbeHandler: corev1.ProbeHandler{
 						HTTPGet: &corev1.HTTPGetAction{
 							Path: "/healthz",
 							Port: svcTargetPort,
