@@ -267,6 +267,10 @@ type Repository struct {
 type FunctionStatus struct {
 	// Specifies the **Runtime** type of the Function.
 	Runtime Runtime `json:"runtime,omitempty"`
+	// Specifies the preset used for the function
+	FunctionResourceProfile string `json:"functionResourceProfile,omitempty"`
+	// Specifies the preset used for the build job
+	BuildResourceProfile string `json:"buildResourceProfile,omitempty"`
 	// Specifies an array of conditions describing the status of the parser.
 	Conditions []Condition `json:"conditions,omitempty"`
 	// Specify the repository which was used to build the function.

@@ -109,6 +109,7 @@ func buildGenericStatusUpdateStateFn(condition serverlessv1alpha2.Condition, rep
 		updatedStatus := existingFunction.Status.DeepCopy()
 		updatedStatus.Conditions = updateCondition(existingFunction.Status.Conditions, condition)
 
+		r.populateStatusFromResourceConfiguration(updatedStatus, s)
 		if err := r.populateStatusFromSystemState(updatedStatus, s); err != nil {
 			return nil, errors.Wrap(err, "while setting up Status")
 		}
@@ -148,6 +149,32 @@ func (m *reconciler) populateStatusFromSystemState(status *serverlessv1alpha2.Fu
 		status.Replicas = s.deployments.Items[0].Status.Replicas
 	}
 	return nil
+}
+
+func (m *reconciler) populateStatusFromResourceConfiguration(status *serverlessv1alpha2.FunctionStatus, s *systemState) {
+	defaultJobPreset := m.cfg.fn.ResourceConfig.BuildJob.Resources.DefaultPreset
+	defaultFunctionPreset := m.cfg.fn.ResourceConfig.Function.Resources.DefaultPreset
+
+	if s.instance.Spec.ResourceConfiguration == nil {
+		status.BuildResourceProfile = defaultJobPreset
+		status.FunctionResourceProfile = defaultFunctionPreset
+		return
+	}
+
+	status.BuildResourceProfile = getUsedResourcePreset(s.instance.Spec.ResourceConfiguration.Build, defaultJobPreset)
+	status.FunctionResourceProfile = getUsedResourcePreset(s.instance.Spec.ResourceConfiguration.Function, defaultFunctionPreset)
+}
+
+func getUsedResourcePreset(resourceRequirements *serverlessv1alpha2.ResourceRequirements, defaultPreset string) string {
+	if resourceRequirements == nil {
+		return defaultPreset
+	}
+
+	if resourceRequirements.Resources != nil {
+		return "custom"
+	}
+
+	return resourceRequirements.Profile
 }
 
 func (m *reconciler) updateFunctionStatusWithEvent(ctx context.Context, f *serverlessv1alpha2.Function, s *serverlessv1alpha2.FunctionStatus, condition serverlessv1alpha2.Condition) error {
