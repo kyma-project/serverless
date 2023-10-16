@@ -45,10 +45,10 @@ func buildCrdPath(wd string) string {
 	crdPath := []string{"/"}
 	for _, path := range wdPath {
 		crdPath = append(crdPath, path)
-		if path == "serverless" {
+		if path == "components" {
 			break
 		}
 	}
-	crdPath = append(crdPath, "config", "crd", "bases")
+	crdPath = append(crdPath, "serverless", "config", "crd", "bases")
 	return filepath.Join(crdPath...)
 }

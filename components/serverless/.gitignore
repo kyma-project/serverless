@@ -28,3 +28,6 @@ vendor/
 cover.out
 filered.cov
 log_config.yaml
+
+# Directory with temporary files used to do development
+hack/test_files

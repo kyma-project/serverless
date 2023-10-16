@@ -130,10 +130,12 @@ type ScaleConfig struct {
 type ResourceConfiguration struct {
 	// Specifies resources requested by the build Job's Pod.
 	// +optional
+	// +kubebuilder:validation:XValidation:message="Use profile or resources",rule="has(self.profile) && !has(self.resources) || !has(self.profile) && has(self.resources)"
 	Build *ResourceRequirements `json:"build,omitempty"`
 
 	// Specifies resources requested by the Function's Pod.
 	// +optional
+	// +kubebuilder:validation:XValidation:message="Use profile or resources",rule="has(self.profile) && !has(self.resources) || !has(self.profile) && has(self.resources)"
 	Function *ResourceRequirements `json:"function,omitempty"`
 }
 
