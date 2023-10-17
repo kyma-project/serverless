@@ -70,6 +70,26 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				},
 			},
 		},
+		"labels not use restricted domain": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Labels: map[string]string{
+						"my.label.com": "labelValue",
+					},
+				},
+			},
+		},
+		"similar label not use restricted domain": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Labels: map[string]string{
+						"serverless.kyma-project.label.com": "labelValue",
+					},
+				},
+			},
+		},
 	}
 
 	for name, tc := range testCases {
@@ -89,7 +109,6 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 	ctx := context.TODO()
 	k8sClient, testEnv := testenv.Start(t)
 	defer testenv.Stop(t, testEnv)
-
 	testNs := corev1.Namespace{
 		ObjectMeta: metav1.ObjectMeta{Name: "test"},
 	}
@@ -128,6 +147,30 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			},
 			expectedErrMsg: "Use profile or resources",
 			fieldPath:      "spec.resourceConfiguration.build",
+		},
+		"labels use exact restricted domain": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Labels: map[string]string{
+						"serverless.kyma-project.io": "labelValue",
+					},
+				},
+			},
+			fieldPath:      "spec.labels",
+			expectedErrMsg: "Labels has key starting with ",
+		},
+		"labels use restricted domain": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Labels: map[string]string{
+						"serverless.kyma-project.io.com": "labelValue",
+					},
+				},
+			},
+			fieldPath:      "spec.labels",
+			expectedErrMsg: "Labels has key starting with ",
 		},
 	}
 	for name, tc := range testCases {
