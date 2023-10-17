@@ -173,7 +173,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Labels: map[string]string{
-						"serverless.kyma-project.io": "labelValue",
+						"serverless.kyma-project.io/": "labelValue",
 					},
 				},
 			},
