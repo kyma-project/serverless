@@ -203,7 +203,7 @@ type FunctionSpec struct {
 
 	// Defines annotations used in Deployment's PodTemplate and applied on the Function's runtime Pod.
 	// +optional
-	// +kubebuilder:validation:XValidation:message="Annotations has key starting with serverless.kyma-project.io/",rule="!(self.exists(e, e.matches('serverless.kyma-project.io/*')))"
+	// +kubebuilder:validation:XValidation:message="Annotations has key starting with serverless.kyma-project.io/",rule="!(self.exists(e, e.matches('^serverless[.]kyma-project[.]io/.*$')))"
 	Annotations map[string]string `json:"annotations,omitempty"`
 }
 

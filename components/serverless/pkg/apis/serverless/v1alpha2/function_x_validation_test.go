@@ -110,7 +110,27 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				},
 			},
 		},
-		"annotation not use restricted domain": {
+		"annotations has value with special characters similar to restricted one ": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Annotations: map[string]string{
+						"serverless$kyma-project#io/abc": "labelValue",
+					},
+				},
+			},
+		},
+		"annotations has value restricted domain without path ": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Annotations: map[string]string{
+						"serverless.kyma-project.io": "labelValue",
+					},
+				},
+			},
+		},
+		"annotations not use restricted domain": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -120,7 +140,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				},
 			},
 		},
-		"similar annotation not use restricted domain": {
+		"annotations label not use restricted domain": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -226,24 +246,38 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			fieldPath:      "spec.labels",
 			expectedErrMsg: "Labels has key starting with ",
 		},
-		"annotation use exact restricted domain": {
+		"annotations use exact restricted domain": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Annotations: map[string]string{
-						"serverless.kyma-project.io": "labelValue",
+						"serverless.kyma-project.io/": "labelValue",
 					},
 				},
 			},
 			fieldPath:      "spec.annotations",
 			expectedErrMsg: "Annotations has key starting with ",
 		},
-		"annotation use restricted domain": {
+		"annotations has many values with incorrect one": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Annotations: map[string]string{
-						"serverless.kyma-project.io.com": "labelValue",
+						"app":                            "mySuperApp",
+						"serverless.kyma-project.io/abc": "labelValue",
+						"service":                        "mySvc",
+					},
+				},
+			},
+			fieldPath:      "spec.annotations",
+			expectedErrMsg: "Annotations has key starting with ",
+		},
+		"annotations use restricted domain": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Annotations: map[string]string{
+						"serverless.kyma-project.io/abc": "labelValue",
 					},
 				},
 			},
