@@ -70,6 +70,26 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				},
 			},
 		},
+		"labels has value with special characters similar to restricted one ": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Labels: map[string]string{
+						"serverless$kyma-project#io/abc": "labelValue",
+					},
+				},
+			},
+		},
+		"labels has value restricted domain without path ": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Labels: map[string]string{
+						"serverless.kyma-project.io": "labelValue",
+					},
+				},
+			},
+		},
 		"labels not use restricted domain": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
@@ -165,7 +185,21 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Labels: map[string]string{
-						"serverless.kyma-project.io.com": "labelValue",
+						"serverless.kyma-project.io/abc": "labelValue",
+					},
+				},
+			},
+			fieldPath:      "spec.labels",
+			expectedErrMsg: "Labels has key starting with ",
+		},
+		"labels has many values with incorrect one": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Labels: map[string]string{
+						"app":                            "mySuperApp",
+						"serverless.kyma-project.io/abc": "labelValue",
+						"service":                        "mySvc",
 					},
 				},
 			},
