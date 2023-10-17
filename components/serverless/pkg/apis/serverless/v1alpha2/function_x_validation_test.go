@@ -12,7 +12,80 @@ import (
 	"testing"
 )
 
-func Test_XKubernetesValidations(t *testing.T) {
+func Test_XKubernetesValidations_Valid(t *testing.T) {
+	fixMetadata := metav1.ObjectMeta{
+		GenerateName: "test",
+		Namespace:    "test",
+	}
+	ctx := context.TODO()
+	k8sClient, testEnv := testenv.Start(t)
+	defer testenv.Stop(t, testEnv)
+
+	testNs := corev1.Namespace{
+		ObjectMeta: metav1.ObjectMeta{Name: "test"},
+	}
+	err := k8sClient.Create(ctx, &testNs)
+	require.NoError(t, err)
+	//GIVEN
+	testCases := map[string]struct {
+		fn *serverlessv1alpha2.Function
+	}{
+		"Profile set only for function": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
+						Profile: "Test",
+					}},
+				},
+			},
+		},
+		"Profile set only for buildJob": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
+						Profile: "Test",
+					}},
+				},
+			},
+		},
+		"Resource set only for buildJob": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
+						Profile: "Test",
+					}},
+				},
+			},
+		},
+		"Resource set only for function": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
+						Profile: "Test",
+					}},
+				},
+			},
+		},
+	}
+
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			//WHEN
+			err := k8sClient.Create(ctx, tc.fn)
+			//THEN
+			require.NoError(t, err)
+		})
+	}
+}
+func Test_XKubernetesValidations_Invalid(t *testing.T) {
+	fixMetadata := metav1.ObjectMeta{
+		GenerateName: "test",
+		Namespace:    "test",
+	}
 	ctx := context.TODO()
 	k8sClient, testEnv := testenv.Start(t)
 	defer testenv.Stop(t, testEnv)
@@ -23,18 +96,15 @@ func Test_XKubernetesValidations(t *testing.T) {
 	err := k8sClient.Create(ctx, &testNs)
 	require.NoError(t, err)
 
+	//GIVEN
 	testCases := map[string]struct {
 		fn             *serverlessv1alpha2.Function
-		expectedErr    bool
 		expectedErrMsg string
 		fieldPath      string
 	}{
 		"Resource and Profiles used together in function": {
 			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					GenerateName: "test",
-					Namespace:    "test",
-				},
+				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
 						Profile:   "Test",
@@ -42,42 +112,13 @@ func Test_XKubernetesValidations(t *testing.T) {
 					}},
 				},
 			},
-			expectedErr:    true,
 			expectedErrMsg: "Use profile or resources",
 			fieldPath:      "spec.resourceConfiguration.function",
 		},
-		"Profile set only for function": {
-			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					GenerateName: "test",
-					Namespace:    "test",
-				},
-				Spec: serverlessv1alpha2.FunctionSpec{
-					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
-						Profile: "Test",
-					}},
-				},
-			},
-		},
-		"Resource set only for function": {
-			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					GenerateName: "test",
-					Namespace:    "test",
-				},
-				Spec: serverlessv1alpha2.FunctionSpec{
-					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
-						Profile: "Test",
-					}},
-				},
-			},
-		},
+
 		"Resource and Profiles used together in buildJob": {
 			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					GenerateName: "test",
-					Namespace:    "test",
-				},
+				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
 						Profile:   "Test",
@@ -85,58 +126,24 @@ func Test_XKubernetesValidations(t *testing.T) {
 					}},
 				},
 			},
-			expectedErr:    true,
 			expectedErrMsg: "Use profile or resources",
 			fieldPath:      "spec.resourceConfiguration.build",
-		},
-		"Profile set only for buildJob": {
-			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					GenerateName: "test",
-					Namespace:    "test",
-				},
-				Spec: serverlessv1alpha2.FunctionSpec{
-					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
-						Profile: "Test",
-					}},
-				},
-			},
-		},
-		"Resource set only for buildJob": {
-			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					GenerateName: "test",
-					Namespace:    "test",
-				},
-				Spec: serverlessv1alpha2.FunctionSpec{
-					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
-						Profile: "Test",
-					}},
-				},
-			},
 		},
 	}
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
-			//GIVEN
-
 			//WHEN
 			err := k8sClient.Create(ctx, tc.fn)
 			//THEN
-			if tc.expectedErr {
-				require.Error(t, err)
-				errStatus, ok := err.(*k8serrors.StatusError)
-				require.True(t, ok)
-				causes := errStatus.Status().Details.Causes
-				require.Len(t, causes, 1)
-				cause := causes[0]
-				assert.Equal(t, metav1.CauseTypeFieldValueInvalid, cause.Type)
-				assert.Equal(t, tc.fieldPath, cause.Field)
-				assert.Contains(t, cause.Message, tc.expectedErrMsg)
-			} else {
-				require.NoError(t, err)
-				require.NoError(t, k8sClient.Delete(ctx, tc.fn))
-			}
+			require.Error(t, err)
+			errStatus, ok := err.(*k8serrors.StatusError)
+			require.True(t, ok)
+			causes := errStatus.Status().Details.Causes
+			require.Len(t, causes, 1)
+			cause := causes[0]
+			assert.Equal(t, metav1.CauseTypeFieldValueInvalid, cause.Type)
+			assert.Equal(t, tc.fieldPath, cause.Field)
+			assert.Contains(t, cause.Message, tc.expectedErrMsg)
 		})
 	}
 }
