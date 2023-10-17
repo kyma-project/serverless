@@ -22,108 +22,121 @@ func Test_XKubernetesValidations(t *testing.T) {
 	}
 	err := k8sClient.Create(ctx, &testNs)
 	require.NoError(t, err)
+	t.Run("Valid functions", func(t *testing.T) {
+		//GIVEN
+		testCases := map[string]struct {
+			fn *serverlessv1alpha2.Function
+		}{
+			"Profile set only for function": {
+				fn: &serverlessv1alpha2.Function{
+					ObjectMeta: metav1.ObjectMeta{
+						GenerateName: "test",
+						Namespace:    "test",
+					},
+					Spec: serverlessv1alpha2.FunctionSpec{
+						ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
+							Profile: "Test",
+						}},
+					},
+				},
+			},
+			"Profile set only for buildJob": {
+				fn: &serverlessv1alpha2.Function{
+					ObjectMeta: metav1.ObjectMeta{
+						GenerateName: "test",
+						Namespace:    "test",
+					},
+					Spec: serverlessv1alpha2.FunctionSpec{
+						ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
+							Profile: "Test",
+						}},
+					},
+				},
+			},
+			"Resource set only for buildJob": {
+				fn: &serverlessv1alpha2.Function{
+					ObjectMeta: metav1.ObjectMeta{
+						GenerateName: "test",
+						Namespace:    "test",
+					},
+					Spec: serverlessv1alpha2.FunctionSpec{
+						ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
+							Profile: "Test",
+						}},
+					},
+				},
+			},
+			"Resource set only for function": {
+				fn: &serverlessv1alpha2.Function{
+					ObjectMeta: metav1.ObjectMeta{
+						GenerateName: "test",
+						Namespace:    "test",
+					},
+					Spec: serverlessv1alpha2.FunctionSpec{
+						ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
+							Profile: "Test",
+						}},
+					},
+				},
+			},
+		}
 
-	testCases := map[string]struct {
-		fn             *serverlessv1alpha2.Function
-		expectedErr    bool
-		expectedErrMsg string
-		fieldPath      string
-	}{
-		"Resource and Profiles used together in function": {
-			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					GenerateName: "test",
-					Namespace:    "test",
-				},
-				Spec: serverlessv1alpha2.FunctionSpec{
-					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
-						Profile:   "Test",
-						Resources: &corev1.ResourceRequirements{},
-					}},
-				},
-			},
-			expectedErr:    true,
-			expectedErrMsg: "Use profile or resources",
-			fieldPath:      "spec.resourceConfiguration.function",
-		},
-		"Profile set only for function": {
-			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					GenerateName: "test",
-					Namespace:    "test",
-				},
-				Spec: serverlessv1alpha2.FunctionSpec{
-					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
-						Profile: "Test",
-					}},
-				},
-			},
-		},
-		"Resource set only for function": {
-			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					GenerateName: "test",
-					Namespace:    "test",
-				},
-				Spec: serverlessv1alpha2.FunctionSpec{
-					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
-						Profile: "Test",
-					}},
-				},
-			},
-		},
-		"Resource and Profiles used together in buildJob": {
-			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					GenerateName: "test",
-					Namespace:    "test",
-				},
-				Spec: serverlessv1alpha2.FunctionSpec{
-					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
-						Profile:   "Test",
-						Resources: &corev1.ResourceRequirements{},
-					}},
-				},
-			},
-			expectedErr:    true,
-			expectedErrMsg: "Use profile or resources",
-			fieldPath:      "spec.resourceConfiguration.build",
-		},
-		"Profile set only for buildJob": {
-			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					GenerateName: "test",
-					Namespace:    "test",
-				},
-				Spec: serverlessv1alpha2.FunctionSpec{
-					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
-						Profile: "Test",
-					}},
-				},
-			},
-		},
-		"Resource set only for buildJob": {
-			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					GenerateName: "test",
-					Namespace:    "test",
-				},
-				Spec: serverlessv1alpha2.FunctionSpec{
-					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
-						Profile: "Test",
-					}},
-				},
-			},
-		},
-	}
-	for name, tc := range testCases {
-		t.Run(name, func(t *testing.T) {
-			//GIVEN
+		for name, tc := range testCases {
+			t.Run(name, func(t *testing.T) {
+				//WHEN
+				err := k8sClient.Create(ctx, tc.fn)
+				//THEN
+				require.NoError(t, err)
+			})
+		}
+	})
 
-			//WHEN
-			err := k8sClient.Create(ctx, tc.fn)
-			//THEN
-			if tc.expectedErr {
+	t.Run("Invalid functions", func(t *testing.T) {
+		//GIVEN
+		testCases := map[string]struct {
+			fn             *serverlessv1alpha2.Function
+			expectedErrMsg string
+			fieldPath      string
+		}{
+			"Resource and Profiles used together in function": {
+				fn: &serverlessv1alpha2.Function{
+					ObjectMeta: metav1.ObjectMeta{
+						GenerateName: "test",
+						Namespace:    "test",
+					},
+					Spec: serverlessv1alpha2.FunctionSpec{
+						ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
+							Profile:   "Test",
+							Resources: &corev1.ResourceRequirements{},
+						}},
+					},
+				},
+				expectedErrMsg: "Use profile or resources",
+				fieldPath:      "spec.resourceConfiguration.function",
+			},
+
+			"Resource and Profiles used together in buildJob": {
+				fn: &serverlessv1alpha2.Function{
+					ObjectMeta: metav1.ObjectMeta{
+						GenerateName: "test",
+						Namespace:    "test",
+					},
+					Spec: serverlessv1alpha2.FunctionSpec{
+						ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
+							Profile:   "Test",
+							Resources: &corev1.ResourceRequirements{},
+						}},
+					},
+				},
+				expectedErrMsg: "Use profile or resources",
+				fieldPath:      "spec.resourceConfiguration.build",
+			},
+		}
+		for name, tc := range testCases {
+			t.Run(name, func(t *testing.T) {
+				//WHEN
+				err := k8sClient.Create(ctx, tc.fn)
+				//THEN
 				require.Error(t, err)
 				errStatus, ok := err.(*k8serrors.StatusError)
 				require.True(t, ok)
@@ -133,10 +146,7 @@ func Test_XKubernetesValidations(t *testing.T) {
 				assert.Equal(t, metav1.CauseTypeFieldValueInvalid, cause.Type)
 				assert.Equal(t, tc.fieldPath, cause.Field)
 				assert.Contains(t, cause.Message, tc.expectedErrMsg)
-			} else {
-				require.NoError(t, err)
-				require.NoError(t, k8sClient.Delete(ctx, tc.fn))
-			}
-		})
-	}
+			})
+		}
+	})
 }
