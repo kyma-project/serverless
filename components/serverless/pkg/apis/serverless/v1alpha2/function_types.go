@@ -157,6 +157,7 @@ const (
 // Defines the desired state of the Function
 type FunctionSpec struct {
 	// Specifies the runtime of the Function. The available values are `nodejs16` - deprecated, `nodejs18`, and `python39`.
+	// +kubebuilder:validation:Enum=nodejs16;nodejs18;python39;
 	Runtime Runtime `json:"runtime"`
 
 	// Specifies the runtime image used instead of the default one.
