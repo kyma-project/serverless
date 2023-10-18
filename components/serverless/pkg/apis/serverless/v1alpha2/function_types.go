@@ -198,6 +198,7 @@ type FunctionSpec struct {
 
 	// Defines labels used in Deployment's PodTemplate and applied on the Function's runtime Pod.
 	// +optional
+	// +kubebuilder:validation:XValidation:message="Labels has key starting with serverless.kyma-project.io/",rule="!(self.exists(e, e.matches('^serverless[.]kyma-project[.]io/.*$')))"
 	Labels map[string]string `json:"labels,omitempty"`
 
 	// Defines annotations used in Deployment's PodTemplate and applied on the Function's runtime Pod.
