@@ -59,7 +59,7 @@ CONFIGOPERATOR = config/operator
 .PHONY: manifests
 manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
     # TODO: change paths to "./..." - temporarily we exclude serverless directories
-	$(CONTROLLER_GEN) rbac:roleName=operator-role crd webhook paths="./components/operator/api/..." paths="./controllers/..." output:crd:artifacts:config=$(CONFIGOPERATOR)/crd/bases
+	$(CONTROLLER_GEN) rbac:roleName=operator-role crd webhook paths="./components/operator/api/..." paths="./controllers/..." output:crd:artifacts:config=$(CONFIGOPERATOR)/crd/bases output:rbac:artifacts:config=$(CONFIGOPERATOR)/rbac
 
 .PHONY: generate
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
