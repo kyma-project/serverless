@@ -37,6 +37,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
 						Profile: "Test",
 					}},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
 		},
@@ -47,6 +48,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
 						Profile: "Test",
 					}},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
 		},
@@ -57,6 +59,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
 						Profile: "Test",
 					}},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
 		},
@@ -67,6 +70,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
 						Profile: "Test",
 					}},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
 		},
@@ -77,6 +81,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 					Labels: map[string]string{
 						"serverless$kyma-project#io/abc": "labelValue",
 					},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
 		},
@@ -87,6 +92,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 					Labels: map[string]string{
 						"serverless.kyma-project.io": "labelValue",
 					},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
 		},
@@ -97,6 +103,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 					Labels: map[string]string{
 						"my.label.com": "labelValue",
 					},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
 		},
@@ -107,6 +114,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 					Labels: map[string]string{
 						"serverless.kyma-project.label.com": "labelValue",
 					},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
 		},
@@ -117,6 +125,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 					Annotations: map[string]string{
 						"serverless$kyma-project#io/abc": "labelValue",
 					},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
 		},
@@ -127,6 +136,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 					Annotations: map[string]string{
 						"serverless.kyma-project.io": "labelValue",
 					},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
 		},
@@ -137,6 +147,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 					Annotations: map[string]string{
 						"my.label.com": "labelValue",
 					},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
 		},
@@ -147,6 +158,31 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 					Annotations: map[string]string{
 						"serverless.kyma-project.label.com": "labelValue",
 					},
+					Runtime: serverlessv1alpha2.Python39,
+				},
+			},
+		},
+		"allowed runtime: nodejs16": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs16,
+				},
+			},
+		},
+		"allowed runtime: nodejs18": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs18,
+				},
+			},
+		},
+		"allowed runtime: python39": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
 		},
@@ -180,6 +216,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 		fn             *serverlessv1alpha2.Function
 		expectedErrMsg string
 		fieldPath      string
+		expectedCause  metav1.CauseType
 	}{
 		"Resource and Profiles used together in function": {
 			fn: &serverlessv1alpha2.Function{
@@ -189,8 +226,10 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 						Profile:   "Test",
 						Resources: &corev1.ResourceRequirements{},
 					}},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			expectedErrMsg: "Use profile or resources",
 			fieldPath:      "spec.resourceConfiguration.function",
 		},
@@ -203,8 +242,10 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 						Profile:   "Test",
 						Resources: &corev1.ResourceRequirements{},
 					}},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			expectedErrMsg: "Use profile or resources",
 			fieldPath:      "spec.resourceConfiguration.build",
 		},
@@ -215,8 +256,10 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					Labels: map[string]string{
 						"serverless.kyma-project.io/": "labelValue",
 					},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			fieldPath:      "spec.labels",
 			expectedErrMsg: "Labels has key starting with ",
 		},
@@ -227,8 +270,10 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					Labels: map[string]string{
 						"serverless.kyma-project.io/abc": "labelValue",
 					},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			fieldPath:      "spec.labels",
 			expectedErrMsg: "Labels has key starting with ",
 		},
@@ -241,8 +286,10 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 						"serverless.kyma-project.io/abc": "labelValue",
 						"service":                        "mySvc",
 					},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			fieldPath:      "spec.labels",
 			expectedErrMsg: "Labels has key starting with ",
 		},
@@ -253,8 +300,10 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					Annotations: map[string]string{
 						"serverless.kyma-project.io/": "labelValue",
 					},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			fieldPath:      "spec.annotations",
 			expectedErrMsg: "Annotations has key starting with ",
 		},
@@ -267,8 +316,10 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 						"serverless.kyma-project.io/abc": "labelValue",
 						"service":                        "mySvc",
 					},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			fieldPath:      "spec.annotations",
 			expectedErrMsg: "Annotations has key starting with ",
 		},
@@ -279,10 +330,23 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					Annotations: map[string]string{
 						"serverless.kyma-project.io/abc": "labelValue",
 					},
+					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			fieldPath:      "spec.annotations",
 			expectedErrMsg: "Annotations has key starting with ",
+		},
+		"disallowed runtime: custom": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Runtime("custom"),
+				},
+			},
+			expectedCause:  metav1.CauseTypeFieldValueNotSupported,
+			fieldPath:      "spec.runtime",
+			expectedErrMsg: "",
 		},
 	}
 	for name, tc := range testCases {
@@ -296,7 +360,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			causes := errStatus.Status().Details.Causes
 			require.Len(t, causes, 1)
 			cause := causes[0]
-			assert.Equal(t, metav1.CauseTypeFieldValueInvalid, cause.Type)
+			assert.Equal(t, tc.expectedCause, cause.Type)
 			assert.Equal(t, tc.fieldPath, cause.Field)
 			assert.Contains(t, cause.Message, tc.expectedErrMsg)
 		})
