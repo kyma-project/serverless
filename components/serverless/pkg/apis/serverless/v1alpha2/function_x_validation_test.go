@@ -191,7 +191,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.Python39,
-					Env:     []corev1.EnvVar{{Name: "TEST_ENV"}},
+					Env:     []corev1.EnvVar{{Name: "TEST_ENV"}, {Name: "MY_ENV"}},
 				},
 			},
 		},
@@ -346,7 +346,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			fieldPath:      "spec.annotations",
 			expectedErrMsg: "Annotations has key starting with ",
 		},
-		"disallowed runtime: custom": {
+		"reserved runtime: custom": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -355,9 +355,9 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			},
 			expectedCause:  metav1.CauseTypeFieldValueNotSupported,
 			fieldPath:      "spec.runtime",
-			expectedErrMsg: "",
+			expectedErrMsg: `Unsupported value: "custom"`,
 		},
-		"disallowed env: FUNC_RUNTIME": {
+		"reserved env: FUNC_RUNTIME": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -369,11 +369,11 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "Following envs are disallowed",
+			expectedErrMsg: "Following envs are reserved",
 			fieldPath:      "spec.env",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
-		"disallowed env: FUNC_HANDLER": {
+		"reserved env: FUNC_HANDLER": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -385,11 +385,11 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "Following envs are disallowed",
+			expectedErrMsg: "Following envs are reserved",
 			fieldPath:      "spec.env",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
-		"disallowed env: FUNC_PORT": {
+		"reserved env: FUNC_PORT": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -401,11 +401,11 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "Following envs are disallowed",
+			expectedErrMsg: "Following envs are reserved",
 			fieldPath:      "spec.env",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
-		"disallowed env: MOD_NAME": {
+		"reserved env: MOD_NAME": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -417,11 +417,11 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "Following envs are disallowed",
+			expectedErrMsg: "Following envs are reserved",
 			fieldPath:      "spec.env",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
-		"disallowed env: NODE_PATH": {
+		"reserved env: NODE_PATH": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -433,11 +433,11 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "Following envs are disallowed",
+			expectedErrMsg: "Following envs are reserved",
 			fieldPath:      "spec.env",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
-		"disallowed env: PYTHONPATH": {
+		"reserved env: PYTHONPATH": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -449,7 +449,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "Following envs are disallowed",
+			expectedErrMsg: "Following envs are reserved",
 			fieldPath:      "spec.env",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -468,7 +468,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			cause := causes[0]
 			assert.Equal(t, tc.expectedCause, cause.Type)
 			assert.Equal(t, tc.fieldPath, cause.Field)
-			assert.NotEmpty(t, tc.expectedErrMsg)
+			assert.NotEmpty(t, tc.expectedErrMsg, "cause message: %s", cause.Message)
 			assert.Contains(t, cause.Message, tc.expectedErrMsg)
 		})
 	}

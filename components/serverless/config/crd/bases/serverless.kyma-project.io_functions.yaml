@@ -183,7 +183,7 @@ spec:
                   type: object
                 type: array
                 x-kubernetes-validations:
-                - message: Following envs are disallowed:['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','MOD_NAME','NODE_PATH','PYTHONPATH']
+                - message: 'Following envs are reserved and cannot be used: [''FUNC_RUNTIME'',''FUNC_HANDLER'',''FUNC_PORT'',''MOD_NAME'',''NODE_PATH'',''PYTHONPATH'']'
                   rule: (self.all(e, !(e.name in ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','MOD_NAME','NODE_PATH','PYTHONPATH'])))
               labels:
                 additionalProperties:
