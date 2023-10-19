@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/internal/chart"
-	"github.com/kyma-project/serverless-manager/internal/warning"
+	"github.com/kyma-project/serverless-manager/components/operator/internal/chart"
+	"github.com/kyma-project/serverless-manager/components/operator/internal/warning"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
