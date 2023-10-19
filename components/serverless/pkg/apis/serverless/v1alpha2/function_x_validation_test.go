@@ -346,7 +346,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			fieldPath:      "spec.annotations",
 			expectedErrMsg: "Annotations has key starting with ",
 		},
-		"reserved runtime: custom": {
+		"disallowed runtime: custom": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
