@@ -186,6 +186,15 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				},
 			},
 		},
+		"allowed envs": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Env:     []corev1.EnvVar{{Name: "TEST_ENV"}, {Name: "MY_ENV"}},
+				},
+			},
+		},
 	}
 
 	for name, tc := range testCases {
@@ -346,13 +355,110 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			},
 			expectedCause:  metav1.CauseTypeFieldValueNotSupported,
 			fieldPath:      "spec.runtime",
-			expectedErrMsg: "",
+			expectedErrMsg: `Unsupported value: "custom"`,
+		},
+		"reserved env: FUNC_RUNTIME": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Env: []corev1.EnvVar{
+						{Name: "TEST2"},
+						{Name: "FUNC_RUNTIME"},
+						{Name: "TEST"},
+					},
+				},
+			},
+			expectedErrMsg: "Following envs are reserved",
+			fieldPath:      "spec.env",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
+		"reserved env: FUNC_HANDLER": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Env: []corev1.EnvVar{
+						{Name: "TEST2"},
+						{Name: "FUNC_HANDLER"},
+						{Name: "TEST"},
+					},
+				},
+			},
+			expectedErrMsg: "Following envs are reserved",
+			fieldPath:      "spec.env",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
+		"reserved env: FUNC_PORT": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Env: []corev1.EnvVar{
+						{Name: "TEST2"},
+						{Name: "FUNC_PORT"},
+						{Name: "TEST"},
+					},
+				},
+			},
+			expectedErrMsg: "Following envs are reserved",
+			fieldPath:      "spec.env",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
+		"reserved env: MOD_NAME": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Env: []corev1.EnvVar{
+						{Name: "TEST2"},
+						{Name: "MOD_NAME"},
+						{Name: "TEST"},
+					},
+				},
+			},
+			expectedErrMsg: "Following envs are reserved",
+			fieldPath:      "spec.env",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
+		"reserved env: NODE_PATH": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Env: []corev1.EnvVar{
+						{Name: "TEST2"},
+						{Name: "NODE_PATH"},
+						{Name: "TEST"},
+					},
+				},
+			},
+			expectedErrMsg: "Following envs are reserved",
+			fieldPath:      "spec.env",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
+		"reserved env: PYTHONPATH": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Env: []corev1.EnvVar{
+						{Name: "TEST2"},
+						{Name: "PYTHONPATH"},
+						{Name: "TEST"},
+					},
+				},
+			},
+			expectedErrMsg: "Following envs are reserved",
+			fieldPath:      "spec.env",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
 	}
 	for name, tc := range testCases {
 		t.Run(name, func(t *testing.T) {
 			//WHEN
 			err := k8sClient.Create(ctx, tc.fn)
+
 			//THEN
 			require.Error(t, err)
 			errStatus, ok := err.(*k8serrors.StatusError)
@@ -362,6 +468,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			cause := causes[0]
 			assert.Equal(t, tc.expectedCause, cause.Type)
 			assert.Equal(t, tc.fieldPath, cause.Field)
+			assert.NotEmpty(t, tc.expectedErrMsg, "cause message: %s", cause.Message)
 			assert.Contains(t, cause.Message, tc.expectedErrMsg)
 		})
 	}
