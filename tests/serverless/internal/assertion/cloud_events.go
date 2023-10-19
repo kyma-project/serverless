@@ -103,6 +103,11 @@ func (ce cloudEventCheck) Cleanup() error {
 }
 
 func (ce cloudEventCheck) OnError() error {
+	resp, err := getEventData(ce.endpoint)
+	if err != nil {
+		return errors.Wrap(err, "while getting all cloud events")
+	}
+	ce.log.Infof("All received events from function: %s", resp)
 	return nil
 }
 
@@ -123,18 +128,20 @@ func (ce cloudEventCheck) createCECtx() (context.Context, string, error) {
 }
 
 type cloudEventSendCheck struct {
-	name     string
-	log      *logrus.Entry
-	endpoint string
+	name           string
+	log            *logrus.Entry
+	endpoint       string
+	publisherProxy string
 }
 
 var _ executor.Step = &cloudEventSendCheck{}
 
-func CloudEventSendCheck(log *logrus.Entry, name string, target *url.URL) executor.Step {
+func CloudEventSendCheck(log *logrus.Entry, name string, target *url.URL, publisherProxy *url.URL) executor.Step {
 	return cloudEventSendCheck{
-		name:     name,
-		log:      log,
-		endpoint: target.String(),
+		name:           name,
+		log:            log,
+		endpoint:       target.String(),
+		publisherProxy: publisherProxy.String(),
 	}
 }
 
@@ -184,6 +191,11 @@ func (s cloudEventSendCheck) Cleanup() error {
 }
 
 func (s cloudEventSendCheck) OnError() error {
+	resp, err := getEventData(s.publisherProxy)
+	if err != nil {
+		return errors.Wrap(err, "while getting all sent events")
+	}
+	s.log.Infof("All sent events from publisher proxy: %s", resp)
 	return nil
 }
 
@@ -226,9 +238,8 @@ func getCloudEventFromFunction(endpoint, eventType string) (cloudEventResponse, 
 	}
 	out, err := io.ReadAll(res.Body)
 	if err != nil {
-		return cloudEventResponse{}, errors.Wrap(err, "while reading response body")
+		return cloudEventResponse{}, errors.Wrapf(err, "while reading response body: %s", string(out))
 	}
-	fmt.Println("GET response:\n", string(out))
 
 	ceResp := cloudEventResponse{}
 	err = json.Unmarshal(out, &ceResp)
@@ -236,6 +247,24 @@ func getCloudEventFromFunction(endpoint, eventType string) (cloudEventResponse, 
 		return cloudEventResponse{}, errors.Wrapf(err, "while unmarshalling response, got: %s", out)
 	}
 	return ceResp, nil
+}
+
+func getEventData(endpoint string) (string, error) {
+	req := &http.Request{}
+	fnURL, err := url.Parse(endpoint)
+	if err != nil {
+		return "", errors.Wrap(err, "while parsing function url")
+	}
+	req.URL = fnURL
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", errors.Wrap(err, "while doing request")
+	}
+	out, err := io.ReadAll(res.Body)
+	if err != nil {
+		return "", errors.Wrap(err, "while reading response body")
+	}
+	return string(out), nil
 }
 
 func assertCloudEvent(response cloudEventResponse, expectedResponse cloudEventResponse) error {

@@ -23,7 +23,7 @@ func TestCloudEventCheckLocally(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				//GIVEN
 				log := logrus.New().WithField("test", "cloud event")
-				fnURL, err := url.Parse("http://localhost:8080")
+				fnURL, err := url.Parse("http://localhost:8091")
 				if err != nil {
 					panic(err)
 				}
@@ -50,7 +50,7 @@ func TestCloudEventCheckLocally(t *testing.T) {
 		}
 
 		//WHEN
-		check := CloudEventSendCheck(log, "test", fnURL)
+		check := CloudEventSendCheck(log, "test", fnURL, fnURL)
 
 		//THEN
 		err = check.Run()
