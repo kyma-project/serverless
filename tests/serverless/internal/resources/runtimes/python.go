@@ -113,7 +113,7 @@ def main(event, context):
 
     if req.method == 'GET':
         event_type = req.query.get(key='type')
-        if event_type is None "":
+        if event_type is None:
             return json.dumps(event_data)
         remote_addr = req.query.get(key='address', default=req.remote_addr)
         runtime_events = event_data.get(remote_addr, {})
