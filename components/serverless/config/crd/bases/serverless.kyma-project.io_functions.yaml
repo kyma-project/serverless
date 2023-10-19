@@ -408,6 +408,10 @@ spec:
                     - source
                     type: object
                 type: object
+                x-kubernetes-validations:
+                - message: Use GitRepository or Inline source
+                  rule: has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository)
+                    && has(self.inline)
               template:
                 description: 'Deprecated: Use **Labels** and **Annotations** to label
                   and/or annotate Function''s Pods.'
