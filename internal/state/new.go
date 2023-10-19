@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/kyma-project/serverless-manager/api/v1alpha1"
+	"github.com/kyma-project/serverless-manager/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless-manager/internal/chart"
 	"go.uber.org/zap"
 	"k8s.io/client-go/rest"

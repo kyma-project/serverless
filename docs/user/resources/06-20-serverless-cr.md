@@ -57,7 +57,7 @@ The following Serverless custom resource (CR) shows configuration of Serverless 
 
 ## Custom resource parameters
 
-For details, see the [Serverless specification file](https://github.com/kyma-project/serverless-manager/blob/main/api/v1alpha1/serverless_types.go).
+For details, see the [Serverless specification file](https://github.com/kyma-project/serverless-manager/blob/main/components/operator/api/v1alpha1/serverless_types.go).
 <!-- TABLE-START -->
 ### Serverless.operator.kyma-project.io/v1alpha1
 

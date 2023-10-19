@@ -2,7 +2,7 @@ package state
 
 import (
 	"context"
-	"github.com/kyma-project/serverless-manager/api/v1alpha1"
+	"github.com/kyma-project/serverless-manager/components/operator/api/v1alpha1"
 	"k8s.io/client-go/tools/record"
 	"sigs.k8s.io/controller-runtime"
 )

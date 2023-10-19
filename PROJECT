@@ -11,6 +11,6 @@ resources:
   domain: kyma-project.io
   group: operator
   kind: Serverless
-  path: github.com/kyma-project/serverless-manager/api/v1alpha1
+  path: github.com/kyma-project/serverless-manager/components/operator/api/v1alpha1
   version: v1alpha1
 version: "3"
