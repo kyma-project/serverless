@@ -20,7 +20,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o operator main.go
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM gcr.io/distroless/static:nonroot
 
-#WORKDIR /
+WORKDIR /
 COPY --chown=65532:65532 --from=builder /workspace/operator .
 COPY --chown=65532:65532 --from=builder /workspace/module-chart ./module-chart
 USER 65532:65532

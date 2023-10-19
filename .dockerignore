@@ -2,7 +2,7 @@
 **
 # Allow
 !./main.go
-!components/operator
+!components/operator/api
 !controllers
 !internal
 !module-chart
