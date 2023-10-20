@@ -200,6 +200,8 @@ async function handleGet(req) {
             }
         }).then((res) => {
             data = res.data
+        }).catch((error) => {
+            data = error
         })
         return data
     }
