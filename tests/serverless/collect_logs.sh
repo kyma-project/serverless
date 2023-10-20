@@ -25,14 +25,14 @@ collect_logs(){
 
 
     echo "########################################################"
-    echo "Get logs from all serverless jobs"
+    echo "Get logs from all function build jobs and runtime"
     echo "########################################################"
     ALL_TEST_NAMESPACES=$(kubectl get namespace --selector created-by=serverless-controller-manager-test   --no-headers -o custom-columns=name:.metadata.name)
     # shellcheck disable=SC2206
     ALL=($ALL_TEST_NAMESPACES)
     for NAMESPACE in "${ALL[@]}"
     do
-      kubectl logs --namespace "${NAMESPACE}" --all-containers  --selector job-name --ignore-errors --prefix=true
+      kubectl logs --namespace "${NAMESPACE}" --all-containers  --selector serverless.kyma-project.io/function-name --ignore-errors --prefix=true
     done
     echo ""
     set -o errexit
