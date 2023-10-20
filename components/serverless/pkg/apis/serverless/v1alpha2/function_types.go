@@ -165,6 +165,8 @@ type FunctionSpec struct {
 	RuntimeImageOverride string `json:"runtimeImageOverride,omitempty"`
 
 	// Contains the Function's source code configuration.
+	// +kubebuilder:validation:XValidation:message="Use GitRepository or Inline source",rule="has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository) && has(self.inline)"
+	// +kubebuilder:validation:Required
 	Source Source `json:"source"`
 
 	// Specifies an array of key-value pairs to be used as environment variables for the Function.
