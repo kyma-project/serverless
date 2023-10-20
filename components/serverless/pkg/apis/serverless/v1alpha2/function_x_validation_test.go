@@ -227,6 +227,17 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				},
 			},
 		},
+		"gitRepository used as source": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{}},
+					Env: []corev1.EnvVar{{Name: "TEST_ENV"}, {Name: "MY_ENV"}},
+				},
+			},
+		},
 	}
 
 	for name, tc := range testCases {
