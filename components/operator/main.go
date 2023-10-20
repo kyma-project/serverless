@@ -21,7 +21,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/kyma-project/serverless-manager/internal/config"
+	"github.com/kyma-project/serverless-manager/components/operator/internal/config"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -38,7 +38,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
 	operatorv1alpha1 "github.com/kyma-project/serverless-manager/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/controllers"
+	"github.com/kyma-project/serverless-manager/components/operator/controllers"
 	//+kubebuilder:scaffold:imports
 )
 

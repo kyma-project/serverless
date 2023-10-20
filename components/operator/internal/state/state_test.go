@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/kyma-project/serverless-manager/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/internal/chart"
+	"github.com/kyma-project/serverless-manager/components/operator/internal/chart"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"

@@ -62,7 +62,7 @@ var _ = BeforeSuite(func() {
 	By("bootstrapping test environment")
 	testEnv = &envtest.Environment{
 		CRDDirectoryPaths: []string{
-			filepath.Join("..", "config", "operator", "crd", "bases"),
+			filepath.Join("..", "..", "..", "config", "operator", "crd", "bases"),
 		},
 		ErrorIfCRDPathMissing: true,
 	}
@@ -91,7 +91,7 @@ var _ = BeforeSuite(func() {
 	reconcilerLogger, err := config.Build()
 	Expect(err).NotTo(HaveOccurred())
 
-	chartPath := filepath.Join("..", "module-chart")
+	chartPath := filepath.Join("..", "..", "..", "module-chart")
 	err = (NewServerlessReconciler(
 		k8sManager.GetClient(),
 		k8sManager.GetConfig(),

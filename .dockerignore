@@ -1,10 +1,10 @@
 # Ignore all
 **
 # Allow
-!./main.go
+!components/operator/main.go
 !components/operator/api
-!controllers
-!internal
+!components/operator/controllers
+!components/operator/internal
 !module-chart
 !go.sum
 !go.mod

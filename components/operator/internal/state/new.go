@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/kyma-project/serverless-manager/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/internal/chart"
+	"github.com/kyma-project/serverless-manager/components/operator/internal/chart"
 	"go.uber.org/zap"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
