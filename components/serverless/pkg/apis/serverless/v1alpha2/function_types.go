@@ -142,10 +142,13 @@ type ResourceConfiguration struct {
 type SecretMount struct {
 	// Specifies the name of the Secret in the Function's Namespace.
 	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MaxLength=253
+	// +kubebuilder:validation:MinLength=1
 	SecretName string `json:"secretName"`
 
 	// Specifies the path within the container where the Secret should be mounted.
 	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
 	MountPath string `json:"mountPath"`
 }
 

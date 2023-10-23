@@ -234,7 +234,17 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 					Runtime: serverlessv1alpha2.Python39,
 					Source: serverlessv1alpha2.Source{
 						GitRepository: &serverlessv1alpha2.GitRepositorySource{}},
-					Env: []corev1.EnvVar{{Name: "TEST_ENV"}, {Name: "MY_ENV"}},
+				},
+			},
+		},
+		"secretMount": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{}},
+					SecretMounts: []serverlessv1alpha2.SecretMount{{MountPath: "/path", SecretName: "secret-name"}},
 				},
 			},
 		},
@@ -539,6 +549,36 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			},
 			expectedErrMsg: "Use GitRepository or Inline source",
 			fieldPath:      "spec.source",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
+		"Secret Mount name is empty": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{}},
+					SecretMounts: []serverlessv1alpha2.SecretMount{
+						{SecretName: "", MountPath: "/path"},
+					},
+				},
+			},
+			expectedErrMsg: "should be at least 1 chars long",
+			fieldPath:      "spec.secretMounts[0].secretName",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
+		"Secret Mount path is empty": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{}},
+					SecretMounts: []serverlessv1alpha2.SecretMount{
+						{SecretName: "my-secret", MountPath: ""},
+					},
+				},
+			},
+			expectedErrMsg: "should be at least 1 chars long",
+			fieldPath:      "spec.secretMounts[0].mountPath",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
 	}
