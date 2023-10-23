@@ -334,10 +334,13 @@ spec:
                     mountPath:
                       description: Specifies the path within the container where the
                         Secret should be mounted.
+                      minLength: 1
                       type: string
                     secretName:
                       description: Specifies the name of the Secret in the Function's
                         Namespace.
+                      maxLength: 253
+                      minLength: 1
                       type: string
                   required:
                   - mountPath
