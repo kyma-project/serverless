@@ -69,8 +69,8 @@ UPLOAD_URL="https://uploads.github.com/repos/kyma-project/serverless-manager/rel
 
 uploadFile "serverless-operator.yaml" "${UPLOAD_URL}?name=serverless-operator.yaml"
 uploadFile "moduletemplate.yaml" "${UPLOAD_URL}?name=moduletemplate.yaml"
-uploadFile "config/samples/default_serverless_cr.yaml" "${UPLOAD_URL}?name=default_serverless_cr.yaml"
-uploadFile "config/samples/default_serverless_cr_k3d.yaml" "${UPLOAD_URL}?name=default_serverless_cr_k3d.yaml"
+uploadFile "config/samples/default-serverless-cr.yaml" "${UPLOAD_URL}?name=default-serverless-cr.yaml"
+uploadFile "config/samples/default-serverless-cr-k3d.yaml" "${UPLOAD_URL}?name=default-serverless-cr-k3d.yaml"
 
 
 
