@@ -151,16 +151,20 @@ configure-git-origin:
 
 ##@ Build Dependencies
 MODULECHART=module-chart
+MODULECHARTOPERATOR=components/operator/module-chart
 
 .PHONY: module-chart
 module-chart: ## Copy serverless chart from config/serverless to module-chart
 module-chart: module-chart-clean
 	mkdir -p ${MODULECHART}
 	cp -r config/serverless/* ${MODULECHART}
+	mkdir -p ${MODULECHARTOPERATOR}
+	cp -r config/serverless/* ${MODULECHARTOPERATOR}
 
 .PHONY: module-chart-clean
 module-chart-clean: ## Remove the module-chart dir.
 	rm -rf ${MODULECHART}
+	rm -rf ${MODULECHARTOPERATOR}
 
 ##@ Tools
 
