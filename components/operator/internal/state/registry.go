@@ -36,16 +36,22 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 }
 
 func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error {
-	extRegSecert, err := registry.GetServerlessExternalRegistrySecret(ctx, r.client, s.instance.GetNamespace())
+	extRegSecretClusterWide, err := registry.GetServerlessExternalRegistrySecret(ctx, r.client, s.instance.GetNamespace())
 	if err != nil {
 		return err
 	}
 
+	var extRegSecretNamespacedScope *corev1.SecretList
+	if extRegSecretClusterWide == nil {
+		// do it only when cluster wide is nit to not collide with it
+		// list extRegSecretNamespacedScope here
+	}
+
 	switch {
-	case extRegSecert != nil:
+	case extRegSecretClusterWide != nil:
 		// case: use runtime secret (with labels)
 		// doc: https://kyma-project.io/docs/kyma/latest/05-technical-reference/svls-03-switching-registries#cluster-wide-external-registry
-		setRuntimeRegistryConfig(extRegSecert, s)
+		setRuntimeRegistryConfig(extRegSecretClusterWide, s)
 	case isRegistrySecretName(s.instance.Spec.DockerRegistry):
 		// case: use secret from secretName field
 		err := setExternalRegistryConfig(ctx, r, s)
@@ -63,20 +69,26 @@ func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error
 		setK3dRegistryConfig(s)
 	}
 
-	addRegistryConfigurationWarnings(extRegSecert, s)
+	addRegistryConfigurationWarnings(extRegSecretClusterWide, extRegSecretNamespacedScope, s)
 	return nil
 }
 
-func addRegistryConfigurationWarnings(extRegSecert *corev1.Secret, s *systemState) {
+func addRegistryConfigurationWarnings(extRegSecretClusterWide *corev1.Secret, extRegSecretsNamespacedScope *corev1.SecretList , s *systemState) {
+	//
+	if len(extRegSecretsNamespacedScope.Items) > 0 {
+		// for 
+		//warn here
+	}
+
 	// runtime secret exist and it's other than this under secretName
-	if extRegSecert != nil && isRegistrySecretName(s.instance.Spec.DockerRegistry) &&
-		extRegSecert.Name != *s.instance.Spec.DockerRegistry.SecretName {
-		s.warningBuilder.With(fmt.Sprintf(extRegSecDiffThanSpecFormat, extRegSecert.Namespace, extRegSecert.Name, extRegSecert.Name))
+	if extRegSecretClusterWide != nil && isRegistrySecretName(s.instance.Spec.DockerRegistry) &&
+		extRegSecretClusterWide.Name != *s.instance.Spec.DockerRegistry.SecretName {
+		s.warningBuilder.With(fmt.Sprintf(extRegSecDiffThanSpecFormat, extRegSecretClusterWide.Namespace, extRegSecretClusterWide.Name, extRegSecretClusterWide.Name))
 	}
 
 	// runtime secret exist and secretName field is empty
-	if extRegSecert != nil && !isRegistrySecretName(s.instance.Spec.DockerRegistry) {
-		s.warningBuilder.With(fmt.Sprintf(extRegSecNotInSpecFormat, extRegSecert.Namespace, extRegSecert.Name, extRegSecert.Name))
+	if extRegSecretClusterWide != nil && !isRegistrySecretName(s.instance.Spec.DockerRegistry) {
+		s.warningBuilder.With(fmt.Sprintf(extRegSecNotInSpecFormat, extRegSecretClusterWide.Namespace, extRegSecretClusterWide.Name, extRegSecretClusterWide.Name))
 	}
 
 	// enableInternal is true and secretName is used
