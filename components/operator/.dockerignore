@@ -5,6 +5,6 @@
 !components/operator/api
 !components/operator/controllers
 !components/operator/internal
-!go.sum
-!go.mod
+!components/operator/go.sum
+!components/operator/go.mod
 !config/serverless

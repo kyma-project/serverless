@@ -68,15 +68,15 @@ generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and
 
 .PHONY: fmt
 fmt: ## Run go fmt against code.
-	go fmt ./...
+	(cd components/operator && go fmt ./...)
 
 .PHONY: vet
 vet: ## Run go vet against code.
-	go vet ./...
+	(cd components/operator && go vet ./...)
 
 .PHONY: test
-test: manifests generate fmt vet envtest  ## Run unit tests.
-	KUBEBUILDER_CONTROLPLANE_START_TIMEOUT=2m KUBEBUILDER_CONTROLPLANE_STOP_TIMEOUT=2m KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test ./... -coverprofile cover.out
+test: manifests generate fmt vet envtest ## Run unit tests.
+	(cd components/operator && KUBEBUILDER_CONTROLPLANE_START_TIMEOUT=2m KUBEBUILDER_CONTROLPLANE_STOP_TIMEOUT=2m KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test ./... -coverprofile cover.out)
 
 ##@ Build
 
@@ -86,11 +86,15 @@ build: generate fmt vet ## Build operator binary.
 
 .PHONY: run
 run: manifests generate fmt vet ## Run a controller from your host.
-	go run ./main.go
+	go run ./components/operator/main.go
 
 .PHONY: docker-build
 docker-build: manifests generate ## Build docker image with the operator.
 	docker build -t ${IMG} .
+
+.PHONY: docker-build-operator
+docker-build-operator: manifests generate ## Build docker image with the operator.
+	docker build -t ${IMG} -f components/operator/Dockerfile .
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the operator.
@@ -126,6 +130,10 @@ undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/confi
 
 .PHONY: module-image
 module-image: docker-build docker-push ## Build the Module Image and push it to a registry defined in IMG_REGISTRY.
+	echo "built and pushed module image $(IMG)"
+
+.PHONY: module-image-operator
+module-image-operator: docker-build-operator docker-push ## Build the Module Image and push it to a registry defined in IMG_REGISTRY.
 	echo "built and pushed module image $(IMG)"
 
 .PHONY: module-build
