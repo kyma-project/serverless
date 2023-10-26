@@ -3,7 +3,7 @@ package config
 import "github.com/vrischmann/envconfig"
 
 type Config struct {
-	ChartPath                  string `envconfig:"default=/config/serverless"`
+	ChartPath                  string `envconfig:"default=/module-chart"`
 	ServerlessManagerNamespace string `envconfig:"default=default"`
 }
 

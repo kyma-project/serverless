@@ -7,3 +7,4 @@
 !components/operator/internal
 !go.sum
 !go.mod
+!config/serverless
