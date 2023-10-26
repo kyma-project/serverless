@@ -36,15 +36,14 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 }
 
 func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error {
-	extRegSecretClusterWide, err := registry.GetServerlessExternalRegistrySecret(ctx, r.client, s.instance.GetNamespace())
+	extRegSecretClusterWide, err := registry.GetExternalClusterWideRegistrySecret(ctx, r.client, s.instance.GetNamespace())
 	if err != nil {
 		return err
 	}
 
-	var extRegSecretNamespacedScope *corev1.SecretList
-	if extRegSecretClusterWide == nil {
-		// do it only when cluster wide is nit to not collide with it
-		// list extRegSecretNamespacedScope here
+	extRegSecretNamespacedScope, err := registry.ListExternalNamespacedScopeSecrets(ctx, r.client)
+	if err != nil {
+		return err
 	}
 
 	switch {
@@ -73,14 +72,13 @@ func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error
 	return nil
 }
 
-func addRegistryConfigurationWarnings(extRegSecretClusterWide *corev1.Secret, extRegSecretsNamespacedScope *corev1.SecretList , s *systemState) {
-	//
-	if len(extRegSecretsNamespacedScope.Items) > 0 {
-		// for 
-		//warn here
+func addRegistryConfigurationWarnings(extRegSecretClusterWide *corev1.Secret, extRegSecretsNamespacedScope []corev1.Secret, s *systemState) {
+	// runtime secrets (namespaced scope) exist
+	for _, secret := range extRegSecretsNamespacedScope {
+		s.warningBuilder.With(fmt.Sprintf(extRegSecDiffThanSpecFormat, secret.Namespace, secret.Name, secret.Name))
 	}
 
-	// runtime secret exist and it's other than this under secretName
+	// runtime secret (cluster wide) exist and it's other than this under secretName
 	if extRegSecretClusterWide != nil && isRegistrySecretName(s.instance.Spec.DockerRegistry) &&
 		extRegSecretClusterWide.Name != *s.instance.Spec.DockerRegistry.SecretName {
 		s.warningBuilder.With(fmt.Sprintf(extRegSecDiffThanSpecFormat, extRegSecretClusterWide.Namespace, extRegSecretClusterWide.Name, extRegSecretClusterWide.Name))

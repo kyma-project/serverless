@@ -243,7 +243,7 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 				Namespace: "kyma-system",
 			},
 		}
-		addRegistryConfigurationWarnings(&extRegSecret, s)
+		addRegistryConfigurationWarnings(&extRegSecret, []corev1.Secret{}, s)
 		require.Equal(t,
 			fmt.Sprintf(
 				fmt.Sprintf("Warning: %s", extRegSecDiffThanSpecFormat), extRegSecret.Namespace, extRegSecret.Name, extRegSecret.Name),
@@ -267,7 +267,7 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 				Namespace: "kyma-system",
 			},
 		}
-		addRegistryConfigurationWarnings(&extRegSecret, s)
+		addRegistryConfigurationWarnings(&extRegSecret, []corev1.Secret{}, s)
 		require.Equal(t,
 			fmt.Sprintf(
 				fmt.Sprintf("Warning: %s", extRegSecNotInSpecFormat), extRegSecret.Namespace, extRegSecret.Name, extRegSecret.Name),
@@ -286,11 +286,42 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 				},
 			},
 		}
-		addRegistryConfigurationWarnings(nil, s)
+		addRegistryConfigurationWarnings(nil, []corev1.Secret{}, s)
 		require.Equal(t, fmt.Sprintf("Warning: %s", internalEnabledAndSecretNameUsedMessage), s.warningBuilder.Build())
 	})
 
-	t.Run("do not build error", func(t *testing.T) {
+	t.Run("namespaced scope secrets exist", func(t *testing.T) {
+		s := &systemState{
+			warningBuilder: warning.NewBuilder(),
+			instance: v1alpha1.Serverless{
+				Spec: v1alpha1.ServerlessSpec{
+					DockerRegistry: &v1alpha1.DockerRegistry{},
+				},
+			},
+		}
+		namespacedScopeSecrets := []corev1.Secret{
+			{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "test-name-1",
+					Namespace: "test-namespace-1",
+				},
+			},
+			{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "test-name-2",
+					Namespace: "test-namespace-2",
+				},
+			},
+		}
+
+		addRegistryConfigurationWarnings(nil, namespacedScopeSecrets, s)
+		require.Equal(t, fmt.Sprintf("Warning: %s; %s",
+			fmt.Sprintf(extRegSecDiffThanSpecFormat, namespacedScopeSecrets[0].Namespace, namespacedScopeSecrets[0].Name, namespacedScopeSecrets[0].Name),
+			fmt.Sprintf(extRegSecDiffThanSpecFormat, namespacedScopeSecrets[1].Namespace, namespacedScopeSecrets[1].Name, namespacedScopeSecrets[1].Name),
+		), s.warningBuilder.Build())
+	})
+
+	t.Run("do not build warning", func(t *testing.T) {
 		s := &systemState{
 			warningBuilder: warning.NewBuilder(),
 			instance: v1alpha1.Serverless{
@@ -308,7 +339,7 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 				Namespace: "kyma-system",
 			},
 		}
-		addRegistryConfigurationWarnings(&extRegSecret, s)
+		addRegistryConfigurationWarnings(&extRegSecret, []corev1.Secret{}, s)
 		require.Equal(t, "", s.warningBuilder.Build())
 	})
 }
