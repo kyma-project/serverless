@@ -14,8 +14,8 @@ This chart implements the Docker Registry deployment.
 
 To install the chart, use the following command:
 
-```console
-$ helm install stable/docker-registry
+```bash
+helm install stable/docker-registry
 ```
 
 ## Configuration

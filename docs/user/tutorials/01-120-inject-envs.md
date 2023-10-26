@@ -23,7 +23,7 @@ kubectl create configmap my-config --from-literal config-env="I come from config
 2. Create your Secret
 
 ```bash
-kubectl create secret generic  my-secret  --from-literal secret-env="I come from secret"
+kubectl create secret generic my-secret --from-literal secret-env="I come from secret"
 ```
 
 
@@ -101,7 +101,7 @@ kubectl create secret generic  my-secret  --from-literal secret-env="I come from
 
 3. Create a Function CR that specifies the Function's logic:
 
-   ```yaml
+   ```bash
    cat <<EOF | kubectl apply -f -
    apiVersion: serverless.kyma-project.io/v1alpha2
    kind: Function

@@ -11,7 +11,7 @@ See sample Functions for all available runtimes:
   Node.js
   </summary>
 
-```yaml
+```bash
 cat <<EOF | kubectl apply -f -
 apiVersion: serverless.kyma-project.io/v1alpha2
 kind: Function
@@ -45,7 +45,7 @@ EOF
   Python 3.9
   </summary>
 
-```yaml
+```bash
 cat <<EOF | kubectl apply -f -
 apiVersion: serverless.kyma-project.io/v1alpha2
 kind: Function

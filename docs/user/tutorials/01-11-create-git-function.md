@@ -96,7 +96,7 @@ You can create a Function either with kubectl or Kyma Dashboard:
 
 3. Create a Function CR that specifies the Function's logic and points to the directory with code and dependencies in the given repository. It also specifies the Git repository metadata:
 
-   ```yaml
+   ```bash
    cat <<EOF | kubectl apply -f -
    apiVersion: serverless.kyma-project.io/v1alpha2
    kind: Function

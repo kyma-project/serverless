@@ -64,7 +64,7 @@ Follow these steps:
 
 3. Create a Function CR that specifies the Function's logic:
 
-   ```yaml
+   ```bash
    cat <<EOF | kubectl apply -f -
    apiVersion: serverless.kyma-project.io/v1alpha2
    kind: Function

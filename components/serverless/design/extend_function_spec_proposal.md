@@ -228,7 +228,6 @@ spec:
       limits: ... #if_custom
       requests: ... #if_custom
 
-
     labels: 
       app: my-app
     annotations: 
@@ -244,7 +243,6 @@ spec:
     resources: # optional... required if spec.build.profile==Custom
       limits: ... #if_custom
       requests: ... #if_custom
-
 ```
 
 ### Option 3
@@ -292,10 +290,10 @@ spec:
       mountPath: /etc/index
   volumes:
     - name: search-index
-        nfs:
-          path: /path-to-index
-          readOnly: true
-          server: localhost
+      nfs:
+        path: /path-to-index
+        readOnly: true
+        server: localhost
     - name: config
       configmap:
         name: function-configuration
@@ -331,7 +329,6 @@ spec:
     volumeMounts:
       - name: private-deps-repo-configuration
         path: /etc/my-dep-resolver.config
-
 ```
 ### Option 4
 
@@ -386,10 +383,10 @@ spec:
             mountPath: /etc/index
       volumes:
         - name: search-index
-            nfs:
-              path: /path-to-index
-              readOnly: true
-              server: localhost
+          nfs:
+            path: /path-to-index
+            readOnly: true
+            server: localhost
         - name: config
           configmap:
             name: function-configuration
@@ -484,8 +481,6 @@ spec: #Contains spec of Function and run stage (deployments, hpa)
     resources: # optional... required if spec.profile is empty
       limits: ... #if profile empty
       requests: ... #if profile empty
-
-
 ```
 
 ### Precedence, defaulting and validation
@@ -527,3 +522,4 @@ spec:
   build:
     labels: # <-- those labels will be used in Job's PodTemplate and will be applied on the function's build-time pod
     annotations: # <-- those annotations will be used in Job's PodTemplate and will be applied on the function's build-time pod
+```

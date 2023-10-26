@@ -20,11 +20,11 @@ See these signatures for each runtime:
   Node.js
   </summary>
 
-```bash
+```js
 module.exports = {
-  main: function (event, context) {
-    return
-  }
+    main: function (event, context) {
+        return
+    }
 }
 ```
 
@@ -34,7 +34,7 @@ module.exports = {
 Python
 </summary>
 
-```bash
+```python
 def main(event, context):
     return
 ```
@@ -152,10 +152,12 @@ See sample context details:
 
 ```json
 ...
-{ "function-name": "main",
-  "timeout": 180,
-  "runtime": "nodejs18",
-  "memory-limit": 200Mi }
+{ 
+    "function-name": "main",
+    "timeout": 180,
+    "runtime": "nodejs18",
+    "memory-limit": 200Mi
+}
 ```
 
 See the detailed descriptions of these fields:

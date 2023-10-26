@@ -25,7 +25,7 @@ Create a Secret CR for your Node.js or Python Functions. You can also create one
 
 2. Create a Secret:
 
- ```yaml
+ ```bash
  cat <<EOF | kubectl apply -f -
  apiVersion: v1
  kind: Secret
@@ -57,7 +57,7 @@ EOF
 
 2. Create a Secret:
 
- ```yaml
+ ```bash
  cat <<EOF | kubectl apply -f -
  apiVersion: v1
  kind: Secret
@@ -90,7 +90,7 @@ EOF
 
 2. Create a Secret:
 
- ```yaml
+ ```bash
  cat <<EOF | kubectl apply -f -
  apiVersion: v1
  kind: Secret

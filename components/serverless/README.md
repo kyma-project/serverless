@@ -90,7 +90,7 @@ Build and install the libgit2 binary required by the Function Controller on macO
 1. Navigate to the Function Controller's root directory and verify the version of git2go:
 
    ```bash
-   $ cat go.mod | grep git2go
+   cat go.mod | grep git2go
    ```
    You should get a result similar to this example:
 
