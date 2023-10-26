@@ -13,6 +13,7 @@ import (
 )
 
 const (
+	extNamespacedScopeSecretsDetectedFormat = "actual registry configuration in namespace %s comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect the %s secret in the secretName field or delete it"
 	extRegSecDiffThanSpecFormat             = "actual registry configuration comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect the %s secret in the secretName field or delete it"
 	extRegSecNotInSpecFormat                = "actual registry configuration comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect %s secret in the secretName field"
 	internalEnabledAndSecretNameUsedMessage = "spec.dockerRegistry.enableInternal is true and spec.dockerRegistry.secretName is used. Delete the secretName field or set the enableInternal value to false"
@@ -75,7 +76,7 @@ func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error
 func addRegistryConfigurationWarnings(extRegSecretClusterWide *corev1.Secret, extRegSecretsNamespacedScope []corev1.Secret, s *systemState) {
 	// runtime secrets (namespaced scope) exist
 	for _, secret := range extRegSecretsNamespacedScope {
-		s.warningBuilder.With(fmt.Sprintf(extRegSecDiffThanSpecFormat, secret.Namespace, secret.Name, secret.Name))
+		s.warningBuilder.With(fmt.Sprintf(extNamespacedScopeSecretsDetectedFormat, secret.Namespace, secret.Namespace, secret.Name, secret.Name))
 	}
 
 	// runtime secret (cluster wide) exist and it's other than this under secretName

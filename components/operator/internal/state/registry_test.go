@@ -299,25 +299,28 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 				},
 			},
 		}
+
+		testSecret1 := corev1.Secret{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "test-name-1",
+				Namespace: "test-namespace-1",
+			},
+		}
+		testSecret2 := corev1.Secret{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "test-name-2",
+				Namespace: "test-namespace-2",
+			},
+		}
 		namespacedScopeSecrets := []corev1.Secret{
-			{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test-name-1",
-					Namespace: "test-namespace-1",
-				},
-			},
-			{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      "test-name-2",
-					Namespace: "test-namespace-2",
-				},
-			},
+			testSecret1,
+			testSecret2,
 		}
 
 		addRegistryConfigurationWarnings(nil, namespacedScopeSecrets, s)
 		require.Equal(t, fmt.Sprintf("Warning: %s; %s",
-			fmt.Sprintf(extRegSecDiffThanSpecFormat, namespacedScopeSecrets[0].Namespace, namespacedScopeSecrets[0].Name, namespacedScopeSecrets[0].Name),
-			fmt.Sprintf(extRegSecDiffThanSpecFormat, namespacedScopeSecrets[1].Namespace, namespacedScopeSecrets[1].Name, namespacedScopeSecrets[1].Name),
+			fmt.Sprintf(extNamespacedScopeSecretsDetectedFormat, testSecret1.Namespace, testSecret1.Namespace, testSecret1.Name, testSecret1.Name),
+			fmt.Sprintf(extNamespacedScopeSecretsDetectedFormat, testSecret2.Namespace, testSecret2.Namespace, testSecret2.Name, testSecret2.Name),
 		), s.warningBuilder.Build())
 	})
 
