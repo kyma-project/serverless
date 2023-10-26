@@ -13,6 +13,7 @@ import (
 )
 
 const (
+	extNamespacedScopeSecretsDetectedFormat = "actual registry configuration in namespace %s comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect the %s secret in the secretName field or delete it"
 	extRegSecDiffThanSpecFormat             = "actual registry configuration comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect the %s secret in the secretName field or delete it"
 	extRegSecNotInSpecFormat                = "actual registry configuration comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect %s secret in the secretName field"
 	internalEnabledAndSecretNameUsedMessage = "spec.dockerRegistry.enableInternal is true and spec.dockerRegistry.secretName is used. Delete the secretName field or set the enableInternal value to false"
@@ -36,16 +37,21 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 }
 
 func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error {
-	extRegSecert, err := registry.GetServerlessExternalRegistrySecret(ctx, r.client, s.instance.GetNamespace())
+	extRegSecretClusterWide, err := registry.GetExternalClusterWideRegistrySecret(ctx, r.client, s.instance.GetNamespace())
+	if err != nil {
+		return err
+	}
+
+	extRegSecretNamespacedScope, err := registry.ListExternalNamespacedScopeSecrets(ctx, r.client)
 	if err != nil {
 		return err
 	}
 
 	switch {
-	case extRegSecert != nil:
+	case extRegSecretClusterWide != nil:
 		// case: use runtime secret (with labels)
 		// doc: https://kyma-project.io/docs/kyma/latest/05-technical-reference/svls-03-switching-registries#cluster-wide-external-registry
-		setRuntimeRegistryConfig(extRegSecert, s)
+		setRuntimeRegistryConfig(extRegSecretClusterWide, s)
 	case isRegistrySecretName(s.instance.Spec.DockerRegistry):
 		// case: use secret from secretName field
 		err := setExternalRegistryConfig(ctx, r, s)
@@ -63,20 +69,25 @@ func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error
 		setK3dRegistryConfig(s)
 	}
 
-	addRegistryConfigurationWarnings(extRegSecert, s)
+	addRegistryConfigurationWarnings(extRegSecretClusterWide, extRegSecretNamespacedScope, s)
 	return nil
 }
 
-func addRegistryConfigurationWarnings(extRegSecert *corev1.Secret, s *systemState) {
-	// runtime secret exist and it's other than this under secretName
-	if extRegSecert != nil && isRegistrySecretName(s.instance.Spec.DockerRegistry) &&
-		extRegSecert.Name != *s.instance.Spec.DockerRegistry.SecretName {
-		s.warningBuilder.With(fmt.Sprintf(extRegSecDiffThanSpecFormat, extRegSecert.Namespace, extRegSecert.Name, extRegSecert.Name))
+func addRegistryConfigurationWarnings(extRegSecretClusterWide *corev1.Secret, extRegSecretsNamespacedScope []corev1.Secret, s *systemState) {
+	// runtime secrets (namespaced scope) exist
+	for _, secret := range extRegSecretsNamespacedScope {
+		s.warningBuilder.With(fmt.Sprintf(extNamespacedScopeSecretsDetectedFormat, secret.Namespace, secret.Namespace, secret.Name, secret.Name))
+	}
+
+	// runtime secret (cluster wide) exist and it's other than this under secretName
+	if extRegSecretClusterWide != nil && isRegistrySecretName(s.instance.Spec.DockerRegistry) &&
+		extRegSecretClusterWide.Name != *s.instance.Spec.DockerRegistry.SecretName {
+		s.warningBuilder.With(fmt.Sprintf(extRegSecDiffThanSpecFormat, extRegSecretClusterWide.Namespace, extRegSecretClusterWide.Name, extRegSecretClusterWide.Name))
 	}
 
 	// runtime secret exist and secretName field is empty
-	if extRegSecert != nil && !isRegistrySecretName(s.instance.Spec.DockerRegistry) {
-		s.warningBuilder.With(fmt.Sprintf(extRegSecNotInSpecFormat, extRegSecert.Namespace, extRegSecert.Name, extRegSecert.Name))
+	if extRegSecretClusterWide != nil && !isRegistrySecretName(s.instance.Spec.DockerRegistry) {
+		s.warningBuilder.With(fmt.Sprintf(extRegSecNotInSpecFormat, extRegSecretClusterWide.Namespace, extRegSecretClusterWide.Name, extRegSecretClusterWide.Name))
 	}
 
 	// enableInternal is true and secretName is used

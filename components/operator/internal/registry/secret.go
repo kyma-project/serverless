@@ -5,6 +5,8 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/selection"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -20,7 +22,38 @@ const (
 	RegistryHTTPEnvKey                               = "REGISTRY_HTTP_SECRET"
 )
 
-func GetServerlessExternalRegistrySecret(ctx context.Context, c client.Client, namespace string) (*corev1.Secret, error) {
+func ListExternalNamespacedScopeSecrets(ctx context.Context, c client.Client) ([]corev1.Secret, error) {
+
+	// has config label
+	remoteRegistryLabelRequirement, _ := labels.NewRequirement(ServerlessExternalRegistryLabelRemoteRegistryKey, selection.Equals, []string{
+		ServerlessExternalRegistryLabelRemoteRegistryVal,
+	})
+
+	// has not credentials label
+	configLabelRequirement, _ := labels.NewRequirement(ServerlessExternalRegistryLabelConfigKey, selection.DoesNotExist, []string{})
+
+	labeledSecrets := corev1.SecretList{}
+	err := c.List(ctx, &labeledSecrets, &client.ListOptions{
+		LabelSelector: labels.NewSelector().Add(
+			*remoteRegistryLabelRequirement,
+			*configLabelRequirement,
+		),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	secrets := []corev1.Secret{}
+	for _, secret := range labeledSecrets.Items {
+		if secret.Name == ServerlessExternalRegistrySecretName {
+			secrets = append(secrets, secret)
+		}
+	}
+
+	return secrets, err
+}
+
+func GetExternalClusterWideRegistrySecret(ctx context.Context, c client.Client, namespace string) (*corev1.Secret, error) {
 	secret := corev1.Secret{}
 	key := client.ObjectKey{
 		Namespace: namespace,

@@ -7,6 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
@@ -21,7 +22,7 @@ func Test_GetExternalRegistrySecret(t *testing.T) {
 			Build()
 		namespace := "some-namespace"
 
-		secret, err := GetServerlessExternalRegistrySecret(ctx, client, namespace)
+		secret, err := GetExternalClusterWideRegistrySecret(ctx, client, namespace)
 		require.NoError(t, err)
 		require.Nil(t, secret)
 	})
@@ -33,7 +34,7 @@ func Test_GetExternalRegistrySecret(t *testing.T) {
 			Build()
 		namespace := testRegistryFilledSecret.Namespace
 
-		secret, err := GetServerlessExternalRegistrySecret(ctx, client, namespace)
+		secret, err := GetExternalClusterWideRegistrySecret(ctx, client, namespace)
 		require.NoError(t, err)
 		require.NotNil(t, secret)
 		require.Equal(t, testRegistryFilledSecret, secret)
@@ -76,9 +77,82 @@ func Test_GetExternalRegistrySecret(t *testing.T) {
 				Build()
 			namespace := testRegistryFilledSecret.Namespace
 
-			secret, err := GetServerlessExternalRegistrySecret(ctx, client, namespace)
+			secret, err := GetExternalClusterWideRegistrySecret(ctx, client, namespace)
 			require.NoError(t, err)
 			require.Nil(t, secret)
 		})
 	}
+}
+
+func TestListExternalNamespacedScopeSecrets(t *testing.T) {
+	t.Run("return empty list when secrets is not found", func(t *testing.T) {
+		ctx := context.Background()
+		client := fake.NewClientBuilder().
+			Build()
+
+		secrets, err := ListExternalNamespacedScopeSecrets(ctx, client)
+		require.NoError(t, err)
+		require.Empty(t, secrets)
+	})
+
+	t.Run("return non empty list when secret is found", func(t *testing.T) {
+		ctx := context.Background()
+
+		client := fake.NewClientBuilder().
+			WithRuntimeObjects(&corev1.Secret{
+				ObjectMeta: v1.ObjectMeta{
+					Name:      ServerlessExternalRegistrySecretName,
+					Namespace: "default",
+					Labels: map[string]string{
+						ServerlessExternalRegistryLabelRemoteRegistryKey: ServerlessExternalRegistryLabelRemoteRegistryVal,
+					},
+				},
+			}).
+			Build()
+
+		secrets, err := ListExternalNamespacedScopeSecrets(ctx, client)
+		require.NoError(t, err)
+		require.Len(t, secrets, 1)
+	})
+
+	t.Run("return empty list when secret has wrong name", func(t *testing.T) {
+		ctx := context.Background()
+
+		client := fake.NewClientBuilder().
+			WithRuntimeObjects(&corev1.Secret{
+				ObjectMeta: v1.ObjectMeta{
+					Name:      "wrong-name",
+					Namespace: "default",
+					Labels: map[string]string{
+						ServerlessExternalRegistryLabelRemoteRegistryKey: ServerlessExternalRegistryLabelRemoteRegistryVal,
+					},
+				},
+			}).
+			Build()
+
+		secrets, err := ListExternalNamespacedScopeSecrets(ctx, client)
+		require.NoError(t, err)
+		require.Len(t, secrets, 0)
+	})
+
+	t.Run("return empty list when secret has wrong labels", func(t *testing.T) {
+		ctx := context.Background()
+
+		client := fake.NewClientBuilder().
+			WithRuntimeObjects(&corev1.Secret{
+				ObjectMeta: v1.ObjectMeta{
+					Name:      ServerlessExternalRegistrySecretName,
+					Namespace: "default",
+					Labels: map[string]string{
+						ServerlessExternalRegistryLabelRemoteRegistryKey: ServerlessExternalRegistryLabelRemoteRegistryVal,
+						ServerlessExternalRegistryLabelConfigKey:         ServerlessExternalRegistryLabelConfigVal,
+					},
+				},
+			}).
+			Build()
+
+		secrets, err := ListExternalNamespacedScopeSecrets(ctx, client)
+		require.NoError(t, err)
+		require.Len(t, secrets, 0)
+	})
 }
