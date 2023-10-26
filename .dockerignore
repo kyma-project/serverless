@@ -5,6 +5,5 @@
 !components/operator/api
 !components/operator/controllers
 !components/operator/internal
-!module-chart
 !go.sum
 !go.mod

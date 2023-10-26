@@ -18,7 +18,6 @@ package controllers
 
 import (
 	"context"
-	"os"
 	"path/filepath"
 	"testing"
 
@@ -91,7 +90,7 @@ var _ = BeforeSuite(func() {
 	reconcilerLogger, err := config.Build()
 	Expect(err).NotTo(HaveOccurred())
 
-	chartPath := filepath.Join("..", "..", "..", "module-chart")
+	chartPath := filepath.Join("..", "..", "..", "config", "serverless")
 	err = (NewServerlessReconciler(
 		k8sManager.GetClient(),
 		k8sManager.GetConfig(),
@@ -117,9 +116,5 @@ var _ = AfterSuite(func() {
 
 	By("tearing down the test environment")
 	err := testEnv.Stop()
-	Expect(err).NotTo(HaveOccurred())
-
-	By("removing orphant cache file")
-	err = os.RemoveAll(filepath.Join("..", "module-chart", "manifest"))
 	Expect(err).NotTo(HaveOccurred())
 })

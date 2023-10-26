@@ -75,21 +75,21 @@ vet: ## Run go vet against code.
 	go vet ./...
 
 .PHONY: test
-test: manifests generate fmt vet envtest module-chart ## Run unit tests.
+test: manifests generate fmt vet envtest  ## Run unit tests.
 	KUBEBUILDER_CONTROLPLANE_START_TIMEOUT=2m KUBEBUILDER_CONTROLPLANE_STOP_TIMEOUT=2m KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test ./... -coverprofile cover.out
 
 ##@ Build
 
 .PHONY: build
-build: generate fmt vet module-chart ## Build operator binary.
-	go build -o bin/operator main.go
+build: generate fmt vet ## Build operator binary.
+	go build -o bin/operator components/operator/main.go
 
 .PHONY: run
-run: manifests generate fmt vet module-chart ## Run a controller from your host.
+run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./main.go
 
 .PHONY: docker-build
-docker-build: manifests generate module-chart ## Build docker image with the operator.
+docker-build: manifests generate ## Build docker image with the operator.
 	docker build -t ${IMG} .
 
 .PHONY: docker-push
@@ -148,23 +148,6 @@ configure-git-origin:
 #	the CLI is looking for the origin url in the .git dir so first we need to be sure it's not empty
 	@git remote | grep '^origin$$' -q || \
 		git remote add origin https://github.com/kyma-project/serverless-manager
-
-##@ Build Dependencies
-MODULECHART=module-chart
-MODULECHARTOPERATOR=components/operator/module-chart
-
-.PHONY: module-chart
-module-chart: ## Copy serverless chart from config/serverless to module-chart
-module-chart: module-chart-clean
-	mkdir -p ${MODULECHART}
-	cp -r config/serverless/* ${MODULECHART}
-	mkdir -p ${MODULECHARTOPERATOR}
-	cp -r config/serverless/* ${MODULECHARTOPERATOR}
-
-.PHONY: module-chart-clean
-module-chart-clean: ## Remove the module-chart dir.
-	rm -rf ${MODULECHART}
-	rm -rf ${MODULECHARTOPERATOR}
 
 ##@ Tools
 
