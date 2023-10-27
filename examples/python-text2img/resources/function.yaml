@@ -23,7 +23,7 @@ spec:
     source:
         inline:
             dependencies: requests==2.24.0
-            source: "import requests\nimport os\nfrom bottle import HTTPResponse\n\ndef main(event, context):\n\n    text = event[\"extensions\"][\"request\"].params.get(\"text\")\n\n    if text:\n        url = os.getenv('URL')\n        apiKey = os.getenv('API-KEY')\n\n        print('Trying to query {} with \"{}\"'.format(url, text))\n\n        # Send request to the external service\n        response = requests.post(url, files=dict(text=text), headers={\"api-key\": apiKey})\n    \n        return response.json()\n\n    else:\n        return HTTPResponse(body={\"'text' parameter is mandatory\"}, status=400)\n\n    \n"
+            source: "import requests\nimport os\nfrom bottle import HTTPResponse\n\ndef main(event, context):\n    text = event[\"extensions\"][\"request\"].params.get(\"text\")\n\n    if not text:\n        return HTTPResponse(body={\"'text' parameter is mandatory\"}, status=400)\n\n    url = os.getenv('URL')\n    apiKey = os.getenv('API-KEY')\n    print(f'Trying to query {url} with \"{text}\"')\n    # Send request to the external service\n    response = requests.post(url, files=dict(text=text), headers={\"api-key\": apiKey})\n    return response.json()\n    \n"
 
 ---
 apiVersion: gateway.kyma-project.io/v1beta1
