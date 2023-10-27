@@ -116,7 +116,7 @@ The dialog box closes. Wait for the **Status** field to change into `RUNNING`, c
 
 2.  Create a Function CR that specifies the Function's logic:
 
-   ```yaml
+   ```bash
    cat <<EOF | kubectl apply -f -
    apiVersion: serverless.kyma-project.io/v1alpha2
    kind: Function

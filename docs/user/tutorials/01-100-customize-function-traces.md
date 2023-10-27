@@ -77,7 +77,6 @@ The following code samples illustrate how to enrich the default trace with custo
       Additionally, if you are using the `requests` library then all the HTTP communication can be auto-instrumented:
 
       ```python
-
       import requests
       import time
       from opentelemetry.instrumentation.requests import RequestsInstrumentor

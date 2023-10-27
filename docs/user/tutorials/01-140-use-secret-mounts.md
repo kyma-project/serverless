@@ -34,7 +34,7 @@ Follow these steps:
    
 3. Create your Function with `secretMounts`:
 
-    ```yaml
+    ```bash
     cat <<EOF | kubectl apply -f -
     apiVersion: serverless.kyma-project.io/v1alpha2
     kind: Function
@@ -65,7 +65,7 @@ Follow these steps:
 
     The following steps allow you to test the Function in action.
 
-    ```yaml
+    ```bash
     cat <<EOF | kubectl apply -f -
     apiVersion: gateway.kyma-project.io/v1beta1
     kind: APIRule

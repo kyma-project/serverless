@@ -64,8 +64,8 @@ apiRules:
           methods:
             - DELETE
           accessStrategies:
-              handler: jwt
-            - config:
+            - handler: jwt
+              config:
                 jwksUrls:
                     - {jwks_uri of your OpenID Connect-compliant identity provider}
                 trustedIssuers:

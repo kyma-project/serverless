@@ -24,6 +24,7 @@ The default configuration of the Serverless Module is following:
    ```yaml
    apiVersion: operator.kyma-project.io/v1alpha1
    kind: Serverless
+   metadata:
      name: serverless-sample
    spec:
      dockerRegistry:
@@ -41,7 +42,12 @@ Follow these steps to use the external Docker registry in Serverless:
 1. Create a Secret in the `kyma-system` Namespace with the required data (`username`, `password`, `serverAddress`, and `registryAddress`):
 
    ```bash
-   kubectl create secret -n kyma-system generic my-registry-config --from-literal=username={your-docker-reg-username} --from-literal=password={your-docker-reg-password} --from-literal=serverAddress={your-docker-reg-server-url}  --from-literal=registryAddress={your-docker-reg-registry-url}
+   kubectl create secret generic my-registry-config \
+       --namespace kyma-system \
+       --from-literal=username={your-docker-reg-username} \
+       --from-literal=password={your-docker-reg-password} \
+       --from-literal=serverAddress={your-docker-reg-server-url} \
+       --from-literal=registryAddress={your-docker-reg-registry-url}
    ```
 
 >**TIP:** In case of DockerHub, usually the Docker registry address is the same as the account name.
@@ -49,7 +55,12 @@ Follow these steps to use the external Docker registry in Serverless:
 Example:
 
    ```bash
-   kubectl create secret -n kyma-system generic my-registry-config --from-literal=username=kyma-rocks --from-literal=password=admin123 --from-literal=serverAddress=https://index.docker.io/v1/  --from-literal=registryAddress=kyma-rocks
+   kubectl create secret generic my-registry-config \
+       --namespace kyma-system \
+       --from-literal=username=kyma-rocks \
+       --from-literal=password=admin123 \
+       --from-literal=serverAddress=https://index.docker.io/v1/ \
+       --from-literal=registryAddress=kyma-rocks
    ```
 2. Reference the Secret in the Serverless CR
 

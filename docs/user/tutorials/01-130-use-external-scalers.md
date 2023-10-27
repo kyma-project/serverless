@@ -22,7 +22,7 @@ Follow these steps:
 
 1. Create your Function with the `replicas` value set to 1, to prevent the internal Serverless HPA creation:
 
-    ```yaml
+    ```bash
     cat <<EOF | kubectl apply -f -
     apiVersion: serverless.kyma-project.io/v1alpha2
     kind: Function
@@ -70,7 +70,7 @@ Follow these steps:
 
 1. Create your Function with the **replicas** value set to `1` to prevent the internal Serverless HPA creation:
 
-    ```yaml
+    ```bash
     cat <<EOF | kubectl apply -f -
     apiVersion: serverless.kyma-project.io/v1alpha2
     kind: Function
@@ -93,7 +93,7 @@ Follow these steps:
 
 2. Create the ScaledObject resource:
 
-    ```yaml
+    ```bash
     cat <<EOF | kubectl apply -f -
     apiVersion: keda.sh/v1alpha1
     kind: ScaledObject
@@ -137,7 +137,7 @@ Follow these steps:
 
 1. Create your Function with the **replicas** value set to `1` to prevent the internal Serverless HPA creation:
 
-    ```yaml
+    ```bash
     cat <<EOF | kubectl apply -f -
     apiVersion: serverless.kyma-project.io/v1alpha2
     kind: Function
@@ -160,7 +160,7 @@ Follow these steps:
 
 2. Create the ScaledObject resource based on the `istio_requests_total` metric, exposed by the Istio:
 
-    ```yaml
+    ```bash
     cat <<EOF | kubectl apply -f -
     apiVersion: keda.sh/v1alpha1
     kind: ScaledObject

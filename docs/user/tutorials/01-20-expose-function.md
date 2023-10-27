@@ -127,7 +127,7 @@ You can expose a Function with Kyma Dashboard, Kyma CLI, or kubectl:
 
 2. Create an APIRule CR for your Function. It is exposed on port `80`, which is the default port of the [Service Placeholder](../technical-reference/04-10-architecture.md).
 
-    ```yaml
+    ```bash
     cat <<EOF | kubectl apply -f -
     apiVersion: gateway.kyma-project.io/v1beta1
     kind: APIRule

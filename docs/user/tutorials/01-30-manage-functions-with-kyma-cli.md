@@ -101,7 +101,7 @@ Follow these steps:
 
   This command returns the result confirming that the local sources were synchronized with cluster changes:
 
-  ```py
+  ```python
   def main(event, context):
       return "Hello Serverless!"
   ```

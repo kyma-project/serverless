@@ -126,5 +126,4 @@ spec:
       source: |
         def main(event. context):
           return "Hello World!"
-
 ```
