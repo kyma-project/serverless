@@ -12,6 +12,6 @@ def main(event, context):
     apiKey = os.getenv('API-KEY')
     print(f'Trying to query {url} with "{text}"')
     # Send request to the external service
-    response = requests.post(url, files=dict(text=text), headers={'api-key': apiKey})
+    response = requests.post(url, files={'text': text}, headers={'api-key': apiKey})
     return response.json()
     

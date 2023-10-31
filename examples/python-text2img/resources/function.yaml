@@ -1,6 +1,3 @@
-[0;33;1mCAUTION: You're using an outdated version of the Kyma CLI (2.19.1). The latest released version is: 2.19.2
-[0m
----
 apiVersion: serverless.kyma-project.io/v1alpha2
 kind: Function
 metadata:
@@ -25,7 +22,7 @@ spec:
     source:
         inline:
             dependencies: requests==2.24.0
-            source: "import requests\nimport os\nfrom bottle import HTTPResponse\n\ndef main(event, context):\n    text = event['extensions']['request'].params.get('text')\n\n    if not text:\n        return HTTPResponse(body={'\"text\" parameter is mandatory'}, status=400)\n\n    url = os.getenv('URL')\n    apiKey = os.getenv('API-KEY')\n    print(f'Trying to query {url} with \"{text}\"')\n    # Send request to the external service\n    response = requests.post(url, files=dict(text=text), headers={'api-key': apiKey})\n    return response.json()\n    \n"
+            source: "import requests\nimport os\nfrom bottle import HTTPResponse\n\ndef main(event, context):\n    text = event['extensions']['request'].params.get('text')\n\n    if not text:\n        return HTTPResponse(body={'\"text\" parameter is mandatory'}, status=400)\n\n    url = os.getenv('URL')\n    apiKey = os.getenv('API-KEY')\n    print(f'Trying to query {url} with \"{text}\"')\n    # Send request to the external service\n    response = requests.post(url, files={'text': text}, headers={'api-key': apiKey})\n    return response.json()\n    \n"
 
 ---
 apiVersion: gateway.kyma-project.io/v1beta1
