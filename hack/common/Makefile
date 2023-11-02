@@ -37,34 +37,11 @@ run-with-lifecycle-manager: kyma \
 	enable-module \
 	verify-kyma
 
-.PHONY: run-with-lifecycle-manager-operator
-run-with-lifecycle-manager-operator: ## Create k3d cluster and deploy module with the lifecycle-manager.
-run-with-lifecycle-manager-operator: kyma \
-	create-k3d \
-	module-image-operator \
-	module-build \
-	fix-template \
-	install-kyma-with-lm \
-	patch-mod-mgr-role \
-	install-module-template \
-	enable-module \
-	verify-kyma
-
-
 .PHONY: run-without-lifecycle-manager
 run-without-lifecycle-manager: ## Create k3d cluster and deploy module without the lifecycle-manager.
 run-without-lifecycle-manager: kyma \
 	create-k3d \
 	module-image \
-	deploy \
-	apply-serverless \
-	verify-serverless
-
-.PHONY: run-without-lifecycle-manager-operator
-run-without-lifecycle-manager-operator: ## Create k3d cluster and deploy module without the lifecycle-manager.
-run-without-lifecycle-manager-operator: kyma \
-	create-k3d \
-	module-image-operator \
 	deploy \
 	apply-serverless \
 	verify-serverless
@@ -168,12 +145,6 @@ kyma:
 module-image:
 	@make -C ${PROJECT_ROOT} module-image \
 		IMG=localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
-
-.PHONY: module-image-operator
-module-image-operator:
-	@make -C ${PROJECT_ROOT} module-image-operator \
-		IMG=localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
-
 
 .PHONY: module-build
 module-build:

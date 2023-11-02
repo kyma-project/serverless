@@ -90,10 +90,6 @@ run: manifests generate fmt vet ## Run a controller from your host.
 
 .PHONY: docker-build
 docker-build: manifests generate ## Build docker image with the operator.
-	docker build -t ${IMG} .
-
-.PHONY: docker-build-operator
-docker-build-operator: manifests generate ## Build docker image with the operator.
 	docker build -t ${IMG} -f components/operator/Dockerfile .
 
 .PHONY: docker-push
@@ -130,10 +126,6 @@ undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/confi
 
 .PHONY: module-image
 module-image: docker-build docker-push ## Build the Module Image and push it to a registry defined in IMG_REGISTRY.
-	echo "built and pushed module image $(IMG)"
-
-.PHONY: module-image-operator
-module-image-operator: docker-build-operator docker-push ## Build the Module Image and push it to a registry defined in IMG_REGISTRY.
 	echo "built and pushed module image $(IMG)"
 
 .PHONY: module-build
