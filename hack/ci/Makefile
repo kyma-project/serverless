@@ -102,6 +102,19 @@ reinstall-serverless:
 
 	@make -C ${PROJECT_COMMON} verify-kyma
 
+.PHONY: reinstall-serverless-operator
+reinstall-serverless-operator:
+	@make -C ${PROJECT_COMMON} kyma \
+	  module-image-operator \
+	  module-build \
+	  fix-template \
+	  install-module-template
+
+	# wait some time to make sure lm starts the reconciliation first
+	sleep 5
+
+	@make -C ${PROJECT_COMMON} verify-kyma
+
 .PHONY: provision-gardener
 provision-gardener:
 	@make -C ${PROJECT_COMMON} provision-gardener
@@ -112,11 +125,11 @@ deprovision-gardener:
 
 .PHONY: run-with-lifecycle-manager
 run-with-lifecycle-manager:
-	@make -C ${PROJECT_COMMON} run-with-lifecycle-manager
+	@make -C ${PROJECT_COMMON} run-with-lifecycle-manager-operator
 
 .PHONY: run-without-lifecycle-manager
 run-without-lifecycle-manager:
-	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager
+	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager-operator
 
 .PHONY: run-without-lm-on-cluster
 run-without-lm-on-cluster:
