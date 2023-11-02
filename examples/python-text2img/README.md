@@ -1,22 +1,22 @@
 # Overview
 
-The function uses [Deep AI API](https://deepai.org/machine-learning-model/text2img) for image generation from text.
-It's purpose is to demonstrate how to achieve basic development tasks as a python function developer:
+The Function uses [Deep AI API](https://deepai.org/machine-learning-model/text2img) for image generation from the text.
+Its purpose is to demonstrate how to achieve basic development tasks as a Python Function developer, such as:
 
- - How to consume request
- - How to customise response
+ - How to consume a request
+ - How to customize a response
  - How to read ENVs
  - How to configure libraries as dependencies
- - How to send requests from the function code
- - How to configure function in the Kyma context
+ - How to send requests from the Function code
+ - How to configure Function in the Kyma context
    - function API exposure
    - function ENVs injection
 
-## Deploy function
+## Deploy Function
 
-Copy the `resources/secrets/deepai-template.env` into `resources/secrets/deepai.env` and fill in `API-KEY`.
+1. Copy `resources/secrets/deepai-template.env` into `resources/secrets/deepai.env` and fill in `API-KEY`.
 
-Then, deploy the application via
+2. Deploy the application.
 ```
 make deploy
 ```
