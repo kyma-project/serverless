@@ -272,7 +272,7 @@ data:
               ''
         - path: dependencies
           widget: CodeEditor
-          language: '$contains($root.spec.runtime, "node") ? "javascript" : "plaintext"'
+          language: '$contains($root.spec.runtime, "node") ? "json" : "plaintext"'
     - path: spec.source.gitRepository
       widget: FormGroup
       visibility: $sourceType = 'Git Repository'
