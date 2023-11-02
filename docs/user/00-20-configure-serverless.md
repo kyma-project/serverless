@@ -44,24 +44,56 @@ Follow these steps to use the external Docker registry in Serverless:
    ```bash
    kubectl create secret generic my-registry-config \
        --namespace kyma-system \
-       --from-literal=username={your-docker-reg-username} \
-       --from-literal=password={your-docker-reg-password} \
-       --from-literal=serverAddress={your-docker-reg-server-url} \
-       --from-literal=registryAddress={your-docker-reg-registry-url}
+       --from-literal=username={USERNAME} \
+       --from-literal=password={PASSWORD} \
+       --from-literal=serverAddress={SERVER_URL} \
+       --from-literal=registryAddress={REGISTRY_URL}
    ```
 
 >**TIP:** In case of DockerHub, usually the Docker registry address is the same as the account name.
 
-Example:
+Examples:
+
+<!-- tabs:start -->
+
+### **Docker Hub**
+
+   ```bash
+      kubectl create secret generic my-registry-config \
+          --namespace kyma-system \
+          --from-literal=username=kyma-rocks \
+          --from-literal=password=admin123 \
+          --from-literal=serverAddress=https://index.docker.io/v1/ \
+          --from-literal=registryAddress=kyma-rocks
+   ```
+
+### **GCR**
+
+To learn how to set up authentication for Docker with GCR, visit the [GCR documentation](https://cloud.google.com/artifact-registry/docs/docker/authentication).
+   ```bash
+   kubectl create secret generic my-registry-config \
+       --namespace kyma-system \
+       --from-literal=username=_json_key \
+       --from-literal=password={GCS_KEY_JSON} \
+       --from-literal=serverAddress=gcr.io \
+       --from-literal=registryAddress=gcr.io/{YOUR_GCR_PROJECT}
+   ```
+
+### **ACR**
+
+To learn how to authenticate with ACR, viist the [ACR documentation](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli)
 
    ```bash
    kubectl create secret generic my-registry-config \
        --namespace kyma-system \
-       --from-literal=username=kyma-rocks \
-       --from-literal=password=admin123 \
-       --from-literal=serverAddress=https://index.docker.io/v1/ \
-       --from-literal=registryAddress=kyma-rocks
+       --from-literal=username={SERVICE_PRINCIPAL_APP_ID} \
+       --from-literal=password={SERVICE_PRINCIPAL_PASSWORD} \
+       --from-literal=serverAddress=azurecr.io \
+       --from-literal=registryAddress={AZ_REGISTRY_NAME}.azurecr.io
    ```
+
+<!-- tabs:end -->
+
 2. Reference the Secret in the Serverless CR
 
    ```yaml
