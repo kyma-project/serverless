@@ -61,10 +61,10 @@ Examples:
    ```bash
       kubectl create secret generic my-registry-config \
           --namespace kyma-system \
-          --from-literal=username=kyma-rocks \
-          --from-literal=password=admin123 \
+          --from-literal=username={USERNAME} \
+          --from-literal=password={PASSWORD} \
           --from-literal=serverAddress=https://index.docker.io/v1/ \
-          --from-literal=registryAddress=kyma-rocks
+          --from-literal=registryAddress={USERNAME}
    ```
 
 ### **GCR**
@@ -88,7 +88,7 @@ To learn how to authenticate with ACR, viist the [ACR documentation](https://lea
        --namespace kyma-system \
        --from-literal=username={SERVICE_PRINCIPAL_APP_ID} \
        --from-literal=password={SERVICE_PRINCIPAL_PASSWORD} \
-       --from-literal=serverAddress=azurecr.io \
+       --from-literal=serverAddress={AZ_REGISTRY_NAME}.azurecr.io \
        --from-literal=registryAddress={AZ_REGISTRY_NAME}.azurecr.io
    ```
 
