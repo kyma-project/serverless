@@ -59,12 +59,12 @@ Examples:
 ### **Docker Hub**
 
    ```bash
-      kubectl create secret generic my-registry-config \
-          --namespace kyma-system \
-          --from-literal=username={USERNAME} \
-          --from-literal=password={PASSWORD} \
-          --from-literal=serverAddress=https://index.docker.io/v1/ \
-          --from-literal=registryAddress={USERNAME}
+   kubectl create secret generic my-registry-config \
+      --namespace kyma-system \
+      --from-literal=username={USERNAME} \
+      --from-literal=password={PASSWORD} \
+      --from-literal=serverAddress=https://index.docker.io/v1/ \
+      --from-literal=registryAddress={USERNAME}
    ```
 
 ### **GCR**
