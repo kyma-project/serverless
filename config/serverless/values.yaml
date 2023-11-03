@@ -8,6 +8,7 @@ injectCerts:
   image:
     pullPolicy: IfNotPresent
 
+
 migration:
   image:
     pullPolicy: IfNotPresent

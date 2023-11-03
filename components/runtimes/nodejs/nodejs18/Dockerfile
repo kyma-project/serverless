@@ -19,3 +19,5 @@ COPY ./server.js /usr/src/app/server.js
 CMD ["npm", "start"]
 
 EXPOSE 8888
+
+

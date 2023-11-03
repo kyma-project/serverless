@@ -35,7 +35,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
-// serverlessReconciler reconciles a Serverless object
+// serverlessReconciler reconciles a Serverless objected
 type serverlessReconciler struct {
 	initStateMachine func(*zap.SugaredLogger) state.StateReconciler
 	client           client.Client

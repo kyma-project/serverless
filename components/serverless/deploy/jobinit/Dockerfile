@@ -12,6 +12,8 @@ RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.18/c
 
 WORKDIR ${BASE_APP_DIR}
 
+
+
 #
 # copy files allowed in .dockerignore
 #
