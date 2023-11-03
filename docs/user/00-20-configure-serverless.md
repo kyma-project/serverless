@@ -94,7 +94,7 @@ To learn how to authenticate with ACR, viist the [ACR documentation](https://lea
 
 <!-- tabs:end -->
 
-1. Reference the Secret in the Serverless CR
+2. Reference the Secret in the Serverless CR
 
    ```yaml
    spec:
