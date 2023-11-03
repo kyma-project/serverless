@@ -69,32 +69,32 @@ Examples:
 
 ### **GCR**
 
-To learn how to set up authentication for Docker with GCR, visit the [GCR documentation](https://cloud.google.com/artifact-registry/docs/docker/authentication).
+To learn how to set up authentication for Docker with GCR, visit the [GCR documentation](https://cloud.google.com/artifact-registry/docs/docker/authentication#json-key).
    ```bash
    kubectl create secret generic my-registry-config \
        --namespace kyma-system \
        --from-literal=username=_json_key \
-       --from-literal=password={GCS_KEY_JSON} \
+       --from-literal=password={GCR_KEY_JSON} \
        --from-literal=serverAddress=gcr.io \
        --from-literal=registryAddress=gcr.io/{YOUR_GCR_PROJECT}
    ```
 
 ### **ACR**
 
-To learn how to authenticate with ACR, viist the [ACR documentation](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli)
+To learn how to authenticate with ACR, viist the [ACR documentation](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli#az-acr-login-with---expose-token)
 
    ```bash
    kubectl create secret generic my-registry-config \
        --namespace kyma-system \
-       --from-literal=username={SERVICE_PRINCIPAL_APP_ID} \
-       --from-literal=password={SERVICE_PRINCIPAL_PASSWORD} \
+       --from-literal=username=00000000-0000-0000-0000-000000000000 \
+       --from-literal=password={ACR_TOKEN} \
        --from-literal=serverAddress={AZ_REGISTRY_NAME}.azurecr.io \
        --from-literal=registryAddress={AZ_REGISTRY_NAME}.azurecr.io
    ```
 
 <!-- tabs:end -->
 
-2. Reference the Secret in the Serverless CR
+1. Reference the Secret in the Serverless CR
 
    ```yaml
    spec:
