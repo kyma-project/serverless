@@ -81,7 +81,7 @@ To learn how to set up authentication for Docker with GCR, visit the [GCR docume
 
 ### **ACR**
 
-To learn how to authenticate with ACR, viist the [ACR documentation](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli#az-acr-login-with---expose-token)
+To learn how to authenticate with ACR, visit the [ACR documentation](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli#az-acr-login-with---expose-token).
 
    ```bash
    kubectl create secret generic my-registry-config \
