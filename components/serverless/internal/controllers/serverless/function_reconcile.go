@@ -175,6 +175,7 @@ func (r *FunctionReconciler) sendHealthCheck() {
 func (r *FunctionReconciler) readDockerConfig(ctx context.Context, instance *serverlessv1alpha2.Function) (DockerConfig, error) {
 	var secret corev1.Secret
 	// try reading user config
+	// DEPRECATED - this feature will be supported but we can disable it by removing lines below
 	if err := r.client.Get(ctx, client.ObjectKey{Namespace: instance.Namespace, Name: r.config.ImageRegistryExternalDockerConfigSecretName}, &secret); err == nil {
 		data := readSecretData(secret.Data)
 		return DockerConfig{
