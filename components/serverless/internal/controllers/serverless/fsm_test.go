@@ -200,9 +200,9 @@ func Test_buildStateFnGenericUpdateStatus(t *testing.T) {
 		updatedCondition := serverlessv1alpha2.Condition{
 			Type:               serverlessv1alpha2.ConditionConfigurationReady,
 			Status:             corev1.ConditionTrue,
-			LastTransitionTime: metav1.Time{time.Now().Add(5 * time.Minute)}.Rfc3339Copy(),
+			LastTransitionTime: metav1.Time{Time: time.Now().Add(5 * time.Minute)}.Rfc3339Copy(),
 			Reason:             serverlessv1alpha2.ConditionReasonConfigMapUpdated,
-			Message:            fmt.Sprintf("ConfigMap test-configmap Updated"),
+			Message:            "ConfigMap test-configmap Updated",
 		}
 
 		statusUpdateFunc := buildGenericStatusUpdateStateFn(updatedCondition, nil, "")
