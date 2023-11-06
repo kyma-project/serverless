@@ -24,7 +24,6 @@ const (
 	ValidationWebhookName = "validation.webhook.serverless.kyma-project.io"
 
 	FunctionDefaultingWebhookPath       = "/defaulting/functions"
-	RegistryConfigDefaultingWebhookPath = "/defaulting/registry-config-secrets"
 	FunctionValidationWebhookPath       = "/validation/function"
 )
 
