@@ -44,3 +44,5 @@ manifests/serverless/rendered.yaml
 serverless.yaml
 moduletemplate-latest.yaml
 module-config.yaml
+
+examples/python-text2img/resources/secrets/deepai.env
