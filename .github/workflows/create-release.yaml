@@ -62,9 +62,11 @@ jobs:
           fetch-depth: 0
 
       - name: Create changelog
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./.github/scripts/create_changelog.sh ${{ github.event.inputs.name }}
+        uses: addnab/docker-run-action@v3
+        with:
+          image: githubchangeloggenerator/github-changelog-generator
+          options: -it -v ${{ github.workspace }}:/usr/local/src/your-app
+          run: github_changelog_generator -u kyma-project -p serverless -t ${{ secrets.GITHUB_TOKEN }} --enhancement-labels kind/feature,area/ci  --bug-labels kind/bug --future-release ${{ github.event.inputs.name }} --unreleased-only
 
       - name: Create draft release
         id: create-draft
