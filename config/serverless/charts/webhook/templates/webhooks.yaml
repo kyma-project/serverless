@@ -44,38 +44,6 @@ metadata:
   labels:
     {{- include "tplValue" ( dict "value" .Values.commonLabels "context" . ) | nindent 4 }}
 webhooks:
-  - name: mutating.secret.webhook.serverless.kyma-project.io
-    clientConfig:
-      service:
-        name: {{ template "webhook.fullname" . }}
-        namespace: {{ .Release.Namespace }}
-        path: "/defaulting/registry-config-secrets"
-        port: {{ .Values.service.ports.httpsWebhook.port}}
-    failurePolicy: Fail
-    sideEffects: None
-    matchPolicy: Exact
-    timeoutSeconds: 10
-    admissionReviewVersions: [ "v1beta1", "v1" ]
-    objectSelector:
-      matchLabels:
-        "serverless.kyma-project.io/remote-registry": "config"
-    namespaceSelector:
-      matchExpressions:
-        - key: gardener.cloud/purpose
-          operator: NotIn
-          values:
-            - kube-system
-    rules:
-      - apiGroups:
-          - ""
-        apiVersions:
-          - v1
-        resources:
-          - secrets
-        operations:
-          - CREATE
-          - UPDATE
-        scope: '*'
   - name: defaulting.webhook.serverless.kyma-project.io
     clientConfig:
       service:
