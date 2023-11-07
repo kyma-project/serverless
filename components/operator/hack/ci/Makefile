@@ -1,4 +1,4 @@
-PROJECT_ROOT ?= ../..
+PROJECT_ROOT ?= ../../../..
 PROJECT_COMMON ?= ${PROJECT_ROOT}/hack/common
 
 MODULECHARTTEST ?= ${PROJECT_ROOT}/module-chart-test

@@ -1,4 +1,4 @@
-PROJECT_ROOT ?= ../..
+PROJECT_ROOT ?= ../../../..
 ifndef MODULE_VERSION
 	include ${PROJECT_ROOT}/.version
 endif
