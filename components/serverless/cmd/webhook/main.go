@@ -131,12 +131,6 @@ func main() {
 			logWithCtx.Named("validating-webhook")),
 	})
 
-	whs.Register(
-		resources.RegistryConfigDefaultingWebhookPath,
-		&ctrlwebhook.Admission{Handler: webhook.NewRegistryWatcher(
-			logWithCtx.Named("registry-watcher"),
-		)})
-
 	logWithCtx.Info("setting up webhook resources controller")
 	// apply and monitor configuration
 	if err := resources.SetupResourcesController(
