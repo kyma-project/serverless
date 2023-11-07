@@ -3,7 +3,7 @@ protecode:
   - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:v20230920-f4ba8aca
   - europe-docker.pkg.dev/kyma-project/prod/function-controller:v20230824-a02c92c2
   - europe-docker.pkg.dev/kyma-project/prod/function-webhook:v20230824-a02c92c2
-  - europe-docker.pkg.dev/kyma-project/prod/function_build_init:v20230824-a02c92c2
+  - europe-docker.pkg.dev/kyma-project/prod/function-build-init:v20230824-a02c92c2
   - europe-docker.pkg.dev/kyma-project/prod/tpi/registry:2.8.1-1b099a1d
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs16:v20230825-7f960fef
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs18:v20230825-7f960fef
