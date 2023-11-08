@@ -1,4 +1,5 @@
-PROJECT_ROOT ?= ../../../..
+OPERATOR_ROOT ?= ../..
+PROJECT_ROOT ?= $(OPERATOR_ROOT)/../..
 ifndef MODULE_VERSION
 	include ${PROJECT_ROOT}/.version
 endif
@@ -13,8 +14,6 @@ OPERATOR_IMAGE_NAME ?= serverless-operator-dev-local
 OPERATOR_IMAGE_TAG ?= $(MODULE_VERSION)
 
 GARDENER_INFRASTRUCTURE ?= az
-
-TEMPLATE_PATH ?= ${PROJECT_ROOT}/moduletemplate.yaml
 
 KYMA ?= ${PROJECT_ROOT}/bin/kyma-unstable
 
@@ -139,23 +138,23 @@ apply-serverless: ## Apply the k3d serverless CR.
 
 .PHONY: kyma
 kyma:
-	@make -C ${PROJECT_ROOT} kyma
+	@make -C ${OPERATOR_ROOT} kyma
 
 .PHONY: module-image
 module-image:
-	@make -C ${PROJECT_ROOT} module-image \
+	@make -C ${OPERATOR_ROOT} module-image \
 		IMG=localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
 
 .PHONY: module-build
 module-build:
-	@make -C ${PROJECT_ROOT} module-build \
+	@make -C ${OPERATOR_ROOT} module-build \
 		PROW_JOB_ID= \
 		IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG} \
 		MODULE_REGISTRY=localhost:${REGISTRY_PORT}
 
 .PHONY: deploy
 deploy:
-	@make -C ${PROJECT_ROOT} deploy \
+	@make -C ${OPERATOR_ROOT} deploy \
 		IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
 
 .PHONY: deploy-k3d
@@ -163,9 +162,9 @@ deploy-k3d:
 	$(eval HASH_TAG=$(shell docker images localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG} --quiet))
 	docker tag localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG} localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${HASH_TAG}
 	docker push localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${HASH_TAG}
-	@make -C ${PROJECT_ROOT} deploy \
+	@make -C ${OPERATOR_ROOT} deploy \
 		IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${HASH_TAG}
 
 .PHONY: deploy-cluster
 deploy-cluster:
-	@make -C ${PROJECT_ROOT} deploy
+	@make -C ${OPERATOR_ROOT} deploy
