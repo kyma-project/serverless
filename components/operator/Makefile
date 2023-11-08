@@ -129,12 +129,12 @@ module-image: docker-build docker-push ## Build the Module Image and push it to 
 .PHONY: module-build
 module-build: ## Build the Module and push artifacts to the registry
 module-build: kyma kustomize render-manifest module-config-template configure-git-origin
-	$(KYMA) alpha create module --path . --output=../../moduletemplate.yaml \
+	$(KYMA) alpha create module --path ../.. --output=../../moduletemplate.yaml \
 		--module-config-file=../../module-config.yaml $(MODULE_CREATION_FLAGS)
 
 .PHONY: module-config-template
 module-config-template:
-	@cat module-config-template.yaml \
+	@cat ../../module-config-template.yaml \
 		| sed -e 's/{{.Channel}}/${MODULE_CHANNEL}/g' \
 			-e 's/{{.Version}}/$(MODULE_VERSION)/g' \
 			-e 's/{{.Name}}/kyma-project.io\/module\/$(MODULE_NAME)/g' \
