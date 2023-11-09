@@ -1,5 +1,6 @@
-PROJECT_ROOT ?= ../../../..
-PROJECT_COMMON ?= ${PROJECT_ROOT}/hack/common
+OPERATOR_ROOT ?= ../..
+PROJECT_ROOT ?= $(OPERATOR_ROOT)/../..
+PROJECT_COMMON ?= $(OPERATOR_ROOT)/hack/common
 
 MODULECHARTTEST ?= ${PROJECT_ROOT}/module-chart-test
 
@@ -19,7 +20,7 @@ help: ## Display this help.
 
 .PHONY: module-build
 module-build: ## Build the Module, push it to a registry and print it based on the commit hash.
-	@make -C ${PROJECT_ROOT} module-build \
+	@make -C ${OPERATOR_ROOT} module-build \
 		IMG=${IMG} \
 		MODULE_REGISTRY=${MODULE_REGISTRY} \
 		MODULE_VERSION=${MODULE_VERSION}-${MODULE_SHA}
@@ -124,4 +125,4 @@ run-without-lm-on-cluster:
 
 .PHONY: render-manifest
 render-manifest:
-	@make -C ${PROJECT_ROOT} render-manifest
+	@make -C ${OPERATOR_ROOT} render-manifest

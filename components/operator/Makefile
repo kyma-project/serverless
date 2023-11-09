@@ -1,5 +1,7 @@
+PROJECT_ROOT = ../..
+
 ifndef MODULE_VERSION
-    include ../../.version
+    include $(PROJECT_ROOT)/.version
 endif
 
 # Module Name used for bundling the OCI Image and later on for referencing in the Kyma Modules
@@ -54,7 +56,7 @@ help: ## Display this help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
 ##@ Development
-CONFIGOPERATOR = ../../config/operator
+CONFIGOPERATOR = $(PROJECT_ROOT)/config/operator
 
 .PHONY: manifests
 manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
@@ -62,7 +64,7 @@ manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and Cust
 
 .PHONY: generate
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
-	$(CONTROLLER_GEN) object:headerFile="../../hack/boilerplate.go.txt" paths="./..."
+	$(CONTROLLER_GEN) object:headerFile="$(PROJECT_ROOT)/hack/boilerplate.go.txt" paths="./..."
 
 .PHONY: fmt
 fmt: ## Run go fmt against code.
@@ -88,7 +90,7 @@ run: manifests generate fmt vet ## Run a controller from your host.
 
 .PHONY: docker-build
 docker-build: manifests generate ## Build docker image with the operator.
-	docker build -t ${IMG} -f Dockerfile .
+	docker build -t ${IMG} -f Dockerfile $(PROJECT_ROOT)
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the operator.
@@ -129,16 +131,16 @@ module-image: docker-build docker-push ## Build the Module Image and push it to 
 .PHONY: module-build
 module-build: ## Build the Module and push artifacts to the registry
 module-build: kyma kustomize render-manifest module-config-template configure-git-origin
-	$(KYMA) alpha create module --path ../.. --output=../../moduletemplate.yaml \
-		--module-config-file=../../module-config.yaml $(MODULE_CREATION_FLAGS)
+	$(KYMA) alpha create module --path $(PROJECT_ROOT) --output=$(PROJECT_ROOT)/moduletemplate.yaml \
+		--module-config-file=$(PROJECT_ROOT)/module-config.yaml $(MODULE_CREATION_FLAGS)
 
 .PHONY: module-config-template
 module-config-template:
-	@cat ../../module-config-template.yaml \
+	@cat $(PROJECT_ROOT)/module-config-template.yaml \
 		| sed -e 's/{{.Channel}}/${MODULE_CHANNEL}/g' \
 			-e 's/{{.Version}}/$(MODULE_VERSION)/g' \
 			-e 's/{{.Name}}/kyma-project.io\/module\/$(MODULE_NAME)/g' \
-				> ../../module-config.yaml
+				> $(PROJECT_ROOT)/module-config.yaml
 
 .PHONY: configure-git-origin
 configure-git-origin:
@@ -150,7 +152,7 @@ configure-git-origin:
 ##@ Tools
 
 ## Location to install dependencies to
-LOCALBIN ?= $(shell pwd)/../../bin
+LOCALBIN ?= $(shell pwd)/$(PROJECT_ROOT)/bin
 $(LOCALBIN):
 	mkdir -p $(LOCALBIN)
 
