@@ -116,7 +116,7 @@ deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in
 .PHONY: render-manifest
 render-manifest: manifests kustomize ## Render serverless-operator.yaml manifest.
 	cd $(CONFIGOPERATOR)/operator && $(KUSTOMIZE) edit set image controller=${IMG}
-	$(KUSTOMIZE) build $(CONFIGOPERATOR)/default > serverless-operator.yaml
+	$(KUSTOMIZE) build $(CONFIGOPERATOR)/default > $(PROJECT_ROOT)/serverless-operator.yaml
 
 .PHONY: undeploy
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with IGNORE_NOT_FOUND=true to ignore resource not found errors during deletion.
