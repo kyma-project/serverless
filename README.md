@@ -127,3 +127,4 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
             secretName: my-secret
     EOF
     ```
+
