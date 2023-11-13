@@ -1,14 +1,15 @@
 module-name: serverless
 rc-tag: v1.0.3
 protecode:
-  - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:1.1.0
-  - europe-docker.pkg.dev/kyma-project/prod/function-controller:v20231012-d3306d5d
-  - europe-docker.pkg.dev/kyma-project/prod/function-build-init:v20231012-d3306d5d
-  - europe-docker.pkg.dev/kyma-project/prod/function-webhook:v20231012-d3306d5d
-  - europe-docker.pkg.dev/kyma-project/prod/tpi/registry:2.8.1-1b099a1d
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs16:v20231010-c44aa328
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs18:v20231010-c44aa328
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python39:v20231010-c44aa328
+  - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:latest
+  - europe-docker.pkg.dev/kyma-project/prod/function-controller:latest
+  - europe-docker.pkg.dev/kyma-project/prod/function-build-init:latest
+  - europe-docker.pkg.dev/kyma-project/prod/function-webhook:latest
+  - europe-docker.pkg.dev/kyma-project/prod/tpi/registry:latest
+  - europe-docker.pkg.dev/kyma-project/prod/tpi/kaniko-executor:latest
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs16:latest
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs18:latest
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python39:latest
 whitesource:
   language: golang-mod
   subprojects: false
