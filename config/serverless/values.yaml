@@ -310,11 +310,6 @@ backendModule:
 clusterMicroFrontend:
   enabled: true
 
-grafanaDashboard:
-  enabled: true
-  functionMetrics:
-    enabled: false
-
 dockerRegistry:
   enableInternal: true
   gateway: "kyma-system/kyma-gateway"
