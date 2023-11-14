@@ -3,7 +3,6 @@ channel: {{.Channel}}
 version: {{.Version}}
 defaultCR: config/samples/default-serverless-cr.yaml
 manifest: serverless-operator.yaml
-security: sec-scanners-config.yaml
 annotations:
   "operator.kyma-project.io/doc-url": "https://kyma-project.io/#/serverless-manager/user/README"
 moduleRepo: https://github.com/kyma-project/serverless-manager.git
