@@ -38,7 +38,7 @@ These sections will lead you through the whole installation, configuration, and 
   kubectl cluster-info
   ```
 
-1. Apply the `functions.serverless.kyma-project.io` CRD from sources in the [`serverless`](https://github.com/kyma-project/serverless/tree/main/components/serverless/config/crd) repository. You will need it to create the Function CR on the cluster.
+3. Apply the `functions.serverless.kyma-project.io` CRD from sources in the [`serverless`](https://github.com/kyma-project/serverless/tree/main/components/serverless/config/crd) repository. You will need it to create the Function CR on the cluster.
 
   ```bash
   kubectl apply -f https://raw.githubusercontent.com/kyma-project/serverless/main/components/serverless/config/crd/bases/serverless.kyma-project.io_functions.yaml
