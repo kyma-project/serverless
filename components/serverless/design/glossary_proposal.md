@@ -4,7 +4,7 @@
 
 Currently, Serverless in Kyma consists of two projects:
 
-- [function-controller](https://github.com/kyma-project/kyma/tree/main/components/function-controller) -
+- [function-controller](../README.md)() -
   responsible for running a Function on a Kubernetes cluster
 - [serverless-manager](https://github.com/kyma-project/serverless-manager) - responsible for installation and
   configuration of Serverless

@@ -1,6 +1,6 @@
 # Function processing stages
 
-From the moment you [create a Function](01-10-create-inline-function.md) (Function CR) until the time it is ready, it goes through three processing stages that are defined as these condition types:
+From the moment you [create a Function](../tutorials/01-10-create-inline-function.md) (Function CR) until the time it is ready, it goes through three processing stages that are defined as these condition types:
 
 1. `ConfigurationReady` (PrinterColumn `CONFIGURED`)
 2. `BuildReady` (PrinterColumn `BUILT`)
@@ -17,13 +17,13 @@ When you update an existing Function, conditions change asynchronously depending
 
 The diagrams illustrate all three core status changes in the Function processing circle that the Function Controller handles. They also list all custom resources involved in this process and specify in which cases their update is required.
 
->**NOTE:** Before you start reading, see the [Function CR](resources/06-10-function-cr.md) document for the custom resource detailed definition, the list of all Function's condition types, and reasons for their success or failure.
+>**NOTE:** Before you start reading, see the [Function CR](../resources/06-10-function-cr.md) document for the custom resource detailed definition, the list of all Function's condition types, and reasons for their success or failure.
 
 ## Configured
 
 This initial phase starts when you create a Function CR with configuration specifying the Function's setup. It ends with creating a ConfigMap that is used as a building block for a Function image.
 
-![Function configured](../assets/svls-configured.svg)
+![Function configured](../../assets/svls-configured.svg)
 
 ## Built
 

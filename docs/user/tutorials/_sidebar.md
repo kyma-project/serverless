@@ -6,7 +6,7 @@
   * [Manage Functions through Kyma CLI](01-30-manage-functions-with-kyma-cli.md)
   * [Debug a Function](01-40-debug-function.md)
   * [Log into a private package registry](01-80-log-into-private-packages-registry.md)
-  * [Set asynchronous communication between Functions](01-90-set-asynchronous-connection)
+  * [Set asynchronous communication between Functions](01-90-set-asynchronous-connection.md)
   * [Customize Function traces](01-100-customize-function-traces.md)
   * [Override runtime image](01-110-override-runtime-image.md)
   * [Inject environment variables](01-120-inject-envs.md)
