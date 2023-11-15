@@ -40,7 +40,7 @@ func TestNamespaceReconciler_Reconcile(t *testing.T) {
 	baseConfigMap := newFixBaseConfigMap(testCfg.BaseNamespace, "ah-tak-przeciez")
 	g.Expect(k8sClient.Create(context.TODO(), baseConfigMap)).To(gomega.Succeed())
 
-	baseSecret := newFixBaseSecret(testCfg.BaseNamespace, "ah-tak-przeciez")
+	baseSecret := newFixBaseSecret(testCfg.BaseNamespace, testCfg.BaseDefaultSecretName)
 	g.Expect(k8sClient.Create(context.TODO(), baseSecret)).To(gomega.Succeed())
 
 	baseServiceAccount := newFixBaseServiceAccount(testCfg.BaseNamespace, "ah-tak-przeciez")
