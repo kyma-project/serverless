@@ -50,7 +50,9 @@ func (r *secretService) GetBase(ctx context.Context) (*corev1.Secret, error) {
 }
 
 func (r *secretService) IsBase(secret *corev1.Secret) bool {
-	return secret.Namespace == r.config.BaseNamespace && secret.Labels[ConfigLabel] == CredentialsLabelValue
+	return secret.Namespace == r.config.BaseNamespace &&
+		secret.Name == r.config.BaseDefaultSecretName &&
+		secret.Labels[ConfigLabel] == CredentialsLabelValue
 }
 
 func (r *secretService) UpdateNamespace(ctx context.Context, logger *zap.SugaredLogger, namespace string, baseInstance *corev1.Secret) error {
