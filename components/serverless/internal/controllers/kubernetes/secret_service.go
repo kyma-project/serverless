@@ -10,6 +10,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/kyma-project/kyma/components/function-controller/internal/resource"
@@ -19,7 +20,7 @@ const cfgSecretFinalizerName = "serverless.kyma-project.io/finalizer-registry-co
 
 type SecretService interface {
 	IsBase(secret *corev1.Secret) bool
-	ListBase(ctx context.Context) ([]corev1.Secret, error)
+	GetBase(ctx context.Context) (*corev1.Secret, error)
 	UpdateNamespace(ctx context.Context, logger *zap.SugaredLogger, namespace string, baseInstance *corev1.Secret) error
 	HandleFinalizer(ctx context.Context, logger *zap.SugaredLogger, secret *corev1.Secret, namespaces []string) error
 }
@@ -38,13 +39,14 @@ func NewSecretService(client resource.Client, config Config) SecretService {
 	}
 }
 
-func (r *secretService) ListBase(ctx context.Context) ([]corev1.Secret, error) {
-	secrets := &corev1.SecretList{}
-	if err := r.client.ListByLabel(ctx, r.config.BaseNamespace, map[string]string{ConfigLabel: CredentialsLabelValue}, secrets); err != nil {
-		return nil, err
-	}
+func (r *secretService) GetBase(ctx context.Context) (*corev1.Secret, error) {
+	secret := &corev1.Secret{}
+	err := r.client.Get(ctx, types.NamespacedName{
+		Namespace: r.config.BaseNamespace,
+		Name:      r.config.BaseDefaultSecretName,
+	}, secret)
 
-	return secrets.Items, nil
+	return secret, err
 }
 
 func (r *secretService) IsBase(secret *corev1.Secret) bool {

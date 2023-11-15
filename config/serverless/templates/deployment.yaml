@@ -115,6 +115,8 @@ spec:
               value: ":{{ .Values.containers.manager.healthz.port }}"
             - name: APP_KUBERNETES_BASE_NAMESPACE
               value: "{{- tpl ( .Values.containers.manager.configuration.data.baseNamespace) . }}"
+            - name: APP_KUBERNETES_BASE_DEFAULT_SECRET_NAME
+              value: "{{- tpl ( .Values.containers.manager.configuration.data.imageRegistryDefaultDockerConfigSecretName) . }}"
             - name: APP_KUBERNETES_CONFIG_MAP_REQUEUE_DURATION
               value: "{{ .Values.containers.manager.configuration.data.configMapRequeueDuration }}"
             - name: APP_KUBERNETES_SECRET_REQUEUE_DURATION

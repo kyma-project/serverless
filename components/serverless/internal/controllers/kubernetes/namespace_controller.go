@@ -88,17 +88,15 @@ func (r *NamespaceReconciler) Reconcile(ctx context.Context, request ctrl.Reques
 		}
 	}
 
-	logger.Info(fmt.Sprintf("Updating Secrets in namespace '%s'", instance.GetName()))
-	secrets, err := r.secretSvc.ListBase(ctx)
+	logger.Info(fmt.Sprintf("Updating Secret in namespace '%s'", instance.GetName()))
+	secret, err := r.secretSvc.GetBase(ctx)
 	if err != nil {
 		logger.Error(err, "Listing base Secrets failed")
 		return ctrl.Result{}, err
 	}
-	for _, secret := range secrets {
-		s := secret
-		if err := r.secretSvc.UpdateNamespace(ctx, logger, instance.GetName(), &s); err != nil {
-			return ctrl.Result{}, err
-		}
+
+	if err := r.secretSvc.UpdateNamespace(ctx, logger, instance.GetName(), secret); err != nil {
+		return ctrl.Result{}, err
 	}
 
 	logger.Info(fmt.Sprintf("Updating ServiceAccounts in namespace '%s'", instance.GetName()))
