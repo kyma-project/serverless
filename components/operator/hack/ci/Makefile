@@ -2,8 +2,6 @@ OPERATOR_ROOT ?= ../..
 PROJECT_ROOT ?= $(OPERATOR_ROOT)/../..
 PROJECT_COMMON ?= $(OPERATOR_ROOT)/hack/common
 
-MODULECHARTTEST ?= ${PROJECT_ROOT}/module-chart-test
-
 ifndef MODULE_VERSION
     include ${PROJECT_ROOT}/.version
 endif
@@ -33,8 +31,8 @@ module-build: ## Build the Module, push it to a registry and print it based on t
 
 .PHONY: integration-test
 integration-test: ## Run integration tests on self-prepared k3d cluster.
-integration-test: module-chart-test
-	cd ${MODULECHARTTEST} && make serverless-integration
+integration-test:
+	cd ${PROJECT_ROOT}/tests/serverless && make serverless-integration
 
 .PHONY: gardener-integration-test
 gardener-integration-test: ## Provision gardener cluster and run integration test on it.
@@ -66,16 +64,6 @@ k3d-k8s-compatibility-test: ## K8s compatibility tests not implemented yet.
 .PHONY: hyperscalers-compatibility-test
 hyperscalers-compatibility-test: ## Hyperscalers compatibility tests not implemented yet.
 	@echo "hyperscalers compatibility tests not implemented yet"
-
-.PHONY: module-chart-test
-module-chart-test: ## Generate module-chart-test dir.
-module-chart-test: module-chart-test-cleanup
-	mkdir -p ${MODULECHARTTEST}
-	cp -r ${PROJECT_ROOT}/tests/serverless/* ${MODULECHARTTEST}
-
-.PHONY: module-chart-test-cleanup
-module-chart-test-cleanup:
-	rm -rf ${MODULECHARTTEST}
 
 .PHONY: remove-serverless
 remove-serverless: ## Remove Serverless CR
