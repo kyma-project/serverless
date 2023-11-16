@@ -9,6 +9,7 @@ import (
 
 func Test_secretService_IsBase(t *testing.T) {
 	baseNs := "base-ns"
+	baseSecretName := "base-name"
 
 	tests := []struct {
 		name string
@@ -20,6 +21,7 @@ func Test_secretService_IsBase(t *testing.T) {
 			name: "should properly detect base secret",
 			secret: &corev1.Secret{
 				ObjectMeta: metav1.ObjectMeta{
+					Name:      baseSecretName,
 					Namespace: baseNs,
 					Labels: map[string]string{
 						ConfigLabel: CredentialsLabelValue,
@@ -39,6 +41,7 @@ func Test_secretService_IsBase(t *testing.T) {
 			name: "should return false for secret in wrong namespace",
 			secret: &corev1.Secret{
 				ObjectMeta: metav1.ObjectMeta{
+					Name:      baseSecretName,
 					Namespace: "some-other-ns",
 					Labels: map[string]string{
 						ConfigLabel: CredentialsLabelValue,
@@ -50,6 +53,7 @@ func Test_secretService_IsBase(t *testing.T) {
 			name: "should return false for secret in some other namespace and with no labels",
 			secret: &corev1.Secret{
 				ObjectMeta: metav1.ObjectMeta{
+					Name:      baseSecretName,
 					Namespace: "blabla-other-ns",
 				}},
 			want: false,
@@ -58,6 +62,7 @@ func Test_secretService_IsBase(t *testing.T) {
 			name: "should return false for secret with wrong label value",
 			secret: &corev1.Secret{
 				ObjectMeta: metav1.ObjectMeta{
+					Name:      baseSecretName,
 					Namespace: baseNs,
 					Labels: map[string]string{
 						ConfigLabel: "wrong-label-value",
@@ -76,12 +81,25 @@ func Test_secretService_IsBase(t *testing.T) {
 			},
 			want: false,
 		},
+		{
+			name: "should return false for secret with wrong name",
+			secret: &corev1.Secret{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "wrong-name",
+					Namespace: baseNs,
+					Labels: map[string]string{
+						ConfigLabel: CredentialsLabelValue,
+					}},
+			},
+			want: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := &secretService{
 				config: Config{
-					BaseNamespace: baseNs,
+					BaseNamespace:         baseNs,
+					BaseDefaultSecretName: baseSecretName,
 				},
 			}
 			if got := r.IsBase(tt.secret); got != tt.want {
