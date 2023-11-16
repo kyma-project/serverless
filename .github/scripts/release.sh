@@ -31,15 +31,14 @@ uploadFile() {
 }
 
 echo "PULL_BASE_REF ${PULL_BASE_REF}"
-
-MODULE_VERSION=${PULL_BASE_REF} make render-manifest
+MODULE_VERSION=${PULL_BASE_REF} make -C components/operator/ render-manifest
 
 echo "Generated serverless-operator.yaml:"
 cat serverless-operator.yaml
 
 MODULE_VERSION=${PULL_BASE_REF} \
   SEC_SCANNERS_CONFIG="${PWD}/sec-scanners-config.yaml"\
-  make module-build
+  make -C components/operator/ module-build
 
 echo "Generated moduletemplate.yaml:"
 cat moduletemplate.yaml
