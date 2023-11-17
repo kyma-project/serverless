@@ -218,7 +218,7 @@ func TestNextRequeue(t *testing.T) {
 			expectedResult: ctrl.Result{Requeue: true},
 		}, {
 			name:           "Git generic error",
-			inputErr:       git2go.MakeGitError2(int(git2go.ErrAmbiguous)),
+			inputErr:       git2go.MakeGitError2(int(git2go.ErrorCodeAmbiguous)),
 			expectedErrMsg: "Sources update failed, reason:",
 			expectedResult: ctrl.Result{Requeue: true},
 		},

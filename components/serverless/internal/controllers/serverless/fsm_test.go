@@ -121,9 +121,6 @@ func dummyInlineFunctionForTest_stateFnName() stateFn {
 }
 
 func Test_stateFnName(t *testing.T) {
-	type fields struct {
-		fn stateFn
-	}
 	tests := []struct {
 		name    string
 		fn      stateFn
@@ -160,7 +157,7 @@ func Test_buildStateFnGenericUpdateStatus(t *testing.T) {
 	testFunction := newFixFunction("test-namespace", "test-func", 1, 1)
 	state := &systemState{instance: *testFunction}
 
-	stateReconciler := createFakeStateReconcilerWithTestFunction(ctx, testFunction)
+	stateReconciler := createFakeStateReconcilerWithTestFunction(t, testFunction)
 
 	t.Run("ConfigMapCreated", func(t *testing.T) {
 		givenCondition := serverlessv1alpha2.Condition{
@@ -168,7 +165,7 @@ func Test_buildStateFnGenericUpdateStatus(t *testing.T) {
 			Status:             corev1.ConditionTrue,
 			LastTransitionTime: metav1.Now().Rfc3339Copy(),
 			Reason:             serverlessv1alpha2.ConditionReasonConfigMapCreated,
-			Message:            fmt.Sprint("ConfigMap test-configmap created"),
+			Message:            "ConfigMap test-configmap created",
 		}
 
 		statusUpdateFunc := buildGenericStatusUpdateStateFn(givenCondition, nil, "")
@@ -230,7 +227,7 @@ func Test_buildStateFnGenericUpdateStatus(t *testing.T) {
 		testFunction := newTestGitFunction("test-namespace", "test-git-func", nil, 1, 1, true)
 		state := &systemState{instance: *testFunction}
 
-		stateReconciler := createFakeStateReconcilerWithTestFunction(ctx, testFunction)
+		stateReconciler := createFakeStateReconcilerWithTestFunction(t, testFunction)
 
 		givenCondition := serverlessv1alpha2.Condition{
 			Type:               serverlessv1alpha2.ConditionConfigurationReady,
@@ -259,9 +256,9 @@ func Test_buildStateFnGenericUpdateStatus(t *testing.T) {
 
 }
 
-func createFakeStateReconcilerWithTestFunction(ctx context.Context, testFunction *serverlessv1alpha2.Function) *reconciler {
-	scheme.AddToScheme(scheme.Scheme)
-	serverlessv1alpha2.AddToScheme(scheme.Scheme)
+func createFakeStateReconcilerWithTestFunction(t *testing.T, testFunction *serverlessv1alpha2.Function) *reconciler {
+	require.NoError(t, scheme.AddToScheme(scheme.Scheme))
+	require.NoError(t, serverlessv1alpha2.AddToScheme(scheme.Scheme))
 	client := fake.NewClientBuilder().WithScheme(scheme.Scheme).WithObjects(testFunction).Build()
 
 	resourceClient := resource.New(client, scheme.Scheme)

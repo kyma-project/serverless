@@ -65,16 +65,6 @@ func equalConditions(existing, expected []serverlessv1alpha2.Condition) bool {
 	return true
 }
 
-func equalRepositories(existing serverlessv1alpha2.Repository, new *serverlessv1alpha2.Repository) bool {
-	if new == nil {
-		return true
-	}
-	expected := *new
-
-	return existing.Reference == expected.Reference &&
-		existing.BaseDir == expected.BaseDir
-}
-
 func equalFunctionStatus(left, right serverlessv1alpha2.FunctionStatus) bool {
 	if !equalConditions(left.Conditions, right.Conditions) {
 		return false

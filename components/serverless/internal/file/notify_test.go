@@ -2,7 +2,6 @@ package file
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"testing"
 	"time"
@@ -12,7 +11,7 @@ import (
 
 func TestNotifyModification(t *testing.T) {
 	t.Run("react to file modification", func(t *testing.T) {
-		file, err := ioutil.TempFile(os.TempDir(), "test-*")
+		file, err := os.CreateTemp(os.TempDir(), "test-*")
 		assert.NoError(t, err)
 
 		notifyErr := make(chan error)
@@ -37,7 +36,7 @@ func TestNotifyModification(t *testing.T) {
 	})
 
 	t.Run("cancel context", func(t *testing.T) {
-		file, err := ioutil.TempFile(os.TempDir(), "test-*")
+		file, err := os.CreateTemp(os.TempDir(), "test-*")
 		assert.NoError(t, err)
 		defer os.Remove(file.Name())
 

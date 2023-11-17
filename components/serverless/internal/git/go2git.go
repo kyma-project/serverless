@@ -3,7 +3,6 @@ package git
 import (
 	"crypto/md5"
 	"fmt"
-	"log"
 	"os"
 	"path"
 	"strings"
@@ -88,7 +87,7 @@ func (g *git2GoClient) LastCommit(options Options) (string, error) {
 	if err == nil {
 		return ref.Target().String(), nil
 	}
-	if !git2go.IsErrorCode(err, git2go.ErrNotFound) {
+	if !git2go.IsErrorCode(err, git2go.ErrorCodeNotFound) {
 		return "", errors.Wrap(err, "while lookup branch")
 	}
 	//tag
@@ -203,10 +202,4 @@ func (g *git2GoClient) lookupTag(repo *git2go.Repository, tagName string) (*git2
 		return nil, errors.Wrap(err, "while getting commit from head")
 	}
 	return commit, nil
-}
-
-func removeDir(path string) {
-	if os.RemoveAll(path) != nil {
-		log.Printf("Error while deleting directory: %s", path)
-	}
 }
