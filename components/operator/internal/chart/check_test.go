@@ -3,6 +3,7 @@ package chart
 import (
 	"context"
 	"fmt"
+	"github.com/stretchr/testify/require"
 	"testing"
 
 	apiextensionsscheme "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/scheme"
@@ -55,15 +56,15 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 	}
 
 	cache := NewInMemoryManifestCache()
-	cache.Set(context.Background(), noCRDManifestKey,
+	_ = cache.Set(context.Background(), noCRDManifestKey,
 		ServerlessSpecManifest{Manifest: fmt.Sprint(testDeploy)})
-	cache.Set(context.Background(), noOrphanManifestKey,
+	_ = cache.Set(context.Background(), noOrphanManifestKey,
 		ServerlessSpecManifest{Manifest: fmt.Sprint(testCRD, separator, testDeploy)})
-	cache.Set(context.Background(), oneOrphanManifestKey,
+	_ = cache.Set(context.Background(), oneOrphanManifestKey,
 		ServerlessSpecManifest{Manifest: fmt.Sprint(testCRD, separator, testOrphanCR)})
-	cache.Set(context.Background(), emptyManifestKey,
+	_ = cache.Set(context.Background(), emptyManifestKey,
 		ServerlessSpecManifest{Manifest: ""})
-	cache.Set(context.Background(), wrongManifestKey,
+	_ = cache.Set(context.Background(), wrongManifestKey,
 		ServerlessSpecManifest{Manifest: "api: test\n\tversion: test"})
 
 	type args struct {
@@ -135,7 +136,7 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 								Group:   "test.group",
 								Version: "v1alpha2",
 							}, &testOrphanObj)
-							apiextensionsscheme.AddToScheme(scheme)
+							require.NoError(t, apiextensionsscheme.AddToScheme(scheme))
 							c := fake.NewClientBuilder().
 								WithScheme(scheme).
 								WithObjects(&testOrphanObj).
@@ -158,7 +159,7 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 					Cluster: Cluster{
 						Client: func() client.Client {
 							scheme := runtime.NewScheme()
-							apiextensionsscheme.AddToScheme(scheme)
+							require.NoError(t, apiextensionsscheme.AddToScheme(scheme))
 							c := fake.NewClientBuilder().WithScheme(scheme).Build()
 							return c
 						}(),

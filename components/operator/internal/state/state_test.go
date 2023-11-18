@@ -50,7 +50,7 @@ func fixEmptyManifestCache() chart.ManifestCache {
 
 func fixManifestCache(manifest string) chart.ManifestCache {
 	cache := chart.NewInMemoryManifestCache()
-	cache.Set(context.Background(), types.NamespacedName{
+	_ = cache.Set(context.Background(), types.NamespacedName{
 		Name:      testInstalledServerless.GetName(),
 		Namespace: testInstalledServerless.GetNamespace(),
 	}, chart.ServerlessSpecManifest{Manifest: manifest, CustomFlags: map[string]interface{}{}})

@@ -150,7 +150,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 			chartConfig: &chart.Config{
 				Cache: func() chart.ManifestCache {
 					cache := chart.NewInMemoryManifestCache()
-					cache.Set(context.Background(), types.NamespacedName{
+					_ = cache.Set(context.Background(), types.NamespacedName{
 						Name:      testInstalledServerless.GetName(),
 						Namespace: testInstalledServerless.GetNamespace(),
 					}, chart.ServerlessSpecManifest{Manifest: testDeployManifest})

@@ -44,11 +44,11 @@ func Test_verify(t *testing.T) {
 	}
 
 	cache := NewInMemoryManifestCache()
-	cache.Set(context.Background(), testManifestKey,
+	_ = cache.Set(context.Background(), testManifestKey,
 		ServerlessSpecManifest{Manifest: fmt.Sprint(testCRD, separator, testDeploy)})
-	cache.Set(context.Background(), emptyManifestKey,
+	_ = cache.Set(context.Background(), emptyManifestKey,
 		ServerlessSpecManifest{Manifest: "---"})
-	cache.Set(context.Background(), wrongManifestKey,
+	_ = cache.Set(context.Background(), wrongManifestKey,
 		ServerlessSpecManifest{Manifest: "api: test\n\tversion: test"})
 
 	type args struct {
