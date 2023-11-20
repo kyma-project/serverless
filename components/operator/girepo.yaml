@@ -1,0 +1,6 @@
+apiVersion: serverless.kyma-project.io/v1alpha1
+kind: GitRepository
+metadata:
+  finalizers:
+  - dupa
+  name: "test-2"
