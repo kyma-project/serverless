@@ -14,7 +14,7 @@ func Test_getOrRenderManifestWithRenderer(t *testing.T) {
 	}
 
 	cache := NewInMemoryManifestCache()
-	cache.Set(context.Background(), noCRDManifestKey,
+	_ = cache.Set(context.Background(), noCRDManifestKey,
 		ServerlessSpecManifest{Manifest: testDeploy})
 
 	type args struct {
