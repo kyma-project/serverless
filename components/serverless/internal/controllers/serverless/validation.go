@@ -56,7 +56,7 @@ func validateResources(r *corev1.ResourceRequirements) validationResult {
 			msg:   "Request CPU cannot be bigger than Limits CPU"}
 	}
 
-	if isMore(r.Requests.Cpu(), *r.Limits.Cpu()) {
+	if isMore(r.Requests.Memory(), *r.Limits.Memory()) {
 		return validationResult{
 			valid: false,
 			msg:   "Request memory cannot be bigger than Limits memory"}

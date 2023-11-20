@@ -19,6 +19,7 @@ import (
 	"testing"
 )
 
+// TODO: add separate use cases with memory and cpu
 func TestValidation(t *testing.T) {
 	//GIVEN
 	ctx := context.TODO()
@@ -36,7 +37,7 @@ func TestValidation(t *testing.T) {
 	testCases := map[string]struct {
 		fn serverlessv1alpha2.Function
 	}{
-		"Function requests are bigger than limits": {
+		"Function requests cpu are bigger than limits": {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					GenerateName: "test-fn",
@@ -50,13 +51,33 @@ func TestValidation(t *testing.T) {
 							},
 							Requests: map[corev1.ResourceName]resource.Quantity{
 								corev1.ResourceCPU:    resource.MustParse("150m"),
+								corev1.ResourceMemory: resource.MustParse("50m"),
+							}}},
+					},
+				},
+			},
+		},
+		"Function requests memory are bigger than limits": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					GenerateName: "test-fn",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Function: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
+							Limits: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("120m"),
+								corev1.ResourceMemory: resource.MustParse("120m"),
+							},
+							Requests: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("50m"),
 								corev1.ResourceMemory: resource.MustParse("150m"),
 							}}},
 					},
 				},
 			},
 		},
-		"Build requests are bigger than limits": {
+		"Build requests cpu are bigger than limits": {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					GenerateName: "test-fn",
@@ -70,6 +91,26 @@ func TestValidation(t *testing.T) {
 							},
 							Requests: map[corev1.ResourceName]resource.Quantity{
 								corev1.ResourceCPU:    resource.MustParse("150m"),
+								corev1.ResourceMemory: resource.MustParse("50m"),
+							}}},
+					},
+				},
+			},
+		},
+		"Build requests memory are bigger than limits": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					GenerateName: "test-fn",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
+							Limits: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("120m"),
+								corev1.ResourceMemory: resource.MustParse("120m"),
+							},
+							Requests: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("50m"),
 								corev1.ResourceMemory: resource.MustParse("150m"),
 							}}},
 					},
