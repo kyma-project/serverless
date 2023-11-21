@@ -17,11 +17,14 @@ limitations under the License.
 package main
 
 import (
+	"context"
 	"flag"
 	"os"
 	"time"
 
 	"github.com/kyma-project/serverless-manager/components/operator/internal/config"
+	"github.com/kyma-project/serverless-manager/components/operator/internal/gitrepository"
+	"github.com/pkg/errors"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -34,6 +37,7 @@ import (
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
@@ -43,9 +47,10 @@ import (
 )
 
 var (
-	scheme     = runtime.NewScheme()
-	setupLog   = ctrl.Log.WithName("setup")
-	syncPeriod = time.Minute * 30
+	scheme         = runtime.NewScheme()
+	setupLog       = ctrl.Log.WithName("setup")
+	syncPeriod     = time.Minute * 30
+	cleanupTimeout = time.Second * 10
 )
 
 func init() {
@@ -78,6 +83,16 @@ func main() {
 	}
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
+
+	ctx, cancel := context.WithTimeout(context.Background(), cleanupTimeout)
+	defer cancel()
+
+	setupLog.Info("cleaning orphan depricated resources")
+	err = cleanupOrphanDepricatedResources(ctx)
+	if err != nil {
+		setupLog.Error(err, "while removing orphan resources")
+		os.Exit(1)
+	}
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
@@ -130,4 +145,19 @@ func main() {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
+}
+
+func cleanupOrphanDepricatedResources(ctx context.Context) error {
+	// We are going to talk to the API server _before_ we start the manager.
+	// Since the default manager client reads from cache, we will get an error.
+	// So, we create a "serverClient" that would read from the API directly.
+	// We only use it here, this only runs at start up, so it shouldn't be to much for the API
+	serverClient, err := ctrlclient.New(ctrl.GetConfigOrDie(), ctrlclient.Options{
+		Scheme: scheme,
+	})
+	if err != nil {
+		return errors.Wrap(err, "failed to create a server client")
+	}
+
+	return gitrepository.Cleanup(ctx, serverClient)
 }
