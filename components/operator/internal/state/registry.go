@@ -69,7 +69,7 @@ func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error
 		setK3dRegistryConfig(s)
 	}
 
-	setExcludedNamespace(s)
+	setExcludedNamespaces(s)
 
 	addRegistryConfigurationWarnings(extRegSecretClusterWide, extRegSecretNamespacedScope, s)
 	return nil
