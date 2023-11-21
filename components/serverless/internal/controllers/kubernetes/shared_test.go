@@ -79,7 +79,7 @@ func TestConfigStruct_ExcludedNamespaceDefaultValue(t *testing.T) {
 		err := envconfig.Init(&cfg)
 		g.Expect(err).To(gomega.Succeed())
 
-		g.Expect(cfg.ExcludedNamespaces).NotTo(gomega.HaveLen(1))
+		g.Expect(cfg.ExcludedNamespaces).To(gomega.HaveLen(1))
 	})
 }
 
