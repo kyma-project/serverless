@@ -5,11 +5,10 @@ Functions support multiple languages through the use of runtimes. To use a chose
 >**TIP:** If you are interested in the Function's signature, `event` and `context` objects, and custom HTTP responses the Function returns, read about [Function’s specification](07-70-function-specification.md).
 
 See sample Functions for all available runtimes:
-<div tabs name="available-runtimes" group="available-runtimes">
-  <details>
-  <summary label="nodejs">
-  Node.js
-  </summary>
+
+<!-- tabs:start -->
+
+#### **Node.js**
 
 ```bash
 cat <<EOF | kubectl apply -f -
@@ -38,12 +37,8 @@ spec:
         }
 EOF
 ```
-</details>
 
-<details>
-  <summary label="python39">
-  Python 3.9
-  </summary>
+#### **Python 3.9**
 
 ```bash
 cat <<EOF | kubectl apply -f -
@@ -65,5 +60,4 @@ spec:
 EOF
 ```
 
-</details>
-</div>
+<!-- tabs:end -->
