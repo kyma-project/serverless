@@ -69,6 +69,8 @@ func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error
 		setK3dRegistryConfig(s)
 	}
 
+	setExcludedNamespaces(s)
+
 	addRegistryConfigurationWarnings(extRegSecretClusterWide, extRegSecretNamespacedScope, s)
 	return nil
 }
@@ -177,6 +179,11 @@ func getRegistrySecret(ctx context.Context, r *reconciler, s *systemState) (*cor
 	}
 	err := r.client.Get(ctx, key, &secret)
 	return &secret, err
+}
+
+func setExcludedNamespaces(s *systemState) {
+	excludedNamespace := s.instance.Namespace
+	s.flagsBuilder.WithExcludedNamespaces([]string{excludedNamespace})
 }
 
 func isRegistrySecretName(registry *v1alpha1.DockerRegistry) bool {
