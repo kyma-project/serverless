@@ -27,7 +27,7 @@ func Test_flagsBuilder_Build(t *testing.T) {
 							"functionTraceCollectorEndpoint":   "testCollectorURL",
 							"healthzLivenessTimeout":           "testHealthzLivenessTimeout",
 							"targetCPUUtilizationPercentage":   "testCPUUtilizationPercentage",
-							"namespaceExcludedNames":           "testNamespace",
+							"namespaceExcludedNames":           "testNamespace;testNamespace2",
 						},
 					},
 				},
@@ -78,7 +78,7 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				"testRequestBodyLimitMb",
 				"testTimeoutSec",
 			).
-			WithExcludedNamespace("testNamespace").Build()
+			WithExcludedNamespaces([]string{"testNamespace", "testNamespace2"}).Build()
 
 		require.Equal(t, expectedFlags, flags)
 	})

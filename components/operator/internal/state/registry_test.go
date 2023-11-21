@@ -41,7 +41,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				"manager": map[string]interface{}{
 					"configuration": map[string]interface{}{
 						"data": map[string]interface{}{
-							"namespaceExcludedNames": "",
+							"namespaceExcludedNames": "kyma-test",
 						},
 					},
 				},
@@ -106,7 +106,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				"manager": map[string]interface{}{
 					"configuration": map[string]interface{}{
 						"data": map[string]interface{}{
-							"namespaceExcludedNames": "",
+							"namespaceExcludedNames": "kyma-test",
 						},
 					},
 				},
@@ -157,7 +157,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				"manager": map[string]interface{}{
 					"configuration": map[string]interface{}{
 						"data": map[string]interface{}{
-							"namespaceExcludedNames": "",
+							"namespaceExcludedNames": "kyma-test",
 						},
 					},
 				},
