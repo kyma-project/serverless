@@ -21,13 +21,12 @@ The time necessary to build Function depends on:
 
 <!-- tabs:start -->
 
-#### **Node.js** 
+#### **Node.js**
 
 |                 | local-dev | no profile (no limits for resource) |
 |-----------------|-----------|-------------------------------------|
 | no dependencies | 24 sec    | 15 sec                              |
 | 2 dependencies  | 26 sec    | 16 sec                              |
-
 
 #### **Python**
 
@@ -35,7 +34,6 @@ The time necessary to build Function depends on:
 |-----------------|-----------|-------------------------------------|
 | no dependencies | 30 sec    | 16 sec                              |
 | 2 dependencies  | 32 sec    | 20 sec                              |
-
 
 <!-- tabs:end -->
 
@@ -50,14 +48,13 @@ The following describes the response times of the selected runtime profiles for 
 
 <!-- tabs:start -->
 
-#### **Node.js** 
+#### **Node.js**
 
 |                               | XL     | L      | M      | S      | XS      |
 |-------------------------------|--------|--------|--------|--------|---------|
 | response time [avarage]       | ~13ms  | 13ms   | ~15ms  | ~60ms  | ~400ms  |
 | response time [95 percentile] | ~20ms  | ~30ms  | ~70ms  | ~200ms | ~800ms  |
 | response time [99 percentile] | ~200ms | ~200ms | ~220ms | ~500ms | ~1.25ms |
-
 
 #### **Python**
 
@@ -66,7 +63,6 @@ The following describes the response times of the selected runtime profiles for 
 | response time [avarage]       | ~11ms  | 12ms   | ~12ms  | ~14ms  |
 | response time [95 percentile] | ~25ms  | ~25ms  | ~25ms  | ~25ms  |
 | response time [99 percentile] | ~175ms | ~180ms | ~210ms | ~280ms |
-
 
 <!-- tabs:end -->
 
