@@ -46,7 +46,6 @@ In the runtime, the Functions serve user-provided logic wrapped in the WEB frame
 
 The following describes the response times of the selected runtime profiles for a "Hello World" Function requested at 50 requests/second. This describes the overhead of the serving framework itself. Any user logic added on top of that will add extra milliseconds and must be profiled separately.
 
-
 <!-- tabs:start -->
 
 #### **Node.js** 
@@ -56,7 +55,6 @@ The following describes the response times of the selected runtime profiles for 
 | response time [avarage]       | ~13ms  | 13ms   | ~15ms  | ~60ms  | ~400ms  |
 | response time [95 percentile] | ~20ms  | ~30ms  | ~70ms  | ~200ms | ~800ms  |
 | response time [99 percentile] | ~200ms | ~200ms | ~220ms | ~500ms | ~1.25ms |
-
 
 #### **Python**
 
