@@ -41,7 +41,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				"manager": map[string]interface{}{
 					"configuration": map[string]interface{}{
 						"data": map[string]interface{}{
-							"namespaceExcludedNames": "kyma-test",
+							"namespaceExcludedNames": "",
 						},
 					},
 				},
@@ -134,7 +134,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				ObjectMeta: metav1.ObjectMeta{
-					Namespace: "some-namespace",
+					Namespace: "kyma-test",
 				},
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
@@ -239,7 +239,17 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			k8s: k8s{client: client},
 			log: zap.NewNop().Sugar(),
 		}
-		expectedFlags := map[string]interface{}{}
+		expectedFlags := map[string]interface{}{
+			"containers": map[string]interface{}{
+				"manager": map[string]interface{}{
+					"configuration": map[string]interface{}{
+						"data": map[string]interface{}{
+							"namespaceExcludedNames": "kyma-test",
+						},
+					},
+				},
+			},
+		}
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
 		require.NoError(t, err)
