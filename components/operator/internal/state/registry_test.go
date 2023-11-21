@@ -37,6 +37,15 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 		}
 		expectedFlags := map[string]interface{}{
+			"containers": map[string]interface{}{
+				"manager": map[string]interface{}{
+					"configuration": map[string]interface{}{
+						"data": map[string]interface{}{
+							"namespaceExcludedNames": "",
+						},
+					},
+				},
+			},
 			"dockerRegistry": map[string]interface{}{
 				"enableInternal": true,
 			},
@@ -93,6 +102,15 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			},
 		}
 		expectedFlags := map[string]interface{}{
+			"containers": map[string]interface{}{
+				"manager": map[string]interface{}{
+					"configuration": map[string]interface{}{
+						"data": map[string]interface{}{
+							"namespaceExcludedNames": "",
+						},
+					},
+				},
+			},
 			"dockerRegistry": map[string]interface{}{
 				"enableInternal":  false,
 				"username":        string(secret.Data["username"]),
@@ -135,6 +153,15 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			},
 		}
 		expectedFlags := map[string]interface{}{
+			"containers": map[string]interface{}{
+				"manager": map[string]interface{}{
+					"configuration": map[string]interface{}{
+						"data": map[string]interface{}{
+							"namespaceExcludedNames": "",
+						},
+					},
+				},
+			},
 			"dockerRegistry": map[string]interface{}{
 				"enableInternal":  false,
 				"registryAddress": v1alpha1.DefaultRegistryAddress,

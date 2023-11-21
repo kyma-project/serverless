@@ -68,7 +68,9 @@ func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error
 		// case: use k3d registry
 		setK3dRegistryConfig(s)
 	}
+
 	setExcludedNamespace(s)
+
 	addRegistryConfigurationWarnings(extRegSecretClusterWide, extRegSecretNamespacedScope, s)
 	return nil
 }
