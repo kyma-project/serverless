@@ -88,7 +88,7 @@ func main() {
 	defer cancel()
 
 	setupLog.Info("cleaning orphan depricated resources")
-	err = cleanupOrphanDepricatedResources(ctx)
+	err = cleanupOrphanDeprecatedResources(ctx)
 	if err != nil {
 		setupLog.Error(err, "while removing orphan resources")
 		os.Exit(1)
@@ -147,7 +147,7 @@ func main() {
 	}
 }
 
-func cleanupOrphanDepricatedResources(ctx context.Context) error {
+func cleanupOrphanDeprecatedResources(ctx context.Context) error {
 	// We are going to talk to the API server _before_ we start the manager.
 	// Since the default manager client reads from cache, we will get an error.
 	// So, we create a "serverClient" that would read from the API directly.
