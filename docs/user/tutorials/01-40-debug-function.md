@@ -5,11 +5,9 @@ This tutorial shows how to use an external IDE to debug a Function in Kyma CLI.
 ## Steps
 Learn how to debug a Function with Visual Studio Code for Node.js or Python, or GoLand:
 
-<div tabs name="steps" group="debug-function">
-  <details>
-  <summary label="vsc_node">
-  Visual Studio Code
-  </summary>
+<!-- tabs:start -->
+
+#### **Visual Studio Code**
 
 1. In VSC, navigate to the location of the file with the Function definition.
 2. Create the `.vscode` directory.
@@ -64,11 +62,7 @@ Learn how to debug a Function with Visual Studio Code for Node.js or Python, or 
     kyma run function --debug
     ```
 
-</details>
-<details>
-<summary label="goland">
-GoLand
-</summary>
+#### **GoLand**
 
 1. In GoLand, navigate to the location of the file with the Function definition.
 2. Choose the **Add Configuration...** option.
@@ -80,5 +74,4 @@ GoLand
     kyma run function --debug
     ```
 
-    </details>
-</div>
+<!-- tabs:end -->
