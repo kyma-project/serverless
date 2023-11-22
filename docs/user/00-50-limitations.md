@@ -19,30 +19,23 @@ The time necessary to build Function depends on:
  - number and size of dependencies that must be downloaded and bundled into the Function image
  - cluster Nodes specification (see the note with reference specification at the end of this document)
 
-<div tabs name="build" group="function-build-times">
-  <details>
-  <summary label="nodejs">
-  Node.js 
-  </summary>
+<!-- tabs:start -->
+
+#### **Node.js**
 
 |                 | local-dev | no profile (no limits for resource) |
 |-----------------|-----------|-------------------------------------|
 | no dependencies | 24 sec    | 15 sec                              |
 | 2 dependencies  | 26 sec    | 16 sec                              |
 
-  </details>
-  <details>
-  <summary label="python">
-  Python
-  </summary>
+#### **Python**
 
 |                 | local-dev | no profile (no limits for resource) |
 |-----------------|-----------|-------------------------------------|
 | no dependencies | 30 sec    | 16 sec                              |
 | 2 dependencies  | 32 sec    | 20 sec                              |
 
-  </details>
-</div>
+<!-- tabs:end -->
 
 The shortest build time (the limit) is approximately 15 seconds and requires no limitation of the build job resources and a minimum number of dependencies that are pulled in during the build phase.
 
@@ -53,32 +46,25 @@ In the runtime, the Functions serve user-provided logic wrapped in the WEB frame
 
 The following describes the response times of the selected runtime profiles for a "Hello World" Function requested at 50 requests/second. This describes the overhead of the serving framework itself. Any user logic added on top of that will add extra milliseconds and must be profiled separately.
 
+<!-- tabs:start -->
 
-<div tabs name="steps" group="function-response-times">
-  <details>
-  <summary label="nodejs">
-  Node.js 
-  </summary>
+#### **Node.js**
+
 |                               | XL     | L      | M      | S      | XS      |
 |-------------------------------|--------|--------|--------|--------|---------|
 | response time [avarage]       | ~13ms  | 13ms   | ~15ms  | ~60ms  | ~400ms  |
 | response time [95 percentile] | ~20ms  | ~30ms  | ~70ms  | ~200ms | ~800ms  |
 | response time [99 percentile] | ~200ms | ~200ms | ~220ms | ~500ms | ~1.25ms |
 
-
-  </details>
-  <details>
-  <summary label="python">
-  Python
-  </summary>
+#### **Python**
 
 |                               | XL     | L      | M      | S      |
 |-------------------------------|--------|--------|--------|--------|
 | response time [avarage]       | ~11ms  | 12ms   | ~12ms  | ~14ms  |
 | response time [95 percentile] | ~25ms  | ~25ms  | ~25ms  | ~25ms  |
 | response time [99 percentile] | ~175ms | ~180ms | ~210ms | ~280ms |
-  </details>
-</div>
+
+<!-- tabs:end -->
 
 Obviously, the bigger the runtime profile, the more resources are available to serve the response quicker. Consider these limits of the serving layer as a baseline - as this does not take your Function logic into account.
 

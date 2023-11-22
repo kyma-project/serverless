@@ -26,12 +26,9 @@ kubectl create configmap my-config --from-literal config-env="I come from config
 kubectl create secret generic my-secret --from-literal secret-env="I come from secret"
 ```
 
+<!-- tabs:start -->
 
-<div tabs name="steps" group="create-function">
-  <details>
-  <summary label="cli">
-  Kyma CLI
-  </summary>
+#### **Kyma CLI**
 
 3. Generate the Function's configuration and sources:
 
@@ -92,12 +89,7 @@ kubectl create secret generic my-secret --from-literal secret-env="I come from s
     kubectl get functions my-function
     ```
 
-  </details>
-  <details>
-  <summary label="kubectl">
-  kubectl
-  </summary>
-
+#### **kubectl**
 
 3. Create a Function CR that specifies the Function's logic:
 
@@ -149,5 +141,4 @@ kubectl create secret generic my-secret --from-literal secret-env="I come from s
     kubectl get functions my-function
     ```
 
-</details>
-</div>
+<!-- tabs:end -->

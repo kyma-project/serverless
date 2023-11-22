@@ -106,41 +106,7 @@ This tutorial shows only one possible use case. There are many more use cases on
    ```
    The `init` command creates the same files as in the `emitter` folder.
 
-2. In the `config.yaml` file, configure event types your Function will subscribe to:
-
-<div tabs name="function" group="set-asynchronous-connection-of-functions">
-  <details>
-  <summary label="v1alpha1">
-  v1alpha1
-  </summary>
-   
-   ```yaml
-    name: event-receiver
-    namespace: default
-    runtime: nodejs18
-    source:
-       sourceType: inline
-    subscriptions:
-       - name: event-receiver
-         protocol: ""
-         filter:
-            filters:
-               - eventSource:
-                   property: source
-                   type: exact
-                   value: ""
-                eventType:
-                   property: type
-                   type: exact
-                   value: sap.kyma.custom.acme.payload.sanitised.v1
-    schemaVersion: v0
-   ```
-
-</details>
-<details>
-  <summary label="v1alpha2">
-  v1alpha2
-  </summary>   
+2. In the `config.yaml` file, configure event types your Function will subscribe to:  
 
 ```yaml
     name: event-receiver
@@ -157,10 +123,7 @@ This tutorial shows only one possible use case. There are many more use cases on
     schemaVersion: v1
    ```
 
-</details>
-</div>
-
-3.  Apply your receiver Function:
+1.  Apply your receiver Function:
      ```bash
      kyma apply function
      ```
