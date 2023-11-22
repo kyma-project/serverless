@@ -17,11 +17,11 @@ func stateFnValidateFunction(_ context.Context, r *reconciler, s *systemState) (
 	fnResourceCfg := r.cfg.fn.ResourceConfig.Function.Resources
 	vrFunction := validateFunctionResources(rc, fnResourceCfg.MinRequestedCPU.Quantity, fnResourceCfg.MinRequestedMemory.Quantity)
 	buildResourceCfg := r.cfg.fn.ResourceConfig.BuildJob.Resources
-	vrBuild := validateBuildResources(rc, buildResourceCfg.MinRequestedCPU.Quantity, buildResourceCfg.MinRequestedCPU.Quantity)
+	vrBuild := validateBuildResources(rc, buildResourceCfg.MinRequestedCPU.Quantity, buildResourceCfg.MinRequestedMemory.Quantity)
 
 	vr := append(vrFunction, vrBuild...)
 	if len(vr) != 0 {
-		msg := strings.Join(vr, ".")
+		msg := strings.Join(vr, ". ")
 		cond := createValidationFailedCondition(msg)
 		r.result.Requeue = false
 		return buildStatusUpdateStateFnWithCondition(cond), nil
@@ -54,13 +54,15 @@ func validateRequests(resources corev1.ResourceRequirements, minMemory, minCPU r
 	requests := resources.Requests
 	allErrs := []string{}
 
-	if requests.Cpu().Cmp(minCPU) == -1 {
-		allErrs = append(allErrs, fmt.Sprintf("%s request cpu(%s) should be higher than minimal value (%s)",
-			resourceType, requests.Cpu().String(), minCPU.String()))
-	}
-	if requests.Memory().Cmp(minMemory) == -1 {
-		allErrs = append(allErrs, fmt.Sprintf("%s request memory(%s) should be higher than minimal value (%s)",
-			resourceType, requests.Memory().String(), minMemory.String()))
+	if requests != nil {
+		if requests.Cpu().Cmp(minCPU) == -1 {
+			allErrs = append(allErrs, fmt.Sprintf("%s request cpu(%s) should be higher than minimal value (%s)",
+				resourceType, requests.Cpu().String(), minCPU.String()))
+		}
+		if requests.Memory().Cmp(minMemory) == -1 {
+			allErrs = append(allErrs, fmt.Sprintf("%s request memory(%s) should be higher than minimal value (%s)",
+				resourceType, requests.Memory().String(), minMemory.String()))
+		}
 	}
 
 	if limits == nil {
@@ -68,11 +70,11 @@ func validateRequests(resources corev1.ResourceRequirements, minMemory, minCPU r
 	}
 
 	if requests.Cpu().Cmp(*limits.Cpu()) == 1 {
-		allErrs = append(allErrs, fmt.Sprintf("%s limits cpu(%s) should be higher than Requests cpu(%s)",
+		allErrs = append(allErrs, fmt.Sprintf("%s limits cpu(%s) should be higher than requests cpu(%s)",
 			resourceType, limits.Cpu().String(), requests.Cpu().String()))
 	}
 	if requests.Memory().Cmp(*limits.Memory()) == 1 {
-		allErrs = append(allErrs, fmt.Sprintf("%s limits memory(%s) should be higher than Requests.memory(%s)",
+		allErrs = append(allErrs, fmt.Sprintf("%s limits memory(%s) should be higher than requests memory(%s)",
 			resourceType, limits.Memory().String(), requests.Memory().String()))
 	}
 
@@ -85,11 +87,11 @@ func validateLimits(resources corev1.ResourceRequirements, minMemory, minCPU res
 
 	if limits != nil {
 		if limits.Cpu().Cmp(minCPU) == -1 {
-			allErrs = append(allErrs, fmt.Sprintf("%s limits.cpu(%s) should be higher than minimal value (%s)",
+			allErrs = append(allErrs, fmt.Sprintf("%s limits cpu(%s) should be higher than minimal value (%s)",
 				resourceType, limits.Cpu().String(), minCPU.String()))
 		}
 		if limits.Memory().Cmp(minMemory) == -1 {
-			allErrs = append(allErrs, fmt.Sprintf("%s limits.memory(%s) should be higher than minimal value (%s)",
+			allErrs = append(allErrs, fmt.Sprintf("%s limits memory(%s) should be higher than minimal value (%s)",
 				resourceType, limits.Memory().String(), minMemory.String()))
 		}
 	}
