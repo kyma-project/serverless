@@ -14,11 +14,9 @@ Before you start, make sure you have these tools installed:
 
 Follow these steps:
 
-<div tabs name="steps" group="create-function">
-  <details>
-  <summary label="hpa">
-  HPA
-  </summary>
+<!-- tabs:start -->
+
+#### **HPA**
 
 1. Create your Function with the `replicas` value set to 1, to prevent the internal Serverless HPA creation:
 
@@ -62,11 +60,7 @@ Follow these steps:
     scaled-function   Function/scaled-function   1%/50%    5         10        5          61s
     ```
 
-  </details>
-  <details>
-  <summary label="keda-cpu">
-  Keda CPU
-  </summary>
+#### **Keda CPU**
 
 1. Create your Function with the **replicas** value set to `1` to prevent the internal Serverless HPA creation:
 
@@ -129,11 +123,7 @@ Follow these steps:
     scaled-function   serverless.kyma-project.io/v1alpha2.Function   scaled-function   5     10    cpu                         True    True     Unknown    4m15s
     ```
 
-  </details>
-  <details>
-  <summary label="keda-prometheus">
-  Keda Prometheus
-  </summary>
+#### **Keda Prometheus**
 
 1. Create your Function with the **replicas** value set to `1` to prevent the internal Serverless HPA creation:
 
@@ -200,5 +190,4 @@ Follow these steps:
 
 Check out this [example](https://github.com/kyma-project/examples/tree/main/scale-to-zero-with-keda) to see how to use Kyma Serverless and Eventing in combination with Keda to accomplish scaling to zero. 
 
-</details>
-</div>
+<!-- tabs:end -->
