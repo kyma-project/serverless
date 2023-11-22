@@ -131,7 +131,7 @@ func TestValidation(t *testing.T) {
 					},
 				},
 			},
-			expectedCondMsg: "less than minimum memory",
+			expectedCondMsg: "Function request memory(5m) should be higher than minimal value",
 		},
 		"Function limits cpu are smaller than minimum without requests": {
 			fn: serverlessv1alpha2.Function{
