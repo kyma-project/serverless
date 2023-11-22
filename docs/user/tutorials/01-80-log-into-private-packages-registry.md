@@ -8,12 +8,9 @@ Serverless allows you to consume private packages in your Functions. This tutori
 
 Create a Secret CR for your Node.js or Python Functions. You can also create one combined Secret CR for both runtimes.
 
+<!-- tabs:start -->
 
-<div tabs name="override" group="external-packages-registry">
-  <details>
-  <summary label="node">
-  Node.js
-  </summary>
+#### **Node.js**
 
 1. Export these variables:
 
@@ -40,11 +37,7 @@ Create a Secret CR for your Node.js or Python Functions. You can also create one
 EOF
  ```
 
-  </details>
-  <details>
-  <summary label="python">
-  Python
-  </summary>
+#### **Python**
 
 1. Export these variables:
 
@@ -72,11 +65,7 @@ EOF
 EOF
  ```
 
-  </details>
-  <details>
-  <summary label="node-python">
-  Node.js & Python
-  </summary>
+#### **Node.js & Python**
 
 1. Export these variables:
 
@@ -108,8 +97,7 @@ EOF
 EOF
  ```
 
-  </details>
-</div>
+<!-- tabs:end -->
 
 ### Test the package registry switch
 
