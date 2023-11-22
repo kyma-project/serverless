@@ -109,7 +109,7 @@ else
 	@echo "Image signing skipped"
 endif
 
-install-manager-k3d: build-image-function-controller
+install-manager-k3d: build-image-function-controller disable-operator
 	$(eval HASH_TAG=$(shell docker images $(MANAGER_NAME):latest --quiet))
 	docker tag $(MANAGER_NAME) $(MANAGER_NAME):$(HASH_TAG)
 
@@ -136,12 +136,18 @@ else
 	@echo "Image signing skipped"
 endif
 
-install-webhook-k3d: build-image-function-webhook
+install-webhook-k3d: build-image-function-webhook disable-operator
 	$(eval HASH_TAG=$(shell docker images $(WEBHOOK_NAME):latest --quiet))
 	docker tag $(WEBHOOK_NAME) $(WEBHOOK_NAME):$(HASH_TAG)
 
 	k3d image import $(WEBHOOK_NAME):$(HASH_TAG) -c kyma
 	kubectl set image deployment serverless-webhook-svc -n kyma-system webhook=$(WEBHOOK_NAME):$(HASH_TAG)
+
+######## disable operator
+
+disable-operator:
+	kubectl scale deployment serverless-operator -n kyma-system --replicas=0
+
 ######## builder init container image
 
 JOBINIT_NAME = function-build-init
