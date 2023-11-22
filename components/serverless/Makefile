@@ -11,6 +11,11 @@ else
 GOBIN=$(shell go env GOBIN)
 endif
 
+.PHONY: help
+help: ## Display this help.
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+
+
 ## Location to install dependencies to
 LOCALBIN ?= $(shell pwd)/bin
 $(LOCALBIN):
@@ -54,13 +59,14 @@ $(CONTROLLER_GEN): $(LOCALBIN)
 test: KUBEBUILDER_CONTROLPLANE_START_TIMEOUT=2m
 test: KUBEBUILDER_CONTROLPLANE_STOP_TIMEOUT=2m
 test: KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)"
-test: envtest
-	go test -race -count=1 -coverprofile=/tmp/artifacts/cover.out ./...
+test: envtest ## Run unit test with envtest
+	go test -race -count=1 ./...
 	@echo -n "Total coverage: "
 	@go tool cover -func=/tmp/artifacts/cover.out | grep total | awk '{print $$3}'
 
 .PHONY: manifests
-manifests: kustomize controller-gen generate-local
+manifests: kustomize controller-gen ## Render CRDs
+	$(CONTROLLER_GEN) object:headerFile=./hack/boilerplate.go.txt paths="./..."
 	$(CONTROLLER_GEN) rbac:roleName=serverless crd webhook paths="./..." \
 		object:headerFile=hack/boilerplate.go.txt \
 		output:crd:artifacts:config=config/crd/bases \
@@ -71,11 +77,6 @@ manifests: kustomize controller-gen generate-local
 	# TODO: Fix it. Now this docu is in https://kyma-project.io/#/serverless-manager/user/resources/06-10-function-cr?id=custom-resource-parameters. Remove table-gen from kyma.
 	# (cd ../../hack/table-gen && make serverless-docs )
 
-# Generate code
-.PHONY: generate-local
-generate-local: controller-gen
-	$(CONTROLLER_GEN) object:headerFile=./hack/boilerplate.go.txt paths="./..."
-
 ######## function manager
 MANAGER_NAME = function-controller
 
@@ -83,7 +84,7 @@ MANAGER_NAME = function-controller
 build-image-function-controller:
 	docker build -t $(MANAGER_NAME) -f $(ROOT)/deploy/manager/Dockerfile .
 
-install-manager-k3d: build-image-function-controller disable-operator
+install-manager-k3d: build-image-function-controller disable-operator ## Build and install serverless manager from local sources on k3d
 	$(eval HASH_TAG=$(shell docker images $(MANAGER_NAME):latest --quiet))
 	docker tag $(MANAGER_NAME) $(MANAGER_NAME):$(HASH_TAG)
 
@@ -97,7 +98,7 @@ WEBHOOK_NAME = function-webhook
 build-image-function-webhook:
 	docker build -t $(WEBHOOK_NAME) -f $(ROOT)/deploy/webhook/Dockerfile .
 
-install-webhook-k3d: build-image-function-webhook disable-operator
+install-webhook-k3d: build-image-function-webhook disable-operator ## Build and install serverless webhook from local sources on k3d
 	$(eval HASH_TAG=$(shell docker images $(WEBHOOK_NAME):latest --quiet))
 	docker tag $(WEBHOOK_NAME) $(WEBHOOK_NAME):$(HASH_TAG)
 
