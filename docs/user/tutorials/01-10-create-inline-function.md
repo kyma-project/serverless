@@ -11,11 +11,9 @@ To learn more about Function's signature, `event` and `context` objects, and cus
 
 You can create a Function with Kyma Dashboard, Kyma CLI, or kubectl:
 
-<div tabs name="steps" group="create-function">
-  <details>
-    <summary label="busola-ui">
-    Kyma Dashboard
-    </summary>
+<!-- tabs:start -->
+
+#### **Kyma Dashboard**
 
 >**NOTE:** Kyma Dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
 
@@ -42,11 +40,7 @@ The dialog box closes. Wait for the **Status** field to change into `RUNNING`, c
 
 1. If you decide to modify it, click **Edit** and confirm changes afterward by selecting the **Update** button. You will see the message at the bottom of the screen confirming the Function was updated.
 
-  </details>
-  <details>
-  <summary label="cli">
-  Kyma CLI
-  </summary>
+#### **Kyma CLI**
 
 1.  Export these variables:
 
@@ -101,11 +95,7 @@ The dialog box closes. Wait for the **Status** field to change into `RUNNING`, c
     test-function   True         True      True      nodejs18   1         96s
     ```
 
-  </details>
-  <details>
-  <summary label="kubectl">
-  kubectl
-  </summary>
+#### **kubectl**
 
 1.  Export these variables:
 
@@ -149,5 +139,4 @@ The dialog box closes. Wait for the **Status** field to change into `RUNNING`, c
     test-function   True         True      True      nodejs18   1         96s
     ```
 
-</details>
-</div>
+<!-- tabs:end -->
