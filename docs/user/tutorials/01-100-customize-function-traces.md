@@ -18,11 +18,9 @@ The following code samples illustrate how to enrich the default trace with custo
 
 1. [Create an inline Function](01-10-create-inline-function.md) with the following body:
 
-   <div tabs name="code" group="functions-code">
-   <details>
-   <summary label="node.js">
-   Node.js
-   </summary>
+<!-- tabs:start -->
+
+#### **Node.js**
 
       ```javascript
 
@@ -67,11 +65,7 @@ The following code samples illustrate how to enrich the default trace with custo
       }
       ```
 
-   </details>
-   <details>
-   <summary label="python">
-   Python
-   </summary>
+#### **Python**
 
       [OpenTelemetry SDK](https://opentelemetry.io/docs/instrumentation/python/manual/#traces) allows you to customize trace spans and events.
       Additionally, if you are using the `requests` library then all the HTTP communication can be auto-instrumented:
@@ -103,8 +97,7 @@ The following code samples illustrate how to enrich the default trace with custo
          return r.json()
       ```
 
-   </details>
-   </div>
+<!-- tabs:end -->
 
 2. [Expose your Function](01-20-expose-function.md).
 
