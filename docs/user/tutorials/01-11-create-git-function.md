@@ -10,11 +10,9 @@ To learn more about Git repository sources for Functions and different ways of s
 
 You can create a Function either with kubectl or Kyma Dashboard:
 
-<div tabs name="steps" group="create-function">
-  <details>
-    <summary label="busola-ui">
-    Kyma Dashboard
-    </summary>
+<!-- tabs:start -->
+
+#### **Kyma Dashboard**
 
 >**NOTE:** Kyma Dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
 
@@ -57,11 +55,7 @@ You can create a Function either with kubectl or Kyma Dashboard:
     After a while, a message confirms that the Function has been created.
     Make sure that the new Function has the `RUNNING` status.
 
-  </details>
-  <details>
-  <summary label="kubectl">
-  kubectl
-  </summary>
+#### **kubectl**
 
 1. Export these variables:
 
@@ -140,5 +134,4 @@ You can create a Function either with kubectl or Kyma Dashboard:
     test-function   True         True      True      nodejs18   1         96s
     ```
 
-    </details>
-</div>
+<!-- tabs:end -->
