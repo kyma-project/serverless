@@ -28,9 +28,9 @@ $(LOCALBIN):
 test: KUBEBUILDER_CONTROLPLANE_START_TIMEOUT=2m
 test: KUBEBUILDER_CONTROLPLANE_STOP_TIMEOUT=2m
 test: envtest ## Run unit test with envtest
-	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test -race -count=1 -coverprofile=/tmp/artifacts/cover.out ./...
+	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test -race -count=1 -coverprofile=cover.out ./...
 	@echo -n "Total coverage: "
-	@go tool cover -func=/tmp/artifacts/cover.out | grep total | awk '{print $$3}'
+	@go tool cover -func=cover.out | grep total | awk '{print $$3}'
 
 .PHONY: manifests
 manifests: kustomize controller-gen ## Render CRDs
