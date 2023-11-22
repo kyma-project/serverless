@@ -35,8 +35,7 @@ test-local:
 CONTROLLER_GEN_VERSION=v0.9.2
 
 .PHONY: manifests
-manifests: controller-gen-local generate-local
-	@make -C ${PROJECT_ROOT} kustomize
+manifests: kustomize controller-gen-local generate-local
 	$(CONTROLLER_GEN) rbac:roleName=serverless crd webhook paths="./..." \
 		object:headerFile=hack/boilerplate.go.txt \
 		output:crd:artifacts:config=config/crd/bases \
@@ -205,3 +204,13 @@ $(ENVTEST): $(LOCALBIN)
 .PHONY: test
 test: envtest
 	KUBEBUILDER_CONTROLPLANE_START_TIMEOUT=2m KUBEBUILDER_CONTROLPLANE_STOP_TIMEOUT=2m KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test ./...
+
+########## Kustomize ###########
+KUSTOMIZE ?= $(LOCALBIN)/kustomize
+KUSTOMIZE_VERSION ?= v4.5.5
+KUSTOMIZE_INSTALL_SCRIPT ?= "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"
+
+.PHONY: kustomize
+kustomize: $(KUSTOMIZE) ## Download kustomize locally if necessary.
+$(KUSTOMIZE): $(LOCALBIN)
+	test -s $(LOCALBIN)/kustomize || { curl -Ss $(KUSTOMIZE_INSTALL_SCRIPT) | bash -s -- $(subst v,,$(KUSTOMIZE_VERSION)) $(LOCALBIN); }

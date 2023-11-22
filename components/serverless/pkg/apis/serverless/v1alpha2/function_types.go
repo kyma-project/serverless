@@ -226,6 +226,7 @@ const (
 type ConditionReason string
 
 const (
+	ConditionReasonFunctionSpec                   ConditionReason = "InvalidFunctionSpec"
 	ConditionReasonConfigMapCreated               ConditionReason = "ConfigMapCreated"
 	ConditionReasonConfigMapUpdated               ConditionReason = "ConfigMapUpdated"
 	ConditionReasonSourceUpdated                  ConditionReason = "SourceUpdated"

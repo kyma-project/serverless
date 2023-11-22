@@ -67,7 +67,7 @@ func NewFunctionReconciler(client resource.Client, log *zap.SugaredLogger, confi
 		gitFactory:        gitFactory,
 		healthCh:          healthCh,
 		statsCollector:    statsCollector,
-		initStateFunction: stateFnInitialize,
+		initStateFunction: stateFnValidateFunction,
 	}
 }
 
