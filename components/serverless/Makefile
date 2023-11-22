@@ -2,7 +2,6 @@ ROOT :=  $(shell pwd)
 PROJECT_ROOT ?= $(ROOT)/../..
 # Image URL to use all building/pushing image targets
 LOCALBIN ?= $(PROJECT_ROOT)/bin
-KUSTOMIZE ?= $(LOCALBIN)/kustomize
 
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(shell go env GOBIN))
@@ -20,40 +19,6 @@ help: ## Display this help.
 LOCALBIN ?= $(shell pwd)/bin
 $(LOCALBIN):
 	mkdir -p $(LOCALBIN)
-
-
-########## Envtest ###########
-ENVTEST ?= $(LOCALBIN)/setup-envtest
-# ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
-ENVTEST_K8S_VERSION = 1.25.0
-
-.PHONY: envtest
-envtest: $(ENVTEST) ## Download envtest-setup locally if necessary.
-$(ENVTEST): $(LOCALBIN)
-	test -s $(LOCALBIN)/setup-envtest || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
-
-########## Kustomize ###########
-KUSTOMIZE ?= $(LOCALBIN)/kustomize
-KUSTOMIZE_VERSION ?= v4.5.5
-KUSTOMIZE_INSTALL_SCRIPT ?= "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"
-
-.PHONY: kustomize
-kustomize: $(KUSTOMIZE) ## Download kustomize locally if necessary.
-$(KUSTOMIZE): $(LOCALBIN)
-	test -s $(LOCALBIN)/kustomize || { curl -Ss $(KUSTOMIZE_INSTALL_SCRIPT) | bash -s -- $(subst v,,$(KUSTOMIZE_VERSION)) $(LOCALBIN); }
-
-########## Controller-gen ###########
-CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
-CONTROLLER_GEN_VERSION ?= v0.9.2
-
-# find or download controller-gen
-# download controller-gen if necessary
-.PHONY: controller-gen
-controller-gen: $(CONTROLLER_GEN)
-$(CONTROLLER_GEN): $(LOCALBIN)
-	test -s $(LOCALBIN)/CONTROLLER_GEN || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-tools/cmd/controller-gen@$(CONTROLLER_GEN_VERSION)
-
-########## other things:) ###########
 
 .PHONY: test
 test: KUBEBUILDER_CONTROLPLANE_START_TIMEOUT=2m
@@ -123,3 +88,37 @@ build-image-registry-gc:
 ######## disable operator to prevent undo of local image update to k3d
 disable-operator:
 	kubectl scale deployment serverless-operator -n kyma-system --replicas=0
+
+
+##@ Tools
+
+########## Envtest ###########
+ENVTEST ?= $(LOCALBIN)/setup-envtest
+# ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
+ENVTEST_K8S_VERSION = 1.25.0
+
+.PHONY: envtest
+envtest: $(ENVTEST) ## Download envtest-setup locally if necessary.
+$(ENVTEST): $(LOCALBIN)
+	test -s $(LOCALBIN)/setup-envtest || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+
+########## Kustomize ###########
+KUSTOMIZE ?= $(LOCALBIN)/kustomize
+KUSTOMIZE_VERSION ?= v4.5.5
+KUSTOMIZE_INSTALL_SCRIPT ?= "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"
+
+.PHONY: kustomize
+kustomize: $(KUSTOMIZE) ## Download kustomize locally if necessary.
+$(KUSTOMIZE): $(LOCALBIN)
+	test -s $(LOCALBIN)/kustomize || { curl -Ss $(KUSTOMIZE_INSTALL_SCRIPT) | bash -s -- $(subst v,,$(KUSTOMIZE_VERSION)) $(LOCALBIN); }
+
+########## Controller-gen ###########
+CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
+CONTROLLER_GEN_VERSION ?= v0.9.2
+
+# find or download controller-gen
+# download controller-gen if necessary
+.PHONY: controller-gen
+controller-gen: $(CONTROLLER_GEN)
+$(CONTROLLER_GEN): $(LOCALBIN)
+	test -s $(LOCALBIN)/CONTROLLER_GEN || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-tools/cmd/controller-gen@$(CONTROLLER_GEN_VERSION)
