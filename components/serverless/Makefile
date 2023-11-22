@@ -24,7 +24,7 @@ $(LOCALBIN):
 test: KUBEBUILDER_CONTROLPLANE_START_TIMEOUT=2m
 test: KUBEBUILDER_CONTROLPLANE_STOP_TIMEOUT=2m
 test: envtest ## Run unit test with envtest
-	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test -race -count=1 ./...
+	KUBEBUILDER_ASSETS="$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path)" go test -race -count=1 -coverprofile=/tmp/artifacts/cover.out ./...
 	@echo -n "Total coverage: "
 	@go tool cover -func=/tmp/artifacts/cover.out | grep total | awk '{print $$3}'
 
