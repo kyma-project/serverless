@@ -20,11 +20,9 @@ Read also about [Function’s specification](../technical-reference/07-70-functi
 
 You can expose a Function with Kyma Dashboard, Kyma CLI, or kubectl:
 
-<div tabs name="steps" group="expose-function">
-  <details>
-    <summary label="busola-ui">
-    Kyma Dashboard
-    </summary>
+<!-- tabs:start -->
+
+#### **Kyma Dashboard**
 
 >**NOTE:** Kyma Dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
 
@@ -48,11 +46,7 @@ You can expose a Function with Kyma Dashboard, Kyma CLI, or kubectl:
 
 6. Check if you can access the Function by selecting the HTTPS link under the **Host** column for the newly created APIRule.
 
-  </details>
-  <details>
-  <summary label="cli">
-  Kyma CLI
-  </summary>
+#### **Kyma CLI**
 
 1. Export these variables:
 
@@ -109,11 +103,7 @@ You can expose a Function with Kyma Dashboard, Kyma CLI, or kubectl:
   curl https://$NAME.$DOMAIN
   ```
 
-  </details>
-  <details>
-  <summary label="kubectl">
-  kubectl
-  </summary>
+#### **kubectl**
 
 1. Export these variables:
 
@@ -165,5 +155,4 @@ You can expose a Function with Kyma Dashboard, Kyma CLI, or kubectl:
     curl https://$NAME.$DOMAIN
     ```
 
-    </details>
-</div>
+<!-- tabs:end -->
