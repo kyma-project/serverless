@@ -8,7 +8,7 @@ Kyma Serverless Module offers a Kubernetes-based platform on which you can build
 
 Such a Function can be:
 
-- Triggered by other workloads in the cluster (in-cluster events) or business events coming from external sources. You can subscribe to them using a [Subscription CR](https://github.com/kyma-project/kyma/blob/main/docs/05-technical-reference/00-custom-resources/evnt-01-subscription.md).
+- Triggered by other workloads in the cluster (in-cluster events) or business events coming from external sources. You can subscribe to them using a [Subscription CR](https://kyma-project.io/#/eventing-manager/user/resources/evnt-cr-subscription).
 - Exposed to an external endpoint (HTTPS). With an [APIRule CR](https://github.com/kyma-project/kyma/blob/main/docs/05-technical-reference/00-custom-resources/apix-01-apirule.md), you can define who can reach the endpoint and what operations they can perform on it.
 
 ## What is Serverless in Kyma?
