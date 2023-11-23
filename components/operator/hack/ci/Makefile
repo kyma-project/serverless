@@ -104,12 +104,12 @@ deprovision-gardener:
 
 .PHONY: run-with-lifecycle-manager
 run-with-lifecycle-manager:
-	./${PROJECT_COMMON}/components/serverless/hack/poc_script_replace_images.sh "${}" "PR-${PULL_NUMBER}"
+	./${PROJECT_ROOT}/components/serverless/hack/poc_script_replace_images.sh "${}" "PR-${PULL_NUMBER}"
 	@make -C ${PROJECT_COMMON} run-with-lifecycle-manager
 
 .PHONY: run-without-lifecycle-manager
 run-without-lifecycle-manager:
-	./${PROJECT_COMMON}/components/serverless/hack/poc_script_replace_images.sh "dev" "PR-${PULL_NUMBER}"
+	./${PROJECT_ROOT}/components/serverless/hack/poc_script_replace_images.sh "dev" "PR-${PULL_NUMBER}"
 	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager
 
 .PHONY: run-without-lm-on-cluster

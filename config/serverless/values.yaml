@@ -3,22 +3,18 @@
 # Declare variables to be passed into your templates.
 
 fullnameOverride: "serverless"
-
 injectCerts:
   image:
     pullPolicy: IfNotPresent
-
 migration:
   image:
     pullPolicy: IfNotPresent
-
 tests:
   enabled: true
   labels:
     integration: true
     after-upgrade: true
     e2e-skr: true
-
   long:
     waitTimeout: 180s
     resources:
@@ -32,7 +28,6 @@ tests:
       pullPolicy: IfNotPresent
     namespace: "long-running-function-test"
     name: longrun
-
   image:
     pullPolicy: IfNotPresent
   disableConcurrency: false
@@ -54,7 +49,6 @@ tests:
       secretName: "serverless-package-registry-config"
       URLNode: "https://pkgs.dev.azure.com/kyma-wookiee/public-packages/_packaging/public-packages%40Release/npm/registry/"
       URLPython: "https://pkgs.dev.azure.com/kyma-wookiee/public-packages/_packaging/public-packages%40Release/pypi/simple/"
-
 global:
   domainName: "kyma.example.com"
   commonLabels:
@@ -82,19 +76,19 @@ global:
       directory: "prod"
     function_controller:
       name: "function-controller"
-      version: "PR-429"
+      version: "PR-437"
       directory: "dev"
     function_webhook:
       name: "function-webhook"
-      version: "PR-429"
+      version: "PR-437"
       directory: "dev"
     function_build_init:
       name: "function-build-init"
-      version: "PR-429"
+      version: "PR-437"
       directory: "dev"
     function_registry_gc:
       name: "function-registry-gc"
-      version: "PR-429"
+      version: "PR-437"
       directory: "dev"
     function_runtime_nodejs16:
       name: "function-runtime-nodejs16"
@@ -125,12 +119,11 @@ global:
 images:
   function_controller:
     pullPolicy: IfNotPresent
-
 deployment:
   replicas: 1
-  labels: { }
-  annotations: { }
-  extraProperties: { }
+  labels: {}
+  annotations: {}
+  extraProperties: {}
   livenessProbe:
     successThreshold: 1
     failureThreshold: 3
@@ -143,9 +136,8 @@ deployment:
     initialDelaySeconds: 10
     timeoutSeconds: 10
     periodSeconds: 30
-
 pod:
-  labels: { }
+  labels: {}
   annotations:
     sidecar.istio.io/inject: "false"
     prometheus.io/scrape: "false"
@@ -183,7 +175,7 @@ containers:
       privileged: false
       allowPrivilegeEscalation: false
       capabilities:
-        drop: [ "ALL" ]
+        drop: ["ALL"]
       procMount: default # Optional. The default is false if the entry is not there.
       readOnlyRootFilesystem: true # Mandatory
     healthz:
@@ -249,8 +241,7 @@ containers:
                   requestMemory: "1024Mi"
                   limitCpu: "1600m"
                   limitMemory: "2048Mi"
-#              runtimePresets:
-
+          #              runtimePresets:
 
           buildJob:
             resources:
@@ -278,12 +269,10 @@ containers:
                   requestMemory: "1100Mi"
                   limitCpu: "1700m"
                   limitMemory: "1100Mi"
-
-
 services:
   manager:
     type: ClusterIP
-    labels: { }
+    labels: {}
     annotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "8080"
@@ -291,7 +280,6 @@ services:
     https:
       port: 443
       targetPort: 8443
-
 metrics:
   enabled: true
   manager:
@@ -301,15 +289,12 @@ metrics:
       targerPort: 8080
       protocol: TCP
   pod:
-    labels: { }
-    annotations: { }
-
+    labels: {}
+    annotations: {}
 backendModule:
   enabled: true
-
 clusterMicroFrontend:
   enabled: true
-
 dockerRegistry:
   enableInternal: true
   gateway: "kyma-system/kyma-gateway"
@@ -320,7 +305,6 @@ dockerRegistry:
   registryAddress: ""
   #  This is the server address of the registry which will be used to create docker configuration.
   serverAddress: ""
-
 docker-registry:
   fullnameOverride: "serverless-docker-registry"
   destinationRule:
@@ -341,10 +325,9 @@ docker-registry:
           - key: password
             path: password.txt
     - name: htpasswd-data
-      emptyDir: { }
+      emptyDir: {}
   rollme: "{{ randAlphaNum 5}}"
   registryHTTPSecret: "{{ randAlphaNum 16 | b64enc }}"
-
 webhook:
   enabled: true
   fullnameOverride: "serverless-webhook"
