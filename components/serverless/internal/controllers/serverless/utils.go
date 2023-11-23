@@ -335,6 +335,16 @@ func getConditionReason(conditions []serverlessv1alpha2.Condition, conditionType
 	return ""
 }
 
+func getCondition(conditions []serverlessv1alpha2.Condition, conditionType serverlessv1alpha2.ConditionType) serverlessv1alpha2.Condition {
+	for _, condition := range conditions {
+		if condition.Type == conditionType {
+			return condition
+		}
+	}
+
+	return serverlessv1alpha2.Condition{}
+}
+
 func calculateInlineImageTag(instance *serverlessv1alpha2.Function) string {
 	hash := sha256.Sum256([]byte(strings.Join([]string{
 		string(instance.GetUID()),

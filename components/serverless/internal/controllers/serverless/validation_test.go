@@ -23,6 +23,20 @@ import (
 func TestValidation(t *testing.T) {
 	//GIVEN
 	ctx := context.TODO()
+	minResourcesCfg := ResourceConfig{
+		Function: FunctionResourceConfig{
+			Resources: Resources{
+				MinRequestedCPU:    Quantity{resource.MustParse("10m")},
+				MinRequestedMemory: Quantity{resource.MustParse("10Mi")},
+			},
+		},
+		BuildJob: BuildJobResourceConfig{
+			Resources: Resources{
+				MinRequestedCPU:    Quantity{resource.MustParse("20m")},
+				MinRequestedMemory: Quantity{resource.MustParse("20Mi")},
+			},
+		},
+	}
 
 	k8sClient := fake.NewClientBuilder().Build()
 	require.NoError(t, serverlessv1alpha2.AddToScheme(scheme.Scheme))
@@ -31,11 +45,9 @@ func TestValidation(t *testing.T) {
 	statsCollector := &automock.StatsCollector{}
 	statsCollector.On("UpdateReconcileStats", mock.Anything, mock.Anything).Return()
 
-	r := &reconciler{out: out{result: controllerruntime.Result{}},
-		k8s: k8s{client: resourceClient, recorder: record.NewFakeRecorder(100), statsCollector: statsCollector}}
-
 	testCases := map[string]struct {
-		fn serverlessv1alpha2.Function
+		fn              serverlessv1alpha2.Function
+		expectedCondMsg string
 	}{
 		"Function requests cpu are bigger than limits": {
 			fn: serverlessv1alpha2.Function{
@@ -47,15 +59,16 @@ func TestValidation(t *testing.T) {
 						Function: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
 								corev1.ResourceCPU:    resource.MustParse("120m"),
-								corev1.ResourceMemory: resource.MustParse("120m"),
+								corev1.ResourceMemory: resource.MustParse("120Mi"),
 							},
 							Requests: map[corev1.ResourceName]resource.Quantity{
 								corev1.ResourceCPU:    resource.MustParse("150m"),
-								corev1.ResourceMemory: resource.MustParse("50m"),
+								corev1.ResourceMemory: resource.MustParse("50Mi"),
 							}}},
 					},
 				},
 			},
+			expectedCondMsg: "Function limits cpu(120m) should be higher than requests cpu(150m)",
 		},
 		"Function requests memory are bigger than limits": {
 			fn: serverlessv1alpha2.Function{
@@ -67,16 +80,96 @@ func TestValidation(t *testing.T) {
 						Function: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
 								corev1.ResourceCPU:    resource.MustParse("120m"),
-								corev1.ResourceMemory: resource.MustParse("120m"),
+								corev1.ResourceMemory: resource.MustParse("120Mi"),
 							},
 							Requests: map[corev1.ResourceName]resource.Quantity{
 								corev1.ResourceCPU:    resource.MustParse("50m"),
-								corev1.ResourceMemory: resource.MustParse("150m"),
+								corev1.ResourceMemory: resource.MustParse("150Mi"),
 							}}},
 					},
 				},
 			},
+			expectedCondMsg: "Function limits memory(120Mi) should be higher than requests memory(150Mi)",
 		},
+		"Function requests cpu are smaller than minimum value": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					GenerateName: "test-fn",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Function: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
+							Limits: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("120m"),
+								corev1.ResourceMemory: resource.MustParse("120Mi"),
+							},
+							Requests: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("5m"),
+								corev1.ResourceMemory: resource.MustParse("50Mi"),
+							}}},
+					},
+				},
+			},
+			expectedCondMsg: "Function request cpu(5m) should be higher than minimal value (10m)",
+		},
+		"Function requests memory are smaller than minimum value": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					GenerateName: "test-fn",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Function: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
+							Limits: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("120m"),
+								corev1.ResourceMemory: resource.MustParse("120Mi"),
+							},
+							Requests: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("50m"),
+								corev1.ResourceMemory: resource.MustParse("5Mi"),
+							}}},
+					},
+				},
+			},
+			expectedCondMsg: "Function request memory(5Mi) should be higher than minimal value (10Mi)",
+		},
+		"Function limits cpu are smaller than minimum without requests": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					GenerateName: "test-fn",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Function: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
+							Limits: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("2m"),
+								corev1.ResourceMemory: resource.MustParse("120Mi"),
+							},
+						}},
+					},
+				},
+			},
+			expectedCondMsg: "Function limits cpu(2m) should be higher than minimal value (10m)",
+		},
+		"Function limits memory are smaller than minimum without requests": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					GenerateName: "test-fn",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Function: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
+							Limits: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("20m"),
+								corev1.ResourceMemory: resource.MustParse("2Mi"),
+							},
+						}},
+					},
+				},
+			},
+			expectedCondMsg: "Function limits memory(2Mi) should be higher than minimal value (10Mi)",
+		},
+		//Build validation
 		"Build requests cpu are bigger than limits": {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
@@ -87,15 +180,16 @@ func TestValidation(t *testing.T) {
 						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
 								corev1.ResourceCPU:    resource.MustParse("120m"),
-								corev1.ResourceMemory: resource.MustParse("120m"),
+								corev1.ResourceMemory: resource.MustParse("120Mi"),
 							},
 							Requests: map[corev1.ResourceName]resource.Quantity{
 								corev1.ResourceCPU:    resource.MustParse("150m"),
-								corev1.ResourceMemory: resource.MustParse("50m"),
+								corev1.ResourceMemory: resource.MustParse("50Mi"),
 							}}},
 					},
 				},
 			},
+			expectedCondMsg: "Function limits cpu(120m) should be higher than requests cpu(150m)",
 		},
 		"Build requests memory are bigger than limits": {
 			fn: serverlessv1alpha2.Function{
@@ -107,15 +201,94 @@ func TestValidation(t *testing.T) {
 						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
 								corev1.ResourceCPU:    resource.MustParse("120m"),
-								corev1.ResourceMemory: resource.MustParse("120m"),
+								corev1.ResourceMemory: resource.MustParse("120Mi"),
 							},
 							Requests: map[corev1.ResourceName]resource.Quantity{
 								corev1.ResourceCPU:    resource.MustParse("50m"),
-								corev1.ResourceMemory: resource.MustParse("150m"),
+								corev1.ResourceMemory: resource.MustParse("150Mi"),
 							}}},
 					},
 				},
 			},
+			expectedCondMsg: "Function limits memory(120Mi) should be higher than requests memory(150Mi)",
+		},
+		"Build requests cpu are smaller than minimum value": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					GenerateName: "test-fn",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
+							Limits: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("120m"),
+								corev1.ResourceMemory: resource.MustParse("120Mi"),
+							},
+							Requests: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("5m"),
+								corev1.ResourceMemory: resource.MustParse("50Mi"),
+							}}},
+					},
+				},
+			},
+			expectedCondMsg: "Function request cpu(5m) should be higher than minimal value (20m)",
+		},
+		"Build requests memory are smaller than minimum value": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					GenerateName: "test-fn",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
+							Limits: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("120m"),
+								corev1.ResourceMemory: resource.MustParse("120Mi"),
+							},
+							Requests: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("50m"),
+								corev1.ResourceMemory: resource.MustParse("5Mi"),
+							}}},
+					},
+				},
+			},
+			expectedCondMsg: "Function request memory(5Mi) should be higher than minimal value (20Mi)",
+		},
+		"Build limits cpu are smaller than minimum without requests": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					GenerateName: "test-fn",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
+							Limits: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("2m"),
+								corev1.ResourceMemory: resource.MustParse("120Mi"),
+							},
+						}},
+					},
+				},
+			},
+			expectedCondMsg: "Function limits cpu(2m) should be higher than minimal value (20m)",
+		},
+		"Build limits memory are smaller than minimum without requests": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					GenerateName: "test-fn",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
+							Limits: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("30m"),
+								corev1.ResourceMemory: resource.MustParse("2Mi"),
+							},
+						}},
+					},
+				},
+			},
+			expectedCondMsg: "Function limits memory(2Mi) should be higher than minimal value (20Mi)",
 		},
 	}
 
@@ -124,20 +297,63 @@ func TestValidation(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			require.NoError(t, resourceClient.Create(ctx, &tc.fn))
 			s := &systemState{instance: tc.fn}
+			r := &reconciler{out: out{result: controllerruntime.Result{Requeue: true}},
+				k8s: k8s{client: resourceClient, recorder: record.NewFakeRecorder(100), statsCollector: statsCollector},
+				cfg: cfg{fn: FunctionConfig{ResourceConfig: minResourcesCfg}}}
+
+			//WHEN
 			nextFn, err := stateFnValidateFunction(ctx, r, s)
 			require.NoError(t, err)
 			_, err = nextFn(context.TODO(), r, s)
+
 			//THEN
 			require.NoError(t, err)
 			updatedFn := serverlessv1alpha2.Function{}
 			require.NoError(t, resourceClient.Get(ctx, ctrlclient.ObjectKey{Name: tc.fn.Name}, &updatedFn))
-			reason := getConditionReason(updatedFn.Status.Conditions, serverlessv1alpha2.ConditionConfigurationReady)
-			assert.Contains(t, reason, serverlessv1alpha2.ConditionReasonFunctionSpec)
-			status := getConditionStatus(updatedFn.Status.Conditions, serverlessv1alpha2.ConditionConfigurationReady)
-			assert.Equal(t, corev1.ConditionFalse, status)
+			cond := getCondition(updatedFn.Status.Conditions, serverlessv1alpha2.ConditionConfigurationReady)
+			assert.Equal(t, cond.Reason, serverlessv1alpha2.ConditionReasonFunctionSpec)
+			assert.Equal(t, corev1.ConditionFalse, cond.Status)
+			assert.NotEmpty(t, tc.expectedCondMsg, "expected message shouldn't be empty")
+			assert.Equal(t, cond.Message, tc.expectedCondMsg)
 			assert.False(t, r.result.Requeue)
 
 		})
 	}
 
+	t.Run("Valid function resources", func(t *testing.T) {
+		//GIVEN
+		fn := serverlessv1alpha2.Function{
+			ObjectMeta: metav1.ObjectMeta{
+				GenerateName: "test-fn",
+			},
+			Spec: serverlessv1alpha2.FunctionSpec{
+				ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+					Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
+						Limits: map[corev1.ResourceName]resource.Quantity{
+							corev1.ResourceCPU:    resource.MustParse("120m"),
+							corev1.ResourceMemory: resource.MustParse("120Mi"),
+						},
+						Requests: map[corev1.ResourceName]resource.Quantity{
+							corev1.ResourceCPU:    resource.MustParse("100m"),
+							corev1.ResourceMemory: resource.MustParse("100Mi"),
+						}}},
+				},
+			},
+		}
+		r := &reconciler{out: out{result: controllerruntime.Result{Requeue: true}},
+			k8s: k8s{client: resourceClient, recorder: record.NewFakeRecorder(100), statsCollector: statsCollector},
+			cfg: cfg{fn: FunctionConfig{ResourceConfig: minResourcesCfg}}}
+
+		//WHEN
+		require.NoError(t, resourceClient.Create(ctx, &fn))
+		s := &systemState{instance: fn}
+		_, err := stateFnValidateFunction(ctx, r, s)
+
+		//THEN
+		require.NoError(t, err)
+		updatedFn := serverlessv1alpha2.Function{}
+		require.NoError(t, resourceClient.Get(ctx, ctrlclient.ObjectKey{Name: fn.Name}, &updatedFn))
+		assert.True(t, r.result.Requeue)
+
+	})
 }
