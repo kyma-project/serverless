@@ -28,8 +28,19 @@ func stateFnInlineCheckSources(ctx context.Context, r *reconciler, s *systemStat
 
 	srcChanged := s.inlineFnSrcChanged(r.cfg.docker.PullAddress)
 	if !srcChanged {
-		expectedJob := s.buildJob(s.configMaps.Items[0].GetName(), r.cfg)
-		return buildStateFnCheckImageJob(expectedJob), nil
+		cfgStatus := getConditionStatus(s.instance.Status.Conditions, serverlessv1alpha2.ConditionConfigurationReady)
+		if cfgStatus == corev1.ConditionTrue {
+			expectedJob := s.buildJob(s.configMaps.Items[0].GetName(), r.cfg)
+			return buildStateFnCheckImageJob(expectedJob), nil
+		}
+		currentCondition := serverlessv1alpha2.Condition{
+			Type:               serverlessv1alpha2.ConditionConfigurationReady,
+			Status:             corev1.ConditionTrue,
+			LastTransitionTime: metav1.Now(),
+			Reason:             serverlessv1alpha2.ConditionReasonFunctionSpec,
+			Message:            "Function configured",
+		}
+		return buildStatusUpdateStateFnWithCondition(currentCondition), nil
 	}
 
 	cfgMapCount := len(s.configMaps.Items)

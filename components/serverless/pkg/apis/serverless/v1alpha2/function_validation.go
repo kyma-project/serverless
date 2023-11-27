@@ -53,8 +53,6 @@ func (fn *Function) getBasicValidations() []validationFunction {
 		fn.Spec.validateEnv,
 		fn.Spec.validateLabels,
 		fn.Spec.validateAnnotations,
-		fn.Spec.validateFunctionResources,
-		fn.Spec.validateBuildResources,
 		fn.Spec.validateSources,
 		fn.Spec.validateSecretMounts,
 	}
