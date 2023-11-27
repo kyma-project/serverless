@@ -35,7 +35,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
-						Profile: "Test",
+						Profile: "XS",
 					}},
 					Source: serverlessv1alpha2.Source{
 						Inline: &serverlessv1alpha2.InlineSource{}},
@@ -48,7 +48,72 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
-						Profile: "Test",
+						Profile: "XL",
+					}},
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{}},
+					Runtime: serverlessv1alpha2.Python39,
+				},
+			},
+		},
+		"Profile XS": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
+						Profile: "XS",
+					}},
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{}},
+					Runtime: serverlessv1alpha2.Python39,
+				},
+			},
+		},
+		"Profile S": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
+						Profile: "S",
+					}},
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{}},
+					Runtime: serverlessv1alpha2.Python39,
+				},
+			},
+		},
+		"Profile M": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
+						Profile: "M",
+					}},
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{}},
+					Runtime: serverlessv1alpha2.Python39,
+				},
+			},
+		},
+		"Profile L": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
+						Profile: "L",
+					}},
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{}},
+					Runtime: serverlessv1alpha2.Python39,
+				},
+			},
+		},
+		"Profile XL": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
+						Profile: "XL",
 					}},
 					Source: serverlessv1alpha2.Source{
 						Inline: &serverlessv1alpha2.InlineSource{}},
@@ -60,9 +125,8 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
-					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
-						Profile: "Test",
-					}},
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{}}},
 					Source: serverlessv1alpha2.Source{
 						Inline: &serverlessv1alpha2.InlineSource{}},
 					Runtime: serverlessv1alpha2.Python39,
@@ -73,9 +137,8 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
-					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
-						Profile: "Test",
-					}},
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Function: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{}}},
 					Source: serverlessv1alpha2.Source{
 						Inline: &serverlessv1alpha2.InlineSource{}},
 					Runtime: serverlessv1alpha2.Python39,
@@ -285,7 +348,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Function: &serverlessv1alpha2.ResourceRequirements{
-						Profile:   "Test",
+						Profile:   "L",
 						Resources: &corev1.ResourceRequirements{},
 					}},
 					Source: serverlessv1alpha2.Source{
@@ -297,13 +360,12 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			expectedErrMsg: "Use profile or resources",
 			fieldPath:      "spec.resourceConfiguration.function",
 		},
-
 		"Resource and Profiles used together in buildJob": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{Build: &serverlessv1alpha2.ResourceRequirements{
-						Profile:   "Test",
+						Profile:   "L",
 						Resources: &corev1.ResourceRequirements{},
 					}},
 					Source: serverlessv1alpha2.Source{
@@ -314,6 +376,40 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			expectedErrMsg: "Use profile or resources",
 			fieldPath:      "spec.resourceConfiguration.build",
+		},
+		"Invalid profile in build": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Build: &serverlessv1alpha2.ResourceRequirements{
+							Profile: "LL",
+						}},
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{}},
+					Runtime: serverlessv1alpha2.Python39,
+				},
+			},
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+			expectedErrMsg: "Invalid profile, please use one of: [",
+			fieldPath:      "spec.resourceConfiguration.build.profile",
+		},
+		"Invalid profile in function": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Function: &serverlessv1alpha2.ResourceRequirements{
+							Profile: "SS",
+						}},
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{}},
+					Runtime: serverlessv1alpha2.Python39,
+				},
+			},
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+			expectedErrMsg: "Invalid profile, please use one of: [",
+			fieldPath:      "spec.resourceConfiguration.function.profile",
 		},
 		"labels use exact restricted domain": {
 			fn: &serverlessv1alpha2.Function{
