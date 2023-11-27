@@ -15,7 +15,6 @@ type FlagsBuilder interface {
 	WithRegistryEnableInternal(enableInternal bool) *flagsBuilder
 	WithRegistryHttpSecret(httpSecret string) *flagsBuilder
 	WithNodePort(nodePort int64) *flagsBuilder
-	WithExcludedNamespaces(excludedNamespaces []string) *flagsBuilder
 }
 
 type flagsBuilder struct {
@@ -126,12 +125,6 @@ func (fb *flagsBuilder) WithDefaultPresetFlags(defaultBuildJobPreset, defaultRun
 	if defaultBuildJobPreset != "" {
 		fb.flags["webhook.values.buildJob.resources.defaultPreset"] = defaultBuildJobPreset
 	}
-
-	return fb
-}
-
-func (fb *flagsBuilder) WithExcludedNamespaces(excludedNamespaces []string) *flagsBuilder {
-	fb.flags["containers.manager.configuration.data.namespaceExcludedNames"] = strings.Join(excludedNamespaces, ";")
 
 	return fb
 }
