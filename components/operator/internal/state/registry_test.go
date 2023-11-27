@@ -37,15 +37,6 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 		}
 		expectedFlags := map[string]interface{}{
-			"containers": map[string]interface{}{
-				"manager": map[string]interface{}{
-					"configuration": map[string]interface{}{
-						"data": map[string]interface{}{
-							"namespaceExcludedNames": "",
-						},
-					},
-				},
-			},
 			"dockerRegistry": map[string]interface{}{
 				"enableInternal": true,
 			},
@@ -102,15 +93,6 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			},
 		}
 		expectedFlags := map[string]interface{}{
-			"containers": map[string]interface{}{
-				"manager": map[string]interface{}{
-					"configuration": map[string]interface{}{
-						"data": map[string]interface{}{
-							"namespaceExcludedNames": "kyma-test",
-						},
-					},
-				},
-			},
 			"dockerRegistry": map[string]interface{}{
 				"enableInternal":  false,
 				"username":        string(secret.Data["username"]),
@@ -134,7 +116,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				ObjectMeta: metav1.ObjectMeta{
-					Namespace: "kyma-test",
+					Namespace: "some-namespace",
 				},
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
@@ -153,15 +135,6 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			},
 		}
 		expectedFlags := map[string]interface{}{
-			"containers": map[string]interface{}{
-				"manager": map[string]interface{}{
-					"configuration": map[string]interface{}{
-						"data": map[string]interface{}{
-							"namespaceExcludedNames": "kyma-test",
-						},
-					},
-				},
-			},
 			"dockerRegistry": map[string]interface{}{
 				"enableInternal":  false,
 				"registryAddress": v1alpha1.DefaultRegistryAddress,
@@ -239,17 +212,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			k8s: k8s{client: client},
 			log: zap.NewNop().Sugar(),
 		}
-		expectedFlags := map[string]interface{}{
-			"containers": map[string]interface{}{
-				"manager": map[string]interface{}{
-					"configuration": map[string]interface{}{
-						"data": map[string]interface{}{
-							"namespaceExcludedNames": "kyma-test",
-						},
-					},
-				},
-			},
-		}
+		expectedFlags := map[string]interface{}{}
 
 		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
 		require.NoError(t, err)

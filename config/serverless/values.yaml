@@ -190,14 +190,6 @@ containers:
         configMapRequeueDuration: 5m
         secretRequeueDuration: 5m
         serviceAccountRequeueDuration: 5m
-        namespaceExcludedNames:
-          - istio-system
-          - kube-node-lease
-          - kube-public
-          - kube-system
-          - kyma-installer
-          - kyma-system
-          - natss
         imageRegistryExternalDockerConfigSecretName: '{{ template "fullname" . }}-registry-config'
         imageRegistryDefaultDockerConfigSecretName: '{{ template "fullname" . }}-registry-config-default'
         packageRegistryConfigSecretName: '{{ template "fullname" . }}-package-registry-config'

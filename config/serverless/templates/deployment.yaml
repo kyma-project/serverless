@@ -124,7 +124,7 @@ spec:
             - name: APP_KUBERNETES_SERVICE_ACCOUNT_REQUEUE_DURATION
               value: {{.Values.containers.manager.configuration.data.serviceAccountRequeueDuration }}
             - name: APP_KUBERNETES_EXCLUDED_NAMESPACES
-              value: "{{.Values.containers.manager.configuration.data.namespaceExcludedNames | toYaml }}"
+              value: "{{ .Release.Namespace }}"
             - name: APP_FUNCTION_TRACE_COLLECTOR_ENDPOINT
               value: "{{.Values.containers.manager.configuration.data.functionTraceCollectorEndpoint }}"
             - name: APP_FUNCTION_PUBLISHER_PROXY_ADDRESS
