@@ -2,7 +2,6 @@ package config
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"testing"
 	"time"
@@ -60,7 +59,7 @@ func modifyFileEveryTick(t *testing.T, file *os.File, interval time.Duration) ch
 }
 
 func fixConfig(t *testing.T) *os.File {
-	file, err := ioutil.TempFile(os.TempDir(), "test-*")
+	file, err := os.CreateTemp(os.TempDir(), "test-*")
 	assert.NoError(t, err)
 
 	bytes, err := yaml.Marshal(&Config{
