@@ -3,7 +3,16 @@ name: Gardener integration
 on:
   push:
     branches: [ "main", "release-*" ]
-  
+    # it should be the same as:
+    # https://github.com/kyma-project/test-infra/blob/94bc4aafbc97034f327a8900926fbadc5e921e62/templates/data/serverless.yaml#L308
+    # because we need serverless-operator build job first
+    paths:
+      - config/**
+      - components/**
+      - sec-scanners-config.yaml
+      - .version
+      - module-config-template.yaml
+
   workflow_dispatch:
 
 jobs:
