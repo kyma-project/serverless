@@ -108,6 +108,7 @@ type ResourceRequirements struct {
 	// Defines the name of the predefined set of values of the resource.
 	// Can't be used together with **Resources**.
 	// +optional
+	// +kubebuilder:validation:XValidation:message="Invalid profile, please use one of: ['XS','S','M','L','XL']",rule="(self in ['XS','S','M','L','XL'])"
 	Profile string `json:"profile,omitempty"`
 
 	// Defines the amount of resources available for the Pod.
