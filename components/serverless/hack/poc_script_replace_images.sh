@@ -16,7 +16,7 @@ replace_values "function_controller"
 replace_values "function_webhook"
 replace_values "function_build_init"
 replace_values "function_registry_gc"
-#replace_values "function_runtime_nodejs16"
-#replace_values "function_runtime_nodejs18"
-#replace_values "function_runtime_python39"
+replace_values "function_runtime_nodejs16"  #Joby sie nie odpalaja bez zmian do runtime'ow
+replace_values "function_runtime_nodejs18"
+replace_values "function_runtime_python39"
 
