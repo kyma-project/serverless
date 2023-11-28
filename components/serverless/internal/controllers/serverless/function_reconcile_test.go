@@ -354,7 +354,7 @@ func TestFunctionReconciler_ResourceConfig(t *testing.T) {
 		g.Expect(function.Status.FunctionResourceProfile).To(gomega.Equal("custom"))
 		g.Expect(function.Status.BuildResourceProfile).To(gomega.Equal("custom"))
 
-		t.Log("should reflect custom settings from profile")
+		t.Log("should reflect settings from profile")
 		customResourceConfigurationWithProfile := serverlessv1alpha2.ResourceConfiguration{
 			Build: &serverlessv1alpha2.ResourceRequirements{
 				Profile: testBuildPresetName2,
