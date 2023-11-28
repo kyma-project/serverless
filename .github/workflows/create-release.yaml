@@ -45,10 +45,6 @@ jobs:
       - name: Verify github actions
         run: ./.github/scripts/verify-actions-status.sh ${{ github.ref_name }}
 
-  run-unit-tests:
-    name: Unit tests
-    needs: verify-head-status
-    uses: "./.github/workflows/run-unit-tests.yaml"
 
   create-draft:
     name: Create draft release
@@ -86,7 +82,7 @@ jobs:
 
   publish-release:
     name: Publish release
-    needs: [verify-head-status, create-draft, run-unit-tests]
+    needs: [verify-head-status, create-draft]
     runs-on: ubuntu-latest
 
     steps:
