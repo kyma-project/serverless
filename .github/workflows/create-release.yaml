@@ -65,7 +65,7 @@ jobs:
         uses: addnab/docker-run-action@3b7e5e2681a0bda95ee4ce0645c28ca1e78ce9ee
         with:
           image: githubchangeloggenerator/github-changelog-generator
-          options: -it -v ${{ github.workspace }}:/usr/local/src/your-app
+          options: -v ${{ github.workspace }}:/usr/local/src/your-app
           run: github_changelog_generator -u kyma-project -p serverless -t ${{ secrets.GITHUB_TOKEN }} --enhancement-labels kind/feature,area/ci  --bug-labels kind/bug --future-release ${{ github.event.inputs.name }} --unreleased-only --no-author
 
       - name: Create draft release
