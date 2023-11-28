@@ -117,10 +117,10 @@ func (ce cloudEventCheck) createCECtx() (context.Context, string, error) {
 	switch ce.encoding {
 	case cloudevents.EncodingStructured:
 		ceCtx = cloudevents.WithEncodingStructured(ceCtx)
-		data = "structured"
+		data = fmt.Sprintf("structured-from-%s", ce.endpoint)
 	case cloudevents.EncodingBinary:
 		ceCtx = cloudevents.WithEncodingBinary(ceCtx)
-		data = "binary"
+		data = fmt.Sprintf("binary-from-%s", ce.endpoint)
 	default:
 		return nil, "", errors.Errorf("Encoding not supported: %s", ce.encoding)
 	}
