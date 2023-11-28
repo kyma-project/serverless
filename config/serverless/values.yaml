@@ -76,19 +76,19 @@ global:
       directory: "prod"
     function_controller:
       name: "function-controller"
-      version: "PR-437"
+      version: "PR-426"
       directory: "dev"
     function_webhook:
       name: "function-webhook"
-      version: "PR-437"
+      version: "PR-426"
       directory: "dev"
     function_build_init:
       name: "function-build-init"
-      version: "PR-437"
+      version: "PR-426"
       directory: "dev"
     function_registry_gc:
       name: "function-registry-gc"
-      version: "PR-437"
+      version: "PR-426"
       directory: "dev"
     function_runtime_nodejs16:
       name: "function-runtime-nodejs16"
@@ -190,14 +190,6 @@ containers:
         configMapRequeueDuration: 5m
         secretRequeueDuration: 5m
         serviceAccountRequeueDuration: 5m
-        namespaceExcludedNames:
-          - istio-system
-          - kube-node-lease
-          - kube-public
-          - kube-system
-          - kyma-installer
-          - kyma-system
-          - natss
         imageRegistryExternalDockerConfigSecretName: '{{ template "fullname" . }}-registry-config'
         imageRegistryDefaultDockerConfigSecretName: '{{ template "fullname" . }}-registry-config-default'
         packageRegistryConfigSecretName: '{{ template "fullname" . }}-package-registry-config'
@@ -241,7 +233,11 @@ containers:
                   requestMemory: "1024Mi"
                   limitCpu: "1600m"
                   limitMemory: "2048Mi"
+<<<<<<< HEAD
           #              runtimePresets:
+=======
+          # runtimePresets:
+>>>>>>> 7c0f2b9b603c993054751414ac4850d902913a65
 
           buildJob:
             resources:

@@ -65,16 +65,6 @@ func equalConditions(existing, expected []serverlessv1alpha2.Condition) bool {
 	return true
 }
 
-func equalRepositories(existing serverlessv1alpha2.Repository, new *serverlessv1alpha2.Repository) bool {
-	if new == nil {
-		return true
-	}
-	expected := *new
-
-	return existing.Reference == expected.Reference &&
-		existing.BaseDir == expected.BaseDir
-}
-
 func equalFunctionStatus(left, right serverlessv1alpha2.FunctionStatus) bool {
 	if !equalConditions(left.Conditions, right.Conditions) {
 		return false
@@ -333,6 +323,16 @@ func getConditionReason(conditions []serverlessv1alpha2.Condition, conditionType
 	}
 
 	return ""
+}
+
+func getCondition(conditions []serverlessv1alpha2.Condition, conditionType serverlessv1alpha2.ConditionType) serverlessv1alpha2.Condition {
+	for _, condition := range conditions {
+		if condition.Type == conditionType {
+			return condition
+		}
+	}
+
+	return serverlessv1alpha2.Condition{}
 }
 
 func calculateInlineImageTag(instance *serverlessv1alpha2.Function) string {

@@ -62,7 +62,7 @@ jobs:
           fetch-depth: 0
 
       - name: Create changelog
-        uses: addnab/docker-run-action@v3
+        uses: addnab/docker-run-action@3b7e5e2681a0bda95ee4ce0645c28ca1e78ce9ee
         with:
           image: githubchangeloggenerator/github-changelog-generator
           options: -it -v ${{ github.workspace }}:/usr/local/src/your-app
