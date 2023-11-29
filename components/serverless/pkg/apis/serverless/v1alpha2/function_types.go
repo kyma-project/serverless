@@ -108,7 +108,6 @@ type ResourceRequirements struct {
 	// Defines the name of the predefined set of values of the resource.
 	// Can't be used together with **Resources**.
 	// +optional
-	// +kubebuilder:validation:XValidation:message="Invalid profile, please use one of: ['XS','S','M','L','XL']",rule="(self in ['XS','S','M','L','XL'])"
 	Profile string `json:"profile,omitempty"`
 
 	// Defines the amount of resources available for the Pod.
@@ -132,11 +131,13 @@ type ResourceConfiguration struct {
 	// Specifies resources requested by the build Job's Pod.
 	// +optional
 	// +kubebuilder:validation:XValidation:message="Use profile or resources",rule="has(self.profile) && !has(self.resources) || !has(self.profile) && has(self.resources)"
+	// +kubebuilder:validation:XValidation:message="Invalid profile, please use one of: ['local-dev','slow','normal','fast']",rule="(!has(self.profile) || self.profile in ['local-dev','slow','normal','fast'])"
 	Build *ResourceRequirements `json:"build,omitempty"`
 
 	// Specifies resources requested by the Function's Pod.
 	// +optional
 	// +kubebuilder:validation:XValidation:message="Use profile or resources",rule="has(self.profile) && !has(self.resources) || !has(self.profile) && has(self.resources)"
+	// +kubebuilder:validation:XValidation:message="Invalid profile, please use one of: ['XS','S','M','L','XL']",rule="(!has(self.profile) || self.profile in ['XS','S','M','L','XL'])"
 	Function *ResourceRequirements `json:"function,omitempty"`
 }
 

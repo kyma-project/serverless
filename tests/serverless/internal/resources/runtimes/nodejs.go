@@ -21,7 +21,7 @@ func BasicNodeJSFunction(msg string, rtm serverlessv1alpha2.Runtime) serverlessv
 				Profile: "M",
 			},
 			Build: &serverlessv1alpha2.ResourceRequirements{
-				Profile: "L",
+				Profile: "fast",
 			},
 		},
 	}
@@ -98,7 +98,7 @@ func BasicNodeJSFunctionWithCustomDependency(msg string, rtm serverlessv1alpha2.
 				Profile: "M",
 			},
 			Build: &serverlessv1alpha2.ResourceRequirements{
-				Profile: "L",
+				Profile: "fast",
 			},
 		},
 	}
@@ -148,7 +148,7 @@ func NodeJSFunctionWithEnvFromConfigMapAndSecret(configMapName, cmEnvKey, secret
 				Profile: "M",
 			},
 			Build: &serverlessv1alpha2.ResourceRequirements{
-				Profile: "L",
+				Profile: "fast",
 			},
 		},
 	}
@@ -221,7 +221,7 @@ async function handleGet(req) {
 				Profile: "M",
 			},
 			Build: &serverlessv1alpha2.ResourceRequirements{
-				Profile: "L",
+				Profile: "fast",
 			},
 		},
 	}

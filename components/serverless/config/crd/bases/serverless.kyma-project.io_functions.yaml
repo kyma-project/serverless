@@ -216,9 +216,6 @@ spec:
                         description: Defines the name of the predefined set of values
                           of the resource. Can't be used together with **Resources**.
                         type: string
-                        x-kubernetes-validations:
-                        - message: 'Invalid profile, please use one of: [''XS'',''S'',''M'',''L'',''XL'']'
-                          rule: (self in ['XS','S','M','L','XL'])
                       resources:
                         description: Defines the amount of resources available for
                           the Pod. Can't be used together with **Profile**. For configuration
@@ -253,6 +250,8 @@ spec:
                     - message: Use profile or resources
                       rule: has(self.profile) && !has(self.resources) || !has(self.profile)
                         && has(self.resources)
+                    - message: 'Invalid profile, please use one of: [''local-dev'',''slow'',''normal'',''fast'']'
+                      rule: (!has(self.profile) || self.profile in ['local-dev','slow','normal','fast'])
                   function:
                     description: Specifies resources requested by the Function's Pod.
                     properties:
@@ -260,9 +259,6 @@ spec:
                         description: Defines the name of the predefined set of values
                           of the resource. Can't be used together with **Resources**.
                         type: string
-                        x-kubernetes-validations:
-                        - message: 'Invalid profile, please use one of: [''XS'',''S'',''M'',''L'',''XL'']'
-                          rule: (self in ['XS','S','M','L','XL'])
                       resources:
                         description: Defines the amount of resources available for
                           the Pod. Can't be used together with **Profile**. For configuration
@@ -297,6 +293,8 @@ spec:
                     - message: Use profile or resources
                       rule: has(self.profile) && !has(self.resources) || !has(self.profile)
                         && has(self.resources)
+                    - message: 'Invalid profile, please use one of: [''XS'',''S'',''M'',''L'',''XL'']'
+                      rule: (!has(self.profile) || self.profile in ['XS','S','M','L','XL'])
                 type: object
               runtime:
                 description: Specifies the runtime of the Function. The available
