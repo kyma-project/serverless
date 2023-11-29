@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-ROOT_DIR="${SCRIPT_DIR}/../../../.."
+ROOT_DIR="${SCRIPT_DIR}/../../.."
 
 IMG_DIRECTORY=${1?"Directory missing"}
 IMG_VERSION=${2?"PULL_BASE_REF Missing"}
