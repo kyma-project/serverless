@@ -19,7 +19,6 @@ import (
 	"testing"
 )
 
-// TODO: add separate use cases with memory and cpu
 func TestValidation(t *testing.T) {
 	//GIVEN
 	ctx := context.TODO()
@@ -273,10 +272,7 @@ func TestValidation(t *testing.T) {
 			expectedCondMsg: "Function limits cpu(2m) should be higher than minimal value (20m)",
 		},
 		"Build limits memory are smaller than minimum without requests": {
-			fn: serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					GenerateName: "test-fn",
-				},
+			fn: serverlessv1alpha2.Function{ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
@@ -289,6 +285,18 @@ func TestValidation(t *testing.T) {
 				},
 			},
 			expectedCondMsg: "Function limits memory(2Mi) should be higher than minimal value (20Mi)",
+		},
+		"Invalid env": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Env: []corev1.EnvVar{
+						{Name: "1ENV"},
+						{Name: "2ENV"},
+					},
+				},
+			},
+			expectedCondMsg: "spec.env: 1ENV. Err: a valid environment variable name must consist of alphabetic characters, digits, '_', '-', or '.', and must not start with a digit (e.g. 'my.env-name',  or 'MY_ENV.NAME',  or 'MyEnvName1', regex used for validation is '[-._a-zA-Z][-._a-zA-Z0-9]*')",
 		},
 	}
 
@@ -320,7 +328,7 @@ func TestValidation(t *testing.T) {
 		})
 	}
 
-	t.Run("Valid function resources", func(t *testing.T) {
+	t.Run("Valid function", func(t *testing.T) {
 		//GIVEN
 		fn := serverlessv1alpha2.Function{
 			ObjectMeta: metav1.ObjectMeta{
@@ -337,6 +345,10 @@ func TestValidation(t *testing.T) {
 							corev1.ResourceCPU:    resource.MustParse("100m"),
 							corev1.ResourceMemory: resource.MustParse("100Mi"),
 						}}},
+				},
+				Env: []corev1.EnvVar{
+					{Name: "_CORRECT_ENV"},
+					{Name: "ANOTHER_CORRECT_ENV"},
 				},
 			},
 		}

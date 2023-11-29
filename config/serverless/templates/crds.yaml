@@ -68,7 +68,7 @@ spec:
                 type: object
                 x-kubernetes-validations:
                 - message: Annotations has key starting with serverless.kyma-project.io/
-                  rule: '!(self.exists(e, e.matches(''^serverless[.]kyma-project[.]io/.*$'')))'
+                  rule: '!(self.exists(e, e.startsWith(''serverless.kyma-project.io/'')))'
               env:
                 description: Specifies an array of key-value pairs to be used as environment
                   variables for the Function. You can define values as static strings
@@ -192,7 +192,7 @@ spec:
                 type: object
                 x-kubernetes-validations:
                 - message: Labels has key starting with serverless.kyma-project.io/
-                  rule: '!(self.exists(e, e.matches(''^serverless[.]kyma-project[.]io/.*$'')))'
+                  rule: '!(self.exists(e, e.startsWith(''serverless.kyma-project.io/'')))'
               replicas:
                 default: 1
                 description: Defines the exact number of Function's Pods to run at
