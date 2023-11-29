@@ -74,7 +74,6 @@ remove-serverless: ## Remove Serverless CR
 .PHONY: install-latest-serverless
 install-latest-serverless:
 	@make -C ${PROJECT_COMMON} kyma create-k3d
-	kubectl create ns kyma-system
 	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/serverless-operator.yaml
 	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default-serverless-cr-k3d.yaml -n kyma-system
 	@make -C ${PROJECT_COMMON} verify-serverless
