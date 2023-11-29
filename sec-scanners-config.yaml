@@ -1,5 +1,5 @@
 module-name: serverless
-rc-tag: 1.2.0
+rc-tag: 1.2.1
 protecode:
   - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:latest
   - europe-docker.pkg.dev/kyma-project/prod/function-controller:latest
