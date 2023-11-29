@@ -29,8 +29,8 @@ const (
 	changedFakeDockerfile   = `ARG base_image=other_image`
 	testFunctionPresetName  = "M"
 	testFunctionPresetName2 = "L"
-	testBuildPresetName     = "M"
-	testBuildPresetName2    = "L"
+	testBuildPresetName     = "slow"
+	testBuildPresetName2    = "fast"
 )
 
 var (
