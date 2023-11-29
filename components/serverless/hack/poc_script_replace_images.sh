@@ -1,6 +1,6 @@
 #!/bin/bash
 
-
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 IMG_DIRECTORY=${1?"Directory missing"}
 IMG_VERSION=${2?"PULL_BASE_REF Missing"}
