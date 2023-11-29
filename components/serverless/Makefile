@@ -15,6 +15,7 @@ endif
 SHELL = /usr/bin/env bash -o pipefail
 .SHELLFLAGS = -ec
 
+##@ General
 .PHONY: help
 help: ## Display this help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
@@ -24,6 +25,7 @@ LOCALBIN ?= $(shell pwd)/bin
 $(LOCALBIN):
 	mkdir -p $(LOCALBIN)
 
+##@ Verification
 .PHONY: test
 test: KUBEBUILDER_CONTROLPLANE_START_TIMEOUT=2m
 test: KUBEBUILDER_CONTROLPLANE_STOP_TIMEOUT=2m
@@ -32,6 +34,7 @@ test: envtest ## Run unit test with envtest
 	@echo -n "Total coverage: "
 	@go tool cover -func=cover.out | grep total | awk '{print $$3}'
 
+##@ Development
 .PHONY: manifests
 manifests: kustomize controller-gen ## Render CRDs
 	$(CONTROLLER_GEN) object:headerFile=./hack/boilerplate.go.txt paths="./..."
@@ -45,6 +48,10 @@ manifests: kustomize controller-gen ## Render CRDs
 	# TODO: Fix it. Now this docu is in https://kyma-project.io/#/serverless-manager/user/resources/06-10-function-cr?id=custom-resource-parameters. Remove table-gen from kyma.
 	# (cd ../../hack/table-gen && make serverless-docs )
 
+##@ Deployment
+
+install: manifests ## Install CRDS into the k8s cluster specified in ~/.kube/config
+	kubectl apply -f ../../config/serverless/templates/crds.yaml
 ######## function manager
 MANAGER_NAME = function-controller
 

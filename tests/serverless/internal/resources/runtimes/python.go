@@ -28,7 +28,7 @@ arrow==0.15.8`
 				Profile: "M",
 			},
 			Build: &serverlessv1alpha2.ResourceRequirements{
-				Profile: "normal",
+				Profile: "fast",
 			},
 		},
 	}
@@ -91,7 +91,7 @@ kyma-pypi-test==1.0.0`
 				Profile: "M",
 			},
 			Build: &serverlessv1alpha2.ResourceRequirements{
-				Profile: "normal",
+				Profile: "fast",
 			},
 		},
 	}

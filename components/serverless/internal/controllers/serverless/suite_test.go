@@ -27,10 +27,10 @@ const (
     USER root
     ENV KUBELESS_INSTALL_VOLUME=/kubeless`
 	changedFakeDockerfile   = `ARG base_image=other_image`
-	testFunctionPresetName  = "function-test-preset"
-	testFunctionPresetName2 = "function-test-preset-2"
-	testBuildPresetName     = "build-test-preset"
-	testBuildPresetName2    = "build-test-preset-2"
+	testFunctionPresetName  = "M"
+	testFunctionPresetName2 = "L"
+	testBuildPresetName     = "slow"
+	testBuildPresetName2    = "fast"
 )
 
 var (
