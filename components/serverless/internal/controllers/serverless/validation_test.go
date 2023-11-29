@@ -19,7 +19,6 @@ import (
 	"testing"
 )
 
-// TODO: add separate use cases with memory and cpu
 func TestValidation(t *testing.T) {
 	//GIVEN
 	ctx := context.TODO()
@@ -189,7 +188,7 @@ func TestValidation(t *testing.T) {
 					},
 				},
 			},
-			expectedCondMsg: "Function limits cpu(120m) should be higher than requests cpu(150m)",
+			expectedCondMsg: "Build limits cpu(120m) should be higher than requests cpu(150m)",
 		},
 		"Build requests memory are bigger than limits": {
 			fn: serverlessv1alpha2.Function{
@@ -210,7 +209,7 @@ func TestValidation(t *testing.T) {
 					},
 				},
 			},
-			expectedCondMsg: "Function limits memory(120Mi) should be higher than requests memory(150Mi)",
+			expectedCondMsg: "Build limits memory(120Mi) should be higher than requests memory(150Mi)",
 		},
 		"Build requests cpu are smaller than minimum value": {
 			fn: serverlessv1alpha2.Function{
@@ -231,7 +230,7 @@ func TestValidation(t *testing.T) {
 					},
 				},
 			},
-			expectedCondMsg: "Function request cpu(5m) should be higher than minimal value (20m)",
+			expectedCondMsg: "Build request cpu(5m) should be higher than minimal value (20m)",
 		},
 		"Build requests memory are smaller than minimum value": {
 			fn: serverlessv1alpha2.Function{
@@ -252,7 +251,7 @@ func TestValidation(t *testing.T) {
 					},
 				},
 			},
-			expectedCondMsg: "Function request memory(5Mi) should be higher than minimal value (20Mi)",
+			expectedCondMsg: "Build request memory(5Mi) should be higher than minimal value (20Mi)",
 		},
 		"Build limits cpu are smaller than minimum without requests": {
 			fn: serverlessv1alpha2.Function{
@@ -270,13 +269,10 @@ func TestValidation(t *testing.T) {
 					},
 				},
 			},
-			expectedCondMsg: "Function limits cpu(2m) should be higher than minimal value (20m)",
+			expectedCondMsg: "Build limits cpu(2m) should be higher than minimal value (20m)",
 		},
 		"Build limits memory are smaller than minimum without requests": {
-			fn: serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					GenerateName: "test-fn",
-				},
+			fn: serverlessv1alpha2.Function{ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
@@ -288,7 +284,19 @@ func TestValidation(t *testing.T) {
 					},
 				},
 			},
-			expectedCondMsg: "Function limits memory(2Mi) should be higher than minimal value (20Mi)",
+			expectedCondMsg: "Build limits memory(2Mi) should be higher than minimal value (20Mi)",
+		},
+		"Invalid env": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Env: []corev1.EnvVar{
+						{Name: "1ENV"},
+						{Name: "2ENV"},
+					},
+				},
+			},
+			expectedCondMsg: "spec.env: 1ENV. Err: a valid environment variable name must consist of alphabetic characters, digits, '_', '-', or '.', and must not start with a digit (e.g. 'my.env-name',  or 'MY_ENV.NAME',  or 'MyEnvName1', regex used for validation is '[-._a-zA-Z][-._a-zA-Z0-9]*')",
 		},
 	}
 
@@ -314,13 +322,13 @@ func TestValidation(t *testing.T) {
 			assert.Equal(t, cond.Reason, serverlessv1alpha2.ConditionReasonFunctionSpec)
 			assert.Equal(t, corev1.ConditionFalse, cond.Status)
 			assert.NotEmpty(t, tc.expectedCondMsg, "expected message shouldn't be empty")
-			assert.Equal(t, cond.Message, tc.expectedCondMsg)
+			assert.Equal(t, tc.expectedCondMsg, cond.Message)
 			assert.False(t, r.result.Requeue)
 
 		})
 	}
 
-	t.Run("Valid function resources", func(t *testing.T) {
+	t.Run("Valid function", func(t *testing.T) {
 		//GIVEN
 		fn := serverlessv1alpha2.Function{
 			ObjectMeta: metav1.ObjectMeta{
@@ -337,6 +345,10 @@ func TestValidation(t *testing.T) {
 							corev1.ResourceCPU:    resource.MustParse("100m"),
 							corev1.ResourceMemory: resource.MustParse("100Mi"),
 						}}},
+				},
+				Env: []corev1.EnvVar{
+					{Name: "_CORRECT_ENV"},
+					{Name: "ANOTHER_CORRECT_ENV"},
 				},
 			},
 		}

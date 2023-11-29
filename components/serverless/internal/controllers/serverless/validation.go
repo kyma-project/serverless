@@ -7,21 +7,34 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	resource "k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	utilvalidation "k8s.io/apimachinery/pkg/util/validation"
 	"strings"
 )
 
 var _ stateFn = stateFnValidateFunction
 
+type validationFn func() []string
+
 func stateFnValidateFunction(_ context.Context, r *reconciler, s *systemState) (stateFn, error) {
 	rc := s.instance.Spec.ResourceConfiguration
 	fnResourceCfg := r.cfg.fn.ResourceConfig.Function.Resources
-	vrFunction := validateFunctionResources(rc, fnResourceCfg.MinRequestedCPU.Quantity, fnResourceCfg.MinRequestedMemory.Quantity)
+	validateFunctionResources := validateFunctionResourcesFn(rc, fnResourceCfg.MinRequestedCPU.Quantity, fnResourceCfg.MinRequestedMemory.Quantity)
 	buildResourceCfg := r.cfg.fn.ResourceConfig.BuildJob.Resources
-	vrBuild := validateBuildResources(rc, buildResourceCfg.MinRequestedCPU.Quantity, buildResourceCfg.MinRequestedMemory.Quantity)
+	validateBuildResources := validateBuildResourcesFn(rc, buildResourceCfg.MinRequestedCPU.Quantity, buildResourceCfg.MinRequestedMemory.Quantity)
 
-	vr := append(vrFunction, vrBuild...)
-	if len(vr) != 0 {
-		msg := strings.Join(vr, ". ")
+	validationFns := []validationFn{
+		validateFunctionResources,
+		validateBuildResources,
+		validateEnvs(s.instance.Spec.Env, "spec.env"),
+	}
+	validationResults := []string{}
+	for _, validationFn := range validationFns {
+		result := validationFn()
+		validationResults = append(validationResults, result...)
+	}
+
+	if len(validationResults) != 0 {
+		msg := strings.Join(validationResults, ". ")
 		cond := createValidationFailedCondition(msg)
 		r.result.Requeue = false
 		return buildStatusUpdateStateFnWithCondition(cond), nil
@@ -29,24 +42,49 @@ func stateFnValidateFunction(_ context.Context, r *reconciler, s *systemState) (
 	return stateFnInitialize, nil
 }
 
-func validateFunctionResources(rc *serverlessv1alpha2.ResourceConfiguration, minCPU resource.Quantity, minMemory resource.Quantity) []string {
-	if rc != nil && rc.Function != nil && rc.Function.Resources != nil {
-		vrLimits := validateLimits(*rc.Function.Resources, minMemory, minCPU, "Function")
-		vrRequests := validateRequests(*rc.Function.Resources, minMemory, minCPU, "Function")
-		vr := append(vrLimits, vrRequests...)
-		return vr
+func validateFunctionResourcesFn(rc *serverlessv1alpha2.ResourceConfiguration, minCPU resource.Quantity, minMemory resource.Quantity) validationFn {
+	return func() []string {
+		if rc != nil && rc.Function != nil && rc.Function.Resources != nil {
+			vrLimits := validateLimits(*rc.Function.Resources, minMemory, minCPU, "Function")
+			vrRequests := validateRequests(*rc.Function.Resources, minMemory, minCPU, "Function")
+			vr := append(vrLimits, vrRequests...)
+			return vr
+		}
+		return []string{}
 	}
-	return []string{}
 }
 
-func validateBuildResources(rc *serverlessv1alpha2.ResourceConfiguration, minCPU resource.Quantity, minMemory resource.Quantity) []string {
-	if rc != nil && rc.Build != nil && rc.Build.Resources != nil {
-		vrLimits := validateLimits(*rc.Build.Resources, minMemory, minCPU, "Function")
-		vrRequests := validateRequests(*rc.Build.Resources, minMemory, minCPU, "Function")
-		vr := append(vrLimits, vrRequests...)
-		return vr
+func validateBuildResourcesFn(rc *serverlessv1alpha2.ResourceConfiguration, minCPU resource.Quantity, minMemory resource.Quantity) validationFn {
+	return func() []string {
+		if rc != nil && rc.Build != nil && rc.Build.Resources != nil {
+			vrLimits := validateLimits(*rc.Build.Resources, minMemory, minCPU, "Build")
+			vrRequests := validateRequests(*rc.Build.Resources, minMemory, minCPU, "Build")
+			vr := append(vrLimits, vrRequests...)
+			return vr
+		}
+		return []string{}
 	}
-	return []string{}
+}
+
+func validateEnvs(envs []corev1.EnvVar, path string) validationFn {
+	return func() []string {
+		for _, env := range envs {
+			vr := utilvalidation.IsEnvVarName(env.Name)
+			if len(vr) != 0 {
+				return enrichErrors(vr, path, env.Name)
+			}
+		}
+
+		return []string{}
+	}
+}
+
+func enrichErrors(errs []string, path string, value string) []string {
+	enrichedErrs := []string{}
+	for _, err := range errs {
+		enrichedErrs = append(enrichedErrs, fmt.Sprintf("%s: %s. Err: %s", path, value, err))
+	}
+	return enrichedErrs
 }
 
 func validateRequests(resources corev1.ResourceRequirements, minMemory, minCPU resource.Quantity, resourceType string) []string {
