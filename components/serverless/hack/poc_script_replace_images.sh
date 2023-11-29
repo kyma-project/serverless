@@ -1,14 +1,15 @@
 #!/bin/bash
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+ROOT_DIR="${SCRIPT_DIR}/../../../.."
 
 IMG_DIRECTORY=${1?"Directory missing"}
 IMG_VERSION=${2?"PULL_BASE_REF Missing"}
 
 
 replace_values () {
-  yq -i ".global.images.${1}.directory=\"${IMG_DIRECTORY}\""  ../../../../config/serverless/values.yaml
-  yq -i ".global.images.${1}.version=\"${IMG_VERSION}\"" ../../../../config/serverless/values.yaml
+  yq -i ".global.images.${1}.directory=\"${IMG_DIRECTORY}\""  ${ROOT_DIR}/config/serverless/values.yaml
+  yq -i ".global.images.${1}.version=\"${IMG_VERSION}\"" ${ROOT_DIR}/config/serverless/values.yaml
 }
 
 
