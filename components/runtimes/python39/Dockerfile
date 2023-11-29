@@ -19,4 +19,3 @@ USER 1000
 ENV OTEL_PROPAGATORS=tracecontext,baggage,b3multi
 
 CMD ["python", "/kubeless.py"]
-#job Trigger

@@ -233,11 +233,7 @@ containers:
                   requestMemory: "1024Mi"
                   limitCpu: "1600m"
                   limitMemory: "2048Mi"
-<<<<<<< HEAD
-          #              runtimePresets:
-=======
           # runtimePresets:
->>>>>>> 7c0f2b9b603c993054751414ac4850d902913a65
 
           buildJob:
             resources:
