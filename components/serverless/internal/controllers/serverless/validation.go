@@ -57,8 +57,8 @@ func validateFunctionResourcesFn(rc *serverlessv1alpha2.ResourceConfiguration, m
 func validateBuildResourcesFn(rc *serverlessv1alpha2.ResourceConfiguration, minCPU resource.Quantity, minMemory resource.Quantity) validationFn {
 	return func() []string {
 		if rc != nil && rc.Build != nil && rc.Build.Resources != nil {
-			vrLimits := validateLimits(*rc.Build.Resources, minMemory, minCPU, "Function")
-			vrRequests := validateRequests(*rc.Build.Resources, minMemory, minCPU, "Function")
+			vrLimits := validateLimits(*rc.Build.Resources, minMemory, minCPU, "Build")
+			vrRequests := validateRequests(*rc.Build.Resources, minMemory, minCPU, "Build")
 			vr := append(vrLimits, vrRequests...)
 			return vr
 		}

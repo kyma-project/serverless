@@ -188,7 +188,7 @@ func TestValidation(t *testing.T) {
 					},
 				},
 			},
-			expectedCondMsg: "Function limits cpu(120m) should be higher than requests cpu(150m)",
+			expectedCondMsg: "Build limits cpu(120m) should be higher than requests cpu(150m)",
 		},
 		"Build requests memory are bigger than limits": {
 			fn: serverlessv1alpha2.Function{
@@ -209,7 +209,7 @@ func TestValidation(t *testing.T) {
 					},
 				},
 			},
-			expectedCondMsg: "Function limits memory(120Mi) should be higher than requests memory(150Mi)",
+			expectedCondMsg: "Build limits memory(120Mi) should be higher than requests memory(150Mi)",
 		},
 		"Build requests cpu are smaller than minimum value": {
 			fn: serverlessv1alpha2.Function{
@@ -230,7 +230,7 @@ func TestValidation(t *testing.T) {
 					},
 				},
 			},
-			expectedCondMsg: "Function request cpu(5m) should be higher than minimal value (20m)",
+			expectedCondMsg: "Build request cpu(5m) should be higher than minimal value (20m)",
 		},
 		"Build requests memory are smaller than minimum value": {
 			fn: serverlessv1alpha2.Function{
@@ -251,7 +251,7 @@ func TestValidation(t *testing.T) {
 					},
 				},
 			},
-			expectedCondMsg: "Function request memory(5Mi) should be higher than minimal value (20Mi)",
+			expectedCondMsg: "Build request memory(5Mi) should be higher than minimal value (20Mi)",
 		},
 		"Build limits cpu are smaller than minimum without requests": {
 			fn: serverlessv1alpha2.Function{
@@ -269,7 +269,7 @@ func TestValidation(t *testing.T) {
 					},
 				},
 			},
-			expectedCondMsg: "Function limits cpu(2m) should be higher than minimal value (20m)",
+			expectedCondMsg: "Build limits cpu(2m) should be higher than minimal value (20m)",
 		},
 		"Build limits memory are smaller than minimum without requests": {
 			fn: serverlessv1alpha2.Function{ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
@@ -284,7 +284,7 @@ func TestValidation(t *testing.T) {
 					},
 				},
 			},
-			expectedCondMsg: "Function limits memory(2Mi) should be higher than minimal value (20Mi)",
+			expectedCondMsg: "Build limits memory(2Mi) should be higher than minimal value (20Mi)",
 		},
 		"Invalid env": {
 			fn: serverlessv1alpha2.Function{
@@ -322,7 +322,7 @@ func TestValidation(t *testing.T) {
 			assert.Equal(t, cond.Reason, serverlessv1alpha2.ConditionReasonFunctionSpec)
 			assert.Equal(t, corev1.ConditionFalse, cond.Status)
 			assert.NotEmpty(t, tc.expectedCondMsg, "expected message shouldn't be empty")
-			assert.Equal(t, cond.Message, tc.expectedCondMsg)
+			assert.Equal(t, tc.expectedCondMsg, cond.Message)
 			assert.False(t, r.result.Requeue)
 
 		})
