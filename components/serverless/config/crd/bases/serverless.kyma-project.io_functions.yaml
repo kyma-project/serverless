@@ -194,6 +194,8 @@ spec:
                 x-kubernetes-validations:
                 - message: Labels has key starting with serverless.kyma-project.io/
                   rule: '!(self.exists(e, e.startsWith(''serverless.kyma-project.io/'')))'
+                - message: Label value cannot be longer than 63
+                  rule: self.all(e, size(e)<64)
               replicas:
                 default: 1
                 description: Defines the exact number of Function's Pods to run at

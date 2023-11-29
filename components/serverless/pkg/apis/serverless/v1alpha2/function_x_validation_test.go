@@ -9,6 +9,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"strings"
 	"testing"
 )
 
@@ -348,6 +349,20 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				},
 			},
 		},
+		"label value lenght is 63": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{}},
+					Labels: map[string]string{
+						strings.Repeat("a", 63): "test",
+					},
+				},
+			},
+		},
+
 		"secretMount": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
@@ -723,6 +738,21 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			},
 			expectedErrMsg: "should be at least 1 chars long",
 			fieldPath:      "spec.secretMounts[0].mountPath",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
+		"Label value is longer than 63 charts": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{}},
+					Labels: map[string]string{
+						strings.Repeat("a", 64): "test",
+					},
+				},
+			},
+			expectedErrMsg: "Label value cannot be longer than 63",
+			fieldPath:      "spec.labels",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
 	}
