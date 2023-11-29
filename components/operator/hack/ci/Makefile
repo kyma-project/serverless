@@ -73,24 +73,21 @@ remove-serverless: ## Remove Serverless CR
 
 .PHONY: install-latest-serverless
 install-latest-serverless:
-	@make -C ${PROJECT_COMMON} kyma create-k3d
-	curl -LJ -s https://github.com/kyma-project/serverless-manager/releases/latest/download/moduletemplate.yaml > ${PROJECT_ROOT}/moduletemplate-latest.yaml
-	@cat ${PROJECT_ROOT}/moduletemplate-latest.yaml | sed -e 's/enableInternal: true/enableInternal: false/g' > ${PROJECT_ROOT}/moduletemplate-k3d.yaml
-	@make -C ${PROJECT_COMMON} install-kyma-with-lm patch-mod-mgr-role install-module-template enable-module verify-kyma
+    @make -C ${PROJECT_COMMON} kyma create-k3d
+	kubectl create ns kyma-system
+	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/serverless-operator.yaml
+	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default-serverless-cr-k3d.yaml -n kyma-system
+	@make -C ${PROJECT_COMMON} verify-serverless
 
 .PHONY: reinstall-serverless
 reinstall-serverless:
-	@make -C ${PROJECT_COMMON} kyma \
-	  module-image \
-	  module-build \
-	  fix-template \
-	  install-module-template
+	@make -C ${PROJECT_COMMON} run-without-lm-on-cluster
 	
 	# wait some time to make sure lm starts the reconciliation first
 	sleep 5
 
-	@make -C ${PROJECT_COMMON} verify-kyma
-
+	# double check that serverless controller has progressed
+	kubectl wait --for condition=Available -n kyma-system deployment serverless-ctrl-mngr --timeout=60s
 .PHONY: provision-gardener
 provision-gardener:
 	@make -C ${PROJECT_COMMON} provision-gardener
