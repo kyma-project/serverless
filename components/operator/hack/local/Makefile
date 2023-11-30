@@ -10,10 +10,10 @@ help: ## Display this help.
 
 .PHONY: run-with-lifecycle-manager
 run-with-lifecycle-manager: ## Create k3d cluster with module installed by the lifecycle-manager.
-	@make -C ${PROJECT_COMMON} kyma \
+	make -C ${PROJECT_COMMON} kyma \
 	create-k3d
 
-	@make build-and-replace-chart-images
+	make build-and-replace-chart-images
 
 	make -C ${PROJECT_COMMON} module-image \
 	module-build \
