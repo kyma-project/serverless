@@ -36,13 +36,6 @@ MODULE_VERSION=${PULL_BASE_REF} make -C components/operator/ render-manifest
 echo "Generated serverless-operator.yaml:"
 cat serverless-operator.yaml
 
-MODULE_VERSION=${PULL_BASE_REF} \
-  SEC_SCANNERS_CONFIG="${PWD}/sec-scanners-config.yaml"\
-  make -C components/operator/ module-build
-
-echo "Generated moduletemplate.yaml:"
-cat moduletemplate.yaml
-
 echo "Fetching releases"
 CURL_RESPONSE=$(curl -w "%{http_code}" -sL \
                 -H "Accept: application/vnd.github+json" \
@@ -69,7 +62,6 @@ echo "Updating github release with assets"
 UPLOAD_URL="https://uploads.github.com/repos/kyma-project/serverless-manager/releases/${RELEASE_ID}/assets"
 
 uploadFile "serverless-operator.yaml" "${UPLOAD_URL}?name=serverless-operator.yaml"
-uploadFile "moduletemplate.yaml" "${UPLOAD_URL}?name=moduletemplate.yaml"
 uploadFile "config/samples/default-serverless-cr.yaml" "${UPLOAD_URL}?name=default-serverless-cr.yaml"
 uploadFile "config/samples/default-serverless-cr-k3d.yaml" "${UPLOAD_URL}?name=default-serverless-cr-k3d.yaml"
 
