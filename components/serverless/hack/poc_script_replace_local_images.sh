@@ -3,9 +3,10 @@
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 ROOT_DIR="${SCRIPT_DIR}/../../.."
 
-LOCAL_REGISTRY=${1?"Registry adress missing"}
+cd $ROOT_DIR | docker compose build
 
+for i in $(yq '.services[].image' $ROOT_DIR/docker-compose.yml); do
+    k3d image import "$i" -c kyma
+done
 
-replace_values () {
-  yq -i ".global.containerRegistry.path=\"${LOCAL_REGISTRY}\"" ${ROOT_DIR}/config/serverless/values.yaml
-}
+${SCRIPT_DIR}/poc_script_replace_images.sh "dev" "local"

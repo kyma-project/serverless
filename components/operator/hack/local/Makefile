@@ -1,3 +1,5 @@
+OPERATOR_ROOT ?= ../..
+PROJECT_ROOT ?= $(OPERATOR_ROOT)/../..
 PROJECT_COMMON ?= ../common
 
 ##@ General
@@ -8,7 +10,19 @@ help: ## Display this help.
 
 .PHONY: run-with-lifecycle-manager
 run-with-lifecycle-manager: ## Create k3d cluster with module installed by the lifecycle-manager.
-	@make -C ${PROJECT_COMMON} run-with-lifecycle-manager
+	@make -C ${PROJECT_COMMON} kyma \
+	create-k3d
+
+	@make build-and-replace-chart-images
+
+	make -C ${PROJECT_COMMON} module-image \
+	module-build \
+	fix-template \
+	install-kyma-with-lm \
+	patch-mod-mgr-role \
+	install-module-template \
+	enable-module \
+	verify-kyma
 
 .PHONY: deploy
 deploy: ## Build image and deploy manager on a cluster
@@ -16,8 +30,20 @@ deploy: ## Build image and deploy manager on a cluster
 
 .PHONY: run-without-lifecycle-manager
 run-without-lifecycle-manager: ## Create k3d cluster with module.
-	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager
+	@make -C ${PROJECT_COMMON} kyma \
+	create-k3d
+
+	@make build-and-replace-chart-images
+
+	@make -C ${PROJECT_COMMON} module-image \
+	deploy \
+	apply-serverless \
+	verify-serverless
 
 .PHONY: stop
 stop: ## Delete k3d cluster and registry.
 	@make -C ${PROJECT_COMMON} delete-k3d
+
+.PHONY: build-and-replace-chart-images
+build-and-replace-chart-images:
+	@${PROJECT_ROOT}/components/serverless/hack/poc_script_replace_local_images.sh
