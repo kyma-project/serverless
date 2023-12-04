@@ -10,7 +10,6 @@ on:
       - config/**
       - components/**
       - sec-scanners-config.yaml
-      - .version
       - module-config-template.yaml
   
   workflow_dispatch:

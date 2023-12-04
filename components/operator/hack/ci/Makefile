@@ -2,9 +2,7 @@ OPERATOR_ROOT ?= ../..
 PROJECT_ROOT ?= $(OPERATOR_ROOT)/../..
 PROJECT_COMMON ?= $(OPERATOR_ROOT)/hack/common
 
-ifndef MODULE_VERSION
-    include ${PROJECT_ROOT}/.version
-endif
+MODULE_VERSION ?= 0.0.0
 
 ifndef MODULE_SHA
     MODULE_SHA = ${shell git rev-parse --short HEAD}
