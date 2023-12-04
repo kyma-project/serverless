@@ -1,19 +1,23 @@
 #!/usr/bin/env bash
 
+valid=true
+
 function check_image() {
-    local version=$1
-    if [[ $version == PR-* || $version == null ]]; then
-      echo "Invalid version: $version"
-      exit 1
+    local version=$(jq '.version' <<< $1)
+    local name=$(jq '.name' <<< $1)
+
+    if [[ $version == *PR-* || $version == null ]]; then
+      echo "Invalid version: ${version} in ${name}"
+      valid=false
     fi
 }
 
-data=$(cat ./config/serverless/values.yaml | yq -r '.global.images.function_controller.version, .global.images.function_webhook.version, .global.images.function_registry_gc.version')
+versionNameJson="$(yq -o json '.global.images[] | [{"version": .version, "name": .name}][]' ./config/serverless/values.yaml)"
+for versionName in $(jq --compact-output <<< $versionNameJson); do
+  check_image "${versionName}"
+done
 
-images=($data)
-
-check_image "${images[0]}"
-check_image "${images[1]}"
-check_image "${images[2]}"
-
+if [ $valid == false ]; then
+  exit 1
+fi
 echo "All versions are valid"
