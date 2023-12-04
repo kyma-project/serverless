@@ -50,7 +50,6 @@ func (fn *Function) getBasicValidations() []validationFunction {
 	return []validationFunction{
 		fn.validateObjectMeta,
 		fn.Spec.validateRuntime,
-		fn.Spec.validateEnv,
 		fn.Spec.validateLabels,
 		fn.Spec.validateAnnotations,
 		fn.Spec.validateSources,
@@ -166,26 +165,6 @@ func (spec *FunctionSpec) validateRuntime(_ *ValidationConfig) error {
 		return nil
 	}
 	return fmt.Errorf("spec.runtime contains unsupported value")
-}
-
-func (spec *FunctionSpec) validateEnv(vc *ValidationConfig) error {
-	var allErrs []string
-	envs := spec.Env
-	reservedEnvs := vc.ReservedEnvs
-	for _, env := range envs {
-		errs := utilvalidation.IsEnvVarName(env.Name)
-		for _, reservedEnv := range reservedEnvs {
-			if env.Name == reservedEnv {
-				errs = append(errs, "env name is reserved for the serverless domain")
-			}
-		}
-		if len(errs) > 0 {
-			allErrs = append(allErrs,
-				errs...,
-			)
-		}
-	}
-	return returnAllErrs("invalid spec.env keys/values", allErrs)
 }
 
 func (spec *FunctionSpec) validateFunctionResources(vc *ValidationConfig) error {
