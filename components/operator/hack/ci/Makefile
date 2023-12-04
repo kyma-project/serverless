@@ -107,4 +107,5 @@ run-without-lm-on-cluster:
 
 .PHONY: render-manifest
 render-manifest:
-	@make -C ${OPERATOR_ROOT} render-manifest
+	@make -C ${OPERATOR_ROOT} render-manifest \
+		MODULE_VERSION=${MODULE_VERSION}
