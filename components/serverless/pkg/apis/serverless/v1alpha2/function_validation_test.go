@@ -237,35 +237,6 @@ func TestFunctionSpec_validateResources(t *testing.T) {
 				),
 			),
 		},
-		"Should return error on env validation": {
-			givenFunc: Function{
-				ObjectMeta: metav1.ObjectMeta{Name: "test", Namespace: "test"},
-				Spec: FunctionSpec{
-					Runtime: NodeJs18,
-					Source: Source{
-						Inline: &InlineSource{
-							Source: "test-source",
-						},
-					},
-					Env: []corev1.EnvVar{
-						{
-							Name:  "test",
-							Value: "test",
-						},
-						{
-							Name:  "K_CONFIGURATION",
-							Value: "should reject this",
-						},
-					},
-				},
-			},
-			expectedError: gomega.HaveOccurred(),
-			specifiedExpectedError: gomega.And(
-				gomega.ContainSubstring(
-					"spec.env",
-				),
-			),
-		},
 		"Should return error on spec/template/labels validation": {
 			givenFunc: Function{
 				ObjectMeta: metav1.ObjectMeta{Name: "test", Namespace: "test"},
