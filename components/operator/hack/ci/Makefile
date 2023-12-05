@@ -2,9 +2,7 @@ OPERATOR_ROOT ?= ../..
 PROJECT_ROOT ?= $(OPERATOR_ROOT)/../..
 PROJECT_COMMON ?= $(OPERATOR_ROOT)/hack/common
 
-ifndef MODULE_VERSION
-    include ${PROJECT_ROOT}/.version
-endif
+MODULE_VERSION ?= 0.0.0
 
 ifndef MODULE_SHA
     MODULE_SHA = ${shell git rev-parse --short HEAD}
@@ -109,4 +107,5 @@ run-without-lm-on-cluster:
 
 .PHONY: render-manifest
 render-manifest:
-	@make -C ${OPERATOR_ROOT} render-manifest
+	@make -C ${OPERATOR_ROOT} render-manifest \
+		MODULE_VERSION=${MODULE_VERSION}

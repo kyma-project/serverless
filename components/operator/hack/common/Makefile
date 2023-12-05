@@ -1,8 +1,7 @@
 OPERATOR_ROOT ?= ../..
 PROJECT_ROOT ?= $(OPERATOR_ROOT)/../..
-ifndef MODULE_VERSION
-	include ${PROJECT_ROOT}/.version
-endif
+
+MODULE_VERSION ?= 0.0.0
 
 CLUSTER_NAME ?= kyma
 KYMA_PROFILE ?= production

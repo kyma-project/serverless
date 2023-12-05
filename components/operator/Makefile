@@ -1,8 +1,6 @@
 PROJECT_ROOT = ../..
 
-ifndef MODULE_VERSION
-    include $(PROJECT_ROOT)/.version
-endif
+MODULE_VERSION ?= 0.0.0
 
 # Path to the sec-scanners-config file
 SEC_SCANNERS_CONFIG ?= ""
