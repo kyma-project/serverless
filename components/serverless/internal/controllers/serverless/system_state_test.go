@@ -39,11 +39,6 @@ func Test_systemState_podLabels(t *testing.T) {
 					UID:  "fn-uuid",
 				},
 				Spec: v1alpha2.FunctionSpec{
-					Template: &v1alpha2.Template{
-						Labels: map[string]string{
-							"test-some": "test-label",
-						},
-					},
 					Labels: map[string]string{
 						"test-another": "test-another-label",
 					},
@@ -53,12 +48,11 @@ func Test_systemState_podLabels(t *testing.T) {
 				v1alpha2.FunctionManagedByLabel: v1alpha2.FunctionControllerValue,
 				v1alpha2.FunctionNameLabel:      "fn-name",
 				v1alpha2.FunctionResourceLabel:  v1alpha2.FunctionResourceLabelDeploymentValue,
-				"test-some":                     "test-label",
 				"test-another":                  "test-another-label",
 			},
 		},
 		{
-			name: "Should create internal and from `spec.template.labels` labels",
+			name: "Should create internal labels without not supported `spec.template.labels`",
 			args: args{instance: &v1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "fn-name",
@@ -67,7 +61,7 @@ func Test_systemState_podLabels(t *testing.T) {
 				Spec: v1alpha2.FunctionSpec{
 					Template: &v1alpha2.Template{
 						Labels: map[string]string{
-							"test-some": "test-label",
+							"test-some": "not-supported",
 						},
 					},
 				}}},
@@ -76,7 +70,6 @@ func Test_systemState_podLabels(t *testing.T) {
 				v1alpha2.FunctionManagedByLabel: v1alpha2.FunctionControllerValue,
 				v1alpha2.FunctionNameLabel:      "fn-name",
 				v1alpha2.FunctionResourceLabel:  v1alpha2.FunctionResourceLabelDeploymentValue,
-				"test-some":                     "test-label",
 			},
 		},
 		{
@@ -107,13 +100,6 @@ func Test_systemState_podLabels(t *testing.T) {
 					UID:  "fn-uuid",
 				},
 				Spec: v1alpha2.FunctionSpec{
-					Template: &v1alpha2.Template{
-						Labels: map[string]string{
-							"test-some":                    "test-label",
-							v1alpha2.FunctionResourceLabel: "job",
-							v1alpha2.FunctionNameLabel:     "some-other-name",
-						},
-					},
 					Labels: map[string]string{
 						"test-another":                 "test-label",
 						v1alpha2.FunctionResourceLabel: "another-job",
@@ -125,7 +111,6 @@ func Test_systemState_podLabels(t *testing.T) {
 				v1alpha2.FunctionManagedByLabel: v1alpha2.FunctionControllerValue,
 				v1alpha2.FunctionNameLabel:      "fn-name",
 				v1alpha2.FunctionResourceLabel:  v1alpha2.FunctionResourceLabelDeploymentValue,
-				"test-some":                     "test-label",
 				"test-another":                  "test-label",
 			},
 		},

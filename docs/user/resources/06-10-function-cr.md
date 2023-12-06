@@ -141,9 +141,6 @@ spec:
 | **source.&#x200b;inline**  | object | Defines the Function as the inline Function. Can't be used together with **GitRepository**. |
 | **source.&#x200b;inline.&#x200b;dependencies**  | string | Specifies the Function's dependencies. |
 | **source.&#x200b;inline.&#x200b;source** (required) | string | Specifies the Function's full source code. |
-| **template**  | object | Deprecated: Use **Labels** and **Annotations** to label and/or annotate Function's Pods. |
-| **template.&#x200b;annotations**  | map\[string\]string | Deprecated: Use **FunctionSpec.Annotations** to annotate Function's Pods. |
-| **template.&#x200b;labels**  | map\[string\]string | Deprecated: Use **FunctionSpec.Labels**  to label Function's Pods. |
 
 **Status:**
 

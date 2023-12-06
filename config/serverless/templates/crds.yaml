@@ -437,6 +437,10 @@ spec:
                       Function''s Pods.'
                     type: object
                 type: object
+                x-kubernetes-validations:
+                - message: 'Not supported: Use spec.labels and spec.annotations to
+                    label and/or annotate Function''s Pods.'
+                  rule: '!has(self.labels) && !has(self.annotations)'
             required:
             - runtime
             - source

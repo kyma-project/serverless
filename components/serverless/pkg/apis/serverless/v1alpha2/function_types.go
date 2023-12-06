@@ -200,6 +200,7 @@ type FunctionSpec struct {
 
 	// Deprecated: Use **Labels** and **Annotations** to label and/or annotate Function's Pods.
 	// +optional
+	// +kubebuilder:validation:XValidation:message="Not supported: Use spec.labels and spec.annotations to label and/or annotate Function's Pods.",rule="!has(self.labels) && !has(self.annotations)"
 	Template *Template `json:"template,omitempty"`
 
 	// Specifies Secrets to mount into the Function's container filesystem.

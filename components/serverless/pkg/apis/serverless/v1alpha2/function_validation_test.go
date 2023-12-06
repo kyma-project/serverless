@@ -87,12 +87,6 @@ func TestFunctionSpec_validateResources(t *testing.T) {
 							Value: "test",
 						},
 					},
-					Template: &Template{
-						Labels: map[string]string{
-							"should-be-ok": "test",
-							"test":         "test",
-						},
-					},
 					ResourceConfiguration: &ResourceConfiguration{
 						Function: &ResourceRequirements{
 							Resources: &corev1.ResourceRequirements{
@@ -237,58 +231,6 @@ func TestFunctionSpec_validateResources(t *testing.T) {
 				),
 			),
 		},
-		"Should return error on spec/template/labels validation": {
-			givenFunc: Function{
-				ObjectMeta: metav1.ObjectMeta{Name: "test", Namespace: "test"},
-				Spec: FunctionSpec{
-					Runtime: NodeJs18,
-					Source: Source{
-						Inline: &InlineSource{
-							Source: "test-source",
-						},
-					},
-					Template: &Template{
-						Labels: map[string]string{
-							"should-be-ok":     "test",
-							"should BE not OK": "test",
-						},
-					},
-				},
-			},
-			expectedError: gomega.HaveOccurred(),
-			specifiedExpectedError: gomega.And(
-				gomega.ContainSubstring(
-					"spec.template.labels",
-				),
-			),
-		},
-		"Should return error on spec/template/labels validation when contains 'serverless.kyma-project.io' label": {
-			givenFunc: Function{
-				ObjectMeta: metav1.ObjectMeta{Name: "test", Namespace: "test"},
-				Spec: FunctionSpec{
-					Runtime: NodeJs18,
-					Source: Source{
-						Inline: &InlineSource{
-							Source: "test-source",
-						},
-					},
-					Template: &Template{
-						Labels: map[string]string{
-							"should-be-ok":                 "test",
-							FunctionGroup + "/abrakadabra": "test",
-						},
-					},
-				},
-			},
-			expectedError: gomega.HaveOccurred(),
-			specifiedExpectedError: gomega.And(
-				gomega.ContainSubstring(
-					"spec.template.labels",
-				),
-				gomega.ContainSubstring(
-					"label from domain serverless.kyma-project.io is not allowed"),
-			),
-		},
 		"Should return error on spec/labels validation": {
 			givenFunc: Function{
 				ObjectMeta: metav1.ObjectMeta{Name: "test", Namespace: "test"},
@@ -336,65 +278,6 @@ func TestFunctionSpec_validateResources(t *testing.T) {
 				gomega.ContainSubstring(
 					"label from domain serverless.kyma-project.io is not allowed"),
 			),
-		},
-		"Should return error on validation when conflict between spec/template/labels and spec/labels": {
-			givenFunc: Function{
-				ObjectMeta: metav1.ObjectMeta{Name: "test", Namespace: "test"},
-				Spec: FunctionSpec{
-					Runtime: NodeJs18,
-					Source: Source{
-						Inline: &InlineSource{
-							Source: "test-source",
-						},
-					},
-					Template: &Template{
-						Labels: map[string]string{
-							"value-1":  "test",
-							"the-same": "test-1",
-						},
-					},
-					Labels: map[string]string{
-						"value-2":  "test",
-						"the-same": "test-2",
-					},
-				},
-			},
-			expectedError: gomega.HaveOccurred(),
-			specifiedExpectedError: gomega.And(
-				gomega.ContainSubstring(
-					"spec.template.labels",
-				),
-				gomega.ContainSubstring(
-					"spec.labels",
-				),
-				gomega.ContainSubstring(
-					"conflict between labels",
-				),
-			),
-		},
-		"Should validate identical labels from spec/template/labels and spec/labels without errors": {
-			givenFunc: Function{
-				ObjectMeta: metav1.ObjectMeta{Name: "test", Namespace: "test"},
-				Spec: FunctionSpec{
-					Runtime: NodeJs18,
-					Source: Source{
-						Inline: &InlineSource{
-							Source: "test-source",
-						},
-					},
-					Template: &Template{
-						Labels: map[string]string{
-							"value-1":  "test",
-							"the-same": "the-same-value",
-						},
-					},
-					Labels: map[string]string{
-						"value-2":  "test",
-						"the-same": "the-same-value",
-					},
-				},
-			},
-			expectedError: gomega.BeNil(),
 		},
 		"Should return error on spec/annotations validation": {
 			givenFunc: Function{
