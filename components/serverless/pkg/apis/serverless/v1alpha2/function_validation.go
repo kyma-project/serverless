@@ -44,7 +44,6 @@ type validationFunction func(*ValidationConfig) error
 func (fn *Function) getBasicValidations() []validationFunction {
 	return []validationFunction{
 		fn.validateObjectMeta,
-		fn.Spec.validateRuntime,
 		fn.Spec.validateLabels,
 		fn.Spec.validateAnnotations,
 		fn.Spec.validateSources,
@@ -151,15 +150,6 @@ func (spec *FunctionSpec) validateGitAuthType(_ *ValidationConfig) error {
 	default:
 		return ErrInvalidGitRepositoryAuthType
 	}
-}
-
-func (spec *FunctionSpec) validateRuntime(_ *ValidationConfig) error {
-	runtimeName := spec.Runtime
-	switch runtimeName {
-	case Python39, NodeJs16, NodeJs18:
-		return nil
-	}
-	return fmt.Errorf("spec.runtime contains unsupported value")
 }
 
 func (spec *FunctionSpec) validateSources(vc *ValidationConfig) error {
