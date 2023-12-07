@@ -524,6 +524,26 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			fieldPath:      "spec.labels",
 			expectedErrMsg: "Labels has key starting with ",
 		},
+		"template.labels is not supported": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Template: &serverlessv1alpha2.Template{
+						Labels: map[string]string{
+							"app":                            "mySuperApp",
+							"serverless.kyma-project.io/abc": "labelValue",
+							"service":                        "mySvc",
+						},
+					},
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{}},
+					Runtime: serverlessv1alpha2.Python39,
+				},
+			},
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+			fieldPath:      "spec.template",
+			expectedErrMsg: "Not supported: Use spec.labels and spec.annotations to label and/or annotate Function's Pods.",
+		},
 		"annotations use exact restricted domain": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
@@ -573,6 +593,26 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			fieldPath:      "spec.annotations",
 			expectedErrMsg: "Annotations has key starting with ",
+		},
+		"template.annotations is not supported": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Template: &serverlessv1alpha2.Template{
+						Annotations: map[string]string{
+							"app":                            "mySuperApp",
+							"serverless.kyma-project.io/abc": "labelValue",
+							"service":                        "mySvc",
+						},
+					},
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{}},
+					Runtime: serverlessv1alpha2.Python39,
+				},
+			},
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+			fieldPath:      "spec.template",
+			expectedErrMsg: "Not supported: Use spec.labels and spec.annotations to label and/or annotate Function's Pods.",
 		},
 		"disallowed runtime: custom": {
 			fn: &serverlessv1alpha2.Function{
