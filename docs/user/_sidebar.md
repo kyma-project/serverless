@@ -1,5 +1,5 @@
-* [Back to Kyma Home](/)
 <!-- markdown-link-check-disable -->
+* [Back to Kyma Home](/)
 * [Serverless module](/serverless/user/README.md)
 * [From code to Function](/serverless/user/00-10-from-code-to-function.md)
 * [Serverless configuration](/serverless/user/00-20-configure-serverless.md)
