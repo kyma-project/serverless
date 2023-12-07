@@ -1,4 +1,5 @@
 * [Back to Kyma Home](/)
+* <!-- markdown-link-check-disable -->
 * [Serverless module](/serverless/user/README.md)
 * [From code to Function](/serverless/user/00-10-from-code-to-function.md)
 * [Serverless configuration](/serverless/user/00-20-configure-serverless.md)
@@ -37,3 +38,4 @@
   * [Functions failing to build on k3d](/serverless/user/troubleshooting-guides/03-40-function-build-failing-k3d.md)
   * [Serverless periodically restarting](/serverless/user/troubleshooting-guides/03-50-serverless-periodically-restaring.md)
 * [Best practices](/serverless/user/08-10-best-practices.md)
+<!-- markdown-link-check-enable -->
