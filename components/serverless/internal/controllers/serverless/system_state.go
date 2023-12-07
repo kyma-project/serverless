@@ -360,9 +360,6 @@ func (s *systemState) deploymentSelectorLabels() map[string]string {
 
 func (s *systemState) podLabels() map[string]string {
 	result := s.deploymentSelectorLabels()
-	if s.instance.Spec.Template != nil && s.instance.Spec.Template.Labels != nil {
-		result = labels.Merge(s.instance.Spec.Template.Labels, result)
-	}
 	if s.instance.Spec.Labels != nil {
 		result = labels.Merge(s.instance.Spec.Labels, result)
 	}

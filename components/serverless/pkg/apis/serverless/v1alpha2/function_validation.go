@@ -6,8 +6,6 @@ import (
 	"regexp"
 	"strings"
 
-	"k8s.io/apimachinery/pkg/labels"
-
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/api/validation"
 	v1validation "k8s.io/apimachinery/pkg/apis/meta/v1/validation"
@@ -180,27 +178,10 @@ func (spec *FunctionSpec) validateSources(vc *ValidationConfig) error {
 }
 
 func (spec *FunctionSpec) validateLabels(_ *ValidationConfig) error {
-	var templateLabels map[string]string
-	if spec.Template != nil {
-		templateLabels = spec.Template.Labels
-	}
-
 	errs := field.ErrorList{}
 	errs = append(errs, validateFunctionLabels(spec.Labels, "spec.labels")...)
-	errs = append(errs, validateFunctionLabels(templateLabels, "spec.template.labels")...)
-	errs = append(errs, validateLabelConflicts(templateLabels, "spec.template.labels", spec.Labels, "spec.labels")...)
 
 	return errs.ToAggregate()
-}
-
-func validateLabelConflicts(lab1 map[string]string, path1 string, lab2 map[string]string, path2 string) field.ErrorList {
-	errs := field.ErrorList{}
-	if labels.Conflicts(lab1, lab2) {
-		fieldPath1 := field.NewPath(path1)
-		fieldPath2 := field.NewPath(path2)
-		errs = append(errs, field.Invalid(fieldPath1, fieldPath2, "conflict between labels"))
-	}
-	return errs
 }
 
 func validateFunctionLabels(labels map[string]string, path string) field.ErrorList {
