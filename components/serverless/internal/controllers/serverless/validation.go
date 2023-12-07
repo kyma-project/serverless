@@ -6,8 +6,11 @@ import (
 	serverlessv1alpha2 "github.com/kyma-project/kyma/components/function-controller/pkg/apis/serverless/v1alpha2"
 	corev1 "k8s.io/api/core/v1"
 	resource "k8s.io/apimachinery/pkg/api/resource"
+	"k8s.io/apimachinery/pkg/api/validation"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	v1validation "k8s.io/apimachinery/pkg/apis/meta/v1/validation"
 	utilvalidation "k8s.io/apimachinery/pkg/util/validation"
+	"k8s.io/apimachinery/pkg/util/validation/field"
 	"strings"
 )
 
@@ -29,6 +32,8 @@ func stateFnValidateFunction(_ context.Context, r *reconciler, s *systemState) (
 		validateEnvs(spec.Env, "spec.env"),
 		validateSecretMounts(spec.SecretMounts),
 		validateInlineDeps(spec.Runtime, spec.Source.Inline),
+		validateFunctionLabels(spec.Labels, "spec.labels"),
+		validateFunctionAnnotations(spec.Annotations, "spec.annotations"),
 	}
 	validationResults := []string{}
 	for _, validationFn := range validationFns {
@@ -119,6 +124,42 @@ func validateInlineDeps(runtime serverlessv1alpha2.Runtime, inlineSource *server
 			}
 		}
 		return []string{}
+	}
+}
+
+func validateFunctionLabels(labels map[string]string, path string) validationFn {
+	return func() []string {
+		errs := field.ErrorList{}
+		fieldPath := field.NewPath(path)
+		errs = append(errs, v1validation.ValidateLabels(labels, fieldPath)...)
+		if len(errs) == 0 {
+			return []string{}
+		}
+		result := []string{}
+		for _, err := range errs {
+			if err != nil {
+				result = append(result, err.Error())
+			}
+		}
+		return result
+	}
+}
+
+func validateFunctionAnnotations(annotations map[string]string, path string) validationFn {
+	return func() []string {
+		errs := field.ErrorList{}
+		fieldPath := field.NewPath(path)
+		errs = append(errs, validation.ValidateAnnotations(annotations, fieldPath)...)
+		if len(errs) == 0 {
+			return []string{}
+		}
+		result := []string{}
+		for _, err := range errs {
+			if err != nil {
+				result = append(result, err.Error())
+			}
+		}
+		return result
 	}
 }
 

@@ -8,7 +8,6 @@ import (
 
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/api/validation"
-	v1validation "k8s.io/apimachinery/pkg/apis/meta/v1/validation"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
@@ -43,8 +42,6 @@ type validationFunction func(*ValidationConfig) error
 func (fn *Function) getBasicValidations() []validationFunction {
 	return []validationFunction{
 		fn.validateObjectMeta,
-		fn.Spec.validateLabels,
-		fn.Spec.validateAnnotations,
 	}
 }
 
@@ -132,42 +129,6 @@ func (spec *FunctionSpec) validateGitAuthType(_ *ValidationConfig) error {
 	default:
 		return ErrInvalidGitRepositoryAuthType
 	}
-}
-
-func (spec *FunctionSpec) validateLabels(_ *ValidationConfig) error {
-	errs := field.ErrorList{}
-	errs = append(errs, validateFunctionLabels(spec.Labels, "spec.labels")...)
-
-	return errs.ToAggregate()
-}
-
-func validateFunctionLabels(labels map[string]string, path string) field.ErrorList {
-	errs := field.ErrorList{}
-
-	fieldPath := field.NewPath(path)
-	errs = append(errs, v1validation.ValidateLabels(labels, fieldPath)...)
-	errs = append(errs, validateFunctionLabelsByOwnGroup(labels, fieldPath)...)
-
-	return errs
-}
-
-func validateFunctionLabelsByOwnGroup(labels map[string]string, fieldPath *field.Path) field.ErrorList {
-	forbiddenPrefix := FunctionGroup + "/"
-	errorMessage := fmt.Sprintf("label from domain %s is not allowed", FunctionGroup)
-	allErrs := field.ErrorList{}
-	for k := range labels {
-		if strings.HasPrefix(k, forbiddenPrefix) {
-			allErrs = append(allErrs, field.Invalid(fieldPath, k, errorMessage))
-		}
-	}
-	return allErrs
-}
-
-func (spec *FunctionSpec) validateAnnotations(_ *ValidationConfig) error {
-	fieldPath := field.NewPath("spec.annotations")
-	errs := validation.ValidateAnnotations(spec.Annotations, fieldPath)
-
-	return errs.ToAggregate()
 }
 
 type property struct {
