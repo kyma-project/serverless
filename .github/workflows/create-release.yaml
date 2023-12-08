@@ -20,7 +20,7 @@ jobs:
           fetch-depth: 0
           
       - name: Verify serverless manifest images
-        run: ./.github/scripts/verify-serverless-jobs-manifest-images.sh
+        run: ./.github/scripts/verify-serverless-manifest-images.sh
 
   verify-head-status:
     name: Verify HEAD
