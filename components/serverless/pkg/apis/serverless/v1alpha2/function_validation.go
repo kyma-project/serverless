@@ -46,7 +46,6 @@ func (fn *Function) getBasicValidations() []validationFunction {
 		fn.validateObjectMeta,
 		fn.Spec.validateLabels,
 		fn.Spec.validateAnnotations,
-		fn.Spec.validateSources,
 		fn.Spec.validateSecretMounts,
 	}
 }
@@ -150,21 +149,6 @@ func (spec *FunctionSpec) validateGitAuthType(_ *ValidationConfig) error {
 	default:
 		return ErrInvalidGitRepositoryAuthType
 	}
-}
-
-func (spec *FunctionSpec) validateSources(vc *ValidationConfig) error {
-	sources := 0
-	if spec.Source.GitRepository != nil {
-		sources++
-	}
-
-	if spec.Source.Inline != nil {
-		sources++
-	}
-	if sources == 1 {
-		return nil
-	}
-	return errors.Errorf("spec.source should contains only 1 configuration of function")
 }
 
 func (spec *FunctionSpec) validateLabels(_ *ValidationConfig) error {
