@@ -26,6 +26,7 @@ func stateFnValidateFunction(_ context.Context, r *reconciler, s *systemState) (
 		validateFunctionResources,
 		validateBuildResources,
 		validateEnvs(s.instance.Spec.Env, "spec.env"),
+		validateSecretMounts(s.instance.Spec.SecretMounts),
 	}
 	validationResults := []string{}
 	for _, validationFn := range validationFns {
@@ -74,9 +75,35 @@ func validateEnvs(envs []corev1.EnvVar, path string) validationFn {
 				return enrichErrors(vr, path, env.Name)
 			}
 		}
-
 		return []string{}
 	}
+}
+
+func validateSecretMounts(secretMounts []serverlessv1alpha2.SecretMount) validationFn {
+	return func() []string {
+		var allErrs []string
+		for _, secretMount := range secretMounts {
+			allErrs = append(allErrs,
+				utilvalidation.IsDNS1123Subdomain(secretMount.SecretName)...)
+		}
+		if !secretNamesAreUnique(secretMounts) {
+			allErrs = append(allErrs, "secretNames should be unique")
+		}
+		if len(allErrs) == 0 {
+			return []string{}
+		}
+		return []string{
+			fmt.Sprintf("invalid spec.secretMounts: %s", allErrs),
+		}
+	}
+}
+
+func secretNamesAreUnique(secretMounts []serverlessv1alpha2.SecretMount) bool {
+	uniqueSecretNames := make(map[string]bool)
+	for _, secretMount := range secretMounts {
+		uniqueSecretNames[secretMount.SecretName] = true
+	}
+	return len(uniqueSecretNames) == len(secretMounts)
 }
 
 func enrichErrors(errs []string, path string, value string) []string {
