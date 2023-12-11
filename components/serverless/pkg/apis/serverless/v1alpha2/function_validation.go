@@ -199,10 +199,6 @@ func (spec *FunctionSpec) validateSecretMounts(_ *ValidationConfig) error {
 		allErrs = append(allErrs, "secretNames should be unique")
 	}
 
-	if !secretMountPathAreNotEmpty(secretMounts) {
-		allErrs = append(allErrs, "mountPath should not be empty")
-	}
-
 	return returnAllErrs("invalid spec.secretMounts", allErrs)
 }
 

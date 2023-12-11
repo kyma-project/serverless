@@ -319,7 +319,7 @@ func TestValidation(t *testing.T) {
 			updatedFn := serverlessv1alpha2.Function{}
 			require.NoError(t, resourceClient.Get(ctx, ctrlclient.ObjectKey{Name: tc.fn.Name}, &updatedFn))
 			cond := getCondition(updatedFn.Status.Conditions, serverlessv1alpha2.ConditionConfigurationReady)
-			assert.Equal(t, cond.Reason, serverlessv1alpha2.ConditionReasonFunctionSpec)
+			assert.Equal(t, serverlessv1alpha2.ConditionReasonFunctionSpec, cond.Reason)
 			assert.Equal(t, corev1.ConditionFalse, cond.Status)
 			assert.NotEmpty(t, tc.expectedCondMsg, "expected message shouldn't be empty")
 			assert.Equal(t, tc.expectedCondMsg, cond.Message)
@@ -349,6 +349,12 @@ func TestValidation(t *testing.T) {
 				Env: []corev1.EnvVar{
 					{Name: "_CORRECT_ENV"},
 					{Name: "ANOTHER_CORRECT_ENV"},
+				},
+				SecretMounts: []serverlessv1alpha2.SecretMount{
+					{
+						SecretName: "secret-name",
+						MountPath:  "mount-path",
+					},
 				},
 			},
 		}
