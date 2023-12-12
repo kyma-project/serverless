@@ -5,7 +5,7 @@ sleep 10
 echo "Checking status of POST Jobs for Serverless"
 
 REF_NAME="${1:-"main"}"
-STATUS_URL="https://api.github.com/repos/kyma-project/serverless-manager/commits/${REF_NAME}/status"
+STATUS_URL="https://api.github.com/repos/kyma-project/serverless/commits/${REF_NAME}/status"
 
 function verify_github_jobs_status () {
 	local number=1
