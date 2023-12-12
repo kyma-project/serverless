@@ -70,10 +70,6 @@ global:
   containerRegistry:
     path: europe-docker.pkg.dev/kyma-project
   images:
-    k8s_tools:
-      name: "tpi/k8s-tools"
-      version: "v20230921-aff55ec1"
-      directory: "prod"
     function_controller:
       name: "function-controller"
       version: "PR-491"
