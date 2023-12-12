@@ -298,6 +298,46 @@ func TestValidation(t *testing.T) {
 			},
 			expectedCondMsg: "spec.env: 1ENV. Err: a valid environment variable name must consist of alphabetic characters, digits, '_', '-', or '.', and must not start with a digit (e.g. 'my.env-name',  or 'MY_ENV.NAME',  or 'MyEnvName1', regex used for validation is '[-._a-zA-Z][-._a-zA-Z0-9]*')",
 		},
+		"Invalid secretMount name": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					SecretMounts: []serverlessv1alpha2.SecretMount{
+						{
+							SecretName: "secret-name-1",
+							MountPath:  "/mount/path/1",
+						},
+						{
+							SecretName: "invalid secret name - not DNS subdomain name as defined in RFC 1123",
+							MountPath:  "/mount/path/2",
+						},
+					},
+				},
+			},
+			expectedCondMsg: "invalid spec.secretMounts: [a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')]",
+		},
+		"Non unique secretMount name": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					SecretMounts: []serverlessv1alpha2.SecretMount{
+						{
+							SecretName: "secret-name-1",
+							MountPath:  "/mount/path/1",
+						},
+						{
+							SecretName: "non-unique-secret-name",
+							MountPath:  "/mount/path/2",
+						},
+						{
+							SecretName: "non-unique-secret-name",
+							MountPath:  "/mount/path/3",
+						},
+					},
+				},
+			},
+			expectedCondMsg: "invalid spec.secretMounts: [secretNames should be unique]",
+		},
 	}
 
 	//WHEN
@@ -319,7 +359,7 @@ func TestValidation(t *testing.T) {
 			updatedFn := serverlessv1alpha2.Function{}
 			require.NoError(t, resourceClient.Get(ctx, ctrlclient.ObjectKey{Name: tc.fn.Name}, &updatedFn))
 			cond := getCondition(updatedFn.Status.Conditions, serverlessv1alpha2.ConditionConfigurationReady)
-			assert.Equal(t, cond.Reason, serverlessv1alpha2.ConditionReasonFunctionSpec)
+			assert.Equal(t, serverlessv1alpha2.ConditionReasonFunctionSpec, cond.Reason)
 			assert.Equal(t, corev1.ConditionFalse, cond.Status)
 			assert.NotEmpty(t, tc.expectedCondMsg, "expected message shouldn't be empty")
 			assert.Equal(t, tc.expectedCondMsg, cond.Message)
@@ -349,6 +389,12 @@ func TestValidation(t *testing.T) {
 				Env: []corev1.EnvVar{
 					{Name: "_CORRECT_ENV"},
 					{Name: "ANOTHER_CORRECT_ENV"},
+				},
+				SecretMounts: []serverlessv1alpha2.SecretMount{
+					{
+						SecretName: "secret-name",
+						MountPath:  "mount-path",
+					},
 				},
 			},
 		}

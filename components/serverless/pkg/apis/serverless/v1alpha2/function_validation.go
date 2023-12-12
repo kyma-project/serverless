@@ -9,7 +9,6 @@ import (
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/api/validation"
 	v1validation "k8s.io/apimachinery/pkg/apis/meta/v1/validation"
-	utilvalidation "k8s.io/apimachinery/pkg/util/validation"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
@@ -46,7 +45,6 @@ func (fn *Function) getBasicValidations() []validationFunction {
 		fn.validateObjectMeta,
 		fn.Spec.validateLabels,
 		fn.Spec.validateAnnotations,
-		fn.Spec.validateSecretMounts,
 	}
 }
 
@@ -185,42 +183,6 @@ func (spec *FunctionSpec) validateAnnotations(_ *ValidationConfig) error {
 	errs := validation.ValidateAnnotations(spec.Annotations, fieldPath)
 
 	return errs.ToAggregate()
-}
-
-func (spec *FunctionSpec) validateSecretMounts(_ *ValidationConfig) error {
-	var allErrs []string
-	secretMounts := spec.SecretMounts
-	for _, secretMount := range secretMounts {
-		allErrs = append(allErrs,
-			utilvalidation.IsDNS1123Subdomain(secretMount.SecretName)...)
-	}
-
-	if !secretNamesAreUnique(secretMounts) {
-		allErrs = append(allErrs, "secretNames should be unique")
-	}
-
-	if !secretMountPathAreNotEmpty(secretMounts) {
-		allErrs = append(allErrs, "mountPath should not be empty")
-	}
-
-	return returnAllErrs("invalid spec.secretMounts", allErrs)
-}
-
-func secretNamesAreUnique(secretMounts []SecretMount) bool {
-	uniqueSecretNames := make(map[string]bool)
-	for _, secretMount := range secretMounts {
-		uniqueSecretNames[secretMount.SecretName] = true
-	}
-	return len(uniqueSecretNames) == len(secretMounts)
-}
-
-func secretMountPathAreNotEmpty(secretMounts []SecretMount) bool {
-	for _, secretMount := range secretMounts {
-		if secretMount.MountPath == "" {
-			return false
-		}
-	}
-	return true
 }
 
 type property struct {
