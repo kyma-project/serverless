@@ -39,7 +39,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 						Profile: "XS",
 					}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -53,7 +53,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 							Profile: "fast",
 						}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -67,7 +67,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 							Profile: "local-dev",
 						}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -81,7 +81,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 							Profile: "slow",
 						}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -95,7 +95,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 							Profile: "normal",
 						}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -109,7 +109,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 							Profile: "fast",
 						}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -123,7 +123,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 							Profile: "S",
 						}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -137,7 +137,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 							Profile: "M",
 						}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -151,7 +151,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 							Profile: "L",
 						}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -165,7 +165,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 							Profile: "XL",
 						}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -177,7 +177,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{}}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -189,7 +189,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Function: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{}}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -202,7 +202,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 						"serverless$kyma-project#io/abc": "labelValue",
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -215,7 +215,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 						"serverless.kyma-project.io": "labelValue",
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -228,7 +228,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 						"my.label.com": "labelValue",
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -241,7 +241,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 						"serverless.kyma-project.label.com": "labelValue",
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -254,7 +254,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 						"serverless$kyma-project#io/abc": "labelValue",
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -267,7 +267,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 						"serverless.kyma-project.io": "labelValue",
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -280,7 +280,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 						"my.label.com": "labelValue",
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -293,7 +293,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 						"serverless.kyma-project.label.com": "labelValue",
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -304,7 +304,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.NodeJs16,
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 				},
 			},
 		},
@@ -314,7 +314,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.NodeJs18,
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 				},
 			},
 		},
@@ -324,7 +324,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.Python39,
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 				},
 			},
 		},
@@ -334,7 +334,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.Python39,
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Env: []corev1.EnvVar{{Name: "TEST_ENV"}, {Name: "MY_ENV"}},
 				},
 			},
@@ -362,7 +362,6 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				},
 			},
 		},
-
 		"secretMount": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
@@ -415,7 +414,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 						Resources: &corev1.ResourceRequirements{},
 					}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -432,7 +431,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 						Resources: &corev1.ResourceRequirements{},
 					}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -449,7 +448,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 							Profile: "LL",
 						}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -466,7 +465,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 							Profile: "SS",
 						}},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -482,7 +481,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 						"serverless.kyma-project.io/": "labelValue",
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -498,7 +497,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 						"serverless.kyma-project.io/abc": "labelValue",
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -516,7 +515,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 						"service":                        "mySvc",
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -536,7 +535,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 						},
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -552,7 +551,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 						"serverless.kyma-project.io/": "labelValue",
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -570,7 +569,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 						"service":                        "mySvc",
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -586,7 +585,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 						"serverless.kyma-project.io/abc": "labelValue",
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -606,7 +605,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 						},
 					},
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 				},
 			},
@@ -619,7 +618,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Runtime("custom"),
 				},
 			},
@@ -632,7 +631,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 					Env: []corev1.EnvVar{
 						{Name: "TEST2"},
@@ -650,7 +649,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 					Env: []corev1.EnvVar{
 						{Name: "TEST2"},
@@ -668,7 +667,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 					Env: []corev1.EnvVar{
 						{Name: "TEST2"},
@@ -686,7 +685,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 					Env: []corev1.EnvVar{
 						{Name: "TEST2"},
@@ -704,7 +703,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 					Env: []corev1.EnvVar{
 						{Name: "TEST2"},
@@ -722,7 +721,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Runtime: serverlessv1alpha2.Python39,
 					Env: []corev1.EnvVar{
 						{Name: "TEST2"},
@@ -755,7 +754,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.Python39,
-					Source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{}},
+					Source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					SecretMounts: []serverlessv1alpha2.SecretMount{
 						{SecretName: "", MountPath: "/path"},
 					},
@@ -770,7 +769,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.Python39,
-					Source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{}},
+					Source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					SecretMounts: []serverlessv1alpha2.SecretMount{
 						{SecretName: "my-secret", MountPath: ""},
 					},
@@ -785,7 +784,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.Python39,
-					Source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{}},
+					Source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
 					Labels: map[string]string{
 						strings.Repeat("a", 64): "test",
 					},
@@ -793,6 +792,20 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			},
 			expectedErrMsg: "Label value cannot be longer than 63",
 			fieldPath:      "spec.labels",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
+		"Inline source is empty": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{},
+					},
+				},
+			},
+			expectedErrMsg: "should be at least 1 chars long",
+			fieldPath:      "spec.source.inline.source",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
 	}
