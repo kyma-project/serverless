@@ -1,4 +1,4 @@
-# Function processing stages
+# Function Processing Stages
 
 From the moment you [create a Function](../tutorials/01-10-create-inline-function.md) (Function CR) until the time it is ready, it goes through three processing stages that are defined as these condition types:
 

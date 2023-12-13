@@ -1,4 +1,4 @@
-# Manage Functions with Kyma CLI
+# Manage Functions With Kyma CLI
 
 This tutorial shows how to use the available CLI commands to manage Functions in Kyma. You will see how to:
 

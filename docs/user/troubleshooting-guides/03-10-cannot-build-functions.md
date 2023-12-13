@@ -1,4 +1,4 @@
-# Failure to build Functions
+# Failure to Build Functions
 
 ## Symptom
 

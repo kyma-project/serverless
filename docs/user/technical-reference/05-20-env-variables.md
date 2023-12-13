@@ -1,12 +1,12 @@
-# Environment variables
+# Environment Variables
 
 You can use environment variables to configure an existing runtime, to read existing configuration or to build your own runtime based on them.
 
-## Environments passed to runtimes
+## Environments Passed to Runtimes
 
 Every runtime provides its own unique environment configuration which can be read by a server and the `handler.js` file during the container run:
 
-### Common environments
+### Common Environments
 
 | Environment | Default | Description                                                                                                                                                           |
 |---------------|-----------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -19,22 +19,22 @@ Every runtime provides its own unique environment configuration which can be rea
 | **TRACE_COLLECTOR_ENDPOINT** | None | Full address of OpenTelemetry Trace Collector is exported if the trace collector's endpoint is present.                                                                  |
 | **PUBLISHER_PROXY_ADDRESS** | `http://eventing-publisher-proxy.kyma-system.svc&nbsp;.cluster.local/publish` | Full address of the Publisher Proxy service.                                                                                                                          |
 
-### Specific environments
+### Specific Environments
 
 There are a few environments that occur only for a specific runtimes. The following list includes all of them:
 
-#### Python runtime-specific environment variables
+#### Python Runtime-Specific Environment Variables
 
 | Environment | Default | Description |
 |---------------|-----------|-------------|
 | **PYTHONPATH** | `$(KUBELESS_INSTALL_VOLUME)/lib.python3.9/site-packages&nbsp;:$(KUBELESS_INSTALL_VOLUME)` | List of directories that Python must add to the sys.path directory list. |
 | **PYTHONUNBUFFERED** | `TRUE` | Defines if Python's logs must be buffered before printing them out. |
 
-## Configure runtime
+## Configure Runtime
 
 You can configure environment variables either separately for a given runtime or make them runtime-agnostic using a ConfigMap.
 
-### Define environment variables in a Config Map
+### Define Environment Variables in a Config Map
 
 ConfigMaps allow you to define Function's environment variables for any runtime through key-value pairs. After you define the values in a ConfigMap, simply reference it in the Function custom resource (CR) through the **valueFrom** parameter. See an example of such a Function CR that specifies the `my-var` value as a reference to the key stored in the `my-vars-cm` ConfigMap as the `MY_VAR` environment variable.
 
@@ -62,7 +62,7 @@ spec:
         }
 ```
 
-### Node.js runtime-specific environment variables
+### Node.js Runtime-Specific Environment Variables
 
 To configure the Function with the Node.js runtime, override the default values of these environment variables:
 
@@ -98,7 +98,7 @@ spec:
         }
 ```
 
-### Python runtime-specific environment variables
+### Python Runtime-Specific Environment Variables
 
 To configure a Function with the Python runtime, override the default values of these environment variables:
 

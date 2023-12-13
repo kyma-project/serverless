@@ -1,4 +1,4 @@
-# Inject environment variables
+# Inject Environment Variables
 
 This tutorial shows how to inject environment variables into Function.
 

@@ -1,4 +1,4 @@
-# Development toolkit
+# Development Toolkit
 
 To start developing your first Functions, you need:
 

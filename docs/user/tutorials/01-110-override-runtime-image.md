@@ -1,4 +1,4 @@
-# Override runtime image
+# Override Runtime Image
 
 This tutorial shows how to build a custom runtime image and override the Function's base image with it.
 

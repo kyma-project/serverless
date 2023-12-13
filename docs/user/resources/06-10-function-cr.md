@@ -6,7 +6,7 @@ The `functions.serverless.kyma-project.io` CustomResourceDefinition (CRD) is a d
 kubectl get crd functions.serverless.kyma-project.io -o yaml
 ```
 
-## Sample custom resource
+## Sample Custom Resource
 
 The following Function object creates a Function which responds to HTTP requests with the "Hello John" message. The Function's code (**source**) and dependencies (**dependencies**) are specified in the Function CR.
 
@@ -103,7 +103,7 @@ spec:
   runtime: "nodejs18"
 ```
 
-## Custom resource parameters
+## Custom Resource Parameters
 <!-- TABLE-START -->
 ### Function.serverless.kyma-project.io/v1alpha2
 
@@ -163,7 +163,7 @@ spec:
 
 <!-- TABLE-END -->
 
-### Status reasons
+### Status Reasons
 
 Processing of a Function CR can succeed, continue, or fail for one of these reasons:
 
@@ -191,7 +191,7 @@ Processing of a Function CR can succeed, continue, or fail for one of these reas
 | `HorizontalPodAutoscalerUpdated` | `Running`            | The existing Horizontal Pod Scaler was updated after applying required changes.                                                                                 |
 | `MinimumReplicasUnavailable`     | `Running`            | Insufficient number of available Replicas. The Function is unhealthy.                                                                                                       |
 
-## Related resources and components
+## Related Resources and Components
 
 These are the resources related to this CR:
 

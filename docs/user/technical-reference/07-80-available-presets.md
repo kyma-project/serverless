@@ -1,4 +1,4 @@
-# Available presets
+# Available Presets
 
 Function's resources and replicas as well as resources for image-building Jobs are based on presets. A preset is a predefined group of values. There are two groups of presets defined for a Function CR and include the presents for:
 
@@ -11,7 +11,7 @@ If you want to apply values from a preset to a single Function, override the exi
 
 For example, to modify the default values for **buildResources**, remove all its entries from the Function CR and add an appropriate **serverless.kyma-project.io/build-resources-preset: {PRESET}** label to the Function CR.
 
-### Function's resources
+### Function's Resources
 
 | Preset | Request CPU | Request memory | Limit CPU | Limit memory |
 | - | - | - | - | - |
@@ -23,7 +23,7 @@ For example, to modify the default values for **buildResources**, remove all its
 
 To apply values ​​from a given preset, use the **serverless.kyma-project.io/function-resources-preset: {PRESET}** label in the Function CR.
 
-### Build Job's resources
+### Build Job's Resources
 
 | Preset | Request CPU | Request memory | Limit CPU | Limit memory |
 | - | - | - | - | - |

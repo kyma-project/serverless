@@ -1,4 +1,4 @@
-# Create and modify an inline Function
+# Create and Modify nn Inline Function
 
 This tutorial shows how you can create a simple "Hello World" Function in Node.js. The Function's code and dependencies are defined as an inline code in the Function's **spec**.
 

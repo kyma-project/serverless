@@ -1,4 +1,4 @@
-# Git source type
+# Git Source Type
 
 Depending on a runtime you use to build your Function (Node.js or Python), your Git repository must contain at least a directory with these files:
 

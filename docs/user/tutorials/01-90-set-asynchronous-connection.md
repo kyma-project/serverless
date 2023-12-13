@@ -1,4 +1,4 @@
-# Set asynchronous communication between Functions
+# Set Asynchronous Communication Between Functions
 
 This tutorial demonstrates how to connect two Functions asynchronously. It is based on the [in-cluster Eventing example](https://github.com/kyma-project/examples/tree/main/incluster_eventing).
 
@@ -21,7 +21,7 @@ This tutorial shows only one possible use case. There are many more use cases on
    ```
 2. Create the `emitter` and `receiver` folders in your project.
 
-### Create the emitter Function
+### Create the Emitter Function
 
 1. Go to the `emitter` folder and run Kyma CLI `init` command to initialize the scaffold for your first Function:
 
@@ -98,7 +98,7 @@ This tutorial shows only one possible use case. There are many more use cases on
    
       curl -X POST https://incoming.${KYMA_DOMAIN} -H 'Content-Type: application/json' -d '{"foo":"bar"}'
       ```
-### Create the receiver Function
+### Create the Receiver Function
 
 1. Go to your `receiver` folder and run Kyma CLI `init` command to initialize the scaffold for your second Function:
    ```bash

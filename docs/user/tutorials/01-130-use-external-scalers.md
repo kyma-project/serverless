@@ -1,4 +1,4 @@
-# Use external scalers
+# Use External Scalers
 
 This tutorial shows how to use an external resource scaler, for example, HorizontalPodAutoscaler (HPA) or Keda's ScaledObject, with the Serverless Function.
 
