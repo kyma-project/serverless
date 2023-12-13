@@ -129,11 +129,11 @@ spec:
 | **scaleConfig.&#x200b;minReplicas** (required) | integer | Defines the minimum number of Function's Pods to run at a time. |
 | **secretMounts**  | \[\]object | Specifies Secrets to mount into the Function's container filesystem. |
 | **secretMounts.&#x200b;mountPath** (required) | string | Specifies the path within the container where the Secret should be mounted. |
-| **secretMounts.&#x200b;secretName** (required) | string | Specifies the name of the Secret in the Function's Namespace. |
+| **secretMounts.&#x200b;secretName** (required) | string | Specifies the name of the Secret in the Function's namespace. |
 | **source** (required) | object | Contains the Function's source code configuration. |
 | **source.&#x200b;gitRepository**  | object | Defines the Function as Git-sourced. Can't be used together with **Inline**. |
 | **source.&#x200b;gitRepository.&#x200b;auth**  | object | Specifies the authentication method. Required for SSH. |
-| **source.&#x200b;gitRepository.&#x200b;auth.&#x200b;secretName** (required) | string | Specifies the name of the Secret with credentials used by the Function Controller to authenticate to the Git repository in order to fetch the Function's source code and dependencies. This Secret must be stored in the same Namespace as the Function CR. |
+| **source.&#x200b;gitRepository.&#x200b;auth.&#x200b;secretName** (required) | string | Specifies the name of the Secret with credentials used by the Function Controller to authenticate to the Git repository in order to fetch the Function's source code and dependencies. This Secret must be stored in the same namespace as the Function CR. |
 | **source.&#x200b;gitRepository.&#x200b;auth.&#x200b;type** (required) | string | Defines the repository authentication method. The value is either `basic` if you use a password or token, or `key` if you use an SSH key. |
 | **source.&#x200b;gitRepository.&#x200b;baseDir**  | string | Specifies the relative path to the Git directory that contains the source code from which the Function is built. |
 | **source.&#x200b;gitRepository.&#x200b;reference**  | string | Specifies either the branch name, tag or commit revision from which the Function Controller automatically fetches the changes in the Function's code and dependencies. |

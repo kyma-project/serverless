@@ -81,7 +81,7 @@ You can now install the Flux operator, connect it with a specific Git repository
   brew install fluxctl
   ```
 
-2. Create a `flux` Namespace for the Flux operator's CRDs:
+2. Create a `flux` namespace for the Flux operator's CRDs:
 
   ```bash
   kubectl create namespace flux
@@ -97,7 +97,7 @@ You can now install the Flux operator, connect it with a specific Git repository
   export GH_FOLDER="{GIT_REPO_FOLDER_FOR_FUNCTION_RESOURCES}"
   ```
 
-4. Run this command to apply CRDs of the Flux operator to the `flux` Namespace on your cluster:
+4. Run this command to apply CRDs of the Flux operator to the `flux` namespace on your cluster:
 
   ```bash
   fluxctl install \
@@ -120,7 +120,7 @@ You can now install the Flux operator, connect it with a specific Git repository
   service/memcached created
   ```
 
-5. List all Pods in the `flux` Namespace to make sure that the one for Flux is in the `Running` state:
+5. List all Pods in the `flux` namespace to make sure that the one for Flux is in the `Running` state:
 
   ```bash
   kubectl get pods --namespace flux

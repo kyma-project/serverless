@@ -17,7 +17,7 @@ You can create a Function with Kyma Dashboard, Kyma CLI, or kubectl:
 
 >**NOTE:** Kyma Dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
 
-1.  Create a Namespace or select one from the drop-down list in the top navigation panel.
+1.  Create a namespace or select one from the drop-down list in the top navigation panel.
 
 2.  Go to **Workloads** > **Functions** and select **Create Function**.
 

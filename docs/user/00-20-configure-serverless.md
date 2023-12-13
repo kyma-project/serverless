@@ -39,7 +39,7 @@ If you use Serverless for production purposes, it is recommended that you use an
 
 Follow these steps to use the external Docker registry in Serverless: 
 
-1. Create a Secret in the `kyma-system` Namespace with the required data (`username`, `password`, `serverAddress`, and `registryAddress`):
+1. Create a Secret in the `kyma-system` namespace with the required data (`username`, `password`, `serverAddress`, and `registryAddress`):
 
    ```bash
    kubectl create secret generic my-registry-config \

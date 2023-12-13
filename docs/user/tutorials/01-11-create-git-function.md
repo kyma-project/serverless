@@ -16,13 +16,13 @@ You can create a Function either with kubectl or Kyma Dashboard:
 
 >**NOTE:** Kyma Dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
 
-1. Create a Namespace or select one from the drop-down list in the top navigation panel.
+1. Create a namespace or select one from the drop-down list in the top navigation panel.
 
 2. Create a Secret (optional).
 
-    If you use a secured repository, you must first create a Secret with either basic (username and password or token) or SSH key authentication to this repository in the same Namespace as the Function. To do that, follow these sub-steps:
+    If you use a secured repository, you must first create a Secret with either basic (username and password or token) or SSH key authentication to this repository in the same namespace as the Function. To do that, follow these sub-steps:
 
-    - Open your Namespace view. In the left navigation panel, go to **Configuration** > **Secrets** and select the **Create Secret** button.
+    - Open your namespace view. In the left navigation panel, go to **Configuration** > **Secrets** and select the **Create Secret** button.
 
     - Open the **Advanced** view and enter the Secret name and type.
 
@@ -68,7 +68,7 @@ You can create a Function either with kubectl or Kyma Dashboard:
 
     If you use a secured repository, follow the sub-steps for the basic or SSH key authentication:
 
-    - Basic authentication (username and password or token) to this repository in the same Namespace as the Function:
+    - Basic authentication (username and password or token) to this repository in the same namespace as the Function:
   
     1. Generate a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) and copy it. 
     2. Create a Secret containg your username and the generated token.
@@ -80,7 +80,7 @@ You can create a Function either with kubectl or Kyma Dashboard:
     - SSH key:
 
     1. Generate a new SSH key pair (private and public). Follow [this tutorial](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) to learn how to do it. Alternatively, you can use the existing pair. 
-    2. Install the generated private key in Kyma, as a Kubernetes Secret that lives in the same Namespace as your Function.
+    2. Install the generated private key in Kyma, as a Kubernetes Secret that lives in the same namespace as your Function.
        ```bash
        kubectl -n $NAMESPACE create secret generic git-creds-ssh --from-file=key={PATH_TO_THE_FILE_WITH_PRIVATE_KEY}
        ```
