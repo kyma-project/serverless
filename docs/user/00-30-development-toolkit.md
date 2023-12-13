@@ -10,4 +10,4 @@ To start developing your first Functions, you need:
    - **Kyma CLI** to easily initiate inline Functions or Git Functions locally, run, test, and later apply them on the clusters
    - **Node.js** or **Python**
    - **IDE** as the source code editor
-   - **Kyma Dashboard** to manage Functions and related workloads through the graphical user interface
+   - **Kyma dashboard** to manage Functions and related workloads through the graphical user interface

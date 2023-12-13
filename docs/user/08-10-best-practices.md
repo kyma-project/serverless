@@ -11,15 +11,15 @@ All of that can be easily managed using the following best practices for the Fun
 ## Use UI to explore
 
 At the beginning of your Kyma journey, you will probably want to evaluate Serverless and draft a few Functions.
-Kyma Dashboard is perfect to gain basic experience and start the journey with Kyma Functions. Its dedicated Serverless features help you draft your first Functions by putting the code directly in the browser using a Web IDE.
-Kyma Dashboard will also help you expose your Function using HTTP, define environment variables, subscribe to CloudEvents, bind ServiceInstances, and even show you the Function logs - all in one place.
+Kyma dashboard is perfect to gain basic experience and start the journey with Kyma Functions. Its dedicated Serverless features help you draft your first Functions by putting the code directly in the browser using a Web IDE.
+Kyma dashboard will also help you expose your Function using HTTP, define environment variables, subscribe to CloudEvents, bind ServiceInstances, and even show you the Function logs - all in one place.
 
 Get started with [Function UI](tutorials/01-10-create-inline-function.md)
 ![function-ui](../assets/svls-function-ui.png)
 
 ## Use Kyma CLI for better development experience
 
-Defining your Function from the Kyma Dashboard is very quick and easy, but it might not be enough to satisfy your needs as a developer. To code and test more complex cases, you may want to write your Function in your favorite IDE or run and debug the Function on your local machine, before actually deploying in Kyma runtime. Also, you might want to avoid recreating the same Functions manually from the UI on a different environment. In the end, having deployable artifacts is more desirable. This is where Kyma CLI comes in handy, as it enables you to keep your Function's code and configuration in the form of a workspace. 
+Defining your Function from the Kyma dashboard is very quick and easy, but it might not be enough to satisfy your needs as a developer. To code and test more complex cases, you may want to write your Function in your favorite IDE or run and debug the Function on your local machine, before actually deploying in Kyma runtime. Also, you might want to avoid recreating the same Functions manually from the UI on a different environment. In the end, having deployable artifacts is more desirable. This is where Kyma CLI comes in handy, as it enables you to keep your Function's code and configuration in the form of a workspace. 
 
 Initialize a scaffold for a brand new Function using the `kyma init function` command or fetch the current state of an existing Function deployed in your Kyma runtime using `kyma sync function`.
 Focus on the Function code and develop it from your favorite IDE. Configure your Functions directly in the [`config.yaml` manifest file](technical-reference/07-60-function-configuration-file.md)
@@ -37,7 +37,7 @@ Having written and tested your Function locally, simply deploy it to the Kyma ru
 
 ## Deploy using CI/CD
 
-Kyma Dashboard helps you get started. Kyma CLI helps you iterate and develop Functions. 
+Kyma dashboard helps you get started. Kyma CLI helps you iterate and develop Functions. 
 But at the end of the day, you may want an automated deployment of your application, where Functions are just part of it.
 It all comes down to the deployment the Kubernetes applications on different Kyma runtimes in a GitOps fashion. For the sake of simplicity, the deployment approach for Functions should not differ from the deployment of the other Kubernetes workloads, ConfigMaps, or Secrets.
 

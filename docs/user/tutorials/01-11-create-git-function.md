@@ -8,13 +8,13 @@ To learn more about Git repository sources for Functions and different ways of s
 
 ## Steps
 
-You can create a Function either with kubectl or Kyma Dashboard:
+You can create a Function either with kubectl or Kyma dashboard:
 
 <!-- tabs:start -->
 
 #### **Kyma Dashboard**
 
->**NOTE:** Kyma Dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
+>**NOTE:** Kyma dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
 
 1. Create a namespace or select one from the drop-down list in the top navigation panel.
 
