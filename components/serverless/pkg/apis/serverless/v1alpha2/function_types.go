@@ -50,6 +50,8 @@ type Source struct {
 
 type InlineSource struct {
 	// Specifies the Function's full source code.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
 	Source string `json:"source"`
 
 	// Specifies the Function's dependencies.

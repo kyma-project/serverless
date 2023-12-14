@@ -57,7 +57,7 @@ func (fn *Function) Validate(vc *ValidationConfig) error {
 
 	switch {
 	case fn.TypeOf(FunctionTypeInline):
-		validations = append(validations, fn.Spec.validateInlineSrc, fn.Spec.validateInlineDeps)
+		validations = append(validations, fn.Spec.validateInlineDeps)
 		return runValidations(vc, validations...)
 
 	case fn.TypeOf(FunctionTypeGit):
@@ -99,13 +99,6 @@ func (spec *FunctionSpec) validateGitRepoURL(_ *ValidationConfig) error {
 		return nil
 	} else if _, err := url.ParseRequestURI(spec.Source.GitRepository.URL); err != nil {
 		return fmt.Errorf("invalid source.gitRepository.URL value: %v", err)
-	}
-	return nil
-}
-
-func (spec *FunctionSpec) validateInlineSrc(_ *ValidationConfig) error {
-	if spec.Source.Inline.Source == "" {
-		return fmt.Errorf("empty source.inline.source value")
 	}
 	return nil
 }

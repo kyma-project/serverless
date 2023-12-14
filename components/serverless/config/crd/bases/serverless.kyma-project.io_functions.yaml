@@ -412,6 +412,7 @@ spec:
                         type: string
                       source:
                         description: Specifies the Function's full source code.
+                        minLength: 1
                         type: string
                     required:
                     - source
