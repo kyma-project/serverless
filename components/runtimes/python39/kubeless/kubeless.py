@@ -56,9 +56,9 @@ function_context = {
     'memory-limit': os.getenv('FUNC_MEMORY_LIMIT'),
 }
 
-pod_name = os.getenv('HOSTNAME', default="")
-service_namespace = os.getenv('SERVICE_NAMESPACE', default="")
-service_name = create_service_name(pod_name, service_namespace)
+function_name = os.getenv('FUNC_NAME')
+service_namespace = os.getenv('SERVICE_NAMESPACE')
+service_name = create_service_name(function_name, service_namespace)
 
 if __name__ == "__main__":
     tracer = tracing._setup_tracer(service_name)

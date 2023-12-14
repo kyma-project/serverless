@@ -54,6 +54,7 @@ public class Main {
             return "generic-svc";
         }
         // remove generated pods suffix ( two last sections )
+        // TODO: createSvcName based on func name, not pod name
         var svcNameBuilder = Arrays.stream(podName.split("-")).limit(2).
                 collect(Collectors.joining("-"));
         return String.join(".", svcNameBuilder, svcNamespace);
