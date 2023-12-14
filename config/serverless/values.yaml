@@ -86,10 +86,6 @@ global:
       name: "function-build-init"
       version: "PR-498"
       directory: "dev"
-    function_registry_gc:
-      name: "function-registry-gc"
-      version: "PR-471"
-      directory: "dev"
     function_runtime_nodejs16:
       name: "function-runtime-nodejs16"
       version: "v20231113-e18796c5"
