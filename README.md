@@ -35,7 +35,7 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
 - [Kubebuilder](https://book.kubebuilder.io/)
 
 
-## Manual installation using make targets
+## Manual Installation Using Make Targets
 
 1. Clone the project.
 
@@ -67,7 +67,7 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
     make deploy
     ```
 
-### Test integration with Lifecycle Manager on the k3d cluster
+### Test Integration With Lifecycle Manager on the k3d Cluster
 
 1. Clone the project.
 
