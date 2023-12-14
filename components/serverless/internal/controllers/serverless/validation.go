@@ -172,7 +172,3 @@ func createValidationFailedCondition(msg string) serverlessv1alpha2.Condition {
 		Message:            msg,
 	}
 }
-
-func isMore(q1 *resource.Quantity, q2 resource.Quantity) bool {
-	return q1.Cmp(q2) != -1
-}
