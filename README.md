@@ -67,7 +67,7 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
     make deploy
     ```
 
-### Test Integration With Lifecycle Manager on the k3d Cluster
+### Test Integration with Lifecycle Manager on the k3d Cluster
 
 1. Clone the project.
 

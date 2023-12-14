@@ -1,4 +1,4 @@
-# Synchronize Git Resources With the Cluster Using a Gitops Operator
+# Synchronize Git Resources with the Cluster Using a Gitops Operator
 
 This tutorial shows how you can automate the deployment of local Kyma resources on a cluster using the GitOps logic. You will use [Kyma CLI](https://github.com/kyma-project/cli) to create an inline Python Function. You will later push the resource to a GitHub repository of your choice and set up a GitOps operator to monitor the given repository folder and synchronize any changes in it with your cluster. For the purpose of this tutorial, you will install and use the [Flux](https://fluxcd.io/flux/get-started/) GitOps operator and a lightweight [k3d](https://k3d.io/) cluster.
 

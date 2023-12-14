@@ -1,4 +1,4 @@
-# Functions Failing To Build on k3d
+# Functions Failing to Build on k3d
 
 ## Symptom
 

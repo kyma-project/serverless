@@ -74,7 +74,7 @@ Obviously, the bigger the runtime profile, the more resources are available to s
 Function runtime Pods can be scaled horizontally from zero up to the limits of the available resources at the Kubernetes worker nodes.
 See the [Use external scalers](tutorials/01-130-use-external-scalers.md) tutorial for more information.
 
-## In-cluster Docker Registry
+## In-Cluster Docker Registry
 
 Serverless comes with an in-cluster Docker registry for the Function images. For more information on the Docker registry configuration, visit [Serverless configuration](00-20-configure-serverless.md#configure-docker-registry).
 

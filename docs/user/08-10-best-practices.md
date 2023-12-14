@@ -1,6 +1,6 @@
-# Serverless best practices
+# Serverless Best Practices
 
-## Overview - Its All About Custom Resources
+## Overview - It's All About Custom Resources
 
 Kyma Serverless introduces a [Function](resources/06-10-function-cr.md) CustomResourceDefinition (CRD) as an extension to the Kubernetes API server.
 Defining a Function in Kyma essentially means creating a new instance of the Function custom resource (CR). However, the content of the Function CR specification may become quite long. It consists of the code (or Git reference to the code), dependencies, runtime specification, build-time specification, etc. Additionally, there are other CRs that are relevant for a Function developer - that is, [APIRule](https://kyma-project.io/docs/kyma/latest/05-technical-reference/00-custom-resources/apix-01-apirule/) (defining how Function is exposed to the outside world), [Subscription](https://kyma-project.io/docs/kyma/latest/05-technical-reference/00-custom-resources/evnt-01-subscription/) (defining which CloudEvents should trigger a Function), and others.
@@ -8,7 +8,7 @@ Defining a Function in Kyma essentially means creating a new instance of the Fun
 
 All of that can be easily managed using the following best practices for the Function development. You will find recommendations that will be helpful for you at any stage of your development journey.
 
-## Use UI To Explore
+## Use UI to Explore
 
 At the beginning of your Kyma journey, you will probably want to evaluate Serverless and draft a few Functions.
 Kyma dashboard is perfect to gain basic experience and start the journey with Kyma Functions. Its dedicated Serverless features help you draft your first Functions by putting the code directly in the browser using a Web IDE.
