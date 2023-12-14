@@ -13,7 +13,7 @@ Use the following tools to set up the project:
 
 ## Usage
 
-### Run a local version
+### Run a Local Version
 
 To run integration tests, follow these instructions:
 
@@ -29,14 +29,14 @@ To run integration tests, follow these instructions:
    go run cmd/main.go {scenario} --test-suite {test-suite}
    ```
 
-### Environment variables
+### Environment Variables
 
 Use the following environment variables to configure the application:
 
 | Name                                    | Required | Default                      | Description                                                                                                                   |
 |-----------------------------------------| -------- |------------------------------|-------------------------------------------------------------------------------------------------------------------------------|
 | **APP_TEST_WAIT_TIMEOUT**               | No       | `5m`                         | The period of time for which the application waits for the resources to meet defined conditions                               |
-| **APP_TEST_NAMESPACE_BASE_NAME**        | No       | `serverless`                 | The name of the Namespace used during integration tests                                                                       |
+| **APP_TEST_NAMESPACE_BASE_NAME**        | No       | `serverless`                 | The name of the namespace used during integration tests                                                                       |
 | **APP_TEST_FUNCTION_NAME**              | No       | `test-function`              | The name of the Function created and deleted during integration tests                                                         |
 | **APP_TEST_APIRULE_NAME**               | No       | `test-apirule`               | The name of the APIRule created and deleted during integration tests                                                          |
 | **APP_TEST_TRIGGER_NAME**               | No       | `test-trigger`               | The name of the Trigger created and deleted during integration tests                                                          |
@@ -53,7 +53,7 @@ Use the following environment variables to configure the application:
 
 ## Development
 
-### Install dependencies
+### Install Dependencies
 
 This project uses `go modules` as a dependency manager. To install all required dependencies, use the following command:
 

@@ -1,4 +1,4 @@
-# Internal Docker registry
+# Internal Docker Registry
 
 By default, the Kyma Serverless module comes with the internal Docker registry, which stores the Function container images without using the third-party registry.
 

@@ -1,4 +1,4 @@
-# Synchronize Git resources with the cluster using a GitOps operator
+# Synchronize Git Resources with the Cluster Using a Gitops Operator
 
 This tutorial shows how you can automate the deployment of local Kyma resources on a cluster using the GitOps logic. You will use [Kyma CLI](https://github.com/kyma-project/cli) to create an inline Python Function. You will later push the resource to a GitHub repository of your choice and set up a GitOps operator to monitor the given repository folder and synchronize any changes in it with your cluster. For the purpose of this tutorial, you will install and use the [Flux](https://fluxcd.io/flux/get-started/) GitOps operator and a lightweight [k3d](https://k3d.io/) cluster.
 
@@ -18,7 +18,7 @@ All you need before you start is to have the following:
 
 These sections will lead you through the whole installation, configuration, and synchronization process. You will first install k3d and create a cluster for your custom resources (CRs). Then, you will need to apply the necessary CustomResourceDefinition (CRD) from Kyma to be able to create Functions. Finally, you will install Flux and authorize it with the `write` access to your GitHub repository in which you store the resource files. Flux will automatically synchronize any new changes pushed to your repository with your k3d cluster.
 
-### Install and configure a k3d cluster
+### Install and Configure a k3d Cluster
 
 1. Install k3d using Homebrew on macOS:
 
@@ -49,7 +49,7 @@ These sections will lead you through the whole installation, configuration, and 
   kubectl get customresourcedefinitions
   ```
 
-### Prepare your local workspace
+### Prepare Your Local Workspace
 
 1. Create a workspace folder in which you will create source files for your Function:
 
@@ -71,7 +71,7 @@ These sections will lead you through the whole installation, configuration, and 
   - `handler.py` with the Function's code and the simple "Hello World" logic
   - `requirements.txt` with an empty file for your Function's custom dependencies
 
-### Install and configure Flux
+### Install and Configure Flux
 
 You can now install the Flux operator, connect it with a specific Git repository folder, and authorize Flux to automatically pull changes from this repository folder and apply them on your cluster.
 
@@ -81,7 +81,7 @@ You can now install the Flux operator, connect it with a specific Git repository
   brew install fluxctl
   ```
 
-2. Create a `flux` Namespace for the Flux operator's CRDs:
+2. Create a `flux` namespace for the Flux operator's CRDs:
 
   ```bash
   kubectl create namespace flux
@@ -97,7 +97,7 @@ You can now install the Flux operator, connect it with a specific Git repository
   export GH_FOLDER="{GIT_REPO_FOLDER_FOR_FUNCTION_RESOURCES}"
   ```
 
-4. Run this command to apply CRDs of the Flux operator to the `flux` Namespace on your cluster:
+4. Run this command to apply CRDs of the Flux operator to the `flux` namespace on your cluster:
 
   ```bash
   fluxctl install \
@@ -120,7 +120,7 @@ You can now install the Flux operator, connect it with a specific Git repository
   service/memcached created
   ```
 
-5. List all Pods in the `flux` Namespace to make sure that the one for Flux is in the `Running` state:
+5. List all Pods in the `flux` namespace to make sure that the one for Flux is in the `Running` state:
 
   ```bash
   kubectl get pods --namespace flux
@@ -149,7 +149,7 @@ You can now install the Flux operator, connect it with a specific Git repository
 
   ![GitHub account settings](../../assets/svls-settings.png)
 
-1. Go to the **SSH and GPG keys** section and select the **New SSH key** button:
+9. Go to the **SSH and GPG keys** section and select the **New SSH key** button:
 
   ![Create a new SSH key](../../assets/svls-create-ssh-key.png)
 
@@ -211,6 +211,6 @@ In this section, you will create a sample inline Function.
   ```
 You can see that Flux synchronized the resource and the new Function CR was added to your cluster.
 
-## Reverting feature
+## Reverting Feature
 
 Once you set it up, Flux will keep monitoring the given Git repository folder for any changes. If you modify the existing resources directly on the cluster, Flux will automatically revert these changes and update the given resource back to its version on the `main` branch of the Git repository.  

@@ -1,4 +1,4 @@
-# Log into a private package registry using credentials from a Secret
+# Log Into a Private Package Registry Using Credentials from a Secret
 
 Serverless allows you to consume private packages in your Functions. This tutorial shows how you can log into a private package registry by defining credentials in a Secret custom resource (CR).
 
@@ -99,7 +99,7 @@ EOF
 
 <!-- tabs:end -->
 
-### Test the package registry switch
+### Test the Package Registry Switch
 
 [Create a Function](01-10-create-inline-function.md) with dependencies from the external registry. Check if your Function was created and all conditions are set to `True`:
 
@@ -114,4 +114,4 @@ NAME            CONFIGURED   BUILT     RUNNING   RUNTIME    VERSION   AGE
 test-function   True         True      True      nodejs18   1         96s
 ```
 
->**CAUTION:** If you want to create a cluster-wide Secret, you must create it in the `kyma-system` Namespace and add the `serverless.kyma-project.io/config: credentials` label.
+>**CAUTION:** If you want to create a cluster-wide Secret, you must create it in the `kyma-system` namespace and add the `serverless.kyma-project.io/config: credentials` label.

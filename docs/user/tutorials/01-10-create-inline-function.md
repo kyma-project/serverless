@@ -1,4 +1,4 @@
-# Create and modify an inline Function
+# Create and Modify an Inline Function
 
 This tutorial shows how you can create a simple "Hello World" Function in Node.js. The Function's code and dependencies are defined as an inline code in the Function's **spec**.
 
@@ -9,15 +9,15 @@ To learn more about Function's signature, `event` and `context` objects, and cus
 
 ## Steps
 
-You can create a Function with Kyma Dashboard, Kyma CLI, or kubectl:
+You can create a Function with Kyma dashboard, Kyma CLI, or kubectl:
 
 <!-- tabs:start -->
 
 #### **Kyma Dashboard**
 
->**NOTE:** Kyma Dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
+>**NOTE:** Kyma dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
 
-1.  Create a Namespace or select one from the drop-down list in the top navigation panel.
+1.  Create a namespace or select one from the drop-down list in the top navigation panel.
 
 2.  Go to **Workloads** > **Functions** and select **Create Function**.
 

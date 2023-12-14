@@ -1,6 +1,6 @@
-# Serverless limitations
+# Serverless Limitations
 
-## Controller limitations
+## Controller Limitations
 Serverless controller does not serve time-critical requests from users.
 It reconciles Function custom resources (CR), stored at the Kubernetes API Server, and has no persistent state on its own.
 
@@ -10,10 +10,10 @@ Refer to the [architecture](technical-reference/04-10-architecture.md) diagram f
 Having this in mind Serverless Controller does not require horizontal scaling.
 It scales vertically up to the `160Mi` of memory and `500m` of CPU time.
 
-## Limitation for the number of Functions
+## Limitation for the Number of Functions
 There is no upper limit of Functions that can be run on Kyma (similar to Kubernetes workloads in general). Once a user defines a Function, its build jobs and runtime Pods will always be requested by Serverless controller. It's up to Kubernetes to schedule them based on the available memory and CPU time on the Kubernetes worker nodes. This is determined mainly by the number of the Kubernetes worker nodes (and the node auto-scaling capabilities) and their computational capacity.
 
-## Build phase limitation:
+## Build Phase Limitation:
 The time necessary to build Function depends on:
  - selected [build profile](technical-reference/07-80-available-presets.md#build-jobs-resources) that determines the requested resources (and their limits) for the build phase 
  - number and size of dependencies that must be downloaded and bundled into the Function image
@@ -41,7 +41,7 @@ The shortest build time (the limit) is approximately 15 seconds and requires no 
 
 Running multiple Function build jobs at once (especially with no limits) may drain the cluster resources. To mitigate such risk, there is an additional limit of 5 simultaneous Function builds. If a sixth one is scheduled, it is built once there is a vacancy in the build queue.
 
-## Runtime phase limitations
+## Runtime Phase Limitations
 In the runtime, the Functions serve user-provided logic wrapped in the WEB framework (`express` for Node.js and `bottle` for Python). Taking the user logic aside, those frameworks have limitations and depend on the selected [runtime profile](technical-reference/07-80-available-presets.md#functions-resources) and the Kubernetes nodes specification (see the note with reference specification at the end of this document).
 
 The following describes the response times of the selected runtime profiles for a "Hello World" Function requested at 50 requests/second. This describes the overhead of the serving framework itself. Any user logic added on top of that will add extra milliseconds and must be profiled separately.
@@ -74,7 +74,7 @@ Obviously, the bigger the runtime profile, the more resources are available to s
 Function runtime Pods can be scaled horizontally from zero up to the limits of the available resources at the Kubernetes worker nodes.
 See the [Use external scalers](tutorials/01-130-use-external-scalers.md) tutorial for more information.
 
-## In-cluster Docker registry
+## In-Cluster Docker Registry
 
 Serverless comes with an in-cluster Docker registry for the Function images. For more information on the Docker registry configuration, visit [Serverless configuration](00-20-configure-serverless.md#configure-docker-registry).
 

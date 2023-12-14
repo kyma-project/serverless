@@ -1,4 +1,4 @@
-# Set an external Docker registry
+# Set an External Docker Registry
 
 By default, you install Kyma with Serverless that uses the internal Docker registry running on a cluster. This tutorial shows how to override this default setup with an external Docker registry from one of these cloud providers:
 
@@ -32,7 +32,7 @@ By default, you install Kyma with Serverless that uses the internal Docker regis
 
 ## Steps
 
-### Create required cloud resources
+### Create Required Cloud Resources
 
 <!-- tabs:start -->
 
@@ -177,7 +177,7 @@ Create an ACR and a service principal. Follow these steps:
 
 <!-- tabs:end -->
 
-### Override Serverless configuration
+### Override Serverless Configuration
 
 Prepare yaml file with overrides that match your Docker registry provider:
 
@@ -229,7 +229,7 @@ EOF
 
 >**CAUTION:** If you want to set an external Docker registry before you install Kyma, manually apply the Secret to the cluster before you run the installation script.
 
-### Apply configuration
+### Apply Configuration
 
 Deploy Kyma with different configuration for Docker registry . Run:
 

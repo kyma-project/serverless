@@ -8,7 +8,7 @@ The `serverlesses.operator.kyma-project.io` CustomResourceDefinition (CRD) is a 
    kubectl get crd serverlesses.operator.kyma-project.io -o yaml
    ```
 
-## Sample custom resource
+## Sample Custom Resource
 
 The following Serverless custom resource (CR) shows configuration of Serverless with the external registry, custom endpoints for eventing and tracing and custom additional configuration.
 
@@ -55,7 +55,7 @@ The following Serverless custom resource (CR) shows configuration of Serverless 
      traceCollectorURL: http://telemetry-otlp-traces.kyma-system.svc.cluster.local:4318/v1/traces
    ```
 
-## Custom resource parameters
+## Custom Resource Parameters
 
 For details, see the [Serverless specification file](https://github.com/kyma-project/serverless-manager/blob/main/components/operator/api/v1alpha1/serverless_types.go).
 <!-- TABLE-START -->
@@ -111,12 +111,12 @@ For details, see the [Serverless specification file](https://github.com/kyma-pro
 
 <!-- TABLE-END -->
 
-### Status reasons
+### Status Reasons
 
 Processing of a Serverless CR can succeed, continue, or fail for one of these reasons:
 
 
-# Serverless CR conditions
+# Serverless CR Conditions
 
 This section describes the possible states of the Serverless CR. Three condition types, `Installed`, `Configured` and `Deleted`, are used.
 

@@ -1,4 +1,4 @@
-# Failure to build Functions
+# Failure to Build Functions
 
 ## Symptom
 
@@ -45,7 +45,7 @@ If the value of the storage does not change, restart the Pod to which this PVC i
 
 To do this, follow these steps:
 
-1. List all available Pods in the `kyma-system` Namespace:
+1. List all available Pods in the `kyma-system` namespace:
 
   ```bash
   kubectl get pods -n kyma-system

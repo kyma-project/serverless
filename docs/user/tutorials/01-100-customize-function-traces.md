@@ -1,4 +1,4 @@
-# Customize Function traces
+# Customize Function Traces
 
 This tutorial shows how to use the built-in OpenTelemetry tracer object to send custom trace data to the trace backend.
 

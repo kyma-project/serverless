@@ -1,4 +1,4 @@
-# Function's specification
+# Function's Specification
 
 With the Serverless module, you can create Functions in both Node.js and Python. Although the Function's interface is unified, its specification differs depending on the runtime used to run the Function.
 
@@ -35,7 +35,7 @@ def main(event, context):
 
 <!-- tabs:end -->
 
-### Event object
+### Event Object
 
 The `event` object contains information about the event the Function refers to. For example, an API request event holds the HTTP request object.
 
@@ -98,7 +98,7 @@ See the detailed descriptions of these fields:
 | **extensions** | JSON object that can contain event payload, a Function's incoming request, or an outgoing response |
 
 
-### Event object SDK
+### Event Object SDK
 
 The `event` object is extended by methods making some operations easier. You can use every method by providing `event.{FUNCTION_NAME(ARGUMENTS...)}`.
 
@@ -124,7 +124,7 @@ The `event` object is extended by methods making some operations easier. You can
 
 <!-- tabs:end -->
 
-### Context object
+### Context Object
 
 The `context` object contains information about the Function's invocation, such as runtime details, execution timeout, or memory limits.
 
@@ -149,11 +149,11 @@ See the detailed descriptions of these fields:
 | **runtime** | Environment used to run the Function. You can use `nodejs16` - deprecated, `nodejs18`, or `python39`. |
 | **memory-limit** | Maximum amount of memory assigned to run a Function                                       |
 
-## HTTP requests
+## HTTP Requests
 
 You can use the **event.extensions.request** object to access properties and methods of a given request that vary depending on the runtime. For more information, read the API documentation for [Node.js Express](http://expressjs.com/en/api.html#req) and [Python](https://bottlepy.org/docs/dev/api.html#the-request-object).
 
-## Custom HTTP responses
+## Custom HTTP Responses
 
 By default, a failing Function simply throws an error to tell the Event Service to reinject the event at a later point. Such an HTTP-based Function returns the HTTP status code `500`.  If you manage to invoke a Function successfully, the system returns the default HTTP status code `200`.
 
@@ -219,7 +219,7 @@ def main(event, context):
 
 <!-- tabs:end -->
 
-## Override runtime image
+## Override Runtime Image
 
 You can use a custom runtime image to override the existing one. Your image must meet all the following requirements:
 

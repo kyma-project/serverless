@@ -1,4 +1,4 @@
-# Serverless configuration
+# Serverless Configuration
 
 ## Overview
 
@@ -31,7 +31,7 @@ The default configuration of the Serverless Module is following:
        enableInternal: true
    ```
 
-## Configure Docker registry
+## Configure Docker Registry
 
 By default, Serverless uses PersistentVolume (PV) as the internal registry to store Docker images for Functions. The default storage size of a single volume is 20 GB. This internal registry is suitable for local development.
 
@@ -39,7 +39,7 @@ If you use Serverless for production purposes, it is recommended that you use an
 
 Follow these steps to use the external Docker registry in Serverless: 
 
-1. Create a Secret in the `kyma-system` Namespace with the required data (`username`, `password`, `serverAddress`, and `registryAddress`):
+1. Create a Secret in the `kyma-system` namespace with the required data (`username`, `password`, `serverAddress`, and `registryAddress`):
 
    ```bash
    kubectl create secret generic my-registry-config \
@@ -104,7 +104,7 @@ To learn how to authenticate with ACR, visit the [ACR documentation](https://lea
 The URL of the currently used Docker registry is visible in the Serverless CR status.
 
 
-## Configure trace endpoint
+## Configure Trace Endpoint
 
 By default, the Serverless operator checks if there is a trace endpoint available. If available, the detected trace endpoint is used as the trace collector URL in Functions.
 If no trace endpoint is detected, Functions are configured with no trace collector endpoint.
@@ -117,7 +117,7 @@ The currently used trace endpoint is visible in the Serverless CR status.
        endpoint: http://jaeger-collector.observability.svc.cluster.local:4318/v1/traces
    ```
 
-## Configure Eventing endpoint
+## Configure Eventing Endpoint
 
 You can configure a custom eventing endpoint, so when you use SDK for sending events from your Functions, it is used to publish events.
 The currently used trace endpoint is visible in the Serverless CR status.
@@ -129,7 +129,7 @@ By default `http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publis
        endpoint: http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish
    ```
 
-## Configure target CPU utilization percentage
+## Configure Target CPU Utilization Percentage
 
 You can set a custom target threshold for CPU utilization. The default value is set to `50%`.
 
@@ -138,7 +138,7 @@ You can set a custom target threshold for CPU utilization. The default value is 
       targetCPUUtilizationPercentage: 50
 ```
 
-## Configure the Function requeue duration
+## Configure the Function Requeue Duration
 
 By default, the Function associated with the default configuration will be requeued every 5 minutes.  
 
@@ -147,7 +147,7 @@ By default, the Function associated with the default configuration will be reque
       functionRequeueDuration: 5m
 ```
 
-## Configure the Function build executor arguments
+## Configure the Function Build Executor Arguments
 
 Use this label to choose the arguments passed to the Function build executor, for example: 
 - `--insecure` - executor operates in an insecure mode
@@ -161,7 +161,7 @@ Use this label to choose the arguments passed to the Function build executor, fo
       functionBuildExecutorArgs: "--insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true"
 ```
 
-## Configure the Function build max simultaneous jobs
+## Configure the Function Build Max Simultaneous Jobs
 
 You can set a custom maximum number of simultaneous jobs which can run at the same time. The default value is set to `5`.
 
@@ -170,7 +170,7 @@ You can set a custom maximum number of simultaneous jobs which can run at the sa
       functionBuildMaxSimultaneousJobs: 5
 ```
 
-## Configure the healthz liveness timeout
+## Configure the healthz Liveness Timeout
 
 By default, the Function is considered unhealthy if the liveness health check endpoint does not respond within 10 seconds.
 
@@ -179,7 +179,7 @@ By default, the Function is considered unhealthy if the liveness health check en
       healthzLivenessTimeout: "10s"
 ```
 
-## Configure the Function request body limit
+## Configure the Function Request Body Limit
 
 Use this field to configure the maximum size limit for the request body of a Function. The default value is set to `1` megabyte.
 
@@ -188,7 +188,7 @@ Use this field to configure the maximum size limit for the request body of a Fun
       functionRequestBodyLimitMb: 1
 ```
 
-## Configure the Function timeout
+## Configure the Function Timeout
 
 By default, the maximum execution time limit for a Function is set to `180` seconds.
 
@@ -197,7 +197,7 @@ By default, the maximum execution time limit for a Function is set to `180` seco
       functionTimeoutSec: 180
 ```
 
-## Configure the default build Job preset
+## Configure the Default Build Job Preset
 
 You can configure the default build Job preset to be used. 
 
@@ -206,7 +206,7 @@ You can configure the default build Job preset to be used.
       defaultBuildJobPreset: "normal"
 ```
 
-## Configure the default runtime Pod preset
+## Configure the Default Runtime Pod Preset
 
 You can configure the default runtime Pod preset to be used.
 
