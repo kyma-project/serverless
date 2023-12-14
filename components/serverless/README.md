@@ -22,9 +22,9 @@ To run the manager and set up envs correctly, source [controller.env](./hack/con
 You can customize the configuration by editing files in [hack](./hack) dir. 
 
 
-### Environment variables
+### Environment Variables
 
-#### The Function Controller uses these environment variables:
+#### The Function Controller Uses These Environment Variables:
 
 | Variable                                                  | Description                                                                                                                                                                                                                                                                                                  | Default value                                                                                                                                          |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -52,7 +52,7 @@ You can customize the configuration by editing files in [hack](./hack) dir.
 | **APP_FUNCTION_DOCKER_REGISTRY_ADDRESS**                  | External address of the Docker registry                                                                                                                                                                                                                                                                      | `registry.kyma.local`                                                                                                                                  |
 | **APP_FUNCTION_TARGET_CPU_UTILIZATION_PERCENTAGE**        | Average CPU usage of all the Pods in a given Deployment. It is represented as a percentage of the overall requested CPU. If the CPU consumption is higher or lower than this limit, HorizontalPodAutoscaler (HPA) scales the Deployment and increases or decreases the number of Pod replicas accordingly. | `50`                                                                                                                                                     |
 
-#### The Webhook uses these environment variables:
+#### The Webhook Uses These Environment Variables:
 
 | Variable                                  | Description                                                                               | Default value        |
 | ----------------------------------------- | ----------------------------------------------------------------------------------------- | -------------------- |
