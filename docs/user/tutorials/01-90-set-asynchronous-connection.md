@@ -123,7 +123,7 @@ This tutorial shows only one possible use case. There are many more use cases on
     schemaVersion: v1
    ```
 
-1.  Apply your receiver Function:
+3.  Apply your receiver Function:
      ```bash
      kyma apply function
      ```

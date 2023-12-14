@@ -229,7 +229,7 @@ EOF
 
 >**CAUTION:** If you want to set an external Docker registry before you install Kyma, manually apply the Secret to the cluster before you run the installation script.
 
-### Apply configuration
+### Apply Configuration
 
 Deploy Kyma with different configuration for Docker registry . Run:
 

@@ -149,7 +149,7 @@ You can now install the Flux operator, connect it with a specific Git repository
 
   ![GitHub account settings](../../assets/svls-settings.png)
 
-1. Go to the **SSH and GPG keys** section and select the **New SSH key** button:
+9. Go to the **SSH and GPG keys** section and select the **New SSH key** button:
 
   ![Create a new SSH key](../../assets/svls-create-ssh-key.png)
 

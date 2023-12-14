@@ -13,7 +13,7 @@ Use the following tools to set up the project:
 
 ## Usage
 
-### Run a local version
+### Run a Local Version
 
 To run integration tests, follow these instructions:
 
@@ -29,7 +29,7 @@ To run integration tests, follow these instructions:
    go run cmd/main.go {scenario} --test-suite {test-suite}
    ```
 
-### Environment variables
+### Environment Variables
 
 Use the following environment variables to configure the application:
 
@@ -53,7 +53,7 @@ Use the following environment variables to configure the application:
 
 ## Development
 
-### Install dependencies
+### Install Dependencies
 
 This project uses `go modules` as a dependency manager. To install all required dependencies, use the following command:
 
