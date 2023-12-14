@@ -54,11 +54,14 @@ spec:
       {{- end }}
       initContainers:
         - name: remove-old-mutating-secret
-          image: "{{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.k8s_tools) }}"
+          image: rancher/kubectl:v1.26.11
           command:
-            - "sh"
-            - "-c"
-            - "kubectl delete mutatingwebhookconfigurations mutating.secrets --ignore-not-found=true"
+            - "kubectl"
+          args: 
+            - "delete"
+            - "mutatingwebhookconfigurations"
+            - "mutating.secrets"
+            - "--ignore-not-found=true"
            {{- if .Values.initContainer.securityContext }}
           securityContext:
             {{- include "tplValue" ( dict "value" .Values.initContainer.securityContext "context" . ) | nindent 12 }}
