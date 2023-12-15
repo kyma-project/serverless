@@ -68,12 +68,10 @@ The following code samples illustrate how to enrich the default trace with custo
 #### **Python**
 
       [OpenTelemetry SDK](https://opentelemetry.io/docs/instrumentation/python/manual/#traces) allows you to customize trace spans and events.
-      Additionally, if you are using the `requests` library then all the HTTP communication can be auto-instrumented:
 
       ```python
       import requests
       import time
-      from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
       def main(event, context):
          # Create a new span to track some work
@@ -89,8 +87,6 @@ The following code samples illustrate how to enrich the default trace with custo
          time.sleep(1)
 
          # This span is also closed when it goes out of scope
-
-         RequestsInstrumentor().instrument()
 
          # This request will be auto-intrumented
          r = requests.get('https://swapi.dev/api/people/2')
