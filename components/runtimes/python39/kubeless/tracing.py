@@ -18,6 +18,7 @@ from opentelemetry.sdk.trace.sampling import (
 
 from opentelemetry.trace import context_api
 from opentelemetry.trace.propagation import _SPAN_KEY
+from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
 import os
 
@@ -38,6 +39,9 @@ def _setup_tracer(service_name: str) -> trace.Tracer:
  
     # Sets the global default tracer provider
     trace.set_tracer_provider(provider)
+
+    #Auto instrument all requests via `requests` library
+    RequestsInstrumentor().instrument()
 
     # Creates a tracer from the global tracer provider
     return trace.get_tracer(__name__)
