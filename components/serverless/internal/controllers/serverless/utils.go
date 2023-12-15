@@ -145,8 +145,9 @@ processing_next_item:
 	return out
 }
 
-func buildDeploymentEnvs(namespace, traceCollectorEndpoint, publisherProxyAddress string) []corev1.EnvVar {
+func buildDeploymentEnvs(name, namespace, traceCollectorEndpoint, publisherProxyAddress string) []corev1.EnvVar {
 	return []corev1.EnvVar{
+		{Name: "FUNC_NAME", Value: name},
 		{Name: "SERVICE_NAMESPACE", Value: namespace},
 		{Name: "TRACE_COLLECTOR_ENDPOINT", Value: traceCollectorEndpoint},
 		{Name: "PUBLISHER_PROXY_ADDRESS", Value: publisherProxyAddress},

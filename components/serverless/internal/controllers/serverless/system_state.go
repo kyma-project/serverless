@@ -414,9 +414,9 @@ func (s *systemState) buildDeployment(cfg buildDeploymentArgs, resourceConfig Re
 	rtmCfg := fnRuntime.GetRuntimeConfig(s.instance.Spec.Runtime)
 
 	envs := append(s.instance.Spec.Env, rtmCfg.RuntimeEnvs...)
-	envs = append(envs, instanceEnvs(s.instance)...)
 
 	deploymentEnvs := buildDeploymentEnvs(
+		s.instance.GetName(),
 		s.instance.GetNamespace(),
 		cfg.TraceCollectorEndpoint,
 		cfg.PublisherProxyAddress,
@@ -766,13 +766,4 @@ func enrichPodSpecWithSecurityContext(ps *corev1.PodSpec, user int64, userGroup 
 	ps.HostNetwork = false
 	ps.HostPID = false
 	ps.HostIPC = false
-}
-
-func instanceEnvs(instance serverlessv1alpha2.Function) []corev1.EnvVar {
-	return []corev1.EnvVar{
-		{
-			Name:  "FUNC_NAME",
-			Value: instance.GetName(),
-		},
-	}
 }
