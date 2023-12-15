@@ -22,11 +22,13 @@ func stateFnValidateFunction(_ context.Context, r *reconciler, s *systemState) (
 	buildResourceCfg := r.cfg.fn.ResourceConfig.BuildJob.Resources
 	validateBuildResources := validateBuildResourcesFn(rc, buildResourceCfg.MinRequestedCPU.Quantity, buildResourceCfg.MinRequestedMemory.Quantity)
 
+	spec := s.instance.Spec
 	validationFns := []validationFn{
 		validateFunctionResources,
 		validateBuildResources,
-		validateEnvs(s.instance.Spec.Env, "spec.env"),
-		validateSecretMounts(s.instance.Spec.SecretMounts),
+		validateEnvs(spec.Env, "spec.env"),
+		validateSecretMounts(spec.SecretMounts),
+		validateInlineDeps(spec.Runtime, spec.Source.Inline),
 	}
 	validationResults := []string{}
 	for _, validationFn := range validationFns {
@@ -104,6 +106,20 @@ func secretNamesAreUnique(secretMounts []serverlessv1alpha2.SecretMount) bool {
 		uniqueSecretNames[secretMount.SecretName] = true
 	}
 	return len(uniqueSecretNames) == len(secretMounts)
+}
+
+func validateInlineDeps(runtime serverlessv1alpha2.Runtime, inlineSource *serverlessv1alpha2.InlineSource) validationFn {
+	return func() []string {
+		if inlineSource == nil {
+			return []string{}
+		}
+		if err := serverlessv1alpha2.ValidateDependencies(runtime, inlineSource.Dependencies); err != nil {
+			return []string{
+				fmt.Sprintf("invalid source.inline.dependencies value: %s", err.Error()),
+			}
+		}
+		return []string{}
+	}
 }
 
 func enrichErrors(errs []string, path string, value string) []string {

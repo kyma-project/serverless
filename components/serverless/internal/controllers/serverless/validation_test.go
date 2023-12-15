@@ -19,10 +19,8 @@ import (
 	"testing"
 )
 
-func TestValidation(t *testing.T) {
-	//GIVEN
-	ctx := context.TODO()
-	minResourcesCfg := ResourceConfig{
+var (
+	minResourcesCfg = ResourceConfig{
 		Function: FunctionResourceConfig{
 			Resources: Resources{
 				MinRequestedCPU:    Quantity{resource.MustParse("10m")},
@@ -36,6 +34,11 @@ func TestValidation(t *testing.T) {
 			},
 		},
 	}
+)
+
+func TestValidation_Invalid(t *testing.T) {
+	//GIVEN
+	ctx := context.TODO()
 
 	k8sClient := fake.NewClientBuilder().Build()
 	require.NoError(t, serverlessv1alpha2.AddToScheme(scheme.Scheme))
@@ -338,6 +341,21 @@ func TestValidation(t *testing.T) {
 			},
 			expectedCondMsg: "invalid spec.secretMounts: [secretNames should be unique]",
 		},
+		"Improper dependencies for JS": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs18,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source:       "source code",
+							Dependencies: "invalid dependencies",
+						},
+					},
+				},
+			},
+			expectedCondMsg: "invalid source.inline.dependencies value: deps should start with '{' and end with '}'",
+		},
 	}
 
 	//WHEN
@@ -367,51 +385,114 @@ func TestValidation(t *testing.T) {
 
 		})
 	}
+}
 
-	t.Run("Valid function", func(t *testing.T) {
-		//GIVEN
-		fn := serverlessv1alpha2.Function{
-			ObjectMeta: metav1.ObjectMeta{
-				GenerateName: "test-fn",
-			},
-			Spec: serverlessv1alpha2.FunctionSpec{
-				ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
-					Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
-						Limits: map[corev1.ResourceName]resource.Quantity{
-							corev1.ResourceCPU:    resource.MustParse("120m"),
-							corev1.ResourceMemory: resource.MustParse("120Mi"),
+func TestValidation_Valid(t *testing.T) {
+	//GIVEN
+	ctx := context.TODO()
+
+	k8sClient := fake.NewClientBuilder().Build()
+	require.NoError(t, serverlessv1alpha2.AddToScheme(scheme.Scheme))
+	resourceClient := serverlessResource.New(k8sClient, scheme.Scheme)
+
+	statsCollector := &automock.StatsCollector{}
+	statsCollector.On("UpdateReconcileStats", mock.Anything, mock.Anything).Return()
+
+	testCases := map[string]struct {
+		fn serverlessv1alpha2.Function
+	}{
+		"Valid function": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					GenerateName: "test-fn",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
+							Limits: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("120m"),
+								corev1.ResourceMemory: resource.MustParse("120Mi"),
+							},
+							Requests: map[corev1.ResourceName]resource.Quantity{
+								corev1.ResourceCPU:    resource.MustParse("100m"),
+								corev1.ResourceMemory: resource.MustParse("100Mi"),
+							}}},
+					},
+					Env: []corev1.EnvVar{
+						{Name: "_CORRECT_ENV"},
+						{Name: "ANOTHER_CORRECT_ENV"},
+					},
+					SecretMounts: []serverlessv1alpha2.SecretMount{
+						{
+							SecretName: "secret-name",
+							MountPath:  "mount-path",
 						},
-						Requests: map[corev1.ResourceName]resource.Quantity{
-							corev1.ResourceCPU:    resource.MustParse("100m"),
-							corev1.ResourceMemory: resource.MustParse("100Mi"),
-						}}},
-				},
-				Env: []corev1.EnvVar{
-					{Name: "_CORRECT_ENV"},
-					{Name: "ANOTHER_CORRECT_ENV"},
-				},
-				SecretMounts: []serverlessv1alpha2.SecretMount{
-					{
-						SecretName: "secret-name",
-						MountPath:  "mount-path",
 					},
 				},
 			},
-		}
-		r := &reconciler{out: out{result: controllerruntime.Result{Requeue: true}},
-			k8s: k8s{client: resourceClient, recorder: record.NewFakeRecorder(100), statsCollector: statsCollector},
-			cfg: cfg{fn: FunctionConfig{ResourceConfig: minResourcesCfg}}}
+		},
+		"Dependencies for JS": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs18,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source:       "source code",
+							Dependencies: "{valid javascript dependencies}",
+						},
+					},
+				},
+			},
+		},
+		"Dependencies for Python": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source:       "source code",
+							Dependencies: "valid python dependencies",
+						},
+					},
+				},
+			},
+		},
+		"Empty dependencies": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs18,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source: "source code",
+						},
+					},
+				},
+			},
+		},
+	}
 
-		//WHEN
-		require.NoError(t, resourceClient.Create(ctx, &fn))
-		s := &systemState{instance: fn}
-		_, err := stateFnValidateFunction(ctx, r, s)
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			require.NoError(t, resourceClient.Create(ctx, &tc.fn))
+			s := &systemState{instance: tc.fn}
+			r := &reconciler{out: out{result: controllerruntime.Result{Requeue: true}},
+				k8s: k8s{client: resourceClient, recorder: record.NewFakeRecorder(100), statsCollector: statsCollector},
+				cfg: cfg{fn: FunctionConfig{ResourceConfig: minResourcesCfg}}}
 
-		//THEN
-		require.NoError(t, err)
-		updatedFn := serverlessv1alpha2.Function{}
-		require.NoError(t, resourceClient.Get(ctx, ctrlclient.ObjectKey{Name: fn.Name}, &updatedFn))
-		assert.True(t, r.result.Requeue)
+			//WHEN
+			nextFn, err := stateFnValidateFunction(ctx, r, s)
+			require.NoError(t, err)
+			_, err = nextFn(context.TODO(), r, s)
 
-	})
+			//THEN
+			require.NoError(t, err)
+			updatedFn := serverlessv1alpha2.Function{}
+			require.NoError(t, resourceClient.Get(ctx, ctrlclient.ObjectKey{Name: tc.fn.Name}, &updatedFn))
+			assert.True(t, r.result.Requeue)
+
+		})
+	}
 }
