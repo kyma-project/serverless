@@ -416,6 +416,7 @@ func (s *systemState) buildDeployment(cfg buildDeploymentArgs, resourceConfig Re
 	envs := append(s.instance.Spec.Env, rtmCfg.RuntimeEnvs...)
 
 	deploymentEnvs := buildDeploymentEnvs(
+		s.instance.GetName(),
 		s.instance.GetNamespace(),
 		cfg.TraceCollectorEndpoint,
 		cfg.PublisherProxyAddress,

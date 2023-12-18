@@ -15,16 +15,12 @@ process.on("uncaughtException", (err) => {
     console.error(`Caught exception: ${err}`);
 });
 
-const podName = process.env.HOSTNAME || "";
-const serviceNamespace = process.env.SERVICE_NAMESPACE || "";
-let serviceName = podName.substring(0, podName.lastIndexOf("-"));
-serviceName = serviceName.substring(0, serviceName.lastIndexOf("-"));
-const defaultFunctioneName = serviceName.substring(0, serviceName.lastIndexOf("-"));
-const functionName = process.env.FUNC_NAME || defaultFunctioneName;
+const serviceNamespace = process.env.SERVICE_NAMESPACE;
+const functionName = process.env.FUNC_NAME;
 const bodySizeLimit = Number(process.env.REQ_MB_LIMIT || '1');
 const funcPort = Number(process.env.FUNC_PORT || '8080');
 
-const otelServiceName = [serviceName, serviceNamespace].join('.')
+const otelServiceName = [functionName, serviceNamespace].join('.')
 const tracer = setupTracer(otelServiceName);
 setupMetrics(otelServiceName);
 
