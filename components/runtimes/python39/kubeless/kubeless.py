@@ -14,12 +14,6 @@ from ce import Event
 from tracing import set_req_context
 
 
-def create_service_name(pod_name: str, service_namespace: str) -> str:
-    # remove generated pods suffix ( two last sections )
-    deployment_name = '-'.join(pod_name.split('-')[0:pod_name.count('-') - 1])
-    return '.'.join([deployment_name, service_namespace])
-
-
 # The reason this file has an underscore prefix in its name is to avoid a
 # name collision with the user-defined module.
 module_name = os.getenv('MOD_NAME')
@@ -58,7 +52,7 @@ function_context = {
 
 function_name = os.getenv('FUNC_NAME')
 service_namespace = os.getenv('SERVICE_NAMESPACE')
-service_name = create_service_name(function_name, service_namespace)
+service_name = '.'.join([function_name, service_namespace])
 
 if __name__ == "__main__":
     tracer = tracing._setup_tracer(service_name)
