@@ -172,21 +172,18 @@ func envsEqual(existing, expected []corev1.EnvVar) bool {
 	return true
 }
 
-func mapsContains(existing, expected map[string]string) bool {
-	for key, value := range existing {
-		if v, ok := expected[key]; !ok || v != value {
-			return false
-		}
-	}
-	return true
-}
-
 func mapsEqual(existing, expected map[string]string) bool {
 	if len(existing) != len(expected) {
 		return false
 	}
 
-	return mapsContains(existing, expected)
+	for key, value := range existing {
+		if v, ok := expected[key]; !ok || v != value {
+			return false
+		}
+	}
+
+	return true
 }
 
 // TODO refactor to make this code more readable
@@ -206,7 +203,6 @@ func equalDeployments(existing appsv1.Deployment, expected appsv1.Deployment) bo
 func equalServices(existing corev1.Service, expected corev1.Service) bool {
 	return mapsEqual(existing.Spec.Selector, expected.Spec.Selector) &&
 		mapsEqual(existing.Labels, expected.Labels) &&
-		mapsContains(existing.Annotations, expected.Annotations) &&
 		len(existing.Spec.Ports) == len(expected.Spec.Ports) &&
 		len(expected.Spec.Ports) > 0 &&
 		len(existing.Spec.Ports) > 0 &&
