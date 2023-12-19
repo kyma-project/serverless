@@ -138,7 +138,7 @@ func (m *reconciler) populateStatusFromSystemState(status *serverlessv1alpha2.Fu
 	status.RuntimeImageOverride = s.instance.Spec.RuntimeImageOverride
 
 	// set scale sub-resource
-	selector, err := metav1.LabelSelectorAsSelector(&metav1.LabelSelector{MatchLabels: s.podLabels()})
+	selector, err := metav1.LabelSelectorAsSelector(&metav1.LabelSelector{MatchLabels: s.deploymentSelectorLabels()})
 	if err != nil {
 		m.log.Warnf("failed to get selector for labelSelector: %w", err)
 		return errors.Wrap(err, "while getting selectors")

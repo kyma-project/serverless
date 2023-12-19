@@ -356,6 +356,39 @@ func TestValidation_Invalid(t *testing.T) {
 			},
 			expectedCondMsg: "invalid source.inline.dependencies value: deps should start with '{' and end with '}'",
 		},
+		"Invalid label name": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Labels: map[string]string{
+						".invalid-name": "value",
+					},
+				},
+			},
+			expectedCondMsg: "spec.labels: Invalid value: \".invalid-name\": name part must consist of alphanumeric characters, '-', '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyName',  or 'my.name',  or '123-abc', regex used for validation is '([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]')",
+		},
+		"Invalid label value": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Labels: map[string]string{
+						"name": ".invalid-value",
+					},
+				},
+			},
+			expectedCondMsg: "spec.labels: Invalid value: \".invalid-value\": a valid label must be an empty string or consist of alphanumeric characters, '-', '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyValue',  or 'my_value',  or '12345', regex used for validation is '(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?')",
+		},
+		"Invalid annotation name": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Annotations: map[string]string{
+						".invalid-name": "value",
+					},
+				},
+			},
+			expectedCondMsg: "spec.annotations: Invalid value: \".invalid-name\": name part must consist of alphanumeric characters, '-', '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyName',  or 'my.name',  or '123-abc', regex used for validation is '([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]')",
+		},
 	}
 
 	//WHEN
@@ -382,7 +415,6 @@ func TestValidation_Invalid(t *testing.T) {
 			assert.NotEmpty(t, tc.expectedCondMsg, "expected message shouldn't be empty")
 			assert.Equal(t, tc.expectedCondMsg, cond.Message)
 			assert.False(t, r.result.Requeue)
-
 		})
 	}
 }
@@ -427,6 +459,15 @@ func TestValidation_Valid(t *testing.T) {
 							SecretName: "secret-name",
 							MountPath:  "mount-path",
 						},
+					},
+					Labels: map[string]string{
+						"name1": "value1",
+						"name2": "value2",
+						"name3": "",
+					},
+					Annotations: map[string]string{
+						"name1": "value1",
+						"name2": "value2",
 					},
 				},
 			},

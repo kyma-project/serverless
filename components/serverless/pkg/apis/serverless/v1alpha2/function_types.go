@@ -210,13 +210,13 @@ type FunctionSpec struct {
 
 	// Defines labels used in Deployment's PodTemplate and applied on the Function's runtime Pod.
 	// +optional
-	// +kubebuilder:validation:XValidation:message="Labels has key starting with serverless.kyma-project.io/",rule="!(self.exists(e, e.startsWith('serverless.kyma-project.io/')))"
+	// +kubebuilder:validation:XValidation:message="Labels has key starting with serverless.kyma-project.io/ which is not allowed",rule="!(self.exists(e, e.startsWith('serverless.kyma-project.io/')))"
 	// +kubebuilder:validation:XValidation:message="Label value cannot be longer than 63",rule="self.all(e, size(e)<64)"
 	Labels map[string]string `json:"labels,omitempty"`
 
 	// Defines annotations used in Deployment's PodTemplate and applied on the Function's runtime Pod.
 	// +optional
-	// +kubebuilder:validation:XValidation:message="Annotations has key starting with serverless.kyma-project.io/",rule="!(self.exists(e, e.startsWith('serverless.kyma-project.io/')))"
+	// +kubebuilder:validation:XValidation:message="Annotations has key starting with serverless.kyma-project.io/ which is not allowed",rule="!(self.exists(e, e.startsWith('serverless.kyma-project.io/')))"
 	Annotations map[string]string `json:"annotations,omitempty"`
 }
 

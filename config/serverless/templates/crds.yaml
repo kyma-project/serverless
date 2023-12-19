@@ -68,6 +68,7 @@ spec:
                 type: object
                 x-kubernetes-validations:
                 - message: Annotations has key starting with serverless.kyma-project.io/
+                    which is not allowed
                   rule: '!(self.exists(e, e.startsWith(''serverless.kyma-project.io/'')))'
               env:
                 description: Specifies an array of key-value pairs to be used as environment
@@ -192,6 +193,7 @@ spec:
                 type: object
                 x-kubernetes-validations:
                 - message: Labels has key starting with serverless.kyma-project.io/
+                    which is not allowed
                   rule: '!(self.exists(e, e.startsWith(''serverless.kyma-project.io/'')))'
                 - message: Label value cannot be longer than 63
                   rule: self.all(e, size(e)<64)

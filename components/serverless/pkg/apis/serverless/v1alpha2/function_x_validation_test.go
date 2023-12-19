@@ -349,7 +349,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				},
 			},
 		},
-		"label value lenght is 63": {
+		"label value length is 63": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -824,6 +824,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			assert.Equal(t, tc.expectedCause, cause.Type)
 			assert.Equal(t, tc.fieldPath, cause.Field)
 			assert.NotEmpty(t, tc.expectedErrMsg, "cause message: %s", cause.Message)
+			//TODO: better will be Equal comparison
 			assert.Contains(t, cause.Message, tc.expectedErrMsg)
 		})
 	}
