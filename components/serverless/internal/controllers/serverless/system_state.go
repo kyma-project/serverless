@@ -57,7 +57,7 @@ func (s *systemState) functionLabels() map[string]string {
 
 func (s *systemState) functionAnnotations() map[string]string {
 	return map[string]string{
-		"prometheus.io/port":   "80",
+		"prometheus.io/port":   svcTargetPort.String(),
 		"prometheus.io/path":   "/metrics",
 		"prometheus.io/scrape": "true",
 	}
