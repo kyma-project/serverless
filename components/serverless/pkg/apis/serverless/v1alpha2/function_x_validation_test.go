@@ -749,6 +749,18 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			fieldPath:      "spec.source",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
+		"Neither GitRepository nor Inline source was used": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source:  serverlessv1alpha2.Source{},
+				},
+			},
+			expectedErrMsg: "Use GitRepository or Inline source",
+			fieldPath:      "spec.source",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
 		"Secret Mount name is empty": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,

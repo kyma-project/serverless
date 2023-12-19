@@ -135,21 +135,6 @@ func TestFunctionSpec_validateResources(t *testing.T) {
 			},
 			expectedError: gomega.BeNil(),
 		},
-		"Should return error when source is not filled": {
-			givenFunc: Function{
-				ObjectMeta: metav1.ObjectMeta{Name: "test", Namespace: "test"},
-				Spec: FunctionSpec{
-					Runtime: NodeJs18,
-					Source:  Source{},
-				},
-			},
-			expectedError: gomega.HaveOccurred(),
-			specifiedExpectedError: gomega.And(
-				gomega.ContainSubstring(
-					"source",
-				),
-			),
-		},
 		"should be OK for git sourceType": {
 			givenFunc: Function{
 				ObjectMeta: metav1.ObjectMeta{Name: "test", Namespace: "test"},
