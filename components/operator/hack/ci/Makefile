@@ -1,8 +1,8 @@
 OPERATOR_ROOT ?= ../..
 PROJECT_ROOT ?= $(OPERATOR_ROOT)/../..
 PROJECT_COMMON ?= $(OPERATOR_ROOT)/hack/common
-IMG_DIRECTORY ?= "dev" # image directory ( prod / dev )
-IMG_VERSION ?= "PR-${PULL_NUMBER}" # image version ( release tag / commit hash / PR-<number> )
+IMG_DIRECTORY ?= "prod" # image directory ( prod / dev )
+IMG_VERSION ?= "main" # image version ( release tag / commit hash / PR-<number> )
 MODULE_VERSION ?= 0.0.0
 
 ifndef MODULE_SHA
@@ -115,8 +115,11 @@ render-manifest:
 
 .PHONY: replace-chart-images
 replace-chart-images:
-	./${PROJECT_ROOT}/components/serverless/hack/poc_script_replace_images.sh "${IMG_DIRECTORY}" "${IMG_VERSION}"
-
+	yq -i "(.global.images[] | select(.version == \"main\") | .directory) = \"${IMG_DIRECTORY}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
+	yq -i "(.global.images[] | select(.version == \"main\") | .version) = \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
+	echo "==== Local Changes ===="
+	git diff #Used for troubleshooting
+	echo "==== End of Local Changes ===="
 
 
 
