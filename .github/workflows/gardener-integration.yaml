@@ -35,3 +35,5 @@ jobs:
         GARDENER_SECRET_NAME: ${{ secrets.GARDENER_SECRET_NAME }}
         GARDENER_PROJECT: ${{ secrets.GARDENER_PROJECT }}
         GARDENER_SA_PATH: /tmp/gardener-sa.yaml
+        IMG_DIRECTORY: "prod"
+        IMG_VERSION: ${{ github.sha }}
