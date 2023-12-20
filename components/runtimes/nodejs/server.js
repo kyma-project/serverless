@@ -20,13 +20,12 @@ const functionName = process.env.FUNC_NAME;
 const bodySizeLimit = Number(process.env.REQ_MB_LIMIT || '1');
 const funcPort = Number(process.env.FUNC_PORT || '8080');
 
-const otelServiceName = [functionName, serviceNamespace].join('.')
-const tracer = setupTracer(otelServiceName);
-setupMetrics(otelServiceName);
+const tracer = setupTracer();
+setupMetrics();
 
-const callsTotalCounter = createFunctionCallsTotalCounter(otelServiceName);
-const failuresTotalCounter = createFunctionFailuresTotalCounter(otelServiceName);
-const durationHistogram = createFunctionDurationHistogram(otelServiceName);
+const callsTotalCounter = createFunctionCallsTotalCounter(functionName);
+const failuresTotalCounter = createFunctionFailuresTotalCounter(functionName);
+const durationHistogram = createFunctionDurationHistogram(functionName);
 
 //require express must be called AFTER tracer was setup!!!!!!
 const express = require("express");

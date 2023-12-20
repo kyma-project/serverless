@@ -44,18 +44,15 @@ bottle.BaseRequest.MEMFILE_MAX = memfile_max
 app = application = bottle.app()
 
 function_context = {
-    'function-name': func.__name__,
+    'function-name': os.getenv('FUNC_NAME'),
+    'namespace': os.getenv('SERVICE_NAMESPACE'),
     'timeout': timeout,
     'runtime': os.getenv('FUNC_RUNTIME'),
     'memory-limit': os.getenv('FUNC_MEMORY_LIMIT'),
 }
 
-function_name = os.getenv('FUNC_NAME')
-service_namespace = os.getenv('SERVICE_NAMESPACE')
-service_name = '.'.join([function_name, service_namespace])
-
 if __name__ == "__main__":
-    tracer = tracing._setup_tracer(service_name)
+    tracer = tracing._setup_tracer()
 
 
 def func_with_context(e, function_context):

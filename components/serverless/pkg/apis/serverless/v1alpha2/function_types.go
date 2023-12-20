@@ -318,6 +318,7 @@ const (
 	FunctionResourceLabel                = "serverless.kyma-project.io/resource"
 	FunctionResourceLabelDeploymentValue = "deployment"
 	FunctionResourceLabelUserValue       = "user"
+	PodAppNameLabel                      = "app.kubernetes.io/name"
 )
 
 //+kubebuilder:object:root=true

@@ -6,12 +6,9 @@ const { SemanticResourceAttributes } = require( '@opentelemetry/semantic-convent
 
 let exporter;
 
-function setupMetrics(serviceName){
+function setupMetrics(){
 
-    const resource = new Resource({
-        [SemanticResourceAttributes.SERVICE_NAME]: serviceName,
-    });
-
+    const resource = new Resource();
 
     const myServiceMeterProvider = new MeterProvider({
     resource,

@@ -322,8 +322,9 @@ func TestGitOpsWithContinuousGitCheckout(t *testing.T) {
 			expectedImage := s.buildImageAddress("localhost:32132")
 			g.Expect(deployment).To(gomega.Not(gomega.BeNil()))
 			g.Expect(deployment).To(haveSpecificContainer0Image(expectedImage))
-			g.Expect(deployment).To(haveLabelLen(7))
+			g.Expect(deployment).To(haveLabelLen(8))
 			g.Expect(deployment).To(haveLabelWithValue(serverlessv1alpha2.FunctionNameLabel, function.Name))
+			g.Expect(deployment).To(haveLabelWithValue(serverlessv1alpha2.PodAppNameLabel, function.Name))
 			g.Expect(deployment).To(haveLabelWithValue(serverlessv1alpha2.FunctionManagedByLabel, serverlessv1alpha2.FunctionControllerValue))
 			g.Expect(deployment).To(haveLabelWithValue(serverlessv1alpha2.FunctionUUIDLabel, string(function.UID)))
 			g.Expect(deployment).To(haveLabelWithValue(
@@ -569,8 +570,9 @@ func TestGitOpsWithoutContinuousGitCheckout(t *testing.T) {
 			expectedImage := s.buildImageAddress("localhost:32132")
 			g.Expect(deployment).To(gomega.Not(gomega.BeNil()))
 			g.Expect(deployment).To(haveSpecificContainer0Image(expectedImage))
-			g.Expect(deployment).To(haveLabelLen(7))
+			g.Expect(deployment).To(haveLabelLen(8))
 			g.Expect(deployment).To(haveLabelWithValue(serverlessv1alpha2.FunctionNameLabel, function.Name))
+			g.Expect(deployment).To(haveLabelWithValue(serverlessv1alpha2.PodAppNameLabel, function.Name))
 			g.Expect(deployment).To(haveLabelWithValue(serverlessv1alpha2.FunctionManagedByLabel, serverlessv1alpha2.FunctionControllerValue))
 			g.Expect(deployment).To(haveLabelWithValue(serverlessv1alpha2.FunctionUUIDLabel, string(function.UID)))
 			g.Expect(deployment).To(haveLabelWithValue(
