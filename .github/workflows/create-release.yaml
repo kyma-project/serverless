@@ -53,6 +53,11 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: Bump sec-scanners-config.yaml
+        run: ./.github/scripts/upgrade-sec-scanners-config.sh
+        env:
+          IMG_VERSION: ${{ github.event.inputs.name }}
+      
       - name: Bump values.yaml
         run: |
           make -C components/operator/hack/ci replace-chart-images
