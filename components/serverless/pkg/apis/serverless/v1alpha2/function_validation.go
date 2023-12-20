@@ -45,30 +45,14 @@ func (fn *Function) getBasicValidations() []validationFunction {
 	}
 }
 
-var (
-	ErrUnknownFunctionType = fmt.Errorf("unknown function source type")
-)
-
 func (fn *Function) Validate(vc *ValidationConfig) error {
 	validations := fn.getBasicValidations()
 
-	switch {
-	case fn.TypeOf(FunctionTypeInline):
-		return runValidations(vc, validations...)
-
-	case fn.TypeOf(FunctionTypeGit):
+	if fn.TypeOf(FunctionTypeGit) {
 		gitAuthValidators := fn.Spec.gitAuthValidations()
 		validations = append(validations, gitAuthValidators...)
-		return runValidations(vc, validations...)
-
-	default:
-		validations = append(validations, unknownFunctionTypeValidator)
-		return runValidations(vc, validations...)
 	}
-}
-
-func unknownFunctionTypeValidator(_ *ValidationConfig) error {
-	return ErrUnknownFunctionType
+	return runValidations(vc, validations...)
 }
 
 func runValidations(vc *ValidationConfig, vFuns ...validationFunction) error {

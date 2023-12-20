@@ -146,7 +146,9 @@ func TestValidatingWebHook_Handle(t *testing.T) {
 									"namespace": "default"
 								},
 								"spec": {
-									"runtime": "python39"
+									"source": {
+                                        "gitRepository": {}
+                                    }
 								}   
 							}`),
 						},
