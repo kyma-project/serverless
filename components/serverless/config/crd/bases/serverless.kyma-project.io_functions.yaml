@@ -405,6 +405,12 @@ spec:
                     required:
                     - url
                     type: object
+                    x-kubernetes-validations:
+                    - message: BaseDir is required and cannot be empty
+                      rule: has(self.baseDir) && (self.baseDir.trim().size() != 0)
+                    - message: Reference is required and cannot be empty
+                      rule: has(self.reference) && (self.reference.trim().size() !=
+                        0)
                   inline:
                     description: Defines the Function as the inline Function. Can't
                       be used together with **GitRepository**.

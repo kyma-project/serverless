@@ -345,7 +345,13 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.Python39,
 					Source: serverlessv1alpha2.Source{
-						GitRepository: &serverlessv1alpha2.GitRepositorySource{}},
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							Repository: serverlessv1alpha2.Repository{
+								BaseDir:   "base-dir",
+								Reference: "ref",
+							},
+						},
+					},
 				},
 			},
 		},
@@ -355,7 +361,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.Python39,
 					Source: serverlessv1alpha2.Source{
-						GitRepository: &serverlessv1alpha2.GitRepositorySource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "abc"}},
 					Labels: map[string]string{
 						strings.Repeat("a", 63): "test",
 					},
@@ -368,7 +374,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.Python39,
 					Source: serverlessv1alpha2.Source{
-						GitRepository: &serverlessv1alpha2.GitRepositorySource{}},
+						Inline: &serverlessv1alpha2.InlineSource{Source: "abc"}},
 					SecretMounts: []serverlessv1alpha2.SecretMount{{MountPath: "/path", SecretName: "secret-name"}},
 				},
 			},
@@ -818,6 +824,44 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			},
 			expectedErrMsg: "should be at least 1 chars long",
 			fieldPath:      "spec.source.inline.source",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
+		"Git source has empty BaseDir": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							Repository: serverlessv1alpha2.Repository{
+								BaseDir:   "   ",
+								Reference: "ref",
+							},
+						},
+					},
+				},
+			},
+			expectedErrMsg: "BaseDir is required and cannot be empty",
+			fieldPath:      "spec.source.gitRepository",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
+		"Git source has empty Reference": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							Repository: serverlessv1alpha2.Repository{
+								BaseDir:   "dir",
+								Reference: "   ",
+							},
+						},
+					},
+				},
+			},
+			expectedErrMsg: "Reference is required and cannot be empty",
+			fieldPath:      "spec.source.gitRepository",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
 	}
