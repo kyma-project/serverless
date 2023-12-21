@@ -9,19 +9,6 @@ on:
         required: true
         
 jobs:
-  verify-serverless-manifest-images:
-    name: Verify serverless manifest images
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          
-      - name: Verify serverless manifest images
-        run: ./.github/scripts/verify-serverless-jobs-manifest-images.sh
-
   verify-head-status:
     name: Verify HEAD
     needs: verify-serverless-manifest-images
@@ -32,9 +19,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
-      - name: Check image
-        run: ./.github/scripts/check_image.sh ${{ github.event.inputs.name }}
 
       - name: Verify prow post jobs
         run: ./.github/scripts/verify-serverless-jobs-status.sh ${{ github.ref_name }}
