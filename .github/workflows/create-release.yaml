@@ -11,7 +11,6 @@ on:
 jobs:
   verify-head-status:
     name: Verify HEAD
-    needs: verify-serverless-manifest-images
     runs-on: ubuntu-latest
 
     steps:
