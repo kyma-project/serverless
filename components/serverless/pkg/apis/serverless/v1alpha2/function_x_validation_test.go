@@ -411,6 +411,49 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 		fieldPath      string
 		expectedCause  metav1.CauseType
 	}{
+		"Invalid metadata.name": {
+			// metadata use kubernetes default validator - this test is to make sure it works
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      ".invalid-name",
+					Namespace: "test",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source: "some-source",
+						},
+					},
+				},
+			},
+			expectedErrMsg: "Invalid value: \".invalid-name\"",
+			fieldPath:      "metadata.name",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
+		"Invalid metadata.label": {
+			// metadata use kubernetes default validator - this test is to make sure it works
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "function-name",
+					Namespace: "test",
+					Labels: map[string]string{
+						".invalid-label": "value",
+					},
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source: "some-source",
+						},
+					},
+				},
+			},
+			expectedErrMsg: "Invalid value: \".invalid-label\": name part must consist of alphanumeric characters",
+			fieldPath:      "metadata.labels",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
 		"Resource and Profiles used together in function": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,

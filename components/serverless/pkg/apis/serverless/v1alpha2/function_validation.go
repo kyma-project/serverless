@@ -7,8 +7,6 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"k8s.io/apimachinery/pkg/api/validation"
-	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
 const ValidationConfigKey = "validation-config"
@@ -39,20 +37,12 @@ type ValidationConfig struct {
 
 type validationFunction func(*ValidationConfig) error
 
-func (fn *Function) getBasicValidations() []validationFunction {
-	return []validationFunction{
-		fn.validateObjectMeta,
-	}
-}
-
 func (fn *Function) Validate(vc *ValidationConfig) error {
-	validations := fn.getBasicValidations()
-
 	if fn.TypeOf(FunctionTypeGit) {
-		gitAuthValidators := fn.Spec.gitAuthValidations()
-		validations = append(validations, gitAuthValidators...)
+		validations := fn.Spec.gitAuthValidations()
+		return runValidations(vc, validations...)
 	}
-	return runValidations(vc, validations...)
+	return nil
 }
 
 func runValidations(vc *ValidationConfig, vFuns ...validationFunction) error {
@@ -63,15 +53,6 @@ func runValidations(vc *ValidationConfig, vFuns ...validationFunction) error {
 		}
 	}
 	return returnAllErrs("", allErrs)
-}
-
-func (fn *Function) validateObjectMeta(_ *ValidationConfig) error {
-	nameFn := validation.ValidateNameFunc(validation.NameIsDNS1035Label)
-	fieldPath := field.NewPath("metadata")
-	if errs := validation.ValidateObjectMeta(&fn.ObjectMeta, true, nameFn, fieldPath); errs != nil {
-		return errs.ToAggregate()
-	}
-	return nil
 }
 
 func (spec *FunctionSpec) validateGitRepoURL(_ *ValidationConfig) error {

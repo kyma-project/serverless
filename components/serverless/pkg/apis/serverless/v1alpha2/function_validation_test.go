@@ -15,18 +15,6 @@ func TestFunctionSpec_validateResources(t *testing.T) {
 		expectedError          gomega.OmegaMatcher
 		specifiedExpectedError gomega.OmegaMatcher
 	}{
-		"Should return errors on empty function": {
-			givenFunc:     Function{},
-			expectedError: gomega.HaveOccurred(),
-			specifiedExpectedError: gomega.And(
-				gomega.ContainSubstring(
-					"metadata.name",
-				),
-				gomega.ContainSubstring(
-					"metadata.namespace",
-				),
-			),
-		},
 		"Should be ok": {
 			givenFunc: Function{
 				ObjectMeta: metav1.ObjectMeta{Name: "test", Namespace: "test"},
