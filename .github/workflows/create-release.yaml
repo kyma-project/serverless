@@ -91,8 +91,9 @@ jobs:
       - name: Create release assets
         id: create-assets
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IMG: "europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.event.inputs.name }}"
           PULL_BASE_REF: ${{ github.event.inputs.name }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./.github/scripts/release.sh
 
       - name: Verify Assets
