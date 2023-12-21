@@ -1,0 +1,43 @@
+name: Verify if images' main tags are not modified
+run-name: ${{github.event.pull_request.title}}
+on: 
+  pull_request:
+    branches: 
+      - main
+    paths: 
+      - sec-scanners-config.yaml
+      - config/serverless/values.yaml
+
+jobs:
+  verify-image-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout to main
+        uses: actions/checkout@v3
+        with:
+          ref: main
+
+      - name: Export main images from the main ref
+        run: |
+          # export sec-scanners-config.yaml images with the main tag as github env
+          echo SSC_MAIN_IMAGES=$(yq '.protecode[] | select(contains(":main")) | sub(":.*", "")' sec-scanners-config.yaml) >> $GITHUB_ENV
+          
+          # export values. images with the main tag as github env
+          echo VALUES_MAIN_IMAGES=$(yq '.global.images[] | select(.version == "main") | .name' config/serverless/values.yaml) >> $GITHUB_ENV
+
+      - name: Checkout to context
+        uses: actions/checkout@v3
+      
+      - name: Verify sec-scanners-config.yaml images
+        run: |
+          PR_NOT_MAIN_IMAGES=$(yq '.protecode[] | select(contains(":main") | not ) | sub(":.*", "")' sec-scanners-config.yaml) \
+            .github/scripts/verify-image-changes.sh
+        env:
+          MAIN_IMAGES: ${{ env.SSC_MAIN_IMAGES }}
+      
+      - name: Verify values.yaml images
+        run: |
+          PR_NOT_MAIN_IMAGES=$(yq '.global.images[] | select(.version != "main") | .name' config/serverless/values.yaml) \
+            .github/scripts/verify-image-changes.sh
+        env:
+          MAIN_IMAGES: ${{ env.VALUES_MAIN_IMAGES }}
