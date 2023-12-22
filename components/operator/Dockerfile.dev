@@ -1,0 +1,46 @@
+# Build the operator binary
+FROM golang:1.21.4 as builder
+
+WORKDIR /workspace
+
+# Copy the Go Modules manifests
+COPY components/operator/go.mod components/operator/go.sum ./
+
+# cache deps before building and copying source so that we don't need to re-download as much
+# and so that source changes don't invalidate our downloaded layer
+RUN go mod download
+
+# Copy the go source
+COPY components/operator .
+
+# Build
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o operator ./main.go
+
+# Replace main images in values.yaml
+FROM alpine as replacer
+
+WORKDIR /workspace
+
+ARG IMG_DIRECTORY
+ARG IMG_VERSION
+
+ENV IMG_DIRECTORY=$IMG_DIRECTORY
+ENV IMG_VERSION=$IMG_VERSION
+
+RUN apk update && apk add make yq
+
+COPY components/operator/hack/ci components/operator/hack/ci
+COPY config/serverless config/serverless
+
+RUN make -C components/operator/hack/ci replace-chart-images
+
+# Use distroless as minimal base image to package the operator binary
+# Refer to https://github.com/GoogleContainerTools/distroless for more details
+FROM gcr.io/distroless/static:nonroot
+
+WORKDIR /
+COPY --chown=65532:65532 --from=builder /workspace/operator .
+COPY --chown=65532:65532 --from=replacer /workspace/config/serverless /module-chart
+USER 65532:65532
+
+ENTRYPOINT ["/operator"]
