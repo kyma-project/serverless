@@ -147,8 +147,12 @@ func TestValidatingWebHook_Handle(t *testing.T) {
 								},
 								"spec": {
 									"source": {
-                                        "gitRepository": {}
-                                    }
+										"gitRepository": {
+											"auth": {
+												"type": "invalid"
+											}
+										}
+									}
 								}   
 							}`),
 						},

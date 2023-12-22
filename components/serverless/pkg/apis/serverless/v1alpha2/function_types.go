@@ -71,6 +71,8 @@ type GitRepositorySource struct {
 	// +optional
 	Auth *RepositoryAuth `json:"auth,omitempty"`
 
+	// +kubebuilder:validation:XValidation:message="BaseDir is required and cannot be empty",rule="has(self.baseDir) && (self.baseDir.trim().size() != 0)"
+	// +kubebuilder:validation:XValidation:message="Reference is required and cannot be empty",rule="has(self.reference) && (self.reference.trim().size() != 0)"
 	Repository `json:",inline"`
 }
 

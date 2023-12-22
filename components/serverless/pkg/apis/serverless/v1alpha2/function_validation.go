@@ -85,12 +85,9 @@ func (spec *FunctionSpec) validateGitRepoURL(_ *ValidationConfig) error {
 
 func (spec *FunctionSpec) gitAuthValidations() []validationFunction {
 	if spec.Source.GitRepository.Auth == nil {
-		return []validationFunction{
-			spec.validateRepository,
-		}
+		return []validationFunction{}
 	}
 	return []validationFunction{
-		spec.validateRepository,
 		spec.validateGitAuthType,
 		spec.validateGitAuthSecretName,
 		spec.validateGitRepoURL,
@@ -113,18 +110,6 @@ func (spec *FunctionSpec) validateGitAuthType(_ *ValidationConfig) error {
 	default:
 		return ErrInvalidGitRepositoryAuthType
 	}
-}
-
-type property struct {
-	name  string
-	value string
-}
-
-func (spec *FunctionSpec) validateRepository(_ *ValidationConfig) error {
-	return validateIfMissingFields([]property{
-		{name: "spec.source.gitRepository.baseDir", value: spec.Source.GitRepository.BaseDir},
-		{name: "spec.source.gitRepository.reference", value: spec.Source.GitRepository.Reference},
-	}...)
 }
 
 func urlIsSSH(repoURL string) bool {

@@ -179,50 +179,6 @@ func TestFunctionSpec_validateResources(t *testing.T) {
 			},
 			expectedError: gomega.BeNil(),
 		},
-		"Should return errors OK if reference and baseDir is missing": {
-			givenFunc: Function{
-				ObjectMeta: metav1.ObjectMeta{Name: "test", Namespace: "test"},
-				Spec: FunctionSpec{
-					Source: Source{
-						GitRepository: &GitRepositorySource{
-							URL: "testme",
-						},
-					},
-					ResourceConfiguration: &ResourceConfiguration{
-						Function: &ResourceRequirements{
-							Resources: &corev1.ResourceRequirements{
-								Limits: corev1.ResourceList{
-									corev1.ResourceCPU:    resource.MustParse("100m"),
-									corev1.ResourceMemory: resource.MustParse("128Mi"),
-								},
-								Requests: corev1.ResourceList{
-									corev1.ResourceCPU:    resource.MustParse("50m"),
-									corev1.ResourceMemory: resource.MustParse("64Mi"),
-								},
-							},
-						},
-						Build: &ResourceRequirements{
-							Resources: &corev1.ResourceRequirements{
-								Limits: corev1.ResourceList{
-									corev1.ResourceCPU:    resource.MustParse("200m"),
-									corev1.ResourceMemory: resource.MustParse("200Mi"),
-								},
-								Requests: corev1.ResourceList{
-									corev1.ResourceCPU:    resource.MustParse("200m"),
-									corev1.ResourceMemory: resource.MustParse("200Mi"),
-								},
-							},
-						},
-					},
-					Runtime: NodeJs18,
-				},
-			},
-			specifiedExpectedError: gomega.And(
-				gomega.ContainSubstring("spec.source.gitRepository.reference"),
-				gomega.ContainSubstring("spec.source.gitRepository.baseDir"),
-			),
-			expectedError: gomega.HaveOccurred(),
-		},
 		"Should validate without error Resources and Profile occurring at once in ResourceConfiguration.Function/Build": {
 			givenFunc: Function{
 				ObjectMeta: metav1.ObjectMeta{Name: "test", Namespace: "test"},
