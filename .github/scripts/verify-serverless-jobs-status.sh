@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+### Verify post-submit prow jobs status
+#
+# Optional input args:
+#   - REF_NAME - branch/tag/commit
+# Return status:
+#   - return 0 - if status is "success"
+#   - return 1 - if status is "failure" or after timeout (~25min)
+
+# wait until Prow trigger pipelines
 sleep 10
 
 echo "Checking status of POST Jobs for Serverless"
@@ -15,7 +24,7 @@ function verify_github_jobs_status () {
 		echo "jobs status: ${STATUS:='UNKNOWN'}"
 		[[ "$STATUS" == "success" ]] && return 0
 		[[ "$STATUS" == "failure" ]] && return 1
-		sleep 5
+		sleep 15
         	((number = number + 1))
 	done
 

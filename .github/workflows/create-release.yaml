@@ -96,7 +96,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./.github/scripts/release.sh
 
-      - name: Verify Assets
+      - name: Verify prow release jobs
         run: ./.github/scripts/verify-serverless-jobs-status.sh ${{ github.ref_name }}
 
     outputs:
