@@ -118,7 +118,7 @@ replace-chart-images:
 	yq -i "(.global.images[] | select(.version == \"main\") | .directory) = \"${IMG_DIRECTORY}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
 	yq -i "(.global.images[] | select(.version == \"main\") | .version) = \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
 	@echo "==== Local Changes ===="
-	git diff #Used for troubleshooting
+	yq '.global.images' ${PROJECT_ROOT}/config/serverless/values.yaml 
 	@echo "==== End of Local Changes ===="
 
 

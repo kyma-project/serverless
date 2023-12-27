@@ -141,7 +141,7 @@ kyma:
 
 .PHONY: module-image
 module-image:
-	@make -C ${OPERATOR_ROOT} module-image \
+	@make -C ${OPERATOR_ROOT} module-image-release \
 		IMG=localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
 
 .PHONY: module-build
