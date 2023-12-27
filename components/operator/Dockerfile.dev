@@ -29,10 +29,11 @@ ENV IMG_VERSION=$IMG_VERSION
 
 RUN apk update && apk add make yq
 
-COPY components/operator/hack/ci components/operator/hack/ci
+COPY components/operator/hack components/operator/hack
 COPY config/serverless config/serverless
 
-RUN make -C components/operator/hack/common replace-chart-images
+
+RUN make -C components/operator/hack/ci replace-chart-images
 
 # Use distroless as minimal base image to package the operator binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
