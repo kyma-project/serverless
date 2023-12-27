@@ -167,3 +167,11 @@ deploy-k3d:
 .PHONY: deploy-cluster
 deploy-cluster:
 	@make -C ${OPERATOR_ROOT} deploy
+
+.PHONY: replace-chart-images
+replace-chart-images:
+	yq -i "(.global.images[] | select(.version == \"main\") | .directory) = \"${IMG_DIRECTORY}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
+	yq -i "(.global.images[] | select(.version == \"main\") | .version) = \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
+	@echo "==== Local Changes ===="
+	yq '.global.images' ${PROJECT_ROOT}/config/serverless/values.yaml
+	@echo "==== End of Local Changes ===="
