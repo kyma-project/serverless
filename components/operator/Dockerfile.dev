@@ -32,7 +32,6 @@ RUN apk update && apk add make yq
 COPY components/operator/hack components/operator/hack
 COPY config/serverless config/serverless
 
-
 RUN make -C components/operator/hack/ci replace-chart-images
 
 # Use distroless as minimal base image to package the operator binary
