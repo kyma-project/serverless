@@ -58,7 +58,7 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
 4. Build and push the image to the registry.
 
     ```bash
-    make module-image
+    make module-image-release
     ```
 
 5. Deploy Serverless Operator.

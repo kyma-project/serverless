@@ -26,7 +26,7 @@ help: ## Display this help.
 run-with-lifecycle-manager: ## Create k3d cluster and deploy module with the lifecycle-manager.
 run-with-lifecycle-manager: kyma \
 	create-k3d \
-	module-image \
+	module-image-release \
 	module-build \
 	fix-template \
 	install-kyma-with-lm \
@@ -39,7 +39,7 @@ run-with-lifecycle-manager: kyma \
 run-without-lifecycle-manager: ## Create k3d cluster and deploy module without the lifecycle-manager.
 run-without-lifecycle-manager: kyma \
 	create-k3d \
-	module-image \
+	module-image-release \
 	deploy \
 	apply-serverless \
 	verify-serverless
@@ -141,7 +141,7 @@ kyma:
 
 .PHONY: module-image
 module-image:
-	@make -C ${OPERATOR_ROOT} module-image \
+	@make -C ${OPERATOR_ROOT} module-image-release \
 		IMG=localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
 
 .PHONY: module-build
