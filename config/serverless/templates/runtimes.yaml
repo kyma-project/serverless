@@ -6,6 +6,7 @@ metadata:
   labels:
     serverless.kyma-project.io/config: runtime
     serverless.kyma-project.io/runtime: nodejs16
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
 data:
   Dockerfile: |-
     ARG base_image={{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.function_runtime_nodejs16) }}
@@ -34,6 +35,7 @@ metadata:
   labels:
     serverless.kyma-project.io/config: runtime
     serverless.kyma-project.io/runtime: nodejs18
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
 data:
   Dockerfile: |-
     ARG base_image={{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.function_runtime_nodejs18) }}
@@ -62,6 +64,7 @@ metadata:
   labels:
     serverless.kyma-project.io/config: runtime
     serverless.kyma-project.io/runtime: python39
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
 data:
   Dockerfile: |-
     ARG base_image={{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.function_runtime_python39) }}

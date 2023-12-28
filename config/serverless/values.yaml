@@ -57,7 +57,9 @@ global:
     app.kubernetes.io/name: '{{ template "name" . }}'
     app.kubernetes.io/instance: "{{ .Release.Name }}"
     app.kubernetes.io/version: "{{ .Values.global.images.function_controller.version }}"
+    app.kubernetes.io/part-of: "serverless"
     helm.sh/chart: '{{ include "chart" . }}'
+    kyma-project.io/module: "serverless"
   registryServicePort: 5000
   registryNodePort: 32137
   configuration:
