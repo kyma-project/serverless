@@ -243,7 +243,14 @@ data:
             sourceType: |-
               $sourceType = 'Inline' ? $language = 'JavaScript' ? $exists($root.metadata.creationTimestamp) ? $root.spec.source.inline.source : "module.exports = {
                 main: async function (event, context) {
-                  const message = `Hello World`
+                  var queryParams = event['extensions']['request']['query'];
+    
+                  //read query param, for example `?greeting=Hi`
+                  var greetingMsg = queryParams['greeting']; 
+                  if(!greetingMsg) {
+                    greetingMsg = 'Hello world';
+                  } 
+                  const message = greetingMsg
                     + ` from the Kyma Function ${context['function-name']}`
                     + ` running on ${context.runtime}!`;
                   console.log(message);
@@ -251,14 +258,25 @@ data:
                 }
               }" :
               $language = 'Python' ? $exists($root.metadata.creationTimestamp) ? $root.spec.source.inline.source : "def main(event, context):
-                  message = 'Hello World from the Kyma Function '+context['function-name']+' running on '+context['runtime']+ '!';
+                  request = event['extensions']['request']
+                  greetingMsg = request.query.get('greeting')
+                  if not greetingMsg:
+                    greetingMsg = 'Hello world'
+                  message = greetingMsg + ' from the Kyma Function '+context['function-name']+' running on '+context['runtime']+ '!';
                   print(message)
                   return message" :
               '' : ''
             language: |-
               $language = 'JavaScript' ? $exists($root.metadata.creationTimestamp) ? $root.spec.source.inline.source : "module.exports = {
                 main: async function (event, context) {
-                  const message = `Hello World`
+                  var queryParams = event['extensions']['request']['query'];
+    
+                  //read query param, for example `?greeting=Hi`
+                  var greetingMsg = queryParams['greeting']; 
+                  if(!greetingMsg) {
+                    greetingMsg = 'Hello world';
+                  } 
+                  const message = greetingMsg
                     + ` from the Kyma Function ${context['function-name']}`
                     + ` running on ${context.runtime}!`;
                   console.log(message);
@@ -266,7 +284,11 @@ data:
                 }
               }" :
               $language = 'Python' ? $exists($root.metadata.creationTimestamp) ? $root.spec.source.inline.source : "def main(event, context):
-                  message = 'Hello World from the Kyma Function '+context['function-name']+' running on '+context['runtime']+ '!';
+                  request = event['extensions']['request']
+                  greetingMsg = request.query.get('greeting')
+                  if not greetingMsg:
+                    greetingMsg = 'Hello world'
+                  message = greetingMsg + ' from the Kyma Function '+context['function-name']+' running on '+context['runtime']+ '!';
                   print(message)
                   return message" :
               ''
