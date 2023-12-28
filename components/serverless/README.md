@@ -137,3 +137,20 @@ Otherwise create an empty directory named `libgit2`.
    ```bash
    brew link libgit2
    ```
+
+### Symptom
+
+Function Controller tests keep failing with such an error message:
+
+```
+assertion failed [!result.is_error]: Failed to create temporary file
+(ThreadContextFcntl.cpp:84 create_tempfile)
+```
+
+### Cause
+
+Docker engine uses Rosetta for virtualization
+
+### Remedy
+
+Disable `Use Rosetta for x86/amd64 emulation on Apple Silicon` option in the Docker Desktop general settings.
