@@ -36,7 +36,6 @@ integration-test:
 .PHONY: gardener-integration-test
 gardener-integration-test: ## Provision gardener cluster and run integration test on it.
 	@make provision-gardener \
-		replace-chart-images \
 		run-without-lm-on-cluster \
 		integration-test \
 		deprovision-gardener || \
@@ -115,11 +114,7 @@ render-manifest:
 
 .PHONY: replace-chart-images
 replace-chart-images:
-	yq -i "(.global.images[] | select(.version == \"main\") | .directory) = \"${IMG_DIRECTORY}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
-	yq -i "(.global.images[] | select(.version == \"main\") | .version) = \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
-	@echo "==== Local Changes ===="
-	yq '.global.images' ${PROJECT_ROOT}/config/serverless/values.yaml 
-	@echo "==== End of Local Changes ===="
-
+	@IMG_VERSION=${IMG_VERSION} IMG_DIRECTORY=${IMG_DIRECTORY} \
+ 		make -C ${PROJECT_COMMON} replace-chart-images
 
 
