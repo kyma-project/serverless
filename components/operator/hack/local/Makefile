@@ -23,10 +23,9 @@ run: ## Create k3d cluster with module.
 	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager
 
 .PHONY: run-for-img
-run-for-img: ## Create k3d cluster with module using local images.
-	@echo "this target requires IMG_DIRECTORY and IMG_VERSION envs"
-	@IMG_VERSION=${IMG_VERSION} IMG_DIRECTORY=${IMG_DIRECTORY} \
-		make -C ${PROJECT_COMMON} replace-chart-images run-without-lifecycle-manager
+run-for-img: ## Create k3d cluster with module using operators image in the IMG env.
+	@echo "this target requires IMG env"
+	@IMG=${IMG} make -C ${PROJECT_COMMON} create-k3d run-without-lm-on-cluster
 
 .PHONY: build-and-run
 build-and-run: ## Create k3d cluster with module using locally built images.
@@ -45,27 +44,3 @@ build-and-run: ## Create k3d cluster with module using locally built images.
 .PHONY: run-with-lm
 run-with-lm: ## Create k3d cluster with module installed by the lifecycle-manager.
 	@make -C ${PROJECT_COMMON} run-with-lifecycle-manager
-
-.PHONY: run-with-lm-for-img
-run-with-lm-for-img: ## Create k3d cluster with module installed by the lifecycle-manager using local images.
-	@echo "this target requires IMG_DIRECTORY and IMG_VERSION envs"
-	@IMG_VERSION=${IMG_VERSION} IMG_DIRECTORY=${IMG_DIRECTORY} \
-		make -C ${PROJECT_COMMON} replace-chart-images run-with-lifecycle-manager
-
-.PHONY: build-and-run-with-lm
-build-and-run-with-lm: ## Create k3d cluster with module installed by the lifecycle-manager using locally built images.
-	@make -C ${PROJECT_COMMON} kyma \
-		create-k3d
-
-	@${PROJECT_LOCAL}/build_local_images.sh
-
-	@IMG_VERSION=${IMG_VERSION} IMG_DIRECTORY=${IMG_DIRECTORY} \
-		make -C ${PROJECT_COMMON} replace-chart-images \
-		module-image \
-		module-build \
-		fix-template \
-		install-kyma-with-lm \
-		patch-mod-mgr-role \
-		install-module-template \
-		enable-module \
-		verify-kyma
