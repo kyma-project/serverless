@@ -149,7 +149,7 @@ assertion failed [!result.is_error]: Failed to create temporary file
 
 ### Cause
 
-Docker engine uses Rosetta for virtualization
+Docker engine uses Rosetta for virtualization, which causes issues on M1 Mac.
 
 ### Remedy
 
