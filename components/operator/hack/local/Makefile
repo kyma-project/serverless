@@ -54,4 +54,4 @@ build-and-run: ## Create k3d cluster with operator using locally built images.
 
 .PHONY: run-with-lm
 run-with-lm: ## Create k3d cluster with module installed by the lifecycle-manager.
-	@IMG_VERSION="local" IMG_DIRECTORY="dev" make -C ${PROJECT_COMMON} run-with-lifecycle-manager
+	@IMG_VERSION="main" IMG_DIRECTORY="prod" make -C ${PROJECT_COMMON} run-with-lifecycle-manager
