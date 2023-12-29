@@ -1,8 +1,6 @@
 PROJECT_COMMON ?= ../common
 PROJECT_LOCAL ?= ../local
 PROJECT_CI ?= ../ci
-IMG_DIRECTORY ?= "dev" # image directory ( prod / dev )
-IMG_VERSION ?= "local" # image version ( release tag / commit hash / PR-<number> )
 
 ##@ General
 
@@ -48,9 +46,8 @@ build-and-run: ## Create k3d cluster with operator using locally built images.
 
 	@${PROJECT_LOCAL}/build_local_images.sh
 
-	@IMG_VERSION=${IMG_VERSION} IMG_DIRECTORY=${IMG_DIRECTORY} \
-		make -C ${PROJECT_COMMON} replace-chart-images \
-		module-image-dev \
+	@IMG_VERSION="local" IMG_DIRECTORY="dev" \
+		make -C ${PROJECT_COMMON} module-image-dev \
 		deploy \
 		apply-serverless \
 		verify-serverless
