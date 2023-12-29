@@ -100,6 +100,7 @@ func main() {
 		Port:                   9443,
 		HealthProbeBindAddress: probeAddr,
 		SyncPeriod:             &syncPeriod,
+		NewCache:               controllers.CacheCreator,
 		// TODO: use our own logger - now eventing use logger with different message format
 	})
 	if err != nil {
