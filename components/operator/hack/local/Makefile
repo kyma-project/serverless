@@ -29,7 +29,7 @@ stop: ## Delete k3d cluster and registry.
 
 .PHONY: run
 run: ## Create k3d cluster and deploy operator.
-	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager
+	@IMG_VERSION="main" IMG_DIRECTORY="prod" make -C ${PROJECT_COMMON} run-without-lifecycle-manager
 
 .PHONY: run-for-img
 run-for-img: ## Create k3d cluster with operator using the IMG env.
@@ -54,4 +54,4 @@ build-and-run: ## Create k3d cluster with operator using locally built images.
 
 .PHONY: run-with-lm
 run-with-lm: ## Create k3d cluster with module installed by the lifecycle-manager.
-	@make -C ${PROJECT_COMMON} run-with-lifecycle-manager
+	@IMG_VERSION="local" IMG_DIRECTORY="dev" make -C ${PROJECT_COMMON} run-with-lifecycle-manager
