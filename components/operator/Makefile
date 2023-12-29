@@ -95,7 +95,7 @@ docker-build-release: manifests generate ## Build docker release image with the 
 
 .PHONY: docker-build-dev
 docker-build-dev: manifests generate ## Build docker dev image with the operator.
-	docker build -t ${IMG} -f Dockerfile.dev $(PROJECT_ROOT)
+	docker build -t ${IMG} -f Dockerfile.dev $(PROJECT_ROOT) --build-arg=IMG_DIRECTORY="$(IMG_DIRECTORY)" --build-arg=IMG_VERSION="$(IMG_VERSION)" #TODO: Defaults
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the operator.

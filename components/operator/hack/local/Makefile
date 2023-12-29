@@ -13,7 +13,7 @@ help: ## Display this help.
 .PHONY: deploy-k3d
 deploy-k3d: ## Build image and deploy operator on a k3d cluster.
 	@make -C ${PROJECT_COMMON} \
-		module-image \
+		module-image-dev \
 		deploy-k3d \
 		apply-serverless \
 		verify-serverless
@@ -50,7 +50,7 @@ build-and-run: ## Create k3d cluster with operator using locally built images.
 
 	@IMG_VERSION=${IMG_VERSION} IMG_DIRECTORY=${IMG_DIRECTORY} \
 		make -C ${PROJECT_COMMON} replace-chart-images \
-		module-image \
+		module-image-dev \
 		deploy \
 		apply-serverless \
 		verify-serverless
