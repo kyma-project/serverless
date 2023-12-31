@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/kyma-project/kyma/components/function-controller/internal/file"
+	"github.com/kyma-project/serverless/components/serverless/internal/file"
 	"go.uber.org/zap"
 )
 

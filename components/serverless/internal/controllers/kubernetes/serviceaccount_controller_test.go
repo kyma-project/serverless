@@ -2,15 +2,15 @@ package kubernetes
 
 import (
 	"context"
-	"github.com/kyma-project/kyma/components/function-controller/internal/testenv"
+	"github.com/kyma-project/serverless/components/serverless/internal/testenv"
 	"testing"
 
 	"go.uber.org/zap"
 
 	"k8s.io/client-go/kubernetes/scheme"
 
-	"github.com/kyma-project/kyma/components/function-controller/internal/resource"
-	"github.com/kyma-project/kyma/components/function-controller/internal/resource/automock"
+	"github.com/kyma-project/serverless/components/serverless/internal/resource"
+	"github.com/kyma-project/serverless/components/serverless/internal/resource/automock"
 	"github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

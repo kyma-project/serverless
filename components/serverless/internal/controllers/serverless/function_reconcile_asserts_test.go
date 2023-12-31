@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyma-project/kyma/components/function-controller/internal/resource"
+	"github.com/kyma-project/serverless/components/serverless/internal/resource"
 
 	"github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
@@ -17,7 +17,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	serverlessv1alpha2 "github.com/kyma-project/kyma/components/function-controller/pkg/apis/serverless/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 )
 
 func assertSuccessfulFunctionBuild(t *testing.T, resourceClient resource.Client, reconciler *FunctionReconciler, request ctrl.Request, fnLabels map[string]string, rebuilding bool) {

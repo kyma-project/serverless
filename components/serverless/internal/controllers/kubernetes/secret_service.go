@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kyma-project/kyma/components/function-controller/pkg/apis/serverless/v1alpha2"
+	"github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"go.uber.org/zap"
 
 	corev1 "k8s.io/api/core/v1"
@@ -13,7 +13,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/kyma-project/kyma/components/function-controller/internal/resource"
+	"github.com/kyma-project/serverless/components/serverless/internal/resource"
 )
 
 const cfgSecretFinalizerName = "serverless.kyma-project.io/finalizer-registry-config"

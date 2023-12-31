@@ -1,7 +1,7 @@
 package serverless
 
 import (
-	"github.com/kyma-project/kyma/components/function-controller/pkg/apis/serverless/v1alpha2"
+	"github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/onsi/gomega"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"testing"

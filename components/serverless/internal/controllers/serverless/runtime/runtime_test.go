@@ -3,8 +3,8 @@ package runtime_test
 import (
 	"testing"
 
-	"github.com/kyma-project/kyma/components/function-controller/internal/controllers/serverless/runtime"
-	serverlessv1alpha2 "github.com/kyma-project/kyma/components/function-controller/pkg/apis/serverless/v1alpha2"
+	"github.com/kyma-project/serverless/components/serverless/internal/controllers/serverless/runtime"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
 )

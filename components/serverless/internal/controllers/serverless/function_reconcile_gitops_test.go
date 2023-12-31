@@ -12,9 +12,9 @@ import (
 
 	git2go "github.com/libgit2/git2go/v34"
 
-	"github.com/kyma-project/kyma/components/function-controller/internal/controllers/serverless/automock"
-	"github.com/kyma-project/kyma/components/function-controller/internal/git"
-	serverlessv1alpha2 "github.com/kyma-project/kyma/components/function-controller/pkg/apis/serverless/v1alpha2"
+	"github.com/kyma-project/serverless/components/serverless/internal/controllers/serverless/automock"
+	"github.com/kyma-project/serverless/components/serverless/internal/git"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
 	autoscalingv1 "k8s.io/api/autoscaling/v1"

@@ -2,9 +2,9 @@ package serverless
 
 import (
 	"context"
-	"github.com/kyma-project/kyma/components/function-controller/internal/controllers/serverless/automock"
-	serverlessResource "github.com/kyma-project/kyma/components/function-controller/internal/resource"
-	serverlessv1alpha2 "github.com/kyma-project/kyma/components/function-controller/pkg/apis/serverless/v1alpha2"
+	"github.com/kyma-project/serverless/components/serverless/internal/controllers/serverless/automock"
+	serverlessResource "github.com/kyma-project/serverless/components/serverless/internal/resource"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"

@@ -3,7 +3,7 @@ package serverless
 import (
 	"fmt"
 
-	"github.com/kyma-project/kyma/components/function-controller/internal/git"
+	"github.com/kyma-project/serverless/components/serverless/internal/git"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 

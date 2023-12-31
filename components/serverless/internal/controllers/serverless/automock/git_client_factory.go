@@ -3,7 +3,7 @@
 package automock
 
 import (
-	git "github.com/kyma-project/kyma/components/function-controller/internal/git"
+	git "github.com/kyma-project/serverless/components/serverless/internal/git"
 	mock "github.com/stretchr/testify/mock"
 
 	zap "go.uber.org/zap"

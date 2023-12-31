@@ -8,8 +8,8 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/kyma-project/kyma/components/function-controller/internal/resource"
-	"github.com/kyma-project/kyma/components/function-controller/internal/resource/automock"
+	"github.com/kyma-project/serverless/components/serverless/internal/resource"
+	"github.com/kyma-project/serverless/components/serverless/internal/resource/automock"
 	"github.com/onsi/gomega"
 	"github.com/stretchr/testify/mock"
 	corev1 "k8s.io/api/core/v1"
