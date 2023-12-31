@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/kyma-project/serverless-manager/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/components/operator/internal/chart"
+	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
+	"github.com/kyma-project/serverless/components/operator/internal/chart"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )

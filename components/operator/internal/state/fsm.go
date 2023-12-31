@@ -7,9 +7,9 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/kyma-project/serverless-manager/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/components/operator/internal/chart"
-	"github.com/kyma-project/serverless-manager/components/operator/internal/warning"
+	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
+	"github.com/kyma-project/serverless/components/operator/internal/chart"
+	"github.com/kyma-project/serverless/components/operator/internal/warning"
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/rest"

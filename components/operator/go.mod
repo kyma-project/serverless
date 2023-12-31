@@ -1,4 +1,4 @@
-module github.com/kyma-project/serverless-manager/components/operator
+module github.com/kyma-project/serverless/components/operator
 
 go 1.19
 

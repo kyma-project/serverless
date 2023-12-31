@@ -22,8 +22,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/kyma-project/serverless-manager/components/operator/internal/config"
-	"github.com/kyma-project/serverless-manager/components/operator/internal/gitrepository"
+	"github.com/kyma-project/serverless/components/operator/internal/config"
+	"github.com/kyma-project/serverless/components/operator/internal/gitrepository"
 	"github.com/pkg/errors"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
@@ -42,8 +42,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	operatorv1alpha1 "github.com/kyma-project/serverless-manager/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/components/operator/controllers"
+	operatorv1alpha1 "github.com/kyma-project/serverless/components/operator/api/v1alpha1"
+	"github.com/kyma-project/serverless/components/operator/controllers"
 	//+kubebuilder:scaffold:imports
 )
 
