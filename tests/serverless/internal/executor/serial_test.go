@@ -2,7 +2,7 @@ package executor_test
 
 import (
 	"errors"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/executor"
+	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
 	"testing"
 
 	"github.com/onsi/gomega"

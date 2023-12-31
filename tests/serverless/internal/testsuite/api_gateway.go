@@ -2,13 +2,13 @@ package testsuite
 
 import (
 	"fmt"
-	"github.com/kyma-project/kyma/tests/function-controller/internal"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/assertion"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/executor"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/resources/function"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/resources/namespace"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/resources/runtimes"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/utils"
+	"github.com/kyma-project/serverless/tests/serverless/internal"
+	"github.com/kyma-project/serverless/tests/serverless/internal/assertion"
+	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
+	"github.com/kyma-project/serverless/tests/serverless/internal/resources/function"
+	"github.com/kyma-project/serverless/tests/serverless/internal/resources/namespace"
+	"github.com/kyma-project/serverless/tests/serverless/internal/resources/runtimes"
+	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 	"github.com/pkg/errors"
 	"time"
 

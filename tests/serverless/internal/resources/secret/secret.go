@@ -1,8 +1,8 @@
 package secret
 
 import (
-	"github.com/kyma-project/kyma/tests/function-controller/internal/resources"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/utils"
+	"github.com/kyma-project/serverless/tests/serverless/internal/resources"
+	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 	"k8s.io/apimachinery/pkg/runtime"
 
 	"github.com/sirupsen/logrus"

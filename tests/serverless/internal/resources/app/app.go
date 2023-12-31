@@ -3,8 +3,8 @@ package app
 import (
 	"context"
 	"github.com/hashicorp/go-multierror"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/executor"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/utils"
+	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
+	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

@@ -2,7 +2,7 @@ package resources
 
 import (
 	"context"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/utils"
+	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
