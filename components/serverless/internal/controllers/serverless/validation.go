@@ -34,6 +34,7 @@ func stateFnValidateFunction(_ context.Context, r *reconciler, s *systemState) (
 		validateInlineDeps(spec.Runtime, spec.Source.Inline),
 		validateFunctionLabels(spec.Labels, "spec.labels"),
 		validateFunctionAnnotations(spec.Annotations, "spec.annotations"),
+		validateGitRepoURL(spec.Source),
 	}
 	validationResults := []string{}
 	for _, validationFn := range validationFns {
@@ -48,6 +49,19 @@ func stateFnValidateFunction(_ context.Context, r *reconciler, s *systemState) (
 		return buildStatusUpdateStateFnWithCondition(cond), nil
 	}
 	return stateFnInitialize, nil
+}
+
+func validateGitRepoURL(source serverlessv1alpha2.Source) validationFn {
+	return func() []string {
+		var result []string
+		if source.GitRepository == nil {
+			return result
+		}
+		if err := serverlessv1alpha2.ValidateGitRepoURL(source.GitRepository); err != nil {
+			result = append(result, err.Error())
+		}
+		return result
+	}
 }
 
 func validateFunctionResourcesFn(rc *serverlessv1alpha2.ResourceConfiguration, minCPU resource.Quantity, minMemory resource.Quantity) validationFn {
