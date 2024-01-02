@@ -356,7 +356,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				},
 			},
 		},
-		"Git source has SecretName": {
+		"Git source has auth with key Type": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -369,6 +369,26 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 							},
 							Auth: &serverlessv1alpha2.RepositoryAuth{
 								Type:       "key",
+								SecretName: "secret",
+							},
+						},
+					},
+				},
+			},
+		},
+		"Git source has auth with basic Type": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							Repository: serverlessv1alpha2.Repository{
+								BaseDir:   "dir",
+								Reference: "ref",
+							},
+							Auth: &serverlessv1alpha2.RepositoryAuth{
+								Type:       "basic",
 								SecretName: "secret",
 							},
 						},
@@ -950,6 +970,29 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			expectedErrMsg: "SecretName is required and cannot be empty",
 			fieldPath:      "spec.source.gitRepository.auth.secretName",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
+		"Git source auth has incorrect Type": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							Repository: serverlessv1alpha2.Repository{
+								BaseDir:   "dir",
+								Reference: "ref",
+							},
+							Auth: &serverlessv1alpha2.RepositoryAuth{
+								Type:       "custom",
+								SecretName: "secret",
+							},
+						},
+					},
+				},
+			},
+			expectedErrMsg: `Unsupported value: "custom"`,
+			fieldPath:      "spec.source.gitRepository.auth.type",
+			expectedCause:  metav1.CauseTypeFieldValueNotSupported,
 		},
 	}
 	for name, tc := range testCases {
