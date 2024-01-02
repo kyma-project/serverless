@@ -2,6 +2,9 @@ package v1alpha2_test
 
 import (
 	"context"
+	"strings"
+	"testing"
+
 	"github.com/kyma-project/kyma/components/function-controller/internal/testenv"
 	serverlessv1alpha2 "github.com/kyma-project/kyma/components/function-controller/pkg/apis/serverless/v1alpha2"
 	"github.com/stretchr/testify/assert"
@@ -9,8 +12,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"strings"
-	"testing"
 )
 
 func Test_XKubernetesValidations_Valid(t *testing.T) {
@@ -349,6 +350,26 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 							Repository: serverlessv1alpha2.Repository{
 								BaseDir:   "base-dir",
 								Reference: "ref",
+							},
+						},
+					},
+				},
+			},
+		},
+		"Git source has SecretName": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							Repository: serverlessv1alpha2.Repository{
+								BaseDir:   "dir",
+								Reference: "ref",
+							},
+							Auth: &serverlessv1alpha2.RepositoryAuth{
+								Type:       "key",
+								SecretName: "secret",
 							},
 						},
 					},
@@ -905,6 +926,29 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			},
 			expectedErrMsg: "Reference is required and cannot be empty",
 			fieldPath:      "spec.source.gitRepository",
+			expectedCause:  metav1.CauseTypeFieldValueInvalid,
+		},
+		"Git source has empty SecretName": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python39,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							Repository: serverlessv1alpha2.Repository{
+								BaseDir:   "dir",
+								Reference: "ref",
+							},
+							Auth: &serverlessv1alpha2.RepositoryAuth{
+								Type:       "key",
+								SecretName: "  ",
+							},
+						},
+					},
+				},
+			},
+			expectedErrMsg: "SecretName is required and cannot be empty",
+			fieldPath:      "spec.source.gitRepository.auth.secretName",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
 	}

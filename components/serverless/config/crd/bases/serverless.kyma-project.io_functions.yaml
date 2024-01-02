@@ -373,6 +373,9 @@ spec:
                               code and dependencies. This Secret must be stored in
                               the same Namespace as the Function CR.
                             type: string
+                            x-kubernetes-validations:
+                            - message: SecretName is required and cannot be empty
+                              rule: self.trim().size() != 0
                           type:
                             description: Defines the repository authentication method.
                               The value is either `basic` if you use a password or
