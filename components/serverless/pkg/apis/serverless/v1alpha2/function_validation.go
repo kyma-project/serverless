@@ -4,9 +4,6 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
-	"strings"
-
-	"github.com/pkg/errors"
 )
 
 const ValidationConfigKey = "validation-config"
@@ -70,16 +67,8 @@ func (spec *FunctionSpec) gitAuthValidations() []validationFunction {
 	}
 	return []validationFunction{
 		spec.validateGitAuthType,
-		spec.validateGitAuthSecretName,
 		spec.validateGitRepoURL,
 	}
-}
-
-func (spec *FunctionSpec) validateGitAuthSecretName(_ *ValidationConfig) error {
-	if strings.TrimSpace(spec.Source.GitRepository.Auth.SecretName) == "" {
-		return errors.New("spec.source.gitRepository.auth.secretName is required")
-	}
-	return nil
 }
 
 var ErrInvalidGitRepositoryAuthType = fmt.Errorf("invalid git repository authentication type")

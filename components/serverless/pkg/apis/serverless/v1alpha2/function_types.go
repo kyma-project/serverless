@@ -83,6 +83,7 @@ type RepositoryAuth struct {
 	Type RepositoryAuthType `json:"type"`
 
 	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:XValidation:message="SecretName is required and cannot be empty",rule="self.trim().size() != 0"
 
 	// Specifies the name of the Secret with credentials used by the Function Controller
 	// to authenticate to the Git repository in order to fetch the Function's source code and dependencies.
