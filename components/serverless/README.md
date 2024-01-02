@@ -140,7 +140,7 @@ Otherwise create an empty directory named `libgit2`.
 
 ### Symptom
 
-Function Controller tests keep failing with such an error message:
+The Function Controller tests keep failing with the following error message:
 
 ```
 assertion failed [!result.is_error]: Failed to create temporary file
@@ -149,8 +149,8 @@ assertion failed [!result.is_error]: Failed to create temporary file
 
 ### Cause
 
-Docker engine uses Rosetta for virtualization, which causes issues on M1 Mac.
+The Docker engine uses Rosetta for virtualization, which causes issues on M1 Mac.
 
 ### Remedy
 
-Disable `Use Rosetta for x86/amd64 emulation on Apple Silicon` option in the Docker Desktop general settings.
+Disable the `Use Rosetta for x86/amd64 emulation on Apple Silicon` option in the Docker Desktop general settings.
