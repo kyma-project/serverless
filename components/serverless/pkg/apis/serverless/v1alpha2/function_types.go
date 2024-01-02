@@ -78,6 +78,7 @@ type GitRepositorySource struct {
 
 // RepositoryAuth defines authentication method used for repository operations
 type RepositoryAuth struct {
+	// +kubebuilder:validation:Required
 	// Defines the repository authentication method. The value is either `basic` if you use a password or token,
 	// or `key` if you use an SSH key.
 	Type RepositoryAuthType `json:"type"`

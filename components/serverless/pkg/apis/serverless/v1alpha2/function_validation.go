@@ -66,19 +66,7 @@ func (spec *FunctionSpec) gitAuthValidations() []validationFunction {
 		return []validationFunction{}
 	}
 	return []validationFunction{
-		spec.validateGitAuthType,
 		spec.validateGitRepoURL,
-	}
-}
-
-var ErrInvalidGitRepositoryAuthType = fmt.Errorf("invalid git repository authentication type")
-
-func (spec *FunctionSpec) validateGitAuthType(_ *ValidationConfig) error {
-	switch spec.Source.GitRepository.Auth.Type {
-	case RepositoryAuthBasic, RepositoryAuthSSHKey:
-		return nil
-	default:
-		return ErrInvalidGitRepositoryAuthType
 	}
 }
 
