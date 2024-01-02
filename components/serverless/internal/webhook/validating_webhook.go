@@ -62,9 +62,6 @@ func (w *ValidatingWebHook) handleFunctionValidation(req admission.Request) admi
 			if err := w.decoder.Decode(req, fn); err != nil {
 				return admission.Errored(http.StatusBadRequest, err)
 			}
-			if err := fn.Validate(w.configv1alpha2); err != nil {
-				return admission.Denied(fmt.Sprintf("validation failed: %s", err.Error()))
-			}
 		}
 	default:
 		return admission.Errored(http.StatusBadRequest, errors.Errorf("Invalid resource version provided: %s", req.Kind.Version))
