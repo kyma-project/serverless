@@ -27,6 +27,18 @@ func Test_flagsBuilder_Build(t *testing.T) {
 							"functionTraceCollectorEndpoint":   "testCollectorURL",
 							"healthzLivenessTimeout":           "testHealthzLivenessTimeout",
 							"targetCPUUtilizationPercentage":   "testCPUUtilizationPercentage",
+							"resourcesConfiguration": map[string]interface{}{
+								"function": map[string]interface{}{
+									"resources": map[string]interface{}{
+										"defaultPreset": "testPodPreset",
+									},
+								},
+								"buildJob": map[string]interface{}{
+									"resources": map[string]interface{}{
+										"defaultPreset": "testJobPreset",
+									},
+								},
+							},
 						},
 					},
 				},
@@ -40,29 +52,16 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				"password":        "testPassword",
 				"registryAddress": "testRegistryAddress",
 				"serverAddress":   "testServerAddress",
-				"username":        "testUsername"},
+				"username":        "testUsername",
+			},
 			"global": map[string]interface{}{
 				"registryNodePort": int64(1234),
-			},
-			"webhook": map[string]interface{}{
-				"values": map[string]interface{}{
-					"buildJob": map[string]interface{}{
-						"resources": map[string]interface{}{
-							"defaultPreset": "testJobPreser",
-						},
-					},
-					"function": map[string]interface{}{
-						"resources": map[string]interface{}{
-							"defaultPreset": "testPodPreser",
-						},
-					},
-				},
 			},
 		}
 
 		flags := NewFlagsBuilder().
 			WithNodePort(1234).
-			WithDefaultPresetFlags("testJobPreser", "testPodPreser").
+			WithDefaultPresetFlags("testJobPreset", "testPodPreset").
 			WithOptionalDependencies("testPublisherURL", "testCollectorURL").
 			WithRegistryAddresses("testRegistryAddress", "testServerAddress").
 			WithRegistryCredentials("testUsername", "testPassword").

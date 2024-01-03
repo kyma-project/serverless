@@ -119,11 +119,11 @@ func (fb *flagsBuilder) WithRegistryHttpSecret(httpSecret string) *flagsBuilder 
 
 func (fb *flagsBuilder) WithDefaultPresetFlags(defaultBuildJobPreset, defaultRuntimePodPreset string) *flagsBuilder {
 	if defaultRuntimePodPreset != "" {
-		fb.flags["webhook.values.function.resources.defaultPreset"] = defaultRuntimePodPreset
+		fb.flags["containers.manager.configuration.data.resourcesConfiguration.function.resources.defaultPreset"] = defaultRuntimePodPreset
 	}
 
 	if defaultBuildJobPreset != "" {
-		fb.flags["webhook.values.buildJob.resources.defaultPreset"] = defaultBuildJobPreset
+		fb.flags["containers.manager.configuration.data.resourcesConfiguration.buildJob.resources.defaultPreset"] = defaultBuildJobPreset
 	}
 
 	return fb
