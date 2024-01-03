@@ -19,6 +19,7 @@ package main
 import (
 	"context"
 	"flag"
+	corev1 "k8s.io/api/core/v1"
 	"os"
 	"time"
 
@@ -100,6 +101,9 @@ func main() {
 		Port:                   9443,
 		HealthProbeBindAddress: probeAddr,
 		SyncPeriod:             &syncPeriod,
+		ClientDisableCacheFor: []ctrlclient.Object{
+			&corev1.Secret{},
+		},
 		// TODO: use our own logger - now eventing use logger with different message format
 	})
 	if err != nil {
