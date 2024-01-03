@@ -82,7 +82,8 @@ var _ = BeforeSuite(func() {
 	Expect(k8sClient).NotTo(BeNil())
 
 	k8sManager, err := ctrl.NewManager(config, ctrl.Options{
-		Scheme: scheme.Scheme,
+		Scheme:   scheme.Scheme,
+		NewCache: CacheCreator,
 	})
 	Expect(err).ToNot(HaveOccurred())
 

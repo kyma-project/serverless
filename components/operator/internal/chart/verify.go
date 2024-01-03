@@ -2,6 +2,7 @@ package chart
 
 import (
 	"fmt"
+	"runtime"
 
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -24,12 +25,18 @@ func Verify(config *Config) (bool, error) {
 		return false, fmt.Errorf("could not parse chart manifest: %s", err.Error())
 	}
 
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+	config.Log.Warnf(printMemUsage(&m, "during verify"))
+
+	config.Log.Infof("jestem tutaj v1")
 	for i := range objs {
 		u := objs[i]
-
+		config.Log.Infof("lece w forze %s", u.GetKind())
 		var verifyFunc verifyFunc
 		switch u.GetKind() {
 		case "Deployment":
+			config.Log.Infof("jestem tutaj %s", u.GetName())
 			verifyFunc = verifyDeployment
 		case "DaemonSet":
 			// TODO: right now we don't support internal docker registry
@@ -50,6 +57,11 @@ func Verify(config *Config) (bool, error) {
 	return true, nil
 }
 
+func printMemUsage(m *runtime.MemStats, message string) string {
+	return fmt.Sprintf("{\"message\": \"%s\", \"alloc\": \"%v MiB\", \"ttotalAlloc\": \"%v MiB\", \"sys\": \"%v MiB\", \"numGC\": \"%v\"}",
+		message, m.Alloc/1024/1024, m.TotalAlloc/1024/1024, m.Sys/1024/1024, m.NumGC)
+}
+
 type verifyFunc func(*Config, unstructured.Unstructured) (bool, error)
 
 func verifyDeployment(config *Config, u unstructured.Unstructured) (bool, error) {
@@ -62,6 +74,7 @@ func verifyDeployment(config *Config, u unstructured.Unstructured) (bool, error)
 		return false, err
 	}
 
+	config.Log.Infof("jestem tutaj v2 %d", len(deployment.Status.Conditions))
 	for _, cond := range deployment.Status.Conditions {
 		if cond.Type == appsv1.DeploymentAvailable && cond.Status == v1.ConditionTrue {
 			return true, nil

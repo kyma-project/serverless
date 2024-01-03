@@ -1,0 +1,4 @@
+NAME                                 TYPE                             DATA   AGE
+serverless-registry-config-default   kubernetes.io/dockerconfigjson   6      5d
+serverless-webhook                   Opaque                           2      5d
+serverless-manifest-cache            Opaque                           1      5d

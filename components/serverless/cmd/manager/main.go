@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	corev1 "k8s.io/api/core/v1"
 	"os"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"time"
 
 	"github.com/go-logr/zapr"
@@ -108,6 +110,9 @@ func main() {
 		LeaderElectionID:       config.LeaderElectionID,
 		Port:                   config.SecretMutatingWebhookPort,
 		HealthProbeBindAddress: config.Healthz.Address,
+		ClientDisableCacheFor: []ctrlclient.Object{
+			&corev1.Secret{},
+		},
 	})
 	if err != nil {
 		setupLog.Error(err, "Unable to initialize controller manager")
