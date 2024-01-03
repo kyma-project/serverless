@@ -6,8 +6,6 @@ import (
 	"regexp"
 )
 
-const ValidationConfigKey = "validation-config"
-
 type MinFunctionResourcesValues struct {
 	MinRequestCPU    string
 	MinRequestMemory string
@@ -32,49 +30,20 @@ type ValidationConfig struct {
 	BuildJob     MinBuildJobValues
 }
 
-type validationFunction func(*ValidationConfig) error
-
-func (fn *Function) Validate(vc *ValidationConfig) error {
-	if fn.TypeOf(FunctionTypeGit) {
-		validations := fn.Spec.gitAuthValidations()
-		return runValidations(vc, validations...)
-	}
-	return nil
-}
-
-func runValidations(vc *ValidationConfig, vFuns ...validationFunction) error {
-	allErrs := []string{}
-	for _, vFun := range vFuns {
-		if err := vFun(vc); err != nil {
-			allErrs = append(allErrs, err.Error())
-		}
-	}
-	return returnAllErrs("", allErrs)
-}
-
-func (spec *FunctionSpec) validateGitRepoURL(_ *ValidationConfig) error {
-	if urlIsSSH(spec.Source.GitRepository.URL) {
-		return nil
-	} else if _, err := url.ParseRequestURI(spec.Source.GitRepository.URL); err != nil {
-		return fmt.Errorf("invalid source.gitRepository.URL value: %v", err)
-	}
-	return nil
-}
-
-func (spec *FunctionSpec) gitAuthValidations() []validationFunction {
-	if spec.Source.GitRepository.Auth == nil {
-		return []validationFunction{}
-	}
-	return []validationFunction{
-		spec.validateGitRepoURL,
-	}
-}
-
 func urlIsSSH(repoURL string) bool {
-	exp, err := regexp.Compile(`((git|ssh?)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(/)?`)
+	exp, err := regexp.Compile(`((git|ssh)|(git@[\w\.]+))(:(//)?)([\w\.@\:/\-~]+)(/)?`)
 	if err != nil {
 		panic(err)
 	}
 
 	return exp.MatchString(repoURL)
+}
+
+func ValidateGitRepoURL(gitRepo *GitRepositorySource) error {
+	if urlIsSSH(gitRepo.URL) {
+		return nil
+	} else if _, err := url.ParseRequestURI(gitRepo.URL); err != nil {
+		return fmt.Errorf("source.gitRepository.URL: %v", err)
+	}
+	return nil
 }

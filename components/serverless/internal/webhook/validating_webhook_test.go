@@ -127,41 +127,6 @@ func TestValidatingWebHook_Handle(t *testing.T) {
 			responseCode: http.StatusOK,
 		},
 		{
-			name: "Deny invalid function",
-			fields: fields{
-				configV1Alpha2: fixValidationConfig(),
-				client:         fake.NewClientBuilder().Build(),
-				decoder:        decoder,
-			},
-			args: args{
-				ctx: context.Background(),
-				req: admission.Request{
-					AdmissionRequest: v1.AdmissionRequest{
-						Kind: metav1.GroupVersionKind{Kind: "Function", Version: serverlessv1alpha2.FunctionVersion},
-						Object: runtime.RawExtension{
-							Raw: []byte(`{"apiVersion": "serverless.kyma-project.io/v1alpha2",
-								"kind": "Function",
-								"metadata": {
-									"name": "testfunc",
-									"namespace": "default"
-								},
-								"spec": {
-									"source": {
-										"gitRepository": {
-											"auth": {
-												"type": "invalid"
-											}
-										}
-									}
-								}   
-							}`),
-						},
-					},
-				},
-			},
-			responseCode: http.StatusForbidden,
-		},
-		{
 			name: "Bad request",
 			fields: fields{
 				configV1Alpha2: fixValidationConfig(),

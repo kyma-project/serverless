@@ -389,6 +389,48 @@ func TestValidation_Invalid(t *testing.T) {
 			},
 			expectedCondMsg: "spec.annotations: Invalid value: \".invalid-name\": name part must consist of alphanumeric characters, '-', '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyName',  or 'my.name',  or '123-abc', regex used for validation is '([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]')",
 		},
+		"Invalid Git repository url": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs18,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							URL: "abc",
+						},
+					},
+				},
+			},
+			expectedCondMsg: "source.gitRepository.URL: parse \"abc\": invalid URI for request",
+		},
+		"Invalid Git repository http url": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs18,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							URL: "github.com/kyma-project/kyma.git",
+						},
+					},
+				},
+			},
+			expectedCondMsg: "source.gitRepository.URL: parse \"github.com/kyma-project/kyma.git\": invalid URI for request",
+		},
+		"Invalid Git repository ssh url": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs18,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							URL: "g0t@github.com:kyma-project/kyma.git",
+						},
+					},
+				},
+			},
+			expectedCondMsg: "source.gitRepository.URL: parse \"g0t@github.com:kyma-project/kyma.git\": invalid URI for request",
+		},
 	}
 
 	//WHEN
@@ -508,6 +550,32 @@ func TestValidation_Valid(t *testing.T) {
 					Source: serverlessv1alpha2.Source{
 						Inline: &serverlessv1alpha2.InlineSource{
 							Source: "source code",
+						},
+					},
+				},
+			},
+		},
+		"Git repository URL SSH": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs18,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							URL: "git@github.com:kyma-project/serverless.git",
+						},
+					},
+				},
+			},
+		},
+		"Git repository URL HTTPS": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs18,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							URL: "https://github.com/kyma-project/serverless.git",
 						},
 					},
 				},
