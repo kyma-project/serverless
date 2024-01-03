@@ -2,7 +2,7 @@ package namespace
 
 import (
 	"context"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/utils"
+	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 	"time"
 
 	"github.com/pkg/errors"

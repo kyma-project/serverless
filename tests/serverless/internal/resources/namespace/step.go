@@ -1,7 +1,7 @@
 package namespace
 
 import (
-	"github.com/kyma-project/kyma/tests/function-controller/internal/executor"
+	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"

@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"github.com/kyma-project/kyma/tests/function-controller/internal/executor"
+	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
 	"time"
 )
 

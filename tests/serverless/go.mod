@@ -1,4 +1,4 @@
-module github.com/kyma-project/kyma/tests/function-controller
+module github.com/kyma-project/serverless/tests/serverless
 
 go 1.19
 

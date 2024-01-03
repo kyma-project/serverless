@@ -2,8 +2,8 @@ package git
 
 import (
 	"github.com/avast/retry-go"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/executor"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/utils"
+	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
+	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	appsCli "k8s.io/client-go/kubernetes/typed/apps/v1"

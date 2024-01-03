@@ -8,7 +8,7 @@ import (
 	"fmt"
 	cloudevents "github.com/cloudevents/sdk-go/v2"
 	"github.com/google/uuid"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/executor"
+	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"io"

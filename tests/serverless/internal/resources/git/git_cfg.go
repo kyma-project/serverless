@@ -1,7 +1,7 @@
 package git
 
 import (
-	"github.com/kyma-project/kyma/tests/function-controller/internal/utils"
+	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 )
 
 type GitopsConfig struct {

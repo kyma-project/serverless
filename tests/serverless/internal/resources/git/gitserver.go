@@ -3,9 +3,9 @@ package git
 import (
 	"context"
 	"fmt"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/resources"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/resources/app"
-	"github.com/kyma-project/kyma/tests/function-controller/internal/utils"
+	"github.com/kyma-project/serverless/tests/serverless/internal/resources"
+	"github.com/kyma-project/serverless/tests/serverless/internal/resources/app"
+	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 
