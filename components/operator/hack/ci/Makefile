@@ -43,17 +43,16 @@ gardener-integration-test: ## Provision gardener cluster and run integration tes
 
 .PHONY: k3d-lm-integration-test
 k3d-lm-integration-test: ## Run integration tests on self-prepared k3d cluster with lifecycle-manager.
-k3d-lm-integration-test: replace-chart-images run-with-lifecycle-manager integration-test
+k3d-lm-integration-test: run-with-lifecycle-manager integration-test
 
 .PHONY: k3d-integration-test
 k3d-integration-test: ## Run integration tests on self-prepared k3d cluster.
-k3d-integration-test: replace-chart-images run-without-lifecycle-manager integration-test remove-serverless
+k3d-integration-test: run-without-lifecycle-manager integration-test remove-serverless
 
 .PHONY: k3d-upgrade-test
 k3d-upgrade-test: ## Installs Serverless from latest and upgrades to local.
 k3d-upgrade-test: \
 	install-latest-serverless \
-	replace-chart-images \
 	reinstall-serverless \
 	integration-test
 
