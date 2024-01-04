@@ -32,6 +32,7 @@ import (
 	uberzapcore "go.uber.org/zap/zapcore"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
+	corev1 "k8s.io/api/core/v1"
 	apiextensionsscheme "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/scheme"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -100,6 +101,10 @@ func main() {
 		Port:                   9443,
 		HealthProbeBindAddress: probeAddr,
 		SyncPeriod:             &syncPeriod,
+		ClientDisableCacheFor: []ctrlclient.Object{
+			&corev1.Secret{},
+			&corev1.ConfigMap{},
+		},
 		// TODO: use our own logger - now eventing use logger with different message format
 	})
 	if err != nil {

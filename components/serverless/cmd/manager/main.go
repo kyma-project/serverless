@@ -17,10 +17,13 @@ import (
 	"github.com/vrischmann/envconfig"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	ctrl "sigs.k8s.io/controller-runtime"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	ctrlzap "sigs.k8s.io/controller-runtime/pkg/log/zap"
@@ -108,6 +111,10 @@ func main() {
 		LeaderElectionID:       config.LeaderElectionID,
 		Port:                   config.SecretMutatingWebhookPort,
 		HealthProbeBindAddress: config.Healthz.Address,
+		ClientDisableCacheFor: []ctrlclient.Object{
+			&corev1.Secret{},
+			&corev1.ConfigMap{},
+		},
 	})
 	if err != nil {
 		setupLog.Error(err, "Unable to initialize controller manager")
