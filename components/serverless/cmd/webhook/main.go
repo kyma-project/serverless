@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"os"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/go-logr/zapr"
 	fileconfig "github.com/kyma-project/kyma/components/function-controller/internal/config"
@@ -21,6 +20,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	ctrlzap "sigs.k8s.io/controller-runtime/pkg/log/zap"
 	ctrlwebhook "sigs.k8s.io/controller-runtime/pkg/webhook"
 )

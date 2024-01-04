@@ -19,7 +19,6 @@ package main
 import (
 	"context"
 	"flag"
-	corev1 "k8s.io/api/core/v1"
 	"os"
 	"time"
 
@@ -33,6 +32,7 @@ import (
 	uberzapcore "go.uber.org/zap/zapcore"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
+	corev1 "k8s.io/api/core/v1"
 	apiextensionsscheme "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/scheme"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
