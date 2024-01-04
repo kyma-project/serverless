@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"os"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/go-logr/zapr"
 	fileconfig "github.com/kyma-project/kyma/components/function-controller/internal/config"
@@ -89,6 +90,10 @@ func main() {
 		Port:               cfg.Port,
 		MetricsBindAddress: ":9090",
 		Logger:             logrZap,
+		ClientDisableCacheFor: []ctrlclient.Object{
+			&corev1.Secret{},
+			&corev1.ConfigMap{},
+		},
 	})
 	if err != nil {
 		logWithCtx.Error(err, "failed to setup controller-manager")
