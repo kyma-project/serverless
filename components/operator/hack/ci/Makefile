@@ -79,13 +79,15 @@ install-latest-serverless:
 
 .PHONY: reinstall-serverless
 reinstall-serverless:
-	@make -C ${PROJECT_COMMON} run-without-lm-on-cluster
+	@make -C ${PROJECT_COMMON} run-without-lm-on-k3d-cluster
 	
 	# wait some time to make sure lm starts the reconciliation first
 	sleep 5
 
-	# double check that serverless controller has progressed
+	# double check that serverless has progressed
+	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s
 	kubectl wait --for condition=Available -n kyma-system deployment serverless-ctrl-mngr --timeout=60s
+
 .PHONY: provision-gardener
 provision-gardener:
 	@make -C ${PROJECT_COMMON} provision-gardener
