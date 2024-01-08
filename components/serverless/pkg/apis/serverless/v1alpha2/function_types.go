@@ -194,6 +194,7 @@ type FunctionSpec struct {
 	// When it is configured, a HorizontalPodAutoscaler will be deployed and will control the **Replicas** field
 	// to scale the Function based on the CPU utilisation.
 	// +optional
+	// +kubebuilder:validation:XValidation:message="minReplicas should be less than or equal maxReplicas",rule="self.minReplicas <= self.maxReplicas"
 	ScaleConfig *ScaleConfig `json:"scaleConfig,omitempty"`
 
 	// Defines the exact number of Function's Pods to run at a time.
