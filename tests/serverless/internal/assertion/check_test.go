@@ -8,6 +8,7 @@ import (
 )
 
 func TestCloudEventCheckLocally(t *testing.T) {
+	t.Skip("Used only to local development")
 	t.Run("cloud event check", func(t *testing.T) {
 		testCases := map[string]struct {
 			cloudevents.Encoding
