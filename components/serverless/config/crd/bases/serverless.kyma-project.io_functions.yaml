@@ -334,6 +334,9 @@ spec:
                 - maxReplicas
                 - minReplicas
                 type: object
+                x-kubernetes-validations:
+                - message: minReplicas should be less than or equal maxReplicas
+                  rule: self.minReplicas <= self.maxReplicas
               secretMounts:
                 description: Specifies Secrets to mount into the Function's container
                   filesystem.
