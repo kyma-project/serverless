@@ -17,7 +17,6 @@ var _ = Describe("Serverless controller", func() {
 			namespaceName            = "kyma-system"
 			serverlessName           = "serverless-cr-test"
 			serverlessDeploymentName = "serverless-ctrl-mngr"
-			serverlessWebhookName    = "serverless-webhook-svc"
 			serverlessRegistrySecret = "serverless-registry-config-default"
 			specSecretName           = "spec-secret-name"
 		)
@@ -81,7 +80,7 @@ var _ = Describe("Serverless controller", func() {
 
 			{
 				emptyData := v1alpha1.ServerlessSpec{}
-				shouldCreateServerless(h, serverlessName, serverlessDeploymentName, serverlessWebhookName, emptyData)
+				shouldCreateServerless(h, serverlessName, serverlessDeploymentName, emptyData)
 				shouldPropagateSpecProperties(h, serverlessDeploymentName, serverlessRegistrySecret, serverlessDataDefault)
 			}
 			{
@@ -115,18 +114,17 @@ var _ = Describe("Serverless controller", func() {
 				shouldPropagateSpecProperties(h, serverlessDeploymentName, serverlessRegistrySecret, serverlessDataDefault)
 			}
 
-			shouldDeleteServerless(h, serverlessName, serverlessDeploymentName, serverlessWebhookName)
+			shouldDeleteServerless(h, serverlessName, serverlessDeploymentName)
 		})
 	})
 })
 
-func shouldCreateServerless(h testHelper, serverlessName, serverlessDeploymentName, serverlessWebhookName string, spec v1alpha1.ServerlessSpec) {
+func shouldCreateServerless(h testHelper, serverlessName, serverlessDeploymentName string, spec v1alpha1.ServerlessSpec) {
 	// act
 	h.createServerless(serverlessName, spec)
 
 	// we have to update deployment status manually
 	h.updateDeploymentStatus(serverlessDeploymentName)
-	h.updateDeploymentStatus(serverlessWebhookName)
 
 	// assert
 	Eventually(h.createGetServerlessStatusFunc(serverlessName)).
@@ -174,7 +172,7 @@ func shouldUpdateServerless(h testHelper, serverlessName string, serverlessSpec 
 		Should(ConditionTrueMatcher())
 }
 
-func shouldDeleteServerless(h testHelper, serverlessName, serverlessDeploymentName, serverlessWebhookName string) {
+func shouldDeleteServerless(h testHelper, serverlessName, serverlessDeploymentName string) {
 	// initial assert
 	var deployList appsv1.DeploymentList
 	Eventually(h.createListKubernetesObjectFunc(&deployList)).
@@ -200,11 +198,6 @@ func shouldDeleteServerless(h testHelper, serverlessName, serverlessDeploymentNa
 
 	// assert
 	Eventually(h.createGetKubernetesObjectFunc(serverlessDeploymentName, &appsv1.Deployment{})).
-		WithPolling(time.Second * 2).
-		WithTimeout(time.Second * 10).
-		Should(BeTrue())
-
-	Eventually(h.createGetKubernetesObjectFunc(serverlessWebhookName, &appsv1.Deployment{})).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 10).
 		Should(BeTrue())
