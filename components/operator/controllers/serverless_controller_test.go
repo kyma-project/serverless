@@ -180,7 +180,7 @@ func shouldDeleteServerless(h testHelper, serverlessName, serverlessDeploymentNa
 		WithTimeout(time.Second * 10).
 		Should(BeTrue())
 
-	Expect(deployList.Items).To(HaveLen(2))
+	Expect(deployList.Items).To(HaveLen(1))
 
 	// act
 	var serverless v1alpha1.Serverless
