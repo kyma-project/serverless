@@ -11,7 +11,7 @@ import (
 
 	mock "github.com/stretchr/testify/mock"
 
-	resource "github.com/kyma-project/kyma/components/function-controller/internal/resource"
+	resource "github.com/kyma-project/serverless/components/serverless/internal/resource"
 
 	types "k8s.io/apimachinery/pkg/types"
 )

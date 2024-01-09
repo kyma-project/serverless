@@ -12,7 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/kyma-project/kyma/components/function-controller/internal/resource"
+	"github.com/kyma-project/serverless/components/serverless/internal/resource"
 )
 
 type ServiceAccountService interface {

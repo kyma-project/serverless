@@ -2,13 +2,13 @@ package kubernetes
 
 import (
 	"context"
-	"github.com/kyma-project/kyma/components/function-controller/internal/testenv"
+	"github.com/kyma-project/serverless/components/serverless/internal/testenv"
 	"testing"
 	"time"
 
 	"go.uber.org/zap"
 
-	"github.com/kyma-project/kyma/components/function-controller/internal/resource"
+	"github.com/kyma-project/serverless/components/serverless/internal/resource"
 	"k8s.io/client-go/kubernetes/scheme"
 
 	"github.com/onsi/gomega"

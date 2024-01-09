@@ -1,7 +1,7 @@
 package testenv
 
 import (
-	serverlessv1alpha2 "github.com/kyma-project/kyma/components/function-controller/pkg/apis/serverless/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/stretchr/testify/require"
 	"k8s.io/client-go/kubernetes/scheme"
 	"os"

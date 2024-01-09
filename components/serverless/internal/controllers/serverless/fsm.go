@@ -10,9 +10,9 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/kyma-project/kyma/components/function-controller/internal/git"
-	"github.com/kyma-project/kyma/components/function-controller/internal/resource"
-	serverlessv1alpha2 "github.com/kyma-project/kyma/components/function-controller/pkg/apis/serverless/v1alpha2"
+	"github.com/kyma-project/serverless/components/serverless/internal/git"
+	"github.com/kyma-project/serverless/components/serverless/internal/resource"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

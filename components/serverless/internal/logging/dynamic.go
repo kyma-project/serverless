@@ -3,7 +3,7 @@ package logging
 import (
 	"context"
 
-	"github.com/kyma-project/kyma/components/function-controller/internal/config"
+	"github.com/kyma-project/serverless/components/serverless/internal/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

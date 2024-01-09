@@ -14,8 +14,8 @@ import (
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 
-	"github.com/kyma-project/kyma/components/function-controller/internal/resource"
-	"github.com/kyma-project/kyma/components/function-controller/internal/resource/automock"
+	"github.com/kyma-project/serverless/components/serverless/internal/resource"
+	"github.com/kyma-project/serverless/components/serverless/internal/resource/automock"
 )
 
 func TestClient_CreateWithReference(t *testing.T) {

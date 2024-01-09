@@ -18,9 +18,9 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 
-	"github.com/kyma-project/kyma/components/function-controller/internal/git"
-	"github.com/kyma-project/kyma/components/function-controller/internal/resource"
-	serverlessv1alpha2 "github.com/kyma-project/kyma/components/function-controller/pkg/apis/serverless/v1alpha2"
+	"github.com/kyma-project/serverless/components/serverless/internal/git"
+	"github.com/kyma-project/serverless/components/serverless/internal/resource"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 )
 
 const (

@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyma-project/kyma/components/function-controller/internal/controllers/serverless"
+	"github.com/kyma-project/serverless/components/serverless/internal/controllers/serverless"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 )
