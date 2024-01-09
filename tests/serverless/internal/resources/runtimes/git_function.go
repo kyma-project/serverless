@@ -1,7 +1,7 @@
 package runtimes
 
 import (
-	serverlessv1alpha2 "github.com/kyma-project/kyma/components/function-controller/pkg/apis/serverless/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 )
 
 func GitopsFunction(repoURL, baseDir, reference string, rtm serverlessv1alpha2.Runtime, auth *serverlessv1alpha2.RepositoryAuth) serverlessv1alpha2.FunctionSpec {

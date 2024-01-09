@@ -12,7 +12,7 @@ import (
 	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 	"time"
 
-	serverlessv1alpha2 "github.com/kyma-project/kyma/components/function-controller/pkg/apis/serverless/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
