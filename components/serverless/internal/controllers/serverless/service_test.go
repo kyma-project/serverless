@@ -26,7 +26,7 @@ func TestFunctionReconciler_equalServices(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "simple case",
+			name: "simple equal case",
 			args: args{
 				existing: corev1.Service{
 					ObjectMeta: metav1.ObjectMeta{
@@ -406,7 +406,7 @@ func TestFunctionReconciler_equalServices(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			g := gomega.NewGomegaWithT(t)
 			got := equalServices(tt.args.existing, tt.args.expected)
-			g.Expect(got).To(gomega.Equal(tt.want))
+			g.Expect(got).To(gomega.Equal(tt.want).FailureMessage())
 		})
 	}
 }

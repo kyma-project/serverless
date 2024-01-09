@@ -132,11 +132,11 @@ func didNotFail(j batchv1.Job) bool {
 func countJobs(l batchv1.JobList, predicates ...func(batchv1.Job) bool) int {
 	var out int
 
-processing_next_item:
+processingNextItem:
 	for _, j := range l.Items {
 		for _, p := range predicates {
 			if !p(j) {
-				continue processing_next_item
+				continue processingNextItem
 			}
 		}
 		out++
@@ -186,6 +186,28 @@ func mapsEqual(existing, expected map[string]string) bool {
 	return true
 }
 
+func updateMapWithNewValues(existing, newValues map[string]string) {
+	for key, value := range newValues {
+		if _, ok := existing[key]; ok {
+			existing[key] = value
+		}
+	}
+}
+
+func mapsContains(existing, contains map[string]string) bool {
+	if len(existing) < len(contains) {
+		return false
+	}
+
+	for key, value := range contains {
+		if v, ok := existing[key]; !ok || v != value {
+			return false
+		}
+	}
+
+	return true
+}
+
 // TODO refactor to make this code more readable
 func equalDeployments(existing appsv1.Deployment, expected appsv1.Deployment) bool {
 	return len(existing.Spec.Template.Spec.Containers) == 1 &&
@@ -202,6 +224,7 @@ func equalDeployments(existing appsv1.Deployment, expected appsv1.Deployment) bo
 
 func equalServices(existing corev1.Service, expected corev1.Service) bool {
 	return mapsEqual(existing.Spec.Selector, expected.Spec.Selector) &&
+		mapsContains(existing.Annotations, prometheusSvcAnnotations()) &&
 		mapsEqual(existing.Labels, expected.Labels) &&
 		len(existing.Spec.Ports) == len(expected.Spec.Ports) &&
 		len(expected.Spec.Ports) > 0 &&
