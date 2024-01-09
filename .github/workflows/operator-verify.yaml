@@ -1,0 +1,19 @@
+name: Operator verify
+
+on:
+  push:
+    branches: [ "main", "release-*" ]
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'examples/**'
+
+jobs:
+  # pre-serverless-operator-unit-tests
+  serverless-operator-unit-tests:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: run test
+        run: make -C components/operator test
