@@ -7,18 +7,19 @@ require (
 	github.com/cloudevents/sdk-go/v2 v2.14.0
 	github.com/go-git/go-billy/v5 v5.0.0
 	github.com/go-git/go-git/v5 v5.2.0
+	github.com/google/uuid v1.3.0
 	github.com/hashicorp/errwrap v1.0.0
 	github.com/hashicorp/go-multierror v1.1.0
-	github.com/kyma-project/kyma/components/function-controller v0.0.0-20230302105705-8afb2e732edb
+	github.com/kyma-project/serverless/components/serverless v0.0.0-20240109095303-6ba0e59b9198
 	github.com/onsi/gomega v1.20.2
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/pflag v1.0.5
 	github.com/vrischmann/envconfig v1.3.0
 	golang.org/x/sync v0.0.0-20220722155255-886fb9371eb4
-	k8s.io/api v0.25.0
-	k8s.io/apimachinery v0.25.0
-	k8s.io/client-go v0.25.0
+	k8s.io/api v0.25.13
+	k8s.io/apimachinery v0.25.13
+	k8s.io/client-go v0.25.13
 )
 
 require (
@@ -29,7 +30,6 @@ require (
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -43,10 +43,10 @@ require (
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.21.0 // indirect
 	golang.org/x/crypto v0.0.0-20220331220935-ae2d96664a29 // indirect
-	golang.org/x/net v0.4.0 // indirect
+	golang.org/x/net v0.8.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20220822191816-0ebed06d0094 // indirect
-	golang.org/x/sys v0.3.0 // indirect
-	golang.org/x/text v0.5.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
+	golang.org/x/text v0.8.0 // indirect
 	golang.org/x/time v0.0.0-20220609170525-579cf78fd858 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
