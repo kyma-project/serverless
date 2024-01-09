@@ -50,7 +50,6 @@ func buildStateFnUpdateService(newService corev1.Service) stateFn {
 
 		svc.ObjectMeta.Labels = newService.GetLabels()
 		updateMapWithNewValues(svc.ObjectMeta.Annotations, newService.GetAnnotations())
-		//svc.ObjectMeta.Annotations = newService.GetAnnotations()
 
 		r.log.Info(fmt.Sprintf("Updating Service %s", svc.GetName()))
 

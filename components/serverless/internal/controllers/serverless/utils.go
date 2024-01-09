@@ -186,14 +186,6 @@ func mapsEqual(existing, expected map[string]string) bool {
 	return true
 }
 
-func updateMapWithNewValues(existing, newValues map[string]string) {
-	for key, value := range newValues {
-		if _, ok := existing[key]; ok {
-			existing[key] = value
-		}
-	}
-}
-
 func mapsContains(existing, contains map[string]string) bool {
 	if len(existing) < len(contains) {
 		return false
@@ -206,6 +198,14 @@ func mapsContains(existing, contains map[string]string) bool {
 	}
 
 	return true
+}
+
+func updateMapWithNewValues(existing, newValues map[string]string) {
+	for key, value := range newValues {
+		if _, ok := existing[key]; ok {
+			existing[key] = value
+		}
+	}
 }
 
 // TODO refactor to make this code more readable
