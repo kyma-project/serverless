@@ -54,7 +54,7 @@ run-without-lm-on-cluster: \
 .PHONY: run-without-lm-on-k3d-cluster
 run-without-lm-on-k3d-cluster: ## Build and deploy module without the lifecycle-manager on existing k3d cluster.
 run-without-lm-on-k3d-cluster: \
-	module-image \
+	module-image-dev \
 	deploy \
 	apply-serverless \
 	verify-serverless
