@@ -200,26 +200,29 @@ func mapsContains(existing, contains map[string]string) bool {
 	return true
 }
 
-func updateMapWithNewValues(existing, newValues map[string]string) {
+func mergeMapWithNewValues(existing, newValues map[string]string) {
 	for key, value := range newValues {
-		if _, ok := existing[key]; ok {
-			existing[key] = value
-		}
+		existing[key] = value
 	}
 }
 
 // TODO refactor to make this code more readable
 func equalDeployments(existing appsv1.Deployment, expected appsv1.Deployment) bool {
-	return len(existing.Spec.Template.Spec.Containers) == 1 &&
-		len(existing.Spec.Template.Spec.Containers) == len(expected.Spec.Template.Spec.Containers) &&
-		existing.Spec.Template.Spec.Containers[0].Image == expected.Spec.Template.Spec.Containers[0].Image &&
-		envsEqual(existing.Spec.Template.Spec.Containers[0].Env, expected.Spec.Template.Spec.Containers[0].Env) &&
-		mapsEqual(existing.GetLabels(), expected.GetLabels()) &&
-		mapsEqual(existing.Spec.Template.GetLabels(), expected.Spec.Template.GetLabels()) &&
-		equalResources(existing.Spec.Template.Spec.Containers[0].Resources, expected.Spec.Template.Spec.Containers[0].Resources) &&
-		equalInt32Pointer(existing.Spec.Replicas, expected.Spec.Replicas) &&
-		equalSecretMounts(existing.Spec.Template.Spec, expected.Spec.Template.Spec) &&
-		mapsEqual(existing.Spec.Template.GetAnnotations(), expected.Spec.Template.GetAnnotations())
+	result := true
+	result = result && len(existing.Spec.Template.Spec.Containers) == 1
+	result = result && len(existing.Spec.Template.Spec.Containers) == len(expected.Spec.Template.Spec.Containers)
+
+	result = result && existing.Spec.Template.Spec.Containers[0].Image == expected.Spec.Template.Spec.Containers[0].Image
+	result = result && envsEqual(existing.Spec.Template.Spec.Containers[0].Env, expected.Spec.Template.Spec.Containers[0].Env)
+	result = result && equalResources(existing.Spec.Template.Spec.Containers[0].Resources, expected.Spec.Template.Spec.Containers[0].Resources)
+
+	result = result && mapsEqual(existing.GetLabels(), expected.GetLabels())
+	result = result && mapsEqual(existing.Spec.Template.GetLabels(), expected.Spec.Template.GetLabels())
+	result = result && equalInt32Pointer(existing.Spec.Replicas, expected.Spec.Replicas)
+
+	result = result && mapsEqual(existing.Spec.Template.GetAnnotations(), expected.Spec.Template.GetAnnotations())
+	result = result && equalSecretMounts(existing.Spec.Template.Spec, expected.Spec.Template.Spec)
+	return result
 }
 
 func equalServices(existing corev1.Service, expected corev1.Service) bool {
