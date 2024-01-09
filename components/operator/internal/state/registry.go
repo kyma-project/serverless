@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kyma-project/serverless-manager/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/components/operator/internal/registry"
+	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
+	"github.com/kyma-project/serverless/components/operator/internal/registry"
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
 	ctrl "sigs.k8s.io/controller-runtime"

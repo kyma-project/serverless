@@ -19,11 +19,11 @@ package controllers
 import (
 	"context"
 
-	"github.com/kyma-project/serverless-manager/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless-manager/components/operator/internal/chart"
-	"github.com/kyma-project/serverless-manager/components/operator/internal/predicate"
-	"github.com/kyma-project/serverless-manager/components/operator/internal/state"
-	"github.com/kyma-project/serverless-manager/components/operator/internal/tracing"
+	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
+	"github.com/kyma-project/serverless/components/operator/internal/chart"
+	"github.com/kyma-project/serverless/components/operator/internal/predicate"
+	"github.com/kyma-project/serverless/components/operator/internal/state"
+	"github.com/kyma-project/serverless/components/operator/internal/tracing"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
