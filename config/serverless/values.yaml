@@ -102,10 +102,6 @@ global:
       name: "tpi/registry"
       version: "2.8.1-1ae4c190"
       directory: "prod"
-    google_pause:
-      name: "external/gcr.io/google-containers/pause"
-      version: "3.2"
-      directory: "prod"
   serverlessPriorityClassValue: 2000000
   serverlessPriorityClassName: "serverless-priority"
 images:
