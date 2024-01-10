@@ -26,12 +26,13 @@ func TestFunctionReconciler_equalServices(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "simple case",
+			name: "simple equal case",
 			args: args{
 				existing: corev1.Service{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      "svc-name",
-						Namespace: "svc-ns",
+						Name:        "svc-name",
+						Namespace:   "svc-ns",
+						Annotations: prometheusSvcAnnotations(),
 						Labels: map[string]string{
 							"label1": "label1",
 						},
@@ -54,6 +55,7 @@ func TestFunctionReconciler_equalServices(t *testing.T) {
 						Labels: map[string]string{
 							"label1": "label1",
 						},
+						Annotations: prometheusSvcAnnotations(),
 					},
 					Spec: corev1.ServiceSpec{
 						Ports: []corev1.ServicePort{{

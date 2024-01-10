@@ -56,13 +56,16 @@ func (s *systemState) functionLabels() map[string]string {
 }
 
 func (s *systemState) functionAnnotations() map[string]string {
+	return prometheusSvcAnnotations()
+}
+
+func prometheusSvcAnnotations() map[string]string {
 	return map[string]string{
-		"prometheus.io/port":   "80",
+		"prometheus.io/port":   "8080",
 		"prometheus.io/path":   "/metrics",
 		"prometheus.io/scrape": "true",
 	}
 }
-
 func (s *systemState) buildImageAddress(registryAddress string) string {
 	var imageTag string
 	isGitType := s.instance.TypeOf(serverlessv1alpha2.FunctionTypeGit)

@@ -132,11 +132,11 @@ func didNotFail(j batchv1.Job) bool {
 func countJobs(l batchv1.JobList, predicates ...func(batchv1.Job) bool) int {
 	var out int
 
-processing_next_item:
+processingNextItem:
 	for _, j := range l.Items {
 		for _, p := range predicates {
 			if !p(j) {
-				continue processing_next_item
+				continue processingNextItem
 			}
 		}
 		out++
@@ -186,22 +186,48 @@ func mapsEqual(existing, expected map[string]string) bool {
 	return true
 }
 
+func mapsContains(mapSet, mapSubset map[string]string) bool {
+	if len(mapSet) < len(mapSubset) {
+		return false
+	}
+
+	for key, value := range mapSubset {
+		if v, ok := mapSet[key]; !ok || v != value {
+			return false
+		}
+	}
+
+	return true
+}
+
+func mergeMapWithNewValues(existing, newValues map[string]string) {
+	for key, value := range newValues {
+		existing[key] = value
+	}
+}
+
 // TODO refactor to make this code more readable
 func equalDeployments(existing appsv1.Deployment, expected appsv1.Deployment) bool {
-	return len(existing.Spec.Template.Spec.Containers) == 1 &&
-		len(existing.Spec.Template.Spec.Containers) == len(expected.Spec.Template.Spec.Containers) &&
-		existing.Spec.Template.Spec.Containers[0].Image == expected.Spec.Template.Spec.Containers[0].Image &&
-		envsEqual(existing.Spec.Template.Spec.Containers[0].Env, expected.Spec.Template.Spec.Containers[0].Env) &&
-		mapsEqual(existing.GetLabels(), expected.GetLabels()) &&
-		mapsEqual(existing.Spec.Template.GetLabels(), expected.Spec.Template.GetLabels()) &&
-		equalResources(existing.Spec.Template.Spec.Containers[0].Resources, expected.Spec.Template.Spec.Containers[0].Resources) &&
-		equalInt32Pointer(existing.Spec.Replicas, expected.Spec.Replicas) &&
-		equalSecretMounts(existing.Spec.Template.Spec, expected.Spec.Template.Spec) &&
-		mapsEqual(existing.Spec.Template.GetAnnotations(), expected.Spec.Template.GetAnnotations())
+	result := true
+	result = result && len(existing.Spec.Template.Spec.Containers) == 1
+	result = result && len(existing.Spec.Template.Spec.Containers) == len(expected.Spec.Template.Spec.Containers)
+
+	result = result && existing.Spec.Template.Spec.Containers[0].Image == expected.Spec.Template.Spec.Containers[0].Image
+	result = result && envsEqual(existing.Spec.Template.Spec.Containers[0].Env, expected.Spec.Template.Spec.Containers[0].Env)
+	result = result && equalResources(existing.Spec.Template.Spec.Containers[0].Resources, expected.Spec.Template.Spec.Containers[0].Resources)
+
+	result = result && mapsEqual(existing.GetLabels(), expected.GetLabels())
+	result = result && mapsEqual(existing.Spec.Template.GetLabels(), expected.Spec.Template.GetLabels())
+	result = result && equalInt32Pointer(existing.Spec.Replicas, expected.Spec.Replicas)
+
+	result = result && mapsEqual(existing.Spec.Template.GetAnnotations(), expected.Spec.Template.GetAnnotations())
+	result = result && equalSecretMounts(existing.Spec.Template.Spec, expected.Spec.Template.Spec)
+	return result
 }
 
 func equalServices(existing corev1.Service, expected corev1.Service) bool {
 	return mapsEqual(existing.Spec.Selector, expected.Spec.Selector) &&
+		mapsContains(existing.Annotations, prometheusSvcAnnotations()) &&
 		mapsEqual(existing.Labels, expected.Labels) &&
 		len(existing.Spec.Ports) == len(expected.Spec.Ports) &&
 		len(expected.Spec.Ports) > 0 &&
