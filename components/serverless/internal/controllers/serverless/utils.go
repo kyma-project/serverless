@@ -206,23 +206,41 @@ func mergeMapWithNewValues(existing, newValues map[string]string) {
 	}
 }
 
-// TODO refactor to make this code more readable
 func equalDeployments(existing appsv1.Deployment, expected appsv1.Deployment) bool {
-	result := true
-	result = result && len(existing.Spec.Template.Spec.Containers) == 1
-	result = result && len(existing.Spec.Template.Spec.Containers) == len(expected.Spec.Template.Spec.Containers)
+	if hasOneContainer(existing.Spec.Template.Spec.Containers, expected.Spec.Template.Spec.Containers) {
+		return false
+	}
 
-	result = result && existing.Spec.Template.Spec.Containers[0].Image == expected.Spec.Template.Spec.Containers[0].Image
-	result = result && envsEqual(existing.Spec.Template.Spec.Containers[0].Env, expected.Spec.Template.Spec.Containers[0].Env)
-	result = result && equalResources(existing.Spec.Template.Spec.Containers[0].Resources, expected.Spec.Template.Spec.Containers[0].Resources)
+	if equalContainer(existing.Spec.Template.Spec.Containers[0], expected.Spec.Template.Spec.Containers[0]) {
+		return false
+	}
 
-	result = result && mapsEqual(existing.GetLabels(), expected.GetLabels())
-	result = result && mapsEqual(existing.Spec.Template.GetLabels(), expected.Spec.Template.GetLabels())
-	result = result && equalInt32Pointer(existing.Spec.Replicas, expected.Spec.Replicas)
+	if mapsEqual(existing.GetLabels(), expected.GetLabels()) {
+		return false
+	}
+	if mapsEqual(existing.Spec.Template.GetLabels(), expected.Spec.Template.GetLabels()) {
+		return false
+	}
 
-	result = result && mapsEqual(existing.Spec.Template.GetAnnotations(), expected.Spec.Template.GetAnnotations())
-	result = result && equalSecretMounts(existing.Spec.Template.Spec, expected.Spec.Template.Spec)
-	return result
+	if equalInt32Pointer(existing.Spec.Replicas, expected.Spec.Replicas) {
+		return false
+	}
+
+	if mapsEqual(existing.Spec.Template.GetAnnotations(), expected.Spec.Template.GetAnnotations()) {
+		return false
+	}
+
+	if equalSecretMounts(existing.Spec.Template.Spec, expected.Spec.Template.Spec) {
+		return false
+	}
+	return true
+}
+func hasOneContainer(c1, c2 []corev1.Container) bool {
+	return len(c1) == 1 && len(c1) == len(c2)
+}
+
+func equalContainer(c1, c2 corev1.Container) bool {
+	return c1.Image == c2.Image && envsEqual(c1.Env, c2.Env) && equalResources(c1.Resources, c2.Resources)
 }
 
 func equalServices(existing corev1.Service, expected corev1.Service) bool {
