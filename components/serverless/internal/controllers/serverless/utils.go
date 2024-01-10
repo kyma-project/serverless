@@ -186,13 +186,13 @@ func mapsEqual(existing, expected map[string]string) bool {
 	return true
 }
 
-func mapsContains(existing, contains map[string]string) bool {
-	if len(existing) < len(contains) {
+func mapsContains(mapSet, mapSubset map[string]string) bool {
+	if len(mapSet) < len(mapSubset) {
 		return false
 	}
 
-	for key, value := range contains {
-		if v, ok := existing[key]; !ok || v != value {
+	for key, value := range mapSubset {
+		if v, ok := mapSet[key]; !ok || v != value {
 			return false
 		}
 	}
