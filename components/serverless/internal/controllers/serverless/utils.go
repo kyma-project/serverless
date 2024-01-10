@@ -210,8 +210,9 @@ type equalCheck func() bool
 
 func equalDeployments(existing appsv1.Deployment, expected appsv1.Deployment) bool {
 	equalChecks := []equalCheck{
-		hasOneContainer(existing.Spec.Template.Spec.Containers, expected.Spec.Template.Spec.Containers),
-		equalContainer(existing.Spec.Template.Spec.Containers, expected.Spec.Template.Spec.Containers, 0),
+		hasOneContainer(existing.Spec.Template.Spec.Containers),
+		hasOneContainer(expected.Spec.Template.Spec.Containers),
+		equalContainers(existing.Spec.Template.Spec.Containers, expected.Spec.Template.Spec.Containers, 0),
 		equalMapCheck(existing.GetLabels(), expected.GetLabels()),
 		equalMapCheck(existing.Spec.Template.GetLabels(), expected.Spec.Template.GetLabels()),
 		equalMapCheck(existing.Spec.Template.GetAnnotations(), expected.Spec.Template.GetAnnotations()),
@@ -219,6 +220,12 @@ func equalDeployments(existing appsv1.Deployment, expected appsv1.Deployment) bo
 		equalSecretMountsCheck(existing.Spec.Template.Spec, expected.Spec.Template.Spec),
 	}
 	return runAllChecks(equalChecks)
+}
+
+func hasOneContainer(c []corev1.Container) equalCheck {
+	return func() bool {
+		return len(c) == 1
+	}
 }
 
 func runAllChecks(checks []equalCheck) bool {
@@ -230,15 +237,9 @@ func runAllChecks(checks []equalCheck) bool {
 	return true
 }
 
-func hasOneContainer(c1, c2 []corev1.Container) equalCheck {
+func equalContainers(c1, c2 []corev1.Container, index int) equalCheck {
 	return func() bool {
-		return len(c1) == 1 && len(c1) == len(c2)
-	}
-}
-
-func equalContainer(c1, c2 []corev1.Container, index int) equalCheck {
-	return func() bool {
-		if len(c1) < index || len(c2) < index {
+		if index >= len(c1) || index >= len(c2) {
 			return false
 		}
 		return c1[index].Image == c2[index].Image && envsEqual(c1[index].Env, c2[index].Env) && equalResources(c1[index].Resources, c2[index].Resources)
