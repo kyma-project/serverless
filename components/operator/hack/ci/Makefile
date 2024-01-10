@@ -49,6 +49,10 @@ k3d-lm-integration-test: run-with-lifecycle-manager integration-test
 k3d-integration-test: ## Run integration tests on self-prepared k3d cluster.
 k3d-integration-test: run-without-lifecycle-manager integration-test remove-serverless
 
+.PHONY: integration-test-on-cluster
+integration-test-on-cluster: ## Run integration tests on existing k3d cluster.
+integration-test-on-cluster: run-without-lm-on-cluster integration-test remove-serverless
+
 .PHONY: k3d-upgrade-test
 k3d-upgrade-test: ## Installs Serverless from latest and upgrades to local.
 k3d-upgrade-test: \

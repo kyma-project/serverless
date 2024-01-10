@@ -7,7 +7,12 @@ on:
     paths-ignore:
       - 'docs/**'
       - 'examples/**'
-
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+      - converted_to_draft
 jobs:
   # pre-serverless-operator-unit-tests
   serverless-operator-unit-tests:
@@ -17,3 +22,30 @@ jobs:
       - uses: actions/checkout@v4
       - name: run test
         run: make -C components/operator test
+
+  # pre-serverless-operator-verify, post-serverless-operator-verify
+  serverless-operator-verify:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v4
+      - name: create single cluster
+        uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79 #v2.4.0
+        with:
+          cluster-name: "k3dCluster"
+          args: >-
+            --agents 1
+            --port 80:80@loadbalancer
+            --port 443:443@loadbalancer
+            --wait
+      - name: run test (pre)
+        if: github.event_name == 'pull_request'
+        run: make -C components/operator/hack/ci integration-test-on-cluster
+        env:
+          IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
+      - name: run test (post)
+        if: github.event_name == 'push'
+        run: make -C components/operator/hack/ci integration-test-on-cluster
+        env:
+          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+
