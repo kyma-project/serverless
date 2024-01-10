@@ -26,7 +26,7 @@ type Client interface {
 type K8sClient interface {
 	Create(context.Context, ctrlclient.Object, ...ctrlclient.CreateOption) error
 	Update(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) error
-	Get(ctx context.Context, key ctrlclient.ObjectKey, obj ctrlclient.Object) error
+	Get(ctx context.Context, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error
 	List(context.Context, ctrlclient.ObjectList, ...ctrlclient.ListOption) error
 	DeleteAllOf(context.Context, ctrlclient.Object, ...ctrlclient.DeleteAllOfOption) error
 	Status() ctrlclient.StatusWriter
