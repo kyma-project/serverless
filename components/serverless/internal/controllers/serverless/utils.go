@@ -206,41 +206,61 @@ func mergeMapWithNewValues(existing, newValues map[string]string) {
 	}
 }
 
+type equalCheck func() bool
+
 func equalDeployments(existing appsv1.Deployment, expected appsv1.Deployment) bool {
-	if hasOneContainer(existing.Spec.Template.Spec.Containers, expected.Spec.Template.Spec.Containers) {
-		return false
+	equalChecks := []equalCheck{
+		hasOneContainer(existing.Spec.Template.Spec.Containers, expected.Spec.Template.Spec.Containers),
+		equalContainer(existing.Spec.Template.Spec.Containers, expected.Spec.Template.Spec.Containers, 0),
+		equalMapCheck(existing.GetLabels(), expected.GetLabels()),
+		equalMapCheck(existing.Spec.Template.GetLabels(), expected.Spec.Template.GetLabels()),
+		equalMapCheck(existing.Spec.Template.GetAnnotations(), expected.Spec.Template.GetAnnotations()),
+		equalInt32PointerCheck(existing.Spec.Replicas, expected.Spec.Replicas),
+		equalSecretMountsCheck(existing.Spec.Template.Spec, expected.Spec.Template.Spec),
 	}
+	return runAllChecks(equalChecks)
+}
 
-	if equalContainer(existing.Spec.Template.Spec.Containers[0], expected.Spec.Template.Spec.Containers[0]) {
-		return false
-	}
-
-	if mapsEqual(existing.GetLabels(), expected.GetLabels()) {
-		return false
-	}
-	if mapsEqual(existing.Spec.Template.GetLabels(), expected.Spec.Template.GetLabels()) {
-		return false
-	}
-
-	if equalInt32Pointer(existing.Spec.Replicas, expected.Spec.Replicas) {
-		return false
-	}
-
-	if mapsEqual(existing.Spec.Template.GetAnnotations(), expected.Spec.Template.GetAnnotations()) {
-		return false
-	}
-
-	if equalSecretMounts(existing.Spec.Template.Spec, expected.Spec.Template.Spec) {
-		return false
+func runAllChecks(checks []equalCheck) bool {
+	for _, check := range checks {
+		if !check() {
+			return false
+		}
 	}
 	return true
 }
-func hasOneContainer(c1, c2 []corev1.Container) bool {
-	return len(c1) == 1 && len(c1) == len(c2)
+
+func hasOneContainer(c1, c2 []corev1.Container) equalCheck {
+	return func() bool {
+		return len(c1) == 1 && len(c1) == len(c2)
+	}
 }
 
-func equalContainer(c1, c2 corev1.Container) bool {
-	return c1.Image == c2.Image && envsEqual(c1.Env, c2.Env) && equalResources(c1.Resources, c2.Resources)
+func equalContainer(c1, c2 []corev1.Container, index int) equalCheck {
+	return func() bool {
+		if len(c1) < index || len(c2) < index {
+			return false
+		}
+		return c1[index].Image == c2[index].Image && envsEqual(c1[index].Env, c2[index].Env) && equalResources(c1[index].Resources, c2[index].Resources)
+	}
+}
+
+func equalMapCheck(m1, m2 map[string]string) equalCheck {
+	return func() bool {
+		return mapsEqual(m1, m2)
+	}
+}
+
+func equalInt32PointerCheck(first *int32, second *int32) equalCheck {
+	return func() bool {
+		return equalInt32Pointer(first, second)
+	}
+}
+
+func equalSecretMountsCheck(existing, expected corev1.PodSpec) equalCheck {
+	return func() bool {
+		return equalSecretMounts(existing, expected)
+	}
 }
 
 func equalServices(existing corev1.Service, expected corev1.Service) bool {
