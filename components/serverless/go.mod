@@ -5,7 +5,6 @@ go 1.19
 replace (
 	golang.org/x/crypto => golang.org/x/crypto v0.0.0-20220213190939-1e6e3497d506
 	golang.org/x/oauth2 => golang.org/x/oauth2 v0.6.0
-// gopkg.in/yaml.v2 => gopkg.in/yaml.v2 v2.3.0
 )
 
 require (
