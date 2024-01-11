@@ -1,4 +1,4 @@
-name: Images change
+name: Images verify
 run-name: ${{github.event.pull_request.title}}
 on: 
   pull_request:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   # check if developer doesn't change `main` images in the values.yaml and sec-scanners-config.yaml files
-  check-main-tag:
+  check-main-tags:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout to main
