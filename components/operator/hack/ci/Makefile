@@ -65,7 +65,10 @@ upgrade-test: \
 k3d-upgrade-test: ## Deploy K3D cluster and installs Serverless from latest and upgrades to local.
 k3d-upgrade-test: \
 	create-k3d \
-	upgrade-test
+	install-latest-serverless \
+	run-without-lm-on-k3d-cluster \
+	check-serverless-availability \
+	integration-test
 
 .PHONY: k3d-k8s-compatibility-test
 k3d-k8s-compatibility-test: ## K8s compatibility tests not implemented yet.
