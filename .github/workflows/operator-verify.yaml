@@ -60,7 +60,26 @@ jobs:
         run: make -C components/operator/hack/ci integration-test-on-cluster
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
-  
+
+  upgrade-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: create single cluster
+        uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79 #v2.4.0
+        with:
+          cluster-name: "k3dCluster"
+          args: >-
+            --agents 1
+            --port 80:80@loadbalancer
+            --port 443:443@loadbalancer
+            --wait
+      - name: upgrade test
+        run: make -C components/operator/hack/ci upgrade-test
+        env:
+          IMG_DIRECTORY: "dev" # prod
+          IMG_VERSION: "PR-${{ github.event.number }}" # {{ github.sha }}
+
   gardener-integration-test:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
