@@ -1,4 +1,4 @@
-name: Verify if images' main tags are not modified
+name: Images change
 run-name: ${{github.event.pull_request.title}}
 on: 
   pull_request:
@@ -9,7 +9,8 @@ on:
       - config/serverless/values.yaml
 
 jobs:
-  verify-image-versions:
+  # check if developer doesn't change `main` images in the values.yaml and sec-scanners-config.yaml files
+  check-main-tag:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout to main
