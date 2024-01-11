@@ -27,7 +27,7 @@ jobs:
           working-directory: 'components/operator'
 
   # pre-serverless-operator-unit-tests
-  unit-tests:
+  unit-test:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -36,7 +36,7 @@ jobs:
         run: make -C components/operator test
 
   # pre-serverless-operator-verify, post-serverless-operator-verify
-  integration-tests:
+  integration-test:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:
