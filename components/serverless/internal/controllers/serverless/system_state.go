@@ -366,7 +366,7 @@ func (s *systemState) podLabels() map[string]string {
 	if s.instance.Spec.Labels != nil {
 		result = labels.Merge(s.instance.Spec.Labels, result)
 	}
-	return result
+	return labels.Merge(result, map[string]string{serverlessv1alpha2.PodAppNameLabel: s.instance.Name})
 }
 
 func (s *systemState) defaultAnnotations() map[string]string {

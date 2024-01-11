@@ -1,10 +1,11 @@
 package serverless
 
 import (
+	"testing"
+
 	"github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/onsi/gomega"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"testing"
 )
 
 func Test_systemState_podLabels(t *testing.T) {
@@ -25,6 +26,7 @@ func Test_systemState_podLabels(t *testing.T) {
 				}},
 			},
 			want: map[string]string{
+				v1alpha2.PodAppNameLabel:        "fn-name",
 				v1alpha2.FunctionUUIDLabel:      "fn-uuid",
 				v1alpha2.FunctionManagedByLabel: v1alpha2.FunctionControllerValue,
 				v1alpha2.FunctionNameLabel:      "fn-name",
@@ -44,6 +46,7 @@ func Test_systemState_podLabels(t *testing.T) {
 					},
 				}}},
 			want: map[string]string{
+				v1alpha2.PodAppNameLabel:        "fn-name",
 				v1alpha2.FunctionUUIDLabel:      "fn-uuid",
 				v1alpha2.FunctionManagedByLabel: v1alpha2.FunctionControllerValue,
 				v1alpha2.FunctionNameLabel:      "fn-name",
@@ -66,6 +69,7 @@ func Test_systemState_podLabels(t *testing.T) {
 					},
 				}}},
 			want: map[string]string{
+				v1alpha2.PodAppNameLabel:        "fn-name",
 				v1alpha2.FunctionUUIDLabel:      "fn-uuid",
 				v1alpha2.FunctionManagedByLabel: v1alpha2.FunctionControllerValue,
 				v1alpha2.FunctionNameLabel:      "fn-name",
@@ -85,6 +89,7 @@ func Test_systemState_podLabels(t *testing.T) {
 					},
 				}}},
 			want: map[string]string{
+				v1alpha2.PodAppNameLabel:        "fn-name",
 				v1alpha2.FunctionUUIDLabel:      "fn-uuid",
 				v1alpha2.FunctionManagedByLabel: v1alpha2.FunctionControllerValue,
 				v1alpha2.FunctionNameLabel:      "fn-name",
@@ -107,6 +112,7 @@ func Test_systemState_podLabels(t *testing.T) {
 					},
 				}}},
 			want: map[string]string{
+				v1alpha2.PodAppNameLabel:        "fn-name",
 				v1alpha2.FunctionUUIDLabel:      "fn-uuid",
 				v1alpha2.FunctionManagedByLabel: v1alpha2.FunctionControllerValue,
 				v1alpha2.FunctionNameLabel:      "fn-name",

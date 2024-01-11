@@ -110,7 +110,7 @@ func TestFunctionReconciler_buildDeployment(t *testing.T) {
 			g.Expect(got.Spec.Template.Spec.Containers[0].Env).To(gomega.ContainElements(rtmCfg.RuntimeEnvs))
 
 			// pod labels & annotations
-			g.Expect(got.Spec.Template.ObjectMeta.Labels).To(gomega.HaveLen(4 + 3))
+			g.Expect(got.Spec.Template.ObjectMeta.Labels).To(gomega.HaveLen(5 + 3))
 			g.Expect(got.Spec.Template.ObjectMeta.Labels).To(gomega.HaveKeyWithValue("foo", "bar"))
 			g.Expect(got.Spec.Template.ObjectMeta.Labels).To(gomega.HaveKeyWithValue(testBindingLabel1, "foobar"))
 			g.Expect(got.Spec.Template.ObjectMeta.Labels).To(gomega.HaveKeyWithValue(testBindingLabel2, testBindingLabelValue))

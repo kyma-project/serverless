@@ -5,10 +5,8 @@ from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider, _Span
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from opentelemetry.propagate import extract
-from opentelemetry.sdk.resources import (
-    SERVICE_NAME,
-    Resource
-)
+from opentelemetry.sdk.resources import Resource
+
 from opentelemetry.sdk.trace.export import (
     SimpleSpanProcessor,
 )
@@ -24,10 +22,10 @@ import os
 
 # Tracing propagators are configured based on OTEL_PROPAGATORS env variable set in dockerfile
 # https://opentelemetry.io/docs/instrumentation/python/manual/#using-environment-variables
-def _setup_tracer(service_name: str) -> trace.Tracer:
+def _setup_tracer() -> trace.Tracer:
 
     provider = TracerProvider(
-        resource=Resource.create({SERVICE_NAME: service_name}),
+        resource=Resource.create(),
         sampler=DEFAULT_ON,
     )
    

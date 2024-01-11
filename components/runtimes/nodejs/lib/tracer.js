@@ -7,7 +7,6 @@ const { NodeTracerProvider } = require( '@opentelemetry/sdk-trace-node');
 const { SimpleSpanProcessor } = require( '@opentelemetry/sdk-trace-base');
 const { OTLPTraceExporter } =  require('@opentelemetry/exporter-trace-otlp-http');
 const { Resource } = require( '@opentelemetry/resources');
-const { SemanticResourceAttributes } = require( '@opentelemetry/semantic-conventions');
 const { B3Propagator, B3InjectEncoding } = require("@opentelemetry/propagator-b3");
 const { ExpressInstrumentation, ExpressLayerType } = require( '@opentelemetry/instrumentation-express');
 const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
@@ -18,12 +17,10 @@ const ignoredTargets = [
   "/healthz", "/favicon.ico", "/metrics"
 ]
 
-function setupTracer(serviceName){
+function setupTracer(){
 
   const provider = new NodeTracerProvider({
-    resource: new Resource({
-      [SemanticResourceAttributes.SERVICE_NAME]: serviceName,
-    }),
+    resource: new Resource(),
     sampler: new ParentBasedSampler({
       root: new AlwaysOnSampler()
     }),
@@ -64,7 +61,7 @@ function setupTracer(serviceName){
     propagator: propagator,
   });
 
-  return opentelemetry.trace.getTracer(serviceName);
+  return opentelemetry.trace.getTracer("tracer");
 };
 
 module.exports = {
