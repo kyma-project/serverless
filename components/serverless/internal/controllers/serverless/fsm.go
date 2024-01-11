@@ -64,7 +64,7 @@ loop:
 			break loop
 
 		default:
-			m.log.With("stateFn", m.stateFnName()).Info("next state")
+			m.log.With("stateFn", m.stateFnName()).Debug("next state")
 			m.fn, err = m.fn(ctx, m, &state)
 		}
 	}

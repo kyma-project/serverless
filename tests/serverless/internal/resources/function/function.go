@@ -186,9 +186,9 @@ func (f Function) toString() string {
 
 func (f Function) logReadiness(ready bool) {
 	if ready {
-		f.log.Infof("%s is ready", f.toString())
+		f.log.Debugf("%s is ready", f.toString())
 	} else {
-		f.log.Infof("%s is not ready", f.toString())
+		f.log.Debugf("%s is not ready", f.toString())
 	}
 
 	if f.verbose {
