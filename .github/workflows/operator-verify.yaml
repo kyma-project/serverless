@@ -22,7 +22,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: golangci/golangci-lint-action@v3
-        continue-on-error: true
         with:
           version: latest
           working-directory: 'components/operator'
