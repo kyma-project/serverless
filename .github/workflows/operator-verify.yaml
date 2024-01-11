@@ -60,4 +60,23 @@ jobs:
         run: make -C components/operator/hack/ci integration-test-on-cluster
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
-
+  
+  gardener-integration-test:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: save sa
+      shell: bash
+      run: 'echo "$GARDENER_SA" > /tmp/gardener-sa.yaml'
+      env:
+        GARDENER_SA: ${{ secrets.GARDENER_SA }}
+    - name: run test
+      run: make -C components/operator/hack/ci gardener-integration-test
+      env:
+        IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+        GARDENER_SECRET_NAME: ${{ secrets.GARDENER_SECRET_NAME }}
+        GARDENER_PROJECT: ${{ secrets.GARDENER_PROJECT }}
+        GARDENER_SA_PATH: /tmp/gardener-sa.yaml
+        IMG_DIRECTORY: "prod"
+        IMG_VERSION: ${{ github.sha }}
