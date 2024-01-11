@@ -63,6 +63,7 @@ jobs:
 
   upgrade-test:
     runs-on: ubuntu-latest
+    # if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
       - name: create single cluster
@@ -77,8 +78,8 @@ jobs:
       - name: upgrade test
         run: make -C components/operator/hack/ci upgrade-test
         env:
-          IMG_DIRECTORY: "dev" # prod
-          IMG_VERSION: "PR-${{ github.event.number }}" # {{ github.sha }}
+          IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
+          # IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
 
   gardener-integration-test:
     if: github.event_name == 'push'
