@@ -13,9 +13,21 @@ on:
       - synchronize
       - ready_for_review
       - converted_to_draft
+
 jobs:
+  # pre-serverless-operator-lint
+  lint:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          working-directory: 'components/operator'
+
   # pre-serverless-operator-unit-tests
-  serverless-operator-unit-tests:
+  unit-tests:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -24,7 +36,7 @@ jobs:
         run: make -C components/operator test
 
   # pre-serverless-operator-verify, post-serverless-operator-verify
-  serverless-operator-verify:
+  integration-tests:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:
