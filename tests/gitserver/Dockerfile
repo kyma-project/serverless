@@ -1,6 +1,4 @@
-FROM alpine:3.12
-
-FROM alpine:3.15
+FROM alpine:3.19
 
 RUN apk add --no-cache git-daemon apache2 apache2-utils && \
     apk upgrade --no-cache --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
