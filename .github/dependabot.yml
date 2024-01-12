@@ -8,7 +8,7 @@ updates:
       - "area/dependency"
       - "kind/chore"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     commit-message:
       prefix: "actions"
       include: "scope"
