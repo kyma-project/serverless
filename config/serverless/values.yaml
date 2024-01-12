@@ -96,7 +96,7 @@ global:
       directory: "prod"
     kaniko_executor:
       name: "tpi/kaniko-executor"
-      version: "1.9.1-1ae4c190"
+      version: "1.9.2-ea54c1c7"
       directory: "prod"
     registry:
       name: "tpi/registry"
@@ -186,7 +186,7 @@ containers:
         functionTraceCollectorEndpoint: "http://telemetry-otlp-traces.kyma-system.svc.cluster.local:4318/v1/traces"
         functionPublisherProxyAddress: "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
         functionRequeueDuration: 5m
-        functionBuildExecutorArgs: "--insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true"
+        functionBuildExecutorArgs: "--insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true,--use-new-run,--compressed-caching=false"
         functionBuildMaxSimultaneousJobs: "5"
         healthzLivenessTimeout: "10s"
         resourcesConfiguration:
