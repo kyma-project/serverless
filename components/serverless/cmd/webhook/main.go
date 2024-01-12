@@ -118,9 +118,14 @@ func main() {
 
 	logWithCtx.Info("setting up webhook server")
 	// webhook server setup
-	whs := mgr.GetWebhookServer()
-	whs.CertName = resources.CertFile
-	whs.KeyName = resources.KeyFile
+	whs := ctrlwebhook.NewServer(ctrlwebhook.Options{
+		CertName: resources.CertFile,
+		KeyName: resources.KeyFile})
+	err = whs.Start(ctx)
+	if err != nil {
+		logWithCtx.Error(err, "failed to start webhook server")
+		os.Exit(1)
+	}
 
 	whs.Register(resources.FunctionDefaultingWebhookPath, &ctrlwebhook.Admission{
 		Handler: webhook.NewDefaultingWebhook(
