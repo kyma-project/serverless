@@ -53,11 +53,21 @@ k3d-integration-test: run-without-lifecycle-manager integration-test remove-serv
 integration-test-on-cluster: ## Run integration tests on existing k3d cluster.
 integration-test-on-cluster: run-without-lm-on-cluster integration-test remove-serverless
 
-.PHONY: k3d-upgrade-test
-k3d-upgrade-test: ## Installs Serverless from latest and upgrades to local.
-k3d-upgrade-test: \
+.PHONY: upgrade-test
+upgrade-test: ## Installs Serverless from latest and upgrades to local
+upgrade-test: \
 	install-latest-serverless \
-	reinstall-serverless \
+	run-without-lm-on-cluster \
+	check-serverless-availability \
+	integration-test
+
+.PHONY: k3d-upgrade-test
+k3d-upgrade-test: ## Deploy K3D cluster and installs Serverless from latest and upgrades to local.
+k3d-upgrade-test: \
+	create-k3d \
+	install-latest-serverless \
+	run-without-lm-on-k3d-cluster \
+	check-serverless-availability \
 	integration-test
 
 .PHONY: k3d-k8s-compatibility-test
@@ -74,18 +84,20 @@ remove-serverless: ## Remove Serverless CR
 
 ### Internal Dependencies
 
+.PHONY: create-k3d
+create-k3d:
+	@make -C ${PROJECT_COMMON} kyma create-k3d
+
 .PHONY: install-latest-serverless
 install-latest-serverless:
-	@make -C ${PROJECT_COMMON} kyma create-k3d
+	kubectl create namespace kyma-system || true
 	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/serverless-operator.yaml
 	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default-serverless-cr-k3d.yaml -n kyma-system
 	@make -C ${PROJECT_COMMON} verify-serverless
 
-.PHONY: reinstall-serverless
-reinstall-serverless:
-	@make -C ${PROJECT_COMMON} run-without-lm-on-k3d-cluster
-	
-	# wait some time to make sure lm starts the reconciliation first
+.PHONY: check-serverless-availability
+check-serverless-availability:
+	# wait some time to make sure operator starts the reconciliation first
 	sleep 5
 
 	# double check that serverless has progressed
