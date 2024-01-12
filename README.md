@@ -11,6 +11,12 @@ Serverless Operator allows deploying the [Serverless](https://kyma-project.io/do
 
 ## Install
 
+Create kyma-system namespace:
+
+```bash
+kubectl create namespace kyma-system
+```
+
 Apply the following script to install Serverless Operator:
 
 ```bash
@@ -20,7 +26,7 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
 To get Serverless installed, apply the sample Serverless CR:
 
 ```bash
-kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default-serverless-cr.yaml -n kyma-system
+kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default-serverless-cr.yaml
 ```
 
 ## Development
