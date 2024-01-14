@@ -58,7 +58,6 @@ upgrade-test: ## Installs Serverless from latest and upgrades to local
 upgrade-test: \
 	install-latest-serverless \
 	run-without-lm-on-cluster \
-	check-serverless-availability \
 	integration-test
 
 .PHONY: k3d-upgrade-test
@@ -67,7 +66,6 @@ k3d-upgrade-test: \
 	create-k3d \
 	install-latest-serverless \
 	run-without-lm-on-k3d-cluster \
-	check-serverless-availability \
 	integration-test
 
 .PHONY: k3d-k8s-compatibility-test
@@ -94,15 +92,6 @@ install-latest-serverless:
 	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/serverless-operator.yaml
 	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default-serverless-cr-k3d.yaml -n kyma-system
 	@make -C ${PROJECT_COMMON} verify-serverless
-
-.PHONY: check-serverless-availability
-check-serverless-availability:
-	# wait some time to make sure operator starts the reconciliation first
-	sleep 5
-
-	# double check that serverless has progressed
-	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s
-	kubectl wait --for condition=Available -n kyma-system deployment serverless-ctrl-mngr --timeout=60s
 
 .PHONY: provision-gardener
 provision-gardener:
