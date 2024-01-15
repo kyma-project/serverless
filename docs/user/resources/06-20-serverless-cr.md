@@ -30,7 +30,7 @@ The following Serverless custom resource (CR) shows configuration of Serverless 
         endpoint: http://telemetry-otlp-traces.kyma-system.svc.cluster.local:4318/v1/traces
      targetCPUUtilizationPercentage: 50
      functionRequeueDuration: 5m
-     functionBuildExecutorArgs: "--insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true"
+     functionBuildExecutorArgs: "--insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true,--use-new-run,--compressed-caching=false"
      functionBuildMaxSimultaneousJobs: 5
      healthzLivenessTimeout: "10s"
      functionRequestBodyLimitMb: 1

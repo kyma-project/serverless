@@ -37,7 +37,7 @@ serverless:
     manager:
       envs:
         functionBuildExecutorArgs:
-          value: --insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true,--force
+          value: --insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true,--use-new-run,--compressed-caching=false,--force
 ```
 
 Use the file to override the default configuration while deploying Kyma on your k3d instance:
