@@ -12,7 +12,7 @@ The Function Controller requires the following components to be installed:
 ## Development
 
 To develop the Function Controller, you need:
-- [libgit2-dev](https://libgit2.org/) (v1.5)
+- [libgit2-dev](https://github.com/libgit2/libgit2) (v1.5)
 - [controller-gen](https://github.com/kubernetes-sigs/controller-tools/releases/tag/v0.6.2) (v0.6.2)
 - <!-- markdown-link-check-disable-line -->[kustomize](https://github.com/kubernetes-sigs/kustomize/releases/tag/kustomize%2Fv4.5.7) (v4.5.7)
 
