@@ -1,8 +1,9 @@
 package internal
 
 import (
-	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
 	"time"
+
+	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
 )
 
 const (
@@ -17,7 +18,7 @@ type Config struct {
 	MaxPollingTime                  time.Duration        `envconfig:"default=5m"`
 	InsecureSkipVerify              bool                 `envconfig:"default=true"`
 	Cleanup                         executor.CleanupMode `envconfig:"default=yes"`
-	GitServerImage                  string               `envconfig:"default=europe-docker.pkg.dev/kyma-project/prod/gitserver:v20231004-1b231653"`
+	GitServerImage                  string               `envconfig:"default=europe-docker.pkg.dev/kyma-project/dev/gitserver:PR-582"`
 	GitServerRepoName               string               `envconfig:"default=function"`
 	IstioEnabled                    bool                 `envconfig:"default=false"`
 	PackageRegistryConfigSecretName string               `envconfig:"default=serverless-package-registry-config"`
