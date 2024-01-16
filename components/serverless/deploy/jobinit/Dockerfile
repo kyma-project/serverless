@@ -20,7 +20,6 @@ RUN go build -ldflags "-s -w" -a -o jobinit ./components/serverless/cmd/jobinit/
     && mkdir /app \
     && mv ./jobinit /app/jobinit
 
-# result container base on alpine:3.17.4
 FROM europe-docker.pkg.dev/kyma-project/prod/external/alpine:3.17.4
 ENV LIBGIT2_VERSION=1.5.2-r0
 
