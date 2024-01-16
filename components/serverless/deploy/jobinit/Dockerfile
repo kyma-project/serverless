@@ -1,5 +1,4 @@
-# image builder base on golang:1.21.4-alpine3.18
-FROM golang@sha256:f475434ea2047a83e9ba02a1da8efc250fa6b2ed0e9e8e4eb8c5322ea6997795 as builder
+FROM golang:1.21.6-alpine3.19 as builder
 
 ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/serverless \
     CGO_ENABLED=1 \
@@ -21,8 +20,7 @@ RUN go build -ldflags "-s -w" -a -o jobinit ./components/serverless/cmd/jobinit/
     && mkdir /app \
     && mv ./jobinit /app/jobinit
 
-# result container base on alpine:3.17.4
-FROM europe-docker.pkg.dev/kyma-project/prod/external/alpine@sha256:e95676db9e4a4f16f6cc01a8915368f82b018cc07aba951c1bd1db586c081388
+FROM europe-docker.pkg.dev/kyma-project/prod/external/alpine:3.17.4
 ENV LIBGIT2_VERSION=1.5.2-r0
 
 LABEL source = git@github.com:kyma-project/kyma.git
