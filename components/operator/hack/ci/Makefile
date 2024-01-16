@@ -123,4 +123,6 @@ replace-chart-images:
 	@IMG_VERSION=${IMG_VERSION} IMG_DIRECTORY=${IMG_DIRECTORY} \
  		make -C ${PROJECT_COMMON} replace-chart-images
 
-
+.PHONY: run-without-lm-on-k3d-cluster
+run-without-lm-on-k3d-cluster:
+	@make -C ${PROJECT_COMMON} run-without-lm-on-k3d-cluster
