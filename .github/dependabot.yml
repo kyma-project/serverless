@@ -27,47 +27,6 @@ updates:
       include: "scope"
 
   - package-ecosystem: "docker"
-    directory: "/components/runtimes/java17"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "java17"
-      include: "scope"
-  - package-ecosystem: "docker"
-    directory: "/components/runtimes/nodejs/nodejs16"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "nodejs16"
-      include: "scope"
-  - package-ecosystem: "docker"
-    directory: "/components/runtimes/nodejs/nodejs18"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "nodejs18"
-      include: "scope"
-  - package-ecosystem: "docker"
-    directory: "/components/runtimes/python39"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "python39"
-      include: "scope"
-
-  - package-ecosystem: "docker"
     directory: "/components/serverless/deploy/jobinit"
     labels:
       - "area/dependency"
