@@ -14,3 +14,56 @@ updates:
       include: "scope"
     ignore:
       - dependency-name: "gaurav-nelson/github-action-markdown-link-check"
+
+  - package-ecosystem: "docker"
+    directory: "/components/operator"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "operator"
+      include: "scope"
+
+  - package-ecosystem: "docker"
+    directory: "/components/serverless/deploy/jobinit"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "jobinit"
+      include: "scope"
+  - package-ecosystem: "docker"
+    directory: "/components/serverless/deploy/manager"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "manager"
+      include: "scope"
+
+  - package-ecosystem: "docker"
+    directory: "/tests/gitserver"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "gitserver"
+      include: "scope"
+  - package-ecosystem: "docker"
+    directory: "/tests/serverless-bench"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "serverless-bench"
+      include: "scope"
