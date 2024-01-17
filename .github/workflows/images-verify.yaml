@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout to main
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           ref: main
 
@@ -27,7 +27,7 @@ jobs:
           echo VALUES_MAIN_IMAGES=$(yq '.global.images[] | select(.version == "main") | .name' config/serverless/values.yaml) >> $GITHUB_ENV
 
       - name: Checkout to context
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: Verify sec-scanners-config.yaml images
         run: |
