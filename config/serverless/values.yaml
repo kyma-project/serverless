@@ -72,27 +72,27 @@ global:
   images:
     function_controller:
       name: "function-controller"
-      version: "1.3.0"
+      version: "1.3.1"
       directory: "prod"
     function_webhook:
       name: "function-webhook"
-      version: "1.3.0"
+      version: "1.3.1"
       directory: "prod"
     function_build_init:
       name: "function-build-init"
-      version: "1.3.0"
+      version: "1.3.1"
       directory: "prod"
     function_runtime_nodejs16:
       name: "function-runtime-nodejs16"
-      version: "1.3.0"
+      version: "1.3.1"
       directory: "prod"
     function_runtime_nodejs18:
       name: "function-runtime-nodejs18"
-      version: "1.3.0"
+      version: "1.3.1"
       directory: "prod"
     function_runtime_python39:
       name: "function-runtime-python39"
-      version: "1.3.0"
+      version: "1.3.1"
       directory: "prod"
     kaniko_executor:
       name: "tpi/kaniko-executor"
