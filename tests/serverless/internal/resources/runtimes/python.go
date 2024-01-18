@@ -2,6 +2,7 @@ package runtimes
 
 import (
 	"fmt"
+
 	v1 "k8s.io/api/core/v1"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
@@ -12,7 +13,7 @@ func BasicPythonFunction(msg string, runtime serverlessv1alpha2.Runtime) serverl
 def main(event, context):
 	return "%s"`, msg)
 
-	dpd := `requests==2.24.0
+	dpd := `requests==2.31.0
 arrow==0.15.8`
 
 	return serverlessv1alpha2.FunctionSpec{
@@ -74,7 +75,7 @@ func BasicPythonFunctionWithCustomDependency(msg string, runtime serverlessv1alp
 def main(event, context):
 	return "%s"`, msg)
 
-	dpd := `requests==2.24.0
+	dpd := `requests==2.31.0
 arrow==0.15.8
 kyma-pypi-test==1.0.0`
 

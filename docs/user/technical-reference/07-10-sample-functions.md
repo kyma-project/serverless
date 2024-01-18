@@ -51,7 +51,7 @@ spec:
   source:
     inline:
       dependencies: |
-        requests==2.24.0
+        requests==2.31.0
       source: |
         import requests
         def main(event, context):
