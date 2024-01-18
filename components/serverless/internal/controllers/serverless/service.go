@@ -49,6 +49,9 @@ func buildStateFnUpdateService(newService corev1.Service) stateFn {
 		svc.Spec.Type = newService.Spec.Type
 
 		svc.ObjectMeta.Labels = newService.GetLabels()
+		if svc.ObjectMeta.Annotations == nil {
+			svc.ObjectMeta.Annotations = make(map[string]string)
+		}
 		mergeMapWithNewValues(svc.ObjectMeta.Annotations, newService.GetAnnotations())
 
 		r.log.Info(fmt.Sprintf("Updating Service %s", svc.GetName()))
