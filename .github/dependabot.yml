@@ -78,13 +78,3 @@ updates:
     commit-message:
       prefix: "pip-python39"
       include: "scope"
-  - package-ecosystem: "pip"
-    directory: "/tests/serverless-bench"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "pip-test"
-      include: "scope"
