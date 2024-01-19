@@ -149,16 +149,18 @@ By default, the Function associated with the default configuration will be reque
 
 ## Configure the Function Build Executor Arguments
 
-Use this label to choose the arguments passed to the Function build executor, for example: 
+Use this label to choose the [arguments](https://github.com/GoogleContainerTools/kaniko?tab=readme-ov-file#additional-flags) passed to the Function build executor, for example: 
 - `--insecure` - executor operates in an insecure mode
 - `--skip-tls-verify` - executor skips the TLS certificate verification
 - `--skip-unused-stages` - executor skips any stages that aren't used for the current execution
 - `--log-format=text` - executor uses logs in a given format
 - `--cache=true` - enables caching for the executor
+- `--compressed-caching=false` - Prevents tar compression for cached layers. This will increase the runtime of the build, but decrease the memory usage especially for large builds.
+- `--use-new-run` - Improves performance by avoiding the full filesystem snapshots.
 
 ```yaml
    spec:
-      functionBuildExecutorArgs: "--insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true"
+      functionBuildExecutorArgs: "--insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true,--use-new-run,--compressed-caching=false"
 ```
 
 ## Configure the Function Build Max Simultaneous Jobs
