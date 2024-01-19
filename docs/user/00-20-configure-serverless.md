@@ -35,7 +35,7 @@ The default configuration of the Serverless Module is following:
 
 By default, Serverless uses PersistentVolume (PV) as the internal registry to store Docker images for Functions. The default storage size of a single volume is 20 GB. This internal registry is suitable for local development.
 
-If you use Serverless for production purposes, it is recommended that you use an external registry, such as Docker Hub, Google Container Registry (GCR), or Azure Container Registry (ACR).
+If you use Serverless for production purposes, it is recommended that you use an external registry, such as Docker Hub, Artifact Registry, or Azure Container Registry (ACR).
 
 Follow these steps to use the external Docker registry in Serverless: 
 
@@ -67,9 +67,9 @@ Examples:
       --from-literal=registryAddress={USERNAME}
    ```
 
-### **GCR**
+### **Artifact Registry**
 
-To learn how to set up authentication for Docker with GCR, visit the [GCR documentation](https://cloud.google.com/artifact-registry/docs/docker/authentication#json-key).
+To learn how to set up authentication for Docker with Artifact Registry, visit the [Artifact Registry documentation](https://cloud.google.com/artifact-registry/docs/docker/authentication#json-key).
    ```bash
    kubectl create secret generic my-registry-config \
        --namespace kyma-system \
