@@ -68,3 +68,34 @@ updates:
     commit-message:
       prefix: "pip-python39"
       include: "scope"
+
+  - package-ecosystem: "npm"
+    directory: "/components/runtimes/nodejs/nodejs16"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "npm-nodejs16"
+      include: "scope"
+  - package-ecosystem: "npm"
+    directory: "/components/runtimes/nodejs/nodejs18"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "npm-nodejs18"
+      include: "scope"
+  - package-ecosystem: "npm"
+    directory: "/tests/gitserver/repos/function"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "npm-test"
+      include: "scope"
