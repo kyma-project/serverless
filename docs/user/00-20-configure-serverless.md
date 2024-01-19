@@ -35,7 +35,7 @@ The default configuration of the Serverless Module is following:
 
 By default, Serverless uses PersistentVolume (PV) as the internal registry to store Docker images for Functions. The default storage size of a single volume is 20 GB. This internal registry is suitable for local development.
 
-If you use Serverless for production purposes, it is recommended that you use an external registry, such as Docker Hub, Google Container Registry (GCR), or Azure Container Registry (ACR).
+If you use Serverless for production purposes, it is recommended that you use an external registry, such as Docker Hub, Artifact Registry, or Azure Container Registry (ACR).
 
 Follow these steps to use the external Docker registry in Serverless: 
 
@@ -67,9 +67,9 @@ Examples:
       --from-literal=registryAddress={USERNAME}
    ```
 
-### **GCR**
+### **Artifact Registry**
 
-To learn how to set up authentication for Docker with GCR, visit the [GCR documentation](https://cloud.google.com/artifact-registry/docs/docker/authentication#json-key).
+To learn how to set up authentication for Docker with Artifact Registry, visit the [Artifact Registry documentation](https://cloud.google.com/artifact-registry/docs/docker/authentication#json-key).
    ```bash
    kubectl create secret generic my-registry-config \
        --namespace kyma-system \
@@ -149,18 +149,16 @@ By default, the Function associated with the default configuration will be reque
 
 ## Configure the Function Build Executor Arguments
 
-Use this label to choose the [arguments](https://github.com/GoogleContainerTools/kaniko?tab=readme-ov-file#additional-flags) passed to the Function build executor, for example: 
+Use this label to choose the arguments passed to the Function build executor, for example: 
 - `--insecure` - executor operates in an insecure mode
 - `--skip-tls-verify` - executor skips the TLS certificate verification
 - `--skip-unused-stages` - executor skips any stages that aren't used for the current execution
 - `--log-format=text` - executor uses logs in a given format
 - `--cache=true` - enables caching for the executor
-- `--compressed-caching=false` - Prevents tar compression for cached layers. This will increase the runtime of the build, but decrease the memory usage especially for large builds.
-- `--use-new-run` - Improves performance by avoiding the full filesystem snapshots.
 
 ```yaml
    spec:
-      functionBuildExecutorArgs: "--insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true,--use-new-run,--compressed-caching=false"
+      functionBuildExecutorArgs: "--insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true"
 ```
 
 ## Configure the Function Build Max Simultaneous Jobs
