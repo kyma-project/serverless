@@ -57,13 +57,14 @@ updates:
     commit-message:
       prefix: "gitserver"
       include: "scope"
-  - package-ecosystem: "docker"
-    directory: "/tests/serverless-bench"
+
+  - package-ecosystem: "pip"
+    directory: "/components/runtimes/python39/kubeless"
     labels:
       - "area/dependency"
       - "kind/chore"
     schedule:
       interval: "weekly"
     commit-message:
-      prefix: "serverless-bench"
+      prefix: "pip-python39"
       include: "scope"
