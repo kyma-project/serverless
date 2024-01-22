@@ -21,8 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: libgit2 installation
-        run: git clone https://github.com/libgit2/libgit2.git && cd libgit2 && git checkout v1.5.2 && cmake . && sudo make install
+      - uses: ./.github/actions/setup-libgit2
       - uses: golangci/golangci-lint-action@v3
         with:
           version: latest
@@ -33,17 +32,8 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - name: install libssh2
-        run: sudo apt update && sudo apt install libssh2-1-dev -y
-      - name: libgit2 installation
-        run: |
-          git clone https://github.com/libgit2/libgit2.git
-          cd libgit2 
-          git checkout v1.5.2
-          cmake . -DBUILD_TESTS=OFF -DBUILD_CLI=OFF -DUSE_SSH=ON
-          sudo make install
-          sudo ldconfig
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-libgit2
       - name: run test
         run: make -C components/serverless test
 
