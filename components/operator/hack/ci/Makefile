@@ -90,7 +90,7 @@ create-k3d:
 install-latest-serverless:
 	kubectl create namespace kyma-system || true
 	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/serverless-operator.yaml
-	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default-serverless-cr-k3d.yaml -n kyma-system
+	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default-serverless-cr.yaml -n kyma-system
 	@make -C ${PROJECT_COMMON} verify-serverless
 
 .PHONY: provision-gardener
