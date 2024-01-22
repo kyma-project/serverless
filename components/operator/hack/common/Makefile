@@ -104,9 +104,14 @@ verify-serverless: ## Wait for Serverless CR to be in Ready state.
 	# wait some time to make sure operator starts the reconciliation first
 	sleep 5
 
-	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s
-	@./verify_serverless_status.sh
-	kubectl wait --for condition=Available -n kyma-system deployment serverless-ctrl-mngr --timeout=60s
+	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s || \
+		(kubectl get -n kyma-system deployment serverless-operator -oyaml && false)
+
+	@./verify_serverless_status.sh || \
+		(kubectl get -n kyma-system serverless default -oyaml && false)
+
+	kubectl wait --for condition=Available -n kyma-system deployment serverless-ctrl-mngr --timeout=60s || \
+		(kubectl get -n kyma-system deployment serverless-ctrl-mngr -oyaml && false)
 
 .PHONY: verify-kyma
 verify-kyma: ## Wait for Kyma CR to be in Ready state.
