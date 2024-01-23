@@ -101,10 +101,13 @@ deprovision-gardener: kyma ## Deprovision gardener cluster
 
 .PHONY: verify-serverless
 verify-serverless: ## Wait for Serverless CR to be in Ready state.
-	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s || \
-		(make print-serverless-details && false)
+	# wait some time to make sure operator starts the reconciliation first
+	sleep 10
 
 	./verify_serverless_status.sh || \
+		(make print-serverless-details && false)
+	
+	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s || \
 		(make print-serverless-details && false)
 
 	kubectl wait --for condition=Available -n kyma-system deployment serverless-ctrl-mngr --timeout=60s || \
