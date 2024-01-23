@@ -87,6 +87,10 @@ updates:
     commit-message:
       prefix: "pip-python39"
       include: "scope"
+    groups:
+      opentelemetry:
+        patterns:
+          - "opentelemetry-*"
 
   - package-ecosystem: "npm"
     directory: "/components/runtimes/nodejs/nodejs16"
