@@ -11,7 +11,7 @@ Serverless Operator allows deploying the [Serverless](https://kyma-project.io/do
 
 ## Install
 
-Create kyma-system namespace:
+Create the `kyma-system` namespace:
 
 ```bash
 kubectl create namespace kyma-system
