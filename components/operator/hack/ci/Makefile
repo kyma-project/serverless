@@ -118,10 +118,25 @@ render-manifest:
 	@make -C ${OPERATOR_ROOT} render-manifest \
 		MODULE_VERSION=${MODULE_VERSION}
 
+# used only by prow (tests: pre-serverless-integration-k3s, pre-serverless-git-auth-integration-k3s)
 .PHONY: replace-chart-images
-replace-chart-images:
-	@IMG_VERSION=${IMG_VERSION} IMG_DIRECTORY=${IMG_DIRECTORY} \
- 		make -C ${PROJECT_COMMON} replace-chart-images
+replace-chart-images: replace-function-chart-images
+
+.PHONY: replace-only-main-chart-images
+replace-only-main-chart-images:
+	yq -i "(.global.images[] | select(.version == \"main\") | .directory) = \"${IMG_DIRECTORY}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
+	yq -i "(.global.images[] | select(.version == \"main\") | .version) = \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
+	@echo "==== Local Changes ===="
+	yq '.global.images' ${PROJECT_ROOT}/config/serverless/values.yaml
+	@echo "==== End of Local Changes ===="
+
+.PHONY: replace-function-chart-images
+replace-function-chart-images:
+	yq -i "(.global.images[] | select(key == \"function_*\") | .directory) = \"${IMG_DIRECTORY}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
+	yq -i "(.global.images[] | select(key == \"function_*\") | .version) = \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
+	@echo "==== Local Changes ===="
+	yq '.global.images' ${PROJECT_ROOT}/config/serverless/values.yaml
+	@echo "==== End of Local Changes ===="
 
 .PHONY: run-without-lm-on-k3d-cluster
 run-without-lm-on-k3d-cluster:
