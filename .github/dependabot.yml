@@ -112,6 +112,10 @@ updates:
     commit-message:
       prefix: "npm-nodejs18"
       include: "scope"
+    groups:
+      opentelemetry:
+        patterns:
+          - "@opentelemetry/*"
   - package-ecosystem: "npm"
     directory: "/tests/gitserver/repos/function"
     labels:
@@ -122,3 +126,7 @@ updates:
     commit-message:
       prefix: "npm-test"
       include: "scope"
+    groups:
+      opentelemetry:
+        patterns:
+          - "@opentelemetry/*"
