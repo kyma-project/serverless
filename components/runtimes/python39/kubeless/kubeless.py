@@ -125,7 +125,7 @@ if __name__ == '__main__':
 
     if mp_context == "fork":
         raise ValueError(
-            '"fork" multiprocessing context is not supported because cherrypy is a '
+            '"fork" multiprocessing context is not supported because cheroot is a '
             'multithreaded server and safely forking a multithreaded process is '
             'problematic'
         )
@@ -181,7 +181,7 @@ if __name__ == '__main__':
 
     bottle.run(
         loggedapp,
-        server='cherrypy',
+        server='cheroot',
         host='0.0.0.0',
         port=func_port,
         # Set this flag to True to auto-reload the server after any source files change
