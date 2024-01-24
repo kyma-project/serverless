@@ -25,3 +25,4 @@ runs:
         sudo make install
         sudo ldconfig
       shell: bash
+
