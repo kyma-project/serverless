@@ -31,7 +31,7 @@ module-build: ## Build the Module, push it to a registry and print it based on t
 .PHONY: integration-test
 integration-test: ## Run integration tests on self-prepared k3d cluster.
 integration-test:
-	cd ${PROJECT_ROOT}/tests/serverless && make serverless-integration
+	cd ${PROJECT_ROOT}/tests/serverless && make serverless-integration serverless-contract-tests
 
 .PHONY: gardener-integration-test
 gardener-integration-test: ## Provision gardener cluster and run integration test on it.
