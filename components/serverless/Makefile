@@ -124,7 +124,7 @@ $(KUSTOMIZE): $(LOCALBIN)
 
 ########## Controller-gen ###########
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
-CONTROLLER_GEN_VERSION ?= v0.9.2
+CONTROLLER_GEN_VERSION ?= v0.12.0
 
 # find or download controller-gen
 # download controller-gen if necessary
