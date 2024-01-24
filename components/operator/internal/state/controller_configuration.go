@@ -2,9 +2,10 @@ package state
 
 import (
 	"context"
+
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"k8s.io/client-go/tools/record"
-	"sigs.k8s.io/controller-runtime"
+	controllerruntime "sigs.k8s.io/controller-runtime"
 )
 
 func sFnControllerConfiguration(_ context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
