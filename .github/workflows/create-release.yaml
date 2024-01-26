@@ -43,7 +43,7 @@ jobs:
           IMG_DIRECTORY: "prod"
           IMG_VERSION: ${{ github.event.inputs.name }}
 
-      - name: Bump sec-scanners-config.yaml
+      - name: Bump sec-scanners-config.yaml based on values.yaml
         run: ./.github/scripts/upgrade-sec-scanners-config.sh
         env:
           IMG_VERSION: ${{ github.event.inputs.name }}
