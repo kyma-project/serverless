@@ -168,6 +168,11 @@ module-image-dev:
 	@make -C ${OPERATOR_ROOT} module-image-dev \
 		IMG=localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
 
+.PHONY: module-image-local
+module-image-local:
+	@make -C ${OPERATOR_ROOT} module-image-local \
+		IMG=localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
+
 .PHONY: module-build
 module-build:
 	@make -C ${OPERATOR_ROOT} module-build \
@@ -191,11 +196,3 @@ deploy-k3d:
 .PHONY: deploy-cluster
 deploy-cluster:
 	@make -C ${OPERATOR_ROOT} deploy
-
-.PHONY: replace-chart-images
-replace-chart-images:
-	yq -i "(.global.images[] | select(.version == \"main\") | .directory) = \"${IMG_DIRECTORY}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
-	yq -i "(.global.images[] | select(.version == \"main\") | .version) = \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
-	@echo "==== Local Changes ===="
-	yq '.global.images' ${PROJECT_ROOT}/config/serverless/values.yaml
-	@echo "==== End of Local Changes ===="

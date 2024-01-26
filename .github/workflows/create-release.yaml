@@ -35,17 +35,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
-      - name: Bump sec-scanners-config.yaml
-        run: ./.github/scripts/upgrade-sec-scanners-config.sh
-        env:
-          IMG_VERSION: ${{ github.event.inputs.name }}
-      
+
       - name: Bump values.yaml
         run: |
-          make -C components/operator/hack/ci replace-chart-images
+          make -C components/operator/hack/ci replace-function-chart-images
         env:
           IMG_DIRECTORY: "prod"
+          IMG_VERSION: ${{ github.event.inputs.name }}
+
+      - name: Bump sec-scanners-config.yaml based on values.yaml
+        run: ./.github/scripts/upgrade-sec-scanners-config.sh
+        env:
           IMG_VERSION: ${{ github.event.inputs.name }}
       
       - name: Commit&Push
