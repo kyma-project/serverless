@@ -1,5 +1,5 @@
 #
-# This Dockerfile is used to build serverless-operator image on every pre- and post-submit job
+# This Dockerfile is used to build serverless-operator image locally
 # It's a copy of Dockerfile.release with additional logic bumping serverless images in the values.yaml
 #
 
@@ -37,7 +37,7 @@ RUN apk update && apk add make yq
 COPY components/operator/hack components/operator/hack
 COPY config/serverless config/serverless
 
-RUN make -C components/operator/hack/ci replace-function-chart-images
+RUN make -C components/operator/hack/ci replace-only-main-chart-images
 
 # Use distroless as minimal base image to package the operator binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details

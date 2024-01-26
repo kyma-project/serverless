@@ -168,6 +168,11 @@ module-image-dev:
 	@make -C ${OPERATOR_ROOT} module-image-dev \
 		IMG=localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
 
+.PHONY: module-image-local
+module-image-local:
+	@make -C ${OPERATOR_ROOT} module-image-local \
+		IMG=localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
+
 .PHONY: module-build
 module-build:
 	@make -C ${OPERATOR_ROOT} module-build \
