@@ -1,6 +1,8 @@
 package tracing
 
 import (
+	"context"
+
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/util/workqueue"
 	"sigs.k8s.io/controller-runtime/pkg/event"
@@ -17,7 +19,7 @@ const (
 
 type eventHandler struct{}
 
-func (e eventHandler) Create(event event.CreateEvent, q workqueue.RateLimitingInterface) {
+func (e eventHandler) Create(_ context.Context, event event.CreateEvent, q workqueue.RateLimitingInterface) {
 	if event.Object == nil {
 		return
 	}
@@ -31,9 +33,10 @@ func (e eventHandler) Create(event event.CreateEvent, q workqueue.RateLimitingIn
 	}})
 }
 
-func (e eventHandler) Update(_ event.UpdateEvent, _ workqueue.RateLimitingInterface) {}
+func (e eventHandler) Update(_ context.Context, _ event.UpdateEvent, _ workqueue.RateLimitingInterface) {
+}
 
-func (e eventHandler) Delete(event event.DeleteEvent, q workqueue.RateLimitingInterface) {
+func (e eventHandler) Delete(_ context.Context, event event.DeleteEvent, q workqueue.RateLimitingInterface) {
 	if event.Object == nil {
 		return
 	}
@@ -47,7 +50,8 @@ func (e eventHandler) Delete(event event.DeleteEvent, q workqueue.RateLimitingIn
 	}})
 }
 
-func (e eventHandler) Generic(_ event.GenericEvent, _ workqueue.RateLimitingInterface) {}
+func (e eventHandler) Generic(_ context.Context, _ event.GenericEvent, _ workqueue.RateLimitingInterface) {
+}
 
 var _ handler.EventHandler = eventHandler{}
 

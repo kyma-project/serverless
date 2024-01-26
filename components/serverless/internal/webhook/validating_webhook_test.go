@@ -30,8 +30,7 @@ func TestValidatingWebHook_Handle(t *testing.T) {
 
 	scheme := runtime.NewScheme()
 	_ = serverlessv1alpha2.AddToScheme(scheme)
-	decoder, err := admission.NewDecoder(scheme)
-	require.NoError(t, err)
+	decoder := admission.NewDecoder(scheme)
 
 	tests := []struct {
 		name         string

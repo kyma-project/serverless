@@ -32,7 +32,6 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/source"
 )
 
 // serverlessReconciler reconciles a Serverless object
@@ -58,7 +57,7 @@ func NewServerlessReconciler(client client.Client, config *rest.Config, recorder
 func (sr *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.Serverless{}, builder.WithPredicates(predicate.NoStatusChangePredicate{})).
-		Watches(&source.Kind{Type: &corev1.Service{}}, tracing.ServiceCollectorWatcher()).
+		Watches(&corev1.Service{}, tracing.ServiceCollectorWatcher()).
 		Complete(sr)
 }
 

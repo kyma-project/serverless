@@ -2,6 +2,8 @@ package serverless
 
 import (
 	"context"
+	"testing"
+
 	"github.com/kyma-project/serverless/components/serverless/internal/controllers/serverless/automock"
 	serverlessResource "github.com/kyma-project/serverless/components/serverless/internal/resource"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
@@ -16,7 +18,6 @@ import (
 	controllerruntime "sigs.k8s.io/controller-runtime"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
-	"testing"
 )
 
 var (
@@ -40,7 +41,7 @@ func TestValidation_Invalid(t *testing.T) {
 	//GIVEN
 	ctx := context.TODO()
 
-	k8sClient := fake.NewClientBuilder().Build()
+	k8sClient := fake.NewClientBuilder().WithStatusSubresource(&serverlessv1alpha2.Function{}).Build()
 	require.NoError(t, serverlessv1alpha2.AddToScheme(scheme.Scheme))
 	resourceClient := serverlessResource.New(k8sClient, scheme.Scheme)
 

@@ -259,7 +259,7 @@ func Test_buildStateFnGenericUpdateStatus(t *testing.T) {
 func createFakeStateReconcilerWithTestFunction(t *testing.T, testFunction *serverlessv1alpha2.Function) *reconciler {
 	require.NoError(t, scheme.AddToScheme(scheme.Scheme))
 	require.NoError(t, serverlessv1alpha2.AddToScheme(scheme.Scheme))
-	client := fake.NewClientBuilder().WithScheme(scheme.Scheme).WithObjects(testFunction).Build()
+	client := fake.NewClientBuilder().WithScheme(scheme.Scheme).WithObjects(testFunction).WithStatusSubresource(&serverlessv1alpha2.Function{}).Build()
 
 	resourceClient := resource.New(client, scheme.Scheme)
 

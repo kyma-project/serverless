@@ -2,7 +2,8 @@ package state
 
 import (
 	"context"
-	"sigs.k8s.io/controller-runtime"
+
+	controllerruntime "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
 
