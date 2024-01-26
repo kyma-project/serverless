@@ -34,6 +34,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.BOT_TOKEN }}
           fetch-depth: 0
 
       - name: Bump values.yaml
@@ -50,8 +51,8 @@ jobs:
       
       - name: Commit&Push
         run: |
-          git config --local user.email "otter-releaser@otter-releaser.noreply.github.com"
-          git config --local user.name "otter-releaser"
+          git config --local user.email "team-otters@sap.com"
+          git config --local user.name "ottersbot"
 
           git add .
           git commit --allow-empty -m "upgrade dependencies"
