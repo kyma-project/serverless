@@ -22,7 +22,7 @@ COPY components/operator components/operator
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o operator ./components/operator/main.go
 
 # Replace main images in values.yaml
-FROM alpine:3.19.0 as replacer
+FROM alpine:3.19.1 as replacer
 
 WORKDIR /workspace
 
