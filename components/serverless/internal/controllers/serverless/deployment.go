@@ -3,12 +3,12 @@ package serverless
 import (
 	"context"
 	"fmt"
-
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apilabels "k8s.io/apimachinery/pkg/labels"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -65,7 +65,7 @@ func buildStateFnCreateDeployment(d appsv1.Deployment) stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, error) {
 		err := r.client.CreateWithReference(ctx, &s.instance, &d)
 		if err != nil {
-			return nil, errors.Wrap(err, "while creating deployment")
+			return handleDeploymentOperationError(err, "while creating deployment")
 		}
 
 		condition := serverlessv1alpha2.Condition{
@@ -101,7 +101,7 @@ func buildStateFnUpdateDeployment(expectedSpec appsv1.DeploymentSpec, expectedLa
 
 		err := r.client.Update(ctx, &s.deployments.Items[0])
 		if err != nil {
-			return nil, errors.Wrap(err, "while updating deployment")
+			return handleDeploymentOperationError(err, "while updating deployment")
 		}
 
 		condition := serverlessv1alpha2.Condition{
@@ -191,4 +191,26 @@ func stateFnUpdateDeploymentStatus(ctx context.Context, r *reconciler, s *system
 	}
 
 	return buildStatusUpdateStateFnWithCondition(condition), nil
+}
+
+func handleDeploymentOperationError(err error, msg string) (stateFn, error) {
+	if k8serrors.IsInvalid(err) {
+		return handleInvalidDeploymentStateFn(err), nil
+	}
+	return nil, errors.Wrap(err, msg)
+}
+
+func handleInvalidDeploymentStateFn(err error) stateFn {
+	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, error) {
+		condition := serverlessv1alpha2.Condition{
+			Type:               serverlessv1alpha2.ConditionRunning,
+			Status:             corev1.ConditionFalse,
+			Reason:             serverlessv1alpha2.ConditionReasonDeploymentFailed,
+			LastTransitionTime: metav1.Now(),
+			Message:            err.Error(),
+		}
+		r.result = ctrl.Result{Requeue: false}
+
+		return buildStatusUpdateStateFnWithCondition(condition), nil
+	}
 }
