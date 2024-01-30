@@ -17,7 +17,7 @@ Use the following tools to set up the project:
 
 To run integration tests, follow these instructions:
 
-1. Install [Kyma](https://kyma-project.io/#/04-operation-guides/operations/02-install-kyma).
+1. Install [Serverless](https://github.com/kyma-project/serverless/blob/main/README.md#install).
 2. Enable kubectl proxy:
 
    ```bash
