@@ -22,40 +22,19 @@ KYMA ?= ${PROJECT_ROOT}/bin/kyma-unstable
 help: ## Display this help.
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_0-9-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
-.PHONY: run-with-lifecycle-manager
-run-with-lifecycle-manager: ## Create k3d cluster and deploy module with the lifecycle-manager.
-run-with-lifecycle-manager: kyma \
-	create-k3d \
-	module-image-dev \
-	module-build \
-	fix-template \
-	install-kyma-with-lm \
-	patch-mod-mgr-role \
-	install-module-template \
-	enable-module \
-	verify-kyma
-
-.PHONY: run-without-lifecycle-manager
-run-without-lifecycle-manager: ## Create k3d cluster and deploy module without the lifecycle-manager.
-run-without-lifecycle-manager: kyma \
+.PHONY: run
+run: ## Create k3d cluster and deploy module.
+run: kyma \
 	create-k3d \
 	module-image-dev \
 	deploy \
 	apply-serverless \
 	verify-serverless
 
-.PHONY: run-without-lm-on-cluster
-run-without-lm-on-cluster: ## Deploy module without the lifecycle-manager on existing cluster.
-run-without-lm-on-cluster: \
+.PHONY: run-on-cluster
+run-on-cluster: ## Deploy module on existing cluster.
+run-on-cluster: \
 	deploy-cluster \
-	apply-serverless \
-	verify-serverless
-
-.PHONY: run-without-lm-on-k3d-cluster
-run-without-lm-on-k3d-cluster: ## Build and deploy module without the lifecycle-manager on existing k3d cluster.
-run-without-lm-on-k3d-cluster: \
-	module-image-dev \
-	deploy \
 	apply-serverless \
 	verify-serverless
 
@@ -127,18 +106,6 @@ verify-kyma: ## Wait for Kyma CR to be in Ready state.
 enable-module: ## Patch serverless module in the right Kyma CR.
 	${KYMA} alpha enable module serverless -c fast
 
-.PHONY: patch-mod-mgr-role
-patch-mod-mgr-role: ## Path lifecycle-manager clusterrole.
-	kubectl patch clusterrole \
-		lifecycle-manager-manager-role \
-		--patch-file=./k3d-patches/patch-k3d-lifecycle-manager-clusterrole.yaml
-
-.PHONY: install-kyma-with-lm
-install-kyma-with-lm:
-	${KYMA} alpha deploy \
-		--ci \
-		--force-conflicts
-
 .PHONY: install-module-template
 install-module-template: ## Apply k3d-ready moduletemplate.
 	kubectl apply -f ${PROJECT_ROOT}/moduletemplate-k3d.yaml
@@ -172,13 +139,6 @@ module-image-dev:
 module-image-local:
 	@make -C ${OPERATOR_ROOT} module-image-local \
 		IMG=localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG}
-
-.PHONY: module-build
-module-build:
-	@make -C ${OPERATOR_ROOT} module-build \
-		PROW_JOB_ID= \
-		IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${OPERATOR_IMAGE_TAG} \
-		MODULE_REGISTRY=localhost:${REGISTRY_PORT}
 
 .PHONY: deploy
 deploy:
