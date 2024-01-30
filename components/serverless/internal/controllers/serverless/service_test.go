@@ -535,7 +535,7 @@ func TestFunctionReconciler_buildStateFnUpdateService(t *testing.T) {
 
 	for testName, testData := range testCases {
 		t.Run(testName, func(t *testing.T) {
-			oldSvc, newSvc := fixtureSvcWithAnnotationDifference()
+			oldSvc, newSvc := fixSvc()
 			oldSvc.Annotations = testData.oldSvcAnnotations
 			newSvc.Annotations = testData.newSvcAnnotations
 
@@ -561,7 +561,7 @@ func TestFunctionReconciler_buildStateFnUpdateService(t *testing.T) {
 
 }
 
-func fixtureSvcWithAnnotationDifference() (old corev1.Service, new corev1.Service) {
+func fixSvc() (old corev1.Service, new corev1.Service) {
 
 	oldSvc := corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{Name: "test-service",
