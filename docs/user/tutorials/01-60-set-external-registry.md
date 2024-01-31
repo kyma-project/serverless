@@ -240,5 +240,6 @@ Deploy Kyma with different configuration for Docker registry . Run:
 kyma deploy --values-file docker-registry-overrides.yaml
 ```
 
-> **NOTE:** To learn more, read about [changing Kyma configuration](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/03-change-kyma-config-values).
+> [!NOTE] 
+> To learn more, read about [changing Kyma configuration](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/03-change-kyma-config-values).
 

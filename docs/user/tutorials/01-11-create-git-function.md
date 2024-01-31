@@ -52,7 +52,9 @@ You can create a Function either with kubectl or Kyma dashboard:
    - **Base Dir**:`orders-service/function`
    - **Reference**:`main`
 
-    > **NOTE:** If you want to connect a secured repository instead of a public one, toggle the **Auth** switch. In the **Auth** section, choose **Secret** from the list and choose the preferred type.
+    > [!NOTE] 
+    > If you want to connect a secured repository instead of a public one, toggle the **Auth** switch. In the **Auth** section, choose **Secret** from the list and choose the preferred type.
+    
 8. Click **Create**.
 
     After a while, a message confirms that the Function has been created.
