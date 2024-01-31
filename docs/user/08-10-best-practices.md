@@ -23,12 +23,14 @@ Defining your Function from the Kyma dashboard is very quick and easy, but it mi
 
 Initialize a scaffold for a brand new Function using the `kyma init function` command or fetch the current state of an existing Function deployed in your Kyma runtime using `kyma sync function`.
 Focus on the Function code and develop it from your favorite IDE. Configure your Functions directly in the [`config.yaml` manifest file](technical-reference/07-60-function-configuration-file.md)
->**TIP:** Use `kyma init function --vscode` to generate a `.json` schema, which can be used in VSCode for autocompletion.
+
+> [!TIP]
+> Use `kyma init function --vscode` to generate a `.json` schema, which can be used in VSCode for autocompletion.
 
 Kyma CLI helps you run your code locally with a single `kyma run function` command. You can run your Function using your local Docker daemon with the same runtime Docker context, as if it was run in Kyma runtime.
 
->**TIP:** Use `kyma run function` with `--hot-deploy` and spare yourself unnecessary restarts of the Functions whenever you test a changed Function logic. Also, use [`--debug` option](tutorials/01-40-debug-function.md) to allow connecting with your favorite debugger.
->>
+> [!TIP]
+> Use `kyma run function` with `--hot-deploy` and spare yourself unnecessary restarts of the Functions whenever you test a changed Function logic. Also, use [`--debug` option](tutorials/01-40-debug-function.md) to allow connecting with your favorite debugger.
 
 ![kyma-cli-functions](../assets/svls-kyma-cli-functions.png)
 
@@ -53,7 +55,8 @@ Use the `--dry-run` option of the `kyma apply function` command to generate Kube
 The generated manifest should be a part of all the manifests that define your application and are pushed to the Git repository.
 Deploy everything in a consistent way either using CI/CD or GitOps operators (for example, `fluxcd` or `argocd`) installed on your Kyma runtime.
 
->**NOTE:** Kyma Functions come in two types: `git` and `inline`. For the [Git type](tutorials/01-11-create-git-function.md), you configure a Git repository as a source of your Function code instead of creating it `inline`.
+> [!NOTE]
+> Kyma Functions come in two types: `git` and `inline`. For the [Git type](tutorials/01-11-create-git-function.md), you configure a Git repository as a source of your Function code instead of creating it `inline`.
 Thus, you can skip rendering the Kubernetes manifests and deploying them each time you made a change in the Function code or dependencies. Simply push the changes to the referenced Git repository, and the Serverless controller will rebuild the Function deployed in your Kyma runtime. 
 
 Have a look at this [example](https://github.com/kyma-project/examples/tree/main/incluster_eventing) that illustrates how you can set up your Git project. Mind the `k8s resources` folder with the YAML manifests to be pushed to the Kubernetes API server (for example, using kubectl in our CI/CD or GitOps) and the `src` folder containing the Functions' source code. They are pulled directly by Kyma Serverless to build new Function images whenever the source content changes in the Git repository.  

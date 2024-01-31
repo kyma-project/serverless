@@ -4,7 +4,8 @@ This tutorial shows how you can build a Function from code and dependencies stor
 
 To learn more about Git repository sources for Functions and different ways of securing your repository, read about the [Git source type](../technical-reference/07-40-git-source-type.md).
 
->**NOTE:** Read about [Istio sidecars in Kyma and why you want them](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-03-istio-sidecars-in-kyma/). Then, check how to [enable automatic Istio sidecar proxy injection](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/smsh-01-istio-enable-sidecar-injection/). For more details, see [Default Istio setup in Kyma](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-02-default-istio-setup-in-kyma/).
+> [!NOTE]
+> Read about [Istio sidecars in Kyma and why you want them](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-03-istio-sidecars-in-kyma/). Then, check how to [enable automatic Istio sidecar proxy injection](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/smsh-01-istio-enable-sidecar-injection/). For more details, see [Default Istio setup in Kyma](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-02-default-istio-setup-in-kyma/).
 
 ## Steps
 
@@ -14,7 +15,8 @@ You can create a Function either with kubectl or Kyma dashboard:
 
 #### **Kyma Dashboard**
 
->**NOTE:** Kyma dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
+> [!NOTE]
+> Kyma dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
 
 1. Create a namespace or select one from the drop-down list in the top navigation panel.
 
@@ -32,7 +34,8 @@ You can create a Function either with kubectl or Kyma dashboard:
 
         - SSH key: `key: {SSH_KEY}`
 
-        >**NOTE:** Read more about the [supported authentication methods](../technical-reference/07-40-git-source-type.md).
+        > [!NOTE]
+        > Read more about the [supported authentication methods](../technical-reference/07-40-git-source-type.md).
 
     - Confirm by selecting **Create**.
 
@@ -86,7 +89,8 @@ You can create a Function either with kubectl or Kyma dashboard:
        ```
     3. Configure the public key in GitHub. Follow the steps described in [this tutorial](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account). 
 
-    >**NOTE:** Read more about the [supported authentication methods](../technical-reference/07-40-git-source-type.md).
+    > [!NOTE]
+    > Read more about the [supported authentication methods](../technical-reference/07-40-git-source-type.md).
 
 3. Create a Function CR that specifies the Function's logic and points to the directory with code and dependencies in the given repository. It also specifies the Git repository metadata:
 
@@ -107,7 +111,8 @@ You can create a Function either with kubectl or Kyma dashboard:
    EOF
    ```
 
-    >**NOTE:** If you use a secured repository, add the **auth** object with the adequate **type** and **secretName** fields to the spec under **gitRepository**:
+    > [!NOTE]
+    > If you use a secured repository, add the **auth** object with the adequate **type** and **secretName** fields to the spec under **gitRepository**:
 
     ```yaml
     gitRepository:
@@ -117,9 +122,11 @@ You can create a Function either with kubectl or Kyma dashboard:
         secretName: # "git-creds-basic" or "git-creds-key"
     ```
    
-    >**NOTE:** To avoid performance degradation caused by large Git repositories and large monorepos, [Function Controller](../resources/06-10-function-cr.md#related-resources-and-components) implements a configurable backoff period for the source checkout based on `APP_FUNCTION_REQUEUE_DURATION`. If you want to allow the controller to perform the source checkout with every reconciliation loop, disable the backoff period by marking the Function CR with the annotation `serverless.kyma-project.io/continuousGitCheckout: true`
+    > [!NOTE]
+    > To avoid performance degradation caused by large Git repositories and large monorepos, [Function Controller](../resources/06-10-function-cr.md#related-resources-and-components) implements a configurable backoff period for the source checkout based on `APP_FUNCTION_REQUEUE_DURATION`. If you want to allow the controller to perform the source checkout with every reconciliation loop, disable the backoff period by marking the Function CR with the annotation `serverless.kyma-project.io/continuousGitCheckout: true`
 
-    >**NOTE:** See this [Function's code and dependencies](https://github.com/kyma-project/examples/tree/main/orders-service/function).
+    > [!NOTE]
+    > See this [Function's code and dependencies](https://github.com/kyma-project/examples/tree/main/orders-service/function).
 
 4. Check if your Function was created and all conditions are set to `True`:
 

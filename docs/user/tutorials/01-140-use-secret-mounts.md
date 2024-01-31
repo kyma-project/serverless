@@ -59,7 +59,8 @@ Follow these steps:
     EOF
     ```
 
-   >**NOTE:** Read more about [creating Functions](01-10-create-inline-function.md).
+   > [!NOTE]
+   > Read more about [creating Functions](01-10-create-inline-function.md).
 
 4. Create an APIRule:
 
@@ -91,7 +92,8 @@ Follow these steps:
     EOF
     ```
 
-   >**NOTE:** Read more about [exposing Functions](01-20-expose-function.md).
+   > [!NOTE]
+   > Read more about [exposing Functions](01-20-expose-function.md).
 
 5. Call Function:
 

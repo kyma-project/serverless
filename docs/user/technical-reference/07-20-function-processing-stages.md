@@ -17,7 +17,8 @@ When you update an existing Function, conditions change asynchronously depending
 
 The diagrams illustrate all three core status changes in the Function processing circle that the Function Controller handles. They also list all custom resources involved in this process and specify in which cases their update is required.
 
->**NOTE:** Before you start reading, see the [Function CR](../resources/06-10-function-cr.md) document for the custom resource detailed definition, the list of all Function's condition types, and reasons for their success or failure.
+> [!NOTE]
+> Before you start reading, see the [Function CR](../resources/06-10-function-cr.md) document for the custom resource detailed definition, the list of all Function's condition types, and reasons for their success or failure.
 
 ## Configured
 
@@ -31,7 +32,8 @@ This phase involves creating and processing the Job CR. It ends successfully whe
 
 Updating an existing Function requires an image rebuild only if you change the Function's body (**source**) or dependencies (**deps**). An update of a Function's other configuration details, such as environment variables, replicas, resources, or labels, does not require image rebuild because it only affects the Deployment.
 
->**NOTE:** Each time you update a Function's configuration, the Function Controller deletes all previous Job CRs for the given Function's **UID**.
+> [!NOTE]
+> Each time you update a Function's configuration, the Function Controller deletes all previous Job CRs for the given Function's **UID**.
 
 ![Function built](../../assets/svls-built.svg)
 
