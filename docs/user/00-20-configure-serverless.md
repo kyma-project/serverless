@@ -50,7 +50,8 @@ Follow these steps to use the external Docker registry in Serverless:
        --from-literal=registryAddress={REGISTRY_URL}
    ```
 
->**TIP:** In case of DockerHub, usually the Docker registry address is the same as the account name.
+> [!TIP]
+> In case of DockerHub, usually the Docker registry address is the same as the account name.
 
 Examples:
 

@@ -24,7 +24,8 @@ You can expose a Function with Kyma dashboard, Kyma CLI, or kubectl:
 
 #### **Kyma Dashboard**
 
->**NOTE:** Kyma dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
+> [!NOTE]
+> Kyma dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
 
 1. Select a namespace from the drop-down list in the top navigation panel. Make sure the namespace includes the Function that you want to expose through an APIRule.
 
@@ -34,7 +35,8 @@ You can expose a Function with Kyma dashboard, Kyma CLI, or kubectl:
 
     - The APIRule's **Name** matching the Function's name.
 
-    >**NOTE:** The APIRule CR can have a name different from that of the Function, but it is recommended that all related resources share a common name.
+    > [!NOTE]
+    > The APIRule CR can have a name different from that of the Function, but it is recommended that all related resources share a common name.
 
     - **Service Name** matching the Function's name.
 
@@ -55,7 +57,8 @@ You can expose a Function with Kyma dashboard, Kyma CLI, or kubectl:
       export NAME={FUNCTION_NAME}
       export NAMESPACE={NAMESPACE_NAME}
       ```
-   >**NOTE:** The Function takes the name from the Function CR name. The APIRule CR can have a different name but for the purpose of this tutorial, all related resources share a common name defined under the **NAME** variable.
+   > [!NOTE]
+   > The Function takes the name from the Function CR name. The APIRule CR can have a different name but for the purpose of this tutorial, all related resources share a common name defined under the **NAME** variable.
 2. Download the latest configuration of the Function from the cluster. This way, you update the local `config.yaml` file with the Function's code.
 
   ```bash
@@ -113,7 +116,8 @@ You can expose a Function with Kyma dashboard, Kyma CLI, or kubectl:
     export NAMESPACE={FUNCTION_NAMESPACE}
     ```
 
-    >**NOTE:** The Function takes the name from the Function CR name. The APIRule CR can have a different name but for the purpose of this tutorial, all related resources share a common name defined under the **NAME** variable.
+    > [!NOTE]
+    > The Function takes the name from the Function CR name. The APIRule CR can have a different name but for the purpose of this tutorial, all related resources share a common name defined under the **NAME** variable.
 
 2. Create an APIRule CR for your Function. It is exposed on port `80`, which is the default port of the [Service Placeholder](../technical-reference/04-10-architecture.md).
 

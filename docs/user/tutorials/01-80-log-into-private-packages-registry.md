@@ -114,4 +114,5 @@ NAME            CONFIGURED   BUILT     RUNNING   RUNTIME    VERSION   AGE
 test-function   True         True      True      nodejs18   1         96s
 ```
 
->**CAUTION:** If you want to create a cluster-wide Secret, you must create it in the `kyma-system` namespace and add the `serverless.kyma-project.io/config: credentials` label.
+> [!WARNING]
+> If you want to create a cluster-wide Secret, you must create it in the `kyma-system` namespace and add the `serverless.kyma-project.io/config: credentials` label.

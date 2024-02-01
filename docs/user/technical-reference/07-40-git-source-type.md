@@ -12,7 +12,8 @@ To create a Function with the Git source, you must:
 1. Create a [Secret](https://kubernetes.io/docs/concepts/configuration/secret/) (optional, only if you must authenticate to the repository).
 2. Create a [Function CR](../resources/06-10-function-cr.md) with your Function definition and references to the Git repository.
 
->**NOTE:** For detailed steps, see the tutorial on [creating a Function from Git repository sources](../tutorials/01-11-create-git-function.md).
+> [!NOTE]
+> For detailed steps, see the tutorial on [creating a Function from Git repository sources](../tutorials/01-11-create-git-function.md).
 
 You can have various setups for your Function's Git source with different:
 

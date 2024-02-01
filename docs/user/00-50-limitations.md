@@ -78,4 +78,5 @@ See the [Use external scalers](tutorials/01-130-use-external-scalers.md) tutoria
 
 Serverless comes with an in-cluster Docker registry for the Function images. For more information on the Docker registry configuration, visit [Serverless configuration](00-20-configure-serverless.md#configure-docker-registry).
 
-> **NOTE:** All measurements were done on Kubernetes with five AWS worker nodes of type `m5.xlarge` (four CPU 3.1 GHz x86_64 cores, 16 GiB memory).
+> [!NOTE] 
+> All measurements were done on Kubernetes with five AWS worker nodes of type `m5.xlarge` (four CPU 3.1 GHz x86_64 cores, 16 GiB memory).

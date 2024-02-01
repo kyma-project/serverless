@@ -2,7 +2,8 @@
 
 This tutorial shows how you can automate the deployment of local Kyma resources on a cluster using the GitOps logic. You will use [Kyma CLI](https://github.com/kyma-project/cli) to create an inline Python Function. You will later push the resource to a GitHub repository of your choice and set up a GitOps operator to monitor the given repository folder and synchronize any changes in it with your cluster. For the purpose of this tutorial, you will install and use the [Flux](https://fluxcd.io/flux/get-started/) GitOps operator and a lightweight [k3d](https://k3d.io/) cluster.
 
->**TIP:** Although this tutorial uses Flux to synchronize Git resources with the cluster, you can use an alternative GitOps operator for this purpose, such as [Argo](https://argoproj.github.io/argo-cd/).
+> [!TIP]
+> Although this tutorial uses Flux to synchronize Git resources with the cluster, you can use an alternative GitOps operator for this purpose, such as [Argo](https://argoproj.github.io/argo-cd/).
 
 ## Prerequisites
 
@@ -63,7 +64,8 @@ These sections will lead you through the whole installation, configuration, and 
   kyma init function --runtime python39 --dir $PWD/{WORKSPACE_FOLDER}
   ```
 
-  >**TIP:** Python 3.9 is only one of the available runtimes. Read about all [supported runtimes and sample Functions to run on them](../technical-reference/07-10-sample-functions.md).
+  > [!TIP]
+  > Python 3.9 is only one of the available runtimes. Read about all [supported runtimes and sample Functions to run on them](../technical-reference/07-10-sample-functions.md).
 
   This command will download the following files to your workspace folder:
 
@@ -168,7 +170,8 @@ In this section, you will create a sample inline Function.
   ```bash
   git clone https://github.com/${GH_USER}/${GH_REPO}.git
   ```
-  >**NOTE:** You can also clone the repository using SSH. To do that, you need to [generate a new SSH key and add it to the ssh-agent](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
+  > [!NOTE]
+  > You can also clone the repository using SSH. To do that, you need to [generate a new SSH key and add it to the ssh-agent](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
 
 2. Go to the repository folder:
 
