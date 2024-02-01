@@ -56,8 +56,8 @@ This tutorial shows only one possible use case. There are many more use cases on
 
 3. Provide your Function logic in the `handler.js` file:
 
-> [!NOTE]
-> In this example, there's no sanitization logic. The `sanitize` Function is just a placeholder.
+   > [!NOTE]
+   > In this example, there's no sanitization logic. The `sanitize` Function is just a placeholder.
 
    ```js
    module.exports = {
