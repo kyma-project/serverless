@@ -16,9 +16,11 @@ This tutorial shows only one possible use case. There are many more use cases on
 ## Steps
 
 1. Export the `KUBECONFIG` variable:
+
    ```bash
    export KUBECONFIG={KUBECONFIG_PATH}
    ```
+
 2. Create the `emitter` and `receiver` folders in your project.
 
 ### Create the Emitter Function
@@ -27,32 +29,32 @@ This tutorial shows only one possible use case. There are many more use cases on
 
    ```bash
    kyma init function
-    ```
+   ```
 
-  The `init` command creates these files in your workspace folder:
+   The `init` command creates these files in your workspace folder:
 
-  - `config.yaml`	with the Function's configuration
+   - `config.yaml`	with the Function's configuration
 
       > [!NOTE]
       > See the detailed description of all fields available in the [`config.yaml` file](../technical-reference/07-60-function-configuration-file.md).
 
-  - `handler.js` with the Function's code and the simple "Hello Serverless" logic
+   - `handler.js` with the Function's code and the simple "Hello Serverless" logic
   
-  - `package.json` with the Function's dependencies
+   - `package.json` with the Function's dependencies
 
 2. In the `config.yaml` file, configure an APIRule to expose your Function to the incoming traffic over HTTP. Provide the subdomain name in the `host` property:
 
-    ```yaml
-    apiRules:
-      - name: incoming-http-trigger
-        service:
-          host: incoming
-        rules:
-          - methods:
-              - GET
-            accessStrategies:
-              - handler: allow
-    ```
+   ```yaml
+   apiRules:
+     - name: incoming-http-trigger
+       service:
+         host: incoming
+       rules:
+         - methods:
+             - GET
+           accessStrategies:
+             - handler: allow
+   ```
 
 3. Provide your Function logic in the `handler.js` file:
 
