@@ -61,17 +61,3 @@ build-and-run: ## Create k3d cluster with operator using locally built images.
 		deploy \
 		apply-serverless \
 		verify-serverless
-
-.PHONY: run-with-lm
-run-with-lm: ## Create k3d cluster with module installed by the lifecycle-manager.
-	@IMG_VERSION="main" IMG_DIRECTORY="prod" make -C ${PROJECT_COMMON} \
-		kyma \
-		create-k3d \
-		module-image-local \
-		module-build \
-		fix-template \
-		install-kyma-with-lm \
-		patch-mod-mgr-role \
-		install-module-template \
-		enable-module \
-		verify-kyma

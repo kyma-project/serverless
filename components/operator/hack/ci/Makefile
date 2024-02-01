@@ -36,45 +36,21 @@ integration-test:
 .PHONY: gardener-integration-test
 gardener-integration-test: ## Provision gardener cluster and run integration test on it.
 	@make provision-gardener \
-		run-without-lm-on-cluster \
+		run-on-cluster \
 		integration-test \
 		deprovision-gardener || \
 		(make deprovision-gardener && false)
 
-.PHONY: k3d-lm-integration-test
-k3d-lm-integration-test: ## Run integration tests on self-prepared k3d cluster with lifecycle-manager.
-k3d-lm-integration-test: run-with-lifecycle-manager integration-test
-
-.PHONY: k3d-integration-test
-k3d-integration-test: ## Run integration tests on self-prepared k3d cluster.
-k3d-integration-test: run-without-lifecycle-manager integration-test remove-serverless
-
 .PHONY: integration-test-on-cluster
 integration-test-on-cluster: ## Run integration tests on existing k3d cluster.
-integration-test-on-cluster: run-without-lm-on-cluster integration-test remove-serverless
+integration-test-on-cluster: run-on-cluster integration-test remove-serverless
 
 .PHONY: upgrade-test
 upgrade-test: ## Installs Serverless from latest and upgrades to local
 upgrade-test: \
 	install-latest-serverless \
-	run-without-lm-on-cluster \
+	run-on-cluster \
 	integration-test
-
-.PHONY: k3d-upgrade-test
-k3d-upgrade-test: ## Deploy K3D cluster and installs Serverless from latest and upgrades to local.
-k3d-upgrade-test: \
-	create-k3d \
-	install-latest-serverless \
-	run-without-lm-on-k3d-cluster \
-	integration-test
-
-.PHONY: k3d-k8s-compatibility-test
-k3d-k8s-compatibility-test: ## K8s compatibility tests not implemented yet.
-	@echo "k8s compatibility tests not implemented yet"
-
-.PHONY: hyperscalers-compatibility-test
-hyperscalers-compatibility-test: ## Hyperscalers compatibility tests not implemented yet.
-	@echo "hyperscalers compatibility tests not implemented yet"
 
 .PHONY: remove-serverless
 remove-serverless: ## Remove Serverless CR
@@ -101,17 +77,17 @@ provision-gardener:
 deprovision-gardener:
 	@make -C ${PROJECT_COMMON} deprovision-gardener
 
-.PHONY: run-with-lifecycle-manager
-run-with-lifecycle-manager:
-	@make -C ${PROJECT_COMMON} run-with-lifecycle-manager
-
+# used on test-infra in prow/scripts/cluster-integration/kyma-serverless-integration-k3d.sh
 .PHONY: run-without-lifecycle-manager
-run-without-lifecycle-manager:
-	@make -C ${PROJECT_COMMON} run-without-lifecycle-manager
+run-without-lifecycle-manager: run
 
-.PHONY: run-without-lm-on-cluster
-run-without-lm-on-cluster:
-	@make -C ${PROJECT_COMMON} run-without-lm-on-cluster
+.PHONY: run
+run:
+	@make -C ${PROJECT_COMMON} run
+
+.PHONY: run-on-cluster
+run-on-cluster:
+	@make -C ${PROJECT_COMMON} run-on-cluster
 
 .PHONY: render-manifest
 render-manifest:
@@ -137,7 +113,3 @@ replace-function-chart-images:
 	@echo "==== Local Changes ===="
 	yq '.global.images' ${PROJECT_ROOT}/config/serverless/values.yaml
 	@echo "==== End of Local Changes ===="
-
-.PHONY: run-without-lm-on-k3d-cluster
-run-without-lm-on-k3d-cluster:
-	@make -C ${PROJECT_COMMON} run-without-lm-on-k3d-cluster

@@ -89,10 +89,6 @@ build: generate fmt vet ## Build operator binary.
 run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./main.go
 
-.PHONY: docker-build-release
-docker-build-release: manifests generate ## Build docker release image with the operator.
-	docker build -t ${IMG} -f Dockerfile.release $(PROJECT_ROOT)
-
 .PHONY: docker-build-dev
 docker-build-dev: manifests generate ## Build docker dev image with the operator.
 	docker build -t ${IMG} -f Dockerfile.dev $(PROJECT_ROOT) --build-arg=IMG_DIRECTORY="$(IMG_DIRECTORY)" --build-arg=IMG_VERSION="$(IMG_VERSION)"
@@ -132,10 +128,6 @@ undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/confi
 	$(KUSTOMIZE) build $(CONFIGOPERATOR)/default | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
 
 ##@ Module
-
-.PHONY: module-image-release
-module-image-release: docker-build-release docker-push ## Build the release Module Image and push it to a registry defined in IMG.
-	echo "built and pushed module image $(IMG)"
 
 .PHONY: module-image-dev
 module-image-dev: docker-build-dev docker-push ## Build the dev Module Image and push it to a registry defined in IMG.
