@@ -16,7 +16,7 @@ on:
 
 jobs:
   #pre-serverless-controller-lint
-  serverless-lint:
+  lint:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -28,7 +28,7 @@ jobs:
           working-directory: 'components/serverless'
 
   #pre-serverless-controller-unit-test
-  serverless-unit-tests:
+  unit-test:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -36,4 +36,51 @@ jobs:
       - uses: ./.github/actions/setup-libgit2
       - name: run test
         run: make -C components/serverless test
-
+  
+  #pre-serverless-integration-k3s
+  integration-test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: create single cluster
+        uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79 #v2.4.0
+        with:
+          cluster-name: "k3dCluster"
+          args: >-
+            --agents 1
+            --image rancher/k3s:v1.27.9-k3s1
+            --port 80:80@loadbalancer
+            --port 443:443@loadbalancer
+            --wait
+      - name: deploy serverless
+        # ?????????
+        run: make -C components/operator/hack/ci run-on-cluster
+        env:
+          IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
+      - name: run tests
+        run: make -C tests/serverless serverless-integration serverless-contract-tests
+  
+  #pre-serverless-git-auth-integration-k3s
+  git-auth-integration-test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: create single cluster
+        uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79 #v2.4.0
+        with:
+          cluster-name: "k3dCluster"
+          args: >-
+            --agents 1
+            --image rancher/k3s:v1.27.9-k3s1
+            --port 80:80@loadbalancer
+            --port 443:443@loadbalancer
+            --wait
+      - name: deploy serverless
+        # ?????????
+        run: make -C components/operator/hack/ci run-on-cluster
+        env:
+          IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
+      - name: run tests
+        run: make -C tests/serverless git-auth-integration
