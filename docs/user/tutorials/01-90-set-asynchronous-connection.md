@@ -91,18 +91,19 @@ This tutorial shows only one possible use case. There are many more use cases on
 
 4. Apply your emitter Function:
 
-    ```bash
-    kyma apply function
-    ```
+   ```bash
+   kyma apply function
+   ```
    Your Function is now built and deployed in Kyma runtime. Kyma exposes it through the APIRule. The incoming payloads are processed by your emitter Function. It then sends the sanitized content to the workload that subscribes to the selected event type. In our case, it's the receiver Function.
 
 5. Test the first Function. Send the payload and see if your HTTP traffic is accepted:
 
-      ```bash
-      export KYMA_DOMAIN={KYMA_DOMAIN_VARIABLE}
+   ```bash
+   export KYMA_DOMAIN={KYMA_DOMAIN_VARIABLE}
    
-      curl -X POST https://incoming.${KYMA_DOMAIN} -H 'Content-Type: application/json' -d '{"foo":"bar"}'
-      ```
+   curl -X POST https://incoming.${KYMA_DOMAIN} -H 'Content-Type: application/json' -d '{"foo":"bar"}'
+   ```
+
 ### Create the Receiver Function
 
 1. Go to your `receiver` folder and run Kyma CLI `init` command to initialize the scaffold for your second Function:
@@ -113,25 +114,27 @@ This tutorial shows only one possible use case. There are many more use cases on
 
 2. In the `config.yaml` file, configure event types your Function will subscribe to:  
 
-```yaml
-    name: event-receiver
-    namespace: default
-    runtime: nodejs18
-    source:
-       sourceType: inline
-    subscriptions:
-       - name: event-receiver
-         typeMatching: exact
-         source: ""
-         types:
-           - sap.kyma.custom.acme.payload.sanitised.v1
-    schemaVersion: v1
-   ```
+   ```yaml
+       name: event-receiver
+       namespace: default
+       runtime: nodejs18
+       source:
+          sourceType: inline
+       subscriptions:
+          - name: event-receiver
+            typeMatching: exact
+            source: ""
+            types:
+              - sap.kyma.custom.acme.payload.sanitised.v1
+       schemaVersion: v1
+      ```
 
 3.  Apply your receiver Function:
-     ```bash
-     kyma apply function
-     ```
+
+   ```bash
+   kyma apply function
+   ```
+   
    The Function is configured, built, and deployed in Kyma runtime. The Subscription becomes active and all events with the selected type are processed by the Function.  
 
 ### Test the whole setup  
