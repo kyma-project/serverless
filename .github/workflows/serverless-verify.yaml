@@ -79,7 +79,7 @@ jobs:
       - name: deploy serverless
         run: make -C components/operator/hack/ci run-on-cluster
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
+          IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:${{ github.sha }}
       - name: run tests
         run: make -C tests/serverless git-auth-integration
         env:
