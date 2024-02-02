@@ -137,13 +137,6 @@ module-image-dev: docker-build-dev docker-push ## Build the dev Module Image and
 module-image-local: docker-build-local docker-push ## Build the local Module Image and push it to a registry defined in IMG.
 	echo "built and pushed module image $(IMG)"
 
-.PHONY: module-build
-module-build: ## Build the Module and push artifacts to the registry
-module-build: kyma kustomize render-manifest module-config-template configure-git-origin
-	$(KYMA) alpha create module --path $(PROJECT_ROOT) --output=$(PROJECT_ROOT)/moduletemplate.yaml \
-		--sec-scanners-config="${SEC_SCANNERS_CONFIG}" \
-		--module-config-file=$(PROJECT_ROOT)/module-config.yaml $(MODULE_CREATION_FLAGS)
-
 .PHONY: module-config-template
 module-config-template:
 	@cat $(PROJECT_ROOT)/module-config-template.yaml \
