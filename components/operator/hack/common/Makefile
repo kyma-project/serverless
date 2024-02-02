@@ -102,10 +102,6 @@ print-serverless-details: ## Print all pods, deploys and serverless CRs in the k
 verify-kyma: ## Wait for Kyma CR to be in Ready state.
 	@./verify_kyma_status.sh
 
-.PHONY: enable-module
-enable-module: ## Patch serverless module in the right Kyma CR.
-	${KYMA} alpha enable module serverless -c fast
-
 .PHONY: install-module-template
 install-module-template: ## Apply k3d-ready moduletemplate.
 	kubectl apply -f ${PROJECT_ROOT}/moduletemplate-k3d.yaml
