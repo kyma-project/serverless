@@ -4,8 +4,6 @@ PROJECT_ROOT ?= $(OPERATOR_ROOT)/../..
 MODULE_VERSION ?= 0.0.0
 
 CLUSTER_NAME ?= kyma
-KYMA_PROFILE ?= production
-KYMA_SOURCE ?= main
 REGISTRY_PORT ?= 5001
 REGISTRY_NAME ?= ${CLUSTER_NAME}-registry
 
@@ -97,27 +95,6 @@ print-serverless-details: ## Print all pods, deploys and serverless CRs in the k
 	kubectl get serverless -n kyma-system -oyaml
 	kubectl get deploy -n kyma-system -oyaml
 	kubectl get pods -n kyma-system -oyaml
-
-.PHONY: verify-kyma
-verify-kyma: ## Wait for Kyma CR to be in Ready state.
-	@./verify_kyma_status.sh
-
-.PHONY: enable-module
-enable-module: ## Patch serverless module in the right Kyma CR.
-	${KYMA} alpha enable module serverless -c fast
-
-.PHONY: install-module-template
-install-module-template: ## Apply k3d-ready moduletemplate.
-	kubectl apply -f ${PROJECT_ROOT}/moduletemplate-k3d.yaml
-
-
-.PHONY: fix-template
-fix-template: ## Create moduletemplate-k3d.yaml based on moduletemplate.yaml with right URLs.
-	@cat ${PROJECT_ROOT}/moduletemplate.yaml \
-	| sed -e 's/remote/control-plane/g' \
-		-e 's/${REGISTRY_PORT}/5000/g' \
-	      	-e 's/localhost/k3d-${REGISTRY_NAME}.localhost/g' \
-	> ${PROJECT_ROOT}/moduletemplate-k3d.yaml
 
 .PHONY: apply-serverless
 apply-serverless: ## Apply the k3d serverless CR.
