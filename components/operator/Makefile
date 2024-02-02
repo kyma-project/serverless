@@ -137,21 +137,6 @@ module-image-dev: docker-build-dev docker-push ## Build the dev Module Image and
 module-image-local: docker-build-local docker-push ## Build the local Module Image and push it to a registry defined in IMG.
 	echo "built and pushed module image $(IMG)"
 
-.PHONY: module-config-template
-module-config-template:
-	@cat $(PROJECT_ROOT)/module-config-template.yaml \
-		| sed -e 's/{{.Channel}}/${MODULE_CHANNEL}/g' \
-			-e 's/{{.Version}}/$(MODULE_VERSION)/g' \
-			-e 's/{{.Name}}/kyma-project.io\/module\/$(MODULE_NAME)/g' \
-				> $(PROJECT_ROOT)/module-config.yaml
-
-.PHONY: configure-git-origin
-configure-git-origin:
-#	test-infra does not include origin remote in the .git directory.
-#	the CLI is looking for the origin url in the .git dir so first we need to be sure it's not empty
-	@git remote | grep '^origin$$' -q || \
-		git remote add origin https://github.com/kyma-project/serverless-manager
-
 ##@ Tools
 
 ## Location to install dependencies to

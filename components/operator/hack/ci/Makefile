@@ -78,11 +78,6 @@ run:
 run-on-cluster:
 	@make -C ${PROJECT_COMMON} run-on-cluster
 
-.PHONY: render-manifest
-render-manifest:
-	@make -C ${OPERATOR_ROOT} render-manifest \
-		MODULE_VERSION=${MODULE_VERSION}
-
 # used only by prow (tests: pre-serverless-integration-k3s, pre-serverless-git-auth-integration-k3s)
 .PHONY: replace-chart-images
 replace-chart-images: replace-function-chart-images
