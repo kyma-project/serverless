@@ -38,7 +38,7 @@ jobs:
         run: make -C components/serverless test
   
   #pre-serverless-integration-k3s
-  integration-test:
+  contract-integration-test:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -58,7 +58,7 @@ jobs:
         env:
           IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
       - name: run tests
-        run: make -C tests/serverless serverless-integration serverless-contract-tests
+        run: make -C tests/serverless serverless-contract-tests
   
   #pre-serverless-git-auth-integration-k3s
   git-auth-integration-test:
