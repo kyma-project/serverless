@@ -2,16 +2,11 @@ PROJECT_ROOT = ../..
 
 MODULE_VERSION ?= 0.0.0
 
-# Path to the sec-scanners-config file
-SEC_SCANNERS_CONFIG ?= ""
-
 # Module Name used for bundling the OCI Image and later on for referencing in the Kyma Modules
 MODULE_NAME ?= serverless
 # Module Registry used for pushing the image
 MODULE_REGISTRY_PORT ?= 8888
 MODULE_REGISTRY ?= op-kcp-registry.localhost:$(MODULE_REGISTRY_PORT)/unsigned
-# Desired Channel of the Generated Module Template
-MODULE_CHANNEL ?= fast
 
 # Image URL to use all building/pushing image targets
 IMG_REGISTRY_PORT ?= $(MODULE_REGISTRY_PORT)
@@ -32,17 +27,6 @@ ifeq (,$(shell go env GOBIN))
 GOBIN=$(shell go env GOPATH)/bin
 else
 GOBIN=$(shell go env GOBIN)
-endif
-
-# This will change the flags of the `kyma alpha module create` command in case we spot credentials
-# Otherwise we will assume http-based local registries without authentication (e.g. for k3d)
-ifneq (,$(PROW_JOB_ID))
-GCP_ACCESS_TOKEN=$(shell gcloud auth application-default print-access-token)
-MODULE_CREATION_FLAGS=--registry $(MODULE_REGISTRY) --module-archive-version-overwrite -c oauth2accesstoken:$(GCP_ACCESS_TOKEN)
-else ifeq (,$(MODULE_CREDENTIALS))
-MODULE_CREATION_FLAGS=--registry $(MODULE_REGISTRY) --module-archive-version-overwrite --insecure
-else
-MODULE_CREATION_FLAGS=--registry $(MODULE_REGISTRY) --module-archive-version-overwrite -c $(MODULE_CREDENTIALS)
 endif
 
 # Setting SHELL to bash allows bash commands to be executed by recipes.
