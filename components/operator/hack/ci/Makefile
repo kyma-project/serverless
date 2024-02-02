@@ -3,7 +3,6 @@ PROJECT_ROOT ?= $(OPERATOR_ROOT)/../..
 PROJECT_COMMON ?= $(OPERATOR_ROOT)/hack/common
 IMG_DIRECTORY ?= "prod" # image directory ( prod / dev )
 IMG_VERSION ?= "main" # image version ( release tag / commit hash / PR-<number> )
-MODULE_VERSION ?= 0.0.0
 
 ifndef MODULE_SHA
     MODULE_SHA = ${shell git rev-parse --short HEAD}
