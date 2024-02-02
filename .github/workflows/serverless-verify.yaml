@@ -54,7 +54,6 @@ jobs:
             --port 443:443@loadbalancer
             --wait
       - name: deploy serverless
-        # ?????????
         run: make -C components/operator/hack/ci run-on-cluster
         env:
           IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
@@ -78,9 +77,12 @@ jobs:
             --port 443:443@loadbalancer
             --wait
       - name: deploy serverless
-        # ?????????
         run: make -C components/operator/hack/ci run-on-cluster
         env:
           IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
       - name: run tests
         run: make -C tests/serverless git-auth-integration
+        env:
+          APP_TEST_GITHUB_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_GITHUB_SSH_KEY }}
+          APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
+          APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
