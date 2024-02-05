@@ -65,10 +65,6 @@ provision-gardener:
 deprovision-gardener:
 	@make -C ${PROJECT_COMMON} deprovision-gardener
 
-# used on test-infra in prow/scripts/cluster-integration/kyma-serverless-integration-k3d.sh
-.PHONY: run-without-lifecycle-manager
-run-without-lifecycle-manager: run
-
 .PHONY: run
 run:
 	@make -C ${PROJECT_COMMON} run
@@ -76,10 +72,6 @@ run:
 .PHONY: run-on-cluster
 run-on-cluster:
 	@make -C ${PROJECT_COMMON} run-on-cluster
-
-# used only by prow (tests: pre-serverless-integration-k3s, pre-serverless-git-auth-integration-k3s)
-.PHONY: replace-chart-images
-replace-chart-images: replace-function-chart-images
 
 .PHONY: replace-only-main-chart-images
 replace-only-main-chart-images:
