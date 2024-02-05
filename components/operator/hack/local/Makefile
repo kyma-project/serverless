@@ -1,6 +1,5 @@
 PROJECT_COMMON ?= ../common
 PROJECT_LOCAL ?= ../local
-PROJECT_CI ?= ../ci
 
 ##@ General
 
