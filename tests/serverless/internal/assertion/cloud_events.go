@@ -6,15 +6,16 @@ import (
 	"encoding/json"
 	goerrors "errors"
 	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+	"time"
+
 	cloudevents "github.com/cloudevents/sdk-go/v2"
 	"github.com/google/uuid"
 	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"io"
-	"net/http"
-	"net/url"
-	"time"
 )
 
 const EventTypeParam = "type"
