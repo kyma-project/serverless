@@ -20,11 +20,11 @@ RUN go build -ldflags "-s -w" -a -o manager ./components/serverless/cmd/manager/
     && mkdir /app \
     && mv ./manager /app/manager
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/alpine:3.19.0 as certs
+FROM europe-docker.pkg.dev/kyma-project/prod/external/alpine:3.19.1 as certs
 
 RUN apk add --no-cache ca-certificates
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/alpine:3.19.0
+FROM europe-docker.pkg.dev/kyma-project/prod/external/alpine:3.19.1
 
 ENV LIBGIT2_VERSION=1.5.2-r0
 
