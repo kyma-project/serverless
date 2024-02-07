@@ -32,7 +32,7 @@ collect_logs(){
     ALL=($ALL_NAMESPACES)
     for NAMESPACE in "${ALL[@]}"
     do
-      kubectl logs --namespace "${NAMESPACE}" --all-containers  --selector serverless.kyma-project.io/function-name --ignore-errors --prefix=true
+      kubectl logs --namespace "${NAMESPACE}" --all-containers  --selector serverless.kyma-project.io/function-name --ignore-errors --prefix=true --tail=-1
     done
     echo ""
     set -o errexit

@@ -50,6 +50,7 @@ from opentelemetry.instrumentation.requests import RequestsInstrumentor
 def main(event, context):
     print("event headers: ", vars(event['extensions']['request'].headers))
     print("event data: ", vars(event['extensions']['request'].body))
+    print("event method: ", event['extensions']['request'].method)
     RequestsInstrumentor().instrument()
     response = requests.get('%s', timeout=1)
     headers = response.request.headers
@@ -113,29 +114,31 @@ event_data = {}
 def main(event, context):
     print("event headers: ", vars(event['extensions']['request'].headers))
     print("event data: ", vars(event['extensions']['request'].body))
+    print("event method: ", event['extensions']['request'].method)
     global event_data
     req = event.ceHeaders['extensions']['request']
 
     if req.method == 'GET':
         event_type = req.query.get(key='type')
         if event_type is None:
-            print("None type, return: ", json.dumps(event_data))
+            print("type is not specified, returning all event data: ", json.dumps(event_data))
             return json.dumps(event_data)
         remote_addr = req.query.get(key='address', default=req.remote_addr)
         runtime_events = event_data.get(remote_addr, {})
         saved_event = runtime_events.get(event_type, "")
-        print("GET, return: ", json.dumps(saved_event))
+        print("getting saved event from memory for type:", event_type, ", for address: ", remote_addr, ", returning: ", json.dumps(saved_event))
         return json.dumps(saved_event)
+
     elif req.method == 'POST':
         event_ce_headers = event.ceHeaders
         event_ce_headers.pop('extensions')
         event_data[str(req.remote_addr)] = {
             event_ce_headers['ce-type']: event_ce_headers
         }
-        print("POST, return: 201")
+        print("saving CE headers in-memory, address: ", str(req.remote_addr), ", headers: ", event_data[str(req.remote_addr)], ", returning: 201")
         return bottle.HTTPResponse(status=201)
 
-    print("Error, return: 405")
+    print("Unexpected call, returning: 405")
     return bottle.HTTPResponse(status=405)
 `
 
@@ -180,8 +183,10 @@ send_check_event_type = "send-check"
 def main(event, context):
     print("event headers: ", vars(event['extensions']['request'].headers))
     print("event data: ", vars(event['extensions']['request'].body))
+    print("event method: ", event['extensions']['request'].method)
     global event_data
     req = event.ceHeaders['extensions']['request']
+    
     if req.method == 'GET':
         event_type = req.query.get(key='type')
         if event_type == send_check_event_type:
@@ -189,22 +194,23 @@ def main(event, context):
             resp = requests.get(publisher_proxy, params={
                 "type": event_type
             })
-            print("send-check, return: ", resp.json())
+            print("getting saved events from publisher proxy, type: ", send_check_event_type, ", returning: ", resp.json())
             return resp.json()
-
+        
         saved_event = event_data.get(event_type, {})
-        print("GET, return: ", json.dumps(saved_event))
+        print("getting saved event from memory for type: ", event_type, ", returning: ", json.dumps(saved_event))
         return json.dumps(saved_event)
-
+    
     if 'ce-type' not in event.ceHeaders:
         event.emitCloudEvent(send_check_event_type, 'function', req.json, {'eventtypeversion': 'v1alpha2'})
-        print("publish CE: type - ", send_check_event_type, ", source - function, data - ", req.json, ", attr - ", {'eventtypeversion': 'v1alpha2'})
+        print("publishing CE, type: ", send_check_event_type, ", source: function, data: ", req.json, ", attr: ", {'eventtypeversion': 'v1alpha2'})
         return ""
+
     event_ce_headers = event.ceHeaders
     event_ce_headers.pop('extensions')
-
+    
     event_data[event_ce_headers['ce-type']] = event_ce_headers
-    print("set ce headers and stop")
+    print("saving received cloud event, type: ", event_ce_headers['ce-type'], " headers: ", event_data[event_ce_headers['ce-type']])
     return ""
 `
 
