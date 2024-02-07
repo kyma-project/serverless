@@ -62,6 +62,7 @@ type healthzConfig struct {
 }
 
 func main() {
+	defer time.Sleep(2000)
 	config, err := loadConfig("APP")
 	if err != nil {
 		setupLog.Error(err, "unable to load config")
