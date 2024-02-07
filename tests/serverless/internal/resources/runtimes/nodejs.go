@@ -40,9 +40,11 @@ func BasicTracingNodeFunction(rtm serverlessv1alpha2.Runtime, externalSvcURL str
 
 module.exports = {
     main: async function (event, context) {
+        console.log("event: ", event)
         let resp = await axios("%s",{timeout: 1000});
         let interceptedHeaders = resp.request._header
         let tracingHeaders = getTracingHeaders(interceptedHeaders)
+        console.log("return: ", JSON.stringify(tracingHeaders, null, 4))
         return tracingHeaders
     }
 }
@@ -79,6 +81,14 @@ function getTracingHeaders(textHeaders) {
 			Inline: &serverlessv1alpha2.InlineSource{
 				Source:       src,
 				Dependencies: dpd,
+			},
+		},
+		ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+			Function: &serverlessv1alpha2.ResourceRequirements{
+				Profile: "L",
+			},
+			Build: &serverlessv1alpha2.ResourceRequirements{
+				Profile: "fast",
 			},
 		},
 	}
@@ -164,13 +174,19 @@ send_check_event_type = "send-check"
 
 module.exports = {
     main: async function (event, context) {
+        console.log("event: ", event)
         switch (event.extensions.request.method) {
             case "POST":
-                return handlePost(event)
+                res = handlePost(event)
+                console.log("POST, return: ", JSON.stringify(res, null, 4))
+                return res
             case "GET":
-                return handleGet(event.extensions.request)
+                res = handleGet(event.extensions.request)
+                console.log("GET, return: ", JSON.stringify(res, null, 4))
+                return res
             default:
                 event.extensions.response.statusCode = 405
+                console.log("Default, return: 405")
                 return ""
         }
     }
@@ -218,7 +234,7 @@ async function handleGet(req) {
 		},
 		ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 			Function: &serverlessv1alpha2.ResourceRequirements{
-				Profile: "M",
+				Profile: "L",
 			},
 			Build: &serverlessv1alpha2.ResourceRequirements{
 				Profile: "fast",
