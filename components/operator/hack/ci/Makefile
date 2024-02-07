@@ -1,12 +1,6 @@
 OPERATOR_ROOT ?= ../..
 PROJECT_ROOT ?= $(OPERATOR_ROOT)/../..
 PROJECT_COMMON ?= $(OPERATOR_ROOT)/hack/common
-IMG_DIRECTORY ?= "prod" # image directory ( prod / dev )
-IMG_VERSION ?= "main" # image version ( release tag / commit hash / PR-<number> )
-
-ifndef MODULE_SHA
-    MODULE_SHA = ${shell git rev-parse --short HEAD}
-endif
 
 ##@ General
 
@@ -65,10 +59,6 @@ provision-gardener:
 deprovision-gardener:
 	@make -C ${PROJECT_COMMON} deprovision-gardener
 
-# used on test-infra in prow/scripts/cluster-integration/kyma-serverless-integration-k3d.sh
-.PHONY: run-without-lifecycle-manager
-run-without-lifecycle-manager: run
-
 .PHONY: run
 run:
 	@make -C ${PROJECT_COMMON} run
@@ -77,12 +67,8 @@ run:
 run-on-cluster:
 	@make -C ${PROJECT_COMMON} run-on-cluster
 
-# used only by prow (tests: pre-serverless-integration-k3s, pre-serverless-git-auth-integration-k3s)
-.PHONY: replace-chart-images
-replace-chart-images: replace-function-chart-images
-
 .PHONY: replace-only-main-chart-images
-replace-only-main-chart-images:
+replace-only-main-chart-images: check-img-envs
 	yq -i "(.global.images[] | select(.version == \"main\") | .directory) = \"${IMG_DIRECTORY}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
 	yq -i "(.global.images[] | select(.version == \"main\") | .version) = \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
 	@echo "==== Local Changes ===="
@@ -90,9 +76,18 @@ replace-only-main-chart-images:
 	@echo "==== End of Local Changes ===="
 
 .PHONY: replace-function-chart-images
-replace-function-chart-images:
+replace-function-chart-images: check-img-envs
 	yq -i "(.global.images[] | select(key == \"function_*\") | .directory) = \"${IMG_DIRECTORY}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
 	yq -i "(.global.images[] | select(key == \"function_*\") | .version) = \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
 	@echo "==== Local Changes ===="
 	yq '.global.images' ${PROJECT_ROOT}/config/serverless/values.yaml
 	@echo "==== End of Local Changes ===="
+
+.PHONY: check-img-envs
+check-img-envs:
+ifndef IMG_DIRECTORY
+	$(error IMG_DIRECTORY is undefined)
+endif
+ifndef IMG_VERSION
+	$(error IMG_VERSION is undefined)
+endif
