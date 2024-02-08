@@ -21,4 +21,4 @@ CURL_RESPONSE=$(curl -L \
   -H "${GITHUB_AUTH_HEADER}" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
   ${GITHUB_URL}/releases/${RELEASE_ID} \
-  -d '{"draft": false, "make_latest": '${IS_LATEST}'}'
+  -d '{"draft": false, "make_latest": '${IS_LATEST}'}')
