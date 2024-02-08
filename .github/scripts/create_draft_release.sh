@@ -23,7 +23,8 @@ JSON_PAYLOAD=$(jq -n \
     "tag_name": $tag_name,
     "name": $name,
     "body": $body,
-    "draft": true
+    "draft": true,
+    "make_latest": "legacy"
   }')
 
 CURL_RESPONSE=$(curl -L \
