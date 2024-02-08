@@ -7,11 +7,6 @@ on:
         description: 'Release name ( e.g. "2.1.3" )'
         default: ""
         required: true
-      isLatest:
-        type: boolean
-        description: 'Is this the latest release'
-        default: true
-        required: true
 
 jobs:
   verify-head-status:
@@ -123,4 +118,4 @@ jobs:
       - name: Publish release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./.github/scripts/publish_release.sh ${{ needs.create-draft.outputs.release_id }} ${{ github.event.inputs.isLatest }}
+        run: ./.github/scripts/publish_release.sh ${{ needs.create-draft.outputs.release_id }}
