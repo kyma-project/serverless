@@ -75,42 +75,16 @@ func sFnSafeDeletionState(_ context.Context, r *reconciler, s *systemState) (sta
 }
 
 func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...chart.FilterFunc) (stateFn, *ctrl.Result, error) {
-	// TODO: This mode can be removed after fixing this issue
-	// https://github.com/kyma-project/serverless-manager/issues/269
 	err, done := chart.UninstallSecrets(s.chartConfig, filterFuncs...)
 	if err != nil {
-		r.log.Warnf("error while uninstalling secrets %s: %s",
-			client.ObjectKeyFromObject(&s.instance), err.Error())
-		s.setState(v1alpha1.StateError)
-		s.instance.UpdateConditionFalse(
-			v1alpha1.ConditionTypeDeleted,
-			v1alpha1.ConditionReasonDeletionErr,
-			err,
-		)
-		return stopWithEventualError(err)
+		return uninstallSecretsError(r, s, err)
 	}
 	if !done {
-		s.setState(v1alpha1.StateDeleting)
-		s.instance.UpdateConditionTrue(
-			v1alpha1.ConditionTypeDeleted,
-			v1alpha1.ConditionReasonDeletion,
-			"Deleting secrets",
-		)
-
-		// wait one sec until ctrl-mngr remove finalizers from secrets
-		return requeueAfter(time.Second)
+		return awaitingSecretsRemoval(s)
 	}
 
 	if err := chart.Uninstall(s.chartConfig, filterFuncs...); err != nil {
-		r.log.Warnf("error while uninstalling resource %s: %s",
-			client.ObjectKeyFromObject(&s.instance), err.Error())
-		s.setState(v1alpha1.StateError)
-		s.instance.UpdateConditionFalse(
-			v1alpha1.ConditionTypeDeleted,
-			v1alpha1.ConditionReasonDeletionErr,
-			err,
-		)
-		return stopWithEventualError(err)
+		return uninstallResourcesError(r, s, err)
 	}
 
 	s.setState(v1alpha1.StateDeleting)
@@ -122,4 +96,40 @@ func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...cha
 
 	// if resources are ready to be deleted, remove finalizer
 	return nextState(sFnRemoveFinalizer)
+}
+
+func uninstallResourcesError(r *reconciler, s *systemState, err error) (stateFn, *ctrl.Result, error) {
+	r.log.Warnf("error while uninstalling resource %s: %s",
+		client.ObjectKeyFromObject(&s.instance), err.Error())
+	s.setState(v1alpha1.StateError)
+	s.instance.UpdateConditionFalse(
+		v1alpha1.ConditionTypeDeleted,
+		v1alpha1.ConditionReasonDeletionErr,
+		err,
+	)
+	return stopWithEventualError(err)
+}
+
+func awaitingSecretsRemoval(s *systemState) (stateFn, *ctrl.Result, error) {
+	s.setState(v1alpha1.StateDeleting)
+	s.instance.UpdateConditionTrue(
+		v1alpha1.ConditionTypeDeleted,
+		v1alpha1.ConditionReasonDeletion,
+		"Deleting secrets",
+	)
+
+	// wait one sec until ctrl-mngr remove finalizers from secrets
+	return requeueAfter(time.Second)
+}
+
+func uninstallSecretsError(r *reconciler, s *systemState, err error) (stateFn, *ctrl.Result, error) {
+	r.log.Warnf("error while uninstalling secrets %s: %s",
+		client.ObjectKeyFromObject(&s.instance), err.Error())
+	s.setState(v1alpha1.StateError)
+	s.instance.UpdateConditionFalse(
+		v1alpha1.ConditionTypeDeleted,
+		v1alpha1.ConditionReasonDeletionErr,
+		err,
+	)
+	return stopWithEventualError(err)
 }
