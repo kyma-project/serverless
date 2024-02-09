@@ -5,6 +5,7 @@ import (
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 )
 
 func BasicNodeJSFunction(msg string, rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
@@ -165,14 +166,14 @@ func NodeJSFunctionWithEnvFromConfigMapAndSecret(configMapName, cmEnvKey, secret
 }
 
 func NodeJSFunctionWithCloudEvent(rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
-	src := fmt.Sprintf(`const process = require("process");
+	src := `const process = require("process");
 const axios = require('axios');
 
 let cloudevent = {}
 
 send_check_event_type = "send-check"
 
-runtime = "%s"
+runtime = process.env.CE_SOURCE
 
 module.exports = {
     main: async function (event, context) {
@@ -229,13 +230,19 @@ async function handleGet(req) {
     console.log("getting saved event from memory for type: ", req.query.type, ", returning: ", JSON.stringify(cloudevent, null, 4))
     return cloudevent
 }
-`, rtm)
+`
 	return serverlessv1alpha2.FunctionSpec{
 		Runtime: rtm,
 		Source: serverlessv1alpha2.Source{
 			Inline: &serverlessv1alpha2.InlineSource{
 				Source:       src,
 				Dependencies: `{ "name": "cloudevent", "version": "0.0.1", "dependencies": {} }`,
+			},
+		},
+		Env: []v1.EnvVar{
+			{
+				Name:  "CE_SOURCE",
+				Value: string(rtm),
 			},
 		},
 		ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{

@@ -171,7 +171,7 @@ def main(event, context):
 func PythonCloudEvent(runtime serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
 	dpd := ``
 
-	src := fmt.Sprintf(`import json
+	src := `import json
 import os
 
 import requests
@@ -180,7 +180,7 @@ event_data = {}
 
 send_check_event_type = "send-check"
 
-runtime = "%s"
+runtime = os.getenv("CE_SOURCE")
 
 
 def main(event, context):
@@ -216,7 +216,7 @@ def main(event, context):
     event_data[event_ce_headers['ce-type']] = event_ce_headers
     print("saving received cloud event, type: ", event_ce_headers['ce-type'], " headers: ", event_data[event_ce_headers['ce-type']])
     return ""
-`, runtime)
+`
 
 	return serverlessv1alpha2.FunctionSpec{
 		Runtime: runtime,
@@ -230,6 +230,10 @@ def main(event, context):
 			{
 				Name:  "PUBLISHER_PROXY_ADDRESS",
 				Value: "localhost:8080",
+			},
+			{
+				Name:  "CE_SOURCE",
+				Value: string(runtime),
 			},
 		},
 		ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
