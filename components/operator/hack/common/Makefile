@@ -1,16 +1,16 @@
-OPERATOR_ROOT ?= ../..
-PROJECT_ROOT ?= $(OPERATOR_ROOT)/../..
+# local variables
+OPERATOR_ROOT = ../..
+PROJECT_ROOT = $(OPERATOR_ROOT)/../..
 
-CLUSTER_NAME ?= kyma
-REGISTRY_PORT ?= 5001
-REGISTRY_NAME ?= ${CLUSTER_NAME}-registry
+KYMA = ${PROJECT_ROOT}/bin/kyma-unstable
 
-OPERATOR_IMAGE_NAME ?= serverless-operator-dev-local
-OPERATOR_IMAGE_TAG ?= 0.0.0
+CLUSTER_NAME = kyma
+REGISTRY_PORT = 5001
+REGISTRY_NAME = ${CLUSTER_NAME}-registry
+OPERATOR_IMAGE_NAME = serverless-operator-dev-local
+OPERATOR_IMAGE_TAG = 0.0.0
+GARDENER_INFRASTRUCTURE = az
 
-GARDENER_INFRASTRUCTURE ?= az
-
-KYMA ?= ${PROJECT_ROOT}/bin/kyma-unstable
 
 ##@ General
 
@@ -57,9 +57,9 @@ delete-k3d-cluster: ## Delete k3d kyma cluster.
 HIBERNATION_HOUR=$(shell echo $$(( ( $(shell date +%H | sed s/^0//g) + 5 ) % 24 )))
 GIT_COMMIT_SHA=$(shell git rev-parse --short=8 HEAD)
 ifneq (,$(GARDENER_SA_PATH))
-GARDENER_K8S_VERSION?=$(shell kubectl --kubeconfig=${GARDENER_SA_PATH} get cloudprofiles.core.gardener.cloud ${GARDENER_INFRASTRUCTURE} -o=jsonpath='{.spec.kubernetes.versions[0].version}')
+GARDENER_K8S_VERSION=$(shell kubectl --kubeconfig=${GARDENER_SA_PATH} get cloudprofiles.core.gardener.cloud ${GARDENER_INFRASTRUCTURE} -o=jsonpath='{.spec.kubernetes.versions[0].version}')
 else
-GARDENER_K8S_VERSION?=1.27.4
+GARDENER_K8S_VERSION=1.27.4
 endif
 
 .PHONY: provision-gardener

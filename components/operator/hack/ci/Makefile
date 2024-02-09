@@ -1,6 +1,7 @@
-OPERATOR_ROOT ?= ../..
-PROJECT_ROOT ?= $(OPERATOR_ROOT)/../..
-PROJECT_COMMON ?= $(OPERATOR_ROOT)/hack/common
+# local variables
+OPERATOR_ROOT = ../..
+PROJECT_ROOT = $(OPERATOR_ROOT)/../..
+PROJECT_COMMON = $(OPERATOR_ROOT)/hack/common
 
 ##@ General
 
