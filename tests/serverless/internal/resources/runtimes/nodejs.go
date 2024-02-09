@@ -178,15 +178,13 @@ module.exports = {
         switch (event.extensions.request.method) {
             case "POST":
                 res = handlePost(event)
-                console.log("POST, return: ", JSON.stringify(res, null, 4))
                 return res
             case "GET":
                 res = handleGet(event.extensions.request)
-                console.log("GET, return: ", JSON.stringify(res, null, 4))
                 return res
             default:
                 event.extensions.response.statusCode = 405
-                console.log("Default, return: 405")
+                console.log("Unexpected call, return: 405")
                 return ""
         }
     }
@@ -195,6 +193,7 @@ module.exports = {
 function handlePost(event) {
     if (!Object.keys(event).includes("ce-type")) {
         event.emitCloudEvent(send_check_event_type, 'function', event.data, {'eventtypeversion': 'v1alpha2'})
+        console.log("publishing CE, type: ", send_check_event_type, ", source: function, data: ", event.data,  ", attr: {eventtypeversion: v1alpha2}")
         return ""
     }
     Object.keys(event).filter((val) => {
@@ -203,6 +202,7 @@ function handlePost(event) {
         cloudevent[item] = event[item]
     })
     cloudevent.data = event.data
+    console.log("saving received cloud event, type: ", event["ce-type"], "data: ", cloudevent.data)
     return ""
 }
 
@@ -219,8 +219,11 @@ async function handleGet(req) {
         }).catch((error) => {
             data = error
         })
+        console.log("getting saved events from publisher proxy, type: ", req.query.type, "returning: ", JSON.stringify(data, null, 4))
         return data
     }
+
+    console.log("getting saved event from memory for type: ", req.query.type, ", returning: ", JSON.stringify(cloudevent, null, 4))
     return cloudevent
 }
 `
