@@ -1,7 +1,5 @@
 PROJECT_ROOT = ../..
 
-MODULE_VERSION ?= 0.0.0
-
 # Module Name used for bundling the OCI Image and later on for referencing in the Kyma Modules
 MODULE_NAME ?= serverless
 # Module Registry used for pushing the image
@@ -11,7 +9,7 @@ MODULE_REGISTRY ?= op-kcp-registry.localhost:$(MODULE_REGISTRY_PORT)/unsigned
 # Image URL to use all building/pushing image targets
 IMG_REGISTRY_PORT ?= $(MODULE_REGISTRY_PORT)
 IMG_REGISTRY ?= op-skr-registry.localhost:$(IMG_REGISTRY_PORT)/unsigned/operator-images
-IMG ?= $(IMG_REGISTRY)/$(MODULE_NAME)-operator:$(MODULE_VERSION)
+IMG ?= $(IMG_REGISTRY)/$(MODULE_NAME)-operator:0.0.0
 
 # Operating system architecture
 OS_ARCH ?= $(shell uname -m)
