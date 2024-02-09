@@ -141,6 +141,7 @@ var _ executor.Step = &cloudEventSendCheck{}
 func CloudEventSendCheck(log *logrus.Entry, name, ceSource string, target *url.URL, publisherProxy *url.URL) executor.Step {
 	return cloudEventSendCheck{
 		name:           name,
+		ceSource:       ceSource,
 		log:            log,
 		endpoint:       target.String(),
 		publisherProxy: publisherProxy.String(),

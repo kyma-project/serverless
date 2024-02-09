@@ -135,7 +135,8 @@ def main(event, context):
         event_data[str(event_ce_headers['ce-source'])] = {
             event_ce_headers['ce-type']: event_ce_headers
         }
-        print("saving CE headers in-memory, source: ", str(event_ce_headers['ce-source']), ", headers: ", event_data[str(req.remote_addr)], ", returning: 201")
+        print("saving CE headers in-memory, source: ", event_ce_headers['ce-source'], ", headers: ", event_data[str(event_ce_headers['ce-source'])], ", returning: 201")
+        print("current event_data: ", event_data)
         return bottle.HTTPResponse(status=201)
 
     print("Unexpected call, returning: 405")
