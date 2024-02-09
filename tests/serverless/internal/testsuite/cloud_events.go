@@ -2,6 +2,8 @@ package testsuite
 
 import (
 	"fmt"
+	"time"
+
 	cloudevents "github.com/cloudevents/sdk-go/v2"
 	"github.com/kyma-project/serverless/tests/serverless/internal"
 	"github.com/kyma-project/serverless/tests/serverless/internal/assertion"
@@ -10,7 +12,6 @@ import (
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/namespace"
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/runtimes"
 	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
-	"time"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/pkg/errors"
@@ -61,19 +62,19 @@ func FunctionCloudEventsTest(restConfig *rest.Config, cfg internal.Config, logf 
 				function.CreateFunction(python39Logger, python39Fn, "Create Python39 Function", runtimes.PythonCloudEvent(serverlessv1alpha2.Python39)),
 				assertion.CloudEventReceiveCheck(python39Logger, "Python39 cloud event structured check", cloudevents.EncodingStructured, python39Fn.FunctionURL),
 				assertion.CloudEventReceiveCheck(python39Logger, "Python39 cloud event binary check", cloudevents.EncodingBinary, python39Fn.FunctionURL),
-				assertion.CloudEventSendCheck(python39Logger, "Python39 cloud event sent check", python39Fn.FunctionURL, publisherProxyMock.FunctionURL),
+				assertion.CloudEventSendCheck(python39Logger, "Python39 cloud event sent check", string(serverlessv1alpha2.Python39), python39Fn.FunctionURL, publisherProxyMock.FunctionURL),
 			),
 			executor.NewSerialTestRunner(nodejs16Logger, "NodeJS16 test",
-				function.CreateFunction(nodejs16Logger, nodejs16Fn, "Create NodeJS16 Function", runtimes.NodeJSFunctionWithCloudEvent(serverlessv1alpha2.NodeJs18)),
+				function.CreateFunction(nodejs16Logger, nodejs16Fn, "Create NodeJS16 Function", runtimes.NodeJSFunctionWithCloudEvent(serverlessv1alpha2.NodeJs16)),
 				assertion.CloudEventReceiveCheck(nodejs16Logger, "NodeJS16 cloud event structured check", cloudevents.EncodingStructured, nodejs16Fn.FunctionURL),
 				assertion.CloudEventReceiveCheck(nodejs16Logger, "NodeJS16 cloud event binary check", cloudevents.EncodingBinary, nodejs16Fn.FunctionURL),
-				assertion.CloudEventSendCheck(nodejs16Logger, "NodeJS16 cloud event sent check", nodejs16Fn.FunctionURL, publisherProxyMock.FunctionURL),
+				assertion.CloudEventSendCheck(nodejs16Logger, "NodeJS16 cloud event sent check", string(serverlessv1alpha2.NodeJs16), nodejs16Fn.FunctionURL, publisherProxyMock.FunctionURL),
 			),
 			executor.NewSerialTestRunner(nodejs18Logger, "NodeJS18 test",
 				function.CreateFunction(nodejs18Logger, nodejs18Fn, "Create NodeJS18 Function", runtimes.NodeJSFunctionWithCloudEvent(serverlessv1alpha2.NodeJs18)),
 				assertion.CloudEventReceiveCheck(nodejs18Logger, "NodeJS18 cloud event structured check", cloudevents.EncodingStructured, nodejs18Fn.FunctionURL),
 				assertion.CloudEventReceiveCheck(nodejs18Logger, "NodeJS18 cloud event binary check", cloudevents.EncodingBinary, nodejs18Fn.FunctionURL),
-				assertion.CloudEventSendCheck(nodejs18Logger, "NodeJS18 cloud event sent check", nodejs18Fn.FunctionURL, publisherProxyMock.FunctionURL),
+				assertion.CloudEventSendCheck(nodejs18Logger, "NodeJS18 cloud event sent check", string(serverlessv1alpha2.NodeJs18), nodejs18Fn.FunctionURL, publisherProxyMock.FunctionURL),
 			),
 		),
 	), nil

@@ -165,12 +165,14 @@ func NodeJSFunctionWithEnvFromConfigMapAndSecret(configMapName, cmEnvKey, secret
 }
 
 func NodeJSFunctionWithCloudEvent(rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
-	src := `const process = require("process");
+	src := fmt.Sprintf(`const process = require("process");
 const axios = require('axios');
 
 let cloudevent = {}
 
 send_check_event_type = "send-check"
+
+runtime = "%s"
 
 module.exports = {
     main: async function (event, context) {
@@ -192,8 +194,8 @@ module.exports = {
 
 function handlePost(event) {
     if (!Object.keys(event).includes("ce-type")) {
-        event.emitCloudEvent(send_check_event_type, 'function', event.data, {'eventtypeversion': 'v1alpha2'})
-        console.log("publishing CE, type: ", send_check_event_type, ", source: function, data: ", event.data,  ", attr: {eventtypeversion: v1alpha2}")
+        event.emitCloudEvent(send_check_event_type, runtime, event.data, {'eventtypeversion': 'v1alpha2'})
+        console.log("publishing CE, type: ", send_check_event_type, ", source: ", runtime, ", data: ", event.data,  ", attr: {eventtypeversion: v1alpha2}")
         return ""
     }
     Object.keys(event).filter((val) => {
@@ -212,21 +214,22 @@ async function handleGet(req) {
         let publisherProxy = process.env.PUBLISHER_PROXY_ADDRESS
         await axios.get(publisherProxy, {
             params: {
-                type: req.query.type
+                type: req.query.type,
+				source: runtime
             }
         }).then((res) => {
             data = res.data
         }).catch((error) => {
             data = error
         })
-        console.log("getting saved events from publisher proxy, type: ", req.query.type, "returning: ", JSON.stringify(data, null, 4))
+        console.log("getting saved events from publisher proxy, type: ", req.query.type, ", source: ", runtime, ", returning: ", JSON.stringify(data, null, 4))
         return data
     }
 
     console.log("getting saved event from memory for type: ", req.query.type, ", returning: ", JSON.stringify(cloudevent, null, 4))
     return cloudevent
 }
-`
+`, rtm)
 	return serverlessv1alpha2.FunctionSpec{
 		Runtime: rtm,
 		Source: serverlessv1alpha2.Source{

@@ -130,6 +130,7 @@ func (ce cloudEventCheck) createCECtx() (context.Context, string, error) {
 
 type cloudEventSendCheck struct {
 	name           string
+	ceSource       string
 	log            *logrus.Entry
 	endpoint       string
 	publisherProxy string
@@ -137,7 +138,7 @@ type cloudEventSendCheck struct {
 
 var _ executor.Step = &cloudEventSendCheck{}
 
-func CloudEventSendCheck(log *logrus.Entry, name string, target *url.URL, publisherProxy *url.URL) executor.Step {
+func CloudEventSendCheck(log *logrus.Entry, name, ceSource string, target *url.URL, publisherProxy *url.URL) executor.Step {
 	return cloudEventSendCheck{
 		name:           name,
 		log:            log,
@@ -174,7 +175,7 @@ func (s cloudEventSendCheck) Run() error {
 	}
 	expected := cloudEventResponse{
 		CeType:             "send-check",
-		CeSource:           "function",
+		CeSource:           s.ceSource,
 		CeSpecVersion:      cloudevents.VersionV1,
 		CeEventTypeVersion: "v1alpha2",
 		Data:               eventData,
