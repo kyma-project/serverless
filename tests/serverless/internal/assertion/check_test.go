@@ -1,10 +1,11 @@
 package assertion
 
 import (
-	cloudevents "github.com/cloudevents/sdk-go/v2"
-	"github.com/sirupsen/logrus"
 	"net/url"
 	"testing"
+
+	cloudevents "github.com/cloudevents/sdk-go/v2"
+	"github.com/sirupsen/logrus"
 )
 
 func TestCloudEventCheckLocally(t *testing.T) {
@@ -51,7 +52,7 @@ func TestCloudEventCheckLocally(t *testing.T) {
 		}
 
 		//WHEN
-		check := CloudEventSendCheck(log, "test", fnURL, fnURL)
+		check := CloudEventSendCheck(log, "test", "test-runtime", fnURL, fnURL)
 
 		//THEN
 		err = check.Run()

@@ -123,19 +123,20 @@ def main(event, context):
         if event_type is None:
             print("type is not specified, returning all event data: ", json.dumps(event_data))
             return json.dumps(event_data)
-        remote_addr = req.query.get(key='address', default=req.remote_addr)
-        runtime_events = event_data.get(remote_addr, {})
+        source = req.query.get(key='source')
+        runtime_events = event_data.get(source, {})
         saved_event = runtime_events.get(event_type, "")
-        print("getting saved event from memory for type:", event_type, ", for address: ", remote_addr, ", returning: ", json.dumps(saved_event))
+        print("getting saved event from memory for type:", event_type, ", for source: ", source, ", returning: ", json.dumps(saved_event))
         return json.dumps(saved_event)
 
     elif req.method == 'POST':
         event_ce_headers = event.ceHeaders
         event_ce_headers.pop('extensions')
-        event_data[str(req.remote_addr)] = {
+        event_data[str(event_ce_headers['ce-source'])] = {
             event_ce_headers['ce-type']: event_ce_headers
         }
-        print("saving CE headers in-memory, address: ", str(req.remote_addr), ", headers: ", event_data[str(req.remote_addr)], ", returning: 201")
+        print("saving CE headers in-memory, source: ", event_ce_headers['ce-source'], ", headers: ", event_data[str(event_ce_headers['ce-source'])], ", returning: 201")
+        print("current event_data: ", event_data)
         return bottle.HTTPResponse(status=201)
 
     print("Unexpected call, returning: 405")
@@ -179,6 +180,8 @@ event_data = {}
 
 send_check_event_type = "send-check"
 
+runtime = os.getenv("CE_SOURCE")
+
 
 def main(event, context):
     print("event headers: ", vars(event['extensions']['request'].headers))
@@ -192,9 +195,10 @@ def main(event, context):
         if event_type == send_check_event_type:
             publisher_proxy = os.getenv("PUBLISHER_PROXY_ADDRESS")
             resp = requests.get(publisher_proxy, params={
-                "type": event_type
+                "type": event_type,
+				"source": runtime
             })
-            print("getting saved events from publisher proxy, type: ", send_check_event_type, ", returning: ", resp.json())
+            print("getting saved events from publisher proxy, type: ", send_check_event_type, ", source: ", runtime, ", returning: ", resp.json())
             return resp.json()
         
         saved_event = event_data.get(event_type, {})
@@ -202,8 +206,8 @@ def main(event, context):
         return json.dumps(saved_event)
     
     if 'ce-type' not in event.ceHeaders:
-        event.emitCloudEvent(send_check_event_type, 'function', req.json, {'eventtypeversion': 'v1alpha2'})
-        print("publishing CE, type: ", send_check_event_type, ", source: function, data: ", req.json, ", attr: ", {'eventtypeversion': 'v1alpha2'})
+        event.emitCloudEvent(send_check_event_type, runtime, req.json, {'eventtypeversion': 'v1alpha2'})
+        print("publishing CE, type: ", send_check_event_type, ", source: ", runtime, ", data: ", req.json, ", attr: ", {'eventtypeversion': 'v1alpha2'})
         return ""
 
     event_ce_headers = event.ceHeaders
@@ -226,6 +230,10 @@ def main(event, context):
 			{
 				Name:  "PUBLISHER_PROXY_ADDRESS",
 				Value: "localhost:8080",
+			},
+			{
+				Name:  "CE_SOURCE",
+				Value: string(runtime),
 			},
 		},
 		ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{

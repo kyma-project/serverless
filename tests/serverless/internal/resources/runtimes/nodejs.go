@@ -5,6 +5,7 @@ import (
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 )
 
 func BasicNodeJSFunction(msg string, rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
@@ -172,6 +173,8 @@ let cloudevent = {}
 
 send_check_event_type = "send-check"
 
+runtime = process.env.CE_SOURCE
+
 module.exports = {
     main: async function (event, context) {
         console.log("event: ", event)
@@ -192,8 +195,8 @@ module.exports = {
 
 function handlePost(event) {
     if (!Object.keys(event).includes("ce-type")) {
-        event.emitCloudEvent(send_check_event_type, 'function', event.data, {'eventtypeversion': 'v1alpha2'})
-        console.log("publishing CE, type: ", send_check_event_type, ", source: function, data: ", event.data,  ", attr: {eventtypeversion: v1alpha2}")
+        event.emitCloudEvent(send_check_event_type, runtime, event.data, {'eventtypeversion': 'v1alpha2'})
+        console.log("publishing CE, type: ", send_check_event_type, ", source: ", runtime, ", data: ", event.data,  ", attr: {eventtypeversion: v1alpha2}")
         return ""
     }
     Object.keys(event).filter((val) => {
@@ -212,14 +215,15 @@ async function handleGet(req) {
         let publisherProxy = process.env.PUBLISHER_PROXY_ADDRESS
         await axios.get(publisherProxy, {
             params: {
-                type: req.query.type
+                type: req.query.type,
+				source: runtime
             }
         }).then((res) => {
             data = res.data
         }).catch((error) => {
             data = error
         })
-        console.log("getting saved events from publisher proxy, type: ", req.query.type, "returning: ", JSON.stringify(data, null, 4))
+        console.log("getting saved events from publisher proxy, type: ", req.query.type, ", source: ", runtime, ", returning: ", JSON.stringify(data, null, 4))
         return data
     }
 
@@ -233,6 +237,12 @@ async function handleGet(req) {
 			Inline: &serverlessv1alpha2.InlineSource{
 				Source:       src,
 				Dependencies: `{ "name": "cloudevent", "version": "0.0.1", "dependencies": {} }`,
+			},
+		},
+		Env: []v1.EnvVar{
+			{
+				Name:  "CE_SOURCE",
+				Value: string(rtm),
 			},
 		},
 		ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
