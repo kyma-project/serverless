@@ -9,7 +9,6 @@ set -E          # needs to be set if we want the ERR trap
 set -o pipefail # prevents errors in a pipeline from being masked
 
 RELEASE_ID=$1
-IS_LATEST=$2
 
 REPOSITORY=${REPOSITORY:-kyma-project/serverless-manager}
 GITHUB_URL=https://api.github.com/repos/${REPOSITORY}
