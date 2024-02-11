@@ -34,7 +34,7 @@ func (f newFunction) Run() error {
 	}
 
 	f.log.Infof("Function Created, Waiting for ready status")
-	return errors.Wrapf(f.fn.WaitForStatusRunning(), "while waiting for function: %s, to be ready:", f.name)
+	return errors.Wrapf(f.fn.WaitForStatusRunning(), "while waiting for function: %s, to be ready:", f.fn.function.GetName())
 }
 
 func (f newFunction) Cleanup() error {
