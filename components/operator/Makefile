@@ -1,21 +1,17 @@
-PROJECT_ROOT = ../..
-
-# Module Name used for bundling the OCI Image and later on for referencing in the Kyma Modules
-MODULE_NAME ?= serverless
-# Module Registry used for pushing the image
-MODULE_REGISTRY_PORT ?= 8888
-MODULE_REGISTRY ?= op-kcp-registry.localhost:$(MODULE_REGISTRY_PORT)/unsigned
+# incoming variables
 
 # Image URL to use all building/pushing image targets
-IMG_REGISTRY_PORT ?= $(MODULE_REGISTRY_PORT)
-IMG_REGISTRY ?= op-skr-registry.localhost:$(IMG_REGISTRY_PORT)/unsigned/operator-images
-IMG ?= $(IMG_REGISTRY)/$(MODULE_NAME)-operator:0.0.0
+IMG ?= op-skr-registry.localhost:8888/unsigned/operator-images/serverless-operator:0.0.0
 
 # Operating system architecture
 OS_ARCH ?= $(shell uname -m)
 
 # Operating system type
 OS_TYPE ?= $(shell uname)
+
+
+# local variables
+PROJECT_ROOT = ../..
 
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.25.0
@@ -84,7 +80,7 @@ docker-push: ## Push docker image with the operator.
 	docker push ${IMG}
 
 ##@ Deployment
-IGNORE_NOT_FOUND ?= false
+IGNORE_NOT_FOUND = false
 
 .PHONY: install
 install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
