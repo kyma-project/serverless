@@ -5,7 +5,7 @@ import (
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	appsv1 "k8s.io/api/apps/v1"
-	"k8s.io/utils/pointer"
+	"k8s.io/utils/ptr"
 
 	"github.com/onsi/gomega"
 	autoscalingv1 "k8s.io/api/autoscaling/v1"
@@ -288,24 +288,24 @@ func Test_isScalingEnabled(t *testing.T) {
 		{
 			name: "scaling enabled",
 			scaleConfig: &serverlessv1alpha2.ScaleConfig{
-				MinReplicas: pointer.Int32(1),
-				MaxReplicas: pointer.Int32(2),
+				MinReplicas: ptr.To[int32](1),
+				MaxReplicas: ptr.To[int32](2),
 			},
 			want: true,
 		},
 		{
 			name: "scaling disabled",
 			scaleConfig: &serverlessv1alpha2.ScaleConfig{
-				MinReplicas: pointer.Int32(1),
-				MaxReplicas: pointer.Int32(1),
+				MinReplicas: ptr.To[int32](1),
+				MaxReplicas: ptr.To[int32](1),
 			},
 			want: false,
 		},
 		{
 			name: "scaling disabled with multiple replicas",
 			scaleConfig: &serverlessv1alpha2.ScaleConfig{
-				MinReplicas: pointer.Int32(5),
-				MaxReplicas: pointer.Int32(5),
+				MinReplicas: ptr.To[int32](5),
+				MaxReplicas: ptr.To[int32](5),
 			},
 			want: false,
 		},

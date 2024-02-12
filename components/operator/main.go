@@ -101,9 +101,13 @@ func main() {
 		Port:                   9443,
 		HealthProbeBindAddress: probeAddr,
 		SyncPeriod:             &syncPeriod,
-		ClientDisableCacheFor: []ctrlclient.Object{
-			&corev1.Secret{},
-			&corev1.ConfigMap{},
+		Client: ctrlclient.Options{
+			Cache: &ctrlclient.CacheOptions{
+				DisableFor: []ctrlclient.Object{
+					&corev1.Secret{},
+					&corev1.ConfigMap{},
+				},
+			},
 		},
 		// TODO: use our own logger - now eventing use logger with different message format
 	})

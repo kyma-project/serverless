@@ -7,7 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"helm.sh/helm/v3/pkg/release"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/utils/pointer"
+	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -75,7 +75,7 @@ func updateObjects(config *Config, objs []unstructured.Unstructured) error {
 		// TODO: what if Path returns error in the middle of manifest?
 		// maybe we should in this case translate applied objs into manifest and set it into cache?
 		err := config.Cluster.Client.Patch(config.Ctx, &u, client.Apply, &client.PatchOptions{
-			Force:        pointer.Bool(true),
+			Force:        ptr.To[bool](true),
 			FieldManager: "serverless-operator",
 		})
 		if err != nil {

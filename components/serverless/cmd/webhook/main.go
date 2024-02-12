@@ -90,9 +90,13 @@ func main() {
 		Port:               cfg.Port,
 		MetricsBindAddress: ":9090",
 		Logger:             logrZap,
-		ClientDisableCacheFor: []ctrlclient.Object{
-			&corev1.Secret{},
-			&corev1.ConfigMap{},
+		Client: ctrlclient.Options{
+			Cache: &ctrlclient.CacheOptions{
+				DisableFor: []ctrlclient.Object{
+					&corev1.Secret{},
+					&corev1.ConfigMap{},
+				},
+			},
 		},
 	})
 	if err != nil {
