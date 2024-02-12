@@ -1,5 +1,6 @@
-PROJECT_COMMON ?= ../common
-PROJECT_LOCAL ?= ../local
+# local variables
+PROJECT_COMMON = ../common
+PROJECT_LOCAL = ../local
 
 ##@ General
 
