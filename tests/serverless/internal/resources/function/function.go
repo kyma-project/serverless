@@ -3,22 +3,19 @@ package function
 import (
 	"context"
 	"fmt"
-	"github.com/kyma-project/serverless/tests/serverless/internal/resources"
-	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 	"net/url"
 	"time"
 
-	"github.com/sirupsen/logrus"
-
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
+	"github.com/kyma-project/serverless/tests/serverless/internal/resources"
+	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
-
-	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 )
 
 type Function struct {
@@ -167,7 +164,13 @@ func (f Function) isConditionReady(fn serverlessv1alpha2.Function) bool {
 		return false
 	}
 
-	ready := conditions[0].Type == serverlessv1alpha2.ConditionRunning && conditions[0].Status == corev1.ConditionTrue
+	var ready bool
+	for i := range conditions {
+		condition := conditions[i]
+		if condition.Type == serverlessv1alpha2.ConditionRunning {
+			ready = (condition.Status == corev1.ConditionTrue)
+		}
+	}
 
 	f.logReadiness(ready)
 
