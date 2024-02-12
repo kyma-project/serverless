@@ -16,6 +16,7 @@ import (
 	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
+	"k8s.io/client-go/util/retry"
 )
 
 const EventTypeParam = "type"
@@ -170,10 +171,6 @@ func (s cloudEventSendCheck) Run() error {
 		return errors.Errorf("Expected: %d, got: %d status code from eventData request", http.StatusAccepted, resp.StatusCode)
 	}
 
-	event, err := getCloudEventFromFunction(s.endpoint, "send-check")
-	if err != nil {
-		return errors.Wrap(err, "while getting saved cloud event")
-	}
 	expected := cloudEventResponse{
 		CeType:             "send-check",
 		CeSource:           s.ceSource,
@@ -181,12 +178,25 @@ func (s cloudEventSendCheck) Run() error {
 		CeEventTypeVersion: "v1alpha2",
 		Data:               eventData,
 	}
-	err = assertCloudEvent(event, expected)
-	if err != nil {
-		return errors.Wrap(err, "while doing assertion on cloud event")
-	}
 
-	return nil
+	// retry GET request to cover situations when a POST request will reach publisher-proxy after GET
+	// this situation is possible because the k8s cluster is not a synchronous environment
+	return retry.OnError(retry.DefaultRetry, func(err error) bool {
+		return true
+	},
+		func() error {
+			event, err := getCloudEventFromFunction(s.endpoint, "send-check")
+			if err != nil {
+				return errors.Wrap(err, "while getting saved cloud event")
+			}
+
+			err = assertCloudEvent(event, expected)
+			if err != nil {
+				return errors.Wrap(err, "while doing assertion on cloud event")
+			}
+
+			return nil
+		})
 }
 
 func (s cloudEventSendCheck) Cleanup() error {
