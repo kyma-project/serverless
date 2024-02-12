@@ -23,7 +23,7 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
-	"k8s.io/utils/pointer"
+	"k8s.io/utils/ptr"
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
@@ -232,7 +232,7 @@ func TestFunctionReconciler_Reconcile_Scaling(t *testing.T) {
 
 		functionWithReplicas := function.DeepCopy()
 		functionWithReplicas.Spec.ScaleConfig = nil
-		functionWithReplicas.Spec.Replicas = pointer.Int32(3)
+		functionWithReplicas.Spec.Replicas = ptr.To[int32](3)
 
 		g.Expect(resourceClient.Update(context.TODO(), functionWithReplicas)).To(gomega.Succeed())
 
@@ -273,7 +273,7 @@ func TestFunctionReconciler_Reconcile_Scaling(t *testing.T) {
 		g.Expect(len(deployments.Items)).To(gomega.Equal(1))
 		deployment := &deployments.Items[0]
 		g.Expect(deployment).ToNot(gomega.BeNil())
-		g.Expect(deployment.Spec.Replicas).To(gomega.Equal(pointer.Int32(3)))
+		g.Expect(deployment.Spec.Replicas).To(gomega.Equal(ptr.To[int32](3)))
 	})
 }
 

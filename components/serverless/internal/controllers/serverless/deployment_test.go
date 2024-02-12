@@ -3,13 +3,12 @@ package serverless
 import (
 	"testing"
 
-	"k8s.io/utils/pointer"
-
 	"github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	k8sresource "k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/utils/ptr"
 )
 
 func TestFunctionReconciler_equalDeployments(t *testing.T) {
@@ -1040,8 +1039,8 @@ func secretVolume() corev1.Volume {
 		VolumeSource: corev1.VolumeSource{
 			Secret: &corev1.SecretVolumeSource{
 				SecretName:  "secret-name",
-				DefaultMode: pointer.Int32(0644),
-				Optional:    pointer.Bool(false),
+				DefaultMode: ptr.To[int32](0644),
+				Optional:    ptr.To[bool](false),
 			},
 		},
 	}

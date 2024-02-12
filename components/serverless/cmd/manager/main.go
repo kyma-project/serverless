@@ -111,9 +111,13 @@ func main() {
 		LeaderElectionID:       config.LeaderElectionID,
 		Port:                   config.SecretMutatingWebhookPort,
 		HealthProbeBindAddress: config.Healthz.Address,
-		ClientDisableCacheFor: []ctrlclient.Object{
-			&corev1.Secret{},
-			&corev1.ConfigMap{},
+		Client: ctrlclient.Options{
+			Cache: &ctrlclient.CacheOptions{
+				DisableFor: []ctrlclient.Object{
+					&corev1.Secret{},
+					&corev1.ConfigMap{},
+				},
+			},
 		},
 	})
 	if err != nil {
