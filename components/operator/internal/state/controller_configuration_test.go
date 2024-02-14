@@ -97,8 +97,8 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, slowBuildPreset, status.DefaultBuildJobPreset)
-		require.Equal(t, slowRuntimePreset, status.DefaultRuntimePodPreset)
+		require.Equal(t, fastBuildPreset, status.DefaultBuildJobPreset)
+		require.Equal(t, fastRuntimePreset, status.DefaultRuntimePodPreset)
 
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
 		requireContainsCondition(t, status,
