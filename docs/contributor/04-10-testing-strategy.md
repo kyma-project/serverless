@@ -23,7 +23,7 @@ Each pull request to the repository triggers the following CI/CD jobs that verif
 
 After the pull request is merged, the following CI/CD jobs are executed:
 
- - `Operator verify / lint (push)` - Is responsible for the Operator linting and static code analysis. For the configuration, see the [operator-verify.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/operator-verify.yaml#L19) file.
+- `Operator verify / lint (push)` - Is responsible for the Operator linting and static code analysis. For the configuration, see the [operator-verify.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/operator-verify.yaml#L19) file.
 - `Serverless verify / lint (push)` - Is responsible for the Serverless linting and static code analysis. For the configuration, see the [serverless-verify.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/serverless-verify.yaml#L19) file.
 - `Operator verify / unit-test (push)` - Executes basic create/update/delete functional tests of Operator's reconciliation logic. For the configuration, see the [operator-verify.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/operator-verify.yaml#L30) file.
 - `Serverless verify / unit-test (push)` - Executes basic create/update/delete functional tests of Serverless's reconciliation logic. For the configuration, see the [serverless-verify.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/serverless-verify.yaml#L31) file.
