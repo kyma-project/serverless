@@ -40,5 +40,3 @@ After the pull request is merged, the following CI/CD jobs are executed:
 - `post-serverless-runtimes-nodejs-v18-build` - Runs tests specific to Node.js 18 after the build.
 - `post-serverless-runtimes-python39-build` - Runs tests specific to Python 3.9 after the build.
 - `post-serverless-webhook-build` - Verifies the deployment of the webhook.
-
- - `gardener-integration-test` - Installs the Serverless module (not using Lifecycle Manager) on the Gardener shoot cluster and runs integration tests of Serverless.
