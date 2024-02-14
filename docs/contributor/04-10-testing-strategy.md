@@ -1,6 +1,6 @@
 # Testing Strategy
 
-Each pull request to the repository triggers CI/CD jobs that verify the Serverless Operator reconciliation logic and run integration tests of the Serverless module.
+Each pull request to the repository triggers the following CI/CD jobs that verify the Serverless Operator reconciliation logic and run integration tests of the Serverless module:
 
 - `Markdown / link-check (pull_request)` - Checks if there are no broken links in the pull request `.md` files. For the configuration, see the [mlc.config.json](https://github.com/kyma-project/serverless/blob/main/.mlc.config.json) file.
 - `Operator verify / lint (pull_request)` - Is responsible for the Operator linting and static code analysis. For the configuration, see the [operator-verify.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/operator-verify.yaml#L19) file.
