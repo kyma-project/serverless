@@ -1,10 +1,10 @@
 package state
 
 import (
-	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
-	"k8s.io/client-go/tools/record"
 	"time"
 
+	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
@@ -39,13 +39,19 @@ func requeueAfter(duration time.Duration) (stateFn, *ctrl.Result, error) {
 }
 
 type fieldsToUpdate []struct {
-	specField   string
-	statusField *string
-	fieldName   string
+	specField    string
+	statusField  *string
+	fieldName    string
+	defaultValue string
 }
 
 func updateStatusFields(eventRecorder record.EventRecorder, instance *v1alpha1.Serverless, fields fieldsToUpdate) {
 	for _, field := range fields {
+		// set default value if spec field is empty
+		if field.specField == "" {
+			field.specField = field.defaultValue
+		}
+
 		if field.specField != *field.statusField {
 			oldStatusValue := *field.statusField
 			*field.statusField = field.specField

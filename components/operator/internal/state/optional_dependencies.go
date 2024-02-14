@@ -56,8 +56,8 @@ func getEventingURL(spec v1alpha1.ServerlessSpec) string {
 
 func updateOptionalDependenciesStatus(eventRecorder record.EventRecorder, instance *v1alpha1.Serverless, eventingURL, tracingURL string) {
 	fields := fieldsToUpdate{
-		{eventingURL, &instance.Status.EventingEndpoint, "Eventing endpoint"},
-		{tracingURL, &instance.Status.TracingEndpoint, "Tracing endpoint"},
+		{eventingURL, &instance.Status.EventingEndpoint, "Eventing endpoint", ""},
+		{tracingURL, &instance.Status.TracingEndpoint, "Tracing endpoint", ""},
 	}
 
 	updateStatusFields(eventRecorder, instance, fields)

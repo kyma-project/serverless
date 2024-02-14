@@ -17,18 +17,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
-const (
-	cpuUtilizationTest          = "test-CPU-utilization-percentage"
-	requeueDurationTest         = "test-requeue-duration"
-	executorArgsTest            = "test-build-executor-args"
-	maxSimultaneousJobsTest     = "test-max-simultaneous-jobs"
-	healthzLivenessTimeoutTest  = "test-healthz-liveness-timeout"
-	requestBodyLimitMbTest      = "test-request-body-limit-mb"
-	timeoutSecTest              = "test-timeout-sec"
-	defaultBuildJobPresetTest   = "test=default-build-job-preset"
-	defaultRuntimePodPresetTest = "test-default-runtime-pod-preset"
-)
-
 func Test_sFnOptionalDependencies(t *testing.T) {
 	scheme := runtime.NewScheme()
 	require.NoError(t, corev1.AddToScheme(scheme))
