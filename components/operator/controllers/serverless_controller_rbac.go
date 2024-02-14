@@ -5,6 +5,7 @@ package controllers
 //+kubebuilder:rbac:groups="",resources=events,verbs=get;list;watch;create;patch
 //+kubebuilder:rbac:groups="",resources=namespaces,verbs=get;list;watch;create;update;patch;delete;deletecollection
 //+kubebuilder:rbac:groups="",resources=services;secrets;serviceaccounts;configmaps,verbs=get;list;watch;create;update;patch;delete;deletecollection
+//+kubebuilder:rbac:groups="",resources=nodes,verbs=list
 //+kubebuilder:rbac:groups="",resources=persistentvolumeclaims,verbs=get;list;watch;create;update;patch;delete;deletecollection
 
 //+kubebuilder:rbac:groups=apps,resources=replicasets,verbs=list
