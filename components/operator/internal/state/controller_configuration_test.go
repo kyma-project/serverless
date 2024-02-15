@@ -10,16 +10,113 @@ import (
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/record"
 	"k8s.io/utils/pointer"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
+const (
+	cpuUtilizationTest         = "test-CPU-utilization-percentage"
+	requeueDurationTest        = "test-requeue-duration"
+	executorArgsTest           = "test-build-executor-args"
+	maxSimultaneousJobsTest    = "test-max-simultaneous-jobs"
+	healthzLivenessTimeoutTest = "test-healthz-liveness-timeout"
+	requestBodyLimitMbTest     = "test-request-body-limit-mb"
+	timeoutSecTest             = "test-timeout-sec"
+	buildJobPresetTest         = "test=default-build-job-preset"
+	runtimePodPresetTest       = "test-default-runtime-pod-preset"
+)
+
 func Test_sFnControllerConfiguration(t *testing.T) {
-	scheme := runtime.NewScheme()
-	require.NoError(t, corev1.AddToScheme(scheme))
 	configurationReadyMsg := "Configuration ready"
+
+	t.Run("update status with slow defaults", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.Serverless{
+				Spec: v1alpha1.ServerlessSpec{},
+			},
+			flagsBuilder: chart.NewFlagsBuilder(),
+		}
+
+		c := fake.NewClientBuilder().WithObjects(
+			fixTestNode("node-1"),
+			fixTestNode("node-2"),
+		).Build()
+		eventRecorder := record.NewFakeRecorder(2)
+		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
+		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
+		require.Nil(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnApplyResources, next)
+
+		status := s.instance.Status
+		require.Equal(t, slowBuildPreset, status.DefaultBuildJobPreset)
+		require.Equal(t, slowRuntimePreset, status.DefaultRuntimePodPreset)
+
+		require.Equal(t, v1alpha1.StateProcessing, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeConfigured,
+			metav1.ConditionTrue,
+			v1alpha1.ConditionReasonConfigured,
+			configurationReadyMsg,
+		)
+
+		expectedEvents := []string{
+			"Normal Configuration Default build job preset set from '' to 'slow'",
+			"Normal Configuration Default runtime pod preset set from '' to 'XS'",
+		}
+
+		for _, expectedEvent := range expectedEvents {
+			require.Equal(t, expectedEvent, <-eventRecorder.Events)
+		}
+	})
+
+	t.Run("update slow default to fast ones", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.Serverless{
+				Spec: v1alpha1.ServerlessSpec{},
+				Status: v1alpha1.ServerlessStatus{
+					DefaultBuildJobPreset:   slowBuildPreset,
+					DefaultRuntimePodPreset: slowRuntimePreset,
+				},
+			},
+			flagsBuilder: chart.NewFlagsBuilder(),
+		}
+
+		c := fake.NewClientBuilder().WithObjects(
+			fixTestNode("node-1"),
+			fixTestNode("node-2"),
+			fixTestNode("node-3"),
+			fixTestNode("node-4"),
+		).Build()
+		eventRecorder := record.NewFakeRecorder(2)
+		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
+		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
+		require.Nil(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnApplyResources, next)
+
+		status := s.instance.Status
+		require.Equal(t, fastBuildPreset, status.DefaultBuildJobPreset)
+		require.Equal(t, fastRuntimePreset, status.DefaultRuntimePodPreset)
+
+		require.Equal(t, v1alpha1.StateProcessing, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeConfigured,
+			metav1.ConditionTrue,
+			v1alpha1.ConditionReasonConfigured,
+			configurationReadyMsg,
+		)
+
+		expectedEvents := []string{
+			"Normal Configuration Default build job preset set from 'slow' to 'fast'",
+			"Normal Configuration Default runtime pod preset set from 'XS' to 'L'",
+		}
+
+		for _, expectedEvent := range expectedEvents {
+			require.Equal(t, expectedEvent, <-eventRecorder.Events)
+		}
+	})
 
 	t.Run("update status additional configuration overrides", func(t *testing.T) {
 		s := &systemState{
@@ -32,14 +129,14 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 					HealthzLivenessTimeout:           healthzLivenessTimeoutTest,
 					FunctionRequestBodyLimitMb:       requestBodyLimitMbTest,
 					FunctionTimeoutSec:               timeoutSecTest,
-					DefaultBuildJobPreset:            defaultBuildJobPresetTest,
-					DefaultRuntimePodPreset:          defaultRuntimePodPresetTest,
+					DefaultBuildJobPreset:            buildJobPresetTest,
+					DefaultRuntimePodPreset:          runtimePodPresetTest,
 				},
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
 		}
 
-		c := fake.NewClientBuilder().WithScheme(scheme).Build()
+		c := fake.NewClientBuilder().Build()
 		eventRecorder := record.NewFakeRecorder(10)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
 		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
@@ -55,8 +152,8 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		require.Equal(t, healthzLivenessTimeoutTest, status.HealthzLivenessTimeout)
 		require.Equal(t, requestBodyLimitMbTest, status.RequestBodyLimitMb)
 		require.Equal(t, timeoutSecTest, status.TimeoutSec)
-		require.Equal(t, defaultBuildJobPresetTest, status.DefaultBuildJobPreset)
-		require.Equal(t, defaultRuntimePodPresetTest, status.DefaultRuntimePodPreset)
+		require.Equal(t, buildJobPresetTest, status.DefaultBuildJobPreset)
+		require.Equal(t, runtimePodPresetTest, status.DefaultRuntimePodPreset)
 
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
 		requireContainsCondition(t, status,
@@ -125,7 +222,8 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		r := &reconciler{
 			log: zap.NewNop().Sugar(),
 			k8s: k8s{
-				client: fake.NewClientBuilder().WithObjects(secret).Build(),
+				client:        fake.NewClientBuilder().WithObjects(secret).Build(),
+				EventRecorder: record.NewFakeRecorder(2),
 			},
 		}
 
@@ -140,4 +238,12 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			configurationReadyMsg)
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
+}
+
+func fixTestNode(name string) *corev1.Node {
+	return &corev1.Node{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: name,
+		},
+	}
 }

@@ -47,6 +47,12 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - nodes
+  verbs:
+  - list
+- apiGroups:
+  - ""
+  resources:
   - persistentvolumeclaims
   verbs:
   - create
