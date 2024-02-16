@@ -1,7 +1,10 @@
 # Testing Strategy
 
+## CI/CD Jobs Running on Pull Requests
+
 Each pull request to the repository triggers the following CI/CD jobs that verify the Serverless Operator reconciliation logic and run integration tests of the Serverless module:
 
+- `Images verify / check-main-tags (pull-request)` - checks if the `main` images in the `values.yaml` and `sec-scanners-config.yaml` files are not changed.
 - `Markdown / link-check (pull_request)` - Checks if there are no broken links in the pull request `.md` files. For the configuration, see the [mlc.config.json](https://github.com/kyma-project/serverless/blob/main/.mlc.config.json) file.
 - `Operator verify / lint (pull_request)` - Is responsible for the Operator linting and static code analysis. For the configuration, see the [operator-verify.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/operator-verify.yaml#L19) file.
 - `Serverless verify / lint (pull_request)` - Is responsible for the Serverless linting and static code analysis. For the configuration, see the [serverless-verify.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/serverless-verify.yaml#L19) file.
@@ -18,7 +21,7 @@ Each pull request to the repository triggers the following CI/CD jobs that verif
 - `pre-serverless-runtimes-python39-build` - Runs tests specific to Python 3.9.
 - `pre-serverless-webhook-build` - Checks the compatibility with the Serverless architecture and ensures that the webhook functionality is working as expected.
 
-After the pull request is merged, the following CI/CD jobs are executed:
+## CI/CD Jobs Running on the Main Branch
 
 - `Operator verify / integration-test (push)` - Runs the basic functionality integration test suite for the Operator on a k3d cluster. For the configuration, see the [operator-verify.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/operator-verify.yaml#L39) file.
 - `Operator verify / upgrade-test (push)` - Runs the upgrade integration test suite and verifies if the latest release can be successfully upgraded to the new (`main`) revision. For the configuration, see the [operator-verify.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/operator-verify.yaml#L66) file.
@@ -32,3 +35,7 @@ After the pull request is merged, the following CI/CD jobs are executed:
 - `post-serverless-runtimes-nodejs-v18-build` - Runs tests specific to Node.js 18 after the build.
 - `post-serverless-runtimes-python39-build` - Runs tests specific to Python 3.9 after the build.
 - `post-serverless-webhook-build` - Verifies the deployment of the webhook.
+
+## CI/CD Jobs Running on a Schedule
+
+- `Markdown / link-check` - Runs Markdown link check every day at 05:00 AM.
