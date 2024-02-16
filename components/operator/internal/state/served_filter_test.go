@@ -106,18 +106,19 @@ func Test_sFnServedFilter(t *testing.T) {
 
 		nextFn, result, err := sFnServedFilter(context.TODO(), r, s)
 
-		require.EqualError(t, err, "only one instance of Serverless is allowed (current served instance: serverless-test/test-2)")
+		expectedErrorMessage := "Only one instance of Serverless is allowed (current served instance: serverless-test/test-2). This Serverless CR is redundant. Remove it to fix the problem."
+		require.EqualError(t, err, expectedErrorMessage)
 		require.Nil(t, result)
 		require.Nil(t, nextFn)
 		require.Equal(t, v1alpha1.ServedFalse, s.instance.Status.Served)
 
 		status := s.instance.Status
-		require.Equal(t, v1alpha1.StateError, status.State)
+		require.Equal(t, v1alpha1.StateWarning, status.State)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeConfigured,
 			metav1.ConditionFalse,
 			v1alpha1.ConditionReasonServerlessDuplicated,
-			"only one instance of Serverless is allowed (current served instance: serverless-test/test-2)",
+			expectedErrorMessage,
 		)
 	})
 }
