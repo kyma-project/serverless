@@ -20,6 +20,10 @@ updates:
         update-types: ["version-update:semver-minor"]
       - dependency-name: "helm.sh/helm/v3"
         update-types: ["version-update:semver-minor"]
+    groups:
+      k8s-io:
+        patterns:
+          - "k8s.io/*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
