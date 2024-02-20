@@ -60,7 +60,7 @@ jobs:
       - name: run tests
         run: make -C tests/serverless serverless-contract-tests
   
-  #pre-serverless-git-auth-integration-k3s
+  #post-serverless-git-auth-integration-k3s
   git-auth-integration-test:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
