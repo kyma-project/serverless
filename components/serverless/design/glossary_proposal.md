@@ -5,7 +5,7 @@
 Currently, Serverless in Kyma consists of two projects:
 
 - [function-controller](../README.md)() -
-  responsible for running a Function on a Kubernetes cluster
+  responsible for running a Function in a Kubernetes cluster
 - [serverless-manager](https://github.com/kyma-project/serverless-manager) - responsible for installation and
   configuration of Serverless
 
@@ -29,7 +29,7 @@ The proposed naming conventions refer to different architecture layers of the wh
 
 This section refers to the high-level architecture elements, namely to the main projects:
 
-- Serverless - the new naming convention for the `function-controller`. Serverless is responsible for running a Function on a Kubernetes cluster. It can contain its own
+- Serverless - the new naming convention for the `function-controller`. Serverless is responsible for running a Function in a Kubernetes cluster. It can contain its own
   CRD.
 - Serverless-operator - the new naming convention for `serverless-manager`. Serverless-operator installs and configures Serverless.
 - Kyma-Keda-operator - the operator which installs and configures [KEDA](https://keda.sh/).
@@ -38,7 +38,7 @@ This section refers to the high-level architecture elements, namely to the main 
 
 This section refers to the Serverless components:
 
-- Controller - responsible for creating and configuring k8s resources to finally run a function on a cluster. It is responsible for the reconciliation of the Function CR.
+- Controller - responsible for creating and configuring k8s resources to finally run a function in a cluster. It is responsible for the reconciliation of the Function CR.
 - Webhook - responsible for defaulting, validation, and conversion of the Function CR, mutating the external registry Secret, and reconciling certificates.
 
 Proposed naming convention:

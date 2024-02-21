@@ -8,7 +8,7 @@
 
 ## Overview
 
-Serverless Operator allows deploying the [Serverless](https://kyma-project.io/docs/kyma/latest/01-overview/serverless/) component on the Kyma cluster in compatibility with [Lifecycle Manager](https://github.com/kyma-project/lifecycle-manager).
+Serverless Operator allows deploying the [Serverless](https://kyma-project.io/docs/kyma/latest/01-overview/serverless/) component in the Kyma cluster in compatibility with [Lifecycle Manager](https://github.com/kyma-project/lifecycle-manager).
 
 ## Install
 
@@ -76,7 +76,7 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
     ```
 
 <!-- TODO: update this section - now we don't use lifecycle manager -->
-### Test Integration with Lifecycle Manager on the k3d Cluster
+### Test Integration with Lifecycle Manager in the k3d Cluster
 
 1. Clone the project.
 
@@ -84,7 +84,7 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
     git clone https://github.com/kyma-project/serverless-manager.git && cd serverless-manager/
     ```
 
-2. Build Serverless Operator locally and run it on the k3d cluster.
+2. Build Serverless Operator locally and run it in the k3d cluster.
 
     ```bash
     make -C hack/local run
