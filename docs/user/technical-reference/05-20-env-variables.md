@@ -13,7 +13,7 @@ Every runtime provides its own unique environment configuration which can be rea
 | **FUNC_HANDLER** | `main` | The name of the exported Function inside the `MOD_NAME` file.                                                                                                         |
 | **MOD_NAME** | `handler` | The name of the main exported file. It must have an extension of `.py` for the Python runtimes and `.js` for the Node.js ones. The extension must be added on the server side. |
 | **FUNC_PORT** | `8080` | The right port a server listens to.                                                                                                                                  |
-| **SERVICE_NAMESPACE** | None | The namespace where the right Function exists on a cluster.                                                                                                           |
+| **SERVICE_NAMESPACE** | None | The namespace where the right Function exists in a cluster.                                                                                                           |
 | **KUBELESS_INSTALL_VOLUME** | `/kubeless` | Full path to volume mount with users source code.                                                                                                                     |
 | **FUNC_RUNTIME** | None | The name of the actual runtime. Possible values: `nodejs16` - deprecated, `nodejs18`, `python39`.                                                                               |
 | **TRACE_COLLECTOR_ENDPOINT** | None | Full address of OpenTelemetry Trace Collector is exported if the trace collector's endpoint is present.                                                                  |

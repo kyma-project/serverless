@@ -7,7 +7,7 @@ To start developing your first Functions, you need:
 - [**Docker**](https://www.docker.com/) as the container runtime
 - [**kubectl**](https://kubernetes.io/docs/reference/kubectl/kubectl/), the Kubernetes command-line tool, for running commands against clusters
 - Development environment of your choice:
-   - **Kyma CLI** to easily initiate inline Functions or Git Functions locally, run, test, and later apply them on the clusters
+   - **Kyma CLI** to easily initiate inline Functions or Git Functions locally, run, test, and later apply them in the clusters
    - **Node.js** or **Python**
    - **IDE** as the source code editor
    - **Kyma dashboard** to manage Functions and related workloads through the graphical user interface
