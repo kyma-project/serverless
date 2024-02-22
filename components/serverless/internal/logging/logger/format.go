@@ -23,7 +23,7 @@ func MapFormat(input string) (Format, error) {
 	case JSON, TEXT:
 		return format, nil
 	default:
-		return format, errors.New(fmt.Sprintf("Given log format: %s, doesn't match with any of %v", format, allFormats))
+		return format, fmt.Errorf("given log format: %s, doesn't match with any of %v", format, allFormats)
 	}
 }
 

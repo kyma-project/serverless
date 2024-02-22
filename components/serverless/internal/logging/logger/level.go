@@ -27,7 +27,7 @@ func MapLevel(level string) (Level, error) {
 	case DEBUG, INFO, WARN, ERROR, FATAL:
 		return lvl, nil
 	default:
-		return lvl, errors.New(fmt.Sprintf("Given log level: %s, doesn't match with any of %v", level, allLevels))
+		return lvl, fmt.Errorf("given log level: %s, doesn't match with any of %v", level, allLevels)
 	}
 }
 

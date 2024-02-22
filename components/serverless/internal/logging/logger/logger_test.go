@@ -84,6 +84,7 @@ func TestLogger(t *testing.T) {
 		require.NoError(t, err)
 		var buf bytes.Buffer
 		_, err = io.Copy(&buf, r)
+		require.NoError(t, err)
 
 		require.NotEqual(t, 0, buf.Len())
 		var entry = logEntry{}
@@ -123,10 +124,11 @@ func TestLogger(t *testing.T) {
 		require.NoError(t, err)
 		var buf bytes.Buffer
 		_, err = io.Copy(&buf, r)
+		require.NoError(t, err)
 
 		require.NotEqual(t, 0, buf.Len())
 
-		logs := strings.Split(string(buf.Bytes()), "\n")
+		logs := strings.Split(buf.String(), "\n")
 
 		require.Len(t, logs, 3) // 3rd line is new empty line
 
@@ -151,6 +153,7 @@ func TestLogger(t *testing.T) {
 
 		var errorEntry = logEntry{}
 		err = strictEncoder.Decode(&errorEntry)
+		require.NoError(t, err)
 		assert.Equal(t, "ERROR", errorEntry.Level)
 		assert.Equal(t, "second message", errorEntry.Msg)
 		assert.EqualValues(t, map[string]string{"key": "second"}, errorEntry.Context, 0.0)

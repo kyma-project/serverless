@@ -29,7 +29,6 @@ func (m *tracingMiddleware) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	newCtx = addHeaderToCtx(newCtx, r.Header, SPAN_HEADER_KEY, SPAN_KEY)
 
 	m.handler(w, r.WithContext(newCtx))
-	return
 }
 
 func addHeaderToCtx(ctx context.Context, headers http.Header, key string, desiredKey string) context.Context {

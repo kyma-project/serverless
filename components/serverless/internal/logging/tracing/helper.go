@@ -2,11 +2,6 @@ package tracing
 
 import "context"
 
-type Trace struct {
-	traceID string
-	spanID  string
-}
-
 func GetMetadata(ctx context.Context) map[string]string {
 	m := map[string]string{
 		TRACE_KEY: UNKNOWN_VALUE,
