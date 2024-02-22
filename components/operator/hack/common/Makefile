@@ -2,7 +2,8 @@
 OPERATOR_ROOT = ../..
 PROJECT_ROOT = $(OPERATOR_ROOT)/../..
 
-KYMA = ${PROJECT_ROOT}/bin/kyma-unstable
+#include other makefiles
+include ${PROJECT_ROOT}/hack/tools/Makefile
 
 CLUSTER_NAME = kyma
 REGISTRY_PORT = 5001
@@ -10,7 +11,6 @@ REGISTRY_NAME = ${CLUSTER_NAME}-registry
 OPERATOR_IMAGE_NAME = serverless-operator-dev-local
 OPERATOR_IMAGE_TAG = 0.0.0
 GARDENER_INFRASTRUCTURE = az
-
 
 ##@ General
 
@@ -100,10 +100,6 @@ apply-serverless: ## Apply the k3d serverless CR.
 		-f ${PROJECT_ROOT}/config/samples/default-serverless-cr.yaml
 
 ### Internal Dependencies
-
-.PHONY: kyma
-kyma:
-	@make -C ${OPERATOR_ROOT} kyma
 
 .PHONY: module-image-dev
 module-image-dev:
