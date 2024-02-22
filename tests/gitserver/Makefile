@@ -1,3 +1,6 @@
+PROJECT_ROOT = ../..
+include ${PROJECT_ROOT}/hack/tools/help.Makefile
+
 APP_NAME = gitserver
 APP_PATH = tools/$(APP_NAME)
 IMG_NAME := $(DOCKER_PUSH_REPOSITORY)$(DOCKER_PUSH_DIRECTORY)/$(APP_NAME)
