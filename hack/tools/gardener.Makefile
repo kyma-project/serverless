@@ -1,3 +1,9 @@
+ifndef PROJECT_ROOT
+$(error PROJECT_ROOT is undefined)
+endif
+
+include ${PROJECT_ROOT}/hack/tools/Makefile
+
 ##@ Gardener
 
 HIBERNATION_HOUR=$(shell echo $$(( ( $(shell date +%H | sed s/^0//g) + 5 ) % 24 )))
