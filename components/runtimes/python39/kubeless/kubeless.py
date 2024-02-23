@@ -65,6 +65,10 @@ def func_with_context(e, function_context):
                 return e
 
 
+@app.get('/favicon.ico')
+def favicon():
+    return bottle.HTTPResponse(status=204)
+
 @app.get('/healthz')
 def healthz():
     return 'OK'
