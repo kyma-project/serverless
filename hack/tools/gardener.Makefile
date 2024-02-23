@@ -6,6 +6,7 @@ include ${PROJECT_ROOT}/hack/tools/Makefile
 
 ##@ Gardener
 
+GARDENER_INFRASTRUCTURE = az
 HIBERNATION_HOUR=$(shell echo $$(( ( $(shell date +%H | sed s/^0//g) + 5 ) % 24 )))
 GIT_COMMIT_SHA=$(shell git rev-parse --short=8 HEAD)
 ifneq (,$(GARDENER_SA_PATH))

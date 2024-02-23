@@ -10,7 +10,6 @@ REGISTRY_PORT = 5001
 REGISTRY_NAME = ${CLUSTER_NAME}-registry
 OPERATOR_IMAGE_NAME = serverless-operator-dev-local
 OPERATOR_IMAGE_TAG = 0.0.0
-GARDENER_INFRASTRUCTURE = az
 
 .PHONY: run
 run: ## Create k3d cluster and deploy module.
