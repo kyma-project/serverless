@@ -1,7 +1,7 @@
 #
-# This Dockerfile is used to build serverless-operator image locally
-# It's a copy of Dockerfile.release with additional logic bumping serverless images in the values.yaml
+# This Dockerfile is used to build serverless-operator image on every pre- and post-submit job
 #
+
 
 # Build the operator binary
 FROM golang:1.22.0 as builder
@@ -21,11 +21,14 @@ COPY components/operator components/operator
 # Build
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o operator ./components/operator/main.go
 
+
 # Replace main images in values.yaml
+# Bumping serverless images in the values.yaml - used for building "local" and "dev" images
 FROM alpine:3.19.1 as replacer
 
 WORKDIR /workspace
 
+ARG PURPOSE
 ARG IMG_DIRECTORY
 ARG IMG_VERSION
 
@@ -38,7 +41,10 @@ COPY components/operator/hack components/operator/hack
 COPY config/serverless config/serverless
 COPY hack/ hack/
 
-RUN make -C components/operator/hack/ci replace-only-main-chart-images
+RUN if [[ "dev" = "$PURPOSE" ]] ; then make -C components/operator/hack/ci replace-function-chart-images ; fi
+RUN if [[ "local" = "$PURPOSE" ]] ; then make -C components/operator/hack/ci replace-only-main-chart-images ; fi
+# do nothing (keep unchanged versions) for "release"
+
 
 # Use distroless as minimal base image to package the operator binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details

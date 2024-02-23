@@ -49,11 +49,11 @@ run: manifests generate fmt vet ## Run a controller from your host.
 
 .PHONY: docker-build-dev
 docker-build-dev: manifests generate ## Build docker dev image with the operator.
-	docker build -t ${IMG} -f Dockerfile.dev $(PROJECT_ROOT) --build-arg=IMG_DIRECTORY="$(IMG_DIRECTORY)" --build-arg=IMG_VERSION="$(IMG_VERSION)"
+	docker build -t ${IMG} -f Dockerfile $(PROJECT_ROOT) --build-arg=PURPOSE="dev" --build-arg=IMG_DIRECTORY="$(IMG_DIRECTORY)" --build-arg=IMG_VERSION="$(IMG_VERSION)"
 
 .PHONY: docker-build-local
 docker-build-local: manifests generate ## Build docker local image with the operator.
-	docker build -t ${IMG} -f Dockerfile.local $(PROJECT_ROOT) --build-arg=IMG_DIRECTORY="$(IMG_DIRECTORY)" --build-arg=IMG_VERSION="$(IMG_VERSION)"
+	docker build -t ${IMG} -f Dockerfile $(PROJECT_ROOT) --build-arg=PURPOSE="local" --build-arg=IMG_DIRECTORY="$(IMG_DIRECTORY)" --build-arg=IMG_VERSION="$(IMG_VERSION)"
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the operator.
