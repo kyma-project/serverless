@@ -11,13 +11,6 @@ include ${PROJECT_ROOT}/hack/gardener.mk
 integration-test: ## Run integration tests on self-prepared k3d cluster.
 	make -C ${TEST_ROOT} serverless-integration serverless-contract-tests
 
-.PHONY: gardener-integration-test
-gardener-integration-test: ## Provision gardener cluster and run integration test on it.
-	make provision-gardener && make -C ${PROJECT_ROOT} install-serverless-custom-operator && \
-	make integration-test \
-		deprovision-gardener || \
-		(make deprovision-gardener && false)
-
 .PHONY: integration-test-on-cluster
 integration-test-on-cluster: ## Install serverless with default serverless-cr, run integration tests and remove serverless-cr
 	make -C ${PROJECT_ROOT} install-serverless-custom-operator
