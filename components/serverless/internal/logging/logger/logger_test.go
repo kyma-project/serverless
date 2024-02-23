@@ -195,6 +195,7 @@ func TestLogger(t *testing.T) {
 func fixContext(values map[string]string) context.Context {
 	ctx := context.TODO()
 	for k, v := range values {
+		//nolint:staticcheck
 		ctx = context.WithValue(ctx, k, v)
 	}
 

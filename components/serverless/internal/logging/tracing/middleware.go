@@ -37,5 +37,6 @@ func addHeaderToCtx(ctx context.Context, headers http.Header, key string, desire
 		return ctx
 	}
 	value := strings.Join(header, ";")
+	//nolint:staticcheck
 	return context.WithValue(ctx, desiredKey, value)
 }
