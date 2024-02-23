@@ -34,3 +34,4 @@ upgrade-test: ## Installs Serverless from latest, upgrades to version specified 
 upgrade-test:
 	make -C ${PROJECT ROOT} install-serverless-latest-release install-serverless-main
 	@make integration-test
+	make -C ${PROJECT_ROOT} remove-serverless
