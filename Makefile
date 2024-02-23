@@ -3,7 +3,7 @@ OPERATOR_ROOT=./components/operator
 include ${PROJECT_ROOT}/hack/tools/help.Makefile
 
 ##@ Installation
-install-default-serverless: ## Install serverless with operator using default serverless cr
+install-default-serverless: ## Install serverless with operator using default serverless cr. You can override operator image setting env `IMG`
 	make -C ${OPERATOR_ROOT} deploy apply-default-serverless-cr check-serverless-installation
 
 .PHONY: install-latest-serverless
@@ -18,4 +18,4 @@ install-serverless-from-sources:
 	@echo "do nothing"
 
 remove-serverless:
-	make -C ${OPERATOR_ROOT} remove-serverless
+	make -C ${OPERATOR_ROOT} remove-serverless undeploy
