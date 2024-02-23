@@ -53,7 +53,7 @@ jobs:
             --port 443:443@loadbalancer
             --wait
       - name: upgrade test
-        run: make -C components/operator/hack/ci upgrade-test
+        run: make -C hack/ci upgrade-test
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
 
@@ -68,7 +68,7 @@ jobs:
       env:
         GARDENER_SA: ${{ secrets.GARDENER_SA }}
     - name: run test
-      run: make -C components/operator/hack/ci gardener-integration-test
+      run: make -C hack/ci gardener-integration-test
       env:
         IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
         GARDENER_SECRET_NAME: ${{ secrets.GARDENER_SECRET_NAME }}

@@ -7,7 +7,7 @@ include ${PROJECT_ROOT}/hack/tools/help.Makefile
 # incoming variables
 
 # Image URL to use all building/pushing image targets
-IMG ?= op-skr-registry.localhost:8888/unsigned/operator-images/serverless-operator:0.0.0
+IMG ?= europe-docker.pkg.dev/kyma-project/prod/serverless-operator:main
 
 # Setting SHELL to bash allows bash commands to be executed by recipes.
 # Options are set to exit when a recipe line exits non-zero or a piped command fails.
