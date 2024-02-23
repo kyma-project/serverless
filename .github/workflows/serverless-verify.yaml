@@ -54,7 +54,7 @@ jobs:
             --wait
       - name: run integration test (pre)
         if: github.event_name == 'pull_request'
-        run: make -C hack/tests integration-test-on-cluster
+        run: make -C hack/ci integration-test-on-cluster
         env:
           IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
       - name: run integration test (post)
