@@ -85,6 +85,32 @@ render-manifest: manifests kustomize ## Render serverless-operator.yaml manifest
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with IGNORE_NOT_FOUND=true to ignore resource not found errors during deletion.
 	$(KUSTOMIZE) build $(CONFIGOPERATOR)/default | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
 
+
+.PHONY: apply-default-serverless-cr
+apply-default-serverless-cr: ## Apply the k3d serverless CR.
+	kubectl apply \
+		-f ${PROJECT_ROOT}/config/samples/default-serverless-cr.yaml
+
+.PHONY: remove-serverless
+remove-serverless: ## Remove Serverless CR
+	kubectl delete serverless -n kyma-system default --timeout 2m || (kubectl get serverless -n kyma-system -oyaml && false)
+
+
+.PHONY: check-serverless-installation
+check-serverless-installation: ## Wait for Serverless CR to be in Ready state.
+	# wait some time to make sure operator starts the reconciliation first
+	sleep 10
+
+	./hack/common/verify_serverless_status.sh || \
+		(make print-serverless-details && false)
+
+	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s || \
+		(make print-serverless-details && false)
+
+	kubectl wait --for condition=Available -n kyma-system deployment serverless-ctrl-mngr --timeout=60s || \
+		(make print-serverless-details && false)
+
+
 ##@ Module
 
 .PHONY: module-image-dev

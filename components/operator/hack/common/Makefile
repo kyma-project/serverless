@@ -20,34 +20,8 @@ run: kyma \
 	apply-serverless \
 	verify-serverless
 
-.PHONY: run-on-cluster
-run-on-cluster: ## Deploy module on existing cluster.
-run-on-cluster: \
-	deploy-cluster \
-	apply-serverless \
-	verify-serverless
-
-##@ K3D
-
-.PHONY: create-k3d
-create-k3d: ## Create k3d with kyma CRDs.
-	${KYMA} provision k3d --registry-port ${REGISTRY_PORT} --name ${CLUSTER_NAME} --ci -p 6080:8080@loadbalancer -p 6433:8433@loadbalancer
-	kubectl create namespace kyma-system
-
-.PHONY: delete-k3d
-delete-k3d: delete-k3d-cluster delete-k3d-registry ## Delete k3d registry & cluster.
-
-.PHONY: delete-k3d-registry
-delete-k3d-registry: ## Delete k3d kyma registry.
-	-k3d registry delete ${REGISTRY_NAME}
-
-.PHONY: delete-k3d-cluster
-delete-k3d-cluster: ## Delete k3d kyma cluster.
-	-k3d cluster delete ${CLUSTER_NAME}
-
 ##@ Module management
-
-#TODO: rename it to check-serverless-instalation
+#TODO: remove it?
 .PHONY: verify-serverless
 verify-serverless: ## Wait for Serverless CR to be in Ready state.
 	# wait some time to make sure operator starts the reconciliation first
@@ -67,11 +41,6 @@ print-serverless-details: ## Print all pods, deploys and serverless CRs in the k
 	kubectl get serverless -n kyma-system -oyaml
 	kubectl get deploy -n kyma-system -oyaml
 	kubectl get pods -n kyma-system -oyaml
-
-.PHONY: apply-serverless
-apply-serverless: ## Apply the k3d serverless CR.
-	kubectl apply \
-		-f ${PROJECT_ROOT}/config/samples/default-serverless-cr.yaml
 
 ### Internal Dependencies
 
@@ -97,7 +66,3 @@ deploy-k3d:
 	docker push localhost:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${HASH_TAG}
 	@make -C ${OPERATOR_ROOT} deploy \
 		IMG=k3d-${REGISTRY_NAME}:${REGISTRY_PORT}/${OPERATOR_IMAGE_NAME}:${HASH_TAG}
-
-.PHONY: deploy-cluster
-deploy-cluster:
-	@make -C ${OPERATOR_ROOT} deploy
