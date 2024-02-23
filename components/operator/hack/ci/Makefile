@@ -2,6 +2,8 @@
 OPERATOR_ROOT = ../..
 PROJECT_ROOT = $(OPERATOR_ROOT)/../..
 PROJECT_COMMON = $(OPERATOR_ROOT)/hack/common
+
+include ${PROJECT_ROOT}/hack/tools/Makefile
 include ${PROJECT_ROOT}/hack/tools/help.Makefile
 include ${PROJECT_ROOT}/hack/tools/gardener.Makefile
 
