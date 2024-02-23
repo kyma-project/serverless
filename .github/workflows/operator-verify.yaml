@@ -67,6 +67,13 @@ jobs:
       run: 'echo "$GARDENER_SA" > /tmp/gardener-sa.yaml'
       env:
         GARDENER_SA: ${{ secrets.GARDENER_SA }}
+    - name: provision gardener
+      run: make -f hack/tools/gardener/Makefile provision-gardener
+      env:
+        GARDENER_SECRET_NAME: ${{ secrets.GARDENER_SECRET_NAME }}
+        GARDENER_PROJECT: ${{ secrets.GARDENER_PROJECT }}
+        GARDENER_SA_PATH: /tmp/gardener-sa.yaml
+
     - name: run test
       run: make -C hack gardener-integration-test
       env:
@@ -76,3 +83,12 @@ jobs:
         GARDENER_SA_PATH: /tmp/gardener-sa.yaml
         IMG_DIRECTORY: "prod"
         IMG_VERSION: ${{ github.sha }}
+
+    - name: deprovision gardener
+#      https://docs.github.com/en/actions/learn-github-actions/expressions#always
+      if: ${{ always() }}
+      run: make -f hack/tools/gardener/Makefile deprovision-gardener
+      env:
+        GARDENER_SECRET_NAME: ${{ secrets.GARDENER_SECRET_NAME }}
+        GARDENER_PROJECT: ${{ secrets.GARDENER_PROJECT }}
+        GARDENER_SA_PATH: /tmp/gardener-sa.yaml
