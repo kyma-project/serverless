@@ -7,7 +7,7 @@ readonly SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 readonly BIN_DIR="${SCRIPT_DIR}/../bin"
 readonly GOLANGCI_LINT_BINARY="${BIN_DIR}/golangci-lint"
 
-readonly GOLANGCI_LINT_VERSION="v1.24"
+readonly GOLANGCI_LINT_VERSION="latest"
 
 main(){
     if [[ ! -x "${GOLANGCI_LINT_BINARY}" ]]; then
@@ -16,7 +16,7 @@ main(){
         echo "Done!"
     fi
     
-    "${GOLANGCI_LINT_BINARY}" run --config "${SCRIPT_DIR}/../.golangci.yml"
+    "${GOLANGCI_LINT_BINARY}" run --config "${SCRIPT_DIR}/../.golangci.yaml"
 }
 
 main
