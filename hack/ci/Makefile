@@ -1,6 +1,7 @@
 # local variables
 PROJECT_ROOT=../..
 TEST_ROOT=${PROJECT_ROOT}/tests/serverless
+OPERATOR_ROOT=${PROJECT_ROOT}/components/operator
 
 include ${PROJECT_ROOT}/hack/tools/help.Makefile
 include ${PROJECT_ROOT}/hack/tools/gardener.Makefile
