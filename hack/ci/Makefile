@@ -13,7 +13,7 @@ integration-test: ## Run integration tests on self-prepared k3d cluster.
 
 .PHONY: gardener-integration-test
 gardener-integration-test: ## Provision gardener cluster and run integration test on it.
-	make provision-gardener && make -c ${OPERATOR_ROOT} install-serverless-main && \
+	make provision-gardener && make -C ${OPERATOR_ROOT} install-serverless-main && \
 	make integration-test \
 		deprovision-gardener || \
 		(make deprovision-gardener && false)
