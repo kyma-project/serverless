@@ -12,7 +12,7 @@ install-serverless-latest-release:
 	kubectl create namespace kyma-system || true
 	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/serverless-operator.yaml
 	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default-serverless-cr.yaml -n kyma-system
-	make -C ${OPERATOR_ROOT} verify-serverless
+	make -C ${OPERATOR_ROOT} check-serverless-installation
 
 .PHONY: remove-serverless
 remove-serverless:
