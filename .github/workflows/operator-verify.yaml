@@ -77,16 +77,9 @@ jobs:
       run: make -C hack integration-test-on-cluster
       env:
         IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
-        GARDENER_SECRET_NAME: ${{ secrets.GARDENER_SECRET_NAME }}
-        GARDENER_PROJECT: ${{ secrets.GARDENER_PROJECT }}
-        GARDENER_SA_PATH: /tmp/gardener-sa.yaml
-        IMG_DIRECTORY: "prod"
-        IMG_VERSION: ${{ github.sha }}
     - name: deprovision gardener
 #      https://docs.github.com/en/actions/learn-github-actions/expressions#always
       if: ${{ always() }}
       run: make -f hack/tools/gardener/Makefile deprovision-gardener
       env:
-        GARDENER_SECRET_NAME: ${{ secrets.GARDENER_SECRET_NAME }}
-        GARDENER_PROJECT: ${{ secrets.GARDENER_PROJECT }}
         GARDENER_SA_PATH: /tmp/gardener-sa.yaml
