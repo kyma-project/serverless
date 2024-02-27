@@ -1,9 +1,11 @@
-#!/bin/bash
-
+#!/bin/sh
+pwd
 # if you only need replace images with version set to "main" specify "main-only" argument
 REPLACE_SCOPE=$1
 
-REQUIRED_ENV_VARIABLES=('IMG_DIRECTORY' 'IMG_VERSION' 'PROJECT_ROOT')
+PROJECT_ROOT=$2
+
+REQUIRED_ENV_VARIABLES=('IMG_DIRECTORY' 'IMG_VERSION')
 for VAR in "${REQUIRED_ENV_VARIABLES[@]}"; do
   if [ -z "${!VAR}" ]; then
     echo "${VAR} is undefined"
