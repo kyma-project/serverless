@@ -13,8 +13,8 @@ replace-only-main-chart-images: check-img-envs
 	yq '.global.images' ${PROJECT_ROOT}/config/serverless/values.yaml
 	@echo "==== End of Local Changes ===="
 
-.PHONY: replace-function-chart-images
-replace-function-chart-images: check-img-envs
+.PHONY: replace-all-serverless-chart-images
+replace-all-serverless-chart-images: check-img-envs
 	yq -i "(.global.images[] | select(key == \"function_*\") | .directory) = \"${IMG_DIRECTORY}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
 	yq -i "(.global.images[] | select(key == \"function_*\") | .version) = \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/serverless/values.yaml
 	@echo "==== Local Changes ===="
