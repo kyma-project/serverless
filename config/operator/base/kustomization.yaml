@@ -14,7 +14,7 @@ commonLabels:
 
 
 resources:
-- ../crd
-- ../rbac
-- ../operator
-- ../ui-extensions
+- ./crd
+- ./deployment
+- ./rbac
+- ./ui-extensions
