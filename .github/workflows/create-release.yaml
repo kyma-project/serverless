@@ -43,7 +43,7 @@ jobs:
 
       - name: Bump values.yaml
         run: |
-          make -C components/operator/hack/ci replace-function-chart-images
+          make -C components/operator/hack/ci replace-all-serverless-chart-images
         env:
           IMG_DIRECTORY: "prod"
           IMG_VERSION: ${{ github.event.inputs.name }}
