@@ -74,7 +74,7 @@ uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified 
 .PHONY: deploy-main
 deploy-main: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
 	kubectl create namespace kyma-system || true
-	$(KUSTOMIZE) build $(CONFIGOPERATOR)/default | kubectl apply -f -
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR) | kubectl apply -f -
 
 
 .PHONY: generate-kustomization-dev
@@ -94,8 +94,8 @@ undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/confi
 
 .PHONY: render-manifest
 render-manifest: manifests kustomize ## Render serverless-operator.yaml manifest with image from IMG env.
-	cd $(CONFIGOPERATOR)/operator && $(KUSTOMIZE) edit set image controller=${IMG}
-	$(KUSTOMIZE) build $(CONFIGOPERATOR)/default > $(PROJECT_ROOT)/serverless-operator.yaml
+	cd $(CONFIG_OPERATOR)/deployment && $(KUSTOMIZE) edit set image controller=${IMG}
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/serverless-operator.yaml
 
 
 .PHONY: apply-default-serverless-cr
