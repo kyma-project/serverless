@@ -15,11 +15,12 @@ SHELL = /usr/bin/env bash -o pipefail
 .SHELLFLAGS = -ec
 
 ##@ Development
-CONFIGOPERATOR = $(PROJECT_ROOT)/config/operator
+CONFIG_OPERATOR = $(PROJECT_ROOT)/config/operator/base
+CONFIG_OPERATOR_DEV = $(PROJECT_ROOT)/config/operator/dev
 
 .PHONY: manifests
 manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
-	$(CONTROLLER_GEN) rbac:roleName=operator-role crd webhook paths="./..." output:crd:artifacts:config=$(CONFIGOPERATOR)/crd/bases output:rbac:artifacts:config=$(CONFIGOPERATOR)/rbac
+	$(CONTROLLER_GEN) rbac:roleName=operator-role crd webhook paths="./..." output:crd:artifacts:config=$(CONFIG_OPERATOR)/crd/bases output:rbac:artifacts:config=$(CONFIG_OPERATOR)/rbac
 
 .PHONY: generate
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
@@ -64,26 +65,37 @@ IGNORE_NOT_FOUND = false
 
 .PHONY: install
 install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
-	$(KUSTOMIZE) build $(CONFIGOPERATOR)/crd | kubectl apply -f -
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR)/crd | kubectl apply -f -
 
 .PHONY: uninstall
 uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config. Call with IGNORE_NOT_FOUND=true to ignore resource not found errors during deletion.
-	$(KUSTOMIZE) build $(CONFIGOPERATOR)/crd | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR)/crd | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
+
+.PHONY: deploy-main
+deploy-main: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
+	kubectl create namespace kyma-system || true
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR) | kubectl apply -f -
+
+
+.PHONY: generate-kustomization-dev
+generate-kustomization-dev:
+	cp $(CONFIG_OPERATOR_DEV)/kustomization.yaml.tpl $(CONFIG_OPERATOR_DEV)/kustomization.yaml
 
 .PHONY: deploy
-deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
+deploy: manifests kustomize generate-kustomization-dev ## Deploy controller to the K8s cluster specified in ~/.kube/config with image from IMG env.
 	kubectl create namespace kyma-system || true
-	cd $(CONFIGOPERATOR)/operator && $(KUSTOMIZE) edit set image controller=${IMG}
-	$(KUSTOMIZE) build $(CONFIGOPERATOR)/default | kubectl apply -f -
+	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit set image europe-docker.pkg.dev/kyma-project/prod/serverless-operator=${IMG}
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR_DEV) | kubectl apply -f -
 
-.PHONY: render-manifest
-render-manifest: manifests kustomize ## Render serverless-operator.yaml manifest.
-	cd $(CONFIGOPERATOR)/operator && $(KUSTOMIZE) edit set image controller=${IMG}
-	$(KUSTOMIZE) build $(CONFIGOPERATOR)/default > $(PROJECT_ROOT)/serverless-operator.yaml
 
 .PHONY: undeploy
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with IGNORE_NOT_FOUND=true to ignore resource not found errors during deletion.
-	$(KUSTOMIZE) build $(CONFIGOPERATOR)/default | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR) | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
+
+.PHONY: render-manifest
+render-manifest: manifests kustomize ## Render serverless-operator.yaml manifest with image from IMG env.
+	cd $(CONFIG_OPERATOR)/deployment && $(KUSTOMIZE) edit set image controller=${IMG}
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/serverless-operator.yaml
 
 
 .PHONY: apply-default-serverless-cr
