@@ -25,9 +25,9 @@ integration-test-on-cluster: ## Install serverless with default serverless-cr, r
 	make -C ${PROJECT_ROOT} remove-serverless
 
 .PHONY: git-auth-test-on-cluster
-git-auth-test-on-cluster: # Install serverless with default serverless-cr, run git auth integration and remove serverless-cr
+git-auth-test-on-cluster: ## Install serverless with default serverless-cr, run git auth integration and remove serverless-cr
 	make -C ${PROJECT_ROOT} install-serverless-main
-	cd ${TEST_ROOT} && make git-auth-integration
+	make -C ${TEST_ROOT} git-auth-integration
 	make -C ${PROJECT_ROOT} remove-serverless
 
 .PHONY: upgrade-test
