@@ -19,10 +19,6 @@ deploy-cluster: ## Deploy operator on a cluster using IMG env.
 		apply-serverless \
 		verify-serverless
 
-.PHONY: stop
-stop: ## Delete k3d cluster and registry.
-	@make -C ${PROJECT_COMMON} delete-k3d
-
 .PHONY: run
 run: ## Create k3d cluster and deploy operator.
 	@IMG_VERSION="main" IMG_DIRECTORY="prod" make -C ${PROJECT_COMMON} \
