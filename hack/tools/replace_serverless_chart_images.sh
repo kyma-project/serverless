@@ -1,5 +1,5 @@
-#!/bin/sh
-pwd
+#!/bin/bash
+
 # if you only need replace images with version set to "main" specify "main-only" argument
 REPLACE_SCOPE=$1
 
