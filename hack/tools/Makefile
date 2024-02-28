@@ -1,5 +1,5 @@
 ## Location to install dependencies to
-LOCALBIN ?= $(shell pwd)/$(PROJECT_ROOT)/bin
+LOCALBIN ?= $(PROJECT_ROOT)/bin
 $(LOCALBIN):
 	mkdir -p $(LOCALBIN)
 
@@ -24,6 +24,7 @@ $(KYMA):
 	## Detect if operating system
 	$(if $(KYMA_FILE_NAME),,$(call os_error, ${OS_TYPE}, ${OS_ARCH}))
 	test -f $@ || curl -s -Lo $(KYMA) https://storage.googleapis.com/kyma-cli-$(KYMA_STABILITY)/$(KYMA_FILE_NAME)
+	chmod +x $(KYMA)
 
 ########## Kustomize ###########
 KUSTOMIZE ?= $(LOCALBIN)/kustomize

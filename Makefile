@@ -1,6 +1,7 @@
 PROJECT_ROOT=./
 OPERATOR_ROOT=./components/operator
 include ${PROJECT_ROOT}/hack/tools/help.Makefile
+include ${PROJECT_ROOT}/hack/tools/k3d.Makefile
 
 ##@ Installation
 .PHONY: install-serverless-main
@@ -17,3 +18,5 @@ install-serverless-latest-release: ## Install serverless from latest release
 .PHONY: remove-serverless
 remove-serverless: ## Remove serverless-cr and serverless operator
 	make -C ${OPERATOR_ROOT} remove-serverless undeploy
+
+run: create-k3d install-serverless-main ## Create k3d cluster and install serverless from main
