@@ -39,7 +39,7 @@ install: manifests ## Install CRDS into the k8s cluster specified in ~/.kube/con
 ######## function manager
 MANAGER_NAME = function-controller
 
-.PHONY: build-image-function-controller push-image-function-controller
+.PHONY: build-image-function-controller
 build-image-function-controller:
 	docker build -t $(MANAGER_NAME) -f $(ROOT)/deploy/manager/Dockerfile $(PROJECT_ROOT)
 
