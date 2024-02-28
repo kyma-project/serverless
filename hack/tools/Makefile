@@ -1,4 +1,5 @@
 ## Location to install dependencies to
+PROJECT_ROOT=$(dir $(realpath $(lastword $(MAKEFILE_LIST))))../..
 LOCALBIN ?= $(PROJECT_ROOT)/bin
 $(LOCALBIN):
 	mkdir -p $(LOCALBIN)
@@ -8,7 +9,6 @@ $(LOCALBIN):
 ########## Kyma CLI ###########
 KYMA_STABILITY ?= unstable
 
-# $(call os_error, os-type, os-architecture)
 define os_error
 $(error Error: unsuported platform OS_TYPE:$1, OS_ARCH:$2; to mitigate this problem set variable KYMA with absolute path to kyma-cli binary compatible with your operating system and architecture)
 endef
