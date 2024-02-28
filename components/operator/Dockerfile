@@ -34,6 +34,7 @@ ARG IMG_VERSION
 
 ENV IMG_DIRECTORY=$IMG_DIRECTORY
 ENV IMG_VERSION=$IMG_VERSION
+ENV PROJECT_ROOT="."
 
 RUN apk update && apk add bash yq
 
@@ -41,8 +42,8 @@ COPY components/operator/hack components/operator/hack
 COPY config/serverless config/serverless
 COPY hack/ hack/
 
-RUN if [[ "dev" = "$PURPOSE" ]] ; then ls hack/ci && ./hack/tools/replace_serverless_chart_images.sh all . ; fi
-RUN if [[ "local" = "$PURPOSE" ]] ; then ./hack/tools/replace_serverless_chart_images.sh main-only . ; fi
+RUN if [[ "dev" = "$PURPOSE" ]] ; then ./hack/tools/replace_serverless_chart_images.sh all ; fi
+RUN if [[ "local" = "$PURPOSE" ]] ; then ./hack/tools/replace_serverless_chart_images.sh main-only ; fi
 # do nothing (keep unchanged versions) for "release"
 
 
