@@ -62,6 +62,19 @@ docker-push: ## Push docker image with the operator.
 
 ##@ Deployment
 IGNORE_NOT_FOUND = false
+OPERATOR_NAME = serverless-operator
+
+.PHONY: build-image-operator
+build-image-operator:
+	docker build -t $(OPERATOR_NAME) -f Dockerfile $(PROJECT_ROOT)
+
+install-operator-k3d: build-image-operator ## Build and install serverless operator from local sources on k3d
+	$(eval HASH_TAG=$(shell docker images $(OPERATOR_NAME):latest --quiet))
+	docker tag $(OPERATOR_NAME) $(OPERATOR_NAME):$(HASH_TAG)
+
+	k3d image import $(OPERATOR_NAME):$(HASH_TAG) -c kyma
+	kubectl set image deployment serverless-operator -n kyma-system manager=$(OPERATOR_NAME):$(HASH_TAG)
+
 
 .PHONY: install
 install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
