@@ -2,7 +2,7 @@ ifndef PROJECT_ROOT
 $(error PROJECT_ROOT is undefined)
 endif
 
-include ${PROJECT_ROOT}/hack/tools/Makefile
+include ${PROJECT_ROOT}/hack/tools.mk
 
 ##@ Gardener
 

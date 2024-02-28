@@ -1,7 +1,7 @@
 PROJECT_ROOT = ../..
 
-include ${PROJECT_ROOT}/hack/tools/Makefile
-include ${PROJECT_ROOT}/hack/tools/help.Makefile
+include ${PROJECT_ROOT}/hack/tools.mk
+include ${PROJECT_ROOT}/hack/help.mk
 
 
 # Setting SHELL to bash allows bash commands to be executed by recipes.

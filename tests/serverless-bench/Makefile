@@ -1,5 +1,5 @@
 PROJECT_ROOT = ../..
-include ${PROJECT_ROOT}/hack/tools/help.Makefile
+include ${PROJECT_ROOT}/hack/help.mk
 
 APP_NAME ?= serverless-bench
 APP_VERSION = $(shell date +'%Y%m%d')

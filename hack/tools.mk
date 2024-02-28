@@ -20,7 +20,7 @@ $(KYMA):
 	$(eval OS_ARCH=$(shell uname -m))
 	# Operating system type
 	$(eval OS_TYPE=$(shell uname))
-	$(eval KYMA_FILE_NAME=$(shell ${PROJECT_ROOT}/hack/tools/get_kyma_file_name.sh ${OS_TYPE} ${OS_ARCH}))
+	$(eval KYMA_FILE_NAME=$(shell ${PROJECT_ROOT}/hack/get_kyma_file_name.sh ${OS_TYPE} ${OS_ARCH}))
 	## Detect if operating system
 	$(if $(KYMA_FILE_NAME),,$(call os_error, ${OS_TYPE}, ${OS_ARCH}))
 	test -f $@ || curl -s -Lo $(KYMA) https://storage.googleapis.com/kyma-cli-$(KYMA_STABILITY)/$(KYMA_FILE_NAME)

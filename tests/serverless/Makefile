@@ -1,5 +1,5 @@
 PROJECT_ROOT = ../..
-include ${PROJECT_ROOT}/hack/tools/help.Makefile
+include ${PROJECT_ROOT}/hack/help.mk
 
 test: ## Run unit test of integration test engine
 	GO111MODULE=on go test -count=1 -v ./internal/...
