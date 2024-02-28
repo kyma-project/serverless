@@ -1,5 +1,5 @@
 ## Location to install dependencies to
-PROJECT_ROOT=$(dir $(realpath $(lastword $(MAKEFILE_LIST))))../..
+PROJECT_ROOT=$(dir $(realpath $(lastword $(MAKEFILE_LIST))))..
 LOCALBIN ?= $(PROJECT_ROOT)/bin
 $(LOCALBIN):
 	mkdir -p $(LOCALBIN)

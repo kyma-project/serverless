@@ -2,7 +2,7 @@ CLUSTER_NAME ?= kyma
 REGISTRY_PORT ?= 5001
 REGISTRY_NAME ?= ${CLUSTER_NAME}-registry
 
-PROJECT_ROOT=$(dir $(realpath $(lastword $(MAKEFILE_LIST))))../..
+PROJECT_ROOT=$(dir $(realpath $(lastword $(MAKEFILE_LIST))))..
 include $(PROJECT_ROOT)/hack/tools.mk
 
 ##@ K3D
