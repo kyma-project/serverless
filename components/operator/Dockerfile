@@ -42,8 +42,8 @@ COPY components/operator/hack components/operator/hack
 COPY config/serverless config/serverless
 COPY hack/ hack/
 
-RUN if [[ "dev" = "$PURPOSE" ]] ; then ./hack/tools/replace_serverless_chart_images.sh all ; fi
-RUN if [[ "local" = "$PURPOSE" ]] ; then ./hack/tools/replace_serverless_chart_images.sh main-only ; fi
+RUN if [[ "dev" = "$PURPOSE" ]] ; then ./hack/replace_serverless_chart_images.sh all ; fi
+RUN if [[ "local" = "$PURPOSE" ]] ; then ./hack/replace_serverless_chart_images.sh main-only ; fi
 # do nothing (keep unchanged versions) for "release"
 
 

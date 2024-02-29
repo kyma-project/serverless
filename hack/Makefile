@@ -1,10 +1,10 @@
 # local variables
-PROJECT_ROOT=../..
+PROJECT_ROOT=..
 TEST_ROOT=${PROJECT_ROOT}/tests/serverless
 OPERATOR_ROOT=${PROJECT_ROOT}/components/operator
 
-include ${PROJECT_ROOT}/hack/tools/help.Makefile
-include ${PROJECT_ROOT}/hack/tools/gardener.Makefile
+include ${PROJECT_ROOT}/hack/help.mk
+include ${PROJECT_ROOT}/hack/gardener.mk
 
 ##@ CI Tests
 .PHONY: integration-test
