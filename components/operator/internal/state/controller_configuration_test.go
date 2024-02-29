@@ -11,7 +11,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/record"
-	"k8s.io/utils/pointer"
+	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
@@ -204,8 +204,8 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 					Eventing: &v1alpha1.Endpoint{Endpoint: "test-event-URL"},
 					Tracing:  &v1alpha1.Endpoint{Endpoint: v1alpha1.EndpointDisabled},
 					DockerRegistry: &v1alpha1.DockerRegistry{
-						EnableInternal: pointer.Bool(false),
-						SecretName:     pointer.String("boo"),
+						EnableInternal: ptr.To[bool](false),
+						SecretName:     ptr.To[string]("boo"),
 					},
 				},
 			},

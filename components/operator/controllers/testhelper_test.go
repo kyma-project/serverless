@@ -13,7 +13,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/utils/pointer"
+	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -246,7 +246,7 @@ func (d *serverlessData) toServerlessSpec(secretName string) v1alpha1.Serverless
 		},
 	}
 	if secretName != "" {
-		result.DockerRegistry.SecretName = pointer.String(secretName)
+		result.DockerRegistry.SecretName = ptr.To[string](secretName)
 	}
 	return result
 }

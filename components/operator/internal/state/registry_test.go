@@ -13,7 +13,7 @@ import (
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/utils/pointer"
+	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
@@ -23,7 +23,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
-						EnableInternal: pointer.Bool(true),
+						EnableInternal: ptr.To[bool](true),
 					},
 				},
 			},
@@ -75,8 +75,8 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				},
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
-						EnableInternal: pointer.Bool(false),
-						SecretName:     pointer.String("test-secret"),
+						EnableInternal: ptr.To[bool](false),
+						SecretName:     ptr.To[string]("test-secret"),
 					},
 				},
 			},
@@ -120,7 +120,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				},
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
-						EnableInternal: pointer.Bool(false),
+						EnableInternal: ptr.To[bool](false),
 					},
 				},
 			},
@@ -159,8 +159,8 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				},
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
-						EnableInternal: pointer.Bool(false),
-						SecretName:     pointer.String("test-secret-not-found"),
+						EnableInternal: ptr.To[bool](false),
+						SecretName:     ptr.To[string]("test-secret-not-found"),
 					},
 				},
 			},
@@ -196,7 +196,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 				},
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
-						EnableInternal: pointer.Bool(true),
+						EnableInternal: ptr.To[bool](true),
 					},
 				},
 			},
@@ -231,8 +231,8 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
-						EnableInternal: pointer.Bool(false),
-						SecretName:     pointer.String("test secret"),
+						EnableInternal: ptr.To[bool](false),
+						SecretName:     ptr.To[string]("test secret"),
 					},
 				},
 			},
@@ -256,7 +256,7 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
-						EnableInternal: pointer.Bool(false),
+						EnableInternal: ptr.To[bool](false),
 					},
 				},
 			},
@@ -280,8 +280,8 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
-						EnableInternal: pointer.Bool(true),
-						SecretName:     pointer.String("test-secret"),
+						EnableInternal: ptr.To[bool](true),
+						SecretName:     ptr.To[string]("test-secret"),
 					},
 				},
 			},
@@ -330,8 +330,8 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
-						EnableInternal: pointer.Bool(false),
-						SecretName:     pointer.String("serverless-registry-config"),
+						EnableInternal: ptr.To[bool](false),
+						SecretName:     ptr.To[string]("serverless-registry-config"),
 					},
 				},
 			},

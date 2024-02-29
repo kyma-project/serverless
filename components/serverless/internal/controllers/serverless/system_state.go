@@ -15,7 +15,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
-	"k8s.io/utils/pointer"
+	"k8s.io/utils/ptr"
 )
 
 const DefaultDeploymentReplicas int32 = 1
@@ -208,10 +208,10 @@ func (s *systemState) buildJobJob(templateSpec corev1.PodSpec) batchv1.Job {
 			Labels:       fnLabels,
 		},
 		Spec: batchv1.JobSpec{
-			Parallelism:           pointer.Int32(1),
-			Completions:           pointer.Int32(1),
+			Parallelism:           ptr.To[int32](1),
+			Completions:           ptr.To[int32](1),
 			ActiveDeadlineSeconds: nil,
-			BackoffLimit:          pointer.Int32(0),
+			BackoffLimit:          ptr.To[int32](0),
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels:      fnLabels,
@@ -333,7 +333,7 @@ func buildRegistryConfigVolume(cfg cfg) corev1.Volume {
 		VolumeSource: corev1.VolumeSource{
 			Secret: &corev1.SecretVolumeSource{
 				SecretName: cfg.fn.PackageRegistryConfigSecretName,
-				Optional:   pointer.Bool(true),
+				Optional:   ptr.To[bool](true),
 			},
 		},
 	}
@@ -563,8 +563,8 @@ func buildDeploymentSecretVolumes(secretMounts []serverlessv1alpha2.SecretMount)
 			VolumeSource: corev1.VolumeSource{
 				Secret: &corev1.SecretVolumeSource{
 					SecretName:  secretMount.SecretName,
-					DefaultMode: pointer.Int32(0666), //read and write only for everybody
-					Optional:    pointer.Bool(false),
+					DefaultMode: ptr.To[int32](0666), //read and write only for everybody
+					Optional:    ptr.To[bool](false),
 				},
 			},
 		}
@@ -732,14 +732,14 @@ func (s *systemState) jobFailed(p func(reason string) bool) bool {
 func restrictiveContainerSecurityContext() *corev1.SecurityContext {
 	defaultProcMount := corev1.DefaultProcMount
 	return &corev1.SecurityContext{
-		Privileged: pointer.Bool(false),
+		Privileged: ptr.To[bool](false),
 		Capabilities: &corev1.Capabilities{
 			Drop: []corev1.Capability{
 				"ALL",
 			},
 		},
 		ProcMount:              &defaultProcMount,
-		ReadOnlyRootFilesystem: pointer.Bool(true),
+		ReadOnlyRootFilesystem: ptr.To[bool](true),
 	}
 }
 
@@ -752,7 +752,7 @@ func buildJobContainerSecurityContext() *corev1.SecurityContext {
 		"SETGID",       // for "fork"
 		"DAC_OVERRIDE", // for "open"
 	}
-	securityContext.ReadOnlyRootFilesystem = pointer.Bool(false)
+	securityContext.ReadOnlyRootFilesystem = ptr.To[bool](false)
 	return securityContext
 }
 

@@ -8,7 +8,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"
-	"k8s.io/utils/pointer"
+	"k8s.io/utils/ptr"
 )
 
 var _ = Describe("Serverless controller", func() {
@@ -23,49 +23,49 @@ var _ = Describe("Serverless controller", func() {
 
 		var (
 			serverlessDataDefault = serverlessData{
-				TraceCollectorURL: pointer.String(v1alpha1.EndpointDisabled),
-				EnableInternal:    pointer.Bool(v1alpha1.DefaultEnableInternal),
+				TraceCollectorURL: ptr.To[string](v1alpha1.EndpointDisabled),
+				EnableInternal:    ptr.To[bool](v1alpha1.DefaultEnableInternal),
 				registrySecretData: registrySecretData{
-					ServerAddress:   pointer.String(v1alpha1.DefaultServerAddress),
-					RegistryAddress: pointer.String(v1alpha1.DefaultRegistryAddress),
+					ServerAddress:   ptr.To[string](v1alpha1.DefaultServerAddress),
+					RegistryAddress: ptr.To[string](v1alpha1.DefaultRegistryAddress),
 				},
 			}
 			serverlessDataWithChangedDependencies = serverlessData{
-				EventPublisherProxyURL: pointer.String("test-eventing-address"),
-				TraceCollectorURL:      pointer.String("test-tracing-address"),
-				EnableInternal:         pointer.Bool(v1alpha1.DefaultEnableInternal),
+				EventPublisherProxyURL: ptr.To[string]("test-eventing-address"),
+				TraceCollectorURL:      ptr.To[string]("test-tracing-address"),
+				EnableInternal:         ptr.To[bool](v1alpha1.DefaultEnableInternal),
 				registrySecretData: registrySecretData{
-					ServerAddress:   pointer.String(v1alpha1.DefaultServerAddress),
-					RegistryAddress: pointer.String(v1alpha1.DefaultRegistryAddress),
+					ServerAddress:   ptr.To[string](v1alpha1.DefaultServerAddress),
+					RegistryAddress: ptr.To[string](v1alpha1.DefaultRegistryAddress),
 				},
 			}
 			serverlessDataExternalWithSecret = serverlessData{
-				EnableInternal: pointer.Bool(false),
+				EnableInternal: ptr.To[bool](false),
 				registrySecretData: registrySecretData{
-					Username:        pointer.String("rumburak"),
-					Password:        pointer.String("mlekota"),
-					ServerAddress:   pointer.String("testserveraddress:5000"),
-					RegistryAddress: pointer.String("testregistryaddress:5000"),
+					Username:        ptr.To[string]("rumburak"),
+					Password:        ptr.To[string]("mlekota"),
+					ServerAddress:   ptr.To[string]("testserveraddress:5000"),
+					RegistryAddress: ptr.To[string]("testregistryaddress:5000"),
 				},
 			}
 			serverlessDataExternalWithIncompleteSecret = serverlessData{
-				EnableInternal: pointer.Bool(false),
+				EnableInternal: ptr.To[bool](false),
 				registrySecretData: registrySecretData{
-					Username:      pointer.String("blekota"),
-					ServerAddress: pointer.String("testserveraddress:5002"),
+					Username:      ptr.To[string]("blekota"),
+					ServerAddress: ptr.To[string]("testserveraddress:5002"),
 				},
 			}
 			serverlessDataIncompleteFilledByDefault = serverlessData{
-				EnableInternal: pointer.Bool(v1alpha1.DefaultEnableInternal),
+				EnableInternal: ptr.To[bool](v1alpha1.DefaultEnableInternal),
 				registrySecretData: registrySecretData{
-					Username:        pointer.String("blekota"),
-					Password:        pointer.String(""),
-					ServerAddress:   pointer.String("testserveraddress:5002"),
-					RegistryAddress: pointer.String(""),
+					Username:        ptr.To[string]("blekota"),
+					Password:        ptr.To[string](""),
+					ServerAddress:   ptr.To[string]("testserveraddress:5002"),
+					RegistryAddress: ptr.To[string](""),
 				},
 			}
 			serverlessDataExternalWithoutSecret = serverlessData{
-				EnableInternal: pointer.Bool(false),
+				EnableInternal: ptr.To[bool](false),
 			}
 		)
 
