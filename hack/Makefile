@@ -13,26 +13,26 @@ integration-test: ## Run integration tests on self-prepared k3d cluster.
 
 .PHONY: gardener-integration-test
 gardener-integration-test: ## Provision gardener cluster and run integration test on it.
-	make provision-gardener && make -C ${PROJECT_ROOT} install-serverless-main && \
+	make provision-gardener && make -C ${PROJECT_ROOT} install-serverless-custom-operator && \
 	make integration-test \
 		deprovision-gardener || \
 		(make deprovision-gardener && false)
 
 .PHONY: integration-test-on-cluster
 integration-test-on-cluster: ## Install serverless with default serverless-cr, run integration tests and remove serverless-cr
-	make -C ${PROJECT_ROOT} install-serverless-main
+	make -C ${PROJECT_ROOT} install-serverless-custom-operator
 	make integration-test
 	make -C ${PROJECT_ROOT} remove-serverless
 
 .PHONY: git-auth-test-on-cluster
 git-auth-test-on-cluster: ## Install serverless with default serverless-cr, run git auth integration and remove serverless-cr
-	make -C ${PROJECT_ROOT} install-serverless-main
+	make -C ${PROJECT_ROOT} install-serverless-custom-operator
 	make -C ${TEST_ROOT} git-auth-integration
 	make -C ${PROJECT_ROOT} remove-serverless
 
 .PHONY: upgrade-test
 upgrade-test: ## Installs Serverless from latest, upgrades to version specified in IMG and run integration tests
 upgrade-test:
-	make -C ${PROJECT_ROOT} install-serverless-latest-release install-serverless-main
+	make -C ${PROJECT_ROOT} install-serverless-latest-release install-serverless-custom-operator
 	make integration-test
 	make -C ${PROJECT_ROOT} remove-serverless
