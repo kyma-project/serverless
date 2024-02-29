@@ -1,9 +1,10 @@
 ## Location to install dependencies to
-PROJECT_ROOT=$(dir $(realpath $(lastword $(MAKEFILE_LIST))))..
-LOCALBIN ?= $(PROJECT_ROOT)/bin
+ifndef PROJECT_ROOT
+$(error PROJECT_ROOT is undefined)
+endif
+LOCALBIN ?= $(realpath $(PROJECT_ROOT))/bin
 $(LOCALBIN):
 	mkdir -p $(LOCALBIN)
-
 ##@ Tools
 
 ########## Kyma CLI ###########
