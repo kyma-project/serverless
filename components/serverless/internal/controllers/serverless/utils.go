@@ -109,7 +109,7 @@ func getPackageConfigVolumeMountsForRuntime(rtm serverlessv1alpha2.Runtime) []co
 				SubPath:   ".npmrc",
 			},
 		}
-	case serverlessv1alpha2.Python39:
+	case serverlessv1alpha2.Python39, serverlessv1alpha2.Python312:
 		return []corev1.VolumeMount{
 			{
 				Name:      "registry-config",

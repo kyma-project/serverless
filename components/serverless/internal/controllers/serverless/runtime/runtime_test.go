@@ -28,6 +28,19 @@ func TestGetRuntimeConfig(t *testing.T) {
 					{Name: "PYTHONUNBUFFERED", Value: "TRUE"}},
 			},
 		},
+		"python312": {
+			name:    "python312",
+			runtime: serverlessv1alpha2.Python312,
+			want: runtime.Config{
+				Runtime:                 serverlessv1alpha2.Python312,
+				DependencyFile:          "requirements.txt",
+				FunctionFile:            "handler.py",
+				DockerfileConfigMapName: "dockerfile-python312",
+				RuntimeEnvs: []corev1.EnvVar{{Name: "PYTHONPATH", Value: "$(KUBELESS_INSTALL_VOLUME)/lib.python3.12/site-packages:$(KUBELESS_INSTALL_VOLUME)"},
+					{Name: "FUNC_RUNTIME", Value: "python312"},
+					{Name: "PYTHONUNBUFFERED", Value: "TRUE"}},
+			},
+		},
 		"nodej16": {
 			name:    "nodejs16 config",
 			runtime: serverlessv1alpha2.NodeJs16,

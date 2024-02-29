@@ -41,6 +41,13 @@ func fillConfigEnvVars(runtime serverlessv1alpha2.Runtime, config *Config) {
 				{Name: "PYTHONPATH", Value: "$(KUBELESS_INSTALL_VOLUME)/lib.python3.9/site-packages:$(KUBELESS_INSTALL_VOLUME)"},
 				{Name: "PYTHONUNBUFFERED", Value: "TRUE"}}...)
 		return
+	case serverlessv1alpha2.Python312:
+		config.RuntimeEnvs = append(config.RuntimeEnvs,
+			[]corev1.EnvVar{
+				// https://github.com/kubeless/runtimes/blob/master/stable/python/python.jsonnet#L45
+				{Name: "PYTHONPATH", Value: "$(KUBELESS_INSTALL_VOLUME)/lib.python3.12/site-packages:$(KUBELESS_INSTALL_VOLUME)"},
+				{Name: "PYTHONUNBUFFERED", Value: "TRUE"}}...)
+		return
 	}
 }
 
@@ -50,7 +57,7 @@ func fillConfigFileNames(runtime serverlessv1alpha2.Runtime, config *Config) {
 		config.DependencyFile = "package.json"
 		config.FunctionFile = "handler.js"
 		return
-	case serverlessv1alpha2.Python39:
+	case serverlessv1alpha2.Python39, serverlessv1alpha2.Python312:
 		config.DependencyFile = "requirements.txt"
 		config.FunctionFile = "handler.py"
 		return
@@ -59,7 +66,7 @@ func fillConfigFileNames(runtime serverlessv1alpha2.Runtime, config *Config) {
 
 func GetRuntime(r serverlessv1alpha2.Runtime) Runtime {
 	switch r {
-	case serverlessv1alpha2.Python39:
+	case serverlessv1alpha2.Python39, serverlessv1alpha2.Python312:
 		return python{}
 	default:
 		return nodejs{}
