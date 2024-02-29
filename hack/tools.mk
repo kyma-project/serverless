@@ -5,6 +5,12 @@ endif
 LOCALBIN ?= $(realpath $(PROJECT_ROOT))/bin
 $(LOCALBIN):
 	mkdir -p $(LOCALBIN)
+
+# Operating system architecture
+OS_ARCH=$(shell uname -m)
+# Operating system type
+OS_TYPE=$(shell uname)
+
 ##@ Tools
 
 ########## Kyma CLI ###########
@@ -17,10 +23,6 @@ endef
 KYMA ?= $(LOCALBIN)/kyma-$(KYMA_STABILITY)
 kyma: $(LOCALBIN) $(KYMA) ## Download kyma locally if necessary.
 $(KYMA):
-	# Operating system architecture
-	$(eval OS_ARCH=$(shell uname -m))
-	# Operating system type
-	$(eval OS_TYPE=$(shell uname))
 	$(eval KYMA_FILE_NAME=$(shell ${PROJECT_ROOT}/hack/get_kyma_file_name.sh ${OS_TYPE} ${OS_ARCH}))
 	## Detect if operating system
 	$(if $(KYMA_FILE_NAME),,$(call os_error, ${OS_TYPE}, ${OS_ARCH}))
@@ -48,6 +50,11 @@ $(CONTROLLER_GEN): $(LOCALBIN)
 
 ########## Envtest ###########
 ENVTEST ?= $(LOCALBIN)/setup-envtest
+KUBEBUILDER_ASSETS=$(LOCALBIN)/k8s/kubebuilder_assets
+
+define path_error
+$(error Error: path is empty: $1)
+endef
 
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.27.1
@@ -56,3 +63,12 @@ ENVTEST_K8S_VERSION = 1.27.1
 envtest: $(ENVTEST) ## Download envtest-setup locally if necessary.
 $(ENVTEST): $(LOCALBIN)
 	test -s $(LOCALBIN)/setup-envtest || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+
+.PHONY: kubebuilder-assets
+kubebuilder-assets: envtest
+	$(eval DOWNLOADED_ASSETS=$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path))
+	$(if $(DOWNLOADED_ASSETS),,$(call path_error, ${DOWNLOADED_ASSETS}))
+	chmod 755 --recursive $(DOWNLOADED_ASSETS)
+	mkdir -p $(LOCALBIN)/k8s/kubebuilder_assets/
+	mv --update $(DOWNLOADED_ASSETS)/* $(LOCALBIN)/k8s/kubebuilder_assets/
+	rm -d $(DOWNLOADED_ASSETS)

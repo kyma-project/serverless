@@ -82,6 +82,7 @@ func setUpTestEnv(g *gomega.GomegaWithT) (cl resource.Client, env *envtest.Envir
 			filepath.Join("..", "..", "..", "config", "crd", "bases"),
 		},
 		ErrorIfCRDPathMissing: true,
+		BinaryAssetsDirectory: filepath.Join("..", "..", "..", "..", "..", "bin", "k8s", "kubebuilder_assets"),
 	}
 	cfg, err := testEnv.Start()
 	g.Expect(err).To(gomega.BeNil())
