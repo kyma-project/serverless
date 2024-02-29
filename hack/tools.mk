@@ -2,10 +2,9 @@
 ifndef PROJECT_ROOT
 $(error PROJECT_ROOT is undefined)
 endif
-LOCALBIN ?= $(PROJECT_ROOT)/bin
+LOCALBIN ?= $(realpath $(PROJECT_ROOT))/bin
 $(LOCALBIN):
 	mkdir -p $(LOCALBIN)
-GOBIN=$(realpath $(LOCALBIN)) 
 ##@ Tools
 
 ########## Kyma CLI ###########
@@ -45,7 +44,7 @@ CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
 .PHONY: controller-gen
 controller-gen: $(CONTROLLER_GEN) ## Download controller-gen locally if necessary.
 $(CONTROLLER_GEN): $(LOCALBIN)
-	test -s $(LOCALBIN)/controller-gen || go install sigs.k8s.io/controller-tools/cmd/controller-gen@$(CONTROLLER_TOOLS_VERSION)
+	test -s $(LOCALBIN)/controller-gen || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-tools/cmd/controller-gen@$(CONTROLLER_TOOLS_VERSION)
 
 ########## Envtest ###########
 ENVTEST ?= $(LOCALBIN)/setup-envtest
@@ -56,4 +55,4 @@ ENVTEST_K8S_VERSION = 1.27.1
 .PHONY: envtest
 envtest: $(ENVTEST) ## Download envtest-setup locally if necessary.
 $(ENVTEST): $(LOCALBIN)
-	test -s $(LOCALBIN)/setup-envtest || go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+	test -s $(LOCALBIN)/setup-envtest || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
