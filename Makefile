@@ -1,4 +1,4 @@
-PROJECT_ROOT=./
+PROJECT_ROOT=.
 OPERATOR_ROOT=./components/operator
 include ${PROJECT_ROOT}/hack/help.mk
 include ${PROJECT_ROOT}/hack/k3d.mk
