@@ -260,6 +260,12 @@ func (s *systemState) buildJobExecutorContainer(cfg cfg, volumeMounts []corev1.V
 		ImagePullPolicy: corev1.PullIfNotPresent,
 		Env: []corev1.EnvVar{
 			{Name: "DOCKER_CONFIG", Value: "/docker/.docker/"},
+			// GOOGLE_APPLICATION_CREDENTIALS is set to file which does not exist to prevent GCE credential helper creation
+			// this is required because Kaniko does not work on clusters run on GKE with the default GCE ServiceAccount
+			// with bound bearer token to it. When such SA exists then Kaniko uses this token to pull any image
+			// from the pkg.dev registry - even public ones - which causes 401 UNAUTHORIZED status during runtime
+			// base pull because we store our runtime bases on the pkg.dev registry
+			{Name: "GOOGLE_APPLICATION_CREDENTIALS", Value: "/dev/null"},
 		},
 		SecurityContext: buildJobContainerSecurityContext(),
 	}
