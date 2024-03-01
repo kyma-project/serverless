@@ -12,7 +12,7 @@ SHELL = /usr/bin/env bash -o pipefail
 .PHONY: test
 test: KUBEBUILDER_CONTROLPLANE_START_TIMEOUT=2m
 test: KUBEBUILDER_CONTROLPLANE_STOP_TIMEOUT=2m
-test: envtest ## Run unit test with envtest
+test: manifests kubebuilder-assets ## Run unit tests.
 	KUBEBUILDER_ASSETS="$(KUBEBUILDER_ASSETS)" go test -race -count=1 -coverprofile=cover.out ./...
 	@echo -n "Total coverage: "
 	@go tool cover -func=cover.out | grep total | awk '{print $$3}'
