@@ -13,11 +13,12 @@ GARDENER_K8S_VERSION=$(shell kubectl --kubeconfig=${GARDENER_SA_PATH} get cloudp
 else
 GARDENER_K8S_VERSION=1.27.4
 endif
+GARDENER_LINUX_VERSION=gardenlinux:1312.3.0
 
 .PHONY: provision-gardener
 provision-gardener: kyma ## Provision gardener cluster with latest k8s version
 	${KYMA} provision gardener ${GARDENER_INFRASTRUCTURE} -c ${GARDENER_SA_PATH} -n test-${GIT_COMMIT_SHA} -p ${GARDENER_PROJECT} -s ${GARDENER_SECRET_NAME} -k ${GARDENER_K8S_VERSION}\
-		--hibernation-start="00 ${HIBERNATION_HOUR} * * ?"
+		--gardenlinux-version=$(GARDENER_LINUX_VERSION) --hibernation-start="00 ${HIBERNATION_HOUR} * * ?"
 
 .PHONY: deprovision-gardener
 deprovision-gardener: kyma ## Deprovision gardener cluster
