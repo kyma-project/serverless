@@ -663,8 +663,7 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 		excessJob.UID = ""
 		excessJob.CreationTimestamp = metav1.Time{}
 		excessJob.Spec.Selector = nil
-		delete(excessJob.Spec.Template.ObjectMeta.Labels, "controller-uid")
-		delete(excessJob.Spec.Template.ObjectMeta.Labels, "job-name")
+		excessJob.Spec.Template.ObjectMeta.Labels = map[string]string{"label": "value"}
 		g.Expect(resourceClient.Create(context.TODO(), excessJob)).To(gomega.Succeed())
 
 		err = reconciler.client.ListByLabel(context.TODO(), function.GetNamespace(), fnLabels, jobList)
