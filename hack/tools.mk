@@ -64,6 +64,8 @@ envtest: $(ENVTEST) ## Download envtest-setup locally if necessary.
 $(ENVTEST): $(LOCALBIN)
 	test -s $(LOCALBIN)/setup-envtest || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
 
+# Envtest download binaries to k8s/(K8S_Version)-(arch)-(os) directory which is different on every machine.
+# To use the same `envtest` binaries on CI and during local development this target moves it to upfront known directory.
 .PHONY: kubebuilder-assets
 kubebuilder-assets: envtest
 	$(eval DOWNLOADED_ASSETS=$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path))
