@@ -66,6 +66,7 @@ $(ENVTEST): $(LOCALBIN)
 
 # Envtest download binaries to k8s/(K8S_Version)-(arch)-(os) directory which is different on every machine.
 # To use the same `envtest` binaries on CI and during local development this target moves it to upfront known directory.
+# Additionaly `OS-ARCH` return X86_64, but envtest uses `amd64` name.
 .PHONY: kubebuilder-assets
 kubebuilder-assets: envtest
 	$(eval DOWNLOADED_ASSETS=$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path))
