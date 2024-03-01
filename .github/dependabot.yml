@@ -69,7 +69,7 @@ updates:
       include: "scope"
 
   - package-ecosystem: "pip"
-    directory: "/components/runtimes/python39/kubeless"
+    directory: "/components/runtimes/python/python39"
     labels:
       - "area/dependency"
       - "kind/chore"
@@ -77,6 +77,20 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "pip-python39"
+      include: "scope"
+    groups:
+      opentelemetry:
+        patterns:
+          - "opentelemetry-*"
+  - package-ecosystem: "pip"
+    directory: "/components/runtimes/python/python312"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "pip-python312"
       include: "scope"
     groups:
       opentelemetry:
