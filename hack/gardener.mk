@@ -13,7 +13,8 @@ GARDENER_K8S_VERSION=$(shell kubectl --kubeconfig=${GARDENER_SA_PATH} get cloudp
 else
 GARDENER_K8S_VERSION=1.27.4
 endif
-GARDENER_LINUX_VERSION=gardenlinux:1312.3.0
+#Overwrite default kyma cli gardenlinux version because it's not supported.
+GARDENR_LINUX_VERSION=gardenlinux:1312.3.0
 
 .PHONY: provision-gardener
 provision-gardener: kyma ## Provision gardener cluster with latest k8s version
