@@ -25,7 +25,6 @@ git-auth-test-on-cluster: ## Install serverless with default serverless-cr, run 
 
 .PHONY: upgrade-test
 upgrade-test: ## Installs Serverless from latest, upgrades to version specified in IMG and run integration tests
-upgrade-test:
 	make -C ${PROJECT_ROOT} install-serverless-latest-release install-serverless-custom-operator
 	make integration-test
 	make -C ${PROJECT_ROOT} remove-serverless
