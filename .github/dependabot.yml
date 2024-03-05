@@ -126,6 +126,20 @@ updates:
         patterns:
           - "@opentelemetry/*"
   - package-ecosystem: "npm"
+    directory: "/components/runtimes/nodejs/nodejs20"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "npm-nodejs20"
+      include: "scope"
+    groups:
+      opentelemetry:
+        patterns:
+          - "@opentelemetry/*"
+  - package-ecosystem: "npm"
     directory: "/tests/gitserver/repos/function"
     labels:
       - "area/dependency"
