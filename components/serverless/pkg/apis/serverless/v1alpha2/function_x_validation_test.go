@@ -329,6 +329,16 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				},
 			},
 		},
+		"allowed runtime: python312": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python312,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
+				},
+			},
+		},
 		"allowed envs": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,

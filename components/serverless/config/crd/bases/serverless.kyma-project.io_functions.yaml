@@ -346,11 +346,13 @@ spec:
                 type: object
               runtime:
                 description: Specifies the runtime of the Function. The available
-                  values are `nodejs16` - deprecated, `nodejs18`, and `python39`.
+                  values are `nodejs16` - deprecated, `nodejs18`, `python39`, and
+                  `python312`.
                 enum:
                 - nodejs16
                 - nodejs18
                 - python39
+                - python312
                 type: string
               runtimeImageOverride:
                 description: Specifies the runtime image used instead of the default

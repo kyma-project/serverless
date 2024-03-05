@@ -94,6 +94,10 @@ global:
       name: "function-runtime-python39"
       version: "main"
       directory: "prod"
+    function_runtime_python312:
+      name: "function-runtime-python312"
+      version: "main"
+      directory: "prod"
     kaniko_executor:
       name: "tpi/kaniko-executor"
       version: "1.9.2-ea54c1c7"

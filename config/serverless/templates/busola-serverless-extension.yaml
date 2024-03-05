@@ -63,7 +63,7 @@ data:
         source: 'spec.source.gitRepository ? "Git Repository" : "Inline Editor"'
       - name: header.runtime
         source: >-
-          spec.runtime = 'nodejs16' ? 'Node.js 16 - deprecated' : (spec.runtime = 'python39' ? 'Python 3.9' : (spec.runtime = 'nodejs18' ? 'Node.js 18' : spec.runtime))
+          spec.runtime = 'nodejs16' ? 'Node.js 16 - deprecated' : (spec.runtime = 'python39' ? 'Python 3.9' : (spec.runtime = 'nodejs18' ? 'Node.js 18' : (spec.runtime = 'python312' ? 'Python 3.12' : spec.runtime)))
     body:
       - widget: Tabs
         children:
@@ -213,14 +213,14 @@ data:
       trigger: [language]
       dynamicValue: |
         spec.runtime in ['nodejs16', 'nodejs18'] ? 'JavaScript' :
-        spec.runtime in ['python39'] ? 'Python' :
+        spec.runtime in ['python39', 'python312'] ? 'Python' :
         ''
     - simple: true
       path: spec.runtime
       placeholder: placeholders.spec.runtime
       enum: |
         $language = 'JavaScript' ? ['nodejs16', 'nodejs18'] :
-        $language = 'Python' ? ['python39'] :
+        $language = 'Python' ? ['python39', 'python312'] :
         []
       subscribe:
         language: |
@@ -422,7 +422,7 @@ data:
   list: |-
     - name: header.runtime
       source: >-
-        spec.runtime = 'nodejs16' ? 'Node.js 16 - deprecated' : (spec.runtime = 'python39' ? 'Python 3.9' : (spec.runtime = 'nodejs18' ? 'Node.js 18' : spec.runtime))
+        spec.runtime = 'nodejs16' ? 'Node.js 16 - deprecated' : (spec.runtime = 'python39' ? 'Python 3.9' : (spec.runtime = 'nodejs18' ? 'Node.js 18' : (spec.runtime = 'python312' ? 'Python 3.12' : spec.runtime)))
     - name: header.sourceType
       source: 'spec.source.gitRepository ? "Git Repository" : "Inline Editor"'
     - name: header.status
@@ -536,6 +536,7 @@ data:
       spec.runtime.nodejs16: Node.js 16 - deprecated
       spec.runtime.nodejs18: Node.js 18
       spec.runtime.python39: Python 3.9
+      spec.runtime.python312: Python 3.12
       spec.resourceConfiguration.build: Build
       spec.resourceConfiguration.function: Function
       spec.resourceConfiguration.function.profile: Function profile
