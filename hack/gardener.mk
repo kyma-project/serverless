@@ -14,7 +14,7 @@ else
 GARDENER_K8S_VERSION=1.27.4
 endif
 #Overwrite default kyma cli gardenlinux version because it's not supported.
-GARDENER_LINUX_VERSION=gardenlinux:1312.3.0
+GARDENER_LINUX_VERSION=1312.3.0
 
 .PHONY: provision-gardener
 provision-gardener: kyma ## Provision gardener cluster with latest k8s version
