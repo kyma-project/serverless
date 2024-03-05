@@ -10,8 +10,7 @@ include $(PROJECT_ROOT)/hack/tools.mk
 ##@ K3D
 
 .PHONY: create-k3d
-create-k3d: kyma
-create-k3d: ## Create k3d with kyma CRDs.
+create-k3d: kyma ## Create k3d with kyma CRDs.
 	${KYMA} provision k3d --registry-port ${REGISTRY_PORT} --name ${CLUSTER_NAME} --ci -p 6080:8080@loadbalancer -p 6433:8433@loadbalancer
 	kubectl create namespace kyma-system
 
