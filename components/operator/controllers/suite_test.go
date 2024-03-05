@@ -63,6 +63,7 @@ var _ = BeforeSuite(func() {
 		CRDDirectoryPaths: []string{
 			filepath.Join("..", "..", "..", "config", "operator", "base", "crd", "bases"),
 		},
+		BinaryAssetsDirectory: filepath.Join("..", "..", "..", "..", "..", "bin", "k8s", "kubebuilder_assets"),
 		ErrorIfCRDPathMissing: true,
 	}
 
