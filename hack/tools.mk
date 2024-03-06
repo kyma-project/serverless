@@ -71,7 +71,7 @@ $(ENVTEST): $(LOCALBIN)
 kubebuilder-assets: envtest
 	$(eval DOWNLOADED_ASSETS=$(shell $(ENVTEST) use $(ENVTEST_K8S_VERSION) --bin-dir $(LOCALBIN) -p path))
 	$(if $(DOWNLOADED_ASSETS),,$(call path_error, ${DOWNLOADED_ASSETS}))
-	chmod 755 --recursive $(DOWNLOADED_ASSETS)
+	chmod -R 755 $(DOWNLOADED_ASSETS)
 	mkdir -p $(LOCALBIN)/k8s/kubebuilder_assets/
-	mv --update $(DOWNLOADED_ASSETS)/* $(LOCALBIN)/k8s/kubebuilder_assets/
+	mv $(DOWNLOADED_ASSETS)/* $(LOCALBIN)/k8s/kubebuilder_assets/
 	rm -d $(DOWNLOADED_ASSETS)
