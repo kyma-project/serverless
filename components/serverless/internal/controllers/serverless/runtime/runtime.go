@@ -53,7 +53,7 @@ func fillConfigEnvVars(runtime serverlessv1alpha2.Runtime, config *Config) {
 
 func fillConfigFileNames(runtime serverlessv1alpha2.Runtime, config *Config) {
 	switch runtime {
-	case serverlessv1alpha2.NodeJs16, serverlessv1alpha2.NodeJs18:
+	case serverlessv1alpha2.NodeJs16, serverlessv1alpha2.NodeJs18, serverlessv1alpha2.NodeJs20:
 		config.DependencyFile = "package.json"
 		config.FunctionFile = "handler.js"
 		return
