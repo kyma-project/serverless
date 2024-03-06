@@ -562,7 +562,7 @@ func TestFunctionReconciler_buildJobWithResources(t *testing.T) {
 	}
 
 	resources := resourceCfg.Presets.ToResourceRequirements()
-	python312Resources := resourceCfg.RuntimePresets[string(serverlessv1alpha2.NodeJs18)].ToResourceRequirements()
+	python312Resources := resourceCfg.RuntimePresets[string(serverlessv1alpha2.Python312)].ToResourceRequirements()
 
 	customResources := &corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
