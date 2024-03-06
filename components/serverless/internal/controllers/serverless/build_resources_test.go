@@ -155,7 +155,7 @@ func checkSecretVolume(g *gomega.WithT, secretMounts []serverlessv1alpha2.Secret
 func TestFunctionReconciler_buildDeploymentWithResources(t *testing.T) {
 	resourceCfg := fixResources()
 	resources := resourceCfg.Presets.ToResourceRequirements()
-	python312Resources := resourceCfg.RuntimePresets[string(serverlessv1alpha2.NodeJs18)].ToResourceRequirements()
+	python312Resources := resourceCfg.RuntimePresets[string(serverlessv1alpha2.Python312)].ToResourceRequirements()
 
 	customResources := &corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
