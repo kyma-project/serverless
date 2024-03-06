@@ -42,8 +42,7 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
 - [Kubebuilder](https://book.kubebuilder.io/)
 
 
-<!-- TODO: update this section - now it doesn't work -->
-## Manual Installation Using Make Targets
+## Installation in the k3d Cluster Using Make Targets
 
 1. Clone the project.
 
@@ -51,46 +50,13 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
     git clone https://github.com/kyma-project/serverless.git && cd serverless/
     ```
 
-2. Set the Serverless Operator image name.
-
-    ```bash
-    export IMG=<DOCKER_USERNAME>/custom-serverless-operator:0.0.1
-    ```
-
-3. Verify the compability.
-
-    ```bash
-    make test
-    ```
-
-4. Build and push the image to the registry.
-
-    ```bash
-    make module-image-release
-    ```
-
-5. Deploy Serverless Operator.
-
-    ```bash
-    make deploy
-    ```
-
-<!-- TODO: update this section - now we don't use lifecycle manager -->
-### Test Integration with Lifecycle Manager in the k3d Cluster
-
-1. Clone the project.
-
-    ```bash
-    git clone https://github.com/kyma-project/serverless-manager.git && cd serverless-manager/
-    ```
-
 2. Build Serverless Operator locally and run it in the k3d cluster.
 
     ```bash
-    make -C hack/local run
+    make run
     ```
 
-> **NOTE:** To clean up the k3d cluster, use the `make -C hack/local stop` make target.
+> **NOTE:** To clean up the k3d cluster, use the `make delete-k3d` make target.
 
 
 ## Using Serverless Operator
