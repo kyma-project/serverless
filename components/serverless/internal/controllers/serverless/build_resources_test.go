@@ -8,6 +8,7 @@ import (
 	fnRuntime "github.com/kyma-project/serverless/components/serverless/internal/controllers/serverless/runtime"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/onsi/gomega"
+	"github.com/stretchr/testify/require"
 	v1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -16,9 +17,9 @@ import (
 )
 
 var (
-	rtmNodeJS16 = fnRuntime.GetRuntimeConfig(serverlessv1alpha2.NodeJs16)
-	rtmNodeJS18 = fnRuntime.GetRuntimeConfig(serverlessv1alpha2.NodeJs18)
-	rtmPython39 = fnRuntime.GetRuntimeConfig(serverlessv1alpha2.Python39)
+	rtmNodeJS16  = fnRuntime.GetRuntimeConfig(serverlessv1alpha2.NodeJs16)
+	rtmNodeJS18  = fnRuntime.GetRuntimeConfig(serverlessv1alpha2.NodeJs18)
+	rtmPython39  = fnRuntime.GetRuntimeConfig(serverlessv1alpha2.Python39)
 	rtmPython312 = fnRuntime.GetRuntimeConfig(serverlessv1alpha2.Python312)
 )
 
@@ -185,21 +186,14 @@ func TestFunctionReconciler_buildDeploymentWithResources(t *testing.T) {
 			},
 		},
 		{
-			name: "deployment should use default resources preset",
-			args: args{
-				instance:          newFixFunction("ns", "name", 1, 2),
-				expectedResources: resources["L"],
-			},
-		},
-		{
 			name: "deployment should use default runtime preset",
 			args: args{
 				instance:          newFixFunctionWithRuntime("ns", "name", serverlessv1alpha2.Python312),
-				expectedResources: python312Resources["S"],
+				expectedResources: python312Resources["L"],
 			},
 		},
 		{
-			name: "deployment should use default runtime preset",
+			name: "deployment should use default resource preset",
 			args: args{
 				instance:          newFixFunctionWithCustomFunctionResource("ns", "name", customResources),
 				expectedResources: *customResources,
@@ -208,15 +202,12 @@ func TestFunctionReconciler_buildDeploymentWithResources(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := gomega.NewGomegaWithT(t)
-			s := systemState{
-				instance: *tt.args.instance,
-			}
+			s := systemState{instance: *tt.args.instance}
 
 			got := s.buildDeployment(buildDeploymentArgs{}, resourceCfg)
 
-			g.Expect(got.Spec.Template.Spec.Containers).To(gomega.HaveLen(1))
-			g.Expect(got.Spec.Template.Spec.Containers[0].Resources).To(gomega.Equal(tt.args.expectedResources))
+			require.Len(t, got.Spec.Template.Spec.Containers, 1)
+			require.Equal(t, tt.args.expectedResources, got.Spec.Template.Spec.Containers[0].Resources)
 		})
 	}
 }
@@ -592,17 +583,10 @@ func TestFunctionReconciler_buildJobWithResources(t *testing.T) {
 			},
 		},
 		{
-			name: "job should have default resources preset",
-			args: args{
-				instance:          newFixFunction("ns", "name", 1, 2),
-				expectedResources: resources["L"],
-			},
-		},
-		{
 			name: "job should have default runtime preset",
 			args: args{
 				instance:          newFixFunctionWithRuntime("ns", "name", serverlessv1alpha2.Python312),
-				expectedResources: python312Resources["S"],
+				expectedResources: python312Resources["L"],
 			},
 		},
 		{
@@ -615,15 +599,12 @@ func TestFunctionReconciler_buildJobWithResources(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			g := gomega.NewGomegaWithT(t)
-			s := systemState{
-				instance: *tt.args.instance,
-			}
+			s := systemState{instance: *tt.args.instance}
 
 			got := s.buildJob("configmap", cfg)
 
-			g.Expect(got.Spec.Template.Spec.Containers).To(gomega.HaveLen(1))
-			g.Expect(got.Spec.Template.Spec.Containers[0].Resources).To(gomega.Equal(tt.args.expectedResources))
+			require.Len(t, got.Spec.Template.Spec.Containers, 1)
+			require.Equal(t, tt.args.expectedResources, got.Spec.Template.Spec.Containers[0].Resources)
 		})
 	}
 }
@@ -666,7 +647,7 @@ func fixResources() Resources {
 		DefaultPreset: "L",
 		RuntimePresets: map[string]Preset{
 			string(serverlessv1alpha2.Python312): map[string]Resource{
-				"S": {
+				"L": {
 					RequestCPU:    Quantity{resource.MustParse("135m")},
 					RequestMemory: Quantity{resource.MustParse("135Mi")},
 					LimitCPU:      Quantity{resource.MustParse("246m")},
