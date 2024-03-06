@@ -61,7 +61,7 @@ These sections will lead you through the whole installation, configuration, and 
 2. Use the `init` Kyma CLI command to create a local workspace with default configuration for a Python Function:
 
   ```bash
-  kyma init function --runtime python39 --dir $PWD/{WORKSPACE_FOLDER}
+  kyma init function --runtime python312 --dir $PWD/{WORKSPACE_FOLDER}
   ```
 
   > [!TIP]

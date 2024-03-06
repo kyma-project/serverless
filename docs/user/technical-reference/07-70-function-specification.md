@@ -146,7 +146,7 @@ See the detailed descriptions of these fields:
 |-------|-------------------------------------------------------------------------------------------|
 | **function-name** | Name of the invoked Function                                                              |
 | **timeout** | Time, in seconds, after which the system cancels the request to invoke the Function       |
-| **runtime** | Environment used to run the Function. You can use `nodejs16` - deprecated, `nodejs18`, `python39`, or `python312`. |
+| **runtime** | Environment used to run the Function. You can use `nodejs16` - deprecated, `nodejs18`, `python39` - deprecated, or `python312`. |
 | **memory-limit** | Maximum amount of memory assigned to run a Function                                       |
 
 ## HTTP Requests

@@ -48,7 +48,7 @@ func FunctionCloudEventsTest(restConfig *rest.Config, cfg internal.Config, logf 
 		Log:         logf,
 	}
 
-	publisherProxyMock := function.NewFunction("eventing-publisher-proxy", "kyma-system", cfg.KubectlProxyEnabled, genericContainer.WithLogger(python39Logger))
+	publisherProxyMock := function.NewFunction("eventing-publisher-proxy", "kyma-system", cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
 	python39Fn := function.NewFunction("python39", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python39Logger))
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
 	nodejs16Fn := function.NewFunction("nodejs16", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs16Logger))

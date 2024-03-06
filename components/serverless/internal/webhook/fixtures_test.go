@@ -59,7 +59,7 @@ func ValidV1Alpha2Function() serverlessv1alpha2.Function {
 				MinReplicas: &one,
 				MaxReplicas: &two,
 			},
-			Runtime: serverlessv1alpha2.Python39,
+			Runtime: serverlessv1alpha2.Python312,
 		}}
 	return f
 }

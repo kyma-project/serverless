@@ -155,7 +155,7 @@ func checkSecretVolume(g *gomega.WithT, secretMounts []serverlessv1alpha2.Secret
 func TestFunctionReconciler_buildDeploymentWithResources(t *testing.T) {
 	resourceCfg := fixResources()
 	resources := resourceCfg.Presets.ToResourceRequirements()
-	python39Resources := resourceCfg.RuntimePresets[string(serverlessv1alpha2.NodeJs18)].ToResourceRequirements()
+	python312Resources := resourceCfg.RuntimePresets[string(serverlessv1alpha2.NodeJs18)].ToResourceRequirements()
 
 	customResources := &corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
@@ -194,8 +194,8 @@ func TestFunctionReconciler_buildDeploymentWithResources(t *testing.T) {
 		{
 			name: "deployment should use default runtime preset",
 			args: args{
-				instance:          newFixFunctionWithRuntime("ns", "name", serverlessv1alpha2.Python39),
-				expectedResources: python39Resources["S"],
+				instance:          newFixFunctionWithRuntime("ns", "name", serverlessv1alpha2.Python312),
+				expectedResources: python312Resources["S"],
 			},
 		},
 		{
@@ -562,7 +562,7 @@ func TestFunctionReconciler_buildJobWithResources(t *testing.T) {
 	}
 
 	resources := resourceCfg.Presets.ToResourceRequirements()
-	python39Resources := resourceCfg.RuntimePresets[string(serverlessv1alpha2.NodeJs18)].ToResourceRequirements()
+	python312Resources := resourceCfg.RuntimePresets[string(serverlessv1alpha2.NodeJs18)].ToResourceRequirements()
 
 	customResources := &corev1.ResourceRequirements{
 		Limits: corev1.ResourceList{
@@ -601,8 +601,8 @@ func TestFunctionReconciler_buildJobWithResources(t *testing.T) {
 		{
 			name: "job should have default runtime preset",
 			args: args{
-				instance:          newFixFunctionWithRuntime("ns", "name", serverlessv1alpha2.Python39),
-				expectedResources: python39Resources["S"],
+				instance:          newFixFunctionWithRuntime("ns", "name", serverlessv1alpha2.Python312),
+				expectedResources: python312Resources["S"],
 			},
 		},
 		{
@@ -665,7 +665,7 @@ func fixResources() Resources {
 		},
 		DefaultPreset: "L",
 		RuntimePresets: map[string]Preset{
-			string(serverlessv1alpha2.Python39): map[string]Resource{
+			string(serverlessv1alpha2.Python312): map[string]Resource{
 				"S": {
 					RequestCPU:    Quantity{resource.MustParse("135m")},
 					RequestMemory: Quantity{resource.MustParse("135Mi")},

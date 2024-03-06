@@ -3,6 +3,8 @@ package testsuite
 import (
 	"encoding/base64"
 	"fmt"
+	"time"
+
 	"github.com/kyma-project/serverless/tests/serverless/internal"
 	"github.com/kyma-project/serverless/tests/serverless/internal/assertion"
 	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
@@ -11,7 +13,6 @@ import (
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/runtimes"
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/secret"
 	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
-	"time"
 
 	"github.com/vrischmann/envconfig"
 
@@ -169,7 +170,7 @@ func getGithubTestcase(cfg *config) (testRepo, error) {
 		baseDir:          cfg.Github.BaseDir,
 		reference:        cfg.Github.Reference,
 		expectedResponse: "hello github",
-		runtime:          serverlessv1alpha2.Python39,
+		runtime:          serverlessv1alpha2.Python312,
 		auth: &serverlessv1alpha2.RepositoryAuth{
 			Type:       serverlessv1alpha2.RepositoryAuthSSHKey,
 			SecretName: "github-auth-secret",

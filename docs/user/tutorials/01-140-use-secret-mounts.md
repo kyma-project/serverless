@@ -42,7 +42,7 @@ Follow these steps:
       name: $FUNCTION_NAME
       namespace: $NAMESPACE
     spec:
-      runtime: python39
+      runtime: python312
       source:
         inline:
           source: |

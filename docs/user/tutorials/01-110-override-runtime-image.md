@@ -31,7 +31,7 @@ Follow these steps:
     ```bash
     mkdir {FOLDER_NAME}
     cd {FOLDER_NAME}
-    kyma init function --name $NAME --namespace $NAMESPACE --runtime-image-override $RUNTIME_IMAGE --runtime python39
+    kyma init function --name $NAME --namespace $NAMESPACE --runtime-image-override $RUNTIME_IMAGE --runtime python312
     ```
 
 4. Deploy your Function:
@@ -66,7 +66,7 @@ Follow these steps:
      name: $NAME
      namespace: $NAMESPACE
    spec:
-     runtime: python39
+     runtime: python312
      runtimeImageOverride: $RUNTIME_IMAGE
      source:
        inline:

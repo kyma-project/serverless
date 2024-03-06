@@ -533,7 +533,7 @@ func TestValidation_Valid(t *testing.T) {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
-					Runtime: serverlessv1alpha2.Python39,
+					Runtime: serverlessv1alpha2.Python312,
 					Source: serverlessv1alpha2.Source{
 						Inline: &serverlessv1alpha2.InlineSource{
 							Source:       "source code",
