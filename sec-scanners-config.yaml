@@ -1,14 +1,14 @@
 module-name: serverless
 rc-tag: 1.3.0
 protecode:
-  - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:main
-  - europe-docker.pkg.dev/kyma-project/prod/function-controller:main
-  - europe-docker.pkg.dev/kyma-project/prod/function-webhook:main
-  - europe-docker.pkg.dev/kyma-project/prod/function-build-init:main
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs16:main
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs18:main
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python39:main
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main
+  - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:release-test-v3
+  - europe-docker.pkg.dev/kyma-project/prod/function-controller:release-test-v3
+  - europe-docker.pkg.dev/kyma-project/prod/function-webhook:release-test-v3
+  - europe-docker.pkg.dev/kyma-project/prod/function-build-init:release-test-v3
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs16:release-test-v3
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs18:release-test-v3
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python39:release-test-v3
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:release-test-v3
   - europe-docker.pkg.dev/kyma-project/prod/tpi/kaniko-executor:1.9.2-ea54c1c7
   - europe-docker.pkg.dev/kyma-project/prod/tpi/registry:2.8.1-1ae4c190
 whitesource:
