@@ -89,7 +89,7 @@ func TestValidatingWebHook_Handle(t *testing.T) {
 		"maxReplicas": 1,
     	"minReplicas": 1
 	},
-    "runtime": "python39",
+    "runtime": "python312",
     "source": {
       "gitRepository": {
         "url": "test-url",
@@ -166,7 +166,7 @@ func TestValidatingWebHook_Handle(t *testing.T) {
 									"namespace": "default"
 								},
 								"spec": {
-									"runtime": "python39"
+									"runtime": "python312"
 								}
 							}`),
 						},

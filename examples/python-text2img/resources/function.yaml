@@ -18,7 +18,7 @@ spec:
             secretKeyRef:
                 key: API-KEY
                 name: deepai-secret
-    runtime: python39
+    runtime: python312
     source:
         inline:
             dependencies: requests==2.31.0

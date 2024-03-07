@@ -144,7 +144,7 @@ def main(event, context):
 `
 
 	return serverlessv1alpha2.FunctionSpec{
-		Runtime: serverlessv1alpha2.Python39,
+		Runtime: serverlessv1alpha2.Python312,
 		Source: serverlessv1alpha2.Source{
 			Inline: &serverlessv1alpha2.InlineSource{
 				Source:       src,

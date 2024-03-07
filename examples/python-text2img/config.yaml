@@ -1,6 +1,6 @@
 name: function-text2img
 namespace: default
-runtime: python39
+runtime: python312
 source:
     sourceType: inline
 schemaVersion: v0
