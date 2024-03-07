@@ -1,10 +1,11 @@
 package serverless
 
 import (
+	"testing"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"testing"
 )
 
 func Test_calculateGitImageTag(t *testing.T) {
@@ -26,10 +27,10 @@ func Test_calculateGitImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime: "nodejs16",
+					Runtime: "nodejs18",
 				},
 			},
-			want: "5e75a855ada0eb1fc5534e42387566508e03a1ef0d927ac281d5248a0ef1d0cc",
+			want: "4480d14ea252bf15f18c6632caff283b55beb6f38d5cf8cc43b1b116a151e78d",
 		},
 		{
 			name: "should use runtimeOverride",
@@ -44,7 +45,7 @@ func Test_calculateGitImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime:              "nodejs16",
+					Runtime:              "python312",
 					RuntimeImageOverride: "nodejs18",
 				},
 			},
@@ -63,11 +64,11 @@ func Test_calculateGitImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime:              "nodejs16",
+					Runtime:              "nodejs18",
 					RuntimeImageOverride: "",
 				},
 			},
-			want: "5e75a855ada0eb1fc5534e42387566508e03a1ef0d927ac281d5248a0ef1d0cc",
+			want: "4480d14ea252bf15f18c6632caff283b55beb6f38d5cf8cc43b1b116a151e78d",
 		},
 	}
 	for _, tt := range tests {
@@ -96,7 +97,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime: "nodejs16",
+					Runtime: "nodejs18",
 				},
 				Status: serverlessv1alpha2.FunctionStatus{
 					Commit: "commit",
@@ -105,7 +106,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 					},
 				},
 			},
-			want: "61373f52b742aec1e1be9b8b6a9984ea087524deffe6bb38f1788c0ae4d7d62b",
+			want: "e6ca45293444d4f6f1b43437f96cd2606842bf7cf9e14a126f52c0b7c216c677",
 		},
 		{
 			name: "should use runtimeOverride",
@@ -120,7 +121,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime:              "nodejs16",
+					Runtime:              "python312",
 					RuntimeImageOverride: "nodejs18",
 				},
 				Status: serverlessv1alpha2.FunctionStatus{
@@ -145,7 +146,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime:              "nodejs16",
+					Runtime:              "nodejs18",
 					RuntimeImageOverride: "",
 				},
 				Status: serverlessv1alpha2.FunctionStatus{
@@ -155,7 +156,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 					},
 				},
 			},
-			want: "61373f52b742aec1e1be9b8b6a9984ea087524deffe6bb38f1788c0ae4d7d62b",
+			want: "e6ca45293444d4f6f1b43437f96cd2606842bf7cf9e14a126f52c0b7c216c677",
 		},
 	}
 	for _, tt := range tests {

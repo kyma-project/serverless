@@ -40,7 +40,6 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 
 	python39Logger := logf.WithField(runtimeKey, "python39")
 	python312Logger := logf.WithField(runtimeKey, "python312")
-	nodejs16Logger := logf.WithField(runtimeKey, "nodejs16")
 	nodejs18Logger := logf.WithField(runtimeKey, "nodejs18")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
 
@@ -55,8 +54,6 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 	python39Fn := function.NewFunction("python39", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python39Logger))
 
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
-
-	nodejs16Fn := function.NewFunction("nodejs16", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs16Logger))
 
 	nodejs18Fn := function.NewFunction("nodejs18", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs18Logger))
 
@@ -104,13 +101,6 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 				function.UpdateFunction(python312Logger, python312Fn, "Update Python312 Function", runtimes.BasicPythonFunctionWithCustomDependency("Hello From updated python", serverlessv1alpha2.Python312)),
 				assertion.NewHTTPCheck(python312Logger, "Python312 post update simple check through service", python312Fn.FunctionURL, poll, "Hello From updated python"),
 			),
-			executor.NewSerialTestRunner(nodejs16Logger, "NodeJS16 test",
-				function.CreateFunction(nodejs16Logger, nodejs16Fn, "Create NodeJS16 Function", runtimes.BasicNodeJSFunction("Hello from nodejs16", serverlessv1alpha2.NodeJs16)),
-				assertion.NewHTTPCheck(nodejs16Logger, "NodeJS16 pre update simple check through service", nodejs16Fn.FunctionURL, poll, "Hello from nodejs16"),
-				function.UpdateFunction(nodejs16Logger, nodejs16Fn, "Update NodeJS16 Function", runtimes.BasicNodeJSFunctionWithCustomDependency("Hello from updated nodejs16", serverlessv1alpha2.NodeJs16)),
-				assertion.NewHTTPCheck(nodejs16Logger, "NodeJS16 post update simple check through service", nodejs16Fn.FunctionURL, poll, "Hello from updated nodejs16"),
-			),
-			//TODO: refactor this to move the CreateConfigMap and Secret to separate test (serial test runner)
 			executor.NewSerialTestRunner(nodejs18Logger, "NodeJS18 test",
 				configmap.CreateConfigMap(nodejs18Logger, cm, "Create Test ConfigMap", cmData),
 				secret.CreateSecret(nodejs18Logger, sec, "Create Test Secret", secretData),

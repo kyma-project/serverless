@@ -82,10 +82,6 @@ global:
       name: "function-build-init"
       version: "main"
       directory: "prod"
-    function_runtime_nodejs16:
-      name: "function-runtime-nodejs16"
-      version: "main"
-      directory: "prod"
     function_runtime_nodejs18:
       name: "function-runtime-nodejs18"
       version: "main"
