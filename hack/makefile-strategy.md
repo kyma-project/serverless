@@ -9,7 +9,7 @@ Pros of the architecture:
 * extensibility
 
 ## Dependencies description
-* `Makefile` - The main makefile which allow install and run serverless on local k3d. It should be readable for every person that doesn't know this article.
+* `Makefile` - The main makefile which allow install and run serverless. It's high level target to run serverless without knowing it's internals. It's the first contact point for serverless users.
 * `hack/Makefile` - High-level API that contains all targets that may be used by any CI/CD system. It has dependencies on the `hack/*.mk` makefiles.
 * `hack/*.mk` - Contains common targets that may be used by other makefiles (they are included and shouldn't be run directly). Targets are groupped by functionality. They should contain helpers' targets.
 * `components/operator/Makefile` - Contains all basic operations on serverless operator like builds, tests, etc. used during development. It's also used by `Makefile`.
