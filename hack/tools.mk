@@ -40,13 +40,13 @@ $(KUSTOMIZE): $(LOCALBIN)
 	test -s $(LOCALBIN)/kustomize || { curl -Ss $(KUSTOMIZE_INSTALL_SCRIPT) | bash -s -- $(subst v,,$(KUSTOMIZE_VERSION)) $(LOCALBIN); }
 
 ########## Controller-Gen ###########
-CONTROLLER_TOOLS_VERSION ?= v0.12.0
+CONTROLLER_TOOLS_VERSION ?= v0.14.0
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
 
 .PHONY: controller-gen
 controller-gen: $(CONTROLLER_GEN) ## Download controller-gen locally if necessary.
 $(CONTROLLER_GEN): $(LOCALBIN)
-	test -s $(LOCALBIN)/controller-gen || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-tools/cmd/controller-gen@$(CONTROLLER_TOOLS_VERSION)
+	test "$(${LOCALBIN}/controller-gen --version)" = "Version: ${CONTROLLER_TOOLS_VERSION}" || GOBIN=$(LOCALBIN) go install sigs.k8s.io/controller-tools/cmd/controller-gen@$(CONTROLLER_TOOLS_VERSION)
 
 ########## Envtest ###########
 ENVTEST ?= $(LOCALBIN)/setup-envtest
