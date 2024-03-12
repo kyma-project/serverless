@@ -12,7 +12,7 @@ Pros of the architecture:
 * `Makefile` - The main makefile that allows for installing and running the Serverless module. It's a high-level target to run the module without knowing its internals. It's the first contact point for the Serverless module users.
 * `hack/Makefile` - High-level API that contains all targets that may be used by any CI/CD system. It has dependencies on the `hack/*.mk` makefiles.
 * `hack/*.mk` - Contains common targets that may be used by other makefiles (they are included and shouldn't be run directly). Targets are grouped by functionality. They should contain helpers' targets.
-* `components/operator/Makefile` - Contains all basic operations on serverless operator like builds, tests, etc. used during development. It's also used by `Makefile`.
+* `components/operator/Makefile` - Contains all basic operations on Serverless Operator like builds, tests, etc., used during development. It's also used by `Makefile`.
 * `components/serverless/Makefile` - Contains all basic operations on serverless like builds, tests, etc. used during development.
 
 ## Good practices
