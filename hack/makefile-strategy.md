@@ -25,7 +25,7 @@ Every makefile (`Makefile` and `*.mk`) must contain a few pieces, making the fil
 Additionaly `Makefile` (but not `*.mk`) should contain:
 
 * Description - helps understand what the target does and shows it in the help. (`## description` after target name).
-* Sections - allow for separations of targets based on their destination. (`##@`).
+* Sections - allows for separations of targets based on their destination. (`##@`).
 
 Example of target that includes all good practices:
 
