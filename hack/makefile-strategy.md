@@ -20,7 +20,7 @@ Pros of the architecture:
 Every makefile (`Makefile` and `*.mk`) must contain a few pieces, making the file more useful and human-readable:
 
 * include `hack/help.mk` - this file provides the `help` target describing what is inside `Makefile` and what we can do with it.
-* before any `include` you should define `PROJECT_ROOT` environment variable pointing on project root directory.
+* before `include` you must define the `PROJECT_ROOT` environment variable pointing to the project root directory.
 
 Additionaly `Makefile` (but not `*.mk`) should contain:
 
