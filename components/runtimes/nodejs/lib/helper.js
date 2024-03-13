@@ -1,6 +1,6 @@
 'use strict';
 
-const { SpanStatusCode } = require("@opentelemetry/api/build/src/trace/status");
+const opentelemetry = require('@opentelemetry/api');
 
 function configureGracefulShutdown(server) {
     let nextConnectionId = 0;
@@ -66,7 +66,7 @@ const isPromise = (promise) => {
 function handleError(err, span, sendResponse) {
     console.error(err);
     const errTxt = resolveErrorMsg(err);
-    span.setStatus({ code: SpanStatusCode.ERROR, message: errTxt });
+    span.setStatus({ code: opentelemetry.SpanStatusCode.ERROR, message: errTxt });
     span.setAttribute("error", errTxt);
     sendResponse(errTxt, 500);
 }
