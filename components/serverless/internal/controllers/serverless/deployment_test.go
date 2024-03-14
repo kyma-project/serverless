@@ -12,6 +12,9 @@ import (
 )
 
 func TestFunctionReconciler_equalDeployments(t *testing.T) {
+
+	ten := int32(10)
+	zero := int32(0)
 	type args struct {
 		existing       appsv1.Deployment
 		expected       appsv1.Deployment
@@ -449,6 +452,22 @@ func TestFunctionReconciler_equalDeployments(t *testing.T) {
 								return podSpec
 							}(),
 						},
+					},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "different secret volumes",
+			args: args{
+				existing: appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						RevisionHistoryLimit: &ten,
+					},
+				},
+				expected: appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						RevisionHistoryLimit: &zero,
 					},
 				},
 			},
