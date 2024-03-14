@@ -12,6 +12,9 @@ import (
 )
 
 func TestFunctionReconciler_equalDeployments(t *testing.T) {
+
+	ten := int32(10)
+	zero := int32(0)
 	type args struct {
 		existing       appsv1.Deployment
 		expected       appsv1.Deployment
@@ -449,6 +452,22 @@ func TestFunctionReconciler_equalDeployments(t *testing.T) {
 								return podSpec
 							}(),
 						},
+					},
+				},
+			},
+			want: false,
+		},
+		{
+			name: "different revision history limit",
+			args: args{
+				existing: appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						RevisionHistoryLimit: &ten,
+					},
+				},
+				expected: appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						RevisionHistoryLimit: &zero,
 					},
 				},
 			},
@@ -1021,9 +1040,11 @@ func TestFunctionReconciler_isDeploymentReady(t *testing.T) {
 }
 
 func fixDeploymentWithReplicas(replicas int32) appsv1.Deployment {
+	zero := int32(0)
 	return appsv1.Deployment{
 		Spec: appsv1.DeploymentSpec{
-			Replicas: &replicas,
+			RevisionHistoryLimit: &zero,
+			Replicas:             &replicas,
 			Template: corev1.PodTemplateSpec{
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{{}},
