@@ -222,7 +222,7 @@ func equalDeployments(existing appsv1.Deployment, expected appsv1.Deployment) bo
 
 	result = result && mapsEqual(existing.Spec.Template.GetAnnotations(), expected.Spec.Template.GetAnnotations())
 	result = result && equalSecretMounts(existing.Spec.Template.Spec, expected.Spec.Template.Spec)
-	result = result && *existing.Spec.RevisionHistoryLimit == *expected.Spec.RevisionHistoryLimit
+	result = result && equalInt32Pointer(existing.Spec.RevisionHistoryLimit, expected.Spec.RevisionHistoryLimit)
 	return result
 }
 
