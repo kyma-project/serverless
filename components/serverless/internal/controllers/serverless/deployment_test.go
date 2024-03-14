@@ -458,7 +458,7 @@ func TestFunctionReconciler_equalDeployments(t *testing.T) {
 			want: false,
 		},
 		{
-			name: "different secret volumes",
+			name: "different revision history limit",
 			args: args{
 				existing: appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
