@@ -518,6 +518,7 @@ func (s *systemState) buildDeployment(cfg buildDeploymentArgs, resourceConfig Re
 	}
 	enrichPodSpecWithSecurityContext(&templateSpec, functionUser, functionUserGroup)
 
+	zero := int32(0)
 	return appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			GenerateName: fmt.Sprintf("%s-", s.instance.GetName()),
@@ -525,7 +526,8 @@ func (s *systemState) buildDeployment(cfg buildDeploymentArgs, resourceConfig Re
 			Labels:       s.functionLabels(),
 		},
 		Spec: appsv1.DeploymentSpec{
-			Replicas: s.getReplicas(DefaultDeploymentReplicas),
+			RevisionHistoryLimit: &zero,
+			Replicas:             s.getReplicas(DefaultDeploymentReplicas),
 			Selector: &metav1.LabelSelector{
 				MatchLabels: s.deploymentSelectorLabels(), // this has to match spec.template.objectmeta.Labels
 				// and also it has to be immutable

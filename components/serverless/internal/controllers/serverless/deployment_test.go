@@ -1021,9 +1021,11 @@ func TestFunctionReconciler_isDeploymentReady(t *testing.T) {
 }
 
 func fixDeploymentWithReplicas(replicas int32) appsv1.Deployment {
+	zero := int32(0)
 	return appsv1.Deployment{
 		Spec: appsv1.DeploymentSpec{
-			Replicas: &replicas,
+			RevisionHistoryLimit: &zero,
+			Replicas:             &replicas,
 			Template: corev1.PodTemplateSpec{
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{{}},
