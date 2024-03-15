@@ -25,7 +25,6 @@ You can find all installation steps in the [Set Asynchronous Communication Betwe
 ### Deploy Using kubectl
 
 Deploy to Kyma runtime manually using `kubectl apply` or `make deploy` target.
-There is also a [GitHub workflow](.github/workflows/deploy.yml) included which you can use as a template to come up with your own automated CI/CD.
 
 ### Auto-Deploy Code Changes
 
