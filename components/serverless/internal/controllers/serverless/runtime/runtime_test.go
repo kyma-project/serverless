@@ -41,7 +41,7 @@ func TestGetRuntimeConfig(t *testing.T) {
 					{Name: "PYTHONUNBUFFERED", Value: "TRUE"}},
 			},
 		},
-		"nodej18": {
+		"nodejs18": {
 			name:    "nodejs18 config",
 			runtime: serverlessv1alpha2.NodeJs18,
 			want: runtime.Config{
