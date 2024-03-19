@@ -8,7 +8,7 @@ import (
 
 func ValidateDependencies(runtime Runtime, dependencies string) error {
 	switch runtime {
-	case NodeJs16, NodeJs18:
+	case NodeJs16, NodeJs18, NodeJs20:
 		return validateNodeJSDependencies(dependencies)
 	case Python39, Python312:
 		return nil

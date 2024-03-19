@@ -21,9 +21,10 @@ import (
 )
 
 const (
-	nodejs16 = "nodejs16"
-	nodejs18 = "nodejs18"
-	python39 = "python39"
+	nodejs16  = "nodejs16"
+	nodejs18  = "nodejs18"
+	nodejs20  = "nodejs20"
+	python39  = "python39"
 	python312 = "python312"
 )
 
@@ -45,6 +46,7 @@ func FunctionAPIGatewayTest(restConfig *rest.Config, cfg internal.Config, logf *
 	python39Logger := logf.WithField(runtimeKey, "python39")
 	nodejs16Logger := logf.WithField(runtimeKey, "nodejs16")
 	nodejs18Logger := logf.WithField(runtimeKey, "nodejs18")
+	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
 
 	genericContainer := utils.Container{
 		DynamicCli:  dynamicCli,
@@ -61,6 +63,8 @@ func FunctionAPIGatewayTest(restConfig *rest.Config, cfg internal.Config, logf *
 	nodejs16Fn := function.NewFunction("nodejs16", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs16Logger))
 
 	nodejs18Fn := function.NewFunction("nodejs18", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs18Logger))
+
+	nodejs20Fn := function.NewFunction("nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
 
 	logf.Infof("Testing function in namespace: %s", cfg.Namespace)
 
@@ -82,6 +86,10 @@ func FunctionAPIGatewayTest(restConfig *rest.Config, cfg internal.Config, logf *
 			executor.NewSerialTestRunner(nodejs18Logger, "NodeJS18 test",
 				function.CreateFunction(nodejs18Logger, nodejs18Fn, "Create NodeJS18 Function", runtimes.BasicNodeJSFunction("Hello from nodejs18", serverlessv1alpha2.NodeJs18)),
 				assertion.APIGatewayFunctionCheck("nodejs18", nodejs18Fn, coreCli, genericContainer.Namespace, nodejs18),
+			),
+			executor.NewSerialTestRunner(nodejs20Logger, "NodeJS20 test",
+				function.CreateFunction(nodejs20Logger, nodejs20Fn, "Create NodeJS20 Function", runtimes.BasicNodeJSFunction("Hello from nodejs20", serverlessv1alpha2.NodeJs20)),
+				assertion.APIGatewayFunctionCheck("nodejs20", nodejs20Fn, coreCli, genericContainer.Namespace, nodejs20),
 			),
 		),
 	), nil

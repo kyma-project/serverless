@@ -50,6 +50,7 @@ func FunctionTracingTest(restConfig *rest.Config, cfg internal.Config, logf *log
 	python312Logger := logf.WithField(runtimeKey, "python312")
 	nodejs16Logger := logf.WithField(runtimeKey, "nodejs16")
 	nodejs18Logger := logf.WithField(runtimeKey, "nodejs18")
+	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
 
 	genericContainer := utils.Container{
 		DynamicCli:  dynamicCli,
@@ -66,6 +67,8 @@ func FunctionTracingTest(restConfig *rest.Config, cfg internal.Config, logf *log
 	nodejs16Fn := function.NewFunction("nodejs16", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs16Logger))
 
 	nodejs18Fn := function.NewFunction("nodejs18", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs18Logger))
+
+	nodejs20Fn := function.NewFunction("nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
 
 	logf.Infof("Testing function in namespace: %s", cfg.Namespace)
 
@@ -98,6 +101,10 @@ func FunctionTracingTest(restConfig *rest.Config, cfg internal.Config, logf *log
 			executor.NewSerialTestRunner(nodejs18Logger, "NodeJS18 test",
 				function.CreateFunction(nodejs18Logger, nodejs18Fn, "Create NodeJS18 Function", runtimes.BasicTracingNodeFunction(serverlessv1alpha2.NodeJs18, httpAppURL.String())),
 				assertion.TracingHTTPCheck(nodejs18Logger, "NodeJS18 tracing headers check", nodejs18Fn.FunctionURL, poll),
+			),
+			executor.NewSerialTestRunner(nodejs20Logger, "NodeJS20 test",
+				function.CreateFunction(nodejs20Logger, nodejs20Fn, "Create NodeJS20 Function", runtimes.BasicTracingNodeFunction(serverlessv1alpha2.NodeJs20, httpAppURL.String())),
+				assertion.TracingHTTPCheck(nodejs20Logger, "NodeJS20 tracing headers check", nodejs20Fn.FunctionURL, poll),
 			),
 		),
 	), nil

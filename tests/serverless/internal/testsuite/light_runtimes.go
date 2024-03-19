@@ -42,6 +42,7 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 	python312Logger := logf.WithField(runtimeKey, "python312")
 	nodejs16Logger := logf.WithField(runtimeKey, "nodejs16")
 	nodejs18Logger := logf.WithField(runtimeKey, "nodejs18")
+	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
 
 	genericContainer := utils.Container{
 		DynamicCli:  dynamicCli,
@@ -58,6 +59,8 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 	nodejs16Fn := function.NewFunction("nodejs16", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs16Logger))
 
 	nodejs18Fn := function.NewFunction("nodejs18", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs18Logger))
+
+	nodejs20Fn := function.NewFunction("nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
 
 	cm := configmap.NewConfigMap("test-serverless-configmap", genericContainer.WithLogger(nodejs18Logger))
 	cmEnvKey := "CM_ENV_KEY"
@@ -107,6 +110,7 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 				function.UpdateFunction(nodejs16Logger, nodejs16Fn, "Update NodeJS16 Function", runtimes.BasicNodeJSFunctionWithCustomDependency("Hello from updated nodejs16", serverlessv1alpha2.NodeJs16)),
 				assertion.NewHTTPCheck(nodejs16Logger, "NodeJS16 post update simple check through service", nodejs16Fn.FunctionURL, poll, "Hello from updated nodejs16"),
 			),
+			//TODO: refactor this to move the CreateConfigMap and Secret to separate test (serial test runner)
 			executor.NewSerialTestRunner(nodejs18Logger, "NodeJS18 test",
 				configmap.CreateConfigMap(nodejs18Logger, cm, "Create Test ConfigMap", cmData),
 				secret.CreateSecret(nodejs18Logger, sec, "Create Test Secret", secretData),
@@ -114,6 +118,12 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 				assertion.NewHTTPCheck(nodejs18Logger, "NodeJS18 pre update simple check through service", nodejs18Fn.FunctionURL, poll, fmt.Sprintf("%s-%s", cmEnvValue, secEnvValue)),
 				function.UpdateFunction(nodejs18Logger, nodejs18Fn, "Update NodeJS18 Function", runtimes.BasicNodeJSFunctionWithCustomDependency("Hello from updated nodejs18", serverlessv1alpha2.NodeJs18)),
 				assertion.NewHTTPCheck(nodejs18Logger, "NodeJS18 post update simple check through service", nodejs18Fn.FunctionURL, poll, "Hello from updated nodejs18"),
+			),
+			executor.NewSerialTestRunner(nodejs20Logger, "NodeJS20 test",
+				function.CreateFunction(nodejs20Logger, nodejs20Fn, "Create NodeJS20 Function", runtimes.NodeJSFunctionWithEnvFromConfigMapAndSecret(cm.Name(), cmEnvKey, sec.Name(), secEnvKey, serverlessv1alpha2.NodeJs20)),
+				assertion.NewHTTPCheck(nodejs20Logger, "NodeJS20 pre update simple check through service", nodejs20Fn.FunctionURL, poll, fmt.Sprintf("%s-%s", cmEnvValue, secEnvValue)),
+				function.UpdateFunction(nodejs20Logger, nodejs20Fn, "Update NodeJS20 Function", runtimes.BasicNodeJSFunctionWithCustomDependency("Hello from updated nodejs20", serverlessv1alpha2.NodeJs20)),
+				assertion.NewHTTPCheck(nodejs20Logger, "NodeJS20 post update simple check through service", nodejs20Fn.FunctionURL, poll, "Hello from updated nodejs20"),
 			),
 		),
 	), nil

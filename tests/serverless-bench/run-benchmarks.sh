@@ -3,7 +3,7 @@
 set -o pipefail  # Fail a pipe if any sub-command fails.
 
 
-ALL_FUNCTIONS="nodejs16-xs nodejs16-s nodejs16-m nodejs16-l nodejs16-xl nodejs18-xs nodejs18-s nodejs18-m nodejs18-l nodejs18-xl python39-s python39-m python39-l python39-xl python312-s python312-m python312-l python312-xl"
+ALL_FUNCTIONS="nodejs16-xs nodejs16-s nodejs16-m nodejs16-l nodejs16-xl nodejs18-xs nodejs18-s nodejs18-m nodejs18-l nodejs18-xl nodejs20-xs nodejs20-s nodejs20-m nodejs20-l nodejs20-xl python39-s python39-m python39-l python39-xl python312-s python312-m python312-l python312-xl"
 
 export TEST_NAMESPACE="${NAMESPACE:-serverless-benchmarks}"
 export TEST_CONCURRENCY="${CONCURRENCY:-50}"
