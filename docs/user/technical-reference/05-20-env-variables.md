@@ -15,7 +15,7 @@ Every runtime provides its own unique environment configuration which can be rea
 | **FUNC_PORT** | `8080` | The right port a server listens to.                                                                                                                                            |
 | **SERVICE_NAMESPACE** | None | The namespace where the right Function exists in a cluster.                                                                                                                    |
 | **KUBELESS_INSTALL_VOLUME** | `/kubeless` | Full path to volume mount with users source code.                                                                                                                              |
-| **FUNC_RUNTIME** | None | The name of the actual runtime. Possible values: `nodejs18`, `nodejs20`, `python39` - deprecated, and `python312`.                                               |
+| **FUNC_RUNTIME** | None | The name of the actual runtime. Possible values: `nodejs18` - deprecated, `nodejs20`, `python39` - deprecated, and `python312`.                                               |
 | **TRACE_COLLECTOR_ENDPOINT** | None | Full address of OpenTelemetry Trace Collector is exported if the trace collector's endpoint is present.                                                                        |
 | **PUBLISHER_PROXY_ADDRESS** | `http://eventing-publisher-proxy.kyma-system.svc&nbsp;.cluster.local/publish` | Full address of the Publisher Proxy service.                                                                                                                                   |
 
