@@ -41,18 +41,6 @@ func TestGetRuntimeConfig(t *testing.T) {
 					{Name: "PYTHONUNBUFFERED", Value: "TRUE"}},
 			},
 		},
-		"nodejs16": {
-			name:    "nodejs16 config",
-			runtime: serverlessv1alpha2.NodeJs16,
-			want: runtime.Config{
-				Runtime:                 serverlessv1alpha2.NodeJs16,
-				DependencyFile:          "package.json",
-				FunctionFile:            "handler.js",
-				DockerfileConfigMapName: "dockerfile-nodejs16",
-				RuntimeEnvs: []corev1.EnvVar{
-					{Name: "FUNC_RUNTIME", Value: "nodejs16"}},
-			},
-		},
 		"nodejs18": {
 			name:    "nodejs18 config",
 			runtime: serverlessv1alpha2.NodeJs18,

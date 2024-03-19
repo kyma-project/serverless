@@ -21,7 +21,6 @@ import (
 )
 
 const (
-	nodejs16  = "nodejs16"
 	nodejs18  = "nodejs18"
 	nodejs20  = "nodejs20"
 	python39  = "python39"
@@ -44,7 +43,6 @@ func FunctionAPIGatewayTest(restConfig *rest.Config, cfg internal.Config, logf *
 
 	python312Logger := logf.WithField(runtimeKey, "python312")
 	python39Logger := logf.WithField(runtimeKey, "python39")
-	nodejs16Logger := logf.WithField(runtimeKey, "nodejs16")
 	nodejs18Logger := logf.WithField(runtimeKey, "nodejs18")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
 
@@ -59,8 +57,6 @@ func FunctionAPIGatewayTest(restConfig *rest.Config, cfg internal.Config, logf *
 	python39Fn := function.NewFunction("python39", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python39Logger))
 
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
-
-	nodejs16Fn := function.NewFunction("nodejs16", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs16Logger))
 
 	nodejs18Fn := function.NewFunction("nodejs18", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs18Logger))
 
@@ -78,10 +74,6 @@ func FunctionAPIGatewayTest(restConfig *rest.Config, cfg internal.Config, logf *
 			executor.NewSerialTestRunner(python312Logger, "Python312 test",
 				function.CreateFunction(python312Logger, python312Fn, "Create Python312 Function", runtimes.BasicPythonFunction("Hello from python312", serverlessv1alpha2.Python312)),
 				assertion.APIGatewayFunctionCheck("python312", python312Fn, coreCli, genericContainer.Namespace, python312),
-			),
-			executor.NewSerialTestRunner(nodejs16Logger, "NodeJS16 test",
-				function.CreateFunction(nodejs16Logger, nodejs16Fn, "Create NodeJS16 Function", runtimes.BasicNodeJSFunction("Hello from nodejs16", serverlessv1alpha2.NodeJs16)),
-				assertion.APIGatewayFunctionCheck("nodejs16", nodejs16Fn, coreCli, genericContainer.Namespace, nodejs16),
 			),
 			executor.NewSerialTestRunner(nodejs18Logger, "NodeJS18 test",
 				function.CreateFunction(nodejs18Logger, nodejs18Fn, "Create NodeJS18 Function", runtimes.BasicNodeJSFunction("Hello from nodejs18", serverlessv1alpha2.NodeJs18)),

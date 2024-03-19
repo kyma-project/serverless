@@ -28,8 +28,6 @@ const (
 	// Deprecated: Python39 will be removed soon
 	Python39  Runtime = "python39"
 	Python312 Runtime = "python312"
-	// Deprecated: Nodejs16 will be removed soon
-	NodeJs16 Runtime = "nodejs16"
 	NodeJs18 Runtime = "nodejs18"
 	NodeJs20 Runtime = "nodejs20"
 )
@@ -170,8 +168,8 @@ const (
 
 // Defines the desired state of the Function
 type FunctionSpec struct {
-	// Specifies the runtime of the Function. The available values are `nodejs16` - deprecated, `nodejs18`, `nodejs20`, `python39` - deprecated, and `python312`.
-	// +kubebuilder:validation:Enum=nodejs16;nodejs18;nodejs20;python39;python312;
+	// Specifies the runtime of the Function. The available values are `nodejs18`, `nodejs20`, `python39` - deprecated, and `python312`.
+	// +kubebuilder:validation:Enum=nodejs18;nodejs20;python39;python312;
 	Runtime Runtime `json:"runtime"`
 
 	// Specifies the runtime image used instead of the default one.

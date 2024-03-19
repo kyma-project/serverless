@@ -5,7 +5,6 @@ protecode:
   - europe-docker.pkg.dev/kyma-project/prod/function-controller:main
   - europe-docker.pkg.dev/kyma-project/prod/function-webhook:main
   - europe-docker.pkg.dev/kyma-project/prod/function-build-init:main
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs16:main
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs18:main
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python39:main

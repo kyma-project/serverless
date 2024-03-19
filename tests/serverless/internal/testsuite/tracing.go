@@ -48,7 +48,6 @@ func FunctionTracingTest(restConfig *rest.Config, cfg internal.Config, logf *log
 
 	python39Logger := logf.WithField(runtimeKey, "python39")
 	python312Logger := logf.WithField(runtimeKey, "python312")
-	nodejs16Logger := logf.WithField(runtimeKey, "nodejs16")
 	nodejs18Logger := logf.WithField(runtimeKey, "nodejs18")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
 
@@ -63,8 +62,6 @@ func FunctionTracingTest(restConfig *rest.Config, cfg internal.Config, logf *log
 	python39Fn := function.NewFunction("python39", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python39Logger))
 
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
-
-	nodejs16Fn := function.NewFunction("nodejs16", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs16Logger))
 
 	nodejs18Fn := function.NewFunction("nodejs18", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs18Logger))
 
@@ -93,10 +90,6 @@ func FunctionTracingTest(restConfig *rest.Config, cfg internal.Config, logf *log
 			executor.NewSerialTestRunner(python312Logger, "Python312 test",
 				function.CreateFunction(python312Logger, python312Fn, "Create Python312 Function", runtimes.BasicTracingPythonFunction(serverlessv1alpha2.Python312, httpAppURL.String())),
 				assertion.TracingHTTPCheck(python312Logger, "Python312 tracing headers check", python312Fn.FunctionURL, poll),
-			),
-			executor.NewSerialTestRunner(nodejs16Logger, "NodeJS16 test",
-				function.CreateFunction(nodejs16Logger, nodejs16Fn, "Create NodeJS16 Function", runtimes.BasicTracingNodeFunction(serverlessv1alpha2.NodeJs16, httpAppURL.String())),
-				assertion.TracingHTTPCheck(nodejs16Logger, "NodeJS16 tracing headers check", nodejs16Fn.FunctionURL, poll),
 			),
 			executor.NewSerialTestRunner(nodejs18Logger, "NodeJS18 test",
 				function.CreateFunction(nodejs18Logger, nodejs18Fn, "Create NodeJS18 Function", runtimes.BasicTracingNodeFunction(serverlessv1alpha2.NodeJs18, httpAppURL.String())),
