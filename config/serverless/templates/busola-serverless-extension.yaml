@@ -224,7 +224,7 @@ data:
         []
       subscribe:
         language: |
-          $language = 'JavaScript' ? ($exists($root.spec.runtime) and $root.spec.runtime != 'python39') ? $root.spec.runtime : 'nodejs18' :
+          $language = 'JavaScript' ? ($exists($root.spec.runtime) and $root.spec.runtime != 'python39') ? $root.spec.runtime : 'nodejs20' :
           $language = 'Python' ? 'python39' :
           ''
     - path: spec.resourceConfiguration.function.profile
@@ -561,7 +561,7 @@ data:
     - name: Node.js Function
       value:
         spec:
-          runtime: nodejs18
+          runtime: nodejs20
           source:
             inline:
               source: |-

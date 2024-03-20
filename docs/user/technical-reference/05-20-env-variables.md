@@ -51,7 +51,7 @@ spec:
         configMapKeyRef:
           key: my-var
           name: my-vars-cm
-  runtime: nodejs18
+  runtime: nodejs20
   source:
     inline:
       source: |
@@ -87,7 +87,7 @@ spec:
       value: '2'
     - name: REQ_MB_LIMIT
       value: '10'
-  runtime: nodejs18
+  runtime: nodejs20
   source:
     inline:
       source: |
@@ -120,7 +120,7 @@ spec:
   env:
     - name: FUNC_MEMFILE_MAX
       value: '1048576' #1MiB
-  runtime: nodejs18
+  runtime: nodejs20
   source:
     inline:
       source: |

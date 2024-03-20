@@ -2,6 +2,8 @@ package testsuite
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/kyma-project/serverless/tests/serverless/internal"
 	"github.com/kyma-project/serverless/tests/serverless/internal/assertion"
 	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
@@ -10,7 +12,6 @@ import (
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/namespace"
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/runtimes"
 	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
-	"time"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 
@@ -65,7 +66,7 @@ func GitopsSteps(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entr
 	return executor.NewSerialTestRunner(logf, "Create git func",
 		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
 		git.NewGitServer(gitCfg, "Start in-cluster Git Server", appsCli.Deployments(genericContainer.Namespace), coreCli.Services(genericContainer.Namespace), cfg.KubectlProxyEnabled, cfg.IstioEnabled),
-		function.CreateFunction(logf, gitFn, "Create Git Function", runtimes.GitopsFunction(gitCfg.GetGitServerInClusterURL(), "/", "master", serverlessv1alpha2.NodeJs18, nil)),
+		function.CreateFunction(logf, gitFn, "Create Git Function", runtimes.GitopsFunction(gitCfg.GetGitServerInClusterURL(), "/", "master", serverlessv1alpha2.NodeJs20, nil)),
 		assertion.NewHTTPCheck(logf, "Git Function pre update simple check through service", gitFn.FunctionURL, poll, "GITOPS 1"),
 		git.NewCommitChanges(logf, "Commit changes to Git Function", gitCfg.GetGitServerURL(cfg.KubectlProxyEnabled)),
 		assertion.NewHTTPCheck(logf, "Git Function post update simple check through service", gitFn.FunctionURL, poll, "GITOPS 2")), nil

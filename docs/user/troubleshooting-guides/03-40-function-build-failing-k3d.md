@@ -8,7 +8,7 @@ Your Function cannot be built and you get the following output:
 ```
 $ kubectl get functions.serverless.kyma-project.io nyfun
 NAME    CONFIGURED   BUILT   RUNNING   RUNTIME    VERSION   AGE
-myfun   True         False             nodejs18   1         3h15m
+myfun   True         False             nodejs20   1         3h15m
 ```
 Additionally, the Function build job shows the following error, meaning that your host k3d environment is likely to experience the problem:
 ```

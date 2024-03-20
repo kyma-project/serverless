@@ -9,8 +9,8 @@ See the sample `config.yaml` for an inline Function for which code and dependenc
 ```yaml
 name: function-practical-filip5
 namespace: testme
-runtime: nodejs18
-runtimeImageOverride: eu.gcr.io/kyma-project/function-runtime-nodejs18:v20230228-b2981e80
+runtime: nodejs20
+runtimeImageOverride: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:v20240320-dacf4702
 labels:
     app: serverless-test
 source:
@@ -95,7 +95,7 @@ See the sample `config.yaml` for a [Git Function](07-40-git-source-type.md) for 
 ```yaml
 name: function-practical-marcin
 namespace: iteration-review
-runtime: nodejs18
+runtime: nodejs20
 source:
     sourceType: git
     url: https://github.com/username/public-gitops.git

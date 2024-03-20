@@ -4,7 +4,7 @@
 
 The container suddenly fails when you use the `kyma run function` command with these flags:
 
-- `runtime=nodejs18`
+- `runtime=nodejs20`
 - `debug=true`
 - `hot-deploy=true`
 

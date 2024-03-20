@@ -96,7 +96,7 @@ The dialog box closes. Wait for the **Status** field to change into `RUNNING`, c
 
     ```bash
     NAME            CONFIGURED   BUILT     RUNNING   RUNTIME    VERSION   AGE
-    test-function   True         True      True      nodejs18   1         96s
+    test-function   True         True      True      nodejs20   1         96s
     ```
 
 #### **kubectl**
@@ -118,7 +118,7 @@ The dialog box closes. Wait for the **Status** field to change into `RUNNING`, c
      name: $NAME
      namespace: $NAMESPACE
    spec:
-     runtime: nodejs18
+     runtime: nodejs20
      source:
        inline:
          source: |
@@ -140,7 +140,7 @@ The dialog box closes. Wait for the **Status** field to change into `RUNNING`, c
 
     ```bash
     NAME            CONFIGURED   BUILT     RUNNING   RUNTIME    VERSION   AGE
-    test-function   True         True      True      nodejs18   1         96s
+    test-function   True         True      True      nodejs20   1         96s
     ```
 
 <!-- tabs:end -->

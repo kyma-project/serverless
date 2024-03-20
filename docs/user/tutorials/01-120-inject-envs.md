@@ -40,7 +40,7 @@ kubectl create secret generic my-secret --from-literal secret-env="I come from s
     ```yaml
     name: my-function
     namespace: default
-    runtime: nodejs18
+    runtime: nodejs20
     source:
         sourceType: inline
     env:
@@ -113,7 +113,7 @@ kubectl create secret generic my-secret --from-literal secret-env="I come from s
            secretKeyRef:
              key: secret-env
              name: my-secret
-     runtime: nodejs18
+     runtime: nodejs20
      source:
        inline:
          source: |-

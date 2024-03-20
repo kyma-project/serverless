@@ -36,7 +36,7 @@ func newTestGitFunction(namespace, name string, auth *serverlessv1alpha2.Reposit
 					Auth: auth,
 				},
 			},
-			Runtime: serverlessv1alpha2.NodeJs18,
+			Runtime: serverlessv1alpha2.NodeJs20,
 			Env: []corev1.EnvVar{
 				{
 					Name:  "TEST_1",
@@ -96,7 +96,7 @@ func newFixFunction(namespace, name string, minReplicas, maxReplicas int) *serve
 					Dependencies: "   ",
 				},
 			},
-			Runtime: serverlessv1alpha2.NodeJs18,
+			Runtime: serverlessv1alpha2.NodeJs20,
 			Env: []corev1.EnvVar{
 				{
 					Name:  "TEST_1",

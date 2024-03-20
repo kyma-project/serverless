@@ -40,7 +40,7 @@ const (
 
 func TestFunctionReconciler_Reconcile_Scaling(t *testing.T) {
 	g := gomega.NewGomegaWithT(t)
-	rtm := serverlessv1alpha2.NodeJs18
+	rtm := serverlessv1alpha2.NodeJs20
 	resourceClient, testEnv := setUpTestEnv(g)
 	defer tearDownTestEnv(g, testEnv)
 	testCfg := setUpControllerConfig(g)
@@ -279,7 +279,7 @@ func TestFunctionReconciler_Reconcile_Scaling(t *testing.T) {
 
 func TestFunctionReconciler_ResourceConfig(t *testing.T) {
 	g := gomega.NewGomegaWithT(t)
-	rtm := serverlessv1alpha2.NodeJs18
+	rtm := serverlessv1alpha2.NodeJs20
 	resourceClient, testEnv := setUpTestEnv(g)
 	defer tearDownTestEnv(g, testEnv)
 	testCfg := setUpControllerConfig(g)
@@ -399,7 +399,7 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 
 	t.Parallel()
 	g := gomega.NewGomegaWithT(t)
-	rtm := serverlessv1alpha2.NodeJs18
+	rtm := serverlessv1alpha2.NodeJs20
 	resourceClient, testEnv := setUpTestEnv(g)
 	defer tearDownTestEnv(g, testEnv)
 	testCfg := setUpControllerConfig(g)

@@ -59,13 +59,13 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 
 	nodejs20Fn := function.NewFunction("nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
 
-	cm := configmap.NewConfigMap("test-serverless-configmap", genericContainer.WithLogger(nodejs18Logger))
+	cm := configmap.NewConfigMap("test-serverless-configmap", genericContainer.WithLogger(nodejs20Logger))
 	cmEnvKey := "CM_ENV_KEY"
 	cmEnvValue := "Value taken as env from ConfigMap"
 	cmData := map[string]string{
 		cmEnvKey: cmEnvValue,
 	}
-	sec := secret.NewSecret("test-serverless-secret", genericContainer.WithLogger(nodejs18Logger))
+	sec := secret.NewSecret("test-serverless-secret", genericContainer.WithLogger(nodejs20Logger))
 	secEnvKey := "SECRET_ENV_KEY"
 	secEnvValue := "Value taken as env from Secret"
 	secretData := map[string]string{
