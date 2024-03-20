@@ -343,7 +343,7 @@ metadata:
   labels:
     app.kubernetes.io/name: my-function
 spec:
-  runtime:20
+  runtime: nodejs20
   source:
     ...
   resourceProfiles:
