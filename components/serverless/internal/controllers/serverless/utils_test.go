@@ -27,10 +27,10 @@ func Test_calculateGitImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime: "nodejs18",
+					Runtime: "nodejs20",
 				},
 			},
-			want: "4480d14ea252bf15f18c6632caff283b55beb6f38d5cf8cc43b1b116a151e78d",
+			want: "5e62e84b27afdcf23e9ea682a8ce44b693c4a3258e5b26bd038c60cd41eb60ee",
 		},
 		{
 			name: "should use runtimeOverride",
@@ -45,11 +45,11 @@ func Test_calculateGitImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime:              "python312",
-					RuntimeImageOverride: "nodejs18",
+					Runtime:              "nodejs18",
+					RuntimeImageOverride: "nodejs20",
 				},
 			},
-			want: "4480d14ea252bf15f18c6632caff283b55beb6f38d5cf8cc43b1b116a151e78d",
+			want: "5e62e84b27afdcf23e9ea682a8ce44b693c4a3258e5b26bd038c60cd41eb60ee",
 		},
 		{
 			name: "should use runtime when runtimeOverride is empty",
@@ -64,11 +64,11 @@ func Test_calculateGitImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime:              "nodejs18",
+					Runtime:              "nodejs20",
 					RuntimeImageOverride: "",
 				},
 			},
-			want: "4480d14ea252bf15f18c6632caff283b55beb6f38d5cf8cc43b1b116a151e78d",
+			want: "5e62e84b27afdcf23e9ea682a8ce44b693c4a3258e5b26bd038c60cd41eb60ee",
 		},
 	}
 	for _, tt := range tests {
@@ -97,7 +97,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime: "nodejs18",
+					Runtime: "nodejs20",
 				},
 				Status: serverlessv1alpha2.FunctionStatus{
 					Commit: "commit",
@@ -106,7 +106,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 					},
 				},
 			},
-			want: "e6ca45293444d4f6f1b43437f96cd2606842bf7cf9e14a126f52c0b7c216c677",
+			want: "9f131e00ad3c6cfc5ca36f27df299eeeb2b08bcc4328782e79b69440b1b7aa2b",
 		},
 		{
 			name: "should use runtimeOverride",
@@ -121,8 +121,8 @@ func Test_calculateInlineImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime:              "python312",
-					RuntimeImageOverride: "nodejs18",
+					Runtime:              "nodejs18",
+					RuntimeImageOverride: "nodejs20",
 				},
 				Status: serverlessv1alpha2.FunctionStatus{
 					Commit: "commit",
@@ -131,7 +131,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 					},
 				},
 			},
-			want: "e6ca45293444d4f6f1b43437f96cd2606842bf7cf9e14a126f52c0b7c216c677",
+			want: "9f131e00ad3c6cfc5ca36f27df299eeeb2b08bcc4328782e79b69440b1b7aa2b",
 		},
 		{
 			name: "should use runtime instead of runtimeOverride",
@@ -146,7 +146,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime:              "nodejs18",
+					Runtime:              "nodejs20",
 					RuntimeImageOverride: "",
 				},
 				Status: serverlessv1alpha2.FunctionStatus{
@@ -156,7 +156,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 					},
 				},
 			},
-			want: "e6ca45293444d4f6f1b43437f96cd2606842bf7cf9e14a126f52c0b7c216c677",
+			want: "9f131e00ad3c6cfc5ca36f27df299eeeb2b08bcc4328782e79b69440b1b7aa2b",
 		},
 	}
 	for _, tt := range tests {
