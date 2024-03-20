@@ -98,20 +98,6 @@ updates:
           - "opentelemetry-*"
 
   - package-ecosystem: "npm"
-    directory: "/components/runtimes/nodejs/nodejs16"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "npm-nodejs16"
-      include: "scope"
-    groups:
-      opentelemetry:
-        patterns:
-          - "@opentelemetry/*"
-  - package-ecosystem: "npm"
     directory: "/components/runtimes/nodejs/nodejs18"
     labels:
       - "area/dependency"
