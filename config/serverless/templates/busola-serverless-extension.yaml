@@ -63,7 +63,7 @@ data:
         source: 'spec.source.gitRepository ? "Git Repository" : "Inline Editor"'
       - name: header.runtime
         source: >-
-          spec.runtime = 'python39' ? 'Python 3.9 - deprecated' : (spec.runtime = 'nodejs18' ? 'Node.js 18' : (spec.runtime = 'python312' ? 'Python 3.12' : (spec.runtime = 'nodejs20' ? 'Node.js 20' : spec.runtime)))
+          spec.runtime = 'python39' ? 'Python 3.9 - deprecated' : (spec.runtime = 'nodejs18' ? 'Node.js 18 - deprecated' : (spec.runtime = 'python312' ? 'Python 3.12' : (spec.runtime = 'nodejs20' ? 'Node.js 20' : spec.runtime)))
     body:
       - widget: Tabs
         children:
@@ -422,7 +422,7 @@ data:
   list: |-
     - name: header.runtime
       source: >-
-        spec.runtime = 'python39' ? 'Python 3.9 - deprecated' : (spec.runtime = 'nodejs18' ? 'Node.js 18' : (spec.runtime = 'python312' ? 'Python 3.12' : (spec.runtime = 'nodejs20' ? 'Node.js 20' : spec.runtime)))
+        spec.runtime = 'python39' ? 'Python 3.9 - deprecated' : (spec.runtime = 'nodejs18' ? 'Node.js 18 - deprecated' : (spec.runtime = 'python312' ? 'Python 3.12' : (spec.runtime = 'nodejs20' ? 'Node.js 20' : spec.runtime)))
     - name: header.sourceType
       source: 'spec.source.gitRepository ? "Git Repository" : "Inline Editor"'
     - name: header.status
@@ -533,7 +533,7 @@ data:
       Status: Status
       Runtime: Runtime
       'Source Type': Source Type
-      spec.runtime.nodejs18: Node.js 18
+      spec.runtime.nodejs18: Node.js 18 - deprecated
       spec.runtime.nodejs20: Node.js 20
       spec.runtime.python39: Python 3.9
       spec.runtime.python312: Python 3.12
