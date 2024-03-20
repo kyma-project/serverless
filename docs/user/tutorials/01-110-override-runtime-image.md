@@ -12,7 +12,7 @@ Before you start, make sure you have these tools installed:
 
 Follow these steps:
 
-1. Follow [this example](https://github.com/kyma-project/examples/tree/main/custom-serverless-runtime-image) to build the Python's custom runtime image.
+1. Follow [this example](https://github.com/kyma-project/serverless/tree/main/examples/custom-serverless-runtime-image) to build the Python's custom runtime image.
 
 <!-- tabs:start -->
 
