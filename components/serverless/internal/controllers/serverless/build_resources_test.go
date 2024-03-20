@@ -80,7 +80,7 @@ func TestFunctionReconciler_buildDeployment(t *testing.T) {
 	type args struct {
 		instance *serverlessv1alpha2.Function
 	}
-	rtmCfg := runtime.GetRuntimeConfig(serverlessv1alpha2.NodeJs18)
+	rtmCfg := runtime.GetRuntimeConfig(serverlessv1alpha2.NodeJs20)
 	resourceCfg := fixResources()
 
 	tests := []struct {

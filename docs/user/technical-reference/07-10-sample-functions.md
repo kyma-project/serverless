@@ -18,7 +18,7 @@ kind: Function
 metadata:
   name: test-function-nodejs
 spec:
-  runtime: nodejs18
+  runtime: nodejs20
   source:
     inline:
       dependencies: |

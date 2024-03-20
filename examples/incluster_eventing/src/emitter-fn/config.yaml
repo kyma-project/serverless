@@ -1,6 +1,6 @@
 name: event-emitter
 namespace: default
-runtime: nodejs18
+runtime: nodejs20
 source:
     sourceType: git
     url: https://github.com/kwiatekus/examples.git

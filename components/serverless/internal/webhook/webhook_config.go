@@ -35,7 +35,7 @@ type WebhookConfig struct {
 }
 
 func LoadWebhookCfg(path string) (WebhookConfig, error) {
-	cfg := WebhookConfig{DefaultRuntime: string(v1alpha2.NodeJs18)}
+	cfg := WebhookConfig{DefaultRuntime: string(v1alpha2.NodeJs20)}
 
 	cleanPath := filepath.Clean(path)
 	yamlFile, err := os.ReadFile(cleanPath)

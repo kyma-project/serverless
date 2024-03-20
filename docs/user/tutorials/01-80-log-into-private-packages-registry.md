@@ -111,7 +111,7 @@ You should get a result similar to the this example:
 
 ```bash
 NAME            CONFIGURED   BUILT     RUNNING   RUNTIME    VERSION   AGE
-test-function   True         True      True      nodejs18   1         96s
+test-function   True         True      True      nodejs20   1         96s
 ```
 
 > [!WARNING]

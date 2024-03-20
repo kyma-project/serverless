@@ -117,7 +117,7 @@ This tutorial shows only one possible use case. There are many more use cases on
    ```yaml
        name: event-receiver
        namespace: default
-       runtime: nodejs18
+       runtime: nodejs20
        source:
           sourceType: inline
        subscriptions:

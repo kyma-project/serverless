@@ -135,7 +135,7 @@ See sample context details:
 { 
     "function-name": "main",
     "timeout": 180,
-    "runtime": "nodejs18",
+    "runtime": "nodejs20",
     "memory-limit": 200Mi
 }
 ```
