@@ -7,7 +7,7 @@ Function's resources and replicas as well as resources for image-building Jobs a
 
 ## Usage
 
-If you want to apply values from a preset to a single Function, override the existing values for a given preset in the Function CR: First, remove the relevant fields from the Function CR and then, add the relevant preset labels. 
+If you want to apply values from a preset to a single Function, override the existing values for a given preset in the Function CR: First, remove the relevant fields from the Function CR and then, add the relevant preset labels.
 
 For example, to modify the default values for **buildResources**, remove all its entries from the Function CR and add an appropriate **serverless.kyma-project.io/build-resources-preset: {PRESET}** label to the Function CR.
 

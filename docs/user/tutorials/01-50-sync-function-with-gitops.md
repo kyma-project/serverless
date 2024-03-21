@@ -44,6 +44,7 @@ These sections will lead you through the whole installation, configuration, and 
   ```bash
   kubectl apply -f https://raw.githubusercontent.com/kyma-project/serverless/main/components/serverless/config/crd/bases/serverless.kyma-project.io_functions.yaml
   ```
+
 4. Run this command to make sure the CRs are applied:
 
   ```bash
@@ -69,7 +70,7 @@ These sections will lead you through the whole installation, configuration, and 
 
   This command will download the following files to your workspace folder:
 
-  - `config.yaml`	with the Function's configuration
+  - `config.yaml` with the Function's configuration
   - `handler.py` with the Function's code and the simple "Hello World" logic
   - `requirements.txt` with an empty file for your Function's custom dependencies
 
@@ -170,6 +171,7 @@ In this section, you will create a sample inline Function.
   ```bash
   git clone https://github.com/${GH_USER}/${GH_REPO}.git
   ```
+
   > [!NOTE]
   > You can also clone the repository using SSH. To do that, you need to [generate a new SSH key and add it to the ssh-agent](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent).
 
@@ -212,6 +214,7 @@ In this section, you will create a sample inline Function.
   ```bash
   kubectl get functions
   ```
+
 You can see that Flux synchronized the resource and the new Function CR was added to your cluster.
 
 ## Reverting Feature

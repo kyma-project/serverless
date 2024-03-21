@@ -1,6 +1,4 @@
----
-title: Serverless
----
+# Serverless
 
 The `serverlesses.operator.kyma-project.io` CustomResourceDefinition (CRD) is a detailed description of the Serverless configuration that you want to install on your cluster. To get the up-to-date CRD and show the output in the YAML format, run this command:
 
@@ -82,7 +80,6 @@ For details, see the [Serverless specification file](https://github.com/kyma-pro
 | **defaultBuildJobPreset**                 | string  | Configures the default build Job preset to be used            |
 | **defaultRuntimePodPreset**               | string  | Configures the default runtime Pod preset to be used            |
 
-
 **Status:**
 
 | Parameter                                            | Type       | Description                                                                                                                                                                                                                                                                                                                                                    |
@@ -115,8 +112,7 @@ For details, see the [Serverless specification file](https://github.com/kyma-pro
 
 Processing of a Serverless CR can succeed, continue, or fail for one of these reasons:
 
-
-# Serverless CR Conditions
+## Serverless CR Conditions
 
 This section describes the possible states of the Serverless CR. Three condition types, `Installed`, `Configured` and `Deleted`, are used.
 

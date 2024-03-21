@@ -3,6 +3,7 @@
 This tutorial shows how to use an external IDE to debug a Function in Kyma CLI.
 
 ## Steps
+
 Learn how to debug a Function with Visual Studio Code for Node.js or Python, or GoLand:
 
 <!-- tabs:start -->
@@ -14,6 +15,7 @@ Learn how to debug a Function with Visual Studio Code for Node.js or Python, or 
 3. In the `.vscode` directory, create the `launch.json` file with the following content:
 
    For Node.js:
+
    ```json
    {
      "version": "0.2.0",
@@ -33,7 +35,9 @@ Learn how to debug a Function with Visual Studio Code for Node.js or Python, or 
      ]
    }
     ```
+
     For Python:
+
    ```json
    {
       "version": "0.2.0",
@@ -58,6 +62,7 @@ Learn how to debug a Function with Visual Studio Code for Node.js or Python, or 
     ```
 
 4. Run the Function with the `--debug` flag.
+
     ```bash
     kyma run function --debug
     ```
@@ -70,6 +75,7 @@ Learn how to debug a Function with Visual Studio Code for Node.js or Python, or 
     - Host: `localhost`
     - Port: `9229`
 4. Run the Function with the `--debug` flag.
+
     ```bash
     kyma run function --debug
     ```

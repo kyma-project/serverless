@@ -28,3 +28,4 @@ You can have various setups for your Function's Git source with different:
 - Function's rebuild triggers
 
   To define whether the Function Controller must monitor a given branch or commit in the Git repository to rebuild the Function upon their changes, use the **spec.source.gitRepository.reference** parameter in the Function CR.
+  

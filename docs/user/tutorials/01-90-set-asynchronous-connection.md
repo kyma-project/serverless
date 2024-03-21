@@ -9,7 +9,6 @@ This tutorial shows only one possible use case. There are many more use cases on
 
 ## Prerequisites
 
-
 - [Kyma CLI](https://github.com/kyma-project/cli)
 - [Eventing and Istio components installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/02-install-kyma/#install-specific-components)
   
@@ -33,7 +32,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 
    The `init` command creates these files in your workspace folder:
 
-   - `config.yaml`	with the Function's configuration
+   - `config.yaml` with the Function's configuration
 
       > [!NOTE]
       > See the detailed description of all fields available in the [`config.yaml` file](../technical-reference/07-60-function-configuration-file.md).
@@ -84,6 +83,7 @@ This tutorial shows only one possible use case. There are many more use cases on
       return data
    }
    ```
+
    The `sap.kyma.custom.acme.payload.sanitised.v1` is a sample event type that the emitter Function declares when publishing events. You can choose a different one that better suits your use case. Keep in mind the constraints described on the [Event names](https://kyma-project.io/docs/kyma/latest/05-technical-reference/evnt-01-event-names/) page. The receiver subscribes to the event type to consume the events.
 
    The event object provides convenience functions to build and publish events. To send the event, build the Cloud Event. To learn more, read [Function's specification](../technical-reference/07-70-function-specification.md#event-object-sdk). In addition, your **eventOut.source** key must point to `“kyma”` to use Kyma in-cluster Eventing.
@@ -94,6 +94,7 @@ This tutorial shows only one possible use case. There are many more use cases on
    ```bash
    kyma apply function
    ```
+
    Your Function is now built and deployed in Kyma runtime. Kyma exposes it through the APIRule. The incoming payloads are processed by your emitter Function. It then sends the sanitized content to the workload that subscribes to the selected event type. In our case, it's the receiver Function.
 
 5. Test the first Function. Send the payload and see if your HTTP traffic is accepted:
@@ -107,9 +108,11 @@ This tutorial shows only one possible use case. There are many more use cases on
 ### Create the Receiver Function
 
 1. Go to your `receiver` folder and run Kyma CLI `init` command to initialize the scaffold for your second Function:
+
    ```bash
    kyma init function
    ```
+
    The `init` command creates the same files as in the `emitter` folder.
 
 2. In the `config.yaml` file, configure event types your Function will subscribe to:  
@@ -129,14 +132,15 @@ This tutorial shows only one possible use case. There are many more use cases on
        schemaVersion: v1
       ```
 
-3.  Apply your receiver Function:
+3. Apply your receiver Function:
 
    ```bash
    kyma apply function
    ```
-   
+
    The Function is configured, built, and deployed in Kyma runtime. The Subscription becomes active and all events with the selected type are processed by the Function.  
 
-### Test the whole setup  
+### Test the Whole Setup
+
 Send a payload to the first Function. For example, use the POST request mentioned above. As the Functions are joined by the in-cluster Eventing, the payload is processed in sequence by both of your Functions.
 In the Function's logs, you can see that both sanitization logic (using the first Function) and the storing logic (using the second Function) are executed.

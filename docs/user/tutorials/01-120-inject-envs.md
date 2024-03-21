@@ -37,6 +37,7 @@ kubectl create secret generic my-secret --from-literal secret-env="I come from s
     ```
 
 4. Define environment variables as part of the Function configuration file. Modify `config.yaml` with the following:
+
     ```yaml
     name: my-function
     namespace: default
@@ -57,7 +58,9 @@ kubectl create secret generic my-secret --from-literal secret-env="I come from s
             name: my-secret
             key: secret-env
     ```
+
 5. Use injected environment variables in the handler file. Modify `handler.js` with the following:
+
     ```js
     module.exports = {
         main: function (event, context) {

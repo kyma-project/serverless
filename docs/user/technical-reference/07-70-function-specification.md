@@ -7,10 +7,11 @@ With the Serverless module, you can create Functions in both Node.js and Python.
 Function's code is represented by a handler that is a method that processes events. When your Function is invoked, it runs this handler method to process a given request and return a response.
 
 All Functions have a predefined signature with elements common for all available runtimes:
+
 - Functions' code must be introduced by the `main` handler name.
 - Functions must accept two arguments that are passed to the Function handler:
-    - `event`
-    - `context`
+  - `event`
+  - `context`
 
 See these signatures for each runtime:
 
@@ -96,7 +97,6 @@ See the detailed descriptions of these fields:
 | **data** | Either JSON or a string, depending on the request type. Read more about [Buffer](https://nodejs.org/api/buffer.html) in Node.js and [bytes literals](https://docs.python.org/3/reference/lexical_analysis.html#string-and-bytes-literals) in Python. |
 | **tracer** | Fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) object that allows you to communicate with the user-defined trace backend service to share tracing data. For more information on how to use the tracer object see [Customize Function traces](../tutorials/01-100-customize-function-traces.md) |
 | **extensions** | JSON object that can contain event payload, a Function's incoming request, or an outgoing response |
-
 
 ### Event Object SDK
 
@@ -228,7 +228,7 @@ You can use a custom runtime image to override the existing one. Your image must
 - Fetch sources from the path under the `KUBELESS_INSTALL_VOLUME` environment
 - Security support. Kyma runtimes are secure by default. You only need to protect your images.
 
-> [!NOTE] 
+> [!NOTE]
 > For better understanding, you can look at the [main Docker files](../../../config/serverless/templates/runtimes.yaml). They are responsible for building the final image based on the `base_image` argument. You, as a user, can override it and what we are doing in [this tutorial](../tutorials/01-110-override-runtime-image.md).
 
 Every Function's Pods container has the same system environments, which helps you configure the Functions server. For more information, read the [Environment variables](05-20-env-variables.md) page.

@@ -41,10 +41,10 @@ You can create a Function either with kubectl or Kyma dashboard:
 
 3. To connect the repository, go to **Workloads** > **Functions** > **Create Function**.
 
-4. Provide or generate the Function's name. 
+4. Provide or generate the Function's name.
 
 5. Go to **Advanced**, change **Source Type** from **Inline** to **Git Repository**.
-   
+
 6. Choose `JavaScript` from the **Language** dropdown and select the proper runtime.
 
 7. Click on the **Git Repository** section and enter the following values:
@@ -52,9 +52,9 @@ You can create a Function either with kubectl or Kyma dashboard:
    - **Base Dir**:`orders-service/function`
    - **Reference**:`main`
 
-    > [!NOTE] 
+    > [!NOTE]
     > If you want to connect a secured repository instead of a public one, toggle the **Auth** switch. In the **Auth** section, choose **Secret** from the list and choose the preferred type.
-    
+
 8. Click **Create**.
 
     After a while, a message confirms that the Function has been created.
@@ -75,7 +75,7 @@ You can create a Function either with kubectl or Kyma dashboard:
 
     - Basic authentication (username and password or token) to this repository in the same namespace as the Function:
   
-    1. Generate a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) and copy it. 
+    1. Generate a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) and copy it.
     2. Create a Secret containg your username and the generated token.
 
        ```bash
@@ -84,12 +84,14 @@ You can create a Function either with kubectl or Kyma dashboard:
 
     - SSH key:
 
-    1. Generate a new SSH key pair (private and public). Follow [this tutorial](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) to learn how to do it. Alternatively, you can use the existing pair. 
+    1. Generate a new SSH key pair (private and public). Follow [this tutorial](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) to learn how to do it. Alternatively, you can use the existing pair.
     2. Install the generated private key in Kyma, as a Kubernetes Secret that lives in the same namespace as your Function.
+
        ```bash
        kubectl -n $NAMESPACE create secret generic git-creds-ssh --from-file=key={PATH_TO_THE_FILE_WITH_PRIVATE_KEY}
        ```
-    3. Configure the public key in GitHub. Follow the steps described in [this tutorial](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account). 
+
+    3. Configure the public key in GitHub. Follow the steps described in [this tutorial](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account).
 
     > [!NOTE]
     > Read more about the [supported authentication methods](../technical-reference/07-40-git-source-type.md).
@@ -123,7 +125,7 @@ You can create a Function either with kubectl or Kyma dashboard:
         type: # "basic" or "key"
         secretName: # "git-creds-basic" or "git-creds-key"
     ```
-   
+
     > [!NOTE]
     > To avoid performance degradation caused by large Git repositories and large monorepos, [Function Controller](../resources/06-10-function-cr.md#related-resources-and-components) implements a configurable backoff period for the source checkout based on `APP_FUNCTION_REQUEUE_DURATION`. If you want to allow the controller to perform the source checkout with every reconciliation loop, disable the backoff period by marking the Function CR with the annotation `serverless.kyma-project.io/continuousGitCheckout: true`
 

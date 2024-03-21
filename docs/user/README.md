@@ -1,4 +1,4 @@
-# Serverless module
+# Serverless Module
 
 ## What is serverless?
 
@@ -24,7 +24,7 @@ Serverless in Kyma is an area that:
 
 Serverless in Kyma allows you to reduce the implementation and operation effort of an application to the absolute minimum. It provides a platform to run lightweight Functions in a cost-efficient and scalable way using JavaScript and Node.js. Serverless in Kyma relies on Kubernetes resources like [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), [Services](https://kubernetes.io/docs/concepts/services-networking/service/) and [HorizontalPodAutoscalers](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) for deploying and managing Functions and [Kubernetes Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/) for creating Docker images.
 
-## Serverless module
+## Serverless Module
 
 The Serverless module allows you to install, uninstall and configure Kyma's Serverless on your Kubernetes cluster, using Serverless Operator.
 
@@ -32,7 +32,7 @@ The Serverless module allows you to install, uninstall and configure Kyma's Serv
 
 When you enable the Serverless module, Serverless Operator takes care of installation and configuration of Serverless on your cluster. It manages the Serverless lifecycle based on the dedicated Serverless custom resource (CR).
 
-## Useful links
+## Useful Links
 
 If you want to perform some simple and more advanced tasks, check the [Serverless tutorials](tutorials/README.md).
 
@@ -40,4 +40,4 @@ To troubleshoot Serverless-related issues, see the [troubleshooting guides](trou
 
 To analyze Function specification and configuration files and to understand technicalities behind Serverless implementation, visit [technical reference](technical-reference/README.md).
 
-For more information on the Serverless custom resources, see [Resources](resources/README.md)
+For more information on the Serverless custom resources, see [Resources](resources/README.md).
