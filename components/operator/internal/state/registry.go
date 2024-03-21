@@ -8,6 +8,7 @@ import (
 	"github.com/kyma-project/serverless/components/operator/internal/registry"
 	"github.com/pkg/errors"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -17,6 +18,7 @@ const (
 	extRegSecDiffThanSpecFormat             = "actual registry configuration comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect the %s secret in the secretName field or delete it"
 	extRegSecNotInSpecFormat                = "actual registry configuration comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect %s secret in the secretName field"
 	internalEnabledAndSecretNameUsedMessage = "spec.dockerRegistry.enableInternal is true and spec.dockerRegistry.secretName is used. Delete the secretName field or set the enableInternal value to false"
+	customPVCSizeNotInSpecFormat            = "actual internal registry size is %s and it is different from default value and from spec.dockerRegistry.size. Configure custom storage size in the spec.dockerRegistry.size"
 )
 
 func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
@@ -106,11 +108,14 @@ func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 		*s.instance.Spec.DockerRegistry.EnableInternal,
 	)
 
+	r.log.Debug("setInternalRegistryConfig")
+
 	existingIntRegSecret, err := registry.GetServerlessInternalRegistrySecret(ctx, r.client, s.instance.Namespace)
 	if err != nil {
 		return errors.Wrap(err, "while fetching existing serverless internal docker registry secret")
 	}
 	if existingIntRegSecret != nil {
+		r.log.Debug("existingIntRegSecret != nil")
 		r.log.Debugf("reusing existing credentials for internal docker registry to avoiding docker registry  rollout")
 		registryHttpSecretEnvValue, getErr := registry.GetRegistryHTTPSecretEnvValue(ctx, r.client, s.instance.Namespace)
 		if getErr != nil {
@@ -133,7 +138,44 @@ func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 	}
 	r.log.Debugf("docker registry node port: %d", nodePort)
 	s.flagsBuilder.WithNodePort(int64(nodePort))
+
+	pvcStorage, err := resolvePVCSize(ctx, r, s)
+	if err != nil {
+		return errors.Wrap(err, "while resolving pvc size")
+	}
+	if pvcStorage != nil {
+		r.log.Debugf("docker registry pvc size: %s", pvcStorage.String())
+		s.flagsBuilder.WithRegistryPVSize(pvcStorage.String())
+	}
+
 	return nil
+}
+
+func resolvePVCSize(ctx context.Context, r *reconciler, s *systemState) (*resource.Quantity, error) {
+
+	actualStorage, err := registry.GetClaimedServerlessDockerRegistryStorageSize(ctx, r.client, s.instance.Namespace)
+	if err != nil {
+		return nil, errors.Wrap(err, "while reading actual PVC size from cluster")
+	}
+
+	r.log.Debugf("PVC size : actual %s", actualStorage.String())
+
+	if s.instance.Spec.DockerRegistry.PV != nil && s.instance.Spec.DockerRegistry.PV.Size != nil {
+		requestedStorage := s.instance.Spec.DockerRegistry.PV.Size
+
+		r.log.Debugf("PVC size : requested %s", requestedStorage.String())
+
+		if actualStorage != nil && requestedStorage.Cmp(*actualStorage) < 0 {
+			r.log.Debugf("requested storage %s is less than actual storage %s -> ConfigurationError", requestedStorage.String(), actualStorage.String())
+			return nil, errors.New(fmt.Sprintf("requested storage %s cannot be less than actual storage %s", requestedStorage.String(), actualStorage.String()))
+		}
+		return requestedStorage, nil
+	} else if actualStorage != nil && !actualStorage.Equal(resource.MustParse("20Gi")) {
+		r.log.Debug("preserving actual pvc size value %s with warning")
+		s.warningBuilder.With(fmt.Sprintf(customPVCSizeNotInSpecFormat, actualStorage.String()))
+		return actualStorage, nil
+	}
+	return nil, nil
 }
 
 func setExternalRegistryConfig(ctx context.Context, r *reconciler, s *systemState) error {

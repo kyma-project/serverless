@@ -35,6 +35,22 @@ The default configuration of the Serverless Module is following:
 ## Configure Docker Registry
 
 By default, Serverless uses PersistentVolume (PV) as the internal registry to store Docker images for Functions. The default storage size of a single volume is 20 GB. This internal registry is suitable for local development.
+You can choose to change the default volume size by defining the requested size, for example:
+
+   ```yaml
+   apiVersion: operator.kyma-project.io/v1alpha1
+   kind: Serverless
+   metadata:
+     name: serverless-sample
+   spec:
+     dockerRegistry:
+       enableInternal: true
+       pv:
+         size: 30Gi
+   ```
+
+> [!NOTE]
+> Please note, that success of volume expansion depends on wheather the default Storage Class assigned to the valume claim supports volume expansion. 
 
 If you use Serverless for production purposes, it is recommended that you use an external registry, such as Docker Hub, Artifact Registry, or Azure Container Registry (ACR).
 

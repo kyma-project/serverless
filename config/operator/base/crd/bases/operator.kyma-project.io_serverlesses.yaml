@@ -67,6 +67,17 @@ spec:
                     description: When set to true, the internal Docker registry is
                       enabled
                     type: boolean
+                  pv:
+                    description: PV configuration
+                    properties:
+                      size:
+                        anyOf:
+                        - type: integer
+                        - type: string
+                        description: Size of the Docker registry PV
+                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                        x-kubernetes-int-or-string: true
+                    type: object
                   secretName:
                     description: Secret used for configuration of the Docker registry
                     type: string

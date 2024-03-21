@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
@@ -344,5 +345,54 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 		}
 		addRegistryConfigurationWarnings(&extRegSecret, []corev1.Secret{}, s)
 		require.Equal(t, "", s.warningBuilder.Build())
+	})
+
+	t.Run("internal registry pvc size", func(t *testing.T) {
+
+		quantity_str := "21Gi"
+		pvcQuantity := resource.MustParse(quantity_str)
+		s := &systemState{
+			instance: v1alpha1.Serverless{
+				Spec: v1alpha1.ServerlessSpec{
+					DockerRegistry: &v1alpha1.DockerRegistry{
+						EnableInternal: ptr.To[bool](true),
+						PV: &v1alpha1.PersistanceVolume{
+							Size: &pvcQuantity,
+						},
+					},
+				},
+			},
+
+			statusSnapshot: v1alpha1.ServerlessStatus{
+				DockerRegistry: "",
+			},
+			flagsBuilder: chart.NewFlagsBuilder(),
+		}
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().Build()},
+			log: zap.NewNop().Sugar(),
+		}
+		expectedFlags := map[string]interface{}{
+			"dockerRegistry": map[string]interface{}{
+				"enableInternal": true,
+			},
+			"global": map[string]interface{}{
+				"registryNodePort": int64(32_137),
+			},
+			"docker-registry": map[string]interface{}{
+				"persistence": map[string]interface{}{
+					"size": quantity_str,
+				},
+			},
+		}
+
+		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
+		require.NoError(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnOptionalDependencies, next)
+
+		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		require.Equal(t, "internal", s.instance.Status.DockerRegistry)
+		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 }

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/kyma-project/serverless/components/operator/internal/annotation"
-	"github.com/pkg/errors"
 	"helm.sh/helm/v3/pkg/release"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/utils/ptr"
@@ -64,13 +63,6 @@ func updateObjects(config *Config, objs []unstructured.Unstructured) error {
 		config.Log.Debugf("creating %s %s/%s", u.GetKind(), u.GetNamespace(), u.GetName())
 
 		u = annotation.AddDoNotEditDisclaimer(u)
-		if IsPVC(u.GroupVersionKind()) {
-			modifiedObj, err := AdjustDockerRegToClusterPVCSize(config.Ctx, config.Cluster.Client, u)
-			if err != nil {
-				return errors.Wrap(err, "while adjusting pvc size")
-			}
-			u = modifiedObj
-		}
 
 		// TODO: what if Path returns error in the middle of manifest?
 		// maybe we should in this case translate applied objs into manifest and set it into cache?
@@ -78,6 +70,7 @@ func updateObjects(config *Config, objs []unstructured.Unstructured) error {
 			Force:        ptr.To[bool](true),
 			FieldManager: "serverless-operator",
 		})
+
 		if err != nil {
 			return fmt.Errorf("could not install object %s/%s: %s", u.GetNamespace(), u.GetName(), err.Error())
 		}

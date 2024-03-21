@@ -18,6 +18,7 @@ package v1alpha1
 
 import (
 	"k8s.io/apimachinery/pkg/api/meta"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -26,6 +27,13 @@ type DockerRegistry struct {
 	EnableInternal *bool `json:"enableInternal,omitempty"`
 	// Secret used for configuration of the Docker registry
 	SecretName *string `json:"secretName,omitempty"`
+	// PV configuration
+	PV *PersistanceVolume `json:"pv,omitempty"`
+}
+
+type PersistanceVolume struct {
+	// Size of the Docker registry PV
+	Size *resource.Quantity `json:"size,omitempty"`
 }
 
 type Endpoint struct {
