@@ -18,7 +18,7 @@ As a workaround, increase the default capacity up to a maximum of 100 GB by edit
   kubectl edit pvc -n kyma-system serverless-docker-registry
   ```
 
-2.  Change the value of **spec.resources.requests.storage** to higher, such as 30 GB, to increase the PVC capacity:
+2. Change the value of **spec.resources.requests.storage** to higher, such as 30 GB, to increase the PVC capacity:
 
   ```yaml
   ...
@@ -62,6 +62,6 @@ To do this, follow these steps:
 
 3. Search for the `serverless-docker-registry` PVC again to check that the capacity was resized:
 
-  ```bash
-  kubectl get pvc serverless-docker-registry -n kyma-system
-  ```
+   ```bash
+   kubectl get pvc serverless-docker-registry -n kyma-system
+   ```

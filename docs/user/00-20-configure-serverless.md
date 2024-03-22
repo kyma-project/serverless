@@ -5,19 +5,20 @@
 The Serverless module has its own operator (Serverless operator). It watches the Serverless custom resource (CR) and reconfigures (reconciles) the Serverless workloads.
 
 The Serverless CR becomes an API to configure the Serverless module. You can use it to:
- - enable or disable the internal Docker registry
- - configure the external Docker registry 
- - override endpoint for traces collected by the Serverless Functions
- - override endpoint for eventing
- - override the target CPU utilization percentage
- - override the Function requeue duration
- - override the Function build executor arguments
- - override the Function build max simultaneous jobs
- - override the healthz liveness timeout
- - override the Function request body limit 
- - override the Function timeout
- - override the default build Job preset
- - override the default runtime Pod preset
+
+- enable or disable the internal Docker registry
+- configure the external Docker registry
+- override endpoint for traces collected by the Serverless Functions
+- override endpoint for eventing
+- override the target CPU utilization percentage
+- override the Function requeue duration
+- override the Function build executor arguments
+- override the Function build max simultaneous jobs
+- override the healthz liveness timeout
+- override the Function request body limit
+- override the Function timeout
+- override the default build Job preset
+- override the default runtime Pod preset
 
 The default configuration of the Serverless Module is following:
 
@@ -37,7 +38,7 @@ By default, Serverless uses PersistentVolume (PV) as the internal registry to st
 
 If you use Serverless for production purposes, it is recommended that you use an external registry, such as Docker Hub, Artifact Registry, or Azure Container Registry (ACR).
 
-Follow these steps to use the external Docker registry in Serverless: 
+Follow these steps to use the external Docker registry in Serverless:
 
 1. Create a Secret in the `kyma-system` namespace with the required data (`username`, `password`, `serverAddress`, and `registryAddress`):
 
@@ -71,6 +72,7 @@ Examples:
 ### **Artifact Registry**
 
 To learn how to set up authentication for Docker with Artifact Registry, visit the [Artifact Registry documentation](https://cloud.google.com/artifact-registry/docs/docker/authentication#json-key).
+
    ```bash
    kubectl create secret generic my-registry-config \
        --namespace kyma-system \
@@ -102,8 +104,8 @@ To learn how to authenticate with ACR, visit the [ACR documentation](https://lea
      dockerRegistry:
        secretName: my-registry-config 
    ```
-The URL of the currently used Docker registry is visible in the Serverless CR status.
 
+The URL of the currently used Docker registry is visible in the Serverless CR status.
 
 ## Configure Trace Endpoint
 
@@ -150,7 +152,8 @@ By default, the Function associated with the default configuration will be reque
 
 ## Configure the Function Build Executor Arguments
 
-Use this label to choose the [arguments](https://github.com/GoogleContainerTools/kaniko?tab=readme-ov-file#additional-flags) passed to the Function build executor, for example: 
+Use this label to choose the [arguments](https://github.com/GoogleContainerTools/kaniko?tab=readme-ov-file#additional-flags) passed to the Function build executor, for example:
+
 - `--insecure` - executor operates in an insecure mode
 - `--skip-tls-verify` - executor skips the TLS certificate verification
 - `--skip-unused-stages` - executor skips any stages that aren't used for the current execution
@@ -202,7 +205,7 @@ By default, the maximum execution time limit for a Function is set to `180` seco
 
 ## Configure the Default Build Job Preset
 
-You can configure the default build Job preset to be used. 
+You can configure the default build Job preset to be used.
 
 ```yaml
    spec:

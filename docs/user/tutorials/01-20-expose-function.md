@@ -14,7 +14,7 @@ Read also about [Function’s specification](../technical-reference/07-70-functi
 ## Prerequisites
 
 - [Existing Function](01-10-create-inline-function.md)
-- [API Gateway component installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/02-install-kyma/#install-specific-components) 
+- [API Gateway component installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/02-install-kyma/#install-specific-components)
 
 ## Steps
 
@@ -57,6 +57,7 @@ You can expose a Function with Kyma dashboard, Kyma CLI, or kubectl:
       export NAME={FUNCTION_NAME}
       export NAMESPACE={NAMESPACE_NAME}
       ```
+
    > [!NOTE]
    > The Function takes the name from the Function CR name. The APIRule CR can have a different name but for the purpose of this tutorial, all related resources share a common name defined under the **NAME** variable.
 2. Download the latest configuration of the Function from the cluster. This way, you update the local `config.yaml` file with the Function's code.

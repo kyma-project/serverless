@@ -36,7 +36,7 @@ Follow these steps:
 
   The `init` command creates these files in your workspace folder:
 
-  - `config.yaml`	with the Function's configuration
+  - `config.yaml` with the Function's configuration
 
    > [!NOTE]
    > See the detailed description of all fields available in the [`config.yaml` file](../technical-reference/07-60-function-configuration-file.md).

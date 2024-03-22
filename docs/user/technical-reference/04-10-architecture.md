@@ -4,9 +4,8 @@ Serverless relies heavily on Kubernetes resources. It uses [Deployments](https:/
 
 ![Serverless architecture](../../assets/svls-architecture.svg)
 
-> [!WARNING] 
+> [!WARNING]
 > Serverless imposes some requirements on the setup of namespaces. For example, if you apply custom [LimitRanges](https://kubernetes.io/docs/concepts/policy/limit-range/) for a new namespace, they must be higher than or equal to the limits for building Jobs' resources.
-
 
 1. Create a Function either through the UI or by applying a Function custom resource (CR). This CR contains the Function definition (business logic that you want to execute) and information on the environment on which it should run.
 

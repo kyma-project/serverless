@@ -1,6 +1,5 @@
 # Serverless Periodically Restarting
 
-
 ## Symptom
 
 When reconciling Git-sourced Functions, Serverless restarts every 10 minutes.
