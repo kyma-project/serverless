@@ -12,6 +12,9 @@ body:
       - name: Docker Registry
         visibility: $root.spec.dockerRegistry.enableInternal = true
         source: spec.dockerRegistry.enableInternal?"INTERNAL":""
+      - name: Docker Registry Size
+        source: spec.dockerRegistry.pv.size
+        visibility: '$exists($value)'
       - name: Docker Registry
         visibility: '$exists($value)'
         source: spec.dockerRegistry.secretName
@@ -20,9 +23,6 @@ body:
           name: spec.dockerRegistry.secretName
           namespace: $root.metadata.namespace
           kind: "'Secret'"
-      - name: Docker Registry Size
-        source: spec.dockerRegistry.pv.size
-        visibility: '$exists($value)'
       - name: Eventing Endpoint
         source: spec.eventing.endpoint
         visibility: '$exists($value)'
