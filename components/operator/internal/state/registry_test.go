@@ -356,8 +356,8 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
 						EnableInternal: ptr.To[bool](true),
-						PV: &v1alpha1.PersistanceVolume{
-							Size: &pvcQuantity,
+						PersistenceVolume: &v1alpha1.PersistenceVolume{
+							Size: pvcQuantity,
 						},
 					},
 				},

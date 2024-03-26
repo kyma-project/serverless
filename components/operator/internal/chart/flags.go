@@ -2,7 +2,6 @@ package chart
 
 import (
 	"fmt"
-	"math/rand"
 	"strings"
 )
 
@@ -17,7 +16,6 @@ type FlagsBuilder interface {
 	WithRegistryHttpSecret(httpSecret string) *flagsBuilder
 	WithNodePort(nodePort int64) *flagsBuilder
 	WithRegistryPVSize(size string) *flagsBuilder
-	WithRegistryRestart() *flagsBuilder
 }
 
 type flagsBuilder struct {
@@ -125,11 +123,6 @@ func (fb *flagsBuilder) WithRegistryPVSize(size string) *flagsBuilder {
 	return fb
 }
 
-func (fb *flagsBuilder) WithRegistryRestart() *flagsBuilder {
-	fb.flags["docker-registry.rollme"] = randSeq(5)
-	return fb
-}
-
 func (fb *flagsBuilder) WithDefaultPresetFlags(defaultBuildJobPreset, defaultRuntimePodPreset string) *flagsBuilder {
 	if defaultRuntimePodPreset != "" {
 		fb.flags["containers.manager.configuration.data.resourcesConfiguration.function.resources.defaultPreset"] = defaultRuntimePodPreset
@@ -145,13 +138,4 @@ func (fb *flagsBuilder) WithDefaultPresetFlags(defaultBuildJobPreset, defaultRun
 func (fb *flagsBuilder) WithNodePort(nodePort int64) *flagsBuilder {
 	fb.flags["global.registryNodePort"] = nodePort
 	return fb
-}
-
-func randSeq(n int) string {
-	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	b := make([]rune, n)
-	for i := range b {
-		b[i] = letters[rand.Intn(len(letters))]
-	}
-	return string(b)
 }

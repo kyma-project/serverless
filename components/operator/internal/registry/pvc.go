@@ -25,17 +25,6 @@ func GetClaimedServerlessDockerRegistryStorageSize(ctx context.Context, k8sClien
 	return &size, nil
 }
 
-func GetRealServerlessDockerRegistryStorageSize(ctx context.Context, k8sClient client.Client, namespace string) (*resource.Quantity, error) {
-	pvc, err := getPVC(ctx, k8sClient, namespace, pvcName)
-	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf("while getting %s pvc", pvcName))
-	}
-	if pvc == nil {
-		return nil, nil
-	}
-	return pvc.Status.Capacity.Storage(), nil
-}
-
 func getPVC(ctx context.Context, k8sClient client.Client, namespace, name string) (*corev1.PersistentVolumeClaim, error) {
 	pvc := corev1.PersistentVolumeClaim{}
 	err := k8sClient.Get(ctx, client.ObjectKey{Namespace: namespace, Name: name}, &pvc)

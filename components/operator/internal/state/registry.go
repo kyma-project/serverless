@@ -18,7 +18,7 @@ const (
 	extRegSecDiffThanSpecFormat             = "actual registry configuration comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect the %s secret in the secretName field or delete it"
 	extRegSecNotInSpecFormat                = "actual registry configuration comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect %s secret in the secretName field"
 	internalEnabledAndSecretNameUsedMessage = "spec.dockerRegistry.enableInternal is true and spec.dockerRegistry.secretName is used. Delete the secretName field or set the enableInternal value to false"
-	customPVCSizeNotInSpecFormat            = "actual internal registry size is %s and it is different from default value and from spec.dockerRegistry.pv.size. Configure custom storage size in the spec.dockerRegistry.pv.size"
+	customPVCSizeNotInSpecFormat            = "actual internal registry size is %s and it is different from default value and from spec.dockerRegistry.persistenceVolume.size. Configure custom storage size in the spec.dockerRegistry.persistenceVolume.size"
 )
 
 func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
@@ -157,15 +157,15 @@ func resolvePVCSize(ctx context.Context, r *reconciler, s *systemState) (*resour
 
 	r.log.Debugf("PVC size : actual %s", actualStorage.String())
 
-	if s.instance.Spec.DockerRegistry.PV != nil && s.instance.Spec.DockerRegistry.PV.Size != nil {
-		requestedStorage := s.instance.Spec.DockerRegistry.PV.Size
+	if s.instance.Spec.DockerRegistry.PersistenceVolume != nil {
+		requestedStorage := s.instance.Spec.DockerRegistry.PersistenceVolume.Size
 
 		r.log.Debugf("PVC size : requested %s", requestedStorage.String())
 
 		if actualStorage != nil && requestedStorage.Cmp(*actualStorage) < 0 {
 			return nil, errors.New(fmt.Sprintf("requested storage %s cannot be less than actual storage %s", requestedStorage.String(), actualStorage.String()))
 		}
-		return requestedStorage, nil
+		return &requestedStorage, nil
 	} else if actualStorage != nil && !actualStorage.Equal(resource.MustParse("20Gi")) {
 		r.log.Debug("preserving actual pvc size value %s with warning")
 		s.warningBuilder.With(fmt.Sprintf(customPVCSizeNotInSpecFormat, actualStorage.String()))

@@ -27,14 +27,13 @@ type DockerRegistry struct {
 	EnableInternal *bool `json:"enableInternal,omitempty"`
 	// Secret used for configuration of the Docker registry
 	SecretName *string `json:"secretName,omitempty"`
-	// PV configuration
-
-	PV *PersistanceVolume `json:"pv,omitempty"`
+	// PersistenceVolume configuration
+	PersistenceVolume *PersistenceVolume `json:"persistenceVolume,omitempty"`
 }
 
-type PersistanceVolume struct {
-	// Size of the Docker registry PV
-	Size *resource.Quantity `json:"size,omitempty"`
+type PersistenceVolume struct {
+	// Size of the Docker registry Persistence Volume
+	Size resource.Quantity `json:"size"`
 }
 
 type Endpoint struct {
@@ -48,7 +47,7 @@ type ServerlessSpec struct {
 	// Used Eventing endpoint
 	Eventing *Endpoint `json:"eventing,omitempty"`
 
-	// +kubebuilder:validation:XValidation:message="Use dockerRegistry.pv only in combination with dockerRegistry.enableInternal set to true",rule="!has(self.pv) || self.enableInternal"
+	// +kubebuilder:validation:XValidation:message="Use dockerRegistry.persistenceVolume only in combination with dockerRegistry.enableInternal set to true",rule="!has(self.persistenceVolume) || self.enableInternal"
 	DockerRegistry *DockerRegistry `json:"dockerRegistry,omitempty"`
 	// Sets a custom CPU utilization threshold for scaling Function Pods
 	TargetCPUUtilizationPercentage string `json:"targetCPUUtilizationPercentage,omitempty"`
