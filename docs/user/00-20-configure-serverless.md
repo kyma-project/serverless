@@ -45,7 +45,7 @@ You can choose to change the default volume size by defining the requested size,
    spec:
      dockerRegistry:
        enableInternal: true
-       pv:
+       persistenceVolume:
          size: 30Gi
    ```
 
