@@ -11,12 +11,12 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-const pvcName = "serverless-docker-registry"
+const PvcName = "serverless-docker-registry"
 
 func GetClaimedServerlessDockerRegistryStorageSize(ctx context.Context, k8sClient client.Client, namespace string) (*resource.Quantity, error) {
-	pvc, err := getPVC(ctx, k8sClient, namespace, pvcName)
+	pvc, err := getPVC(ctx, k8sClient, namespace, PvcName)
 	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf("while getting %s pvc", pvcName))
+		return nil, errors.Wrap(err, fmt.Sprintf("while getting %s pvc", PvcName))
 	}
 	if pvc == nil {
 		return nil, nil
