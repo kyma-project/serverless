@@ -28,6 +28,7 @@ type DockerRegistry struct {
 	// Secret used for configuration of the Docker registry
 	SecretName *string `json:"secretName,omitempty"`
 	// PV configuration
+
 	PV *PersistanceVolume `json:"pv,omitempty"`
 }
 
@@ -45,7 +46,9 @@ type ServerlessSpec struct {
 	// Used Tracing endpoint
 	Tracing *Endpoint `json:"tracing,omitempty"`
 	// Used Eventing endpoint
-	Eventing       *Endpoint       `json:"eventing,omitempty"`
+	Eventing *Endpoint `json:"eventing,omitempty"`
+
+	// +kubebuilder:validation:XValidation:message="Use dockerRegistry.pv only in combination with dockerRegistry.enableInternal set to true",rule="!has(self.pv) || self.enableInternal"
 	DockerRegistry *DockerRegistry `json:"dockerRegistry,omitempty"`
 	// Sets a custom CPU utilization threshold for scaling Function Pods
 	TargetCPUUtilizationPercentage string `json:"targetCPUUtilizationPercentage,omitempty"`

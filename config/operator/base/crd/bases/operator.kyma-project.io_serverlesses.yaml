@@ -68,7 +68,6 @@ spec:
                       enabled
                     type: boolean
                   pv:
-                    description: PV configuration
                     properties:
                       size:
                         anyOf:
@@ -82,6 +81,10 @@ spec:
                     description: Secret used for configuration of the Docker registry
                     type: string
                 type: object
+                x-kubernetes-validations:
+                - message: Use dockerRegistry.pv only in combination with dockerRegistry.enableInternal
+                    set to true
+                  rule: '!has(self.pv) || self.enableInternal'
               eventing:
                 description: Used Eventing endpoint
                 properties:
