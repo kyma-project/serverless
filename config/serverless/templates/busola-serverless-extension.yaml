@@ -535,7 +535,7 @@ data:
       'Source Type': Source Type
       spec.runtime.nodejs18: Node.js 18 - deprecated
       spec.runtime.nodejs20: Node.js 20
-      spec.runtime.python39: Python 3.9
+      spec.runtime.python39: Python 3.9 - deprecated
       spec.runtime.python312: Python 3.12
       spec.resourceConfiguration.build: Build
       spec.resourceConfiguration.function: Function
