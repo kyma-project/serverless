@@ -67,8 +67,8 @@ spec:
                     description: When set to true, the internal Docker registry is
                       enabled
                     type: boolean
-                  persistenceVolume:
-                    description: PersistenceVolume configuration
+                  persistence:
+                    description: Persistence configuration
                     properties:
                       size:
                         anyOf:
@@ -85,9 +85,9 @@ spec:
                     type: string
                 type: object
                 x-kubernetes-validations:
-                - message: Use dockerRegistry.persistenceVolume only in combination
-                    with dockerRegistry.enableInternal set to true
-                  rule: '!has(self.persistenceVolume) || self.enableInternal'
+                - message: Use dockerRegistry.persistence only in combination with
+                    dockerRegistry.enableInternal set to true
+                  rule: '!has(self.persistence) || self.enableInternal'
               eventing:
                 description: Used Eventing endpoint
                 properties:

@@ -6,7 +6,7 @@
   severity: warning
   alert: "'Internal Docker Registry is not recommended for production grade installations'"
   visibility: "$root.spec.dockerRegistry.enableInternal = true"
-- path: spec.dockerRegistry.persistenceVolume.size
+- path: spec.dockerRegistry.persistence.size
   simple: true
   visibility: "$root.spec.dockerRegistry.enableInternal = true"
   name: Persistence Volume Size

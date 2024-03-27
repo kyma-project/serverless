@@ -18,7 +18,7 @@ const (
 	extRegSecDiffThanSpecFormat             = "actual registry configuration comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect the %s secret in the secretName field or delete it"
 	extRegSecNotInSpecFormat                = "actual registry configuration comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect %s secret in the secretName field"
 	internalEnabledAndSecretNameUsedMessage = "spec.dockerRegistry.enableInternal is true and spec.dockerRegistry.secretName is used. Delete the secretName field or set the enableInternal value to false"
-	customPVCSMissingInSpec                 = "actual internal registry size is %s and it is different from default value and from spec.dockerRegistry.persistenceVolume.size. Configure custom storage size in the spec.dockerRegistry.persistenceVolume.size"
+	customPVCSMissingInSpec                 = "actual internal registry size is %s and it is different from default value and from spec.dockerRegistry.persistence.size. Configure custom storage size in the spec.dockerRegistry.persistence.size"
 	requestedPVCLessThanActual              = "requested storage %s cannot be less than actual storage %s"
 )
 
@@ -158,8 +158,8 @@ func resolvePVCSize(ctx context.Context, r *reconciler, s *systemState) (*resour
 
 	r.log.Debugf("PVC size : actual %s", actualStorage.String())
 
-	if s.instance.Spec.DockerRegistry.PersistenceVolume != nil {
-		requestedStorage := s.instance.Spec.DockerRegistry.PersistenceVolume.Size
+	if s.instance.Spec.DockerRegistry.Persistence != nil {
+		requestedStorage := s.instance.Spec.DockerRegistry.Persistence.Size
 		r.log.Debugf("PVC size : requested %s", requestedStorage.String())
 
 		if actualStorage != nil && requestedStorage.Cmp(*actualStorage) < 0 {

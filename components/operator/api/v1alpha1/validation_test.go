@@ -33,7 +33,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 	testCases := map[string]struct {
 		serverless *v1alpha1.Serverless
 	}{
-		"No PersistenceVolume explicit config": {
+		"No Persistence explicit config": {
 			serverless: &v1alpha1.Serverless{
 				ObjectMeta: fixMetadata,
 				Spec: v1alpha1.ServerlessSpec{
@@ -43,26 +43,26 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				},
 			},
 		},
-		"Explicit PersistenceVolume config": {
+		"Explicit Persistence config": {
 			serverless: &v1alpha1.Serverless{
 				ObjectMeta: fixMetadata,
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
 						EnableInternal: &enableInternal,
-						PersistenceVolume: &v1alpha1.PersistenceVolume{
+						Persistence: &v1alpha1.Persistence{
 							Size: resource.MustParse("2Gi"),
 						},
 					},
 				},
 			},
 		},
-		"Empty PersistenceVolume config": {
+		"Empty Persistence config": {
 			serverless: &v1alpha1.Serverless{
 				ObjectMeta: fixMetadata,
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
-						EnableInternal:    &enableInternal,
-						PersistenceVolume: &v1alpha1.PersistenceVolume{},
+						EnableInternal: &enableInternal,
+						Persistence:    &v1alpha1.Persistence{},
 					},
 				},
 			},
@@ -100,35 +100,35 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 		fieldPath      string
 		expectedCause  metav1.CauseType
 	}{
-		"PersistenceVolume size config w/o enableInternal": {
+		"Persistence size config w/o enableInternal": {
 			serverless: &v1alpha1.Serverless{
 				ObjectMeta: fixMetadata,
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
-						PersistenceVolume: &v1alpha1.PersistenceVolume{
+						Persistence: &v1alpha1.Persistence{
 							Size: resource.MustParse("2Gi"),
 						},
 					},
 				},
 			},
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
-			expectedErrMsg: "Use dockerRegistry.persistenceVolume only in combination with dockerRegistry.enableInternal set to true",
+			expectedErrMsg: "Use dockerRegistry.persistence only in combination with dockerRegistry.enableInternal set to true",
 			fieldPath:      "spec.dockerRegistry",
 		},
-		"PersistenceVolume size config and enableInternal=false": {
+		"Persistence size config and enableInternal=false": {
 			serverless: &v1alpha1.Serverless{
 				ObjectMeta: fixMetadata,
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
 						EnableInternal: &enableInternal,
-						PersistenceVolume: &v1alpha1.PersistenceVolume{
+						Persistence: &v1alpha1.Persistence{
 							Size: resource.MustParse("2Gi"),
 						},
 					},
 				},
 			},
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
-			expectedErrMsg: "Use dockerRegistry.persistenceVolume only in combination with dockerRegistry.enableInternal set to true",
+			expectedErrMsg: "Use dockerRegistry.persistence only in combination with dockerRegistry.enableInternal set to true",
 			fieldPath:      "spec.dockerRegistry",
 		},
 	}

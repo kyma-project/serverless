@@ -359,7 +359,7 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
 						EnableInternal: ptr.To[bool](true),
-						PersistenceVolume: &v1alpha1.PersistenceVolume{
+						Persistence: &v1alpha1.Persistence{
 							Size: pvcQuantity,
 						},
 					},
@@ -446,7 +446,7 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 		require.Equal(t, "internal", s.instance.Status.DockerRegistry)
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 
-		require.Equal(t, "Warning: actual internal registry size is 21Gi and it is different from default value and from spec.dockerRegistry.persistenceVolume.size. Configure custom storage size in the spec.dockerRegistry.persistenceVolume.size", s.warningBuilder.Build())
+		require.Equal(t, "Warning: actual internal registry size is 21Gi and it is different from default value and from spec.dockerRegistry.persistence.size. Configure custom storage size in the spec.dockerRegistry.persistence.size", s.warningBuilder.Build())
 	})
 
 	t.Run("Requesting pvc size that is less than existing", func(t *testing.T) {
@@ -460,7 +460,7 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
 						EnableInternal: ptr.To[bool](true),
-						PersistenceVolume: &v1alpha1.PersistenceVolume{
+						Persistence: &v1alpha1.Persistence{
 							Size: resource.MustParse("19Gi"),
 						},
 					},
