@@ -75,7 +75,7 @@ func (r *NamespaceReconciler) Reconcile(ctx context.Context, request ctrl.Reques
 
 	logger := r.Log.With("name", instance.GetName())
 
-	logger.Info(fmt.Sprintf("Updating ConfigMaps in namespace '%s'", instance.GetName()))
+	logger.Debug(fmt.Sprintf("Updating ConfigMaps in namespace '%s'", instance.GetName()))
 	configMaps, err := r.configMapSvc.ListBase(ctx)
 	if err != nil {
 		logger.Error(err, "Listing base ConfigMaps failed")
@@ -88,7 +88,7 @@ func (r *NamespaceReconciler) Reconcile(ctx context.Context, request ctrl.Reques
 		}
 	}
 
-	logger.Info(fmt.Sprintf("Updating Secret in namespace '%s'", instance.GetName()))
+	logger.Debug(fmt.Sprintf("Updating Secret in namespace '%s'", instance.GetName()))
 	secret, err := r.secretSvc.GetBase(ctx)
 	if err != nil {
 		logger.Error(err, "Listing base Secrets failed")
@@ -99,7 +99,7 @@ func (r *NamespaceReconciler) Reconcile(ctx context.Context, request ctrl.Reques
 		return ctrl.Result{}, err
 	}
 
-	logger.Info(fmt.Sprintf("Updating ServiceAccounts in namespace '%s'", instance.GetName()))
+	logger.Debug(fmt.Sprintf("Updating ServiceAccounts in namespace '%s'", instance.GetName()))
 	serviceAccounts, err := r.serviceAccountSvc.ListBase(ctx)
 	if err != nil {
 		logger.Error(err, "Listing base ServiceAccounts failed")

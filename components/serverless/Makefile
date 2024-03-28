@@ -1,4 +1,5 @@
 PROJECT_ROOT = ../..
+COMPONENT_ROOT=$(PROJECT_ROOT)/components/serverless
 
 include ${PROJECT_ROOT}/hack/tools.mk
 include ${PROJECT_ROOT}/hack/help.mk
@@ -40,7 +41,7 @@ MANAGER_NAME = function-controller
 
 .PHONY: build-image-function-controller
 build-image-function-controller:
-	docker build -t $(MANAGER_NAME) -f $(ROOT)/deploy/manager/Dockerfile $(PROJECT_ROOT)
+	docker build -t $(MANAGER_NAME) -f $(COMPONENT_ROOT)/deploy/manager/Dockerfile $(PROJECT_ROOT)
 
 install-manager-k3d: build-image-function-controller disable-operator ## Build and install serverless manager from local sources on k3d
 	$(eval HASH_TAG=$(shell docker images $(MANAGER_NAME):latest --quiet))
@@ -54,7 +55,7 @@ WEBHOOK_NAME = function-webhook
 
 .PHONY: build-image-function-webhook push-function-webhook
 build-image-function-webhook:
-	docker build -t $(WEBHOOK_NAME) -f $(ROOT)/deploy/webhook/Dockerfile $(PROJECT_ROOT)
+	docker build -t $(WEBHOOK_NAME) -f $(COMPONENT_ROOT)/deploy/webhook/Dockerfile $(PROJECT_ROOT)
 
 install-webhook-k3d: build-image-function-webhook disable-operator ## Build and install serverless webhook from local sources on k3d
 	$(eval HASH_TAG=$(shell docker images $(WEBHOOK_NAME):latest --quiet))
@@ -68,14 +69,14 @@ JOBINIT_NAME = function-build-init
 
 .PHONY: build-image-function-build-init push-function-build-init
 build-image-function-build-init:
-	docker build -t $(JOBINIT_NAME) -f $(ROOT)/deploy/jobinit/Dockerfile $(PROJECT_ROOT)
+	docker build -t $(JOBINIT_NAME) -f $(COMPONENT_ROOT)/deploy/jobinit/Dockerfile $(PROJECT_ROOT)
 
 ######## registry-gc 
 REGISTRY_GC_NAME = registry-gc
 
 .PHONY: build-image-registry-gc push-registry-gc
 build-image-registry-gc:
-	docker build -t $(REGISTRY_GC_NAME) -f $(ROOT)/deploy/registry-gc/Dockerfile .
+	docker build -t $(REGISTRY_GC_NAME) -f $(COMPONENT_ROOT)/deploy/registry-gc/Dockerfile .
 
 
 ######## disable operator to prevent undo of local image update to k3d
