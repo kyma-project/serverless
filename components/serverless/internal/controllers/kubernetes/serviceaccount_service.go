@@ -47,7 +47,7 @@ func (r *serviceAccountService) IsBase(serviceAccount *corev1.ServiceAccount) bo
 }
 
 func (r *serviceAccountService) UpdateNamespace(ctx context.Context, logger *zap.SugaredLogger, namespace string, baseInstance *corev1.ServiceAccount) error {
-	logger.Info(fmt.Sprintf("Updating ServiceAccount '%s/%s'", namespace, baseInstance.GetName()))
+	logger.Debug(fmt.Sprintf("Updating ServiceAccount '%s/%s'", namespace, baseInstance.GetName()))
 	serviceAccount := &corev1.ServiceAccount{}
 	if err := r.client.Get(ctx, client.ObjectKey{Namespace: namespace, Name: baseInstance.GetName()}, serviceAccount); err != nil {
 		if errors.IsNotFound(err) {
@@ -74,7 +74,7 @@ func (r *serviceAccountService) createServiceAccount(ctx context.Context, logger
 		AutomountServiceAccountToken: baseInstance.AutomountServiceAccountToken,
 	}
 
-	logger.Info(fmt.Sprintf("Creating ServiceAccount '%s/%s'", serviceAccount.GetNamespace(), serviceAccount.GetName()))
+	logger.Debug(fmt.Sprintf("Creating ServiceAccount '%s/%s'", serviceAccount.GetNamespace(), serviceAccount.GetName()))
 	if err := r.client.Create(ctx, &serviceAccount); err != nil {
 		logger.Error(err, fmt.Sprintf("Creating ServiceAccount '%s/%s'", serviceAccount.GetNamespace(), serviceAccount.GetName()))
 		return err

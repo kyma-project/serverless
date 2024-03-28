@@ -56,7 +56,7 @@ func (r *secretService) IsBase(secret *corev1.Secret) bool {
 }
 
 func (r *secretService) UpdateNamespace(ctx context.Context, logger *zap.SugaredLogger, namespace string, baseInstance *corev1.Secret) error {
-	logger.Info(fmt.Sprintf("Updating Secret '%s/%s'", namespace, baseInstance.GetName()))
+	logger.Debug(fmt.Sprintf("Updating Secret '%s/%s'", namespace, baseInstance.GetName()))
 	instance := &corev1.Secret{}
 	if err := r.client.Get(ctx, client.ObjectKey{Namespace: namespace, Name: baseInstance.GetName()}, instance); err != nil {
 		if errors.IsNotFound(err) {
@@ -85,7 +85,7 @@ func (r *secretService) HandleFinalizer(ctx context.Context, logger *zap.Sugared
 			return nil
 		}
 		for _, namespace := range namespaces {
-			logger.Info(fmt.Sprintf("Deleting Secret '%s/%s'", namespace, instance.Name))
+			logger.Debug(fmt.Sprintf("Deleting Secret '%s/%s'", namespace, instance.Name))
 			if err := r.deleteSecret(ctx, logger, namespace, instance.Name); err != nil {
 				return err
 			}
@@ -111,7 +111,7 @@ func (r *secretService) createSecret(ctx context.Context, logger *zap.SugaredLog
 		Type:       baseInstance.Type,
 	}
 
-	logger.Info(fmt.Sprintf("Creating Secret '%s/%s'", secret.GetNamespace(), secret.GetName()))
+	logger.Debug(fmt.Sprintf("Creating Secret '%s/%s'", secret.GetNamespace(), secret.GetName()))
 	if err := r.client.Create(ctx, &secret); err != nil {
 		logger.Error(err, fmt.Sprintf("Creating Secret '%s/%s' failed", secret.GetNamespace(), secret.GetName()))
 		return err

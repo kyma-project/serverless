@@ -48,7 +48,7 @@ func (r *configMapService) IsBase(configMap *corev1.ConfigMap) bool {
 }
 
 func (r *configMapService) UpdateNamespace(ctx context.Context, logger *zap.SugaredLogger, namespace string, baseInstance *corev1.ConfigMap) error {
-	logger.Info(fmt.Sprintf("Updating ConfigMap '%s/%s'", namespace, baseInstance.GetName()))
+	logger.Debug(fmt.Sprintf("Updating ConfigMap '%s/%s'", namespace, baseInstance.GetName()))
 	instance := &corev1.ConfigMap{}
 	if err := r.client.Get(ctx, client.ObjectKey{Namespace: namespace, Name: baseInstance.GetName()}, instance); err != nil {
 		if errors.IsNotFound(err) {
@@ -73,7 +73,7 @@ func (r *configMapService) createConfigMap(ctx context.Context, logger *zap.Suga
 		BinaryData: baseInstance.BinaryData,
 	}
 
-	logger.Info(fmt.Sprintf("Creating ConfigMap '%s/%s'", configMap.GetNamespace(), configMap.GetName()))
+	logger.Debug(fmt.Sprintf("Creating ConfigMap '%s/%s'", configMap.GetNamespace(), configMap.GetName()))
 	if err := r.client.Create(ctx, &configMap); err != nil {
 		logger.Error(err, fmt.Sprintf("Creating ConfigMap '%s/%s' failed", configMap.GetNamespace(), configMap.GetName()))
 		return err
