@@ -46,6 +46,9 @@ func Test_flagsBuilder_Build(t *testing.T) {
 			"docker-registry": map[string]interface{}{
 				"registryHTTPSecret": "testHttpSecret",
 				"rollme":             "dontrollplease",
+				"persistence": map[string]interface{}{
+					"size": "3Gi",
+				},
 			},
 			"dockerRegistry": map[string]interface{}{
 				"enableInternal":  false,
@@ -75,7 +78,8 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				"testHealthzLivenessTimeout",
 				"testRequestBodyLimitMb",
 				"testTimeoutSec",
-			).Build()
+			).
+			WithRegistryPVSize("3Gi").Build()
 
 		require.Equal(t, expectedFlags, flags)
 	})

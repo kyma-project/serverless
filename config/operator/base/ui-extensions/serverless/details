@@ -12,6 +12,9 @@ body:
       - name: Docker Registry
         visibility: $root.spec.dockerRegistry.enableInternal = true
         source: spec.dockerRegistry.enableInternal?"INTERNAL":""
+      - name: Persistence Volume Size
+        source: spec.dockerRegistry.persistence.size
+        visibility: '$exists($value)'
       - name: Docker Registry
         visibility: '$exists($value)'
         source: spec.dockerRegistry.secretName

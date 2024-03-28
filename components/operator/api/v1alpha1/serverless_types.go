@@ -18,6 +18,7 @@ package v1alpha1
 
 import (
 	"k8s.io/apimachinery/pkg/api/meta"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -26,6 +27,13 @@ type DockerRegistry struct {
 	EnableInternal *bool `json:"enableInternal,omitempty"`
 	// Secret used for configuration of the Docker registry
 	SecretName *string `json:"secretName,omitempty"`
+	// Persistence configuration
+	Persistence *Persistence `json:"persistence,omitempty"`
+}
+
+type Persistence struct {
+	// Size of the Docker registry Persistence Volume
+	Size resource.Quantity `json:"size"`
 }
 
 type Endpoint struct {
@@ -37,7 +45,9 @@ type ServerlessSpec struct {
 	// Used Tracing endpoint
 	Tracing *Endpoint `json:"tracing,omitempty"`
 	// Used Eventing endpoint
-	Eventing       *Endpoint       `json:"eventing,omitempty"`
+	Eventing *Endpoint `json:"eventing,omitempty"`
+
+	// +kubebuilder:validation:XValidation:message="Use dockerRegistry.persistence only in combination with dockerRegistry.enableInternal set to true",rule="!has(self.persistence) || self.enableInternal"
 	DockerRegistry *DockerRegistry `json:"dockerRegistry,omitempty"`
 	// Sets a custom CPU utilization threshold for scaling Function Pods
 	TargetCPUUtilizationPercentage string `json:"targetCPUUtilizationPercentage,omitempty"`

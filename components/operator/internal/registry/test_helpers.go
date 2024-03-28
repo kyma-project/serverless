@@ -1,7 +1,8 @@
 package registry
 
 import (
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -23,6 +24,26 @@ func FixServerlessClusterWideExternalRegistrySecret() *v1.Secret {
 		Data: map[string][]byte{
 			"registryAddress": []byte("test-registry-address"),
 			"serverAddress":   []byte("test-server-address"),
+		},
+	}
+}
+
+func FixServerlessDockerRegistryPVCWithStorage(storage resource.Quantity) *v1.PersistentVolumeClaim {
+	return &v1.PersistentVolumeClaim{
+		TypeMeta: v12.TypeMeta{
+			Kind:       "PersistentVolumeClaim",
+			APIVersion: "v1",
+		},
+		ObjectMeta: v12.ObjectMeta{
+			Name:      PvcName,
+			Namespace: "kyma-system",
+		},
+		Spec: v1.PersistentVolumeClaimSpec{
+			Resources: v1.ResourceRequirements{
+				Requests: v1.ResourceList{
+					"storage": storage,
+				},
+			},
 		},
 	}
 }

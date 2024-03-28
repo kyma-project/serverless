@@ -15,6 +15,7 @@ type FlagsBuilder interface {
 	WithRegistryEnableInternal(enableInternal bool) *flagsBuilder
 	WithRegistryHttpSecret(httpSecret string) *flagsBuilder
 	WithNodePort(nodePort int64) *flagsBuilder
+	WithRegistryPVSize(size string) *flagsBuilder
 }
 
 type flagsBuilder struct {
@@ -114,6 +115,11 @@ func (fb *flagsBuilder) WithRegistryHttpSecret(httpSecret string) *flagsBuilder 
 	fb.flags["docker-registry.rollme"] = "dontrollplease"
 	fb.flags["docker-registry.registryHTTPSecret"] = httpSecret
 
+	return fb
+}
+
+func (fb *flagsBuilder) WithRegistryPVSize(size string) *flagsBuilder {
+	fb.flags["docker-registry.persistence.size"] = size
 	return fb
 }
 

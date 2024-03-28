@@ -1,5 +1,5 @@
 configMapGenerator:
-- name: operator.kyma-project.io
+- name: serverlesses
   namespace: kube-public
   files:
   - general
@@ -9,6 +9,6 @@ configMapGenerator:
   options:
     disableNameSuffixHash: true
     labels:
-      app.kubernetes.io/name: serverlesses.operator.kyma-project.io
+      app.kubernetes.io/name: serverlesses
       busola.io/extension: resource
       busola.io/extension-version: "0.5"
