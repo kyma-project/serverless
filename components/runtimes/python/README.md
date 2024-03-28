@@ -11,7 +11,7 @@ python3 -m venv venv
   ```
 3.Create the `function` directory with `handler.py` and `requirements.txt`
 
-4.Install dependencies from specific runtime {XYZ} and Function:
+4.From specific Python Runtime Version {XYZ} and Function:
     ```bash
     pip install -r python{XYZ}/requirements.txt
     pip install -r function/requirements.txt
