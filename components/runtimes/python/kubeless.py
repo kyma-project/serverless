@@ -9,9 +9,9 @@ import threading
 import bottle
 import prometheus_client as prom
 
-import tracing
-from ce import Event
-from tracing import set_req_context
+import lib.tracing as tracing
+from lib.ce import Event
+from lib.tracing import set_req_context
 
 
 # The reason this file has an underscore prefix in its name is to avoid a

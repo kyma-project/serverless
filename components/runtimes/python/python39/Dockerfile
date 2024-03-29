@@ -10,7 +10,7 @@ COPY ./python39/requirements.txt /kubeless/requirements.txt
 
 RUN pip install --no-cache-dir -r /kubeless/requirements.txt
 
-COPY ./kubeless/ /
+COPY ./ /
 
 WORKDIR /
 
