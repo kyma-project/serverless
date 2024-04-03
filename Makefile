@@ -20,6 +20,17 @@ install-serverless-latest-release: ## Install serverless from latest release
 	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default-serverless-cr.yaml -n kyma-system
 	make -C ${OPERATOR_ROOT} check-serverless-installation
 
+.PHONY: install-serverless-local-sources
+install-serverless-local-sources:
+	$(eval IMG_VERSION=local-$(shell date +'%Y%m%d-%H%M%S'))
+	IMG_VERSION=${IMG_VERSION} ./hack/build_all.sh
+
+	$(eval IMG=europe-docker.pkg.dev/kyma-project/dev/serverless-operator:${IMG_VERSION})
+	IMG_DIRECTORY="dev" IMG_VERSION=${IMG_VERSION} IMG=${IMG} make -C ${OPERATOR_ROOT} docker-build-local
+
+	k3d image import "${IMG}" -c kyma
+	IMG=${IMG} make install-serverless-custom-operator
+
 .PHONY: remove-serverless
 remove-serverless: ## Remove serverless-cr and serverless operator
 	make -C ${OPERATOR_ROOT} remove-serverless undeploy
