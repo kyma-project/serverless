@@ -21,7 +21,7 @@ install-serverless-latest-release: ## Install serverless from latest release
 	make -C ${OPERATOR_ROOT} check-serverless-installation
 
 .PHONY: install-serverless-local-sources
-install-serverless-local-sources:
+install-serverless-local-sources: ## Install serverless from local sources
 	$(eval IMG_VERSION=local-$(shell date +'%Y%m%d-%H%M%S'))
 	IMG_VERSION=${IMG_VERSION} ./hack/build_all.sh
 
