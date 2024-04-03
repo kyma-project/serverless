@@ -24,8 +24,7 @@ install-serverless-latest-release: ## Install serverless from latest release
 remove-serverless: ## Remove serverless-cr and serverless operator
 	make -C ${OPERATOR_ROOT} remove-serverless undeploy
 
-.PHONY: run
-run: create-k3d install-serverless-main ## Create k3d cluster and install serverless from main
+.PHONY: run-main
+run-main: create-k3d install-serverless-main ## Create k3d cluster and install serverless from main
 
 check-var = $(if $(strip $($1)),,$(error "$1" is not defined))
-
