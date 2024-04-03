@@ -88,7 +88,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), cleanupTimeout)
 	defer cancel()
 
-	setupLog.Info("cleaning orphan depricated resources")
+	setupLog.Info("cleaning orphan deprecated resources")
 	err = cleanupOrphanDeprecatedResources(ctx)
 	if err != nil {
 		setupLog.Error(err, "while removing orphan resources")
@@ -131,8 +131,7 @@ func main() {
 		mgr.GetClient(), mgr.GetConfig(),
 		mgr.GetEventRecorderFor("serverless-operator"),
 		reconcilerLogger.Sugar(),
-		cfg.ChartPath,
-		cfg.ServerlessManagerNamespace)
+		cfg.ChartPath)
 
 	if err = reconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Serverless")

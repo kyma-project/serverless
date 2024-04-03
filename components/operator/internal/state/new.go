@@ -17,7 +17,7 @@ type StateReconciler interface {
 	Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl.Result, error)
 }
 
-func NewMachine(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, cache chart.ManifestCache, chartPath, namespace string) StateReconciler {
+func NewMachine(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, cache chart.ManifestCache, chartPath string) StateReconciler {
 	return &reconciler{
 		fn:    sFnServedFilter,
 		cache: cache,
@@ -25,7 +25,6 @@ func NewMachine(client client.Client, config *rest.Config, recorder record.Event
 		cfg: cfg{
 			finalizer:     v1alpha1.Finalizer,
 			chartPath:     chartPath,
-			namespace:     namespace,
 			managerPodUID: os.Getenv("SERVERLESS_MANAGER_UID"),
 		},
 		k8s: k8s{
