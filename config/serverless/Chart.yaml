@@ -7,5 +7,3 @@ icon: https://github.com/kyma-project/kyma/blob/main/logo.png?raw=true
 dependencies:
   - name: docker-registry
     condition: dockerRegistry.enableInternal
-  - name: webhook
-    condition: webhook.enabled
