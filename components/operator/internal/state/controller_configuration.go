@@ -4,9 +4,7 @@ import (
 	"context"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
-	corev1 "k8s.io/api/core/v1"
 	controllerruntime "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -59,14 +57,4 @@ func configureControllerConfigurationFlags(s *systemState) {
 			s.instance.Status.DefaultBuildJobPreset,
 			s.instance.Status.DefaultRuntimePodPreset,
 		)
-}
-
-func getNodesLen(ctx context.Context, c client.Client) (int, error) {
-	nodeList := corev1.NodeList{}
-	err := c.List(ctx, &nodeList)
-	if err != nil {
-		return 0, err
-	}
-
-	return len(nodeList.Items), nil
 }

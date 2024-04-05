@@ -27,7 +27,6 @@ import (
 const (
 	ServerlessGroup   = "operator.kyma-project.io"
 	ServerlessVersion = "v1alpha1"
-	ServerlessKind    = "Serverless"
 )
 
 var (
