@@ -17,6 +17,7 @@ SHELL = /usr/bin/env bash -o pipefail
 ##@ Development
 CONFIG_OPERATOR = $(PROJECT_ROOT)/config/operator/base
 CONFIG_OPERATOR_DEV = $(PROJECT_ROOT)/config/operator/dev
+CONFIG_OPERATOR_MAIN = https://github.com/kyma-project/serverless/config/operator/base?ref=main
 
 .PHONY: manifests
 manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
@@ -88,7 +89,7 @@ uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified 
 .PHONY: deploy-main
 deploy-main: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
 	kubectl create namespace kyma-system || true
-	$(KUSTOMIZE) build $(CONFIG_OPERATOR) | kubectl apply -f -
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR_MAIN) | kubectl apply -f -
 
 
 .PHONY: generate-kustomization-dev
