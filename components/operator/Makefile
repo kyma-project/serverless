@@ -70,7 +70,7 @@ build-image-operator: ## Build serverless operator from local sources on k3d
 	docker build -t $(OPERATOR_NAME) -f Dockerfile $(PROJECT_ROOT)
 
 .PHONY: install-operator-k3d
-install-operator-k3d: build-image-operator ## Build and install serverless operator from local sources on k3d
+install-operator-k3d: build-image-operator ## Build and replace serverless operator from local sources on k3d
 	$(eval HASH_TAG=$(shell docker images $(OPERATOR_NAME):latest --quiet))
 	docker tag $(OPERATOR_NAME) $(OPERATOR_NAME):$(HASH_TAG)
 

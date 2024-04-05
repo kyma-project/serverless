@@ -43,7 +43,7 @@ CONTROLLER_NAME = function-controller
 build-image-function-controller:
 	docker build -t $(CONTROLLER_NAME) -f $(COMPONENT_ROOT)/deploy/manager/Dockerfile $(PROJECT_ROOT)
 
-install-controller-k3d: build-image-function-controller disable-operator ## Build and install serverless manager from local sources on k3d
+install-controller-k3d: build-image-function-controller disable-operator ## Build and replace serverless manager from local sources on k3d
 	$(eval HASH_TAG=$(shell docker images $(CONTROLLER_NAME):latest --quiet))
 	docker tag $(CONTROLLER_NAME) $(CONTROLLER_NAME):$(HASH_TAG)
 
@@ -57,7 +57,7 @@ WEBHOOK_NAME = function-webhook
 build-image-function-webhook:
 	docker build -t $(WEBHOOK_NAME) -f $(COMPONENT_ROOT)/deploy/webhook/Dockerfile $(PROJECT_ROOT)
 
-install-webhook-k3d: build-image-function-webhook disable-operator ## Build and install serverless webhook from local sources on k3d
+install-webhook-k3d: build-image-function-webhook disable-operator ## Build and replace serverless webhook from local sources on k3d
 	$(eval HASH_TAG=$(shell docker images $(WEBHOOK_NAME):latest --quiet))
 	docker tag $(WEBHOOK_NAME) $(WEBHOOK_NAME):$(HASH_TAG)
 

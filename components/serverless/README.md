@@ -15,8 +15,10 @@ To develop the Function Controller, you need:
 - <!-- markdown-link-check-disable-line -->[kustomize](https://github.com/kubernetes-sigs/kustomize/releases/tag/kustomize%2Fv4.5.7) (v4.5.7)
 
 ### Installing locally build serverless controller image on k3d with serverless
+Prerequisite:
+- installed serverless on cluster
 
-To install serverless-manager from local sources on k3d cluster run:
+To install serverless-controller from local sources on k3d cluster run:
 ```bash
 make install-controller-k3d
 ```

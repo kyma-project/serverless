@@ -11,12 +11,15 @@ The Function Operator requires the following components to be installed:
 ## Development
 
 ### Installing locally build serverless operator image on k3d with serverless
+Prerequisite:
+- installed operator on cluster
 
 To install serverless-manager from local sources on k3d cluster run:
 
 ```bash
 make install-operator-k3d
 ```
+
 
 This target does:
 
