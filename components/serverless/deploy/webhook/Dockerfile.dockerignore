@@ -1,6 +1,0 @@
-# Ignore all
-**
-# Allow
-!components/serverless
-!go.sum
-!go.mod
