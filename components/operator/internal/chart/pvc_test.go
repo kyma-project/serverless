@@ -72,7 +72,7 @@ func fixPVC(name string, size int) *corev1.PersistentVolumeClaim {
 			Namespace: "kyma-system",
 		},
 		Spec: corev1.PersistentVolumeClaimSpec{
-			Resources: corev1.ResourceRequirements{
+			Resources: corev1.VolumeResourceRequirements{
 				Requests: corev1.ResourceList{
 					corev1.ResourceStorage: resource.MustParse(fmt.Sprintf("%dGi", size)),
 				},
