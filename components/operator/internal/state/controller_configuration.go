@@ -35,29 +35,9 @@ func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemSta
 }
 
 func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, instance *v1alpha1.Serverless) error {
-	nodesLen, err := getNodesLen(ctx, r.client)
-	if err != nil {
-		return err
-	}
-
-	defaultBuildPreset := slowBuildPreset
-	defaultRuntimePreset := slowRuntimePreset
-	if nodesLen > 2 {
-		defaultBuildPreset = fastBuildPreset
-		defaultRuntimePreset = fastRuntimePreset
-	}
-
 	spec := instance.Spec
 	fields := fieldsToUpdate{
-		{spec.TargetCPUUtilizationPercentage, &instance.Status.CPUUtilizationPercentage, "CPU utilization", ""},
-		{spec.FunctionRequeueDuration, &instance.Status.RequeueDuration, "Function requeue duration", ""},
-		{spec.FunctionBuildExecutorArgs, &instance.Status.BuildExecutorArgs, "Function build executor args", ""},
-		{spec.FunctionBuildMaxSimultaneousJobs, &instance.Status.BuildMaxSimultaneousJobs, "Max number of simultaneous jobs", ""},
 		{spec.HealthzLivenessTimeout, &instance.Status.HealthzLivenessTimeout, "Duration of health check", ""},
-		{spec.FunctionRequestBodyLimitMb, &instance.Status.RequestBodyLimitMb, "Max size of request body", ""},
-		{spec.FunctionTimeoutSec, &instance.Status.TimeoutSec, "Timeout", ""},
-		{spec.DefaultBuildJobPreset, &instance.Status.DefaultBuildJobPreset, "Default build job preset", defaultBuildPreset},
-		{spec.DefaultRuntimePodPreset, &instance.Status.DefaultRuntimePodPreset, "Default runtime pod preset", defaultRuntimePreset},
 	}
 
 	updateStatusFields(r.k8s, instance, fields)

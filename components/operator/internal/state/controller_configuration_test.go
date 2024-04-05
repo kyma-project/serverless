@@ -122,15 +122,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{
-					TargetCPUUtilizationPercentage:   cpuUtilizationTest,
-					FunctionRequeueDuration:          requeueDurationTest,
-					FunctionBuildExecutorArgs:        executorArgsTest,
-					FunctionBuildMaxSimultaneousJobs: maxSimultaneousJobsTest,
-					HealthzLivenessTimeout:           healthzLivenessTimeoutTest,
-					FunctionRequestBodyLimitMb:       requestBodyLimitMbTest,
-					FunctionTimeoutSec:               timeoutSecTest,
-					DefaultBuildJobPreset:            buildJobPresetTest,
-					DefaultRuntimePodPreset:          runtimePodPresetTest,
+					HealthzLivenessTimeout: healthzLivenessTimeoutTest,
 				},
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
