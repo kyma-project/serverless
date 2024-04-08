@@ -203,7 +203,7 @@ rules:
 - apiGroups:
   - operator.kyma-project.io
   resources:
-  - serverlesses
+  - dockerregistries
   verbs:
   - create
   - delete
@@ -216,7 +216,7 @@ rules:
 - apiGroups:
   - operator.kyma-project.io
   resources:
-  - serverlesses/finalizers
+  - dockerregistries/finalizers
   verbs:
   - create
   - delete
@@ -229,7 +229,7 @@ rules:
 - apiGroups:
   - operator.kyma-project.io
   resources:
-  - serverlesses/status
+  - dockerregistries/status
   verbs:
   - create
   - delete

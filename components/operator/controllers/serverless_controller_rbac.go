@@ -26,9 +26,9 @@ package controllers
 //+kubebuilder:rbac:groups=serverless.kyma-project.io,resources=functions,verbs=get;list;watch;create;update;patch;delete;deletecollection
 //+kubebuilder:rbac:groups=serverless.kyma-project.io,resources=functions/status,verbs=get;list;watch;create;update;patch;delete;deletecollection
 
-//+kubebuilder:rbac:groups=operator.kyma-project.io,resources=serverlesses,verbs=get;list;watch;create;update;patch;delete;deletecollection
-//+kubebuilder:rbac:groups=operator.kyma-project.io,resources=serverlesses/status,verbs=get;list;watch;create;update;patch;delete;deletecollection
-//+kubebuilder:rbac:groups=operator.kyma-project.io,resources=serverlesses/finalizers,verbs=get;list;watch;create;update;patch;delete;deletecollection
+//+kubebuilder:rbac:groups=operator.kyma-project.io,resources=dockerregistries,verbs=get;list;watch;create;update;patch;delete;deletecollection
+//+kubebuilder:rbac:groups=operator.kyma-project.io,resources=dockerregistries/status,verbs=get;list;watch;create;update;patch;delete;deletecollection
+//+kubebuilder:rbac:groups=operator.kyma-project.io,resources=dockerregistries/finalizers,verbs=get;list;watch;create;update;patch;delete;deletecollection
 
 //+kubebuilder:rbac:groups=admissionregistration.k8s.io,resources=validatingwebhookconfigurations;mutatingwebhookconfigurations,verbs=get;list;watch;create;update;patch;delete;deletecollection
 
