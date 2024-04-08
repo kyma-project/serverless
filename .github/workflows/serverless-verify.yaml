@@ -15,28 +15,6 @@ on:
       - converted_to_draft
 
 jobs:
-  #pre-serverless-controller-lint
-  lint:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-libgit2
-      - uses: golangci/golangci-lint-action@v3
-        with:
-          version: latest
-          working-directory: 'components/serverless'
-
-  #pre-serverless-controller-unit-test
-  unit-test:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-libgit2
-      - name: run test
-        run: make -C components/serverless test
-
   integration-test:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false

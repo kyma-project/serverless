@@ -5,7 +5,6 @@ go 1.21
 toolchain go1.21.3
 
 require (
-	github.com/kyma-project/serverless/components/serverless v0.0.0-20240111105303-738d9da2a2ee
 	github.com/onsi/ginkgo/v2 v2.17.1
 	github.com/onsi/gomega v1.32.0
 	github.com/pkg/errors v0.9.1
