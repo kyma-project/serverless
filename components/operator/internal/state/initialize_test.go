@@ -21,13 +21,13 @@ func Test_sFnInitialize(t *testing.T) {
 			},
 		}
 		s := &systemState{
-			instance: v1alpha1.Serverless{
+			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
 					Finalizers: []string{
 						r.cfg.finalizer,
 					},
 				},
-				Spec: v1alpha1.ServerlessSpec{},
+				Spec: v1alpha1.DockerRegistrySpec{},
 			},
 		}
 
@@ -49,14 +49,14 @@ func Test_sFnInitialize(t *testing.T) {
 		}
 		metaTime := metav1.Now()
 		s := &systemState{
-			instance: v1alpha1.Serverless{
+			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
 					Finalizers: []string{
 						r.cfg.finalizer,
 					},
 					DeletionTimestamp: &metaTime,
 				},
-				Spec: v1alpha1.ServerlessSpec{},
+				Spec: v1alpha1.DockerRegistrySpec{},
 			},
 		}
 

@@ -16,17 +16,17 @@ import (
 )
 
 var (
-	testInstalledServerless = v1alpha1.Serverless{
+	testInstalledServerless = v1alpha1.DockerRegistry{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "test",
 			Namespace: "test",
 		},
-		Spec: v1alpha1.ServerlessSpec{
-			DockerRegistry: &v1alpha1.DockerRegistry{
+		Spec: v1alpha1.DockerRegistrySpec{
+			DockerRegistry: &v1alpha1.DockerRegistryCfg{
 				EnableInternal: ptr.To[bool](false),
 			},
 		},
-		Status: v1alpha1.ServerlessStatus{
+		Status: v1alpha1.DockerRegistryStatus{
 			Conditions: []metav1.Condition{
 				{
 					Type:   string(v1alpha1.ConditionTypeConfigured),
@@ -101,7 +101,7 @@ func getFnName(fn stateFn) string {
 	return runtime.FuncForPC(reflect.ValueOf(fn).Pointer()).Name()
 }
 
-func requireContainsCondition(t *testing.T, status v1alpha1.ServerlessStatus,
+func requireContainsCondition(t *testing.T, status v1alpha1.DockerRegistryStatus,
 	conditionType v1alpha1.ConditionType, conditionStatus metav1.ConditionStatus, conditionReason v1alpha1.ConditionReason, conditionMessage string) {
 	hasExpectedCondition := false
 	for _, condition := range status.Conditions {

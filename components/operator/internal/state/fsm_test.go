@@ -45,7 +45,7 @@ func Test_reconciler_Reconcile(t *testing.T) {
 	}
 	type args struct {
 		ctx context.Context
-		v   v1alpha1.Serverless
+		v   v1alpha1.DockerRegistry
 	}
 	tests := []struct {
 		name    string
@@ -124,8 +124,8 @@ func Test_reconciler_Reconcile(t *testing.T) {
 			},
 			log: zap.NewNop().Sugar(),
 		}
-		serverless := v1alpha1.Serverless{
-			Status: v1alpha1.ServerlessStatus{
+		serverless := v1alpha1.DockerRegistry{
+			Status: v1alpha1.DockerRegistryStatus{
 				Conditions: []metav1.Condition{
 					{
 						Type:               "test-type",

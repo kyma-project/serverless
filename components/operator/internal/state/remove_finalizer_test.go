@@ -16,7 +16,7 @@ func Test_sFnRemoveFinalizer(t *testing.T) {
 	t.Run("remove finalizer", func(t *testing.T) {
 		scheme := scheme.Scheme
 		require.NoError(t, v1alpha1.AddToScheme(scheme))
-		instance := v1alpha1.Serverless{
+		instance := v1alpha1.DockerRegistry{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "test",
 				Namespace: "default",
@@ -54,7 +54,7 @@ func Test_sFnRemoveFinalizer(t *testing.T) {
 			},
 		}
 		s := &systemState{
-			instance: v1alpha1.Serverless{
+			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{},
 			},
 		}

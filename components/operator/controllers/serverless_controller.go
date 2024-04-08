@@ -34,7 +34,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// serverlessReconciler reconciles a Serverless object
+// serverlessReconciler reconciles a DockerRegistry object
 type serverlessReconciler struct {
 	initStateMachine func(*zap.SugaredLogger) state.StateReconciler
 	client           client.Client
@@ -56,7 +56,7 @@ func NewServerlessReconciler(client client.Client, config *rest.Config, recorder
 // SetupWithManager sets up the controller with the Manager.
 func (sr *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&v1alpha1.Serverless{}, builder.WithPredicates(predicate.NoStatusChangePredicate{})).
+		For(&v1alpha1.DockerRegistry{}, builder.WithPredicates(predicate.NoStatusChangePredicate{})).
 		Watches(&corev1.Service{}, tracing.ServiceCollectorWatcher()).
 		Complete(sr)
 }

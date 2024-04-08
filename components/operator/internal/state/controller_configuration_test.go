@@ -32,8 +32,8 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 
 	t.Run("update status with slow defaults", func(t *testing.T) {
 		s := &systemState{
-			instance: v1alpha1.Serverless{
-				Spec: v1alpha1.ServerlessSpec{},
+			instance: v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{},
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
 		}
@@ -73,9 +73,9 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 
 	t.Run("update slow default to fast ones", func(t *testing.T) {
 		s := &systemState{
-			instance: v1alpha1.Serverless{
-				Spec: v1alpha1.ServerlessSpec{},
-				Status: v1alpha1.ServerlessStatus{
+			instance: v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{},
+				Status: v1alpha1.DockerRegistryStatus{
 					DefaultBuildJobPreset:   slowBuildPreset,
 					DefaultRuntimePodPreset: slowRuntimePreset,
 				},
@@ -120,8 +120,8 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 
 	t.Run("update status additional configuration overrides", func(t *testing.T) {
 		s := &systemState{
-			instance: v1alpha1.Serverless{
-				Spec: v1alpha1.ServerlessSpec{
+			instance: v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
 					HealthzLivenessTimeout: healthzLivenessTimeoutTest,
 				},
 			},
@@ -174,8 +174,8 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 
 	t.Run("reconcile from configurationError", func(t *testing.T) {
 		s := &systemState{
-			instance: v1alpha1.Serverless{
-				Status: v1alpha1.ServerlessStatus{
+			instance: v1alpha1.DockerRegistry{
+				Status: v1alpha1.DockerRegistryStatus{
 					Conditions: []metav1.Condition{
 						{
 							Type:   string(v1alpha1.ConditionTypeConfigured),
@@ -192,16 +192,16 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 					EventingEndpoint: "test-event-URL",
 					TracingEndpoint:  v1alpha1.EndpointDisabled,
 				},
-				Spec: v1alpha1.ServerlessSpec{
+				Spec: v1alpha1.DockerRegistrySpec{
 					Eventing: &v1alpha1.Endpoint{Endpoint: "test-event-URL"},
 					Tracing:  &v1alpha1.Endpoint{Endpoint: v1alpha1.EndpointDisabled},
-					DockerRegistry: &v1alpha1.DockerRegistry{
+					DockerRegistry: &v1alpha1.DockerRegistryCfg{
 						EnableInternal: ptr.To[bool](false),
 						SecretName:     ptr.To[string]("boo"),
 					},
 				},
 			},
-			statusSnapshot: v1alpha1.ServerlessStatus{
+			statusSnapshot: v1alpha1.DockerRegistryStatus{
 				DockerRegistry: "",
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),

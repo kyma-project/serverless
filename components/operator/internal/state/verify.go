@@ -43,7 +43,7 @@ func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (state
 	s.instance.UpdateConditionTrue(
 		v1alpha1.ConditionTypeInstalled,
 		v1alpha1.ConditionReasonInstalled,
-		"Serverless installed",
+		"DockerRegistry installed",
 	)
 	return stop()
 }

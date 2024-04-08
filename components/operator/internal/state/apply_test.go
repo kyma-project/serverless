@@ -15,7 +15,7 @@ import (
 func Test_buildSFnApplyResources(t *testing.T) {
 	t.Run("switch state and add condition when condition is missing", func(t *testing.T) {
 		s := &systemState{
-			instance: v1alpha1.Serverless{},
+			instance: v1alpha1.DockerRegistry{},
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{

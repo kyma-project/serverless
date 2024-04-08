@@ -30,9 +30,9 @@ func ConditionTrueMatcher() gomegatypes.GomegaMatcher {
 }
 
 func (matcher *conditionMatcher) Match(actual interface{}) (success bool, err error) {
-	status, ok := actual.(v1alpha1.ServerlessStatus)
+	status, ok := actual.(v1alpha1.DockerRegistryStatus)
 	if !ok {
-		return false, fmt.Errorf("ConditionMatcher matcher expects an v1alpha1.ServerlessStatus")
+		return false, fmt.Errorf("ConditionMatcher matcher expects an v1alpha1.DockerRegistryStatus")
 	}
 
 	if status.State != matcher.expectedState {
@@ -129,9 +129,9 @@ func (h *testHelper) createReplicaSetForDeployment(deployment appsv1.Deployment)
 	return replicaSetName
 }
 
-func (h *testHelper) createServerless(serverlessName string, spec v1alpha1.ServerlessSpec) {
+func (h *testHelper) createServerless(serverlessName string, spec v1alpha1.DockerRegistrySpec) {
 	By(fmt.Sprintf("Creating crd: %s", serverlessName))
-	serverless := v1alpha1.Serverless{
+	serverless := v1alpha1.DockerRegistry{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      serverlessName,
 			Namespace: h.namespaceName,
@@ -211,21 +211,21 @@ func (h *testHelper) listKubernetesObjectFunc(list client.ObjectList) (bool, err
 	return true, err
 }
 
-func (h *testHelper) createGetServerlessStatusFunc(serverlessName string) func() (v1alpha1.ServerlessStatus, error) {
-	return func() (v1alpha1.ServerlessStatus, error) {
+func (h *testHelper) createGetServerlessStatusFunc(serverlessName string) func() (v1alpha1.DockerRegistryStatus, error) {
+	return func() (v1alpha1.DockerRegistryStatus, error) {
 		return h.getServerlessStatus(serverlessName)
 	}
 }
 
-func (h *testHelper) getServerlessStatus(serverlessName string) (v1alpha1.ServerlessStatus, error) {
-	var serverless v1alpha1.Serverless
+func (h *testHelper) getServerlessStatus(serverlessName string) (v1alpha1.DockerRegistryStatus, error) {
+	var serverless v1alpha1.DockerRegistry
 	key := types.NamespacedName{
 		Name:      serverlessName,
 		Namespace: h.namespaceName,
 	}
 	err := k8sClient.Get(h.ctx, key, &serverless)
 	if err != nil {
-		return v1alpha1.ServerlessStatus{}, err
+		return v1alpha1.DockerRegistryStatus{}, err
 	}
 	return serverless.Status, nil
 }
@@ -237,11 +237,11 @@ type serverlessData struct {
 	registrySecretData
 }
 
-func (d *serverlessData) toServerlessSpec(secretName string) v1alpha1.ServerlessSpec {
-	result := v1alpha1.ServerlessSpec{
+func (d *serverlessData) toServerlessSpec(secretName string) v1alpha1.DockerRegistrySpec {
+	result := v1alpha1.DockerRegistrySpec{
 		Eventing: getEndpoint(d.EventPublisherProxyURL),
 		Tracing:  getEndpoint(d.TraceCollectorURL),
-		DockerRegistry: &v1alpha1.DockerRegistry{
+		DockerRegistry: &v1alpha1.DockerRegistryCfg{
 			EnableInternal: d.EnableInternal,
 		},
 	}

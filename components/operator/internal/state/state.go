@@ -41,7 +41,7 @@ type fieldsToUpdate []struct {
 	defaultValue string
 }
 
-func updateStatusFields(eventRecorder record.EventRecorder, instance *v1alpha1.Serverless, fields fieldsToUpdate) {
+func updateStatusFields(eventRecorder record.EventRecorder, instance *v1alpha1.DockerRegistry, fields fieldsToUpdate) {
 	for _, field := range fields {
 		// set default value if spec field is empty
 		if field.specField == "" {

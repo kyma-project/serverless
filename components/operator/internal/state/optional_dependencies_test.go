@@ -64,8 +64,8 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			ctx := context.TODO()
 			s := &systemState{
-				instance: v1alpha1.Serverless{
-					Spec: v1alpha1.ServerlessSpec{
+				instance: v1alpha1.DockerRegistry{
+					Spec: v1alpha1.DockerRegistrySpec{
 						Eventing: testCase.eventing,
 						Tracing:  testCase.tracing,
 					},
@@ -87,9 +87,9 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 
 	t.Run("configure chart flags in release if status is up-to date", func(t *testing.T) {
 		s := &systemState{
-			instance: v1alpha1.Serverless{
-				Spec: v1alpha1.ServerlessSpec{Eventing: &v1alpha1.Endpoint{Endpoint: customEventingURL}},
-				Status: v1alpha1.ServerlessStatus{
+			instance: v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{Eventing: &v1alpha1.Endpoint{Endpoint: customEventingURL}},
+				Status: v1alpha1.DockerRegistryStatus{
 					Conditions: []metav1.Condition{
 						{
 							Type:   string(v1alpha1.ConditionTypeConfigured),

@@ -14,7 +14,7 @@ import (
 )
 
 type StateReconciler interface {
-	Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl.Result, error)
+	Reconcile(ctx context.Context, v v1alpha1.DockerRegistry) (ctrl.Result, error)
 }
 
 func NewMachine(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, cache chart.ManifestCache, chartPath string) StateReconciler {

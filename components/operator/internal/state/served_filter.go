@@ -30,7 +30,7 @@ func setInitialServed(ctx context.Context, r *reconciler, s *systemState) error 
 	return setServed(servedServerless, s)
 }
 
-func setServed(servedServerless *v1alpha1.Serverless, s *systemState) error {
+func setServed(servedServerless *v1alpha1.DockerRegistry, s *systemState) error {
 	if servedServerless == nil {
 		s.setServed(v1alpha1.ServedTrue)
 		return nil
@@ -39,7 +39,7 @@ func setServed(servedServerless *v1alpha1.Serverless, s *systemState) error {
 	s.setServed(v1alpha1.ServedFalse)
 	s.setState(v1alpha1.StateWarning)
 	err := fmt.Errorf(
-		"Only one instance of Serverless is allowed (current served instance: %s/%s). This Serverless CR is redundant. Remove it to fix the problem.",
+		"Only one instance of DockerRegistry is allowed (current served instance: %s/%s). This DockerRegistry CR is redundant. Remove it to fix the problem.",
 		servedServerless.GetNamespace(), servedServerless.GetName())
 	s.instance.UpdateConditionFalse(
 		v1alpha1.ConditionTypeConfigured,

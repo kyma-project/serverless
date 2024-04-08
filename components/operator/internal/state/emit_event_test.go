@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	testServerlessConditions1 = v1alpha1.Serverless{
-		Status: v1alpha1.ServerlessStatus{
+	testServerlessConditions1 = v1alpha1.DockerRegistry{
+		Status: v1alpha1.DockerRegistryStatus{
 			Conditions: []metav1.Condition{
 				{
 					Status:  metav1.ConditionUnknown,
@@ -28,8 +28,8 @@ var (
 			},
 		},
 	}
-	testServerlessConditions2 = v1alpha1.Serverless{
-		Status: v1alpha1.ServerlessStatus{
+	testServerlessConditions2 = v1alpha1.DockerRegistry{
+		Status: v1alpha1.DockerRegistryStatus{
 			Conditions: []metav1.Condition{
 				{
 					Status:  metav1.ConditionFalse,

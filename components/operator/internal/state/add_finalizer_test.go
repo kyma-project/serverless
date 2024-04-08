@@ -16,7 +16,7 @@ func Test_sFnAddFinalizer(t *testing.T) {
 		scheme := runtime.NewScheme()
 		require.NoError(t, v1alpha1.AddToScheme(scheme))
 
-		serverless := v1alpha1.Serverless{
+		serverless := v1alpha1.DockerRegistry{
 			ObjectMeta: v1.ObjectMeta{
 				Name:            "test-name",
 				Namespace:       "test-namespace",
@@ -48,7 +48,7 @@ func Test_sFnAddFinalizer(t *testing.T) {
 		require.Contains(t, s.instance.GetFinalizers(), r.cfg.finalizer)
 
 		// check finalizer in k8s
-		obj := v1alpha1.Serverless{}
+		obj := v1alpha1.DockerRegistry{}
 		err = r.k8s.client.Get(context.Background(),
 			client.ObjectKey{
 				Namespace: serverless.Namespace,
@@ -68,7 +68,7 @@ func Test_sFnAddFinalizer(t *testing.T) {
 
 		metaTimeNow := v1.Now()
 		s := &systemState{
-			instance: v1alpha1.Serverless{
+			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: v1.ObjectMeta{
 					DeletionTimestamp: &metaTimeNow,
 				},

@@ -4,14 +4,14 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.14.0
-  name: serverlesses.operator.kyma-project.io
+  name: dockerregistries.operator.kyma-project.io
 spec:
   group: operator.kyma-project.io
   names:
-    kind: Serverless
-    listKind: ServerlessList
-    plural: serverlesses
-    singular: serverless
+    kind: DockerRegistry
+    listKind: DockerRegistryList
+    plural: dockerregistries
+    singular: dockerregistry
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
@@ -33,7 +33,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Serverless is the Schema for the serverlesses API
+        description: DockerRegistry is the Schema for the serverlesses API
         properties:
           apiVersion:
             description: |-
@@ -53,9 +53,10 @@ spec:
           metadata:
             type: object
           spec:
-            description: ServerlessSpec defines the desired state of Serverless
+            description: DockerRegistrySpec defines the desired state of DockerRegistry
             properties:
               dockerRegistry:
+                description: 'TODO: change the DockerRegistryCfg name'
                 properties:
                   enableInternal:
                     description: When set to true, the internal Docker registry is
@@ -184,7 +185,7 @@ spec:
                 type: string
               served:
                 description: |-
-                  Served signifies that current Serverless is managed.
+                  Served signifies that current DockerRegistry is managed.
                   Value can be one of ("True", "False").
                 enum:
                 - "True"
@@ -192,7 +193,7 @@ spec:
                 type: string
               state:
                 description: |-
-                  State signifies current state of Serverless.
+                  State signifies current state of DockerRegistry.
                   Value can be one of ("Ready", "Processing", "Error", "Deleting").
                 enum:
                 - Processing

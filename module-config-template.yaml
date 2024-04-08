@@ -1,7 +1,7 @@
 name: {{.Name}}
 channel: {{.Channel}}
 version: {{.Version}}
-defaultCR: config/samples/default-serverless-cr.yaml
+defaultCR: config/samples/default-dockerregistry-cr.yaml
 manifest: serverless-operator.yaml
 annotations:
   "operator.kyma-project.io/doc-url": "https://kyma-project.io/#/serverless-manager/user/README"

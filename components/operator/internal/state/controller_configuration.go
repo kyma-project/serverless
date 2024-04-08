@@ -32,7 +32,7 @@ func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemSta
 	return nextState(sFnApplyResources)
 }
 
-func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, instance *v1alpha1.Serverless) error {
+func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, instance *v1alpha1.DockerRegistry) error {
 	spec := instance.Spec
 	fields := fieldsToUpdate{
 		{spec.HealthzLivenessTimeout, &instance.Status.HealthzLivenessTimeout, "Duration of health check", ""},

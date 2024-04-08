@@ -35,8 +35,8 @@ type cfg struct {
 }
 
 type systemState struct {
-	instance       v1alpha1.Serverless
-	statusSnapshot v1alpha1.ServerlessStatus
+	instance       v1alpha1.DockerRegistry
+	statusSnapshot v1alpha1.DockerRegistryStatus
 	chartConfig    *chart.Config
 	warningBuilder *warning.Builder
 	flagsBuilder   chart.FlagsBuilder
@@ -45,7 +45,7 @@ type systemState struct {
 func (s *systemState) saveStatusSnapshot() {
 	result := s.instance.Status.DeepCopy()
 	if result == nil {
-		result = &v1alpha1.ServerlessStatus{}
+		result = &v1alpha1.DockerRegistryStatus{}
 	}
 	s.statusSnapshot = *result
 }
@@ -104,7 +104,7 @@ func (m *reconciler) stateFnName() string {
 	return shortName
 }
 
-func (m *reconciler) Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl.Result, error) {
+func (m *reconciler) Reconcile(ctx context.Context, v v1alpha1.DockerRegistry) (ctrl.Result, error) {
 	state := systemState{
 		instance:       v,
 		warningBuilder: warning.NewBuilder(),

@@ -11,7 +11,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// enable or disable serverless optional dependencies based on the Serverless Spec and installed module on the cluster
+// enable or disable serverless optional dependencies based on the DockerRegistry Spec and installed module on the cluster
 func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
 	// TODO: add functionality of auto-detecting these dependencies by checking Eventing CRs if user does not override these values.
 	// checking these URLs manually is not possible because of lack of istio-sidecar in the serverless-operator
@@ -35,7 +35,7 @@ func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState)
 	return nextState(sFnControllerConfiguration)
 }
 
-func getTracingURL(ctx context.Context, client client.Client, spec v1alpha1.ServerlessSpec) (string, error) {
+func getTracingURL(ctx context.Context, client client.Client, spec v1alpha1.DockerRegistrySpec) (string, error) {
 	if spec.Tracing != nil {
 		return spec.Tracing.Endpoint, nil
 	}
@@ -47,14 +47,14 @@ func getTracingURL(ctx context.Context, client client.Client, spec v1alpha1.Serv
 	return tracingURL, nil
 }
 
-func getEventingURL(spec v1alpha1.ServerlessSpec) string {
+func getEventingURL(spec v1alpha1.DockerRegistrySpec) string {
 	if spec.Eventing != nil {
 		return spec.Eventing.Endpoint
 	}
 	return v1alpha1.DefaultEventingEndpoint
 }
 
-func updateOptionalDependenciesStatus(eventRecorder record.EventRecorder, instance *v1alpha1.Serverless, eventingURL, tracingURL string) {
+func updateOptionalDependenciesStatus(eventRecorder record.EventRecorder, instance *v1alpha1.DockerRegistry, eventingURL, tracingURL string) {
 	fields := fieldsToUpdate{
 		{eventingURL, &instance.Status.EventingEndpoint, "Eventing endpoint", ""},
 		{tracingURL, &instance.Status.TracingEndpoint, "Tracing endpoint", ""},

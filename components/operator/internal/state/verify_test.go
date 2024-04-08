@@ -76,7 +76,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 			v1alpha1.ConditionTypeInstalled,
 			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonInstalled,
-			"Serverless installed",
+			"DockerRegistry installed",
 		)
 	})
 

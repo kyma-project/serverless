@@ -115,7 +115,7 @@ render-manifest: manifests kustomize ## Render serverless-operator.yaml manifest
 .PHONY: apply-default-serverless-cr
 apply-default-serverless-cr: ## Apply the k3d serverless CR.
 	kubectl apply \
-		-f ${PROJECT_ROOT}/config/samples/default-serverless-cr.yaml
+		-f ${PROJECT_ROOT}/config/samples/default-dockerregistry-cr.yaml
 
 .PHONY: remove-serverless
 remove-serverless: ## Remove Serverless CR

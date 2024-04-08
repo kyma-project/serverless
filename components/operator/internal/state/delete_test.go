@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	testDeletingServerless = func() v1alpha1.Serverless {
+	testDeletingServerless = func() v1alpha1.DockerRegistry {
 		serverless := testInstalledServerless
 		serverless.Status.State = v1alpha1.StateDeleting
 		serverless.Status.Conditions = []metav1.Condition{
@@ -35,7 +35,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 	t.Run("update condition", func(t *testing.T) {
 		s := &systemState{
-			instance: v1alpha1.Serverless{},
+			instance: v1alpha1.DockerRegistry{},
 		}
 
 		next, result, err := sFnDeleteResources(context.Background(), nil, s)
@@ -97,7 +97,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 			v1alpha1.ConditionTypeDeleted,
 			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonDeleted,
-			"Serverless module deleted",
+			"DockerRegistry module deleted",
 		)
 	})
 
@@ -199,7 +199,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 			v1alpha1.ConditionTypeDeleted,
 			metav1.ConditionTrue,
 			v1alpha1.ConditionReasonDeleted,
-			"Serverless module deleted",
+			"DockerRegistry module deleted",
 		)
 	})
 }

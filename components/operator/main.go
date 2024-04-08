@@ -151,7 +151,7 @@ func main() {
 	serviceAccountSvc := k8s.NewServiceAccountService(resourceClient, configKubernetes)
 
 	if err = reconciler.SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "Serverless")
+		setupLog.Error(err, "unable to create controller", "controller", "DockerRegistry")
 		os.Exit(1)
 	}
 

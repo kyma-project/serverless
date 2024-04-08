@@ -179,11 +179,11 @@ func getRegistrySecret(ctx context.Context, r *reconciler, s *systemState) (*cor
 	return &secret, err
 }
 
-func isRegistrySecretName(registry *v1alpha1.DockerRegistry) bool {
+func isRegistrySecretName(registry *v1alpha1.DockerRegistryCfg) bool {
 	return registry != nil && registry.SecretName != nil
 }
 
-func getEnableInternal(registry *v1alpha1.DockerRegistry) bool {
+func getEnableInternal(registry *v1alpha1.DockerRegistryCfg) bool {
 	if registry != nil && registry.EnableInternal != nil {
 		return *registry.EnableInternal
 	}

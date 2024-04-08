@@ -10,8 +10,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func GetServerlessOrServed(ctx context.Context, req ctrl.Request, c client.Client) (*v1alpha1.Serverless, error) {
-	instance := &v1alpha1.Serverless{}
+func GetServerlessOrServed(ctx context.Context, req ctrl.Request, c client.Client) (*v1alpha1.DockerRegistry, error) {
+	instance := &v1alpha1.DockerRegistry{}
 	err := c.Get(ctx, req.NamespacedName, instance)
 	if err == nil {
 		return instance, nil
@@ -27,8 +27,8 @@ func GetServerlessOrServed(ctx context.Context, req ctrl.Request, c client.Clien
 	return instance, nil
 }
 
-func GetServedServerless(ctx context.Context, c client.Client) (*v1alpha1.Serverless, error) {
-	var serverlessList v1alpha1.ServerlessList
+func GetServedServerless(ctx context.Context, c client.Client) (*v1alpha1.DockerRegistry, error) {
+	var serverlessList v1alpha1.DockerRegistryList
 
 	err := c.List(ctx, &serverlessList)
 

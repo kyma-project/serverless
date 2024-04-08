@@ -20,14 +20,14 @@ import (
 func Test_sFnRegistryConfiguration(t *testing.T) {
 	t.Run("internal registry and update", func(t *testing.T) {
 		s := &systemState{
-			instance: v1alpha1.Serverless{
-				Spec: v1alpha1.ServerlessSpec{
-					DockerRegistry: &v1alpha1.DockerRegistry{
+			instance: v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
+					DockerRegistry: &v1alpha1.DockerRegistryCfg{
 						EnableInternal: ptr.To[bool](true),
 					},
 				},
 			},
-			statusSnapshot: v1alpha1.ServerlessStatus{
+			statusSnapshot: v1alpha1.DockerRegistryStatus{
 				DockerRegistry: "",
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
@@ -69,18 +69,18 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			},
 		}
 		s := &systemState{
-			instance: v1alpha1.Serverless{
+			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: "kyma-test",
 				},
-				Spec: v1alpha1.ServerlessSpec{
-					DockerRegistry: &v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
+					DockerRegistry: &v1alpha1.DockerRegistryCfg{
 						EnableInternal: ptr.To[bool](false),
 						SecretName:     ptr.To[string]("test-secret"),
 					},
 				},
 			},
-			statusSnapshot: v1alpha1.ServerlessStatus{
+			statusSnapshot: v1alpha1.DockerRegistryStatus{
 				DockerRegistry: string(secret.Data["serverAddress"]),
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
@@ -114,17 +114,17 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 
 	t.Run("k3d registry and update", func(t *testing.T) {
 		s := &systemState{
-			instance: v1alpha1.Serverless{
+			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: "some-namespace",
 				},
-				Spec: v1alpha1.ServerlessSpec{
-					DockerRegistry: &v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
+					DockerRegistry: &v1alpha1.DockerRegistryCfg{
 						EnableInternal: ptr.To[bool](false),
 					},
 				},
 			},
-			statusSnapshot: v1alpha1.ServerlessStatus{
+			statusSnapshot: v1alpha1.DockerRegistryStatus{
 				DockerRegistry: "",
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
@@ -153,12 +153,12 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 
 	t.Run("external registry secret not found error", func(t *testing.T) {
 		s := &systemState{
-			instance: v1alpha1.Serverless{
+			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: "some-namespace",
 				},
-				Spec: v1alpha1.ServerlessSpec{
-					DockerRegistry: &v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
+					DockerRegistry: &v1alpha1.DockerRegistryCfg{
 						EnableInternal: ptr.To[bool](false),
 						SecretName:     ptr.To[string]("test-secret-not-found"),
 					},
@@ -190,17 +190,17 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		serverlessClusterWideExternalRegistrySecret := registry.FixServerlessClusterWideExternalRegistrySecret()
 		s := &systemState{
 			warningBuilder: warning.NewBuilder(),
-			instance: v1alpha1.Serverless{
+			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: serverlessClusterWideExternalRegistrySecret.Namespace,
 				},
-				Spec: v1alpha1.ServerlessSpec{
-					DockerRegistry: &v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
+					DockerRegistry: &v1alpha1.DockerRegistryCfg{
 						EnableInternal: ptr.To[bool](true),
 					},
 				},
 			},
-			statusSnapshot: v1alpha1.ServerlessStatus{
+			statusSnapshot: v1alpha1.DockerRegistryStatus{
 				DockerRegistry: "",
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
@@ -228,9 +228,9 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 	t.Run("external registry secret exists and it doesn't match the one set in spec", func(t *testing.T) {
 		s := &systemState{
 			warningBuilder: warning.NewBuilder(),
-			instance: v1alpha1.Serverless{
-				Spec: v1alpha1.ServerlessSpec{
-					DockerRegistry: &v1alpha1.DockerRegistry{
+			instance: v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
+					DockerRegistry: &v1alpha1.DockerRegistryCfg{
 						EnableInternal: ptr.To[bool](false),
 						SecretName:     ptr.To[string]("test secret"),
 					},
@@ -253,9 +253,9 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 	t.Run("external registry secret exists and secretName field is not filled", func(t *testing.T) {
 		s := &systemState{
 			warningBuilder: warning.NewBuilder(),
-			instance: v1alpha1.Serverless{
-				Spec: v1alpha1.ServerlessSpec{
-					DockerRegistry: &v1alpha1.DockerRegistry{
+			instance: v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
+					DockerRegistry: &v1alpha1.DockerRegistryCfg{
 						EnableInternal: ptr.To[bool](false),
 					},
 				},
@@ -277,9 +277,9 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 	t.Run("enable internal is true and secret name exists", func(t *testing.T) {
 		s := &systemState{
 			warningBuilder: warning.NewBuilder(),
-			instance: v1alpha1.Serverless{
-				Spec: v1alpha1.ServerlessSpec{
-					DockerRegistry: &v1alpha1.DockerRegistry{
+			instance: v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
+					DockerRegistry: &v1alpha1.DockerRegistryCfg{
 						EnableInternal: ptr.To[bool](true),
 						SecretName:     ptr.To[string]("test-secret"),
 					},
@@ -293,9 +293,9 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 	t.Run("namespaced scope secrets exist", func(t *testing.T) {
 		s := &systemState{
 			warningBuilder: warning.NewBuilder(),
-			instance: v1alpha1.Serverless{
-				Spec: v1alpha1.ServerlessSpec{
-					DockerRegistry: &v1alpha1.DockerRegistry{},
+			instance: v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
+					DockerRegistry: &v1alpha1.DockerRegistryCfg{},
 				},
 			},
 		}
@@ -327,9 +327,9 @@ func Test_addRegistryConfigurationWarnings(t *testing.T) {
 	t.Run("do not build warning", func(t *testing.T) {
 		s := &systemState{
 			warningBuilder: warning.NewBuilder(),
-			instance: v1alpha1.Serverless{
-				Spec: v1alpha1.ServerlessSpec{
-					DockerRegistry: &v1alpha1.DockerRegistry{
+			instance: v1alpha1.DockerRegistry{
+				Spec: v1alpha1.DockerRegistrySpec{
+					DockerRegistry: &v1alpha1.DockerRegistryCfg{
 						EnableInternal: ptr.To[bool](false),
 						SecretName:     ptr.To[string]("serverless-registry-config"),
 					},

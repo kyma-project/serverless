@@ -17,7 +17,7 @@ install-serverless-custom-operator: ## Install serverless with operator from IMG
 install-serverless-latest-release: ## Install serverless from latest release
 	kubectl create namespace kyma-system || true
 	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/serverless-operator.yaml
-	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default-serverless-cr.yaml -n kyma-system
+	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default-dockerregistry-cr.yaml -n kyma-system
 	make -C ${OPERATOR_ROOT} check-serverless-installation
 
 .PHONY: remove-serverless

@@ -11,7 +11,7 @@ import (
 	"k8s.io/utils/ptr"
 )
 
-var _ = Describe("Serverless controller", func() {
+var _ = Describe("DockerRegistry controller", func() {
 	Context("When creating fresh instance", func() {
 		const (
 			namespaceName            = "kyma-system"
@@ -79,12 +79,12 @@ var _ = Describe("Serverless controller", func() {
 			h.createNamespace()
 
 			{
-				emptyData := v1alpha1.ServerlessSpec{}
+				emptyData := v1alpha1.DockerRegistrySpec{}
 				shouldCreateServerless(h, serverlessName, serverlessDeploymentName, emptyData)
 				shouldPropagateSpecProperties(h, serverlessDeploymentName, serverlessRegistrySecret, serverlessDataDefault)
 			}
 			{
-				updateData := v1alpha1.ServerlessSpec{
+				updateData := v1alpha1.DockerRegistrySpec{
 					Eventing: getEndpoint(serverlessDataWithChangedDependencies.EventPublisherProxyURL),
 					Tracing:  getEndpoint(serverlessDataWithChangedDependencies.TraceCollectorURL),
 				}
@@ -119,7 +119,7 @@ var _ = Describe("Serverless controller", func() {
 	})
 })
 
-func shouldCreateServerless(h testHelper, serverlessName, serverlessDeploymentName string, spec v1alpha1.ServerlessSpec) {
+func shouldCreateServerless(h testHelper, serverlessName, serverlessDeploymentName string, spec v1alpha1.DockerRegistrySpec) {
 	// act
 	h.createServerless(serverlessName, spec)
 
@@ -145,9 +145,9 @@ func shouldPropagateSpecProperties(h testHelper, deploymentName, registrySecretN
 		Should(BeTrue())
 }
 
-func shouldUpdateServerless(h testHelper, serverlessName string, serverlessSpec v1alpha1.ServerlessSpec) {
+func shouldUpdateServerless(h testHelper, serverlessName string, serverlessSpec v1alpha1.DockerRegistrySpec) {
 	// arrange
-	var serverless v1alpha1.Serverless
+	var serverless v1alpha1.DockerRegistry
 	Eventually(h.createGetKubernetesObjectFunc(serverlessName, &serverless)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 10).
@@ -183,7 +183,7 @@ func shouldDeleteServerless(h testHelper, serverlessName, serverlessDeploymentNa
 	Expect(deployList.Items).To(HaveLen(1))
 
 	// act
-	var serverless v1alpha1.Serverless
+	var serverless v1alpha1.DockerRegistry
 	Eventually(h.createGetKubernetesObjectFunc(serverlessName, &serverless)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 10).

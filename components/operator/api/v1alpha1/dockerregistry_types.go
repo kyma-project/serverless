@@ -21,7 +21,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type DockerRegistry struct {
+// TODO: change the DockerRegistryCfg name
+type DockerRegistryCfg struct {
 	// When set to true, the internal Docker registry is enabled
 	EnableInternal *bool `json:"enableInternal,omitempty"`
 	// Secret used for configuration of the Docker registry
@@ -32,13 +33,13 @@ type Endpoint struct {
 	Endpoint string `json:"endpoint"`
 }
 
-// ServerlessSpec defines the desired state of Serverless
-type ServerlessSpec struct {
+// DockerRegistrySpec defines the desired state of DockerRegistry
+type DockerRegistrySpec struct {
 	// Used Tracing endpoint
 	Tracing *Endpoint `json:"tracing,omitempty"`
 	// Used Eventing endpoint
-	Eventing       *Endpoint       `json:"eventing,omitempty"`
-	DockerRegistry *DockerRegistry `json:"dockerRegistry,omitempty"`
+	Eventing       *Endpoint          `json:"eventing,omitempty"`
+	DockerRegistry *DockerRegistryCfg `json:"dockerRegistry,omitempty"`
 	// Sets the timeout for the Function health check. The default value in seconds is `10`
 	HealthzLivenessTimeout string `json:"healthzLivenessTimeout,omitempty"`
 }
@@ -84,7 +85,7 @@ const (
 	Finalizer = "serverless-operator.kyma-project.io/deletion-hook"
 )
 
-type ServerlessStatus struct {
+type DockerRegistryStatus struct {
 	// Used the Eventing endpoint and the Tracing endpoint.
 	EventingEndpoint string `json:"eventingEndpoint,omitempty"`
 	TracingEndpoint  string `json:"tracingEndpoint,omitempty"`
@@ -103,13 +104,13 @@ type ServerlessStatus struct {
 	// Contains registry URL or "internal"
 	DockerRegistry string `json:"dockerRegistry,omitempty"`
 
-	// State signifies current state of Serverless.
+	// State signifies current state of DockerRegistry.
 	// Value can be one of ("Ready", "Processing", "Error", "Deleting").
 	// +kubebuilder:validation:Required
 	// +kubebuilder:validation:Enum=Processing;Deleting;Ready;Error;Warning
 	State State `json:"state,omitempty"`
 
-	// Served signifies that current Serverless is managed.
+	// Served signifies that current DockerRegistry is managed.
 	// Value can be one of ("True", "False").
 	// +kubebuilder:validation:Enum=True;False
 	Served Served `json:"served"`
@@ -128,16 +129,16 @@ type ServerlessStatus struct {
 //+kubebuilder:printcolumn:name="age",type="date",JSONPath=".metadata.creationTimestamp"
 //+kubebuilder:printcolumn:name="state",type="string",JSONPath=".status.state"
 
-// Serverless is the Schema for the serverlesses API
-type Serverless struct {
+// DockerRegistry is the Schema for the serverlesses API
+type DockerRegistry struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   ServerlessSpec   `json:"spec,omitempty"`
-	Status ServerlessStatus `json:"status,omitempty"`
+	Spec   DockerRegistrySpec   `json:"spec,omitempty"`
+	Status DockerRegistryStatus `json:"status,omitempty"`
 }
 
-func (s *Serverless) UpdateConditionFalse(c ConditionType, r ConditionReason, err error) {
+func (s *DockerRegistry) UpdateConditionFalse(c ConditionType, r ConditionReason, err error) {
 	condition := metav1.Condition{
 		Type:               string(c),
 		Status:             "False",
@@ -148,7 +149,7 @@ func (s *Serverless) UpdateConditionFalse(c ConditionType, r ConditionReason, er
 	meta.SetStatusCondition(&s.Status.Conditions, condition)
 }
 
-func (s *Serverless) UpdateConditionUnknown(c ConditionType, r ConditionReason, msg string) {
+func (s *DockerRegistry) UpdateConditionUnknown(c ConditionType, r ConditionReason, msg string) {
 	condition := metav1.Condition{
 		Type:               string(c),
 		Status:             "Unknown",
@@ -159,7 +160,7 @@ func (s *Serverless) UpdateConditionUnknown(c ConditionType, r ConditionReason, 
 	meta.SetStatusCondition(&s.Status.Conditions, condition)
 }
 
-func (s *Serverless) UpdateConditionTrue(c ConditionType, r ConditionReason, msg string) {
+func (s *DockerRegistry) UpdateConditionTrue(c ConditionType, r ConditionReason, msg string) {
 	condition := metav1.Condition{
 		Type:               string(c),
 		Status:             "True",
@@ -170,19 +171,19 @@ func (s *Serverless) UpdateConditionTrue(c ConditionType, r ConditionReason, msg
 	meta.SetStatusCondition(&s.Status.Conditions, condition)
 }
 
-func (s *Serverless) IsServedEmpty() bool {
+func (s *DockerRegistry) IsServedEmpty() bool {
 	return s.Status.Served == ""
 }
 
 //+kubebuilder:object:root=true
 
-// ServerlessList contains a list of Serverless
-type ServerlessList struct {
+// DockerRegistryList contains a list of DockerRegistry
+type DockerRegistryList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
-	Items           []Serverless `json:"items"`
+	Items           []DockerRegistry `json:"items"`
 }
 
 func init() {
-	SchemeBuilder.Register(&Serverless{}, &ServerlessList{})
+	SchemeBuilder.Register(&DockerRegistry{}, &DockerRegistryList{})
 }

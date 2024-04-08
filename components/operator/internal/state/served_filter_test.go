@@ -15,8 +15,8 @@ import (
 func Test_sFnServedFilter(t *testing.T) {
 	t.Run("skip processing when served is false", func(t *testing.T) {
 		s := &systemState{
-			instance: v1alpha1.Serverless{
-				Status: v1alpha1.ServerlessStatus{
+			instance: v1alpha1.DockerRegistry{
+				Status: v1alpha1.DockerRegistryStatus{
 					Served: v1alpha1.ServedFalse,
 				},
 			},
@@ -30,8 +30,8 @@ func Test_sFnServedFilter(t *testing.T) {
 
 	t.Run("do next step when served is true", func(t *testing.T) {
 		s := &systemState{
-			instance: v1alpha1.Serverless{
-				Status: v1alpha1.ServerlessStatus{
+			instance: v1alpha1.DockerRegistry{
+				Status: v1alpha1.DockerRegistryStatus{
 					Served: v1alpha1.ServedTrue,
 				},
 			},
@@ -45,8 +45,8 @@ func Test_sFnServedFilter(t *testing.T) {
 
 	t.Run("set served value from nil to true when there is no served serverless on cluster", func(t *testing.T) {
 		s := &systemState{
-			instance: v1alpha1.Serverless{
-				Status: v1alpha1.ServerlessStatus{},
+			instance: v1alpha1.DockerRegistry{
+				Status: v1alpha1.DockerRegistryStatus{},
 			},
 		}
 
@@ -79,8 +79,8 @@ func Test_sFnServedFilter(t *testing.T) {
 
 	t.Run("set served value from nil to false and set condition to error when there is at lease one served serverless on cluster", func(t *testing.T) {
 		s := &systemState{
-			instance: v1alpha1.Serverless{
-				Status: v1alpha1.ServerlessStatus{},
+			instance: v1alpha1.DockerRegistry{
+				Status: v1alpha1.DockerRegistryStatus{},
 			},
 		}
 
@@ -106,7 +106,7 @@ func Test_sFnServedFilter(t *testing.T) {
 
 		nextFn, result, err := sFnServedFilter(context.TODO(), r, s)
 
-		expectedErrorMessage := "Only one instance of Serverless is allowed (current served instance: serverless-test/test-2). This Serverless CR is redundant. Remove it to fix the problem."
+		expectedErrorMessage := "Only one instance of DockerRegistry is allowed (current served instance: serverless-test/test-2). This DockerRegistry CR is redundant. Remove it to fix the problem."
 		require.EqualError(t, err, expectedErrorMessage)
 		require.Nil(t, result)
 		require.Nil(t, nextFn)
@@ -123,13 +123,13 @@ func Test_sFnServedFilter(t *testing.T) {
 	})
 }
 
-func fixServedServerless(name, namespace string, served v1alpha1.Served) *v1alpha1.Serverless {
-	return &v1alpha1.Serverless{
+func fixServedServerless(name, namespace string, served v1alpha1.Served) *v1alpha1.DockerRegistry {
+	return &v1alpha1.DockerRegistry{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      name,
 			Namespace: namespace,
 		},
-		Status: v1alpha1.ServerlessStatus{
+		Status: v1alpha1.DockerRegistryStatus{
 			Served: served,
 		},
 	}
