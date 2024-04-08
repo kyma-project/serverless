@@ -153,6 +153,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	if err := k8s.NewNamespace(mgr.GetClient(), logWithCtx.Named("controllers.namespace"), config.Kubernetes, configMapSvc, secretSvc, serviceAccountSvc).
+		SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create Namespace controller")
+		os.Exit(1)
+	}
+
 	secretLogger, err := config.Build()
 	if err != nil {
 		setupLog.Error(err, "unable to setup logger")
