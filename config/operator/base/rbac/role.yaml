@@ -10,6 +10,20 @@ rules:
   - configmaps
   - secrets
   - serviceaccounts
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - secrets
+  - serviceaccounts
   - services
   verbs:
   - create

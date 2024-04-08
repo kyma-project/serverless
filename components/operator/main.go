@@ -147,13 +147,21 @@ func main() {
 
 	resourceClient := internalresource.New(mgr.GetClient(), scheme)
 	secretSvc := k8s.NewSecretService(resourceClient, configKubernetes)
+	configMapSvc := k8s.NewConfigMapService(resourceClient, configKubernetes)
+	serviceAccountSvc := k8s.NewServiceAccountService(resourceClient, configKubernetes)
 
 	if err = reconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Serverless")
 		os.Exit(1)
 	}
 
-	if err := k8s.NewNamespace(mgr.GetClient(), logWithCtx.Named("controllers.namespace"), config.Kubernetes, configMapSvc, secretSvc, serviceAccountSvc).
+	namespaceLogger, err := config.Build()
+	if err != nil {
+		setupLog.Error(err, "unable to setup logger")
+		os.Exit(1)
+	}
+
+	if err := k8s.NewNamespace(mgr.GetClient(), namespaceLogger.Sugar(), configKubernetes, configMapSvc, secretSvc, serviceAccountSvc).
 		SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create Namespace controller")
 		os.Exit(1)
