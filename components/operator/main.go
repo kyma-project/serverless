@@ -32,7 +32,8 @@ import (
 	uberzapcore "go.uber.org/zap/zapcore"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
-	k8s "github.com/kyma-project/serverless/components/serverless/internal/controllers/kubernetes"
+	k8s "github.com/kyma-project/serverless/components/operator/internal/controllers/kubernetes"
+	internalresource "github.com/kyma-project/serverless/components/operator/internal/resource"
 	corev1 "k8s.io/api/core/v1"
 	apiextensionsscheme "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/scheme"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -134,14 +135,25 @@ func main() {
 		reconcilerLogger.Sugar(),
 		cfg.ChartPath)
 
-	secretSvc := k8s.NewSecretService(resourceClient, config.Kubernetes)
+	//TODO: get it from some configuration
+	configKubernetes := k8s.Config{
+		BaseNamespace:                 "kyma-system",
+		BaseDefaultSecretName:         "serverless-registry-config-default",
+		ExcludedNamespaces:            []string{"kyma-system"},
+		ConfigMapRequeueDuration:      time.Minute,
+		SecretRequeueDuration:         time.Minute,
+		ServiceAccountRequeueDuration: time.Minute,
+	}
+
+	resourceClient := internalresource.New(mgr.GetClient(), scheme)
+	secretSvc := k8s.NewSecretService(resourceClient, configKubernetes)
 
 	if err = reconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Serverless")
 		os.Exit(1)
 	}
 
-	if err := k8s.NewSecret(mgr.GetClient(), logWithCtx.Named("controllers.secret"), config.Kubernetes, secretSvc).
+	if err := k8s.NewSecret(mgr.GetClient(), /*logWithCtx.Named("controllers.secret")*/ log, configKubernetes, secretSvc).
 		SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create Secret controller")
 		os.Exit(1)
