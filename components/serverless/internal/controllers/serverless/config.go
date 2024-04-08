@@ -11,18 +11,17 @@ import (
 )
 
 type FunctionConfig struct {
-	PublisherProxyAddress                       string         `envconfig:"optional"`
-	TraceCollectorEndpoint                      string         `envconfig:"optional"`
-	ImageRegistryDefaultDockerConfigSecretName  string         `envconfig:"default=serverless-registry-config-default"`
-	ImageRegistryExternalDockerConfigSecretName string         `envconfig:"default=serverless-registry-config"`
-	PackageRegistryConfigSecretName             string         `envconfig:"default=serverless-package-registry-config"`
-	ImagePullAccountName                        string         `envconfig:"default=serverless-function"`
-	TargetCPUUtilizationPercentage              int32          `envconfig:"default=50"`
-	RequeueDuration                             time.Duration  `envconfig:"default=1m"`
-	FunctionReadyRequeueDuration                time.Duration  `envconfig:"default=5m"`
-	GitFetchRequeueDuration                     time.Duration  `envconfig:"default=30s"`
-	ResourceConfig                              ResourceConfig `envconfig:"optional"`
-	Build                                       BuildConfig
+	PublisherProxyAddress                      string         `envconfig:"optional"`
+	TraceCollectorEndpoint                     string         `envconfig:"optional"`
+	ImageRegistryDefaultDockerConfigSecretName string         `envconfig:"default=serverless-registry-config-default"`
+	PackageRegistryConfigSecretName            string         `envconfig:"default=serverless-package-registry-config"`
+	ImagePullAccountName                       string         `envconfig:"default=serverless-function"`
+	TargetCPUUtilizationPercentage             int32          `envconfig:"default=50"`
+	RequeueDuration                            time.Duration  `envconfig:"default=1m"`
+	FunctionReadyRequeueDuration               time.Duration  `envconfig:"default=5m"`
+	GitFetchRequeueDuration                    time.Duration  `envconfig:"default=30s"`
+	ResourceConfig                             ResourceConfig `envconfig:"optional"`
+	Build                                      BuildConfig
 }
 
 type BuildConfig struct {

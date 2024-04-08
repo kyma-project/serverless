@@ -173,21 +173,10 @@ func (r *FunctionReconciler) sendHealthCheck() {
 
 func (r *FunctionReconciler) readDockerConfig(ctx context.Context, instance *serverlessv1alpha2.Function) (DockerConfig, error) {
 	var secret corev1.Secret
-	// try reading user config
-	// DEPRECATED - this feature will be supported but we can disable it by removing lines below
-	// TODO: remove it in April 2024 - https://github.com/kyma-project/serverless/issues/400
-	if err := r.client.Get(ctx, client.ObjectKey{Namespace: instance.Namespace, Name: r.config.ImageRegistryExternalDockerConfigSecretName}, &secret); err == nil {
-		data := readSecretData(secret.Data)
-		return DockerConfig{
-			ActiveRegistryConfigSecretName: r.config.ImageRegistryExternalDockerConfigSecretName,
-			PushAddress:                    data[keyRegistryAddress],
-			PullAddress:                    data[keyRegistryAddress],
-		}, nil
-	}
 
 	// try reading default config
 	if err := r.client.Get(ctx, client.ObjectKey{Namespace: instance.Namespace, Name: r.config.ImageRegistryDefaultDockerConfigSecretName}, &secret); err != nil {
-		return DockerConfig{}, errors.Wrapf(err, "docker registry configuration not found, none of configuration secrets (%s, %s) found in function namespace", r.config.ImageRegistryDefaultDockerConfigSecretName, r.config.ImageRegistryExternalDockerConfigSecretName)
+		return DockerConfig{}, errors.Wrapf(err, "docker registry configuration not found, configuration secret (%s) not found in function namespace", r.config.ImageRegistryDefaultDockerConfigSecretName)
 	}
 	data := readSecretData(secret.Data)
 	if data[keyIsInternal] == "true" {
