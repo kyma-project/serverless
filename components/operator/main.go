@@ -153,7 +153,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := k8s.NewSecret(mgr.GetClient(), /*logWithCtx.Named("controllers.secret")*/ log, configKubernetes, secretSvc).
+	secretLogger, err := config.Build()
+	if err != nil {
+		setupLog.Error(err, "unable to setup logger")
+		os.Exit(1)
+	}
+
+	if err := k8s.NewSecret(mgr.GetClient(), secretLogger.Sugar(), configKubernetes, secretSvc).
 		SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create Secret controller")
 		os.Exit(1)
