@@ -32,6 +32,7 @@ import (
 	uberzapcore "go.uber.org/zap/zapcore"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
+	k8s "github.com/kyma-project/serverless/components/serverless/internal/controllers/kubernetes"
 	corev1 "k8s.io/api/core/v1"
 	apiextensionsscheme "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/scheme"
 	"k8s.io/apimachinery/pkg/runtime"
