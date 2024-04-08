@@ -133,8 +133,16 @@ func main() {
 		reconcilerLogger.Sugar(),
 		cfg.ChartPath)
 
+	secretSvc := k8s.NewSecretService(resourceClient, config.Kubernetes)
+
 	if err = reconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Serverless")
+		os.Exit(1)
+	}
+
+	if err := k8s.NewSecret(mgr.GetClient(), logWithCtx.Named("controllers.secret"), config.Kubernetes, secretSvc).
+		SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create Secret controller")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder
