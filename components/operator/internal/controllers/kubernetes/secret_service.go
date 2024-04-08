@@ -13,7 +13,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
-	"github.com/kyma-project/serverless/components/serverless/internal/resource"
+	"github.com/kyma-project/serverless/components/operator/internal/resource"
 )
 
 const cfgSecretFinalizerName = "serverless.kyma-project.io/finalizer-registry-config"
