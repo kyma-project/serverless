@@ -10,27 +10,26 @@ The Function Operator requires the following components to be installed:
 
 ## Development
 
-### Installing locally build serverless operator image on k3d with serverless
+### Installing Locally Built Serverless Operator Image on k3d With Serverless
 Prerequisite:
-- installed operator on cluster
+- installed Operator on a cluster
 
-To install serverless-manager from local sources on k3d cluster run:
+To install `serverless-manager` from local sources on the k3d cluster run:
 
 ```bash
 make install-operator-k3d
 ```
 
+This target:
 
-This target does:
+- builds local image with `serverless-operator`
+- tags local the `serverless-operator` image with its hash to be sure the deployment is updated
+- uploads local image to k3d
+- updates the image in the `serverless-operator` deployment
 
-- build local image with serverless-operator
-- tag local serverless-operator image with its hash to be sure to deployment be updated
-- upload local image to k3d
-- update image in serverless-operator deployment
+### Running/Debugging `serverless-operator` Locally
 
-### Running/Debugging serverless-operator locally
-
-To develop the component as normal binary, set up environment variables.
+To develop the component as a normal binary, set up environment variables.
 
 ### Environment Variables
 
@@ -38,5 +37,5 @@ To develop the component as normal binary, set up environment variables.
 
 | Variable                   | Description                                                                                                         | Default value   |
 |----------------------------|---------------------------------------------------------------------------------------------------------------------|-----------------|
-| **CHART_PATH**             | Location of serverless chart                                                                                        | `/module-chart` |
-| **SERVERLESS_MANAGER_UID** | Unique ID of operator instance. Used to mark created resources to distinguish which version of operator created it. | ``              |
+| **CHART_PATH**             | Location of the Serverless chart                                                                                        | `/module-chart` |
+| **SERVERLESS_MANAGER_UID** | Unique ID of operator instance. Used to mark created resources to distinguish which version of the Operator created it. | ``              |

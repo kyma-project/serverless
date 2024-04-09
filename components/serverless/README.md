@@ -14,23 +14,23 @@ To develop the Function Controller, you need:
 - [controller-gen](https://github.com/kubernetes-sigs/controller-tools/releases/tag/v0.6.2) (v0.6.2)
 - <!-- markdown-link-check-disable-line -->[kustomize](https://github.com/kubernetes-sigs/kustomize/releases/tag/kustomize%2Fv4.5.7) (v4.5.7)
 
-### Installing locally build serverless controller image on k3d with serverless
+### Installing Locally Built Serverless Controller Image on k3d With Serverless
 Prerequisite:
-- installed serverless on cluster
+- installed Serverless on a cluster
 
-To install serverless-controller from local sources on k3d cluster run:
+To install `serverless-controller` from local sources on the k3d cluster run:
 ```bash
 make install-controller-k3d
 ```
 
-This target does:
-- scale down serverless operator to prevent reverting further changes made to serverless-controller deployment
-- build local image with serverless-controller image
-- tag local serverless-controller image with its hash to be sure to deployment be updated
-- upload local image to k3d
-- update image in serverless-ctrl-mngr deployment
+This target:
+- scales down the Serverless Operator to prevent reverting further changes made to the `serverless-controller` deployment
+- builds the local image with the `serverless-controller` image
+- tags the local `serverless-controller` image with its hash to be sure the deployment is updated
+- uploads the local image to k3d
+- updates the image in the `serverless-ctrl-mngr` deployment
 
-### Running/Debugging serverless-manager locally
+### Running/Debugging serverless-manager Locally
 To develop the component as normal binary, set up envs correctly, example envs to use [controller.env](./hack/controller.env).
 You can customize the configuration by editing files in [hack](./hack) dir.
 

@@ -58,7 +58,7 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
 
 > **NOTE:** To clean up the k3d cluster, use the `make delete-k3d` make target.
 
-> **NOTE:** If you have k3d already running you can use `install-*` target to install serverless in different flavours.
+> **NOTE:** If you have k3d already running you can use `install-*` target to install Serverless in different flavors.
 
 ## Using Serverless Operator
 
