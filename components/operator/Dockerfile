@@ -28,6 +28,7 @@ FROM alpine:3.19.1 as replacer
 
 WORKDIR /workspace
 
+# TODO: remove variable PURPOSE
 ARG PURPOSE
 ARG IMG_DIRECTORY
 ARG IMG_VERSION
@@ -41,10 +42,6 @@ RUN apk update && apk add bash yq
 COPY components/operator/hack components/operator/hack
 COPY config/serverless config/serverless
 COPY hack/ hack/
-
-RUN if [[ "dev" = "$PURPOSE" ]] ; then ./hack/replace_serverless_chart_images.sh all ; fi
-RUN if [[ "local" = "$PURPOSE" ]] ; then ./hack/replace_serverless_chart_images.sh main-only ; fi
-# do nothing (keep unchanged versions) for "release"
 
 
 # Use distroless as minimal base image to package the operator binary

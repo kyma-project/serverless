@@ -41,14 +41,6 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           fetch-depth: 0
 
-      - name: Bump values.yaml
-        run: |
-          ./hack/replace_serverless_chart_images.sh all .
-        env:
-          IMG_DIRECTORY: "prod"
-          IMG_VERSION: ${{ github.event.inputs.name }}
-          PROJECT_ROOT: "."
-
       - name: Bump sec-scanners-config.yaml based on values.yaml
         run: ./.github/scripts/upgrade-sec-scanners-config.sh
         env:
