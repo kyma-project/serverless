@@ -58,9 +58,11 @@ func fixManifestCache(manifest string) chart.ManifestCache {
 	return cache
 }
 
+// requireEqualFunc compares two stateFns based on their names returned from the reflect package
+// names returned from the package may be different for any go/dlv compiler version
+// for go1.22 returned name is in format:
+// github.com/kyma-project/keda-manager/pkg/reconciler.Test_sFnServedFilter.func4.sFnUpdateStatus.3
 func requireEqualFunc(t *testing.T, expected, actual stateFn) {
-	require.NotNil(t, actual)
-
 	expectedFnName := getFnName(expected)
 	actualFnName := getFnName(actual)
 
@@ -73,12 +75,14 @@ func requireEqualFunc(t *testing.T, expected, actual stateFn) {
 	actualElems := strings.Split(actualFnName, "/")
 
 	// check package paths (prefix)
+	// e.g. 'github.com/kyma-project/keda-manager/pkg'
 	require.Equal(t,
 		strings.Join(expectedElems[0:len(expectedElems)-2], "/"),
 		strings.Join(actualElems[0:len(actualElems)-2], "/"),
 	)
 
 	// check direct fn names (suffix)
+	// e.g. 'reconciler.Test_sFnServedFilter.func4.sFnUpdateStatus.3'
 	require.Equal(t,
 		getDirectFnName(expectedElems[len(expectedElems)-1]),
 		getDirectFnName(actualElems[len(actualElems)-1]),
@@ -87,14 +91,7 @@ func requireEqualFunc(t *testing.T, expected, actual stateFn) {
 
 func getDirectFnName(nameSuffix string) string {
 	elements := strings.Split(nameSuffix, ".")
-	for i := range elements {
-		elemI := len(elements) - i - 1
-		if !strings.HasPrefix(elements[elemI], "func") {
-			return elements[elemI]
-		}
-	}
-
-	return ""
+	return elements[len(elements)-2]
 }
 
 func getFnName(fn stateFn) string {
