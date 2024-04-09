@@ -43,7 +43,7 @@ func setServed(servedDockerRegistry *v1alpha1.DockerRegistry, s *systemState) er
 		servedDockerRegistry.GetNamespace(), servedDockerRegistry.GetName())
 	s.instance.UpdateConditionFalse(
 		v1alpha1.ConditionTypeConfigured,
-		v1alpha1.ConditionReasonServerlessDuplicated,
+		v1alpha1.ConditionReasonDuplicated,
 		err,
 	)
 	return err

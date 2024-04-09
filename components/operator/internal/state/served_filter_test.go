@@ -117,7 +117,7 @@ func Test_sFnServedFilter(t *testing.T) {
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeConfigured,
 			metav1.ConditionFalse,
-			v1alpha1.ConditionReasonServerlessDuplicated,
+			v1alpha1.ConditionReasonDuplicated,
 			expectedErrorMessage,
 		)
 	})

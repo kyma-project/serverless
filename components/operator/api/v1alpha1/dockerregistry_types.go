@@ -71,16 +71,16 @@ const (
 	// deletion
 	ConditionTypeDeleted = ConditionType("Deleted")
 
-	ConditionReasonConfiguration        = ConditionReason("Configuration")
-	ConditionReasonConfigurationErr     = ConditionReason("ConfigurationErr")
-	ConditionReasonConfigured           = ConditionReason("Configured")
-	ConditionReasonInstallation         = ConditionReason("Installation")
-	ConditionReasonInstallationErr      = ConditionReason("InstallationErr")
-	ConditionReasonInstalled            = ConditionReason("Installed")
-	ConditionReasonServerlessDuplicated = ConditionReason("ServerlessDuplicated")
-	ConditionReasonDeletion             = ConditionReason("Deletion")
-	ConditionReasonDeletionErr          = ConditionReason("DeletionErr")
-	ConditionReasonDeleted              = ConditionReason("Deleted")
+	ConditionReasonConfiguration    = ConditionReason("Configuration")
+	ConditionReasonConfigurationErr = ConditionReason("ConfigurationErr")
+	ConditionReasonConfigured       = ConditionReason("Configured")
+	ConditionReasonInstallation     = ConditionReason("Installation")
+	ConditionReasonInstallationErr  = ConditionReason("InstallationErr")
+	ConditionReasonInstalled        = ConditionReason("Installed")
+	ConditionReasonDuplicated       = ConditionReason("Duplicated")
+	ConditionReasonDeletion         = ConditionReason("Deletion")
+	ConditionReasonDeletionErr      = ConditionReason("DeletionErr")
+	ConditionReasonDeleted          = ConditionReason("Deleted")
 
 	Finalizer = "serverless-operator.kyma-project.io/deletion-hook"
 )

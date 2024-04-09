@@ -124,7 +124,7 @@ loop:
 		default:
 			m.log.Info(fmt.Sprintf("switching state: %s", m.stateFnName()))
 			m.fn, result, err = m.fn(ctx, m, &state)
-			if updateErr := updateServerlessStatus(ctx, m, &state); updateErr != nil {
+			if updateErr := updateDockerRegistryStatus(ctx, m, &state); updateErr != nil {
 				err = updateErr
 			}
 		}

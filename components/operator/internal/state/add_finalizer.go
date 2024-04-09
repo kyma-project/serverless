@@ -28,5 +28,5 @@ func sFnAddFinalizer(ctx context.Context, r *reconciler, s *systemState) (stateF
 func addFinalizer(ctx context.Context, r *reconciler, s *systemState) error {
 	// in case instance does not have finalizer - add it and update instance
 	controllerutil.AddFinalizer(&s.instance, r.finalizer)
-	return updateServerlessWithoutStatus(ctx, r, s)
+	return updateDockerRegistryWithoutStatus(ctx, r, s)
 }

@@ -12,6 +12,6 @@ func sFnRemoveFinalizer(ctx context.Context, r *reconciler, s *systemState) (sta
 		return requeue()
 	}
 
-	err := updateServerlessWithoutStatus(ctx, r, s)
+	err := updateDockerRegistryWithoutStatus(ctx, r, s)
 	return stopWithEventualError(err)
 }
