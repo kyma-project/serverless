@@ -51,6 +51,9 @@ jobs:
     if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.SETUP_GO_VERSION }}
       - name: create single cluster
         uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79 #v2.4.0
         with:
@@ -70,25 +73,28 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: save sa
-      shell: bash
-      run: 'echo "$GARDENER_SA" > /tmp/gardener-sa.yaml'
-      env:
-        GARDENER_SA: ${{ secrets.GARDENER_SA }}
-    - name: provision gardener
-      run: make -C hack  provision-gardener
-      env:
-        GARDENER_SECRET_NAME: ${{ secrets.GARDENER_SECRET_NAME }}
-        GARDENER_PROJECT: ${{ secrets.GARDENER_PROJECT }}
-        GARDENER_SA_PATH: /tmp/gardener-sa.yaml
-    - name: run test
-      run: make -C hack integration-test-on-cluster
-      env:
-        IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
-    - name: deprovision gardener
-#      https://docs.github.com/en/actions/learn-github-actions/expressions#always
-      if: ${{ always() }}
-      run: make -C hack deprovision-gardener
-      env:
-        GARDENER_SA_PATH: /tmp/gardener-sa.yaml
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.SETUP_GO_VERSION }}
+      - name: save sa
+        shell: bash
+        run: 'echo "$GARDENER_SA" > /tmp/gardener-sa.yaml'
+        env:
+          GARDENER_SA: ${{ secrets.GARDENER_SA }}
+      - name: provision gardener
+        run: make -C hack  provision-gardener
+        env:
+          GARDENER_SECRET_NAME: ${{ secrets.GARDENER_SECRET_NAME }}
+          GARDENER_PROJECT: ${{ secrets.GARDENER_PROJECT }}
+          GARDENER_SA_PATH: /tmp/gardener-sa.yaml
+      - name: run test
+        run: make -C hack integration-test-on-cluster
+        env:
+          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+      - name: deprovision gardener
+#       https://docs.github.com/en/actions/learn-github-actions/expressions#always
+        if: ${{ always() }}
+        run: make -C hack deprovision-gardener
+        env:
+          GARDENER_SA_PATH: /tmp/gardener-sa.yaml
