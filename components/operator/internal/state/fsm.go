@@ -21,8 +21,8 @@ import (
 var (
 	defaultResult  = ctrl.Result{}
 	secretCacheKey = types.NamespacedName{
-		Name:      "serverless-manifest-cache",
-		Namespace: "kyma-system", // TODO: detect serverless-manager's namespace
+		Name:      "dockerregistry-manifest-cache",
+		Namespace: "kyma-system",
 	}
 )
 

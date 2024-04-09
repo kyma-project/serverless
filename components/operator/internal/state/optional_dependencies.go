@@ -11,10 +11,10 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// enable or disable serverless optional dependencies based on the DockerRegistry Spec and installed module on the cluster
+// enable or disable dockerregistry optional dependencies based on the DockerRegistry Spec and installed module on the cluster
 func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
 	// TODO: add functionality of auto-detecting these dependencies by checking Eventing CRs if user does not override these values.
-	// checking these URLs manually is not possible because of lack of istio-sidecar in the serverless-operator
+	// checking these URLs manually is not possible because of lack of istio-sidecar in the dockerregistry-operator
 
 	tracingURL, err := getTracingURL(ctx, r.client, s.instance.Spec)
 	if err != nil {

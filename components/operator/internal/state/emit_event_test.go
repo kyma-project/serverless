@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	testServerlessConditions1 = v1alpha1.DockerRegistry{
+	testDockerRegistryConditions1 = v1alpha1.DockerRegistry{
 		Status: v1alpha1.DockerRegistryStatus{
 			Conditions: []metav1.Condition{
 				{
@@ -28,7 +28,7 @@ var (
 			},
 		},
 	}
-	testServerlessConditions2 = v1alpha1.DockerRegistry{
+	testDockerRegistryConditions2 = v1alpha1.DockerRegistry{
 		Status: v1alpha1.DockerRegistryStatus{
 			Conditions: []metav1.Condition{
 				{
@@ -52,8 +52,8 @@ func Test_emitEvent(t *testing.T) {
 	t.Run("don't emit event", func(t *testing.T) {
 		eventRecorder := record.NewFakeRecorder(5)
 		s := &systemState{
-			instance:       *testServerlessConditions1.DeepCopy(),
-			statusSnapshot: *testServerlessConditions1.Status.DeepCopy(),
+			instance:       *testDockerRegistryConditions1.DeepCopy(),
+			statusSnapshot: *testDockerRegistryConditions1.Status.DeepCopy(),
 		}
 		r := &reconciler{
 			k8s: k8s{
@@ -70,8 +70,8 @@ func Test_emitEvent(t *testing.T) {
 	t.Run("emit events", func(t *testing.T) {
 		eventRecorder := record.NewFakeRecorder(5)
 		s := &systemState{
-			instance:       *testServerlessConditions2.DeepCopy(),
-			statusSnapshot: *testServerlessConditions1.Status.DeepCopy(),
+			instance:       *testDockerRegistryConditions2.DeepCopy(),
+			statusSnapshot: *testDockerRegistryConditions1.Status.DeepCopy(),
 		}
 		r := &reconciler{
 			k8s: k8s{

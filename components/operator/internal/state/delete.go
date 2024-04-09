@@ -22,7 +22,7 @@ const (
 	upstreamDeletionStrategy deletionStrategy = "upstreamDeletionStrategy"
 )
 
-// delete serverless based on previously installed resources
+// delete dockerregistry based on previously installed resources
 func sFnDeleteResources(_ context.Context, _ *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	s.setState(v1alpha1.StateDeleting)
 	s.instance.UpdateConditionUnknown(

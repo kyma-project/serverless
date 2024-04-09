@@ -16,17 +16,17 @@ import (
 )
 
 var (
-	testDeletingServerless = func() v1alpha1.DockerRegistry {
-		serverless := testInstalledServerless
-		serverless.Status.State = v1alpha1.StateDeleting
-		serverless.Status.Conditions = []metav1.Condition{
+	testDeletingDockerRegistry = func() v1alpha1.DockerRegistry {
+		dockerRegistry := testInstalledDockerRegistry
+		dockerRegistry.Status.State = v1alpha1.StateDeleting
+		dockerRegistry.Status.Conditions = []metav1.Condition{
 			{
 				Type:   string(v1alpha1.ConditionTypeDeleted),
 				Reason: string(v1alpha1.ConditionReasonDeletion),
 				Status: metav1.ConditionUnknown,
 			},
 		}
-		return serverless
+		return dockerRegistry
 	}()
 )
 
@@ -55,7 +55,7 @@ func Test_sFnDeleteResources(t *testing.T) {
 
 	t.Run("choose deletion strategy", func(t *testing.T) {
 		s := &systemState{
-			instance: *testDeletingServerless.DeepCopy(),
+			instance: *testDeletingDockerRegistry.DeepCopy(),
 		}
 
 		next, result, err := sFnDeleteResources(context.Background(), nil, s)
@@ -69,12 +69,12 @@ func Test_sFnDeleteResources(t *testing.T) {
 	t.Run("cascade deletion", func(t *testing.T) {
 		fn := deletionStrategyBuilder(cascadeDeletionStrategy)
 		s := &systemState{
-			instance: *testDeletingServerless.DeepCopy(),
+			instance: *testDeletingDockerRegistry.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
-					Name:      testDeletingServerless.GetName(),
-					Namespace: testDeletingServerless.GetNamespace(),
+					Name:      testDeletingDockerRegistry.GetName(),
+					Namespace: testDeletingDockerRegistry.GetNamespace(),
 				},
 				Cluster: chart.Cluster{
 					Client: fake.NewClientBuilder().
@@ -105,12 +105,12 @@ func Test_sFnDeleteResources(t *testing.T) {
 		fn := deletionStrategyBuilder(upstreamDeletionStrategy)
 
 		s := &systemState{
-			instance: *testDeletingServerless.DeepCopy(),
+			instance: *testDeletingDockerRegistry.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixManifestCache("\t"),
 				CacheKey: types.NamespacedName{
-					Name:      testInstalledServerless.GetName(),
-					Namespace: testInstalledServerless.GetNamespace(),
+					Name:      testInstalledDockerRegistry.GetName(),
+					Namespace: testInstalledDockerRegistry.GetNamespace(),
 				},
 			},
 		}
@@ -137,12 +137,12 @@ func Test_sFnDeleteResources(t *testing.T) {
 		wrongStrategy := deletionStrategy("test-strategy")
 		fn := deletionStrategyBuilder(wrongStrategy)
 		s := &systemState{
-			instance: *testDeletingServerless.DeepCopy(),
+			instance: *testDeletingDockerRegistry.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixManifestCache("\t"),
 				CacheKey: types.NamespacedName{
-					Name:      testInstalledServerless.GetName(),
-					Namespace: testInstalledServerless.GetNamespace(),
+					Name:      testInstalledDockerRegistry.GetName(),
+					Namespace: testInstalledDockerRegistry.GetNamespace(),
 				},
 			},
 		}
@@ -169,12 +169,12 @@ func Test_sFnDeleteResources(t *testing.T) {
 		wrongStrategy := deletionStrategy("test-strategy")
 		fn := deletionStrategyBuilder(wrongStrategy)
 		s := &systemState{
-			instance: *testDeletingServerless.DeepCopy(),
+			instance: *testDeletingDockerRegistry.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
-					Name:      testDeletingServerless.GetName(),
-					Namespace: testDeletingServerless.GetNamespace(),
+					Name:      testDeletingDockerRegistry.GetName(),
+					Namespace: testDeletingDockerRegistry.GetNamespace(),
 				},
 				Cluster: chart.Cluster{
 					Client: fake.NewClientBuilder().

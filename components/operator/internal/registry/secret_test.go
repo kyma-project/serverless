@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	testRegistryFilledSecret = FixServerlessClusterWideExternalRegistrySecret()
+	testRegistryFilledSecret = FixClusterWideExternalRegistrySecret()
 )
 
 func Test_GetExternalRegistrySecret(t *testing.T) {
@@ -56,7 +56,7 @@ func Test_GetExternalRegistrySecret(t *testing.T) {
 			name: "without label remote-registry",
 			secretInEnvironment: func() *corev1.Secret {
 				secret := testRegistryFilledSecret.DeepCopy()
-				delete(secret.Labels, ServerlessExternalRegistryLabelRemoteRegistryKey)
+				delete(secret.Labels, ExternalRegistryLabelRemoteRegistryKey)
 				return secret
 			}(),
 		},
@@ -64,7 +64,7 @@ func Test_GetExternalRegistrySecret(t *testing.T) {
 			name: "without label config",
 			secretInEnvironment: func() *corev1.Secret {
 				secret := testRegistryFilledSecret.DeepCopy()
-				delete(secret.Labels, ServerlessExternalRegistryLabelConfigKey)
+				delete(secret.Labels, ExternalRegistryLabelConfigKey)
 				return secret
 			}(),
 		},
@@ -101,10 +101,10 @@ func TestListExternalNamespacedScopeSecrets(t *testing.T) {
 		client := fake.NewClientBuilder().
 			WithRuntimeObjects(&corev1.Secret{
 				ObjectMeta: v1.ObjectMeta{
-					Name:      ServerlessExternalRegistrySecretName,
+					Name:      ExternalRegistrySecretName,
 					Namespace: "default",
 					Labels: map[string]string{
-						ServerlessExternalRegistryLabelRemoteRegistryKey: ServerlessExternalRegistryLabelRemoteRegistryVal,
+						ExternalRegistryLabelRemoteRegistryKey: ExternalRegistryLabelRemoteRegistryVal,
 					},
 				},
 			}).
@@ -124,7 +124,7 @@ func TestListExternalNamespacedScopeSecrets(t *testing.T) {
 					Name:      "wrong-name",
 					Namespace: "default",
 					Labels: map[string]string{
-						ServerlessExternalRegistryLabelRemoteRegistryKey: ServerlessExternalRegistryLabelRemoteRegistryVal,
+						ExternalRegistryLabelRemoteRegistryKey: ExternalRegistryLabelRemoteRegistryVal,
 					},
 				},
 			}).
@@ -141,11 +141,11 @@ func TestListExternalNamespacedScopeSecrets(t *testing.T) {
 		client := fake.NewClientBuilder().
 			WithRuntimeObjects(&corev1.Secret{
 				ObjectMeta: v1.ObjectMeta{
-					Name:      ServerlessExternalRegistrySecretName,
+					Name:      ExternalRegistrySecretName,
 					Namespace: "default",
 					Labels: map[string]string{
-						ServerlessExternalRegistryLabelRemoteRegistryKey: ServerlessExternalRegistryLabelRemoteRegistryVal,
-						ServerlessExternalRegistryLabelConfigKey:         ServerlessExternalRegistryLabelConfigVal,
+						ExternalRegistryLabelRemoteRegistryKey: ExternalRegistryLabelRemoteRegistryVal,
+						ExternalRegistryLabelConfigKey:         ExternalRegistryLabelConfigVal,
 					},
 				},
 			}).

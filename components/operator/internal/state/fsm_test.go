@@ -124,7 +124,7 @@ func Test_reconciler_Reconcile(t *testing.T) {
 			},
 			log: zap.NewNop().Sugar(),
 		}
-		serverless := v1alpha1.DockerRegistry{
+		dockerRegistry := v1alpha1.DockerRegistry{
 			Status: v1alpha1.DockerRegistryStatus{
 				Conditions: []metav1.Condition{
 					{
@@ -139,7 +139,7 @@ func Test_reconciler_Reconcile(t *testing.T) {
 				State: v1alpha1.StateError,
 			},
 		}
-		_, err := r.Reconcile(context.Background(), serverless)
+		_, err := r.Reconcile(context.Background(), dockerRegistry)
 		require.NoError(t, err)
 	})
 }

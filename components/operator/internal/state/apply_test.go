@@ -19,12 +19,12 @@ func Test_buildSFnApplyResources(t *testing.T) {
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
-					Name:      testInstalledServerless.GetName(),
-					Namespace: testInstalledServerless.GetNamespace(),
+					Name:      testInstalledDockerRegistry.GetName(),
+					Namespace: testInstalledDockerRegistry.GetNamespace(),
 				},
 				Release: chart.Release{
-					Name:      testInstalledServerless.GetName(),
-					Namespace: testInstalledServerless.GetNamespace(),
+					Name:      testInstalledDockerRegistry.GetName(),
+					Namespace: testInstalledDockerRegistry.GetNamespace(),
 				},
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
@@ -47,16 +47,16 @@ func Test_buildSFnApplyResources(t *testing.T) {
 
 	t.Run("apply resources", func(t *testing.T) {
 		s := &systemState{
-			instance: *testInstalledServerless.DeepCopy(),
+			instance: *testInstalledDockerRegistry.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
-					Name:      testInstalledServerless.GetName(),
-					Namespace: testInstalledServerless.GetNamespace(),
+					Name:      testInstalledDockerRegistry.GetName(),
+					Namespace: testInstalledDockerRegistry.GetNamespace(),
 				},
 				Release: chart.Release{
-					Name:      testInstalledServerless.GetName(),
-					Namespace: testInstalledServerless.GetNamespace(),
+					Name:      testInstalledDockerRegistry.GetName(),
+					Namespace: testInstalledDockerRegistry.GetNamespace(),
 				},
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
@@ -72,12 +72,12 @@ func Test_buildSFnApplyResources(t *testing.T) {
 
 	t.Run("install chart error", func(t *testing.T) {
 		s := &systemState{
-			instance: *testInstalledServerless.DeepCopy(),
+			instance: *testInstalledDockerRegistry.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixManifestCache("\t"),
 				CacheKey: types.NamespacedName{
-					Name:      testInstalledServerless.GetName(),
-					Namespace: testInstalledServerless.GetNamespace(),
+					Name:      testInstalledDockerRegistry.GetName(),
+					Namespace: testInstalledDockerRegistry.GetNamespace(),
 				},
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),

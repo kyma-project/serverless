@@ -9,7 +9,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// run serverless chart installation
+// run dockerregistry chart installation
 func sFnApplyResources(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	// set condition Installed if it does not exist
 	if !s.instance.IsCondition(v1alpha1.ConditionTypeInstalled) {

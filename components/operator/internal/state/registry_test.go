@@ -187,12 +187,12 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 	})
 
 	t.Run("overwrite docker registry status when exists serverless cluster-wide external registry secret", func(t *testing.T) {
-		serverlessClusterWideExternalRegistrySecret := registry.FixServerlessClusterWideExternalRegistrySecret()
+		clusterWideExternalRegistrySecret := registry.FixClusterWideExternalRegistrySecret()
 		s := &systemState{
 			warningBuilder: warning.NewBuilder(),
 			instance: v1alpha1.DockerRegistry{
 				ObjectMeta: metav1.ObjectMeta{
-					Namespace: serverlessClusterWideExternalRegistrySecret.Namespace,
+					Namespace: clusterWideExternalRegistrySecret.Namespace,
 				},
 				Spec: v1alpha1.DockerRegistrySpec{
 					DockerRegistry: &v1alpha1.DockerRegistryCfg{
@@ -206,7 +206,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			flagsBuilder: chart.NewFlagsBuilder(),
 		}
 		client := fake.NewClientBuilder().
-			WithObjects(serverlessClusterWideExternalRegistrySecret).
+			WithObjects(clusterWideExternalRegistrySecret).
 			Build()
 		r := &reconciler{
 			k8s: k8s{client: client},
@@ -220,7 +220,7 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnOptionalDependencies, next)
 
 		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
-		require.Equal(t, string(serverlessClusterWideExternalRegistrySecret.Data["serverAddress"]), s.instance.Status.DockerRegistry)
+		require.Equal(t, string(clusterWideExternalRegistrySecret.Data["serverAddress"]), s.instance.Status.DockerRegistry)
 	})
 }
 

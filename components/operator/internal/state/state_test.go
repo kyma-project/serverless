@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	testInstalledServerless = v1alpha1.DockerRegistry{
+	testInstalledDockerRegistry = v1alpha1.DockerRegistry{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "test",
 			Namespace: "test",
@@ -51,8 +51,8 @@ func fixEmptyManifestCache() chart.ManifestCache {
 func fixManifestCache(manifest string) chart.ManifestCache {
 	cache := chart.NewInMemoryManifestCache()
 	_ = cache.Set(context.Background(), types.NamespacedName{
-		Name:      testInstalledServerless.GetName(),
-		Namespace: testInstalledServerless.GetNamespace(),
+		Name:      testInstalledDockerRegistry.GetName(),
+		Namespace: testInstalledDockerRegistry.GetNamespace(),
 	}, chart.ServerlessSpecManifest{Manifest: manifest, CustomFlags: map[string]interface{}{}})
 
 	return cache

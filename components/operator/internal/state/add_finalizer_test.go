@@ -16,7 +16,7 @@ func Test_sFnAddFinalizer(t *testing.T) {
 		scheme := runtime.NewScheme()
 		require.NoError(t, v1alpha1.AddToScheme(scheme))
 
-		serverless := v1alpha1.DockerRegistry{
+		dockerRegistry := v1alpha1.DockerRegistry{
 			ObjectMeta: v1.ObjectMeta{
 				Name:            "test-name",
 				Namespace:       "test-namespace",
@@ -24,7 +24,7 @@ func Test_sFnAddFinalizer(t *testing.T) {
 			},
 		}
 		s := &systemState{
-			instance: serverless,
+			instance: dockerRegistry,
 		}
 		r := &reconciler{
 			cfg: cfg{
@@ -33,7 +33,7 @@ func Test_sFnAddFinalizer(t *testing.T) {
 			k8s: k8s{
 				client: fake.NewClientBuilder().
 					WithScheme(scheme).
-					WithObjects(&serverless).
+					WithObjects(&dockerRegistry).
 					Build(),
 			},
 		}
@@ -51,8 +51,8 @@ func Test_sFnAddFinalizer(t *testing.T) {
 		obj := v1alpha1.DockerRegistry{}
 		err = r.k8s.client.Get(context.Background(),
 			client.ObjectKey{
-				Namespace: serverless.Namespace,
-				Name:      serverless.Name,
+				Namespace: dockerRegistry.Namespace,
+				Name:      dockerRegistry.Name,
 			},
 			&obj)
 		require.NoError(t, err)

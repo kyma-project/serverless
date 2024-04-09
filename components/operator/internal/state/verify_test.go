@@ -47,12 +47,12 @@ func Test_sFnVerifyResources(t *testing.T) {
 	t.Run("ready", func(t *testing.T) {
 		s := &systemState{
 			warningBuilder: warning.NewBuilder(),
-			instance:       *testInstalledServerless.DeepCopy(),
+			instance:       *testInstalledDockerRegistry.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
-					Name:      testInstalledServerless.GetName(),
-					Namespace: testInstalledServerless.GetNamespace(),
+					Name:      testInstalledDockerRegistry.GetName(),
+					Namespace: testInstalledDockerRegistry.GetNamespace(),
 				},
 			},
 		}
@@ -83,12 +83,12 @@ func Test_sFnVerifyResources(t *testing.T) {
 	t.Run("warning", func(t *testing.T) {
 		s := &systemState{
 			warningBuilder: warning.NewBuilder().With("test warning"),
-			instance:       *testInstalledServerless.DeepCopy(),
+			instance:       *testInstalledDockerRegistry.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixEmptyManifestCache(),
 				CacheKey: types.NamespacedName{
-					Name:      testInstalledServerless.GetName(),
-					Namespace: testInstalledServerless.GetNamespace(),
+					Name:      testInstalledDockerRegistry.GetName(),
+					Namespace: testInstalledDockerRegistry.GetNamespace(),
 				},
 			},
 		}
@@ -114,12 +114,12 @@ func Test_sFnVerifyResources(t *testing.T) {
 
 	t.Run("verify error", func(t *testing.T) {
 		s := &systemState{
-			instance: *testInstalledServerless.DeepCopy(),
+			instance: *testInstalledDockerRegistry.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: fixManifestCache("\t"),
 				CacheKey: types.NamespacedName{
-					Name:      testInstalledServerless.GetName(),
-					Namespace: testInstalledServerless.GetNamespace(),
+					Name:      testInstalledDockerRegistry.GetName(),
+					Namespace: testInstalledDockerRegistry.GetNamespace(),
 				},
 			},
 		}
@@ -146,19 +146,19 @@ func Test_sFnVerifyResources(t *testing.T) {
 	t.Run("requeue when resources are not ready", func(t *testing.T) {
 		client := fake.NewClientBuilder().WithObjects(testDeployCR).Build()
 		s := &systemState{
-			instance: *testInstalledServerless.DeepCopy(),
+			instance: *testInstalledDockerRegistry.DeepCopy(),
 			chartConfig: &chart.Config{
 				Cache: func() chart.ManifestCache {
 					cache := chart.NewInMemoryManifestCache()
 					_ = cache.Set(context.Background(), types.NamespacedName{
-						Name:      testInstalledServerless.GetName(),
-						Namespace: testInstalledServerless.GetNamespace(),
+						Name:      testInstalledDockerRegistry.GetName(),
+						Namespace: testInstalledDockerRegistry.GetNamespace(),
 					}, chart.ServerlessSpecManifest{Manifest: testDeployManifest})
 					return cache
 				}(),
 				CacheKey: types.NamespacedName{
-					Name:      testInstalledServerless.GetName(),
-					Namespace: testInstalledServerless.GetNamespace(),
+					Name:      testInstalledDockerRegistry.GetName(),
+					Namespace: testInstalledDockerRegistry.GetNamespace(),
 				},
 				Cluster: chart.Cluster{
 					Client: client,

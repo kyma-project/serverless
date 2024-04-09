@@ -11,26 +11,26 @@ import (
 )
 
 const (
-	ServerlessRegistryDefaultSecretName              = "serverless-registry-config-default"
-	ServerlessExternalRegistrySecretName             = "serverless-registry-config"
-	ServerlessExternalRegistryLabelRemoteRegistryKey = "serverless.kyma-project.io/remote-registry"
-	ServerlessExternalRegistryLabelRemoteRegistryVal = "config"
-	ServerlessExternalRegistryLabelConfigKey         = "serverless.kyma-project.io/config"
-	ServerlessExternalRegistryLabelConfigVal         = "credentials"
-	ServerlessRegistryIsInternalKey                  = "isInternal"
-	ServerlessDockerRegistryDeploymentName           = "serverless-docker-registry"
-	RegistryHTTPEnvKey                               = "REGISTRY_HTTP_SECRET"
+	RegistryDefaultSecretName              = "serverless-registry-config-default"
+	ExternalRegistrySecretName             = "serverless-registry-config"
+	ExternalRegistryLabelRemoteRegistryKey = "serverless.kyma-project.io/remote-registry"
+	ExternalRegistryLabelRemoteRegistryVal = "config"
+	ExternalRegistryLabelConfigKey         = "serverless.kyma-project.io/config"
+	ExternalRegistryLabelConfigVal         = "credentials"
+	RegistryIsInternalKey                  = "isInternal"
+	DockerRegistryDeploymentName           = "serverless-docker-registry"
+	RegistryHTTPEnvKey                     = "REGISTRY_HTTP_SECRET"
 )
 
 func ListExternalNamespacedScopeSecrets(ctx context.Context, c client.Client) ([]corev1.Secret, error) {
 
 	// has config label
-	remoteRegistryLabelRequirement, _ := labels.NewRequirement(ServerlessExternalRegistryLabelRemoteRegistryKey, selection.Equals, []string{
-		ServerlessExternalRegistryLabelRemoteRegistryVal,
+	remoteRegistryLabelRequirement, _ := labels.NewRequirement(ExternalRegistryLabelRemoteRegistryKey, selection.Equals, []string{
+		ExternalRegistryLabelRemoteRegistryVal,
 	})
 
 	// has not credentials label
-	configLabelRequirement, _ := labels.NewRequirement(ServerlessExternalRegistryLabelConfigKey, selection.DoesNotExist, []string{})
+	configLabelRequirement, _ := labels.NewRequirement(ExternalRegistryLabelConfigKey, selection.DoesNotExist, []string{})
 
 	labeledSecrets := corev1.SecretList{}
 	err := c.List(ctx, &labeledSecrets, &client.ListOptions{
@@ -45,7 +45,7 @@ func ListExternalNamespacedScopeSecrets(ctx context.Context, c client.Client) ([
 
 	secrets := []corev1.Secret{}
 	for _, secret := range labeledSecrets.Items {
-		if secret.Name == ServerlessExternalRegistrySecretName {
+		if secret.Name == ExternalRegistrySecretName {
 			secrets = append(secrets, secret)
 		}
 	}
@@ -57,39 +57,39 @@ func GetExternalClusterWideRegistrySecret(ctx context.Context, c client.Client, 
 	secret := corev1.Secret{}
 	key := client.ObjectKey{
 		Namespace: namespace,
-		Name:      ServerlessExternalRegistrySecretName,
+		Name:      ExternalRegistrySecretName,
 	}
 	err := c.Get(ctx, key, &secret)
 	if err != nil {
 		return nil, client.IgnoreNotFound(err)
 	}
 
-	if val, ok := secret.GetLabels()[ServerlessExternalRegistryLabelRemoteRegistryKey]; !ok || val != ServerlessExternalRegistryLabelRemoteRegistryVal {
+	if val, ok := secret.GetLabels()[ExternalRegistryLabelRemoteRegistryKey]; !ok || val != ExternalRegistryLabelRemoteRegistryVal {
 		return nil, nil
 	}
-	if val, ok := secret.GetLabels()[ServerlessExternalRegistryLabelConfigKey]; !ok || val != ServerlessExternalRegistryLabelConfigVal {
+	if val, ok := secret.GetLabels()[ExternalRegistryLabelConfigKey]; !ok || val != ExternalRegistryLabelConfigVal {
 		return nil, nil
 	}
 
 	return &secret, nil
 }
 
-func GetServerlessInternalRegistrySecret(ctx context.Context, c client.Client, namespace string) (*corev1.Secret, error) {
+func GetDockerRegistryInternalRegistrySecret(ctx context.Context, c client.Client, namespace string) (*corev1.Secret, error) {
 	secret := corev1.Secret{}
 	key := client.ObjectKey{
 		Namespace: namespace,
-		Name:      ServerlessRegistryDefaultSecretName,
+		Name:      RegistryDefaultSecretName,
 	}
 	err := c.Get(ctx, key, &secret)
 	if err != nil {
 		return nil, client.IgnoreNotFound(err)
 	}
 
-	if val, ok := secret.GetLabels()[ServerlessExternalRegistryLabelConfigKey]; !ok || val != ServerlessExternalRegistryLabelConfigVal {
+	if val, ok := secret.GetLabels()[ExternalRegistryLabelConfigKey]; !ok || val != ExternalRegistryLabelConfigVal {
 		return nil, nil
 	}
 
-	if val := string(secret.Data[ServerlessRegistryIsInternalKey]); val != "true" {
+	if val := string(secret.Data[RegistryIsInternalKey]); val != "true" {
 		return nil, nil
 	}
 
@@ -100,7 +100,7 @@ func GetRegistryHTTPSecretEnvValue(ctx context.Context, c client.Client, namespa
 	deployment := appsv1.Deployment{}
 	key := client.ObjectKey{
 		Namespace: namespace,
-		Name:      ServerlessDockerRegistryDeploymentName,
+		Name:      DockerRegistryDeploymentName,
 	}
 	err := c.Get(ctx, key, &deployment)
 	if err != nil {
