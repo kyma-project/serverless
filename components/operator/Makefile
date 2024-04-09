@@ -65,11 +65,11 @@ IGNORE_NOT_FOUND = false
 OPERATOR_NAME = dockerregistry-operator
 
 .PHONY: build-image-operator
-build-image-operator: ## Build serverless operator from local sources on k3d
+build-image-operator: ## Build dockerregistry operator from local sources on k3d
 	docker build -t $(OPERATOR_NAME) -f Dockerfile $(PROJECT_ROOT)
 
 .PHONY: install-operator-k3d
-install-operator-k3d: build-image-operator ## Build and install serverless operator from local sources on k3d
+install-operator-k3d: build-image-operator ## Build and install dockerregistry operator from local sources on k3d
 	$(eval HASH_TAG=$(shell docker images $(OPERATOR_NAME):latest --quiet))
 	docker tag $(OPERATOR_NAME) $(OPERATOR_NAME):$(HASH_TAG)
 
@@ -112,30 +112,30 @@ render-manifest: manifests kustomize ## Render dockerregistry-operator.yaml mani
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/dockerregistry-operator.yaml
 
 
-.PHONY: apply-default-serverless-cr
-apply-default-serverless-cr: ## Apply the k3d serverless CR.
+.PHONY: apply-default-dockerregistry-cr
+apply-default-dockerregistry-cr: ## Apply the k3d dockerregistry CR.
 	kubectl apply \
 		-f ${PROJECT_ROOT}/config/samples/default-dockerregistry-cr.yaml
 
-.PHONY: remove-serverless
-remove-serverless: ## Remove Serverless CR
-	kubectl delete serverless -n kyma-system default --timeout 2m || (kubectl get serverless -n kyma-system -oyaml && false)
+.PHONY: remove-dockerregistry
+remove-dockerregistry: ## Remove Dockerregistry CR
+	kubectl delete dockerregistry -n kyma-system default --timeout 2m || (kubectl get dockerregistry -n kyma-system -oyaml && false)
 
 
-.PHONY: check-serverless-installation
-check-serverless-installation: ## Wait for Serverless CR to be in Ready state.
+.PHONY: check-dockerregistry-installation
+check-dockerregistry-installation: ## Wait for Dockerregistry CR to be in Ready state.
 	# wait some time to make sure operator starts the reconciliation first
 	sleep 10
 
 	./hack/verify_dockerregistry_status.sh || \
-		(make print-serverless-details && false)
+		(make print-dockerregistry-details && false)
 
 	kubectl wait --for condition=Available -n kyma-system deployment dockerregistry-operator --timeout=60s || \
-		(make print-serverless-details && false)
+		(make print-dockerregistry-details && false)
 
-.PHONY: print-serverless-details
-print-serverless-details: ## Print all pods, deploys and serverless CRs in the kyma-system namespace.
-	kubectl get serverless -n kyma-system -oyaml
+.PHONY: print-dockerregistry-details
+print-dockerregistry-details: ## Print all pods, deploys and dockerregistry CRs in the kyma-system namespace.
+	kubectl get dockerregistry -n kyma-system -oyaml
 	kubectl get deploy -n kyma-system -oyaml
 	kubectl get pods -n kyma-system -oyaml
 

@@ -12,19 +12,19 @@ integration-test: ## Run integration tests on self-prepared k3d cluster.
 	make -C ${TEST_ROOT} serverless-integration serverless-contract-tests
 
 .PHONY: integration-test-on-cluster
-integration-test-on-cluster: ## Install serverless with default serverless-cr, run integration tests and remove serverless-cr
+integration-test-on-cluster: ## Install serverless with default dockerregistry-cr, run integration tests and remove dockerregistry-cr
 	make -C ${PROJECT_ROOT} install-serverless-custom-operator
 	make integration-test
-	make -C ${PROJECT_ROOT} remove-serverless
+	make -C ${PROJECT_ROOT} remove-dockerregistry
 
 .PHONY: git-auth-test-on-cluster
-git-auth-test-on-cluster: ## Install serverless with default serverless-cr, run git auth integration and remove serverless-cr
+git-auth-test-on-cluster: ## Install serverless with default dockerregistry-cr, run git auth integration and remove dockerregistry-cr
 	make -C ${PROJECT_ROOT} install-serverless-custom-operator
 	make -C ${TEST_ROOT} git-auth-integration
-	make -C ${PROJECT_ROOT} remove-serverless
+	make -C ${PROJECT_ROOT} remove-dockerregistry
 
 .PHONY: upgrade-test
 upgrade-test: ## Installs Serverless from latest, upgrades to version specified in IMG and run integration tests
 	make -C ${PROJECT_ROOT} install-serverless-latest-release install-serverless-custom-operator
 	make integration-test
-	make -C ${PROJECT_ROOT} remove-serverless
+	make -C ${PROJECT_ROOT} remove-dockerregistry
