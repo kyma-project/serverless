@@ -65,7 +65,7 @@ func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	log := sr.log.With("request", req)
 	log.Info("reconciliation started")
 
-	instance, err := state.GetServerlessOrServed(ctx, req, sr.client)
+	instance, err := state.GetDockerRegistryOrServed(ctx, req, sr.client)
 	if err != nil {
 		log.Warnf("while getting serverless, got error: %s", err.Error())
 		return ctrl.Result{}, errors.Wrap(err, "while fetching serverless instance")

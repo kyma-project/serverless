@@ -22,16 +22,16 @@ func sFnServedFilter(ctx context.Context, r *reconciler, s *systemState) (stateF
 }
 
 func setInitialServed(ctx context.Context, r *reconciler, s *systemState) error {
-	servedServerless, err := GetServedServerless(ctx, r.k8s.client)
+	servedDockerRegistry, err := GetServedDockerRegistry(ctx, r.k8s.client)
 	if err != nil {
 		return err
 	}
 
-	return setServed(servedServerless, s)
+	return setServed(servedDockerRegistry, s)
 }
 
-func setServed(servedServerless *v1alpha1.DockerRegistry, s *systemState) error {
-	if servedServerless == nil {
+func setServed(servedDockerRegistry *v1alpha1.DockerRegistry, s *systemState) error {
+	if servedDockerRegistry == nil {
 		s.setServed(v1alpha1.ServedTrue)
 		return nil
 	}
@@ -40,7 +40,7 @@ func setServed(servedServerless *v1alpha1.DockerRegistry, s *systemState) error 
 	s.setState(v1alpha1.StateWarning)
 	err := fmt.Errorf(
 		"Only one instance of DockerRegistry is allowed (current served instance: %s/%s). This DockerRegistry CR is redundant. Remove it to fix the problem.",
-		servedServerless.GetNamespace(), servedServerless.GetName())
+		servedDockerRegistry.GetNamespace(), servedDockerRegistry.GetName())
 	s.instance.UpdateConditionFalse(
 		v1alpha1.ConditionTypeConfigured,
 		v1alpha1.ConditionReasonServerlessDuplicated,
