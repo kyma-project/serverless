@@ -1,4 +1,4 @@
-name: "Promote to release channel with config"
+name: "Promote serverless to release channel"
 
 on:
   workflow_dispatch:
@@ -7,8 +7,6 @@ on:
         description: 'Serverless tag to promote (`x.x.x`)'
         default: ""
         required: true
-#       Always "serverless-operator.yaml"
-
       channel:
         type: choice
         description: 'Module channel'
@@ -26,7 +24,7 @@ env:
   GH_ENTERPRISE_TOKEN: ${{ secrets.BOT_TOKEN }}
   BOT_USERNAME: kyma-otter-serviceuser
   BOT_EMAIL: dl_545734d8fd84a02c39000002@global.corp.sap
-  GH_TOOLS_REPO_URL: ${{ secrets.GH_TOOLS_REPO_URL }}
+  GH_TOOLS_REPO_URL: ${{ secrets.GH_TOOLS_REPO_URL }} # TODO: Remember its here
 
 jobs:
 
@@ -39,7 +37,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.event.inputs.serverless_tag }} # fetching tag that was created in previous job
+          ref: ${{ github.event.inputs.serverless_tag }}
 
       - name: Download release assets
         run: |
@@ -58,8 +56,9 @@ jobs:
         run: |
           git config --global user.email "${BOT_EMAIL}"
           git config --global user.name "${BOT_USERNAME}"
-          git clone "https://${BOT_USERNAME}:${GH_ENTERPRISE_TOKEN}@${GH_TOOLS_REPO_URL}/${BOT_USERNAME}/module-manifests.git" # TODO: Why are we using "GH_TOOLS_REPO_URL" here
-          git -C module-manifests remote add upstream "https://${BOT_USERNAME}:${GH_ENTERPRISE_TOKEN}@github.tools.sap/kyma/module-manifests.git" # TODO: Here its explicit
+        # TODO: Why are we using "GH_TOOLS_REPO_URL" here if its explicit in the next line
+          git clone "https://${BOT_USERNAME}:${GH_ENTERPRISE_TOKEN}@${GH_TOOLS_REPO_URL}/${BOT_USERNAME}/module-manifests.git"
+          git -C module-manifests remote add upstream "https://${BOT_USERNAME}:${GH_ENTERPRISE_TOKEN}@github.tools.sap/kyma/module-manifests.git"
 
       - name: Commit manifest
         working-directory: module-manifests
@@ -67,7 +66,7 @@ jobs:
           git fetch upstream
           git checkout -B "${MODULE_VERSION}-${CHANNEL}" upstream/main
 
-          mkdir -p modules/warden/${CHANNEL}
+          mkdir -p modules/serverless/${CHANNEL}
           cp ../serverless-operator.yaml modules/serverless/${CHANNEL}/serverless-operator.yaml
           cp ../default-serverless-cr.yaml modules/serverless/${CHANNEL}/default-serverless-cr.yaml
           cp ../module-config.yaml modules/serverless/${CHANNEL}/module-config.yaml
@@ -81,6 +80,7 @@ jobs:
       - name: Create PullRequest to module-manifests
         working-directory: module-manifests
         run: |
+        # TODO: used from env again
           prs=$(gh pr list -R "https://${GH_TOOLS_REPO_URL}/kyma/module-manifests" -A "${BOT_USERNAME}" --state open --json headRefName)
 
           if  echo $prs | jq -e ".[] | select(.headRefName==\"${MODULE_VERSION}-${CHANNEL}\")"; then
