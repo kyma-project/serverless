@@ -62,7 +62,7 @@ docker-push: ## Push docker image with the operator.
 
 ##@ Deployment
 IGNORE_NOT_FOUND = false
-OPERATOR_NAME = serverless-operator
+OPERATOR_NAME = dockerregistry-operator
 
 .PHONY: build-image-operator
 build-image-operator: ## Build serverless operator from local sources on k3d
@@ -74,7 +74,7 @@ install-operator-k3d: build-image-operator ## Build and install serverless opera
 	docker tag $(OPERATOR_NAME) $(OPERATOR_NAME):$(HASH_TAG)
 
 	k3d image import $(OPERATOR_NAME):$(HASH_TAG) -c kyma
-	kubectl set image deployment serverless-operator -n kyma-system manager=$(OPERATOR_NAME):$(HASH_TAG)
+	kubectl set image deployment dockerregistry-operator -n kyma-system manager=$(OPERATOR_NAME):$(HASH_TAG)
 
 
 .PHONY: install
@@ -107,9 +107,9 @@ undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/confi
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
 
 .PHONY: render-manifest
-render-manifest: manifests kustomize ## Render serverless-operator.yaml manifest with image from IMG env.
+render-manifest: manifests kustomize ## Render dockerregistry-operator.yaml manifest with image from IMG env.
 	cd $(CONFIG_OPERATOR)/deployment && $(KUSTOMIZE) edit set image controller=${IMG}
-	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/serverless-operator.yaml
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/dockerregistry-operator.yaml
 
 
 .PHONY: apply-default-serverless-cr
@@ -130,10 +130,7 @@ check-serverless-installation: ## Wait for Serverless CR to be in Ready state.
 	./hack/verify_dockerregistry_status.sh || \
 		(make print-serverless-details && false)
 
-	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s || \
-		(make print-serverless-details && false)
-
-	kubectl wait --for condition=Available -n kyma-system deployment serverless-ctrl-mngr --timeout=60s || \
+	kubectl wait --for condition=Available -n kyma-system deployment dockerregistry-operator --timeout=60s || \
 		(make print-serverless-details && false)
 
 .PHONY: print-serverless-details
