@@ -127,7 +127,7 @@ check-serverless-installation: ## Wait for Serverless CR to be in Ready state.
 	# wait some time to make sure operator starts the reconciliation first
 	sleep 10
 
-	./hack/verify_serverless_status.sh || \
+	./hack/verify_dockerregistry_status.sh || \
 		(make print-serverless-details && false)
 
 	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s || \
