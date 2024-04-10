@@ -48,7 +48,7 @@ jobs:
           CHANNEL: ${{ github.event.inputs.channel }}
           MODULE_VERSION: ${{ github.event.inputs.serverless_tag }}
         run: |
-          make -C hack/module-config
+          make -C hack module-config
           echo "==== module-config ==="
           cat module-config.yaml 
 
