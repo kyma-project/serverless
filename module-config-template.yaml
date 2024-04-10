@@ -1,4 +1,4 @@
-name: {{.Name}}
+name: kyma-project.io/module/serverless
 channel: {{.Channel}}
 version: {{.Version}}
 defaultCR: config/samples/default-serverless-cr.yaml
