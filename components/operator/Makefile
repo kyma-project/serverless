@@ -17,6 +17,7 @@ SHELL = /usr/bin/env bash -o pipefail
 ##@ Development
 CONFIG_OPERATOR = $(PROJECT_ROOT)/config/operator/base
 CONFIG_OPERATOR_DEV = $(PROJECT_ROOT)/config/operator/dev
+CONFIG_OPERATOR_MAIN = https://github.com/kyma-project/serverless/config/operator/base?ref=main
 
 .PHONY: manifests
 manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
@@ -69,7 +70,7 @@ build-image-operator: ## Build serverless operator from local sources on k3d
 	docker build -t $(OPERATOR_NAME) -f Dockerfile $(PROJECT_ROOT)
 
 .PHONY: install-operator-k3d
-install-operator-k3d: build-image-operator ## Build and install serverless operator from local sources on k3d
+install-operator-k3d: build-image-operator ## Build and replace serverless operator from local sources on k3d
 	$(eval HASH_TAG=$(shell docker images $(OPERATOR_NAME):latest --quiet))
 	docker tag $(OPERATOR_NAME) $(OPERATOR_NAME):$(HASH_TAG)
 
@@ -88,7 +89,7 @@ uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified 
 .PHONY: deploy-main
 deploy-main: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
 	kubectl create namespace kyma-system || true
-	$(KUSTOMIZE) build $(CONFIG_OPERATOR) | kubectl apply -f -
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR_MAIN) | kubectl apply -f -
 
 
 .PHONY: generate-kustomization-dev
@@ -96,11 +97,19 @@ generate-kustomization-dev:
 	cp $(CONFIG_OPERATOR_DEV)/kustomization.yaml.tpl $(CONFIG_OPERATOR_DEV)/kustomization.yaml
 
 .PHONY: deploy
-deploy: manifests kustomize generate-kustomization-dev ## Deploy controller to the K8s cluster specified in ~/.kube/config with image from IMG env.
+deploy: manifests kustomize generate-kustomization-dev ## Deploy operator to the K8s cluster specified in ~/.kube/config with image from IMG env.
 	kubectl create namespace kyma-system || true
 	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit set image europe-docker.pkg.dev/kyma-project/prod/serverless-operator=${IMG}
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR_DEV) | kubectl apply -f -
 
+.PHONY: deploy-local
+deploy-local: build-image-operator ## Deploy operator to the K8s cluster specified in ~/.kube/config with locally build image.
+	$(eval HASH_TAG=$(shell docker images $(OPERATOR_NAME):latest --quiet))
+	docker tag $(OPERATOR_NAME) $(OPERATOR_NAME):$(HASH_TAG)
+
+	$(eval IMG=$(OPERATOR_NAME):$(HASH_TAG))
+	k3d image import $(IMG) -c kyma
+	IMG=$(IMG) make deploy
 
 .PHONY: undeploy
 undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with IGNORE_NOT_FOUND=true to ignore resource not found errors during deletion.
@@ -117,7 +126,7 @@ apply-default-serverless-cr: ## Apply the k3d serverless CR.
 	kubectl apply \
 		-f ${PROJECT_ROOT}/config/samples/default-serverless-cr.yaml
 
-.PHONY: remove-serverless
+.PHONY: remove-default-serverless-cr
 remove-serverless: ## Remove Serverless CR
 	kubectl delete serverless -n kyma-system default --timeout 2m || (kubectl get serverless -n kyma-system -oyaml && false)
 

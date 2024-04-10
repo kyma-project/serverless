@@ -5,9 +5,7 @@ The Function Controller is a Kubernetes controller that enables Kyma to manage F
 ## Prerequisites
 
 The Function Controller requires the following components to be installed:
-
-- [Istio](https://github.com/istio/istio/releases) (v1.4.3)
-- [Docker registry](https://github.com/docker/distribution) (v2.7.1)
+- [Go](https://go.dev/)
 
 ## Development
 
@@ -16,11 +14,25 @@ To develop the Function Controller, you need:
 - [controller-gen](https://github.com/kubernetes-sigs/controller-tools/releases/tag/v0.6.2) (v0.6.2)
 - <!-- markdown-link-check-disable-line -->[kustomize](https://github.com/kubernetes-sigs/kustomize/releases/tag/kustomize%2Fv4.5.7) (v4.5.7)
 
-To develop the component, use the formulae declared in the [Makefile](./Makefile).
+### Installing Locally Built Serverless Controller Image on k3d With Serverless
+Prerequisite:
+- installed Serverless on a cluster
 
-To run the manager and set up envs correctly, source [controller.env](./hack/controller.env). 
-You can customize the configuration by editing files in [hack](./hack) dir. 
+To install `serverless-controller` from local sources on the k3d cluster run:
+```bash
+make install-controller-k3d
+```
 
+This target:
+- scales down the Serverless Operator to prevent reverting further changes made to the `serverless-controller` deployment
+- builds the local image with the `serverless-controller` image
+- tags the local `serverless-controller` image with its hash to be sure the deployment is updated
+- uploads the local image to k3d
+- updates the image in the `serverless-ctrl-mngr` deployment
+
+### Running/Debugging serverless-manager Locally
+To develop the component as normal binary, set up envs correctly, example envs to use [controller.env](./hack/controller.env).
+You can customize the configuration by editing files in [hack](./hack) dir.
 
 ### Environment Variables
 

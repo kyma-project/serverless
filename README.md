@@ -53,11 +53,12 @@ kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/lat
 2. Build Serverless Operator locally and run it in the k3d cluster.
 
     ```bash
-    make run
+    make run-main
     ```
 
 > **NOTE:** To clean up the k3d cluster, use the `make delete-k3d` make target.
 
+> **NOTE:** If you have k3d already running you can use `install-*` target to install Serverless in different flavors.
 
 ## Using Serverless Operator
 
