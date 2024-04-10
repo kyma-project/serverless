@@ -294,6 +294,7 @@ data:
               ''
         - path: dependencies
           widget: CodeEditor
+          formatAsString: true
           language: '$contains($root.spec.runtime, "node") ? "json" : "plaintext"'
     - path: spec.source.gitRepository
       widget: FormGroup
