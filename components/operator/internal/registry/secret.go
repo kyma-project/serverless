@@ -10,8 +10,6 @@ import (
 
 const (
 	ServerlessRegistryDefaultSecretName              = "serverless-registry-config-default"
-	ServerlessExternalRegistryLabelRemoteRegistryKey = "serverless.kyma-project.io/remote-registry"
-	ServerlessExternalRegistryLabelRemoteRegistryVal = "config"
 	ServerlessExternalRegistryLabelConfigKey         = "serverless.kyma-project.io/config"
 	ServerlessExternalRegistryLabelConfigVal         = "credentials"
 	ServerlessRegistryIsInternalKey                  = "isInternal"
