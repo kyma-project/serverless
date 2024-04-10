@@ -27,12 +27,5 @@ remove-serverless: ## Remove serverless-cr and serverless operator
 .PHONY: run
 run: create-k3d install-serverless-main ## Create k3d cluster and install serverless from main
 
-##@ Actions
-.PHONY: module-config
-module-config:
-	yq ".channel = \"${CHANNEL}\" | .version = \"${MODULE_VERSION}\""\
-    	module-config-template.yaml > module-config.yaml
-
-
 check-var = $(if $(strip $($1)),,$(error "$1" is not defined))
 

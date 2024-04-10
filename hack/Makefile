@@ -28,3 +28,9 @@ upgrade-test: ## Installs Serverless from latest, upgrades to version specified 
 	make -C ${PROJECT_ROOT} install-serverless-latest-release install-serverless-custom-operator
 	make integration-test
 	make -C ${PROJECT_ROOT} remove-serverless
+
+##@ Actions
+.PHONY: module-config
+module-config:
+	yq ".channel = \"${CHANNEL}\" | .version = \"${MODULE_VERSION}\""\
+    	module-config-template.yaml > module-config.yaml
