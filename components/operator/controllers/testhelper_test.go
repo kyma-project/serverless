@@ -230,14 +230,14 @@ func (h *testHelper) getServerlessStatus(serverlessName string) (v1alpha1.Docker
 	return serverless.Status, nil
 }
 
-type serverlessData struct {
+type dockerRegistryData struct {
 	EventPublisherProxyURL *string
 	TraceCollectorURL      *string
 	EnableInternal         *bool
 	registrySecretData
 }
 
-func (d *serverlessData) toServerlessSpec(secretName string) v1alpha1.DockerRegistrySpec {
+func (d *dockerRegistryData) toServerlessSpec(secretName string) v1alpha1.DockerRegistrySpec {
 	result := v1alpha1.DockerRegistrySpec{
 		Eventing: getEndpoint(d.EventPublisherProxyURL),
 		Tracing:  getEndpoint(d.TraceCollectorURL),
@@ -301,7 +301,7 @@ func (h *testHelper) createCheckRegistrySecretFunc(serverlessRegistrySecret stri
 	}
 }
 
-func (h *testHelper) createCheckOptionalDependenciesFunc(deploymentName string, expected serverlessData) func() (bool, error) {
+func (h *testHelper) createCheckOptionalDependenciesFunc(deploymentName string, expected dockerRegistryData) func() (bool, error) {
 	return func() (bool, error) {
 		var deploy appsv1.Deployment
 		ok, err := h.getKubernetesObjectFunc(deploymentName, &deploy)

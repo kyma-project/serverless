@@ -44,5 +44,7 @@ manifests/serverless/rendered.yaml
 serverless.yaml
 moduletemplate-latest.yaml
 module-config.yaml
+dockerregistry-operator.yaml
+dockerregistry.yaml
 
 examples/python-text2img/resources/secrets/deepai.env

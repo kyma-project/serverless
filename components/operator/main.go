@@ -129,7 +129,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	reconciler := controllers.NewServerlessReconciler(
+	reconciler := controllers.NewDockerRegistryReconciler(
 		mgr.GetClient(), mgr.GetConfig(),
 		mgr.GetEventRecorderFor("serverless-operator"),
 		reconcilerLogger.Sugar(),

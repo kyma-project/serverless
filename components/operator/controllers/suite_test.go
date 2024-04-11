@@ -92,7 +92,7 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 
 	chartPath := filepath.Join("..", "..", "..", "config", "serverless")
-	err = (NewServerlessReconciler(
+	err = (NewDockerRegistryReconciler(
 		k8sManager.GetClient(),
 		k8sManager.GetConfig(),
 		record.NewFakeRecorder(100),

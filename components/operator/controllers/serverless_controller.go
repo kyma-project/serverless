@@ -34,17 +34,17 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// serverlessReconciler reconciles a DockerRegistry object
-type serverlessReconciler struct {
+// dockerRegistryReconciler reconciles a DockerRegistry object
+type dockerRegistryReconciler struct {
 	initStateMachine func(*zap.SugaredLogger) state.StateReconciler
 	client           client.Client
 	log              *zap.SugaredLogger
 }
 
-func NewServerlessReconciler(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, chartPath string) *serverlessReconciler {
+func NewDockerRegistryReconciler(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, chartPath string) *dockerRegistryReconciler {
 	cache := chart.NewSecretManifestCache(client)
 
-	return &serverlessReconciler{
+	return &dockerRegistryReconciler{
 		initStateMachine: func(log *zap.SugaredLogger) state.StateReconciler {
 			return state.NewMachine(client, config, recorder, log, cache, chartPath)
 		},
@@ -54,14 +54,14 @@ func NewServerlessReconciler(client client.Client, config *rest.Config, recorder
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (sr *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (sr *dockerRegistryReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.DockerRegistry{}, builder.WithPredicates(predicate.NoStatusChangePredicate{})).
 		Watches(&corev1.Service{}, tracing.ServiceCollectorWatcher()).
 		Complete(sr)
 }
 
-func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (sr *dockerRegistryReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := sr.log.With("request", req)
 	log.Info("reconciliation started")
 
