@@ -29,6 +29,7 @@ import (
 	ctrlzap "sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/source"
+	ctrlwebhook "sigs.k8s.io/controller-runtime/pkg/webhook"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -109,7 +110,9 @@ func main() {
 		MetricsBindAddress:     config.MetricsAddress,
 		LeaderElection:         config.LeaderElectionEnabled,
 		LeaderElectionID:       config.LeaderElectionID,
-		Port:                   config.SecretMutatingWebhookPort,
+		WebhookServer: ctrlwebhook.NewServer(ctrlwebhook.Options{
+			Port: config.SecretMutatingWebhookPort,
+		}),
 		HealthProbeBindAddress: config.Healthz.Address,
 		Client: ctrlclient.Options{
 			Cache: &ctrlclient.CacheOptions{
