@@ -30,94 +30,6 @@ const (
 func Test_sFnControllerConfiguration(t *testing.T) {
 	configurationReadyMsg := "Configuration ready"
 
-	t.Run("update status with slow defaults", func(t *testing.T) {
-		s := &systemState{
-			instance: v1alpha1.DockerRegistry{
-				Spec: v1alpha1.DockerRegistrySpec{},
-			},
-			flagsBuilder: chart.NewFlagsBuilder(),
-		}
-
-		c := fake.NewClientBuilder().WithObjects(
-			fixTestNode("node-1"),
-			fixTestNode("node-2"),
-		).Build()
-		eventRecorder := record.NewFakeRecorder(2)
-		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
-		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
-		require.Nil(t, err)
-		require.Nil(t, result)
-		requireEqualFunc(t, sFnApplyResources, next)
-
-		status := s.instance.Status
-		require.Equal(t, slowBuildPreset, status.DefaultBuildJobPreset)
-		require.Equal(t, slowRuntimePreset, status.DefaultRuntimePodPreset)
-
-		require.Equal(t, v1alpha1.StateProcessing, status.State)
-		requireContainsCondition(t, status,
-			v1alpha1.ConditionTypeConfigured,
-			metav1.ConditionTrue,
-			v1alpha1.ConditionReasonConfigured,
-			configurationReadyMsg,
-		)
-
-		expectedEvents := []string{
-			"Normal Configuration Default build job preset set from '' to 'slow'",
-			"Normal Configuration Default runtime pod preset set from '' to 'XS'",
-		}
-
-		for _, expectedEvent := range expectedEvents {
-			require.Equal(t, expectedEvent, <-eventRecorder.Events)
-		}
-	})
-
-	t.Run("update slow default to fast ones", func(t *testing.T) {
-		s := &systemState{
-			instance: v1alpha1.DockerRegistry{
-				Spec: v1alpha1.DockerRegistrySpec{},
-				Status: v1alpha1.DockerRegistryStatus{
-					DefaultBuildJobPreset:   slowBuildPreset,
-					DefaultRuntimePodPreset: slowRuntimePreset,
-				},
-			},
-			flagsBuilder: chart.NewFlagsBuilder(),
-		}
-
-		c := fake.NewClientBuilder().WithObjects(
-			fixTestNode("node-1"),
-			fixTestNode("node-2"),
-			fixTestNode("node-3"),
-			fixTestNode("node-4"),
-		).Build()
-		eventRecorder := record.NewFakeRecorder(2)
-		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
-		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
-		require.Nil(t, err)
-		require.Nil(t, result)
-		requireEqualFunc(t, sFnApplyResources, next)
-
-		status := s.instance.Status
-		require.Equal(t, fastBuildPreset, status.DefaultBuildJobPreset)
-		require.Equal(t, fastRuntimePreset, status.DefaultRuntimePodPreset)
-
-		require.Equal(t, v1alpha1.StateProcessing, status.State)
-		requireContainsCondition(t, status,
-			v1alpha1.ConditionTypeConfigured,
-			metav1.ConditionTrue,
-			v1alpha1.ConditionReasonConfigured,
-			configurationReadyMsg,
-		)
-
-		expectedEvents := []string{
-			"Normal Configuration Default build job preset set from 'slow' to 'fast'",
-			"Normal Configuration Default runtime pod preset set from 'XS' to 'L'",
-		}
-
-		for _, expectedEvent := range expectedEvents {
-			require.Equal(t, expectedEvent, <-eventRecorder.Events)
-		}
-	})
-
 	t.Run("update status additional configuration overrides", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.DockerRegistry{
@@ -137,15 +49,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, cpuUtilizationTest, status.CPUUtilizationPercentage)
-		require.Equal(t, requeueDurationTest, status.RequeueDuration)
-		require.Equal(t, executorArgsTest, status.BuildExecutorArgs)
-		require.Equal(t, maxSimultaneousJobsTest, status.BuildMaxSimultaneousJobs)
 		require.Equal(t, healthzLivenessTimeoutTest, status.HealthzLivenessTimeout)
-		require.Equal(t, requestBodyLimitMbTest, status.RequestBodyLimitMb)
-		require.Equal(t, timeoutSecTest, status.TimeoutSec)
-		require.Equal(t, buildJobPresetTest, status.DefaultBuildJobPreset)
-		require.Equal(t, runtimePodPresetTest, status.DefaultRuntimePodPreset)
 
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
 		requireContainsCondition(t, status,
@@ -156,15 +60,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		)
 
 		expectedEvents := []string{
-			"Normal Configuration CPU utilization set from '' to 'test-CPU-utilization-percentage'",
-			"Normal Configuration Function requeue duration set from '' to 'test-requeue-duration'",
-			"Normal Configuration Function build executor args set from '' to 'test-build-executor-args'",
-			"Normal Configuration Max number of simultaneous jobs set from '' to 'test-max-simultaneous-jobs'",
 			"Normal Configuration Duration of health check set from '' to 'test-healthz-liveness-timeout'",
-			"Normal Configuration Max size of request body set from '' to 'test-request-body-limit-mb'",
-			"Normal Configuration Timeout set from '' to 'test-timeout-sec'",
-			"Normal Configuration Default build job preset set from '' to 'test=default-build-job-preset'",
-			"Normal Configuration Default runtime pod preset set from '' to 'test-default-runtime-pod-preset'",
 		}
 
 		for _, expectedEvent := range expectedEvents {
@@ -230,12 +126,4 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			configurationReadyMsg)
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
-}
-
-func fixTestNode(name string) *corev1.Node {
-	return &corev1.Node{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: name,
-		},
-	}
 }

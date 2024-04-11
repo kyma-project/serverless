@@ -89,16 +89,8 @@ type DockerRegistryStatus struct {
 	// Used the Eventing endpoint and the Tracing endpoint.
 	EventingEndpoint string `json:"eventingEndpoint,omitempty"`
 	TracingEndpoint  string `json:"tracingEndpoint,omitempty"`
-
-	CPUUtilizationPercentage string `json:"targetCPUUtilizationPercentage,omitempty"`
-	RequeueDuration          string `json:"functionRequeueDuration,omitempty"`
-	BuildExecutorArgs        string `json:"functionBuildExecutorArgs,omitempty"`
-	BuildMaxSimultaneousJobs string `json:"functionBuildMaxSimultaneousJobs,omitempty"`
-	HealthzLivenessTimeout   string `json:"healthzLivenessTimeout,omitempty"`
-	RequestBodyLimitMb       string `json:"functionRequestBodyLimitMb,omitempty"`
-	TimeoutSec               string `json:"functionTimeoutSec,omitempty"`
-	DefaultBuildJobPreset    string `json:"defaultBuildJobPreset,omitempty"`
-	DefaultRuntimePodPreset  string `json:"defaultRuntimePodPreset,omitempty"`
+	
+	HealthzLivenessTimeout string `json:"healthzLivenessTimeout,omitempty"`
 
 	// Used registry configuration.
 	// Contains registry URL or "internal"

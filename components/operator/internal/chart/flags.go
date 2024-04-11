@@ -7,8 +7,7 @@ import (
 
 type FlagsBuilder interface {
 	Build() map[string]interface{}
-	WithControllerConfiguration(CPUUtilizationPercentage string, requeueDuration string, buildExecutorArgs string, maxSimultaneousJobs string, healthzLivenessTimeout string, requestBodyLimitMb string, timeoutSec string) *flagsBuilder
-	WithDefaultPresetFlags(defaultBuildJobPreset string, defaultRuntimePodPreset string) *flagsBuilder
+	WithControllerConfiguration(healthzLivenessTimeout string) *flagsBuilder
 	WithOptionalDependencies(publisherURL string, traceCollectorURL string) *flagsBuilder
 	WithRegistryAddresses(registryAddress string, serverAddress string) *flagsBuilder
 	WithRegistryCredentials(username string, password string) *flagsBuilder
@@ -62,18 +61,12 @@ func nextDeeperFlag(currentFlag map[string]interface{}, path string) map[string]
 	return currentFlag[path].(map[string]interface{})
 }
 
-func (fb *flagsBuilder) WithControllerConfiguration(CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout, requestBodyLimitMb, timeoutSec string) *flagsBuilder {
+func (fb *flagsBuilder) WithControllerConfiguration(healthzLivenessTimeout string) *flagsBuilder {
 	optionalFlags := []struct {
 		key   string
 		value string
 	}{
-		{"targetCPUUtilizationPercentage", CPUUtilizationPercentage},
-		{"functionRequeueDuration", requeueDuration},
-		{"functionBuildExecutorArgs", buildExecutorArgs},
-		{"functionBuildMaxSimultaneousJobs", maxSimultaneousJobs},
 		{"healthzLivenessTimeout", healthzLivenessTimeout},
-		{"functionRequestBodyLimitMb", requestBodyLimitMb},
-		{"functionTimeoutSec", timeoutSec},
 	}
 
 	for _, flag := range optionalFlags {
@@ -113,18 +106,6 @@ func (fb *flagsBuilder) WithRegistryAddresses(registryAddress, serverAddress str
 func (fb *flagsBuilder) WithRegistryHttpSecret(httpSecret string) *flagsBuilder {
 	fb.flags["docker-registry.rollme"] = "dontrollplease"
 	fb.flags["docker-registry.registryHTTPSecret"] = httpSecret
-
-	return fb
-}
-
-func (fb *flagsBuilder) WithDefaultPresetFlags(defaultBuildJobPreset, defaultRuntimePodPreset string) *flagsBuilder {
-	if defaultRuntimePodPreset != "" {
-		fb.flags["containers.manager.configuration.data.resourcesConfiguration.function.resources.defaultPreset"] = defaultRuntimePodPreset
-	}
-
-	if defaultBuildJobPreset != "" {
-		fb.flags["containers.manager.configuration.data.resourcesConfiguration.buildJob.resources.defaultPreset"] = defaultBuildJobPreset
-	}
 
 	return fb
 }

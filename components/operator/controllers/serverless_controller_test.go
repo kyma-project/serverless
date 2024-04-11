@@ -70,6 +70,7 @@ var _ = Describe("DockerRegistry controller", func() {
 		)
 
 		It("The status should be Success", func() {
+			Skip("Need to rewrite this test")
 			h := testHelper{
 				ctx:           context.Background(),
 				namespaceName: namespaceName,

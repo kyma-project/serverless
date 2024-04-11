@@ -18,27 +18,9 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				"manager": map[string]interface{}{
 					"configuration": map[string]interface{}{
 						"data": map[string]interface{}{
-							"functionBuildExecutorArgs":        "testBuildExecutorArgs",
-							"functionBuildMaxSimultaneousJobs": "testMaxSimultaneousJobs",
-							"functionPublisherProxyAddress":    "testPublisherURL",
-							"functionRequestBodyLimitMb":       "testRequestBodyLimitMb",
-							"functionRequeueDuration":          "testRequeueDuration",
-							"functionTimeoutSec":               "testTimeoutSec",
-							"functionTraceCollectorEndpoint":   "testCollectorURL",
-							"healthzLivenessTimeout":           "testHealthzLivenessTimeout",
-							"targetCPUUtilizationPercentage":   "testCPUUtilizationPercentage",
-							"resourcesConfiguration": map[string]interface{}{
-								"function": map[string]interface{}{
-									"resources": map[string]interface{}{
-										"defaultPreset": "testPodPreset",
-									},
-								},
-								"buildJob": map[string]interface{}{
-									"resources": map[string]interface{}{
-										"defaultPreset": "testJobPreset",
-									},
-								},
-							},
+							"functionPublisherProxyAddress":  "testPublisherURL",
+							"functionTraceCollectorEndpoint": "testCollectorURL",
+							"healthzLivenessTimeout":         "testHealthzLivenessTimeout",
 						},
 					},
 				},
@@ -61,20 +43,13 @@ func Test_flagsBuilder_Build(t *testing.T) {
 
 		flags := NewFlagsBuilder().
 			WithNodePort(1234).
-			WithDefaultPresetFlags("testJobPreset", "testPodPreset").
 			WithOptionalDependencies("testPublisherURL", "testCollectorURL").
 			WithRegistryAddresses("testRegistryAddress", "testServerAddress").
 			WithRegistryCredentials("testUsername", "testPassword").
 			WithRegistryEnableInternal(false).
 			WithRegistryHttpSecret("testHttpSecret").
 			WithControllerConfiguration(
-				"testCPUUtilizationPercentage",
-				"testRequeueDuration",
-				"testBuildExecutorArgs",
-				"testMaxSimultaneousJobs",
 				"testHealthzLivenessTimeout",
-				"testRequestBodyLimitMb",
-				"testTimeoutSec",
 			).Build()
 
 		require.Equal(t, expectedFlags, flags)
@@ -104,10 +79,7 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				"manager": map[string]interface{}{
 					"configuration": map[string]interface{}{
 						"data": map[string]interface{}{
-							"functionBuildMaxSimultaneousJobs": "testMaxSimultaneousJobs",
-							"functionRequestBodyLimitMb":       "testRequestBodyLimitMb",
-							"healthzLivenessTimeout":           "testHealthzLivenessTimeout",
-							"targetCPUUtilizationPercentage":   "testCPUUtilizationPercentage",
+							"healthzLivenessTimeout": "testHealthzLivenessTimeout",
 						},
 					},
 				},
@@ -116,13 +88,7 @@ func Test_flagsBuilder_Build(t *testing.T) {
 
 		flags := NewFlagsBuilder().
 			WithControllerConfiguration(
-				"testCPUUtilizationPercentage",
-				"",
-				"",
-				"testMaxSimultaneousJobs",
 				"testHealthzLivenessTimeout",
-				"testRequestBodyLimitMb",
-				"",
 			).Build()
 
 		require.Equal(t, expectedFlags, flags)
