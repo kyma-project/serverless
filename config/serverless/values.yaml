@@ -43,12 +43,8 @@ tests:
     waitTimeout: 15m
     verifySSL: "false"
     verbose: "false"
-    gitServer:
-      repoName: "function"
     pkgRegistryConfig:
       secretName: "serverless-package-registry-config"
-      URLNode: "https://pkgs.dev.azure.com/kyma-wookiee/public-packages/_packaging/public-packages%40Release/npm/registry/"
-      URLPython: "https://pkgs.dev.azure.com/kyma-wookiee/public-packages/_packaging/public-packages%40Release/pypi/simple/"
 global:
   domainName: "kyma.example.com"
   commonLabels:
@@ -61,7 +57,7 @@ global:
   registryServicePort: 5000
   registryNodePort: 32137
   configuration:
-    configmapName: "serverless-configuration"
+    configmapName: "serverless-configuration" #TODO: rename it
     targetDir: "/appconfig"
     logFilename: "log-config.yaml"
     filename: "config.yaml"
@@ -74,9 +70,6 @@ global:
       name: "tpi/registry"
       version: "2.8.1-1ae4c190"
       directory: "prod"
-images:
-  function_controller:
-    pullPolicy: IfNotPresent
 deployment:
   replicas: 1
   labels: {}
@@ -152,69 +145,7 @@ containers:
         imageRegistryDefaultDockerConfigSecretName: '{{ template "fullname" . }}-registry-config-default'
         packageRegistryConfigSecretName: '{{ template "fullname" . }}-package-registry-config'
         imagePullAccountName: '{{ template "fullname" . }}-function'
-        functionTraceCollectorEndpoint: "http://telemetry-otlp-traces.kyma-system.svc.cluster.local:4318/v1/traces"
-        functionPublisherProxyAddress: "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
         healthzLivenessTimeout: "10s"
-        resourcesConfiguration:
-          function:
-            resources:
-              minRequestCpu: "10m"
-              minRequestMemory: "16Mi"
-              defaultPreset: "L"
-              presets:
-                XS:
-                  requestCpu: "50m"
-                  requestMemory: "64Mi"
-                  limitCpu: "100m"
-                  limitMemory: "128Mi"
-                S:
-                  requestCpu: "100m"
-                  requestMemory: "128Mi"
-                  limitCpu: "200m"
-                  limitMemory: "256Mi"
-                M:
-                  requestCpu: "200m"
-                  requestMemory: "256Mi"
-                  limitCpu: "400m"
-                  limitMemory: "512Mi"
-                L:
-                  requestCpu: "400m"
-                  requestMemory: "512Mi"
-                  limitCpu: "800m"
-                  limitMemory: "1024Mi"
-                XL:
-                  requestCpu: "800m"
-                  requestMemory: "1024Mi"
-                  limitCpu: "1600m"
-                  limitMemory: "2048Mi"
-          # runtimePresets:
-
-          buildJob:
-            resources:
-              minRequestCpu: "200m"
-              minRequestMemory: "200Mi"
-              defaultPreset: "fast"
-              presets:
-                local-dev:
-                  requestCpu: "200m"
-                  requestMemory: "200Mi"
-                  limitCpu: "400m"
-                  limitMemory: "400Mi"
-                slow:
-                  requestCpu: "200m"
-                  requestMemory: "200Mi"
-                  limitCpu: "700m"
-                  limitMemory: "700Mi"
-                normal:
-                  requestCpu: "700m"
-                  requestMemory: "700Mi"
-                  limitCpu: "1100m"
-                  limitMemory: "1100Mi"
-                fast:
-                  requestCpu: "1100m"
-                  requestMemory: "1100Mi"
-                  limitCpu: "1700m"
-                  limitMemory: "1100Mi"
 services:
   manager:
     type: ClusterIP
