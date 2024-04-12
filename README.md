@@ -1,9 +1,9 @@
 # Serverless
 
 ## Status
-![GitHub tag checks state](https://img.shields.io/github/checks-status/kyma-project/serverless-manager/main?label=serverless-operator&link=https%3A%2F%2Fgithub.com%2Fkyma-project%2Fserverless-manager%2Fcommits%2Fmain)
+![GitHub tag checks state](https://img.shields.io/github/checks-status/kyma-project/serverless/main?label=serverless-operator&link=https%3A%2F%2Fgithub.com%2Fkyma-project%2Fserverless%2Fcommits%2Fmain)
 <!-- markdown-link-check-disable-next-line -->
-[![REUSE status](https://api.reuse.software/badge/github.com/kyma-project/serverless-manager)](https://api.reuse.software/info/github.com/kyma-project/serverless-manager)
+[![REUSE status](https://api.reuse.software/badge/github.com/kyma-project/serverless)](https://api.reuse.software/info/github.com/kyma-project/serverless)
 
 
 ## Overview
@@ -21,13 +21,13 @@ kubectl create namespace kyma-system
 Apply the following script to install Serverless Operator:
 
 ```bash
-kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/serverless-operator.yaml
+kubectl apply -f https://github.com/kyma-project/serverless/releases/latest/download/serverless-operator.yaml
 ```
 
 To get Serverless installed, apply the sample Serverless CR:
 
 ```bash
-kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default-serverless-cr.yaml
+kubectl apply -f https://github.com/kyma-project/serverless/releases/latest/download/default-serverless-cr.yaml
 ```
 
 ## Development
