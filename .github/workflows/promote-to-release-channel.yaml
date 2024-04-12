@@ -21,7 +21,7 @@ env:
   MODULE_VERSION: ${{ github.event.inputs.serverless_tag }}
   CHANNEL: ${{ github.event.inputs.channel }}
   # needed by gh cli for GitHub enterprise
-  GH_ENTERPRISE_TOKEN: ${{ secrets.BOT_TOKEN }}
+  GH_ENTERPRISE_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
   BOT_USERNAME: kyma-otter-serviceuser
   BOT_EMAIL: dl_545734d8fd84a02c39000002@global.corp.sap
   GH_TOOLS_REPO_URL: ${{ secrets.GH_TOOLS_REPO_URL }}
