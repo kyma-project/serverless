@@ -347,7 +347,7 @@ func deploymentContainsEnv(deployment appsv1.Deployment, name, value string) err
 }
 
 func secretContainsRequired(configurationSecret corev1.Secret) (bool, error) {
-	for _, k := range []string{"username", "password", "registryAddress", "serverAddress"} {
+	for _, k := range []string{"username", "password", "pullRegAddr", "pushRegAddr", ".dockerconfigjson"} {
 		_, ok := configurationSecret.Data[k]
 		if !ok {
 			return false, fmt.Errorf("values not propagated (%s is required)", k)
