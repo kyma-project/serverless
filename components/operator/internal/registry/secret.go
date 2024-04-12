@@ -18,7 +18,7 @@ const (
 	ExternalRegistryLabelConfigKey         = "serverless.kyma-project.io/config"
 	ExternalRegistryLabelConfigVal         = "credentials"
 	RegistryIsInternalKey                  = "isInternal"
-	DockerRegistryDeploymentName           = "serverless-docker-registry"
+	DockerRegistryDeploymentName           = "internal-docker-registry"
 	RegistryHTTPEnvKey                     = "REGISTRY_HTTP_SECRET"
 )
 

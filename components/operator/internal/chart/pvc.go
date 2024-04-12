@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	dockerRegistryPVCName = "serverless-docker-registry"
+	dockerRegistryPVCName = "internal-docker-registry"
 	pvcKind               = "PersistentVolumeClaim"
 	pvcVersion            = "v1"
 	pvcGroup              = ""

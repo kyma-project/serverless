@@ -19,7 +19,7 @@ const (
 )
 
 const (
-	dockerRegistryService  = "serverless-docker-registry"
+	dockerRegistryService  = "internal-docker-registry"
 	dockerRegistryPortName = "http-registry"
 
 	allNamespaces = ""

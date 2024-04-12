@@ -16,7 +16,7 @@ var _ = Describe("DockerRegistry controller", func() {
 		const (
 			namespaceName            = "kyma-system"
 			serverlessName           = "serverless-cr-test"
-			serverlessDeploymentName = "serverless-docker-registry"
+			serverlessDeploymentName = "internal-docker-registry"
 			serverlessRegistrySecret = "serverless-registry-config-default"
 		)
 

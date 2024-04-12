@@ -57,7 +57,7 @@ global:
   registryServicePort: 5000
   registryNodePort: 32137
   configuration:
-    configmapName: "serverless-configuration" #TODO: rename it
+    configmapName: "dockerregistry-configuration"
     targetDir: "/appconfig"
     logFilename: "log-config.yaml"
     filename: "config.yaml"
@@ -183,7 +183,7 @@ dockerRegistry:
   #  This is the server address of the registry which will be used to create docker configuration.
   serverAddress: ""
 docker-registry:
-  fullnameOverride: "serverless-docker-registry"
+  fullnameOverride: "internal-docker-registry"
   destinationRule:
     enabled: true
   secrets:
