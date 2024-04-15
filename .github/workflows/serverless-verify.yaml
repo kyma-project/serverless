@@ -34,7 +34,7 @@ jobs:
           working-directory: 'components/serverless'
 
   #pre-serverless-controller-unit-test
-  serverless-unit-test:
+  serverless-unit-tests:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
