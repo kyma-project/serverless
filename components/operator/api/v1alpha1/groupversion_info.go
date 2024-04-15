@@ -25,13 +25,13 @@ import (
 )
 
 const (
-	ServerlessGroup   = "operator.kyma-project.io"
-	ServerlessVersion = "v1alpha1"
+	DockerregistryGroup   = "operator.kyma-project.io"
+	DockerregistryVersion = "v1alpha1"
 )
 
 var (
 	// GroupVersion is group version used to register these objects
-	GroupVersion = schema.GroupVersion{Group: ServerlessGroup, Version: ServerlessVersion}
+	GroupVersion = schema.GroupVersion{Group: DockerregistryGroup, Version: DockerregistryVersion}
 
 	// SchemeBuilder is used to add go types to the GroupVersionKind scheme
 	SchemeBuilder = &scheme.Builder{GroupVersion: GroupVersion}

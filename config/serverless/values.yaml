@@ -195,7 +195,7 @@ docker-registry:
   extraVolumes:
     - name: registry-credentials
       secret:
-        secretName: serverless-registry-config-default
+        secretName: serverless-registry-config-default #TODO: change to internal-dockerregistry-config
         items:
           - key: username
             path: username.txt

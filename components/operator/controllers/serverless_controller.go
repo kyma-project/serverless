@@ -67,11 +67,11 @@ func (sr *dockerRegistryReconciler) Reconcile(ctx context.Context, req ctrl.Requ
 
 	instance, err := state.GetDockerRegistryOrServed(ctx, req, sr.client)
 	if err != nil {
-		log.Warnf("while getting serverless, got error: %s", err.Error())
-		return ctrl.Result{}, errors.Wrap(err, "while fetching serverless instance")
+		log.Warnf("while getting dockerregistry, got error: %s", err.Error())
+		return ctrl.Result{}, errors.Wrap(err, "while fetching dockerregistry instance")
 	}
 	if instance == nil {
-		log.Info("Couldn't find proper instance of serverless")
+		log.Info("Couldn't find proper instance of dockerregistry")
 		return ctrl.Result{}, nil
 	}
 
