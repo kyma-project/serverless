@@ -10,7 +10,7 @@ on:
 
 jobs:
   # check if developer doesn't change `main` images in the values.yaml and sec-scanners-config.yaml files
-  check-main-tags:
+  verify-sec-scanner-and-values-files:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout to main

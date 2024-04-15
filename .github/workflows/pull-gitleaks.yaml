@@ -7,7 +7,7 @@ env:
   GITLEAKS_VERSION: 8.18.2
 
 jobs:
-  scan:
+  gitleaks-scan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

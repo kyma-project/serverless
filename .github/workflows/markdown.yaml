@@ -5,7 +5,7 @@ on:
     - cron: "0 5 * * *" # Run everyday at 5:00 AM
   pull_request:
 jobs:
-  link-check:
+  documentation-link-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

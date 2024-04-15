@@ -19,7 +19,7 @@ on:
 
 jobs:
   #pre-serverless-controller-lint
-  lint:
+  serverless-lint:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -34,7 +34,7 @@ jobs:
           working-directory: 'components/serverless'
 
   #pre-serverless-controller-unit-test
-  unit-test:
+  serverless-unit-tests:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -46,7 +46,7 @@ jobs:
       - name: run test
         run: make -C components/serverless test
 
-  integration-test:
+  serverless-integration-test:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:

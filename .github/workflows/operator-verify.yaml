@@ -19,7 +19,7 @@ on:
 
 jobs:
   # pre-serverless-operator-lint
-  lint:
+  operator-lint:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -33,7 +33,7 @@ jobs:
           working-directory: 'components/operator'
 
   # pre-serverless-operator-unit-tests
-  unit-test:
+  operator-unit-tests:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -46,7 +46,7 @@ jobs:
 
 
   # post-serverless-operator-upgrade-latest-to-main
-  upgrade-test:
+  operator-upgrade-test:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     steps:
