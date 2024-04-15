@@ -57,15 +57,15 @@ func TestCheckCRDOrphanResources(t *testing.T) {
 
 	cache := NewInMemoryManifestCache()
 	_ = cache.Set(context.Background(), noCRDManifestKey,
-		ServerlessSpecManifest{Manifest: fmt.Sprint(testDeploy)})
+		DockerRegistrySpecManifest{Manifest: fmt.Sprint(testDeploy)})
 	_ = cache.Set(context.Background(), noOrphanManifestKey,
-		ServerlessSpecManifest{Manifest: fmt.Sprint(testCRD, separator, testDeploy)})
+		DockerRegistrySpecManifest{Manifest: fmt.Sprint(testCRD, separator, testDeploy)})
 	_ = cache.Set(context.Background(), oneOrphanManifestKey,
-		ServerlessSpecManifest{Manifest: fmt.Sprint(testCRD, separator, testOrphanCR)})
+		DockerRegistrySpecManifest{Manifest: fmt.Sprint(testCRD, separator, testOrphanCR)})
 	_ = cache.Set(context.Background(), emptyManifestKey,
-		ServerlessSpecManifest{Manifest: ""})
+		DockerRegistrySpecManifest{Manifest: ""})
 	_ = cache.Set(context.Background(), wrongManifestKey,
-		ServerlessSpecManifest{Manifest: "api: test\n\tversion: test"})
+		DockerRegistrySpecManifest{Manifest: "api: test\n\tversion: test"})
 
 	type args struct {
 		config *Config

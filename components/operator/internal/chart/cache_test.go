@@ -26,7 +26,7 @@ func TestManifestCache_Delete(t *testing.T) {
 		}
 		ctx := context.TODO()
 		client := fake.NewClientBuilder().WithRuntimeObjects(
-			fixSecretCache(t, key, emptyServerlessSpecManifest),
+			fixSecretCache(t, key, emptySpecManifest),
 		).Build()
 
 		cache := NewSecretManifestCache(client)
@@ -80,7 +80,7 @@ func TestManifestCache_Get(t *testing.T) {
 		}
 		ctx := context.TODO()
 		client := fake.NewClientBuilder().WithRuntimeObjects(
-			fixSecretCache(t, key, ServerlessSpecManifest{
+			fixSecretCache(t, key, DockerRegistrySpecManifest{
 				CustomFlags: map[string]interface{}{
 					"flag1": "val1",
 					"flag2": "val2",
@@ -94,7 +94,7 @@ func TestManifestCache_Get(t *testing.T) {
 		result, err := cache.Get(ctx, key)
 		require.NoError(t, err)
 
-		expectedResult := ServerlessSpecManifest{
+		expectedResult := DockerRegistrySpecManifest{
 			CustomFlags: map[string]interface{}{
 				"flag1": "val1",
 				"flag2": "val2",
@@ -120,7 +120,7 @@ func TestManifestCache_Get(t *testing.T) {
 
 		result, err := cache.Get(ctx, key)
 		require.Error(t, err)
-		require.Equal(t, emptyServerlessSpecManifest, result)
+		require.Equal(t, emptySpecManifest, result)
 	})
 
 	t.Run("secret not found", func(t *testing.T) {
@@ -135,7 +135,7 @@ func TestManifestCache_Get(t *testing.T) {
 
 		result, err := cache.Get(ctx, key)
 		require.NoError(t, err)
-		require.Equal(t, emptyServerlessSpecManifest, result)
+		require.Equal(t, emptySpecManifest, result)
 	})
 
 	t.Run("conversion error", func(t *testing.T) {
@@ -159,7 +159,7 @@ func TestManifestCache_Get(t *testing.T) {
 
 		result, err := cache.Get(ctx, key)
 		require.Error(t, err)
-		require.Equal(t, emptyServerlessSpecManifest, result)
+		require.Equal(t, emptySpecManifest, result)
 	})
 }
 
@@ -173,7 +173,7 @@ func TestManifestCache_Set(t *testing.T) {
 		client := fake.NewClientBuilder().Build()
 
 		cache := NewSecretManifestCache(client)
-		expectedSpec := ServerlessSpecManifest{
+		expectedSpec := DockerRegistrySpecManifest{
 			Manifest: "schmetterling",
 			CustomFlags: map[string]interface{}{
 				"flag1": "val1",
@@ -187,7 +187,7 @@ func TestManifestCache_Set(t *testing.T) {
 		var secret corev1.Secret
 		require.NoError(t, client.Get(ctx, key, &secret))
 
-		actualSpec := ServerlessSpecManifest{}
+		actualSpec := DockerRegistrySpecManifest{}
 		err = json.Unmarshal(secret.Data["spec"], &actualSpec)
 		require.NoError(t, err)
 
@@ -201,11 +201,11 @@ func TestManifestCache_Set(t *testing.T) {
 		}
 		ctx := context.TODO()
 		client := fake.NewClientBuilder().WithRuntimeObjects(
-			fixSecretCache(t, key, emptyServerlessSpecManifest),
+			fixSecretCache(t, key, emptySpecManifest),
 		).Build()
 
 		cache := NewSecretManifestCache(client)
-		expectedSpec := ServerlessSpecManifest{
+		expectedSpec := DockerRegistrySpecManifest{
 			Manifest: "schmetterling",
 			CustomFlags: map[string]interface{}{
 				"flag1": "val1",
@@ -218,7 +218,7 @@ func TestManifestCache_Set(t *testing.T) {
 		var secret corev1.Secret
 		require.NoError(t, client.Get(ctx, key, &secret))
 
-		actualSpec := ServerlessSpecManifest{}
+		actualSpec := DockerRegistrySpecManifest{}
 		err = json.Unmarshal(secret.Data["spec"], &actualSpec)
 		require.NoError(t, err)
 
@@ -238,7 +238,7 @@ func TestManifestCache_Set(t *testing.T) {
 
 		cache := NewSecretManifestCache(client)
 
-		err := cache.Set(ctx, key, ServerlessSpecManifest{
+		err := cache.Set(ctx, key, DockerRegistrySpecManifest{
 			Manifest:    "",
 			CustomFlags: wrongFlags,
 		})
@@ -246,7 +246,7 @@ func TestManifestCache_Set(t *testing.T) {
 	})
 }
 
-func fixSecretCache(t *testing.T, key types.NamespacedName, spec ServerlessSpecManifest) *corev1.Secret {
+func fixSecretCache(t *testing.T, key types.NamespacedName, spec DockerRegistrySpecManifest) *corev1.Secret {
 	byteSpec, err := json.Marshal(&spec)
 	require.NoError(t, err)
 

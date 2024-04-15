@@ -53,7 +53,7 @@ func fixManifestCache(manifest string) chart.ManifestCache {
 	_ = cache.Set(context.Background(), types.NamespacedName{
 		Name:      testInstalledDockerRegistry.GetName(),
 		Namespace: testInstalledDockerRegistry.GetNamespace(),
-	}, chart.ServerlessSpecManifest{Manifest: manifest, CustomFlags: map[string]interface{}{}})
+	}, chart.DockerRegistrySpecManifest{Manifest: manifest, CustomFlags: map[string]interface{}{}})
 
 	return cache
 }

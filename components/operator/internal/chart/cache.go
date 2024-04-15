@@ -17,16 +17,16 @@ var (
 )
 
 var (
-	emptyServerlessSpecManifest = ServerlessSpecManifest{}
+	emptySpecManifest = DockerRegistrySpecManifest{}
 )
 
 type ManifestCache interface {
-	Set(context.Context, client.ObjectKey, ServerlessSpecManifest) error
-	Get(context.Context, client.ObjectKey) (ServerlessSpecManifest, error)
+	Set(context.Context, client.ObjectKey, DockerRegistrySpecManifest) error
+	Get(context.Context, client.ObjectKey) (DockerRegistrySpecManifest, error)
 	Delete(context.Context, client.ObjectKey) error
 }
 
-// inMemoryManifestCache provides an in-memory processor to store serverless Spec and rendered chart manifest. By using sync.Map for caching,
+// inMemoryManifestCache provides an in-memory processor to store dockerregistry Spec and rendered chart manifest. By using sync.Map for caching,
 // concurrent operations to the processor from diverse reconciliations are considered safe.
 //
 // Inside the processor is stored chart manifest with used custom flags by client.ObjectKey key.
@@ -41,18 +41,18 @@ func NewInMemoryManifestCache() *inMemoryManifestCache {
 	}
 }
 
-// Get loads the ServerlessSpecManifest from inMemoryManifestCache for the passed client.ObjectKey.
-func (r *inMemoryManifestCache) Get(_ context.Context, key client.ObjectKey) (ServerlessSpecManifest, error) {
+// Get loads the DockerRegistrySpecManifest from inMemoryManifestCache for the passed client.ObjectKey.
+func (r *inMemoryManifestCache) Get(_ context.Context, key client.ObjectKey) (DockerRegistrySpecManifest, error) {
 	value, ok := r.processor.Load(key)
 	if !ok {
-		return emptyServerlessSpecManifest, nil
+		return emptySpecManifest, nil
 	}
 
-	return *value.(*ServerlessSpecManifest), nil
+	return *value.(*DockerRegistrySpecManifest), nil
 }
 
 // Set saves the passed flags and manifest into inMemoryManifestCache for the client.ObjectKey.
-func (r *inMemoryManifestCache) Set(_ context.Context, key client.ObjectKey, spec ServerlessSpecManifest) error {
+func (r *inMemoryManifestCache) Set(_ context.Context, key client.ObjectKey, spec DockerRegistrySpecManifest) error {
 	r.processor.Store(key, &spec)
 
 	return nil
@@ -64,14 +64,14 @@ func (r *inMemoryManifestCache) Delete(_ context.Context, key client.ObjectKey) 
 	return nil
 }
 
-// secretManifestCache - provides an Secret based processor to store serverless Spec and rendered chart manifest.
+// secretManifestCache - provides an Secret based processor to store dockerregistry Spec and rendered chart manifest.
 //
 // Inside the secret we store manifest and flags used to render it.
 type secretManifestCache struct {
 	client client.Client
 }
 
-type ServerlessSpecManifest struct {
+type DockerRegistrySpecManifest struct {
 	ManagerUID  string
 	CustomFlags map[string]interface{}
 	Manifest    string
@@ -96,28 +96,28 @@ func (m *secretManifestCache) Delete(ctx context.Context, key client.ObjectKey) 
 	return client.IgnoreNotFound(err)
 }
 
-// Get - loads the ServerlessSpecManifest from SecretManifestCache based on the passed client.ObjectKey.
-func (m *secretManifestCache) Get(ctx context.Context, key client.ObjectKey) (ServerlessSpecManifest, error) {
+// Get - loads the DockerRegistrySpecManifest from SecretManifestCache based on the passed client.ObjectKey.
+func (m *secretManifestCache) Get(ctx context.Context, key client.ObjectKey) (DockerRegistrySpecManifest, error) {
 	secret := corev1.Secret{}
 	err := m.client.Get(ctx, key, &secret)
 	if errors.IsNotFound(err) {
-		return emptyServerlessSpecManifest, nil
+		return emptySpecManifest, nil
 	}
 	if err != nil {
-		return emptyServerlessSpecManifest, err
+		return emptySpecManifest, err
 	}
 
-	spec := ServerlessSpecManifest{}
+	spec := DockerRegistrySpecManifest{}
 	err = json.Unmarshal(secret.Data["spec"], &spec)
 	if err != nil {
-		return emptyServerlessSpecManifest, err
+		return emptySpecManifest, err
 	}
 
 	return spec, nil
 }
 
 // Set - saves the passed flags and manifest into Secret based on the client.ObjectKey.
-func (m *secretManifestCache) Set(ctx context.Context, key client.ObjectKey, spec ServerlessSpecManifest) error {
+func (m *secretManifestCache) Set(ctx context.Context, key client.ObjectKey, spec DockerRegistrySpecManifest) error {
 	byteSpec, err := json.Marshal(&spec)
 	if err != nil {
 		return err

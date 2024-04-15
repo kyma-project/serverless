@@ -153,7 +153,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 					_ = cache.Set(context.Background(), types.NamespacedName{
 						Name:      testInstalledDockerRegistry.GetName(),
 						Namespace: testInstalledDockerRegistry.GetNamespace(),
-					}, chart.ServerlessSpecManifest{Manifest: testDeployManifest})
+					}, chart.DockerRegistrySpecManifest{Manifest: testDeployManifest})
 					return cache
 				}(),
 				CacheKey: types.NamespacedName{

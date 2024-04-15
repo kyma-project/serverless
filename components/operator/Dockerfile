@@ -1,5 +1,5 @@
 #
-# This Dockerfile is used to build serverless-operator image on every pre- and post-submit job
+# This Dockerfile is used to build dockerregistry-operator image on every pre- and post-submit job
 #
 
 
@@ -23,7 +23,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o operator ./components/o
 
 
 # Replace main images in values.yaml
-# Bumping serverless images in the values.yaml - used for building "local" and "dev" images
+# Bumping dockerregistry images in the values.yaml - used for building "local" and "dev" images
 FROM alpine:3.19.1 as replacer
 
 WORKDIR /workspace

@@ -89,7 +89,7 @@ type DockerRegistryStatus struct {
 	// Used the Eventing endpoint and the Tracing endpoint.
 	EventingEndpoint string `json:"eventingEndpoint,omitempty"`
 	TracingEndpoint  string `json:"tracingEndpoint,omitempty"`
-	
+
 	HealthzLivenessTimeout string `json:"healthzLivenessTimeout,omitempty"`
 
 	// Used registry configuration.
@@ -121,7 +121,7 @@ type DockerRegistryStatus struct {
 //+kubebuilder:printcolumn:name="age",type="date",JSONPath=".metadata.creationTimestamp"
 //+kubebuilder:printcolumn:name="state",type="string",JSONPath=".status.state"
 
-// DockerRegistry is the Schema for the serverlesses API
+// DockerRegistry is the Schema for the dockerregistry API
 type DockerRegistry struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`

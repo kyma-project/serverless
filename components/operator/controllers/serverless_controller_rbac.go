@@ -1,6 +1,6 @@
 package controllers
 
-// TODO: serverless-manager doesn't need almost half of these rbscs. It uses them only to create another rbacs ( is there any onther option? - investigate )
+// TODO: dockerregistry-manager doesn't need almost half of these rbscs. It uses them only to create another rbacs ( is there any onther option? - investigate )
 
 //+kubebuilder:rbac:groups="",resources=events,verbs=get;list;watch;create;patch
 //+kubebuilder:rbac:groups="",resources=namespaces,verbs=get;list;watch;create;update;patch;delete;deletecollection

@@ -15,7 +15,7 @@ func Test_getOrRenderManifestWithRenderer(t *testing.T) {
 
 	cache := NewInMemoryManifestCache()
 	_ = cache.Set(context.Background(), noCRDManifestKey,
-		ServerlessSpecManifest{Manifest: testDeploy})
+		DockerRegistrySpecManifest{Manifest: testDeploy})
 
 	type args struct {
 		config          *Config

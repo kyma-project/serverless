@@ -36,7 +36,7 @@ func install(config *Config, customFlags map[string]interface{}, renderChartFunc
 		return err
 	}
 
-	return config.Cache.Set(config.Ctx, config.CacheKey, ServerlessSpecManifest{
+	return config.Cache.Set(config.Ctx, config.CacheKey, DockerRegistrySpecManifest{
 		ManagerUID:  config.ManagerUID,
 		CustomFlags: customFlags,
 		Manifest:    currentManifest,
@@ -80,15 +80,6 @@ func updateObjects(config *Config, objs []unstructured.Unstructured) error {
 		})
 		if err != nil {
 			return fmt.Errorf("could not install object %s/%s: %s", u.GetNamespace(), u.GetName(), err.Error())
-		}
-
-		// remove old reconciler "DO NOT EDIT" disclaimer
-		// TODO: remove this functionality when all clusters are migrated to the serverless-manager
-		err = annotation.DeleteReconcilerDisclaimer(
-			config.Cluster.Client, *config.Cluster.Config, u)
-		if err != nil {
-			return fmt.Errorf("could not remove old reconciler annotation for object %s/%s: %s",
-				u.GetNamespace(), u.GetName(), err.Error())
 		}
 	}
 	return nil
