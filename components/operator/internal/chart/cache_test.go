@@ -21,7 +21,7 @@ const testSecretNamespace = "kyma-system"
 func TestManifestCache_Delete(t *testing.T) {
 	t.Run("delete secret", func(t *testing.T) {
 		key := types.NamespacedName{
-			Name:      "test-serverless",
+			Name:      "test-name",
 			Namespace: testSecretNamespace,
 		}
 		ctx := context.TODO()
@@ -45,7 +45,7 @@ func TestManifestCache_Delete(t *testing.T) {
 		require.NoError(t, apiextensionsscheme.AddToScheme(scheme))
 
 		key := types.NamespacedName{
-			Name:      "test-serverless",
+			Name:      "test-name",
 			Namespace: testSecretNamespace,
 		}
 		ctx := context.TODO()
@@ -59,7 +59,7 @@ func TestManifestCache_Delete(t *testing.T) {
 
 	t.Run("do nothing when cache is not found", func(t *testing.T) {
 		key := types.NamespacedName{
-			Name:      "test-serverless",
+			Name:      "test-name",
 			Namespace: testSecretNamespace,
 		}
 		ctx := context.TODO()
@@ -75,7 +75,7 @@ func TestManifestCache_Delete(t *testing.T) {
 func TestManifestCache_Get(t *testing.T) {
 	t.Run("get secret value", func(t *testing.T) {
 		key := types.NamespacedName{
-			Name:      "test-serverless",
+			Name:      "test-name",
 			Namespace: testSecretNamespace,
 		}
 		ctx := context.TODO()
@@ -110,7 +110,7 @@ func TestManifestCache_Get(t *testing.T) {
 		require.NoError(t, apiextensionsscheme.AddToScheme(scheme))
 
 		key := types.NamespacedName{
-			Name:      "test-serverless",
+			Name:      "test-name",
 			Namespace: testSecretNamespace,
 		}
 		ctx := context.TODO()
@@ -125,7 +125,7 @@ func TestManifestCache_Get(t *testing.T) {
 
 	t.Run("secret not found", func(t *testing.T) {
 		key := types.NamespacedName{
-			Name:      "test-serverless",
+			Name:      "test-name",
 			Namespace: testSecretNamespace,
 		}
 		ctx := context.TODO()
@@ -140,7 +140,7 @@ func TestManifestCache_Get(t *testing.T) {
 
 	t.Run("conversion error", func(t *testing.T) {
 		key := types.NamespacedName{
-			Name:      "test-serverless",
+			Name:      "test-name",
 			Namespace: testSecretNamespace,
 		}
 		ctx := context.TODO()
@@ -166,7 +166,7 @@ func TestManifestCache_Get(t *testing.T) {
 func TestManifestCache_Set(t *testing.T) {
 	t.Run("create secret", func(t *testing.T) {
 		key := types.NamespacedName{
-			Name:      "test-serverless",
+			Name:      "test-name",
 			Namespace: testSecretNamespace,
 		}
 		ctx := context.TODO()
@@ -196,7 +196,7 @@ func TestManifestCache_Set(t *testing.T) {
 
 	t.Run("update secret", func(t *testing.T) {
 		key := types.NamespacedName{
-			Name:      "test-serverless",
+			Name:      "test-name",
 			Namespace: testSecretNamespace,
 		}
 		ctx := context.TODO()
@@ -227,7 +227,7 @@ func TestManifestCache_Set(t *testing.T) {
 
 	t.Run("marshal error", func(t *testing.T) {
 		key := types.NamespacedName{
-			Name:      "test-serverless",
+			Name:      "test-name",
 			Namespace: testSecretNamespace,
 		}
 		ctx := context.TODO()

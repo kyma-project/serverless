@@ -118,7 +118,7 @@ func uninstallOrphanedResources(config *Config) error {
 	//TODO: move this to finalizers logic in controller
 	var namespaces corev1.NamespaceList
 	if err := config.Cluster.Client.List(config.Ctx, &namespaces); err != nil {
-		return errors.Wrap(err, "couldn't get namespaces during Serverless uninstallation")
+		return errors.Wrap(err, "couldn't get namespaces during Docker Registry uninstallation")
 	}
 
 	if err := uninstallOrphanedConfigMaps(config, namespaces); err != nil {
@@ -138,7 +138,7 @@ func uninstallOrphanedServiceAccounts(config *Config, namespaces corev1.Namespac
 			client.MatchingLabels{"serverless.kyma-project.io/config": "service-account"})
 		if err != nil {
 			return errors.Wrapf(err,
-				"couldn't delete ServiceAccount from namespace \"%s\" during Serverless uninstallation",
+				"couldn't delete ServiceAccount from namespace \"%s\" during DockerRegistry uninstallation",
 				namespace.GetName())
 		}
 	}
@@ -152,7 +152,7 @@ func uninstallOrphanedConfigMaps(config *Config, namespaces corev1.NamespaceList
 			client.MatchingLabels{"serverless.kyma-project.io/config": "runtime"})
 		if err != nil {
 			return errors.Wrapf(err,
-				"couldn't delete ConfigMap from namespace \"%s\" during Serverless uninstallation",
+				"couldn't delete ConfigMap from namespace \"%s\" during Docker Registry uninstallation",
 				namespace.GetName())
 		}
 	}
