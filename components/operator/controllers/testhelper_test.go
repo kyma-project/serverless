@@ -13,7 +13,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -235,27 +234,6 @@ type dockerRegistryData struct {
 	TraceCollectorURL      *string
 	EnableInternal         *bool
 	registrySecretData
-}
-
-func (d *dockerRegistryData) toDockerRegistrySpec(secretName string) v1alpha1.DockerRegistrySpec {
-	result := v1alpha1.DockerRegistrySpec{
-		Eventing: getEndpoint(d.EventPublisherProxyURL),
-		Tracing:  getEndpoint(d.TraceCollectorURL),
-		DockerRegistry: &v1alpha1.DockerRegistryCfg{
-			EnableInternal: d.EnableInternal,
-		},
-	}
-	if secretName != "" {
-		result.DockerRegistry.SecretName = ptr.To[string](secretName)
-	}
-	return result
-}
-
-func getEndpoint(url *string) *v1alpha1.Endpoint {
-	if url != nil {
-		return &v1alpha1.Endpoint{Endpoint: *url}
-	}
-	return nil
 }
 
 type registrySecretData struct {

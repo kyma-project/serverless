@@ -27,7 +27,6 @@ func Test_sFnInitialize(t *testing.T) {
 						r.cfg.finalizer,
 					},
 				},
-				Spec: v1alpha1.DockerRegistrySpec{},
 			},
 		}
 
@@ -56,7 +55,6 @@ func Test_sFnInitialize(t *testing.T) {
 					},
 					DeletionTimestamp: &metaTime,
 				},
-				Spec: v1alpha1.DockerRegistrySpec{},
 			},
 		}
 

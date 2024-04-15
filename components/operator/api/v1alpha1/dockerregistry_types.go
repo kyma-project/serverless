@@ -21,25 +21,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// TODO: change the DockerRegistryCfg name
-type DockerRegistryCfg struct {
-	// When set to true, the internal Docker registry is enabled
-	EnableInternal *bool `json:"enableInternal,omitempty"`
-	// Secret used for configuration of the Docker registry
-	SecretName *string `json:"secretName,omitempty"`
-}
-
 type Endpoint struct {
 	Endpoint string `json:"endpoint"`
 }
 
 // DockerRegistrySpec defines the desired state of DockerRegistry
 type DockerRegistrySpec struct {
-	// Used Tracing endpoint
-	Tracing *Endpoint `json:"tracing,omitempty"`
-	// Used Eventing endpoint
-	Eventing       *Endpoint          `json:"eventing,omitempty"`
-	DockerRegistry *DockerRegistryCfg `json:"dockerRegistry,omitempty"`
 	// Sets the timeout for the Function health check. The default value in seconds is `10`
 	HealthzLivenessTimeout string `json:"healthzLivenessTimeout,omitempty"`
 }
@@ -86,15 +73,7 @@ const (
 )
 
 type DockerRegistryStatus struct {
-	// Used the Eventing endpoint and the Tracing endpoint.
-	EventingEndpoint string `json:"eventingEndpoint,omitempty"`
-	TracingEndpoint  string `json:"tracingEndpoint,omitempty"`
-
 	HealthzLivenessTimeout string `json:"healthzLivenessTimeout,omitempty"`
-
-	// Used registry configuration.
-	// Contains registry URL or "internal"
-	DockerRegistry string `json:"dockerRegistry,omitempty"`
 
 	// State signifies current state of DockerRegistry.
 	// Value can be one of ("Ready", "Processing", "Error", "Deleting").

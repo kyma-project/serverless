@@ -11,7 +11,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/record"
-	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
@@ -84,23 +83,11 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 							Reason: string(v1alpha1.ConditionReasonInstallation),
 						},
 					},
-					State:            v1alpha1.StateError,
-					EventingEndpoint: "test-event-URL",
-					TracingEndpoint:  v1alpha1.EndpointDisabled,
-				},
-				Spec: v1alpha1.DockerRegistrySpec{
-					Eventing: &v1alpha1.Endpoint{Endpoint: "test-event-URL"},
-					Tracing:  &v1alpha1.Endpoint{Endpoint: v1alpha1.EndpointDisabled},
-					DockerRegistry: &v1alpha1.DockerRegistryCfg{
-						EnableInternal: ptr.To[bool](false),
-						SecretName:     ptr.To[string]("boo"),
-					},
+					State: v1alpha1.StateError,
 				},
 			},
-			statusSnapshot: v1alpha1.DockerRegistryStatus{
-				DockerRegistry: "",
-			},
-			flagsBuilder: chart.NewFlagsBuilder(),
+			statusSnapshot: v1alpha1.DockerRegistryStatus{},
+			flagsBuilder:   chart.NewFlagsBuilder(),
 		}
 		secret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{

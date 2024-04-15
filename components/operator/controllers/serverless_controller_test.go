@@ -35,11 +35,7 @@ var _ = Describe("DockerRegistry controller", func() {
 			h.createNamespace()
 
 			{
-				emptyData := v1alpha1.DockerRegistrySpec{
-					DockerRegistry: &v1alpha1.DockerRegistryCfg{
-						EnableInternal: ptr.To[bool](true),
-					},
-				}
+				emptyData := v1alpha1.DockerRegistrySpec{}
 				shouldCreateDockerRegistry(h, crName, deploymentName, emptyData)
 				shouldPropagateSpecProperties(h, registrySecret, defaultData)
 			}

@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/utils/ptr"
 )
 
 var (
@@ -20,11 +19,6 @@ var (
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "test",
 			Namespace: "test",
-		},
-		Spec: v1alpha1.DockerRegistrySpec{
-			DockerRegistry: &v1alpha1.DockerRegistryCfg{
-				EnableInternal: ptr.To[bool](false),
-			},
 		},
 		Status: v1alpha1.DockerRegistryStatus{
 			Conditions: []metav1.Condition{
