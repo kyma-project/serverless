@@ -14,14 +14,14 @@ import (
 var _ = Describe("DockerRegistry controller", func() {
 	Context("When creating fresh instance", func() {
 		const (
-			namespaceName            = "kyma-system"
-			serverlessName           = "serverless-cr-test"
-			serverlessDeploymentName = "internal-docker-registry"
-			serverlessRegistrySecret = "serverless-registry-config-default"
+			namespaceName  = "kyma-system"
+			crName         = "cr-test"
+			deploymentName = "internal-docker-registry"
+			registrySecret = "serverless-registry-config-default"
 		)
 
 		var (
-			dockerRegistryDataDefault = dockerRegistryData{
+			defaultData = dockerRegistryData{
 				TraceCollectorURL: ptr.To[string](v1alpha1.EndpointDisabled),
 				EnableInternal:    ptr.To[bool](v1alpha1.DefaultEnableInternal),
 			}
@@ -40,24 +40,24 @@ var _ = Describe("DockerRegistry controller", func() {
 						EnableInternal: ptr.To[bool](true),
 					},
 				}
-				shouldCreateServerless(h, serverlessName, serverlessDeploymentName, emptyData)
-				shouldPropagateSpecProperties(h, serverlessRegistrySecret, dockerRegistryDataDefault)
+				shouldCreateDockerRegistry(h, crName, deploymentName, emptyData)
+				shouldPropagateSpecProperties(h, registrySecret, defaultData)
 			}
 
-			shouldDeleteServerless(h, serverlessName, serverlessDeploymentName)
+			shouldDeleteDockerRegistry(h, crName, deploymentName)
 		})
 	})
 })
 
-func shouldCreateServerless(h testHelper, serverlessName, serverlessDeploymentName string, spec v1alpha1.DockerRegistrySpec) {
+func shouldCreateDockerRegistry(h testHelper, name, deploymentName string, spec v1alpha1.DockerRegistrySpec) {
 	// act
-	h.createServerless(serverlessName, spec)
+	h.createDockerRegistry(name, spec)
 
 	// we have to update deployment status manually
-	h.updateDeploymentStatus(serverlessDeploymentName)
+	h.updateDeploymentStatus(deploymentName)
 
 	// assert
-	Eventually(h.createGetServerlessStatusFunc(serverlessName)).
+	Eventually(h.getDockerRegistryStatusFunc(name)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 20).
 		Should(ConditionTrueMatcher())
@@ -70,10 +70,10 @@ func shouldPropagateSpecProperties(h testHelper, registrySecretName string, expe
 		Should(BeTrue())
 }
 
-func shouldDeleteServerless(h testHelper, serverlessName, serverlessDeploymentName string) {
+func shouldDeleteDockerRegistry(h testHelper, name, deploymentName string) {
 	// initial assert
 	var deployList appsv1.DeploymentList
-	Eventually(h.createListKubernetesObjectFunc(&deployList)).
+	Eventually(h.listKubernetesObjectFunc(&deployList)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 10).
 		Should(BeTrue())
@@ -81,21 +81,21 @@ func shouldDeleteServerless(h testHelper, serverlessName, serverlessDeploymentNa
 	Expect(deployList.Items).To(HaveLen(1))
 
 	// act
-	var serverless v1alpha1.DockerRegistry
-	Eventually(h.createGetKubernetesObjectFunc(serverlessName, &serverless)).
+	var dockerRegistry v1alpha1.DockerRegistry
+	Eventually(h.getKubernetesObjectFunc(name, &dockerRegistry)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 10).
 		Should(BeTrue())
 
-	Expect(k8sClient.Delete(h.ctx, &serverless)).To(Succeed())
+	Expect(k8sClient.Delete(h.ctx, &dockerRegistry)).To(Succeed())
 
-	Eventually(h.createGetKubernetesObjectFunc(serverlessName, &serverless)).
+	Eventually(h.getKubernetesObjectFunc(name, &dockerRegistry)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 10).
 		Should(BeTrue())
 
 	// assert
-	Eventually(h.createGetKubernetesObjectFunc(serverlessDeploymentName, &appsv1.Deployment{})).
+	Eventually(h.getKubernetesObjectFunc(deploymentName, &appsv1.Deployment{})).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 10).
 		Should(BeTrue())

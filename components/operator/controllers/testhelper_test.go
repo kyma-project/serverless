@@ -66,7 +66,7 @@ type testHelper struct {
 func (h *testHelper) updateDeploymentStatus(deploymentName string) {
 	By(fmt.Sprintf("Updating deployment status: %s", deploymentName))
 	var deployment appsv1.Deployment
-	Eventually(h.createGetKubernetesObjectFunc(deploymentName, &deployment)).
+	Eventually(h.getKubernetesObjectFunc(deploymentName, &deployment)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 30).
 		Should(BeTrue())
@@ -83,7 +83,7 @@ func (h *testHelper) updateDeploymentStatus(deploymentName string) {
 	replicaSetName := h.createReplicaSetForDeployment(deployment)
 
 	var replicaSet appsv1.ReplicaSet
-	Eventually(h.createGetKubernetesObjectFunc(replicaSetName, &replicaSet)).
+	Eventually(h.getKubernetesObjectFunc(replicaSetName, &replicaSet)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 30).
 		Should(BeTrue())
@@ -129,11 +129,11 @@ func (h *testHelper) createReplicaSetForDeployment(deployment appsv1.Deployment)
 	return replicaSetName
 }
 
-func (h *testHelper) createServerless(serverlessName string, spec v1alpha1.DockerRegistrySpec) {
-	By(fmt.Sprintf("Creating crd: %s", serverlessName))
-	serverless := v1alpha1.DockerRegistry{
+func (h *testHelper) createDockerRegistry(crName string, spec v1alpha1.DockerRegistrySpec) {
+	By(fmt.Sprintf("Creating cr: %s", crName))
+	dockerRegistry := v1alpha1.DockerRegistry{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      serverlessName,
+			Name:      crName,
 			Namespace: h.namespaceName,
 			Labels: map[string]string{
 				"operator.kyma-project.io/kyma-name": "test",
@@ -141,8 +141,8 @@ func (h *testHelper) createServerless(serverlessName string, spec v1alpha1.Docke
 		},
 		Spec: spec,
 	}
-	Expect(k8sClient.Create(h.ctx, &serverless)).To(Succeed())
-	By(fmt.Sprintf("Crd created: %s", serverlessName))
+	Expect(k8sClient.Create(h.ctx, &dockerRegistry)).To(Succeed())
+	By(fmt.Sprintf("Crd created: %s", crName))
 }
 
 func (h *testHelper) createNamespace() {
@@ -174,13 +174,13 @@ func (h *testHelper) createRegistrySecret(name string, data registrySecretData) 
 	h.createSecret(name, secretData)
 }
 
-func (h *testHelper) createGetKubernetesObjectFunc(objectName string, obj client.Object) func() (bool, error) {
+func (h *testHelper) getKubernetesObjectFunc(objectName string, obj client.Object) func() (bool, error) {
 	return func() (bool, error) {
-		return h.getKubernetesObjectFunc(objectName, obj)
+		return h.getKubernetesObject(objectName, obj)
 	}
 }
 
-func (h *testHelper) getKubernetesObjectFunc(objectName string, obj client.Object) (bool, error) {
+func (h *testHelper) getKubernetesObject(objectName string, obj client.Object) (bool, error) {
 	key := types.NamespacedName{
 		Name:      objectName,
 		Namespace: h.namespaceName,
@@ -193,13 +193,13 @@ func (h *testHelper) getKubernetesObjectFunc(objectName string, obj client.Objec
 	return true, err
 }
 
-func (h *testHelper) createListKubernetesObjectFunc(list client.ObjectList) func() (bool, error) {
+func (h *testHelper) listKubernetesObjectFunc(list client.ObjectList) func() (bool, error) {
 	return func() (bool, error) {
-		return h.listKubernetesObjectFunc(list)
+		return h.listKubernetesObject(list)
 	}
 }
 
-func (h *testHelper) listKubernetesObjectFunc(list client.ObjectList) (bool, error) {
+func (h *testHelper) listKubernetesObject(list client.ObjectList) (bool, error) {
 	opts := client.ListOptions{
 		Namespace: h.namespaceName,
 	}
@@ -211,23 +211,23 @@ func (h *testHelper) listKubernetesObjectFunc(list client.ObjectList) (bool, err
 	return true, err
 }
 
-func (h *testHelper) createGetServerlessStatusFunc(serverlessName string) func() (v1alpha1.DockerRegistryStatus, error) {
+func (h *testHelper) getDockerRegistryStatusFunc(name string) func() (v1alpha1.DockerRegistryStatus, error) {
 	return func() (v1alpha1.DockerRegistryStatus, error) {
-		return h.getServerlessStatus(serverlessName)
+		return h.getDockerRegistryStatus(name)
 	}
 }
 
-func (h *testHelper) getServerlessStatus(serverlessName string) (v1alpha1.DockerRegistryStatus, error) {
-	var serverless v1alpha1.DockerRegistry
+func (h *testHelper) getDockerRegistryStatus(name string) (v1alpha1.DockerRegistryStatus, error) {
+	var dockerRegistry v1alpha1.DockerRegistry
 	key := types.NamespacedName{
-		Name:      serverlessName,
+		Name:      name,
 		Namespace: h.namespaceName,
 	}
-	err := k8sClient.Get(h.ctx, key, &serverless)
+	err := k8sClient.Get(h.ctx, key, &dockerRegistry)
 	if err != nil {
 		return v1alpha1.DockerRegistryStatus{}, err
 	}
-	return serverless.Status, nil
+	return dockerRegistry.Status, nil
 }
 
 type dockerRegistryData struct {
@@ -237,7 +237,7 @@ type dockerRegistryData struct {
 	registrySecretData
 }
 
-func (d *dockerRegistryData) toServerlessSpec(secretName string) v1alpha1.DockerRegistrySpec {
+func (d *dockerRegistryData) toDockerRegistrySpec(secretName string) v1alpha1.DockerRegistrySpec {
 	result := v1alpha1.DockerRegistrySpec{
 		Eventing: getEndpoint(d.EventPublisherProxyURL),
 		Tracing:  getEndpoint(d.TraceCollectorURL),
@@ -282,12 +282,12 @@ func (d *registrySecretData) toMap() map[string]string {
 	return result
 }
 
-func (h *testHelper) createCheckRegistrySecretFunc(serverlessRegistrySecret string, expected registrySecretData) func() (bool, error) {
+func (h *testHelper) createCheckRegistrySecretFunc(registrySecret string, expected registrySecretData) func() (bool, error) {
 	return func() (bool, error) {
 		var configurationSecret corev1.Secret
 
-		if ok, err := h.getKubernetesObjectFunc(
-			serverlessRegistrySecret, &configurationSecret); !ok || err != nil {
+		if ok, err := h.getKubernetesObject(
+			registrySecret, &configurationSecret); !ok || err != nil {
 			return ok, err
 		}
 		if ok, err := secretContainsSameValues(
@@ -304,7 +304,7 @@ func (h *testHelper) createCheckRegistrySecretFunc(serverlessRegistrySecret stri
 func (h *testHelper) createCheckOptionalDependenciesFunc(deploymentName string, expected dockerRegistryData) func() (bool, error) {
 	return func() (bool, error) {
 		var deploy appsv1.Deployment
-		ok, err := h.getKubernetesObjectFunc(deploymentName, &deploy)
+		ok, err := h.getKubernetesObject(deploymentName, &deploy)
 		if !ok || err != nil {
 			return ok, err
 		}
