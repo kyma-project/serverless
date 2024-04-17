@@ -25,6 +25,7 @@ env:
   BOT_USERNAME: kyma-otter-serviceuser
   BOT_EMAIL: dl_545734d8fd84a02c39000002@global.corp.sap
   GH_TOOLS_REPO_URL: ${{ secrets.GH_TOOLS_REPO_URL }}
+  SERVERLESS_REPO_URL: ${{ secrets.SERVERLESS_REPO_URL }}
 
 jobs:
 
@@ -41,7 +42,7 @@ jobs:
 
       - name: Download release assets
         run: |
-          gh release download ${{ github.event.inputs.serverless_tag}} --pattern '*.yaml'
+          gh release download ${{ github.event.inputs.serverless_tag}} -R "${SERVERLESS_REPO_URL} --pattern '*.yaml'
 
       - name: Render module-config
         env:
