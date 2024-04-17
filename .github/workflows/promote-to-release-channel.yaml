@@ -42,7 +42,7 @@ jobs:
 
       - name: Download release assets
         run: |
-          gh release download ${{ github.event.inputs.serverless_tag}} -R "${SERVERLESS_REPO_URL} --pattern '*.yaml'
+          gh release download ${{ github.event.inputs.serverless_tag}} -R "${SERVERLESS_REPO_URL}" --pattern '*.yaml'
 
       - name: Render module-config
         env:
