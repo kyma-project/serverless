@@ -33,7 +33,7 @@ spec:
     name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: DockerRegistry is the Schema for the serverlesses API
+        description: DockerRegistry is the Schema for the dockerregistry API
         properties:
           apiVersion:
             description: |-
@@ -55,37 +55,10 @@ spec:
           spec:
             description: DockerRegistrySpec defines the desired state of DockerRegistry
             properties:
-              dockerRegistry:
-                description: 'TODO: change the DockerRegistryCfg name'
-                properties:
-                  enableInternal:
-                    description: When set to true, the internal Docker registry is
-                      enabled
-                    type: boolean
-                  secretName:
-                    description: Secret used for configuration of the Docker registry
-                    type: string
-                type: object
-              eventing:
-                description: Used Eventing endpoint
-                properties:
-                  endpoint:
-                    type: string
-                required:
-                - endpoint
-                type: object
               healthzLivenessTimeout:
                 description: Sets the timeout for the Function health check. The default
                   value in seconds is `10`
                 type: string
-              tracing:
-                description: Used Tracing endpoint
-                properties:
-                  endpoint:
-                    type: string
-                required:
-                - endpoint
-                type: object
             type: object
           status:
             properties:
@@ -159,14 +132,6 @@ spec:
                   - type
                   type: object
                 type: array
-              dockerRegistry:
-                description: |-
-                  Used registry configuration.
-                  Contains registry URL or "internal"
-                type: string
-              eventingEndpoint:
-                description: Used the Eventing endpoint and the Tracing endpoint.
-                type: string
               healthzLivenessTimeout:
                 type: string
               served:
@@ -187,8 +152,6 @@ spec:
                 - Ready
                 - Error
                 - Warning
-                type: string
-              tracingEndpoint:
                 type: string
             required:
             - served
