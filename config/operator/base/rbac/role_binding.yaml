@@ -3,10 +3,10 @@ kind: ClusterRoleBinding
 metadata:
   labels:
     app.kubernetes.io/name: clusterrolebinding
-    app.kubernetes.io/instance: serverless-operator-rolebinding
+    app.kubernetes.io/instance: dockerregistry-operator-rolebinding
     app.kubernetes.io/component: rbac
-    app.kubernetes.io/created-by: serverless-operator
-    app.kubernetes.io/part-of: serverless-operator
+    app.kubernetes.io/created-by: dockerregistry-operator
+    app.kubernetes.io/part-of: dockerregistry-operator
     app.kubernetes.io/managed-by: kustomize
   name: operator-rolebinding
 roleRef:

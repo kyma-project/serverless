@@ -69,7 +69,7 @@ const (
 	ConditionReasonDeletionErr      = ConditionReason("DeletionErr")
 	ConditionReasonDeleted          = ConditionReason("Deleted")
 
-	Finalizer = "serverless-operator.kyma-project.io/deletion-hook"
+	Finalizer = "dockerregistry-operator.kyma-project.io/deletion-hook"
 )
 
 type DockerRegistryStatus struct {

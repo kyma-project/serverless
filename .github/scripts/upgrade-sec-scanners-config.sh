@@ -8,8 +8,8 @@ yq eval-all --inplace '
         | .global.containerRegistry.path as $registryPath
         | (
             {
-                "serverless_operator" : {
-                    "name" : "serverless-operator",
+                "dockerregistry_operator" : {
+                    "name" : "dockerregistry-operator",
                     "directory" : "prod",
                     "version" : env(IMG_VERSION)
                 }

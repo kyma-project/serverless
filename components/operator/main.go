@@ -131,7 +131,7 @@ func main() {
 
 	reconciler := controllers.NewDockerRegistryReconciler(
 		mgr.GetClient(), mgr.GetConfig(),
-		mgr.GetEventRecorderFor("serverless-operator"),
+		mgr.GetEventRecorderFor("dockerregistry-operator"),
 		reconcilerLogger.Sugar(),
 		cfg.ChartPath)
 

@@ -10,7 +10,7 @@ namePrefix: dockerregistry-
 
 # Labels to add to all resources and selectors.
 commonLabels:
-  app.kubernetes.io/component: serverless-operator.kyma-project.io
+  app.kubernetes.io/component: dockerregistry-operator.kyma-project.io
 
 
 resources:

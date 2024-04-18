@@ -4,10 +4,10 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: clusterrole
-    app.kubernetes.io/instance: serverless-operator-editor-role
+    app.kubernetes.io/instance: dockerregistry-operator-editor-role
     app.kubernetes.io/component: rbac
-    app.kubernetes.io/created-by: serverless-operator
-    app.kubernetes.io/part-of: serverless-operator
+    app.kubernetes.io/created-by: dockerregistry-operator
+    app.kubernetes.io/part-of: dockerregistry-operator
     app.kubernetes.io/managed-by: kustomize
   name: operator-editor-role
 rules:

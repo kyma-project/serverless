@@ -4,5 +4,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 images:
 - name: controller
-  newName: europe-docker.pkg.dev/kyma-project/prod/serverless-operator
-  newTag: main
+  newName: dockerregistry-operator
+  newTag: 2d332b272e2a

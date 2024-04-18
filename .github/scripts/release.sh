@@ -34,8 +34,8 @@ uploadFile() {
 echo "IMG: ${IMG}"
 IMG=${IMG} make -C components/operator/ render-manifest
 
-echo "Generated serverless-operator.yaml:"
-cat serverless-operator.yaml
+echo "Generated dockerregistry-operator.yaml:"
+cat dockerregistry-operator.yaml
 
 echo "Fetching releases"
 CURL_RESPONSE=$(curl -w "%{http_code}" -sL \

@@ -6,10 +6,10 @@ metadata:
   labels:
     control-plane: operator
     app.kubernetes.io/name: deployment
-    app.kubernetes.io/instance: serverless-operator
+    app.kubernetes.io/instance: dockerregistry-operator
     app.kubernetes.io/component: operator
-    app.kubernetes.io/created-by: serverless-operator
-    app.kubernetes.io/part-of: serverless-operator
+    app.kubernetes.io/created-by: dockerregistry-operator
+    app.kubernetes.io/part-of: dockerregistry-operator
     app.kubernetes.io/managed-by: kustomize
 spec:
   selector:
