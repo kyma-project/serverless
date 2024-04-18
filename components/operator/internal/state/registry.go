@@ -8,13 +8,6 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
-const (
-	extNamespacedScopeSecretsDetectedFormat = "actual registry configuration in namespace %s comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect the %s secret in the secretName field or delete it"
-	extRegSecDiffThanSpecFormat             = "actual registry configuration comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect the %s secret in the secretName field or delete it"
-	extRegSecNotInSpecFormat                = "actual registry configuration comes from %s/%s and it is different from spec.dockerRegistry.secretName. Reflect %s secret in the secretName field"
-	internalEnabledAndSecretNameUsedMessage = "spec.dockerRegistry.enableInternal is true and spec.dockerRegistry.secretName is used. Delete the secretName field or set the enableInternal value to false"
-)
-
 func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	s.setState(v1alpha1.StateProcessing)
 	// setup status.dockerRegistry and set possible warnings
@@ -42,8 +35,6 @@ func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error
 }
 
 func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemState) error {
-	s.flagsBuilder.WithRegistryEnableInternal(true)
-
 	existingIntRegSecret, err := registry.GetDockerRegistryInternalRegistrySecret(ctx, r.client, s.instance.Namespace)
 	if err != nil {
 		return errors.Wrap(err, "while fetching existing internal docker registry secret")

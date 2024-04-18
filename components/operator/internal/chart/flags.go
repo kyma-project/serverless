@@ -11,7 +11,6 @@ type FlagsBuilder interface {
 	WithOptionalDependencies(publisherURL string, traceCollectorURL string) *flagsBuilder
 	WithRegistryAddresses(registryAddress string, serverAddress string) *flagsBuilder
 	WithRegistryCredentials(username string, password string) *flagsBuilder
-	WithRegistryEnableInternal(enableInternal bool) *flagsBuilder
 	WithRegistryHttpSecret(httpSecret string) *flagsBuilder
 	WithNodePort(nodePort int64) *flagsBuilder
 }
@@ -82,11 +81,6 @@ func (fb *flagsBuilder) WithControllerConfiguration(healthzLivenessTimeout strin
 func (fb *flagsBuilder) WithOptionalDependencies(publisherURL, traceCollectorURL string) *flagsBuilder {
 	fb.flags["containers.manager.configuration.data.functionTraceCollectorEndpoint"] = traceCollectorURL
 	fb.flags["containers.manager.configuration.data.functionPublisherProxyAddress"] = publisherURL
-	return fb
-}
-
-func (fb *flagsBuilder) WithRegistryEnableInternal(enableInternal bool) *flagsBuilder {
-	fb.flags["dockerRegistry.enableInternal"] = enableInternal
 	return fb
 }
 

@@ -46,7 +46,6 @@ func Test_flagsBuilder_Build(t *testing.T) {
 			WithOptionalDependencies("testPublisherURL", "testCollectorURL").
 			WithRegistryAddresses("testRegistryAddress", "testServerAddress").
 			WithRegistryCredentials("testUsername", "testPassword").
-			WithRegistryEnableInternal(false).
 			WithRegistryHttpSecret("testHttpSecret").
 			WithControllerConfiguration(
 				"testHealthzLivenessTimeout",
