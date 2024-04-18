@@ -15,13 +15,7 @@ metadata:
 data:
   username: "{{ $username | b64enc }}"
   password: "{{ $password | b64enc }}"
-  isInternal: "{{ .Values.dockerRegistry.enableInternal | toString | b64enc }}"
-  {{- if .Values.dockerRegistry.enableInternal }}
+  isInternal: {{ "true" | b64enc }}
   pullRegAddr: {{ $internalRegPullAddr | b64enc }}
   pushRegAddr: "{{ $internalRegPushAddr | b64enc }}"
   .dockerconfigjson: "{{- (printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}, \"%s\": {\"auth\": \"%s\"}}}" $internalRegPushAddr $encodedUsernamePassword $internalRegPullAddr $encodedUsernamePassword) | b64enc }}"
-  {{- else }}
-  serverAddress: "{{ .Values.dockerRegistry.serverAddress | b64enc }}"
-  registryAddress: "{{ .Values.dockerRegistry.registryAddress | b64enc }}"
-  .dockerconfigjson: "{{- (printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}}}" .Values.dockerRegistry.serverAddress $encodedUsernamePassword) | b64enc }}"
-  {{- end }}

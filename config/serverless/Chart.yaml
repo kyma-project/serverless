@@ -6,4 +6,3 @@ home: https://kyma-project.io
 icon: https://github.com/kyma-project/kyma/blob/main/logo.png?raw=true
 dependencies:
   - name: docker-registry
-    condition: dockerRegistry.enableInternal
