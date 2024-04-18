@@ -42,6 +42,8 @@ jobs:
 
       - name: Download release assets
         run: |
+          git config --local user.email "otter-releaser@otter-releaser.noreply.github.com"
+          git config --local user.name "otter-releaser"
           gh release download ${{ github.event.inputs.serverless_tag}} -R "${SERVERLESS_REPO_URL}" --pattern '*.yaml'
 
       - name: Render module-config
