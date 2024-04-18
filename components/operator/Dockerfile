@@ -40,7 +40,7 @@ ENV PROJECT_ROOT="."
 RUN apk update && apk add bash yq
 
 COPY components/operator/hack components/operator/hack
-COPY config/serverless config/serverless
+COPY config/docker-registry config/docker-registry
 COPY hack/ hack/
 
 
@@ -50,7 +50,7 @@ FROM gcr.io/distroless/static:nonroot
 
 WORKDIR /
 COPY --chown=65532:65532 --from=builder /workspace/operator .
-COPY --chown=65532:65532 --from=replacer /workspace/config/serverless /module-chart
+COPY --chown=65532:65532 --from=replacer /workspace/config/docker-registry /module-chart
 USER 65532:65532
 
 ENTRYPOINT ["/operator"]

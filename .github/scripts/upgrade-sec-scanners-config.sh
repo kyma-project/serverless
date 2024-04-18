@@ -19,4 +19,4 @@ yq eval-all --inplace '
         | $registryPath + "/" + .directory + "/" + .name + ":" + .version
     ]
     | select(fileIndex == 0)
-    ' sec-scanners-config.yaml config/serverless/values.yaml
+    ' sec-scanners-config.yaml config/docker-registry/values.yaml

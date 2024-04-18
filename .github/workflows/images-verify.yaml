@@ -6,7 +6,7 @@ on:
       - main
     paths: 
       - sec-scanners-config.yaml
-      - config/serverless/values.yaml
+      - config/docker-registry/values.yaml
 
 jobs:
   # check if developer doesn't change `main` images in the values.yaml and sec-scanners-config.yaml files
@@ -24,7 +24,7 @@ jobs:
           echo SSC_MAIN_IMAGES=$(yq '.protecode[] | select(contains(":main")) | sub(":.*", "")' sec-scanners-config.yaml) >> $GITHUB_ENV
           
           # export values. images with the main tag as github env
-          echo VALUES_MAIN_IMAGES=$(yq '.global.images[] | select(.version == "main") | .name' config/serverless/values.yaml) >> $GITHUB_ENV
+          echo VALUES_MAIN_IMAGES=$(yq '.global.images[] | select(.version == "main") | .name' config/docker-registry/values.yaml) >> $GITHUB_ENV
 
       - name: Checkout to context
         uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
       
       - name: Verify values.yaml images
         run: |
-          PR_NOT_MAIN_IMAGES=$(yq '.global.images[] | select(.version != "main") | .name' config/serverless/values.yaml) \
+          PR_NOT_MAIN_IMAGES=$(yq '.global.images[] | select(.version != "main") | .name' config/docker-registry/values.yaml) \
             .github/scripts/verify-image-changes.sh
         env:
           MAIN_IMAGES: ${{ env.VALUES_MAIN_IMAGES }}
