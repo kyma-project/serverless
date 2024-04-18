@@ -30,7 +30,6 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				"rollme":             "dontrollplease",
 			},
 			"dockerRegistry": map[string]interface{}{
-				"enableInternal":  false,
 				"password":        "testPassword",
 				"registryAddress": "testRegistryAddress",
 				"serverAddress":   "testServerAddress",

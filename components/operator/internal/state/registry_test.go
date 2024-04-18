@@ -23,9 +23,6 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 		}
 		expectedFlags := map[string]interface{}{
-			"dockerRegistry": map[string]interface{}{
-				"enableInternal": true,
-			},
 			"global": map[string]interface{}{
 				"registryNodePort": int64(32_137),
 			},
