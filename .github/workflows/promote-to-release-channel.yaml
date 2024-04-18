@@ -41,6 +41,8 @@ jobs:
           ref: ${{ github.event.inputs.serverless_tag }}
 
       - name: Download release assets
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release download ${{ github.event.inputs.serverless_tag}} -R "${SERVERLESS_REPO_URL}" --pattern '*.yaml'
 
