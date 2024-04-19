@@ -37,14 +37,13 @@ func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemSta
 	return nextState(sFnApplyResources)
 }
 
-func warnAboutDeadFields(s *systemState) error {
+func warnAboutDeadFields(s *systemState) {
 	if s.instance.Spec.FunctionTimeoutSec != "" {
 		s.warningBuilder.With(functionTimeoutDepreciationMessage)
 	}
 	if s.instance.Spec.FunctionRequestBodyLimitMb != "" {
 		s.warningBuilder.With(functionRequestBodyLimitDepreciationMessage)
 	}
-	return nil
 }
 
 func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, instance *v1alpha1.Serverless) error {
