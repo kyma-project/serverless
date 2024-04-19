@@ -10,8 +10,8 @@ import (
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless/tests/operator/logger"
 	"github.com/kyma-project/serverless/tests/operator/namespace"
-	"github.com/kyma-project/serverless/tests/operator/utils"
 	"github.com/kyma-project/serverless/tests/operator/serverless"
+	"github.com/kyma-project/serverless/tests/operator/utils"
 )
 
 var (
@@ -49,6 +49,19 @@ func main() {
 			DockerRegistry: &v1alpha1.DockerRegistry{
 				EnableInternal: utils.PtrFromVal(true),
 			},
+			Tracing: &v1alpha1.Endpoint{
+				Endpoint: "http://tracing-endpoint",
+			},
+			Eventing: &v1alpha1.Endpoint{
+				Endpoint: "http://eventing-endpoint",
+			},
+			TargetCPUUtilizationPercentage:   "10",
+			FunctionRequeueDuration:          "19m",
+			FunctionBuildExecutorArgs:        "executor-args",
+			FunctionBuildMaxSimultaneousJobs: "10",
+			HealthzLivenessTimeout:           "20",
+			DefaultBuildJobPreset:            "fast",
+			DefaultRuntimePodPreset:          "M",
 		},
 	})
 	if err != nil {
