@@ -11,7 +11,7 @@ import (
 	"github.com/kyma-project/serverless/tests/operator/logger"
 	"github.com/kyma-project/serverless/tests/operator/namespace"
 	"github.com/kyma-project/serverless/tests/operator/utils"
-	// "github.com/kyma-project/serverless/tests/operator/serverless"
+	"github.com/kyma-project/serverless/tests/operator/serverless"
 )
 
 var (
@@ -58,49 +58,47 @@ func main() {
 }
 
 func runScenario(testutil *utils.TestUtils) error {
-	// TODO: implement the scenario
-
 	// create test namespace
 	testutil.Logger.Infof("Creating namespace '%s'", testutil.Namespace)
 	if err := namespace.Create(testutil); err != nil {
 		return err
 	}
 
-	// // create Serverless
-	// testutil.Logger.Infof("Creating serverless '%s'", testutil.ServerlessName)
-	// if err := serverless.Create(testutil); err != nil {
-	// 	return err
-	// }
+	// create Serverless
+	testutil.Logger.Infof("Creating serverless '%s'", testutil.ServerlessName)
+	if err := serverless.Create(testutil); err != nil {
+		return err
+	}
 
-	// // verify Serverless
-	// testutil.Logger.Infof("Verifying serverless '%s'", testutil.ServerlessName)
-	// if err := utils.WithRetry(testutil, serverless.Verify); err != nil {
-	// 	return err
-	// }
+	// verify Serverless
+	testutil.Logger.Infof("Verifying serverless '%s'", testutil.ServerlessName)
+	if err := utils.WithRetry(testutil, serverless.Verify); err != nil {
+		return err
+	}
 
-	// // update serverless with other spec
-	// testutil.Logger.Infof("Updating serverless '%s'", testutil.ServerlessName)
-	// if err := serverless.Update(testutil); err != nil {
-	// 	return err
-	// }
+	// update serverless with other spec
+	testutil.Logger.Infof("Updating serverless '%s'", testutil.ServerlessName)
+	if err := serverless.Update(testutil); err != nil {
+		return err
+	}
 
-	// // verify Serverless
-	// testutil.Logger.Infof("Verifying serverless '%s'", testutil.ServerlessName)
-	// if err := utils.WithRetry(testutil, serverless.Verify); err != nil {
-	// 	return err
-	// }
+	// verify Serverless
+	testutil.Logger.Infof("Verifying serverless '%s'", testutil.ServerlessName)
+	if err := utils.WithRetry(testutil, serverless.Verify); err != nil {
+		return err
+	}
 
-	// // delete Serverless
-	// testutil.Logger.Infof("Deleting serverless '%s'", testutil.ServerlessName)
-	// if err := serverless.Delete(testutil); err != nil {
-	// 	return err
-	// }
+	// delete Serverless
+	testutil.Logger.Infof("Deleting serverless '%s'", testutil.ServerlessName)
+	if err := serverless.Delete(testutil); err != nil {
+		return err
+	}
 
-	// // verify Serverless deletion
-	// testutil.Logger.Infof("Verifying serverless '%s' deletion", testutil.ServerlessName)
-	// if err := utils.WithRetry(testutil, serverless.VerifyDeletion); err != nil {
-	// 	return err
-	// }
+	// verify Serverless deletion
+	testutil.Logger.Infof("Verifying serverless '%s' deletion", testutil.ServerlessName)
+	if err := utils.WithRetry(testutil, serverless.VerifyDeletion); err != nil {
+		return err
+	}
 
 	// cleanup
 	testutil.Logger.Infof("Deleting namespace '%s'", testutil.Namespace)
