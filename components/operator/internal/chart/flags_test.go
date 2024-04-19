@@ -21,9 +21,7 @@ func Test_flagsBuilder_Build(t *testing.T) {
 							"functionBuildExecutorArgs":        "testBuildExecutorArgs",
 							"functionBuildMaxSimultaneousJobs": "testMaxSimultaneousJobs",
 							"functionPublisherProxyAddress":    "testPublisherURL",
-							"functionRequestBodyLimitMb":       "testRequestBodyLimitMb",
 							"functionRequeueDuration":          "testRequeueDuration",
-							"functionTimeoutSec":               "testTimeoutSec",
 							"functionTraceCollectorEndpoint":   "testCollectorURL",
 							"healthzLivenessTimeout":           "testHealthzLivenessTimeout",
 							"targetCPUUtilizationPercentage":   "testCPUUtilizationPercentage",
@@ -73,8 +71,6 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				"testBuildExecutorArgs",
 				"testMaxSimultaneousJobs",
 				"testHealthzLivenessTimeout",
-				"testRequestBodyLimitMb",
-				"testTimeoutSec",
 			).Build()
 
 		require.Equal(t, expectedFlags, flags)
@@ -105,7 +101,6 @@ func Test_flagsBuilder_Build(t *testing.T) {
 					"configuration": map[string]interface{}{
 						"data": map[string]interface{}{
 							"functionBuildMaxSimultaneousJobs": "testMaxSimultaneousJobs",
-							"functionRequestBodyLimitMb":       "testRequestBodyLimitMb",
 							"healthzLivenessTimeout":           "testHealthzLivenessTimeout",
 							"targetCPUUtilizationPercentage":   "testCPUUtilizationPercentage",
 						},
@@ -121,8 +116,6 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				"",
 				"testMaxSimultaneousJobs",
 				"testHealthzLivenessTimeout",
-				"testRequestBodyLimitMb",
-				"",
 			).Build()
 
 		require.Equal(t, expectedFlags, flags)

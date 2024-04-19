@@ -14,8 +14,6 @@ const (
 	slowRuntimePreset = "XS"
 	fastBuildPreset   = "fast"
 	fastRuntimePreset = "L"
-	functionTimeoutDepreciationMessage = "spec.functionTimeoutSec is unused and will be removed. Remove it from your Serverless CR."
-	functionRequestBodyLimitDepreciationMessage = "spec.functionRequestBodyLimitMb is unused and will be removed. Remove it from your Serverless CR."
 )
 
 func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
@@ -25,7 +23,6 @@ func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemSta
 	}
 
 	configureControllerConfigurationFlags(s)
-	warnAboutDeadFields(s)
 
 	s.setState(v1alpha1.StateProcessing)
 	s.instance.UpdateConditionTrue(
@@ -35,15 +32,6 @@ func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemSta
 	)
 
 	return nextState(sFnApplyResources)
-}
-
-func warnAboutDeadFields(s *systemState) {
-	if s.instance.Spec.FunctionTimeoutSec != "" {
-		s.warningBuilder.With(functionTimeoutDepreciationMessage)
-	}
-	if s.instance.Spec.FunctionRequestBodyLimitMb != "" {
-		s.warningBuilder.With(functionRequestBodyLimitDepreciationMessage)
-	}
 }
 
 func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, instance *v1alpha1.Serverless) error {
@@ -66,8 +54,6 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 		{spec.FunctionBuildExecutorArgs, &instance.Status.BuildExecutorArgs, "Function build executor args", ""},
 		{spec.FunctionBuildMaxSimultaneousJobs, &instance.Status.BuildMaxSimultaneousJobs, "Max number of simultaneous jobs", ""},
 		{spec.HealthzLivenessTimeout, &instance.Status.HealthzLivenessTimeout, "Duration of health check", ""},
-		{spec.FunctionRequestBodyLimitMb, &instance.Status.RequestBodyLimitMb, "Max size of request body", ""},
-		{spec.FunctionTimeoutSec, &instance.Status.TimeoutSec, "Timeout", ""},
 		{spec.DefaultBuildJobPreset, &instance.Status.DefaultBuildJobPreset, "Default build job preset", defaultBuildPreset},
 		{spec.DefaultRuntimePodPreset, &instance.Status.DefaultRuntimePodPreset, "Default runtime pod preset", defaultRuntimePreset},
 	}
@@ -84,8 +70,6 @@ func configureControllerConfigurationFlags(s *systemState) {
 			s.instance.Status.BuildExecutorArgs,
 			s.instance.Status.BuildMaxSimultaneousJobs,
 			s.instance.Status.HealthzLivenessTimeout,
-			s.instance.Status.RequestBodyLimitMb,
-			s.instance.Status.TimeoutSec,
 		).
 		WithDefaultPresetFlags(
 			s.instance.Status.DefaultBuildJobPreset,

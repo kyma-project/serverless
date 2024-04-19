@@ -7,7 +7,7 @@ import (
 
 type FlagsBuilder interface {
 	Build() map[string]interface{}
-	WithControllerConfiguration(CPUUtilizationPercentage string, requeueDuration string, buildExecutorArgs string, maxSimultaneousJobs string, healthzLivenessTimeout string, requestBodyLimitMb string, timeoutSec string) *flagsBuilder
+	WithControllerConfiguration(CPUUtilizationPercentage string, requeueDuration string, buildExecutorArgs string, maxSimultaneousJobs string, healthzLivenessTimeout string) *flagsBuilder
 	WithDefaultPresetFlags(defaultBuildJobPreset string, defaultRuntimePodPreset string) *flagsBuilder
 	WithOptionalDependencies(publisherURL string, traceCollectorURL string) *flagsBuilder
 	WithRegistryAddresses(registryAddress string, serverAddress string) *flagsBuilder
@@ -62,7 +62,7 @@ func nextDeeperFlag(currentFlag map[string]interface{}, path string) map[string]
 	return currentFlag[path].(map[string]interface{})
 }
 
-func (fb *flagsBuilder) WithControllerConfiguration(CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout, requestBodyLimitMb, timeoutSec string) *flagsBuilder {
+func (fb *flagsBuilder) WithControllerConfiguration(CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout string) *flagsBuilder {
 	optionalFlags := []struct {
 		key   string
 		value string
@@ -72,8 +72,6 @@ func (fb *flagsBuilder) WithControllerConfiguration(CPUUtilizationPercentage, re
 		{"functionBuildExecutorArgs", buildExecutorArgs},
 		{"functionBuildMaxSimultaneousJobs", maxSimultaneousJobs},
 		{"healthzLivenessTimeout", healthzLivenessTimeout},
-		{"functionRequestBodyLimitMb", requestBodyLimitMb},
-		{"functionTimeoutSec", timeoutSec},
 	}
 
 	for _, flag := range optionalFlags {

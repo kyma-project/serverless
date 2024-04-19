@@ -31,8 +31,6 @@ The following Serverless custom resource (CR) shows configuration of Serverless 
      functionBuildExecutorArgs: "--insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true,--use-new-run,--compressed-caching=false"
      functionBuildMaxSimultaneousJobs: 5
      healthzLivenessTimeout: "10s"
-     functionRequestBodyLimitMb: 1
-     functionTimeoutSec: 180
      defaultBuildJobPreset: "normal"
      defaultRuntimePodPreset: "M"
    status:
@@ -75,8 +73,6 @@ For details, see the [Serverless specification file](https://github.com/kyma-pro
 | **functionBuildExecutorArgs**             | string  | Specifies the arguments passed to the Function build executor            |
 | **functionBuildMaxSimultaneousJobs**      | string  | A number of simultaneous jobs that can run at the same time. The default value is `5`            |
 | **healthzLivenessTimeout**                | string  | Sets the timeout for the Function health check. The default value in seconds is `10`            |
-| **functionRequestBodyLimitMb**            | string  | Used to configure the maximum size limit for the request body of a Function. The default value is `1` megabyte           |
-| **functionTimeoutSec**                    | string  | Sets the maximum execution time limit for a Function. By default, the value is `180` seconds           |
 | **defaultBuildJobPreset**                 | string  | Configures the default build Job preset to be used            |
 | **defaultRuntimePodPreset**               | string  | Configures the default runtime Pod preset to be used            |
 
@@ -100,9 +96,7 @@ For details, see the [Serverless specification file](https://github.com/kyma-pro
 | **functionRequeueDuration**                          | string     | Used the Function requeue duration.                                                                                                                                                                                                                                                                                                                                |
 | **functionBuildExecutorArgs**                        | string     | Used the Function build executor arguments.                                                                                                                                                                                                                                                                                                                        |
 | **functionBuildMaxSimultaneousJobs**                 | string     | Used the Function build max number of simultaneous jobs.                                                                                                                                                                                                                                                                                                           |
-| **healthzLivenessTimeout**                           | string     | Used the healthz liveness timeout.                                                                                                                                                                                                                                                                                                                                 |
-| **functionRequestBodyLimitMb**                       | string     | Used the Function request body limit.                                                                                                                                                                                                                                                                                                                              |
-| **functionTimeoutSec**                               | string     | Used the Function timeout.                                                                                                                                                                                                                                                                                                                                         |
+| **healthzLivenessTimeout**                           | string     | Used the healthz liveness timeout.                                                                                                                                                                                                                                                                                                           |
 | **defaultBuildJobPreset**                            | string     | Used the default build Job preset.                                                                                                                                                                                                                                                                                                                                 |
 | **defaultRuntimePodPreset**                          | string     | Used the default runtime Pod preset.                                                                                                                                                                                                                                                                                                                               |
 

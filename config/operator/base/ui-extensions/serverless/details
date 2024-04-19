@@ -42,12 +42,6 @@ body:
       - name: Max Simultaneous Builds 
         source: spec.functionBuildMaxSimultaneousJobs
         visibility: '$exists($value)'
-      - name: Function Request Body Limit [Mb]
-        source: spec.functionRequestBodyLimitMb
-        visibility: '$exists($value)'
-      - name: Function Timeout [Sec]
-        source: spec.functionTimeoutSec
-        visibility: '$exists($value)'
       - name: Function Requeue Duration
         source: spec.functionRequeueDuration
         visibility: '$exists($value)'
