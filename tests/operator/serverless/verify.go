@@ -30,7 +30,7 @@ func Verify(utils *utils.TestUtils) error {
 		return err
 	}
 
-	if err := verifyCondition(utils, &serverless); err != nil {
+	if err := verifyState(utils, &serverless); err != nil {
 		return err
 	}
 
@@ -102,7 +102,7 @@ func isSpecValueReflectedInStatus(specValue string, statusValue string) error {
 	return nil
 }
 
-func verifyCondition(utils *utils.TestUtils, serverless *v1alpha1.Serverless) error {
+func verifyState(utils *utils.TestUtils, serverless *v1alpha1.Serverless) error {
 	if serverless.Status.State != v1alpha1.StateReady {
 		return fmt.Errorf("serverless '%s' in '%s' state", utils.ServerlessName, serverless.Status.State)
 	}
