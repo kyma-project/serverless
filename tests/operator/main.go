@@ -9,9 +9,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless/tests/operator/logger"
+	"github.com/kyma-project/serverless/tests/operator/namespace"
 	"github.com/kyma-project/serverless/tests/operator/utils"
-
-	// "github.com/kyma-project/serverless/tests/operator/namespace"
 	// "github.com/kyma-project/serverless/tests/operator/serverless"
 )
 
@@ -62,10 +61,10 @@ func runScenario(testutil *utils.TestUtils) error {
 	// TODO: implement the scenario
 
 	// create test namespace
-	// testutil.Logger.Infof("Creating namespace '%s'", testutil.Namespace)
-	// if err := namespace.Create(testutil); err != nil {
-	// 	return err
-	// }
+	testutil.Logger.Infof("Creating namespace '%s'", testutil.Namespace)
+	if err := namespace.Create(testutil); err != nil {
+		return err
+	}
 
 	// // create Serverless
 	// testutil.Logger.Infof("Creating serverless '%s'", testutil.ServerlessName)
@@ -104,9 +103,6 @@ func runScenario(testutil *utils.TestUtils) error {
 	// }
 
 	// cleanup
-	// testutil.Logger.Infof("Deleting namespace '%s'", testutil.Namespace)
-	// return namespace.Delete(testutil)
-
-	// TODO: remove this return
-	return nil
+	testutil.Logger.Infof("Deleting namespace '%s'", testutil.Namespace)
+	return namespace.Delete(testutil)
 }
