@@ -14,6 +14,8 @@ const (
 	slowRuntimePreset = "XS"
 	fastBuildPreset   = "fast"
 	fastRuntimePreset = "L"
+	functionTimeoutDepreciationMessage = "spec.functionTimeoutSec is unused and will be removed. Remove it from your Serverless CR."
+	functionRequestBodyLimitDepreciationMessage = "spec.functionRequestBodyLimitMb is unused and will be removed. Remove it from your Serverless CR."
 )
 
 func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
@@ -23,6 +25,7 @@ func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemSta
 	}
 
 	configureControllerConfigurationFlags(s)
+	warnAboutDeadFields(s)
 
 	s.setState(v1alpha1.StateProcessing)
 	s.instance.UpdateConditionTrue(
@@ -32,6 +35,15 @@ func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemSta
 	)
 
 	return nextState(sFnApplyResources)
+}
+
+func warnAboutDeadFields(s *systemState) {
+	if s.instance.Spec.FunctionTimeoutSec != "" {
+		s.warningBuilder.With(functionTimeoutDepreciationMessage)
+	}
+	if s.instance.Spec.FunctionRequestBodyLimitMb != "" {
+		s.warningBuilder.With(functionRequestBodyLimitDepreciationMessage)
+	}
 }
 
 func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, instance *v1alpha1.Serverless) error {

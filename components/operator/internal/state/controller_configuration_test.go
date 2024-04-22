@@ -3,9 +3,11 @@ package state
 import (
 	"context"
 	"testing"
+	"fmt"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless/components/operator/internal/chart"
+	"github.com/kyma-project/serverless/components/operator/internal/warning"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
@@ -127,8 +129,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 					FunctionBuildExecutorArgs:        executorArgsTest,
 					FunctionBuildMaxSimultaneousJobs: maxSimultaneousJobsTest,
 					HealthzLivenessTimeout:           healthzLivenessTimeoutTest,
-					FunctionRequestBodyLimitMb:       requestBodyLimitMbTest,
-					FunctionTimeoutSec:               timeoutSecTest,
 					DefaultBuildJobPreset:            buildJobPresetTest,
 					DefaultRuntimePodPreset:          runtimePodPresetTest,
 				},
@@ -150,8 +150,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		require.Equal(t, executorArgsTest, status.BuildExecutorArgs)
 		require.Equal(t, maxSimultaneousJobsTest, status.BuildMaxSimultaneousJobs)
 		require.Equal(t, healthzLivenessTimeoutTest, status.HealthzLivenessTimeout)
-		require.Equal(t, requestBodyLimitMbTest, status.RequestBodyLimitMb)
-		require.Equal(t, timeoutSecTest, status.TimeoutSec)
 		require.Equal(t, buildJobPresetTest, status.DefaultBuildJobPreset)
 		require.Equal(t, runtimePodPresetTest, status.DefaultRuntimePodPreset)
 
@@ -169,8 +167,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			"Normal Configuration Function build executor args set from '' to 'test-build-executor-args'",
 			"Normal Configuration Max number of simultaneous jobs set from '' to 'test-max-simultaneous-jobs'",
 			"Normal Configuration Duration of health check set from '' to 'test-healthz-liveness-timeout'",
-			"Normal Configuration Max size of request body set from '' to 'test-request-body-limit-mb'",
-			"Normal Configuration Timeout set from '' to 'test-timeout-sec'",
 			"Normal Configuration Default build job preset set from '' to 'test=default-build-job-preset'",
 			"Normal Configuration Default runtime pod preset set from '' to 'test-default-runtime-pod-preset'",
 		}
@@ -238,7 +234,23 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			configurationReadyMsg)
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
+
+	t.Run("enable dead fields", func(t *testing.T) {
+		s := &systemState{
+			warningBuilder: warning.NewBuilder(),
+			instance: v1alpha1.Serverless{
+				Spec: v1alpha1.ServerlessSpec{
+					FunctionRequestBodyLimitMb:       requestBodyLimitMbTest,
+					FunctionTimeoutSec:               timeoutSecTest,
+				},
+			},
+		}
+		warnAboutDeadFields(s)
+		require.Equal(t, fmt.Sprintf("Warning: %s; %s", functionTimeoutDepreciationMessage, functionRequestBodyLimitDepreciationMessage), s.warningBuilder.Build())
+	})
 }
+
+
 
 func fixTestNode(name string) *corev1.Node {
 	return &corev1.Node{
