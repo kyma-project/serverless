@@ -64,12 +64,18 @@ jobs:
             --wait
       - name: run integration test (pre)
         if: github.event_name == 'pull_request'
-        run: make -C hack integration-test-on-cluster
+        run: |
+          make install-serverless-custom-operator
+          make -C tests/serverless serverless-integration serverless-contract-tests
+          make remove-serverless
         env:
           IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
       - name: run integration test (post)
         if: github.event_name == 'push'
-        run: make -C hack integration-test-on-cluster
+        run: |
+          make install-serverless-custom-operator
+          make -C tests/serverless serverless-integration serverless-contract-tests
+          make remove-serverless
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
 
@@ -92,7 +98,10 @@ jobs:
             --port 443:443@loadbalancer
             --wait
       - name: run git auth tests
-        run: make -C hack git-auth-test-on-cluster
+        run: |
+          make install-serverless-custom-operator
+          make -C tests/serverless git-auth-integration
+          make remove-serverless
         env:
           APP_TEST_GITHUB_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_GITHUB_SSH_KEY }}
           APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
