@@ -124,9 +124,8 @@ jobs:
           GARDENER_SA_PATH: /tmp/gardener-sa.yaml
       - name: run test
         run: |
-          make install-serverless-custom-operator
-          make -C tests/serverless serverless-integration serverless-contract-tests
-          make remove-serverless
+          make -C components/operator deploy
+          make -C tests/operator test
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
       - name: deprovision gardener
