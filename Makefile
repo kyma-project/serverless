@@ -13,10 +13,13 @@ install-serverless-custom-operator: ## Install serverless with operator from IMG
 	$(call check-var,IMG)
 	make -C ${OPERATOR_ROOT} deploy apply-default-serverless-cr check-serverless-installation
 
-.PHONY: install-serverless-latest-release
-install-serverless-latest-release: ## Install serverless from latest release
+.PHONY: install-operator-latest-release
+install-operator-latest-release: ## Install serverless operator from latest release
 	kubectl create namespace kyma-system || true
 	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/serverless-operator.yaml
+
+.PHONY: install-serverless-latest-release
+install-serverless-latest-release: install-operator-latest-release ## Install serverless from latest release
 	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/default-serverless-cr.yaml -n kyma-system
 	make -C ${OPERATOR_ROOT} check-serverless-installation
 
