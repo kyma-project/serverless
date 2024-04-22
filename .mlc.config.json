@@ -1,4 +1,12 @@
 {
+    "ignorePatterns": [
+      {
+        "pattern": "^https://img.shields.io"
+      },
+      {
+        "pattern": "^https://api.reuse.software"
+      }
+    ],
     "replacementPatterns": [
       {
         "_comment": "a replacement rule for all the in-repository references",
