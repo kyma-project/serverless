@@ -42,7 +42,6 @@ jobs:
       - name: run test
         run: make -C components/operator test
 
-
   operator-upgrade-test:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
