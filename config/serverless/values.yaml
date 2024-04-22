@@ -178,7 +178,6 @@ containers:
         configMapRequeueDuration: 5m
         secretRequeueDuration: 5m
         serviceAccountRequeueDuration: 5m
-        imageRegistryExternalDockerConfigSecretName: '{{ template "fullname" . }}-registry-config'
         imageRegistryDefaultDockerConfigSecretName: '{{ template "fullname" . }}-registry-config-default'
         packageRegistryConfigSecretName: '{{ template "fullname" . }}-package-registry-config'
         imagePullAccountName: '{{ template "fullname" . }}-function'
