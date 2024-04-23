@@ -131,8 +131,6 @@ spec:
               value: "{{.Values.containers.manager.configuration.data.functionPublisherProxyAddress }}"
             - name: APP_FUNCTION_IMAGE_REGISTRY_DEFAULT_DOCKER_CONFIG_SECRET_NAME
               value: "{{- tpl ( .Values.containers.manager.configuration.data.imageRegistryDefaultDockerConfigSecretName) . }}"
-            - name: APP_FUNCTION_IMAGE_REGISTRY_EXTERNAL_DOCKER_CONFIG_SECRET_NAME
-              value: "{{- tpl ( .Values.containers.manager.configuration.data.imageRegistryExternalDockerConfigSecretName) . }}"
             - name: APP_FUNCTION_PACKAGE_REGISTRY_CONFIG_SECRET_NAME
               value: "{{- tpl ( .Values.containers.manager.configuration.data.packageRegistryConfigSecretName) . }}"
             - name: APP_FUNCTION_IMAGE_PULL_ACCOUNT_NAME
