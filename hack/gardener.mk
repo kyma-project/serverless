@@ -11,7 +11,7 @@ GIT_COMMIT_SHA=$(shell git rev-parse --short=8 HEAD)
 ifneq (,$(GARDENER_SA_PATH))
 GARDENER_K8S_VERSION=$(shell kubectl --kubeconfig=${GARDENER_SA_PATH} get cloudprofiles.core.gardener.cloud ${GARDENER_INFRASTRUCTURE} -o=jsonpath='{.spec.kubernetes.versions[0].version}')
 else
-GARDENER_K8S_VERSION=1.27.4
+GARDENER_K8S_VERSION=1.29.3
 endif
 #Overwrite default kyma cli gardenlinux version because it's not supported.
 GARDENER_LINUX_VERSION=1312.3.0
