@@ -7,9 +7,9 @@ on:
   push:
     branches: [ "main", "release-*" ]
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - 'examples/**'
+#    paths-ignore:
+#      - 'docs/**'
+#      - 'examples/**'
     types:
       - opened
       - reopened
@@ -18,7 +18,6 @@ on:
       - converted_to_draft
 
 jobs:
-  #pre-serverless-controller-lint
   serverless-lint:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -33,7 +32,6 @@ jobs:
           version: latest
           working-directory: 'components/serverless'
 
-  #pre-serverless-controller-unit-test
   serverless-unit-tests:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
@@ -75,7 +73,6 @@ jobs:
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
 
-  #post-serverless-git-auth-integration-k3s
   git-auth-integration-test:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
