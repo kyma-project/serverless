@@ -42,7 +42,6 @@ jobs:
       - name: run test
         run: make -C components/operator test
 
-
   operator-upgrade-test:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
@@ -62,7 +61,10 @@ jobs:
             --port 443:443@loadbalancer
             --wait
       - name: upgrade test
-        run: make -C hack upgrade-test
+        run: |
+          make install-serverless-latest-release install-serverless-custom-operator
+          make -C tests/serverless serverless-integration serverless-contract-tests
+          make remove-serverless
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
 
@@ -80,13 +82,16 @@ jobs:
         env:
           GARDENER_SA: ${{ secrets.GARDENER_SA }}
       - name: provision gardener
-        run: make -C hack  provision-gardener
+        run: make -C hack provision-gardener
         env:
           GARDENER_SECRET_NAME: ${{ secrets.GARDENER_SECRET_NAME }}
           GARDENER_PROJECT: ${{ secrets.GARDENER_PROJECT }}
           GARDENER_SA_PATH: /tmp/gardener-sa.yaml
       - name: run test
-        run: make -C hack integration-test-on-cluster
+        run: |
+          make install-serverless-custom-operator
+          make -C tests/serverless serverless-integration serverless-contract-tests
+          make remove-serverless
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
       - name: deprovision gardener
