@@ -1,7 +1,7 @@
 # image builder base on golang:1.22.2-alpine3.19
 FROM golang@sha256:cdc86d9f363e8786845bea2040312b4efa321b828acdeb26f393faa864d887b0 as builder
 
-ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/serverless \
+ENV BASE_APP_DIR=/app/go/src/github.com/kyma-project/serverless \
     CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=amd64

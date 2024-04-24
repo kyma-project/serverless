@@ -1,6 +1,6 @@
 FROM golang:1.22.2-alpine3.19 as builder
 
-ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/serverless \
+ENV BASE_APP_DIR=/app/go/src/github.com/kyma-project/serverless \
     CGO_ENABLED=1 \
     GOOS=linux \
     GOARCH=amd64 \
