@@ -96,6 +96,11 @@ deploy-main: manifests kustomize ## Deploy controller to the K8s cluster specifi
 generate-kustomization-dev:
 	cp $(CONFIG_OPERATOR_DEV)/kustomization.yaml.tpl $(CONFIG_OPERATOR_DEV)/kustomization.yaml
 
+.PHONY: deploy-release
+deploy-release: ## Deploy operator to the k8s cluster specified in ~/.kube/config with image from latest release.
+	kubectl create namespace kyma-system || true
+	kubectl apply -f https://github.com/kyma-project/serverless-manager/releases/latest/download/serverless-operator.yaml
+
 .PHONY: deploy
 deploy: manifests kustomize generate-kustomization-dev ## Deploy operator to the K8s cluster specified in ~/.kube/config with image from IMG env.
 	kubectl create namespace kyma-system || true

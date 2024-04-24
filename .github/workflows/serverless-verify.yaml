@@ -107,3 +107,29 @@ jobs:
           APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
           APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+
+  serverless-upgrade-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.SETUP_GO_VERSION }}
+      - name: create single cluster
+        uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79 #v2.4.0
+        with:
+          cluster-name: "k3dCluster"
+          args: >-
+            --agents 1
+            --image rancher/k3s:v1.28.6-k3s1
+            --port 80:80@loadbalancer
+            --port 443:443@loadbalancer
+            --wait
+      - name: upgrade test
+        run: |
+          make install-serverless-latest-release install-serverless-custom-operator
+          make -C tests/serverless serverless-integration serverless-contract-tests
+          make remove-serverless
+        env:
+          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
