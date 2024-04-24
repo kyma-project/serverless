@@ -75,7 +75,6 @@ jobs:
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
 
-  # post-serverless-operator-upgrade-latest-to-main
   operator-upgrade-test:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
