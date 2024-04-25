@@ -38,6 +38,7 @@ import (
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
+	ctrlcache "sigs.k8s.io/controller-runtime/pkg/cache"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
@@ -45,6 +46,7 @@ import (
 
 	operatorv1alpha1 "github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless/components/operator/controllers"
+	ctrlmetrics "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	//+kubebuilder:scaffold:imports
 )
 
@@ -97,13 +99,17 @@ func main() {
 	}
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
-		Scheme:                 scheme,
-		MetricsBindAddress:     metricsAddr,
+		Scheme: scheme,
+		Metrics: ctrlmetrics.Options{
+			BindAddress: metricsAddr,
+		},
 		WebhookServer: ctrlwebhook.NewServer(ctrlwebhook.Options{
 			Port: 9443,
 		}),
 		HealthProbeBindAddress: probeAddr,
-		SyncPeriod:             &syncPeriod,
+		Cache: ctrlcache.Options{
+			SyncPeriod: &syncPeriod,
+		},
 		Client: ctrlclient.Options{
 			Cache: &ctrlclient.CacheOptions{
 				DisableFor: []ctrlclient.Object{

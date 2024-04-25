@@ -22,6 +22,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	ctrlzap "sigs.k8s.io/controller-runtime/pkg/log/zap"
+	ctrlmetrics "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	ctrlwebhook "sigs.k8s.io/controller-runtime/pkg/webhook"
 )
 
@@ -86,10 +87,14 @@ func main() {
 	logWithCtx.Info("setting up controller-manager")
 
 	mgr, err := manager.New(ctrl.GetConfigOrDie(), manager.Options{
-		Scheme:             scheme,
-		Port:               cfg.Port,
-		MetricsBindAddress: ":9090",
-		Logger:             logrZap,
+		Scheme: scheme,
+		WebhookServer: ctrlwebhook.NewServer(ctrlwebhook.Options{
+			Port: cfg.Port,
+		}),
+		Metrics: ctrlmetrics.Options{
+			BindAddress: ":9090",
+		},
+		Logger: logrZap,
 		Client: ctrlclient.Options{
 			Cache: &ctrlclient.CacheOptions{
 				DisableFor: []ctrlclient.Object{
@@ -124,7 +129,7 @@ func main() {
 	// webhook server setup
 	whs := ctrlwebhook.NewServer(ctrlwebhook.Options{
 		CertName: resources.CertFile,
-		KeyName: resources.KeyFile})
+		KeyName:  resources.KeyFile})
 	err = whs.Start(ctx)
 	if err != nil {
 		logWithCtx.Error(err, "failed to start webhook server")
