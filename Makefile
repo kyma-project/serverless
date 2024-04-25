@@ -25,7 +25,7 @@ install-serverless-local-sources: ## Install serverless from local sources
 	IMG_VERSION=${IMG_VERSION} ./hack/build_all.sh
 
 	$(eval IMG=europe-docker.pkg.dev/kyma-project/dev/serverless-operator:${IMG_VERSION})
-	IMG_DIRECTORY="dev" IMG_VERSION=${IMG_VERSION} IMG=${IMG} make -C ${OPERATOR_ROOT} docker-build-local
+	IMG_DIRECTORY="kyma-project" IMG_VERSION=${IMG_VERSION} IMG=${IMG} make -C ${OPERATOR_ROOT} docker-build-local
 
 	k3d image import "${IMG}" -c kyma
 	IMG=${IMG} make install-serverless-custom-operator

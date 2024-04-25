@@ -69,6 +69,8 @@ global:
     domainName:
   containerRegistry:
     path: europe-docker.pkg.dev/kyma-project
+  tpiContainerRegistry:
+    path: europe-docker.pkg.dev/kyma-project
   images:
     function_controller:
       name: "function-controller"

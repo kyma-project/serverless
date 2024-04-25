@@ -1,38 +1,38 @@
 services:
   # serverless
   function_controller:
-    image: europe-docker.pkg.dev/kyma-project/dev/function-controller:local
+    image: k3d-kyma-registry.localhost:5000/kyma-project/function-controller:local
     platform: "linux/amd64"
     build:
       context: ../
       dockerfile: components/serverless/deploy/manager/Dockerfile
   function_build_init:
-    image: europe-docker.pkg.dev/kyma-project/dev/function-build-init:local
+    image: k3d-kyma-registry.localhost:5000/kyma-project/function-build-init:local
     platform: "linux/amd64"
     build:
       context: ../
       dockerfile: components/serverless/deploy/jobinit/Dockerfile
   # runtimes
   function_runtime_nodejs18:
-    image: europe-docker.pkg.dev/kyma-project/dev/function-runtime-nodejs18:local
+    image: k3d-kyma-registry.localhost:5000/kyma-project/function-runtime-nodejs18:local
     platform: "linux/amd64"
     build:
       context: ../components/runtimes/nodejs
       dockerfile: nodejs18/Dockerfile
   function_runtime_nodejs20:
-    image: europe-docker.pkg.dev/kyma-project/dev/function-runtime-nodejs20:local
+    image: k3d-kyma-registry.localhost:5000/kyma-project/function-runtime-nodejs20:local
     platform: "linux/amd64"
     build:
       context: ../components/runtimes/nodejs
       dockerfile: nodejs20/Dockerfile
   function_runtime_python39:
-    image: europe-docker.pkg.dev/kyma-project/dev/function-runtime-python39:local
+    image: k3d-kyma-registry.localhost:5000/kyma-project/function-runtime-python39:local
     platform: "linux/amd64"
     build:
       context: ../components/runtimes/python
       dockerfile: python39/Dockerfile
   function_runtime_python312:
-    image: europe-docker.pkg.dev/kyma-project/dev/function-runtime-python312:local
+    image: k3d-kyma-registry.localhost:5000/kyma-project/function-runtime-python312:local
     platform: "linux/amd64"
     build:
       context: ../components/runtimes/python
