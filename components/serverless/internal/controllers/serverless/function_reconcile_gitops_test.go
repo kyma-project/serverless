@@ -319,7 +319,7 @@ func TestGitOpsWithContinuousGitCheckout(t *testing.T) {
 				instance: *function,
 			}
 
-			expectedImage := s.buildImageAddress("localhost:32132", "some-image")
+			expectedImage := s.buildImageAddress("localhost:32132", "some_image")
 			g.Expect(deployment).To(gomega.Not(gomega.BeNil()))
 			g.Expect(deployment).To(haveSpecificContainer0Image(expectedImage))
 			g.Expect(deployment).To(haveLabelLen(8))
