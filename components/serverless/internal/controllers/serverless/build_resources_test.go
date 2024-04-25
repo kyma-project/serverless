@@ -102,7 +102,16 @@ func TestFunctionReconciler_buildDeployment(t *testing.T) {
 				instance: *tt.args.instance,
 			}
 
-			got := s.buildDeployment(buildDeploymentArgs{}, resourceCfg)
+			got := s.buildDeployment(buildDeploymentArgs{}, cfg{
+				runtimeBaseImage: "",
+				fn: FunctionConfig{
+					ResourceConfig: ResourceConfig{
+						Function: FunctionResourceConfig{
+							Resources: resourceCfg,
+						},
+					},
+				},
+			})
 
 			// deployment selector labels are equal with pod labels
 			for key, value := range got.Spec.Selector.MatchLabels {
@@ -204,7 +213,16 @@ func TestFunctionReconciler_buildDeploymentWithResources(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			s := systemState{instance: *tt.args.instance}
 
-			got := s.buildDeployment(buildDeploymentArgs{}, resourceCfg)
+			got := s.buildDeployment(buildDeploymentArgs{}, cfg{
+				runtimeBaseImage: "",
+				fn: FunctionConfig{
+					ResourceConfig: ResourceConfig{
+						Function: FunctionResourceConfig{
+							Resources: resourceCfg,
+						},
+					},
+				},
+			})
 
 			require.Len(t, got.Spec.Template.Spec.Containers, 1)
 			require.Equal(t, tt.args.expectedResources, got.Spec.Template.Spec.Containers[0].Resources)

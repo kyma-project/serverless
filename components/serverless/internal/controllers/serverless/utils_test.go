@@ -10,12 +10,14 @@ import (
 
 func Test_calculateGitImageTag(t *testing.T) {
 	tests := []struct {
-		name string
-		fn   *serverlessv1alpha2.Function
-		want string
+		name      string
+		fn        *serverlessv1alpha2.Function
+		baseImage string
+		want      string
 	}{
 		{
-			name: "should use runtime",
+			name:      "should use runtime",
+			baseImage: "nodejs18:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -33,7 +35,8 @@ func Test_calculateGitImageTag(t *testing.T) {
 			want: "5e62e84b27afdcf23e9ea682a8ce44b693c4a3258e5b26bd038c60cd41eb60ee",
 		},
 		{
-			name: "should use runtimeOverride",
+			name:      "should use runtimeOverride",
+			baseImage: "nodejs20:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -52,7 +55,8 @@ func Test_calculateGitImageTag(t *testing.T) {
 			want: "5e62e84b27afdcf23e9ea682a8ce44b693c4a3258e5b26bd038c60cd41eb60ee",
 		},
 		{
-			name: "should use runtime when runtimeOverride is empty",
+			name:      "should use runtime when runtimeOverride is empty",
+			baseImage: "python39:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -73,19 +77,21 @@ func Test_calculateGitImageTag(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, calculateGitImageTag(tt.fn))
+			assert.Equal(t, tt.want, calculateGitImageTag(tt.fn, tt.baseImage))
 		})
 	}
 }
 
 func Test_calculateInlineImageTag(t *testing.T) {
 	tests := []struct {
-		name string
-		fn   *serverlessv1alpha2.Function
-		want string
+		name      string
+		fn        *serverlessv1alpha2.Function
+		baseImage string
+		want      string
 	}{
 		{
-			name: "should use runtime",
+			name:      "should use runtime",
+			baseImage: "nodejs18:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -109,7 +115,8 @@ func Test_calculateInlineImageTag(t *testing.T) {
 			want: "9f131e00ad3c6cfc5ca36f27df299eeeb2b08bcc4328782e79b69440b1b7aa2b",
 		},
 		{
-			name: "should use runtimeOverride",
+			name:      "should use runtimeOverride",
+			baseImage: "nodejs18:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -134,7 +141,8 @@ func Test_calculateInlineImageTag(t *testing.T) {
 			want: "9f131e00ad3c6cfc5ca36f27df299eeeb2b08bcc4328782e79b69440b1b7aa2b",
 		},
 		{
-			name: "should use runtime instead of runtimeOverride",
+			name:      "should use runtime instead of runtimeOverride",
+			baseImage: "nodejs18:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -161,7 +169,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, calculateInlineImageTag(tt.fn))
+			assert.Equal(t, tt.want, calculateInlineImageTag(tt.fn, tt.baseImage))
 		})
 	}
 }

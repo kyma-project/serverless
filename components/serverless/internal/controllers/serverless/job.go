@@ -65,7 +65,7 @@ func buildStateFnCheckImageJob(expectedJob batchv1.Job) stateFn {
 			return buildStatusUpdateStateFnWithCondition(condition), nil
 		}
 
-		s.fnImage = s.buildImageAddress(r.cfg.docker.PullAddress)
+		s.fnImage = s.buildImageAddress(r.cfg.docker.PullAddress, r.cfg.runtimeBaseImage)
 
 		diffRuntimeImage, err := functionRuntimeChanged(ctx, r, s)
 		if err != nil {

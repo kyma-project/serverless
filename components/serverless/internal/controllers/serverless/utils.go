@@ -363,22 +363,24 @@ func getCondition(conditions []serverlessv1alpha2.Condition, conditionType serve
 	return serverlessv1alpha2.Condition{}
 }
 
-func calculateInlineImageTag(instance *serverlessv1alpha2.Function) string {
+func calculateInlineImageTag(instance *serverlessv1alpha2.Function, runtimeBase string) string {
 	hash := sha256.Sum256([]byte(strings.Join([]string{
 		string(instance.GetUID()),
 		fmt.Sprintf("%v", *instance.Spec.Source.Inline),
 		instance.EffectiveRuntime(),
+		runtimeBase,
 	}, "-")))
 
 	return fmt.Sprintf("%x", hash)
 }
 
-func calculateGitImageTag(instance *serverlessv1alpha2.Function) string {
+func calculateGitImageTag(instance *serverlessv1alpha2.Function, runtimeBase string) string {
 	data := strings.Join([]string{
 		string(instance.GetUID()),
 		instance.Status.Commit,
 		instance.Status.BaseDir,
 		instance.EffectiveRuntime(),
+		runtimeBase,
 	}, "-")
 	hash := sha256.Sum256([]byte(data))
 	return fmt.Sprintf("%x", hash)
