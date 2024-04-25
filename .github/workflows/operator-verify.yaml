@@ -74,6 +74,9 @@ jobs:
           make -C tests/operator test
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+      - name: collect cluster-info
+        if: ${{ always() }}
+        run: make -C tests/operator cluster-info
 
   operator-upgrade-test:
     runs-on: ubuntu-latest
@@ -101,6 +104,9 @@ jobs:
           make -C tests/operator test
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+      - name: collect cluster-info
+        if: ${{ always() }}
+        run: make -C tests/operator cluster-info
 
   gardener-integration-test:
     if: github.event_name == 'push'
@@ -128,7 +134,6 @@ jobs:
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
       - name: deprovision gardener
-#       https://docs.github.com/en/actions/learn-github-actions/expressions#always
         if: ${{ always() }}
         run: make -C hack deprovision-gardener
         env:
