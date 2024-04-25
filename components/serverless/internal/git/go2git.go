@@ -77,6 +77,8 @@ func (g *git2GoClient) LastCommit(options Options) (string, error) {
 	if err != nil {
 		return "", errors.Wrap(err, "while creating temporary directory")
 	}
+	defer os.RemoveAll(repoDir)
+	
 	repo, err := g.fetchRepo(options, repoDir)
 	if err != nil {
 		return "", errors.Wrap(err, "while fetching the repository")
