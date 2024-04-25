@@ -1,14 +1,14 @@
 module-name: serverless
 rc-tag: 1.4.0
 protecode:
-  - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:1.4.3
-  - europe-docker.pkg.dev/kyma-project/prod/function-controller:1.4.3
-  - europe-docker.pkg.dev/kyma-project/prod/function-webhook:1.4.3
-  - europe-docker.pkg.dev/kyma-project/prod/function-build-init:1.4.3
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs18:1.4.3
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:1.4.3
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python39:1.4.3
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:1.4.3
+  - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:1.4.4
+  - europe-docker.pkg.dev/kyma-project/prod/function-controller:1.4.4
+  - europe-docker.pkg.dev/kyma-project/prod/function-webhook:1.4.4
+  - europe-docker.pkg.dev/kyma-project/prod/function-build-init:1.4.4
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs18:1.4.4
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:1.4.4
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python39:1.4.4
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:1.4.4
   - europe-docker.pkg.dev/kyma-project/prod/tpi/kaniko-executor:1.9.2-ea54c1c7
   - europe-docker.pkg.dev/kyma-project/prod/tpi/registry:2.8.1-1ae4c190
 whitesource:
