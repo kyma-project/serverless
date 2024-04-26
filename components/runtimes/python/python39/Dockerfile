@@ -7,10 +7,12 @@ LABEL source = git@github.com:kyma-project/kyma.git
 RUN apk add --no-cache --virtual .build-deps build-base linux-headers
 
 COPY ./python39/requirements.txt /kubeless/requirements.txt
+RUN chmod 644 /kubeless/requirements.txt
 
 RUN pip install --no-cache-dir -r /kubeless/requirements.txt
 
 COPY ./ /
+RUN chmod 644 kubeless.py
 
 WORKDIR /
 

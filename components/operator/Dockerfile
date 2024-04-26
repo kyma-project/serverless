@@ -47,7 +47,6 @@ RUN if [[ "local" = "$PURPOSE" ]] ; then ./hack/replace_serverless_chart_images.
 # do nothing (keep unchanged versions) for "release"
 
 
-
 # Use distroless as minimal base image to package the operator binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM gcr.io/distroless/static:nonroot
