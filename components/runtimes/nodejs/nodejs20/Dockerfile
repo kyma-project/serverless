@@ -13,7 +13,7 @@ WORKDIR /usr/src/app
 
 COPY --chown=root:root --chmod=644 ./nodejs20/package.json /usr/src/app/
 RUN npm install && npm cache clean --force
-COPY --chown=root:root --chmod=644 ./lib /usr/src/app/lib
+COPY --chown=root:root --chmod=755 ./lib /usr/src/app/lib
 
 COPY --chown=root:root --chmod=644 ./server.js /usr/src/app/server.js
 
