@@ -24,7 +24,6 @@ import (
 
 	"github.com/kyma-project/serverless/components/serverless/internal/git"
 	"github.com/kyma-project/serverless/components/serverless/internal/resource"
-	"github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 )
 
@@ -143,7 +142,12 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, request ctrl.Request
 
 	contextLogger.Debug("starting state machine")
 
-	latestRuntimeImage, err := r.getRuntimeImageFromConfigMap(ctx, &instance)
+	runtime := instance.Status.Runtime
+	if runtime == "" {
+		runtime = instance.Spec.Runtime
+	}
+
+	latestRuntimeImage, err := r.getRuntimeImageFromConfigMap(ctx, instance.GetNamespace(), string(runtime))
 	if err != nil {
 		return ctrl.Result{}, errors.Wrap(err, "failed to fetch runtime image from config map")
 	}
@@ -206,10 +210,10 @@ func (r *FunctionReconciler) readDockerConfig(ctx context.Context, instance *ser
 
 }
 
-func (r *FunctionReconciler) getRuntimeImageFromConfigMap(ctx context.Context, function *v1alpha2.Function) (string, error) {
+func (r *FunctionReconciler) getRuntimeImageFromConfigMap(ctx context.Context, namespace, runtime string) (string, error) {
 	instance := &corev1.ConfigMap{}
-	dockerfileConfigMapName := fmt.Sprintf("dockerfile-%s", function.Status.Runtime)
-	err := r.client.Get(ctx, types.NamespacedName{Namespace: function.Namespace, Name: dockerfileConfigMapName}, instance)
+	dockerfileConfigMapName := fmt.Sprintf("dockerfile-%s", runtime)
+	err := r.client.Get(ctx, types.NamespacedName{Namespace: namespace, Name: dockerfileConfigMapName}, instance)
 	if err != nil {
 		return "", errors.Wrap(err, "while extracting correct config map for given runtime")
 	}
