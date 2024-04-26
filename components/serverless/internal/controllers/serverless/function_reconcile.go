@@ -147,7 +147,7 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, request ctrl.Request
 		runtime = instance.Spec.Runtime
 	}
 
-	latestRuntimeImage, err := r.getRuntimeImageFromConfigMap(ctx, instance.GetNamespace(), string(runtime))
+	latestRuntimeImage, err := r.getRuntimeImageFromConfigMap(ctx, instance.GetNamespace(), runtime)
 	if err != nil {
 		return ctrl.Result{}, errors.Wrap(err, "failed to fetch runtime image from config map")
 	}
@@ -210,7 +210,7 @@ func (r *FunctionReconciler) readDockerConfig(ctx context.Context, instance *ser
 
 }
 
-func (r *FunctionReconciler) getRuntimeImageFromConfigMap(ctx context.Context, namespace, runtime string) (string, error) {
+func (r *FunctionReconciler) getRuntimeImageFromConfigMap(ctx context.Context, namespace string, runtime serverlessv1alpha2.Runtime) (string, error) {
 	instance := &corev1.ConfigMap{}
 	dockerfileConfigMapName := fmt.Sprintf("dockerfile-%s", runtime)
 	err := r.client.Get(ctx, types.NamespacedName{Namespace: namespace, Name: dockerfileConfigMapName}, instance)
