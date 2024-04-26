@@ -6,7 +6,7 @@
 # Build the operator binary
 FROM golang:1.22.2 as builder
 
-WORKDIR /workspace
+WORKDIR /workdir
 
 # Copy the Go Modules manifests
 COPY go.mod go.sum ./
@@ -26,7 +26,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o operator ./components/o
 # Bumping serverless images in the values.yaml - used for building "local" and "dev" images
 FROM alpine:3.19.1 as replacer
 
-WORKDIR /workspace
+WORKDIR /workdir
 
 ARG PURPOSE
 ARG IMG_DIRECTORY
@@ -52,8 +52,8 @@ RUN if [[ "local" = "$PURPOSE" ]] ; then ./hack/replace_serverless_chart_images.
 FROM gcr.io/distroless/static:nonroot
 
 WORKDIR /
-COPY --chown=65532:65532 --from=builder /workspace/operator .
-COPY --chown=65532:65532 --from=replacer /workspace/config/serverless /module-chart
+COPY --chown=65532:65532 --from=builder /workdir/operator .
+COPY --chown=65532:65532 --from=replacer /workdir/config/serverless /module-chart
 USER 65532:65532
 
 ENTRYPOINT ["/operator"]
