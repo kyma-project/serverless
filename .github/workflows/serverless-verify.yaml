@@ -122,7 +122,7 @@ jobs:
           cluster-name: "k3dCluster"
           args: >-
             --agents 1
-            --image rancher/k3s:v1.28.6-k3s1
+            --image rancher/k3s:v1.29.3-k3s1
             --port 80:80@loadbalancer
             --port 443:443@loadbalancer
             --wait
