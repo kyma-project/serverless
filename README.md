@@ -40,6 +40,7 @@ kubectl apply -f https://github.com/kyma-project/serverless/releases/latest/down
 - [Docker](https://www.docker.com/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/)
 - [Kubebuilder](https://book.kubebuilder.io/)
+- [yq](https://mikefarah.gitbook.io/yq)
 
 
 ## Installation in the k3d Cluster Using Make Targets
@@ -50,7 +51,7 @@ kubectl apply -f https://github.com/kyma-project/serverless/releases/latest/down
     git clone https://github.com/kyma-project/serverless.git && cd serverless/
     ```
 
-2. Build Serverless Operator locally and run it in the k3d cluster.
+2. Run serverless from main with new k3d cluster 
 
     ```bash
     make run-main
@@ -58,7 +59,7 @@ kubectl apply -f https://github.com/kyma-project/serverless/releases/latest/down
 
 > **NOTE:** To clean up the k3d cluster, use the `make delete-k3d` make target.
 
-> **NOTE:** If you have k3d already running you can use `install-*` target to install Serverless in different flavors.
+> **NOTE:** If you have k3d already running you can use `install-*` targets to install Serverless in different flavors.
 
 ## Using Serverless Operator
 
@@ -104,3 +105,18 @@ kubectl apply -f https://github.com/kyma-project/serverless/releases/latest/down
             secretName: my-secret
     EOF
     ```
+## Troubleshooting
+
+### Target install-serverless-local-sources - lookup k3d-kyma-registry.localhost: no such host
+
+On some OSes there is a problem with pushing to k3d registry.
+The error log may look similar:
+```
++ docker push k3d-kyma-registry.localhost:5000/kyma-project/function-controller:local-20240426-111856
+The push refers to repository [k3d-kyma-registry.localhost:5000/kyma-project/function-controller]
+Get "https://k3d-kyma-registry.localhost:5000/v2/": dialing k3d-kyma-registry.localhost:5000 with direct connection: resolving host k3d-kyma-registry.localhost: lookup k3d-kyma-registry.localhost: no such host
+make: *** [install-serverless-local-sources] Error 1
+```
+
+You have to add `127.0.0.1 k3d-kyma-registry.locahost` to your `etc/hosts`. 
+More details: https://k3d.io/v5.3.0/usage/registries/#preface-referencing-local-registries
