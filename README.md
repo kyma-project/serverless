@@ -105,18 +105,3 @@ kubectl apply -f https://github.com/kyma-project/serverless/releases/latest/down
             secretName: my-secret
     EOF
     ```
-## Troubleshooting
-
-### Target install-serverless-local-sources - lookup k3d-kyma-registry.localhost: no such host
-
-On some OSes there is a problem with pushing to k3d registry.
-The error log may look similar:
-```
-+ docker push k3d-kyma-registry.localhost:5000/kyma-project/function-controller:local-20240426-111856
-The push refers to repository [k3d-kyma-registry.localhost:5000/kyma-project/function-controller]
-Get "https://k3d-kyma-registry.localhost:5000/v2/": dialing k3d-kyma-registry.localhost:5000 with direct connection: resolving host k3d-kyma-registry.localhost: lookup k3d-kyma-registry.localhost: no such host
-make: *** [install-serverless-local-sources] Error 1
-```
-
-You have to add `127.0.0.1 k3d-kyma-registry.locahost` to your `etc/hosts`. 
-More details: https://k3d.io/v5.3.0/usage/registries/#preface-referencing-local-registries
