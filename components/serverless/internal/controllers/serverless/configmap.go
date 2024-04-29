@@ -26,7 +26,7 @@ func stateFnInlineCheckSources(ctx context.Context, r *reconciler, s *systemStat
 		return nil, errors.Wrap(err, "while listing deployments")
 	}
 
-	srcChanged := s.inlineFnSrcChanged(r.cfg.docker.PullAddress)
+	srcChanged := s.inlineFnSrcChanged(r.cfg.docker.PullAddress, r.cfg.runtimeBaseImage)
 	if !srcChanged {
 		cfgStatus := getConditionStatus(s.instance.Status.Conditions, serverlessv1alpha2.ConditionConfigurationReady)
 		if cfgStatus == corev1.ConditionTrue {
