@@ -66,20 +66,20 @@ func prometheusSvcAnnotations() map[string]string {
 		"prometheus.io/scrape": "true",
 	}
 }
-func (s *systemState) buildImageAddress(registryAddress string) string {
+func (s *systemState) buildImageAddress(registryAddress string, runtimeBase string) string {
 	var imageTag string
 	isGitType := s.instance.TypeOf(serverlessv1alpha2.FunctionTypeGit)
 	if isGitType {
-		imageTag = calculateGitImageTag(&s.instance)
+		imageTag = calculateGitImageTag(&s.instance, runtimeBase)
 	} else {
-		imageTag = calculateInlineImageTag(&s.instance)
+		imageTag = calculateInlineImageTag(&s.instance, runtimeBase)
 	}
 	return fmt.Sprintf("%s/%s-%s:%s", registryAddress, s.instance.Namespace, s.instance.Name, imageTag)
 }
 
 // TODO to self - create issue to refactor this
-func (s *systemState) inlineFnSrcChanged(dockerPullAddress string) bool {
-	image := s.buildImageAddress(dockerPullAddress)
+func (s *systemState) inlineFnSrcChanged(dockerPullAddress string, runtimeBase string) bool {
+	image := s.buildImageAddress(dockerPullAddress, runtimeBase)
 	configurationStatus := getConditionStatus(s.instance.Status.Conditions, serverlessv1alpha2.ConditionConfigurationReady)
 	rtm := fnRuntime.GetRuntime(s.instance.Spec.Runtime)
 	fnLabels := s.functionLabels()
@@ -240,7 +240,7 @@ func (s *systemState) buildGitJobRepoFetcherContainer(gitOptions git.Options, cf
 }
 
 func (s *systemState) buildJobExecutorContainer(cfg cfg, volumeMounts []corev1.VolumeMount) corev1.Container {
-	imageName := s.buildImageAddress(cfg.docker.PushAddress)
+	imageName := s.buildImageAddress(cfg.docker.PushAddress, cfg.runtimeBaseImage)
 	args := append(cfg.fn.Build.ExecutorArgs,
 		fmt.Sprintf("%s=%s", destinationArg, imageName),
 		fmt.Sprintf("--context=dir://%s", workspaceMountPath))
@@ -414,8 +414,8 @@ type buildDeploymentArgs struct {
 	ImagePullAccountName   string
 }
 
-func (s *systemState) buildDeployment(cfg buildDeploymentArgs, resourceConfig Resources) appsv1.Deployment {
-	imageName := s.buildImageAddress(cfg.DockerPullAddress)
+func (s *systemState) buildDeployment(args buildDeploymentArgs, cfg cfg) appsv1.Deployment {
+	imageName := s.buildImageAddress(args.DockerPullAddress, cfg.runtimeBaseImage)
 
 	const volumeName = "tmp-dir"
 	emptyDirVolumeSize := resource.MustParse("100Mi")
@@ -427,8 +427,8 @@ func (s *systemState) buildDeployment(cfg buildDeploymentArgs, resourceConfig Re
 	deploymentEnvs := buildDeploymentEnvs(
 		s.instance.GetName(),
 		s.instance.GetNamespace(),
-		cfg.TraceCollectorEndpoint,
-		cfg.PublisherProxyAddress,
+		args.TraceCollectorEndpoint,
+		args.PublisherProxyAddress,
 	)
 	envs = append(envs, deploymentEnvs...)
 
@@ -468,7 +468,7 @@ func (s *systemState) buildDeployment(cfg buildDeploymentArgs, resourceConfig Re
 				Name:         functionContainerName,
 				Image:        imageName,
 				Env:          envs,
-				Resources:    getDeploymentResources(s.instance, resourceConfig),
+				Resources:    getDeploymentResources(s.instance, cfg.fn.ResourceConfig.Function.Resources),
 				VolumeMounts: volumeMounts,
 				/*
 					In order to mark pod as ready we need to ensure the function is actually running and ready to serve traffic.
@@ -514,7 +514,7 @@ func (s *systemState) buildDeployment(cfg buildDeploymentArgs, resourceConfig Re
 				SecurityContext: restrictiveContainerSecurityContext(),
 			},
 		},
-		ServiceAccountName: cfg.ImagePullAccountName,
+		ServiceAccountName: args.ImagePullAccountName,
 	}
 	enrichPodSpecWithSecurityContext(&templateSpec, functionUser, functionUserGroup)
 

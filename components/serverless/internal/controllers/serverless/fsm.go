@@ -31,8 +31,9 @@ type k8s struct {
 }
 
 type cfg struct {
-	docker DockerConfig
-	fn     FunctionConfig
+	runtimeBaseImage string
+	docker           DockerConfig
+	fn               FunctionConfig
 }
 
 // nolint
