@@ -4,7 +4,7 @@
 - simple: true
   widget: Alert
   severity: warning
-  alert: "'Internal Docker Registry is not recommended for production grade installations'"
+  alert: "'Internal Docker Registry is not a highly available registry and should be used for development purpose only'"
   visibility: "$root.spec.dockerRegistry.enableInternal = true"
 - path: spec.dockerRegistry.secretName
   visibility: $root.spec.dockerRegistry.enableInternal != true
