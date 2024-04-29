@@ -9,11 +9,15 @@ RUN mkdir -p /usr/src/app
 RUN mkdir -p /usr/src/app/lib
 WORKDIR /usr/src/app
 
-COPY ./nodejs18/package.json /usr/src/app/
-RUN npm install && npm cache clean --force
-COPY ./lib /usr/src/app/lib
+COPY --chown=root:root ./nodejs18/package.json /usr/src/app/
+RUN chmod 644 /usr/src/app/package.json
 
-COPY ./server.js /usr/src/app/server.js
+RUN npm install && npm cache clean --force
+COPY --chown=root:root ./lib /usr/src/app/lib
+RUN chmod -R 755 /usr/src/app/lib
+
+COPY --chown=root:root ./server.js /usr/src/app/server.js
+RUN chmod 644 /usr/src/app/server.js
 
 CMD ["npm", "start"]
 
