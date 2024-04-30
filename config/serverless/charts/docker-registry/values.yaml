@@ -131,13 +131,14 @@ initContainers:
   # this is required to allow the initContainer to chmod the volumemount for the registry storage volume. This is incompatible with the security requirements above and should be fixed in the future.
     runAsUser: 0
     runAsGroup: 0
-    privileged: true # TODO: remove this field after resolving TODO in the init container
+    privileged: false
     allowPrivilegeEscalation: false
     capabilities:
       drop: ["ALL"]
       add: ["CHOWN"]
     procMount: default # Optional. The default is false if the entry is not there.
-    readOnlyRootFilesystem: true # Mandatory
+    # TODO: remove this field after resolving TODO in the init container
+    readOnlyRootFilesystem: false # Mandatory (true)
 
 pod:
   # the following guidelines should be followed for this https://github.com/kyma-project/community/tree/main/concepts/psp-replacement
