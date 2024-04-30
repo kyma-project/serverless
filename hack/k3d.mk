@@ -10,7 +10,7 @@ endif
 
 .PHONY: create-k3d
 create-k3d: delete-k3d ## Delete old k3d registry and cluster. Create preconfigured k3d with registry
-	k3d registry create ${REGISTRY_NAME} --port 5000
+	k3d registry create ${REGISTRY_NAME} --port 5000 --no-help
 	k3d cluster create ${CLUSTER_NAME} --registry-use "k3d-${REGISTRY_NAME}:5000"
 	kubectl create namespace kyma-system
 
