@@ -9,10 +9,6 @@ body:
   - name: Desired Specification
     widget: Panel
     children:
-      - widget: Alert
-        severity: warning
-        alert: "'Internal Docker Registry is not a highly available registry and should be used for development purpose only'"
-        visibility: "$root.spec.dockerRegistry.enableInternal = true"
       - name: Docker Registry
         visibility: $root.spec.dockerRegistry.enableInternal = true
         source: spec.dockerRegistry.enableInternal?"INTERNAL":""
@@ -57,6 +53,11 @@ body:
       - name: Target CPU utilisation for HPA
         source: spec.targetCPUUtilizationPercentage
         visibility: '$exists($value)'
+  - simple: true
+    widget: Alert
+    severity: warning
+    alert: "'Internal Docker Registry is not a highly available registry and should be used for development purpose only'"
+    visibility: "$root.spec.dockerRegistry.enableInternal = true"
   - name: Status
     widget: Panel
     children:

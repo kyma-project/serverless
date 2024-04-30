@@ -1,6 +1,6 @@
 configMapGenerator:
-- name: operator.kyma-project.io
-  namespace: kube-public
+- name: serverless.operator.kyma-project.io
+  namespace: kyma-system
   files:
   - general
   - form
