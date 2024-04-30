@@ -48,6 +48,7 @@ spec:
       initContainers:
         - name: generate-htpasswd
           # TODO: replace this image with self crafted one with htpasswd installed
+          # https://github.com/kyma-project/serverless/issues/858#issuecomment-2085199217
           image: alpine:3.19.1
 {{- if .Values.initContainers.securityContext }}
           securityContext:
