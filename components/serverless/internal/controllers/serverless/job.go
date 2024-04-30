@@ -3,15 +3,12 @@ package serverless
 import (
 	"context"
 	"fmt"
-	"regexp"
-	"strings"
 	"time"
 
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	apilabels "k8s.io/apimachinery/pkg/labels"
-	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
@@ -68,7 +65,7 @@ func buildStateFnCheckImageJob(expectedJob batchv1.Job) stateFn {
 			return buildStatusUpdateStateFnWithCondition(condition), nil
 		}
 
-		s.fnImage = s.buildImageAddress(r.cfg.docker.PullAddress)
+		s.fnImage = s.buildImageAddress(r.cfg.docker.PullAddress, r.cfg.runtimeBaseImage)
 
 		diffRuntimeImage, err := functionRuntimeChanged(ctx, r, s)
 		if err != nil {
@@ -108,11 +105,7 @@ func functionRuntimeChanged(ctx context.Context, r *reconciler, s *systemState) 
 		return !result, nil
 	}
 
-	latestRuntimeImage, err := getRuntimeImageFromConfigMap(ctx, r, s)
-	if err != nil {
-		return false, errors.Wrap(err, "while fetching runtime image from config map")
-	}
-	result := latestRuntimeImage == functionRuntimeImage
+	result := r.cfg.runtimeBaseImage == functionRuntimeImage
 	return !result, nil
 }
 
@@ -141,11 +134,6 @@ func buildStateFnRunJob(expectedJob batchv1.Job) stateFn {
 			return nil, errors.Wrap(err, "while creating job")
 		}
 
-		runtimeImage, err := getRuntimeImageFromConfigMap(ctx, r, s)
-		if err != nil {
-			return nil, errors.Wrap(err, "while extracting runtime fn-image from config map")
-		}
-
 		condition := serverlessv1alpha2.Condition{
 			Type:               serverlessv1alpha2.ConditionBuildReady,
 			Status:             corev1.ConditionUnknown,
@@ -154,26 +142,9 @@ func buildStateFnRunJob(expectedJob batchv1.Job) stateFn {
 			Message:            fmt.Sprintf("Job %s created", expectedJob.GetName()),
 		}
 
-		s.instance.Status.RuntimeImage = runtimeImage
+		s.instance.Status.RuntimeImage = r.cfg.runtimeBaseImage
 		return buildStatusUpdateStateFnWithCondition(condition), nil
 	}
-}
-
-func getRuntimeImageFromConfigMap(ctx context.Context, r *reconciler, s *systemState) (string, error) {
-	instance := &corev1.ConfigMap{}
-	dockerfileConfigMapName := fmt.Sprintf("dockerfile-%s", s.instance.Status.Runtime)
-	err := r.client.Get(ctx, types.NamespacedName{Namespace: s.instance.Namespace, Name: dockerfileConfigMapName}, instance)
-	if err != nil {
-		return "", errors.Wrap(err, "while extracting correct config map for given runtime")
-	}
-	baseImage := instance.Data["Dockerfile"]
-	re := regexp.MustCompile(`base_image=.*`)
-	matchedLines := re.FindStringSubmatch(baseImage)
-	if len(matchedLines) == 0 {
-		return "", errors.Errorf("could not find the base image from %s", dockerfileConfigMapName)
-	}
-	runtimeImage := strings.TrimPrefix(matchedLines[0], "base_image=")
-	return runtimeImage, err
 }
 
 func stateFnInlineDeleteJobs(ctx context.Context, r *reconciler, s *systemState) (stateFn, error) {

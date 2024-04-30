@@ -119,7 +119,7 @@ func assertSuccessfulFunctionDeployment(t *testing.T, resourceClient resource.Cl
 		instance: *function,
 	}
 
-	g.Expect(deployment.Spec.Template.Spec.Containers[0].Image).To(gomega.Equal(s.buildImageAddress(regPullAddr)))
+	g.Expect(deployment.Spec.Template.Spec.Containers[0].Image).To(gomega.Equal(s.buildImageAddress(regPullAddr, "some_image")))
 	g.Expect(deployment.Spec.Template.Labels).To(gomega.HaveLen(8))
 	g.Expect(deployment.Spec.Template.Labels[serverlessv1alpha2.FunctionNameLabel]).To(gomega.Equal(function.Name))
 	g.Expect(deployment.Spec.Template.Labels[serverlessv1alpha2.PodAppNameLabel]).To(gomega.Equal(function.Name))
