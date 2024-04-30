@@ -140,7 +140,7 @@ spec:
             - name: APP_FUNCTION_BUILD_EXECUTOR_ARGS
               value: "{{.Values.containers.manager.configuration.data.functionBuildExecutorArgs }}"
             - name: APP_FUNCTION_BUILD_EXECUTOR_IMAGE
-              value: "{{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.kaniko_executor) }}"
+              value: "{{ include "imageurl" (dict "reg" .Values.global.tpiContainerRegistry "img" .Values.global.images.kaniko_executor) }}"
             - name: APP_FUNCTION_TARGET_CPU_UTILIZATION_PERCENTAGE
               value: "{{.Values.containers.manager.configuration.data.targetCPUUtilizationPercentage }}"
             - name: APP_FUNCTION_BUILD_REPO_FETCHER_IMAGE

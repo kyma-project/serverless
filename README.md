@@ -40,6 +40,7 @@ kubectl apply -f https://github.com/kyma-project/serverless/releases/latest/down
 - [Docker](https://www.docker.com/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/)
 - [Kubebuilder](https://book.kubebuilder.io/)
+- [yq](https://mikefarah.gitbook.io/yq)
 
 
 ## Installation in the k3d Cluster Using Make Targets
@@ -50,7 +51,7 @@ kubectl apply -f https://github.com/kyma-project/serverless/releases/latest/down
     git clone https://github.com/kyma-project/serverless.git && cd serverless/
     ```
 
-2. Build Serverless Operator locally and run it in the k3d cluster.
+2. Create a new k3d cluster and run Serverless from the main branch:
 
     ```bash
     make run-main
@@ -58,7 +59,7 @@ kubectl apply -f https://github.com/kyma-project/serverless/releases/latest/down
 
 > **NOTE:** To clean up the k3d cluster, use the `make delete-k3d` make target.
 
-> **NOTE:** If you have k3d already running you can use `install-*` target to install Serverless in different flavors.
+> **NOTE:** If you have k3d already running, you can use the `install-*` targets to install Serverless in different flavors.
 
 ## Using Serverless Operator
 
