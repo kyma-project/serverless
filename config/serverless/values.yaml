@@ -146,7 +146,7 @@ pod:
 containers:
   daemonset:
     initContainerSecurityContext:
-      privileged: true # TODO: remove this field after resolving TODO in the init container
+      privileged: false
       allowPrivilegeEscalation: false
       runAsUser: 0
     containerSecurityContext:

@@ -131,7 +131,7 @@ initContainers:
   # this is required to allow the initContainer to chmod the volumemount for the registry storage volume. This is incompatible with the security requirements above and should be fixed in the future.
     runAsUser: 0
     runAsGroup: 0
-    privileged: false
+    privileged: true # TODO: remove this field after resolving TODO in the init container
     allowPrivilegeEscalation: false
     capabilities:
       drop: ["ALL"]
