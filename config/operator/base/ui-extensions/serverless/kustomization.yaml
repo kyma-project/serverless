@@ -1,11 +1,12 @@
 configMapGenerator:
-- name: serverless.operator.kyma-project.io
+- name: operator.kyma-project.io
   namespace: kyma-system
   files:
   - general
   - form
   - list
   - details
+  - translations
   options:
     disableNameSuffixHash: true
     labels:
