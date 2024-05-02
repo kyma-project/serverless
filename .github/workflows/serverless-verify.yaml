@@ -69,7 +69,7 @@ jobs:
           make -C tests/serverless serverless-integration serverless-contract-tests
           make remove-serverless
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/dev/dockerregistry-operator:PR-17
+          IMG: europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:v20240430-39d4875c
       - name: run integration test (post)
         if: github.event_name == 'push'
         run: |
