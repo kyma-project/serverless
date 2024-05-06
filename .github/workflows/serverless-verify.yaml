@@ -52,16 +52,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: ${{ env.SETUP_GO_VERSION }}
-      - name: create single cluster
-        uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79 #v2.4.0
-        with:
-          cluster-name: "k3dCluster"
-          args: >-
-            --agents 1
-            --image rancher/k3s:v1.29.3-k3s1
-            --port 80:80@loadbalancer
-            --port 443:443@loadbalancer
-            --wait
+      - uses: ./.github/actions/create-single-cluster
       - name: run integration test (pre)
         if: github.event_name == 'pull_request'
         run: |
@@ -87,16 +78,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: ${{ env.SETUP_GO_VERSION }}
-      - name: create single cluster
-        uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79 #v2.4.0
-        with:
-          cluster-name: "k3dCluster"
-          args: >-
-            --agents 1
-            --image rancher/k3s:v1.29.3-k3s1
-            --port 80:80@loadbalancer
-            --port 443:443@loadbalancer
-            --wait
+      - uses: ./.github/actions/create-single-cluster
       - name: run git auth tests
         run: |
           make install-serverless-custom-operator
@@ -116,16 +98,7 @@ jobs:
       - uses: actions/setup-go@v5
         with:
           go-version: ${{ env.SETUP_GO_VERSION }}
-      - name: create single cluster
-        uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79 #v2.4.0
-        with:
-          cluster-name: "k3dCluster"
-          args: >-
-            --agents 1
-            --image rancher/k3s:v1.29.3-k3s1
-            --port 80:80@loadbalancer
-            --port 443:443@loadbalancer
-            --wait
+      - uses: ./.github/actions/create-single-cluster
       - name: upgrade test
         run: |
           make install-serverless-latest-release install-serverless-custom-operator
