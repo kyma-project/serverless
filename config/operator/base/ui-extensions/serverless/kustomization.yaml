@@ -1,11 +1,12 @@
 configMapGenerator:
 - name: operator.kyma-project.io
-  namespace: kube-public
+  namespace: kyma-system
   files:
   - general
   - form
   - list
   - details
+  - translations
   options:
     disableNameSuffixHash: true
     labels:

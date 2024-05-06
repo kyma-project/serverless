@@ -6,6 +6,10 @@ header:
       positive:
         - 'Ready'
 body:
+  - widget: Alert
+    severity: warning
+    source: '"alert.internalregistry"'
+    visibility: $root.spec.dockerRegistry.enableInternal = true
   - name: Desired Specification
     widget: Panel
     children:
