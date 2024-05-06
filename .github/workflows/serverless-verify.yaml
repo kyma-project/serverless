@@ -1,8 +1,5 @@
 name: Serverless verify
 
-env:
-  SETUP_GO_VERSION: '1.22'
-
 on:
   push:
     branches: [ "main", "release-*" ]
@@ -23,9 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.SETUP_GO_VERSION }}
+      - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/setup-libgit2
       - uses: golangci/golangci-lint-action@v3
         with:
@@ -37,9 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.SETUP_GO_VERSION }}
+      - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/setup-libgit2
       - name: run test
         run: make -C components/serverless test
@@ -49,9 +42,7 @@ jobs:
     if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.SETUP_GO_VERSION }}
+      - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-single-cluster
       - name: run integration test (pre)
         if: github.event_name == 'pull_request'
@@ -75,9 +66,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.SETUP_GO_VERSION }}
+      - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-single-cluster
       - name: run git auth tests
         run: |
@@ -95,9 +84,7 @@ jobs:
     if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.SETUP_GO_VERSION }}
+      - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-single-cluster
       - name: upgrade test
         run: |

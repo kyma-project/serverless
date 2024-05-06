@@ -1,8 +1,5 @@
 name: Operator verify
 
-env:
-  SETUP_GO_VERSION: '1.22'
-
 on:
   push:
     branches: [ "main", "release-*" ]
@@ -23,9 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.SETUP_GO_VERSION }}
+      - uses: ./.github/actions/setup-go
       - uses: golangci/golangci-lint-action@v3
         with:
           version: latest
@@ -36,9 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.SETUP_GO_VERSION }}
+      - uses: ./.github/actions/setup-go
       - name: run test
         run: make -C components/operator test
 
@@ -47,9 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.SETUP_GO_VERSION }}
+      - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-single-cluster
       - name: run integration test (pre)
         if: github.event_name == 'pull_request'
@@ -74,9 +65,7 @@ jobs:
     if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.SETUP_GO_VERSION }}
+      - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-single-cluster
       - name: upgrade test
         run: |
@@ -95,9 +84,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ env.SETUP_GO_VERSION }}
+      - uses: ./.github/actions/setup-go
       - name: save sa
         shell: bash
         run: 'echo "$GARDENER_SA" > /tmp/gardener-sa.yaml'
