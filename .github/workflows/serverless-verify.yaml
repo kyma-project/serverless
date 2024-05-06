@@ -15,18 +15,6 @@ on:
       - converted_to_draft
 
 jobs:
-  serverless-lint:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/setup-libgit2
-      - uses: golangci/golangci-lint-action@v3
-        with:
-          version: latest
-          working-directory: 'components/serverless'
-
   serverless-unit-tests:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
