@@ -10,6 +10,9 @@
 
 Serverless Operator allows deploying the [Serverless](https://kyma-project.io/docs/kyma/latest/01-overview/serverless/) component in the Kyma cluster in compatibility with [Lifecycle Manager](https://github.com/kyma-project/lifecycle-manager).
 
+### Architecture Diagram
+![Architecture](./architecture.svg)
+
 ## Install
 
 Create the `kyma-system` namespace:
