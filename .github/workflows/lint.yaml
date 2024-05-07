@@ -1,4 +1,4 @@
-name: Lint test
+name: lint
 
 on:
   pull_request:
@@ -6,12 +6,7 @@ on:
       - 'components/operator/**'
       - 'components/serverless/**'
       - '.github/**'
-    types:
-      - opened
-      - reopened
-      - synchronize
-      - ready_for_review
-      - converted_to_draft
+    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
 
 jobs:
   operator-lint:

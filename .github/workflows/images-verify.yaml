@@ -1,4 +1,4 @@
-name: Images verify
+name: images verify
 run-name: ${{github.event.pull_request.title}}
 on: 
   pull_request:

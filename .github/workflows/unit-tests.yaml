@@ -1,0 +1,27 @@
+name: unit tests
+
+on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'examples/**'
+    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
+
+jobs:
+  operator-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-go
+      - name: run test
+        run: make -C components/operator test
+
+  serverless-unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-go
+      - uses: ./.github/actions/setup-libgit2
+      - name: run test
+        run: make -C components/serverless test
+

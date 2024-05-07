@@ -1,4 +1,4 @@
-name: "Promote serverless to release channel"
+name: promote to release channel
 
 on:
   workflow_dispatch:

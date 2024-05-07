@@ -1,0 +1,10 @@
+name: 'Collect cluster-info'
+description: 'Action for collecting cluster-info'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: collect cluster-info
+      if: ${{ always() }}
+      run: make -C tests/operator cluster-info
+      shell: bash
