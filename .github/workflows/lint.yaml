@@ -1,0 +1,36 @@
+name: Lint test
+
+on:
+  pull_request:
+    paths:
+      - 'components/operator/**'
+      - 'components/serverless/**'
+      - '.github/**'
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+      - converted_to_draft
+
+jobs:
+  operator-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-go
+      - uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          working-directory: 'components/operator'
+
+  serverless-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-go
+      - uses: ./.github/actions/setup-libgit2
+      - uses: golangci/golangci-lint-action@v3
+        with:
+          version: latest
+          working-directory: 'components/serverless'
