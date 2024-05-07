@@ -1,0 +1,24 @@
+name: Push verify
+
+on:
+  push:
+    branches: [ "main", "release-*" ]
+
+jobs:
+  call-push-operator-integration-test:
+    uses: ./.github/workflows/operator-verify.yaml@push-operator-integration-test
+
+  call-push-operator-upgrade-test:
+    uses: ./.github/workflows/operator-verify.yaml@push-operator-upgrade-test
+
+  call-push-gardener-integration-test:
+    uses: ./.github/workflows/operator-verify.yaml@push-gardener-integration-test
+
+  call-push-serverless-integration-test:
+    uses: ./.github/workflows/serverless-verify.yaml@push-serverless-integration-test
+
+  call-push-git-auth-integration-test:
+    uses: ./.github/workflows/serverless-verify.yaml@push-git-auth-integration-test
+
+  call-push-serverless-upgrade-test:
+    uses: ./.github/workflows/serverless-verify.yaml@push-serverless-upgrade-test

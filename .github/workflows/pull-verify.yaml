@@ -1,0 +1,26 @@
+name: Pull verify
+
+on:
+  pull_request:
+    paths-ignore:
+      - 'docs/**'
+      - 'examples/**'
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+      - converted_to_draft
+
+jobs:
+  call-pull-operator-unit-tests:
+    uses: ./.github/workflows/operator-verify.yaml@pull-operator-unit-tests
+
+  call-pull-operator-integration-test:
+    uses: ./.github/workflows/operator-verify.yaml@pull-operator-integration-test
+
+  call-pull-serverless-unit-tests:
+    uses: ./.github/workflows/serverless-verify.yaml@pull-serverless-unit-tests
+
+  call-pull-serverless-integration-test:
+    uses: ./.github/workflows/serverless-verify.yaml@pull-serverless-integration-test

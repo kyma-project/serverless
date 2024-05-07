@@ -1,22 +1,9 @@
 name: Serverless verify
 
-on:
-  push:
-    branches: [ "main", "release-*" ]
-  pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - 'examples/**'
-    types:
-      - opened
-      - reopened
-      - synchronize
-      - ready_for_review
-      - converted_to_draft
+on: [ workflow_call ]
 
 jobs:
-  serverless-unit-tests:
-    if: github.event_name == 'pull_request'
+  pull-serverless-unit-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,7 +12,7 @@ jobs:
       - name: run test
         run: make -C components/serverless test
 
-  serverless-integration-test:
+  pull-serverless-integration-test:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:
@@ -33,15 +20,21 @@ jobs:
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-single-cluster
       - name: run integration test (pre)
-        if: github.event_name == 'pull_request'
         run: |
           make install-serverless-custom-operator
           make -C tests/serverless serverless-integration serverless-contract-tests
           make remove-serverless
         env:
           IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
+
+  push-serverless-integration-test:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-go
+      - uses: ./.github/actions/create-single-cluster
       - name: run integration test (post)
-        if: github.event_name == 'push'
         run: |
           make install-serverless-custom-operator
           make -C tests/serverless serverless-integration serverless-contract-tests
@@ -49,8 +42,7 @@ jobs:
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
 
-  git-auth-integration-test:
-    if: github.event_name == 'push'
+  push-git-auth-integration-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -67,9 +59,8 @@ jobs:
           APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
 
-  serverless-upgrade-test:
+  push-serverless-upgrade-test:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-go

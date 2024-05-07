@@ -1,22 +1,9 @@
 name: Operator verify
 
-on:
-  push:
-    branches: [ "main", "release-*" ]
-  pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - 'examples/**'
-    types:
-      - opened
-      - reopened
-      - synchronize
-      - ready_for_review
-      - converted_to_draft
+on: [ workflow_call ]
 
 jobs:
-  operator-unit-tests:
-    if: github.event_name == 'pull_request'
+  pull-operator-unit-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +11,7 @@ jobs:
       - name: run test
         run: make -C components/operator test
 
-  operator-integration-test:
+  pull-operator-integration-test:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
@@ -32,14 +19,23 @@ jobs:
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-single-cluster
       - name: run integration test (pre)
-        if: github.event_name == 'pull_request'
         run: |
           make -C components/operator deploy
           make -C tests/operator test
         env:
           IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
+      - name: collect cluster-info
+        if: ${{ always() }}
+        run: make -C tests/operator cluster-info
+
+  push-operator-integration-test:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-go
+      - uses: ./.github/actions/create-single-cluster
       - name: run integration test (post)
-        if: github.event_name == 'push'
         run: |
           make -C components/operator deploy
           make -C tests/operator test
@@ -49,9 +45,8 @@ jobs:
         if: ${{ always() }}
         run: make -C tests/operator cluster-info
 
-  operator-upgrade-test:
+  push-operator-upgrade-test:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-go
@@ -68,8 +63,7 @@ jobs:
         if: ${{ always() }}
         run: make -C tests/operator cluster-info
 
-  gardener-integration-test:
-    if: github.event_name == 'push'
+  push-gardener-integration-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
