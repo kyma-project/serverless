@@ -1,0 +1,12 @@
+name: Push verify
+
+on:
+  push:
+    branches: [ "main", "release-*" ]
+
+jobs:
+  call-integration-tests:
+    uses: ./.github/workflows/push-integration-tests.yaml
+
+  call-upgrade-tests:
+    uses: ./.github/workflows/push-upgrade-tests.yaml
