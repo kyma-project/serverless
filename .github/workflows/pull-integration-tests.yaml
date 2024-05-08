@@ -5,8 +5,7 @@ on:
     paths-ignore:
       - 'docs/**'
       - 'examples/**'
-    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
-    draft: false
+    types: [ready_for_review]
 
 jobs:
   operator-integration-test:
