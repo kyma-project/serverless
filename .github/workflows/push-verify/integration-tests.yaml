@@ -1,31 +1,50 @@
-name: Serverless verify
+name: Integration tests
 
 on: [ workflow_call ]
 
 jobs:
-  pull-serverless-unit-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/setup-libgit2
-      - name: run test
-        run: make -C components/serverless test
-
-  pull-serverless-integration-test:
-    runs-on: ubuntu-latest
+  push-operator-integration-test:
     if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-single-cluster
-      - name: run integration test (pre)
+      - name: run integration test
         run: |
-          make install-serverless-custom-operator
-          make -C tests/serverless serverless-integration serverless-contract-tests
-          make remove-serverless
+          make -C components/operator deploy
+          make -C tests/operator test
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
+          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+      - uses: ./.github/actions/collect-cluster-info
+
+  push-gardener-integration-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-go
+      - name: save sa
+        shell: bash
+        run: 'echo "$GARDENER_SA" > /tmp/gardener-sa.yaml'
+        env:
+          GARDENER_SA: ${{ secrets.GARDENER_SA }}
+      - name: provision gardener
+        run: make -C hack provision-gardener
+        env:
+          GARDENER_SECRET_NAME: ${{ secrets.GARDENER_SECRET_NAME }}
+          GARDENER_PROJECT: ${{ secrets.GARDENER_PROJECT }}
+          GARDENER_SA_PATH: /tmp/gardener-sa.yaml
+      - name: run test
+        run: |
+          make -C components/operator deploy
+          make -C tests/operator test
+        env:
+          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+      - name: deprovision gardener
+        if: ${{ always() }}
+        run: make -C hack deprovision-gardener
+        env:
+          GARDENER_SA_PATH: /tmp/gardener-sa.yaml
 
   push-serverless-integration-test:
     runs-on: ubuntu-latest
@@ -34,7 +53,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-single-cluster
-      - name: run integration test (post)
+      - name: run integration test
         run: |
           make install-serverless-custom-operator
           make -C tests/serverless serverless-integration serverless-contract-tests
@@ -57,18 +76,4 @@ jobs:
           APP_TEST_GITHUB_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_GITHUB_SSH_KEY }}
           APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
           APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
-          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
-
-  push-serverless-upgrade-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-single-cluster
-      - name: upgrade test
-        run: |
-          make install-serverless-latest-release install-serverless-custom-operator
-          make -C tests/serverless serverless-integration serverless-contract-tests
-          make remove-serverless
-        env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
