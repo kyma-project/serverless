@@ -5,12 +5,7 @@ on:
     paths-ignore:
       - 'docs/**'
       - 'examples/**'
-    types:
-      - opened
-      - reopened
-      - synchronize
-      - ready_for_review
-      - converted_to_draft
+    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
 
 jobs:
   call-unit-tests:
