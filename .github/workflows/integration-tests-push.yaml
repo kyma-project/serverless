@@ -6,7 +6,6 @@ on:
 
 jobs:
   operator-integration-test:
-    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -50,7 +49,6 @@ jobs:
 
   serverless-integration-test:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-go
