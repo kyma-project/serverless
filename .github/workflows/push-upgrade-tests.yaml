@@ -5,7 +5,7 @@ on:
     branches: [ "main", "release-*" ]
 
 jobs:
-  push-operator-upgrade-test:
+  operator-upgrade-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,7 +21,7 @@ jobs:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
       - uses: ./.github/actions/collect-cluster-info
 
-  push-serverless-upgrade-test:
+  serverless-upgrade-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

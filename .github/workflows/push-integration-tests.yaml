@@ -5,7 +5,7 @@ on:
     branches: [ "main", "release-*" ]
 
 jobs:
-  push-operator-integration-test:
+  operator-integration-test:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
@@ -20,7 +20,7 @@ jobs:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
       - uses: ./.github/actions/collect-cluster-info
 
-  push-gardener-integration-test:
+  gardener-integration-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -48,7 +48,7 @@ jobs:
         env:
           GARDENER_SA_PATH: /tmp/gardener-sa.yaml
 
-  push-serverless-integration-test:
+  serverless-integration-test:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:
@@ -63,7 +63,7 @@ jobs:
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
 
-  push-git-auth-integration-test:
+  git-auth-integration-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

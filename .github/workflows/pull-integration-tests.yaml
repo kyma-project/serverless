@@ -8,7 +8,7 @@ on:
     types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
 
 jobs:
-  pull-operator-integration-test:
+  operator-integration-test:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
@@ -23,7 +23,7 @@ jobs:
           IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
       - uses: ./.github/actions/collect-cluster-info
 
-  pull-serverless-integration-test:
+  serverless-integration-test:
     runs-on: ubuntu-latest
     if: github.event.pull_request.draft == false
     steps:
