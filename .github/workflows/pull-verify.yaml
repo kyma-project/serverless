@@ -13,14 +13,8 @@ on:
       - converted_to_draft
 
 jobs:
-  call-pull-operator-unit-tests:
-    uses: ./.github/workflows/operator-verify.yaml@pull-operator-unit-tests
+  call-operator-verify:
+    uses: ./.github/workflows/operator-verify.yaml
 
-  call-pull-operator-integration-test:
-    uses: ./.github/workflows/operator-verify.yaml@pull-operator-integration-test
-
-  call-pull-serverless-unit-tests:
-    uses: ./.github/workflows/serverless-verify.yaml@pull-serverless-unit-tests
-
-  call-pull-serverless-integration-test:
-    uses: ./.github/workflows/serverless-verify.yaml@pull-serverless-integration-test
+  call-serverless-verify:
+    uses: ./.github/workflows/serverless-verify.yaml
