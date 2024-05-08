@@ -6,10 +6,10 @@ on:
       - 'docs/**'
       - 'examples/**'
     types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
+    draft: false
 
 jobs:
   operator-integration-test:
-    if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -25,7 +25,6 @@ jobs:
 
   serverless-integration-test:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-go
