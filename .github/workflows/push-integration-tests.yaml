@@ -1,6 +1,8 @@
-name: Integration tests
+name: Push integration tests
 
-on: [ workflow_call ]
+on:
+  push:
+    branches: [ "main", "release-*" ]
 
 jobs:
   push-operator-integration-test:

@@ -1,6 +1,8 @@
-name: Upgrade tests
+name: Push upgrade tests
 
-on: [ workflow_call ]
+on:
+  push:
+    branches: [ "main", "release-*" ]
 
 jobs:
   push-operator-upgrade-test:
