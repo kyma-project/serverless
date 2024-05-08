@@ -18,3 +18,7 @@ jobs:
 
   call-integration-tests:
     uses: ./.github/workflows/pull-verify/integration-tests.yaml
+
+  call-unit-tests-2:
+    uses: ./.github/workflows/unit-tests.yaml
+
