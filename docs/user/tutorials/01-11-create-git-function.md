@@ -125,7 +125,7 @@ You can create a Function either with kubectl or Kyma dashboard:
         type: # "basic" or "key"
         secretName: # "git-creds-basic" or "git-creds-ssh"
     ```
-    If you use `key` type authentication, the SSH URL format should be used to configure Function URL:
+    If you use the `key` type authentication, the SSH URL format must be used to configure the Function URL:
 
     ```yaml
     gitRepository:
