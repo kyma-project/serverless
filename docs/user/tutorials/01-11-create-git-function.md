@@ -123,8 +123,18 @@ You can create a Function either with kubectl or Kyma dashboard:
       ...
       auth:
         type: # "basic" or "key"
-        secretName: # "git-creds-basic" or "git-creds-key"
+        secretName: # "git-creds-basic" or "git-creds-ssh"
     ```
+    If you use the `key` type authentication, the SSH URL format must be used to configure the Function URL:
+
+    ```yaml
+    gitRepository:
+      ...
+      url: git@github.com/<your-github-handle>/<repo-name>.git
+      auth:
+        type: key
+        secretName: "git-creds-ssh"
+    ```  
 
     > [!NOTE]
     > To avoid performance degradation caused by large Git repositories and large monorepos, [Function Controller](../resources/06-10-function-cr.md#related-resources-and-components) implements a configurable backoff period for the source checkout based on `APP_FUNCTION_REQUEUE_DURATION`. If you want to allow the controller to perform the source checkout with every reconciliation loop, disable the backoff period by marking the Function CR with the annotation `serverless.kyma-project.io/continuousGitCheckout: true`
