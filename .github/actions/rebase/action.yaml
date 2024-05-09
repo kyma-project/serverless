@@ -5,6 +5,12 @@ runs:
   using: 'composite'
   steps:
 
+    - name: Setup git identity
+      run: |
+        git config --global user.email "rebase@action.com"
+        git config --global user.name "Rebase Action"
+      shell: bash
+
     - name: Update origin/main
       run: |
         git fetch origin main
