@@ -11,8 +11,8 @@ See sample Functions for all available runtimes:
 
 #### **Node.js**
 
-Serverless supports both CommonJS (cjs) and ECMAScript (ESM) syntax supported by Node.js
-You can switch between them via `type` property in the Function dependencies.
+Serverless supports both CommonJS (cjs) and ECMAScript (ESM) syntax supported by Node.js.
+You can switch between them using the `type` property in the Function dependencies.
 
 CommonJS example:
 
