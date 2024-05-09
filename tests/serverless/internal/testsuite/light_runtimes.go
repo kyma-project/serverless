@@ -116,5 +116,6 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 				assertion.NewHTTPCheck(nodejs20Logger, "NodeJS20 post update simple check through service", nodejs20Fn.FunctionURL, poll, "Hello from updated nodejs20"),
 			),
 		),
+		assertion.EventWarningCheck(logf, "Check events emitted", genericContainer.Namespace, coreCli),
 	), nil
 }

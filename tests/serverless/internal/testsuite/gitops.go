@@ -69,5 +69,6 @@ func GitopsSteps(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entr
 		function.CreateFunction(logf, gitFn, "Create Git Function", runtimes.GitopsFunction(gitCfg.GetGitServerInClusterURL(), "/", "master", serverlessv1alpha2.NodeJs20, nil)),
 		assertion.NewHTTPCheck(logf, "Git Function pre update simple check through service", gitFn.FunctionURL, poll, "GITOPS 1"),
 		git.NewCommitChanges(logf, "Commit changes to Git Function", gitCfg.GetGitServerURL(cfg.KubectlProxyEnabled)),
-		assertion.NewHTTPCheck(logf, "Git Function post update simple check through service", gitFn.FunctionURL, poll, "GITOPS 2")), nil
+		assertion.NewHTTPCheck(logf, "Git Function post update simple check through service", gitFn.FunctionURL, poll, "GITOPS 2"),
+		assertion.EventWarningCheck(logf, "Check events emitted", genericContainer.Namespace, coreCli)), nil
 }
