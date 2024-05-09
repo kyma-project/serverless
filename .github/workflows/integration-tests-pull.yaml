@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-single-cluster
       - name: run test
@@ -28,6 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-single-cluster
       - name: run test
