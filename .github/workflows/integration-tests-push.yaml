@@ -10,14 +10,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-single-cluster
+      - uses: ./.github/actions/create-k3d-cluster
       - name: run test
         run: |
           make -C components/operator deploy
           make -C tests/operator test
         env:
           IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
-      - uses: ./.github/actions/collect-cluster-info
+      - if: ${{ always() }}
+        uses: ./.github/actions/collect-cluster-info
 
   gardener-integration-test:
     runs-on: ubuntu-latest
@@ -52,7 +53,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-single-cluster
+      - uses: ./.github/actions/create-k3d-cluster
       - name: run test
         run: |
           make install-serverless-custom-operator
@@ -66,7 +67,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-single-cluster
+      - uses: ./.github/actions/create-k3d-cluster
       - name: run tests
         run: |
           make install-serverless-custom-operator
