@@ -15,11 +15,13 @@ import (
 func Start(t *testing.T) (cl client.Client, env *envtest.Environment) {
 	wdPath, err := os.Getwd()
 	require.NoError(t, err)
-	crdPath := buildCrdPath(wdPath)
+	crdPath := buildPathFromProjectRoot(wdPath, "components", "serverless", "config", "crd", "bases")
+	envtestBinsPath := buildPathFromProjectRoot(wdPath, "bin", "k8s", "kubebuilder_assets")
 
 	testEnv := &envtest.Environment{
 		CRDDirectoryPaths:     []string{crdPath},
 		ErrorIfCRDPathMissing: true,
+		BinaryAssetsDirectory: envtestBinsPath,
 	}
 	cfg, err := testEnv.Start()
 	require.NoError(t, err)
@@ -39,16 +41,16 @@ func Stop(t *testing.T, testEnv *envtest.Environment) {
 	require.NoError(t, testEnv.Stop())
 }
 
-func buildCrdPath(wd string) string {
+func buildPathFromProjectRoot(wd string, dirs ...string) string {
 	wdPath := strings.Split(wd, "/")
 
-	crdPath := []string{"/"}
-	for _, path := range wdPath {
-		crdPath = append(crdPath, path)
-		if path == "components" {
+	path := []string{"/"}
+	for _, dir := range wdPath {
+		if dir == "components" {
 			break
 		}
+		path = append(path, dir)
 	}
-	crdPath = append(crdPath, "serverless", "config", "crd", "bases")
-	return filepath.Join(crdPath...)
+	path = append(path, dirs...)
+	return filepath.Join(path...)
 }
