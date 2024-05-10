@@ -35,6 +35,8 @@ fmt: ## Run go fmt against code.
 vet: ## Run go vet against code.
 	go vet ./...
 
+##@ Verification
+
 .PHONY: test
 test: manifests generate fmt vet kubebuilder-assets ## Run unit tests.
 	KUBEBUILDER_CONTROLPLANE_START_TIMEOUT=2m KUBEBUILDER_CONTROLPLANE_STOP_TIMEOUT=2m KUBEBUILDER_ASSETS="$(KUBEBUILDER_ASSETS)" go test ./... -coverprofile cover.out
@@ -46,7 +48,7 @@ build: generate fmt vet ## Build operator binary.
 	go build -o bin/operator main.go
 
 .PHONY: run
-run: manifests generate fmt vet ## Run a controller from your host.
+run: manifests generate fmt vet ## Run a operator from your host.
 	go run ./main.go
 
 .PHONY: docker-build-dev
@@ -87,7 +89,7 @@ uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified 
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR)/crd | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
 
 .PHONY: deploy-main
-deploy-main: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
+deploy-main: manifests kustomize ## Deploy operator to the K8s cluster specified in ~/.kube/config.
 	kubectl create namespace kyma-system || true
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR_MAIN) | kubectl apply -f -
 
@@ -117,7 +119,7 @@ deploy-local: build-image-operator ## Deploy operator to the K8s cluster specifi
 	IMG=$(IMG) make deploy
 
 .PHONY: undeploy
-undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with IGNORE_NOT_FOUND=true to ignore resource not found errors during deletion.
+undeploy: ## Undeploy operator from the K8s cluster specified in ~/.kube/config. Call with IGNORE_NOT_FOUND=true to ignore resource not found errors during deletion.
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
 
 .PHONY: render-manifest
