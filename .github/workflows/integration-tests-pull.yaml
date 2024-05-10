@@ -15,14 +15,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-single-cluster
+      - uses: ./.github/actions/create-k3d-cluster
       - name: run test
         run: |
           make -C components/operator deploy
           make -C tests/operator test
         env:
           IMG: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
-      - uses: ./.github/actions/collect-cluster-info
+      - if: ${{ always() }}
+        uses: ./.github/actions/collect-cluster-info
 
   serverless-integration-test:
     if: github.event.pull_request.draft == false
@@ -31,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-single-cluster
+      - uses: ./.github/actions/create-k3d-cluster
       - name: run test
         run: |
           make install-serverless-custom-operator
