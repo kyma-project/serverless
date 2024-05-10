@@ -49,10 +49,6 @@ type ServerlessSpec struct {
 	FunctionBuildMaxSimultaneousJobs string `json:"functionBuildMaxSimultaneousJobs,omitempty"`
 	// Sets the timeout for the Function health check. The default value in seconds is `10`
 	HealthzLivenessTimeout string `json:"healthzLivenessTimeout,omitempty"`
-	// Used to configure the maximum size limit for the request body of a Function. The default value is `1` megabyte
-	FunctionRequestBodyLimitMb string `json:"functionRequestBodyLimitMb,omitempty"`
-	// Sets the maximum execution time limit for a Function. By default, the value is `180` seconds
-	FunctionTimeoutSec string `json:"functionTimeoutSec,omitempty"`
 	// Configures the default build Job preset to be used
 	DefaultBuildJobPreset string `json:"defaultBuildJobPreset,omitempty"`
 	// Configures the default runtime Pod preset to be used
@@ -110,8 +106,6 @@ type ServerlessStatus struct {
 	BuildExecutorArgs        string `json:"functionBuildExecutorArgs,omitempty"`
 	BuildMaxSimultaneousJobs string `json:"functionBuildMaxSimultaneousJobs,omitempty"`
 	HealthzLivenessTimeout   string `json:"healthzLivenessTimeout,omitempty"`
-	RequestBodyLimitMb       string `json:"functionRequestBodyLimitMb,omitempty"`
-	TimeoutSec               string `json:"functionTimeoutSec,omitempty"`
 	DefaultBuildJobPreset    string `json:"defaultBuildJobPreset,omitempty"`
 	DefaultRuntimePodPreset  string `json:"defaultRuntimePodPreset,omitempty"`
 

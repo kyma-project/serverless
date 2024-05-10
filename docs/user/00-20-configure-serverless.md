@@ -185,24 +185,6 @@ By default, the Function is considered unhealthy if the liveness health check en
       healthzLivenessTimeout: "10s"
 ```
 
-## Configure the Function Request Body Limit
-
-Use this field to configure the maximum size limit for the request body of a Function. The default value is set to `1` megabyte.
-
-```yaml
-   spec:
-      functionRequestBodyLimitMb: 1
-```
-
-## Configure the Function Timeout
-
-By default, the maximum execution time limit for a Function is set to `180` seconds.
-
-```yaml
-   spec:
-      functionTimeoutSec: 180
-```
-
 ## Configure the Default Build Job Preset
 
 You can configure the default build Job preset to be used.

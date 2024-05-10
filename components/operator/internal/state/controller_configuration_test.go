@@ -3,11 +3,9 @@ package state
 import (
 	"context"
 	"testing"
-	"fmt"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless/components/operator/internal/chart"
-	"github.com/kyma-project/serverless/components/operator/internal/warning"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
@@ -23,8 +21,6 @@ const (
 	executorArgsTest           = "test-build-executor-args"
 	maxSimultaneousJobsTest    = "test-max-simultaneous-jobs"
 	healthzLivenessTimeoutTest = "test-healthz-liveness-timeout"
-	requestBodyLimitMbTest     = "test-request-body-limit-mb"
-	timeoutSecTest             = "test-timeout-sec"
 	buildJobPresetTest         = "test=default-build-job-preset"
 	runtimePodPresetTest       = "test-default-runtime-pod-preset"
 )
@@ -233,20 +229,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			v1alpha1.ConditionReasonConfigured,
 			configurationReadyMsg)
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
-	})
-
-	t.Run("enable dead fields", func(t *testing.T) {
-		s := &systemState{
-			warningBuilder: warning.NewBuilder(),
-			instance: v1alpha1.Serverless{
-				Spec: v1alpha1.ServerlessSpec{
-					FunctionRequestBodyLimitMb:       requestBodyLimitMbTest,
-					FunctionTimeoutSec:               timeoutSecTest,
-				},
-			},
-		}
-		warnAboutDeadFields(s)
-		require.Equal(t, fmt.Sprintf("Warning: %s; %s", functionTimeoutDepreciationMessage, functionRequestBodyLimitDepreciationMessage), s.warningBuilder.Build())
 	})
 }
 
