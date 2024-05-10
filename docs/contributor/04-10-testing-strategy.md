@@ -11,7 +11,7 @@ Each pull request to the repository triggers the following CI/CD jobs that verif
 - `unit tests / serverless-unit-tests` - Runs unit tests of Serverless's logic. For the configuration, see the [unit-tests.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/unit-tests.yaml) file.
 - `integration tests (pull) / operator-integration-test` - Runs the create/update/delete Serverless integration tests in k3d cluster. For the configuration, see the [integration-tests-pull.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/integration-tests-pull.yaml) file.
 - `integration tests (pull) / serverless-integration-test` - Runs the basic functionality integration and the `tracing`, `api-gateway`, and `cloud-event` contract compatibility integration test suite for the Serverless in a k3d cluster. For the configuration, see the [integration-tests-pull.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/integration-tests-pull.yaml) file.
-- `gitleaks / gitleaks-scan` - Scans the pull request for secrets and credentials.
+- `gitleaks / gitleaks-scan` - Scans the pull request for secrets and credentials. For the configuration, see the [gitleaks.yaml.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/gitleaks.yaml) file.
 
 ## CI/CD Jobs Running on the Main Branch
 
@@ -24,4 +24,4 @@ Each pull request to the repository triggers the following CI/CD jobs that verif
 
 ## CI/CD Jobs Running on a Schedule
 
-- `markdown / documentation-link-check` - Runs Markdown link check every day at 05:00 AM.
+- `markdown / documentation-link-check` - Runs Markdown link check every day at 05:00 AM. For the configuration, see the [mlc.config.json](https://github.com/kyma-project/serverless/blob/main/.mlc.config.json) and the [markdown.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/markdown.yaml) files.
