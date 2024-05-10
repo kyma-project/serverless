@@ -206,23 +206,30 @@ func mergeMapWithNewValues(existing, newValues map[string]string) {
 	}
 }
 
-// TODO refactor to make this code more readable
 func equalDeployments(existing appsv1.Deployment, expected appsv1.Deployment) bool {
-	result := true
-	result = result && len(existing.Spec.Template.Spec.Containers) == 1
-	result = result && len(existing.Spec.Template.Spec.Containers) == len(expected.Spec.Template.Spec.Containers)
+	result := equalFnContainer(existing, expected)
+	result = result && equalMetadata(existing, expected)
 
-	result = result && existing.Spec.Template.Spec.Containers[0].Image == expected.Spec.Template.Spec.Containers[0].Image
-	result = result && envsEqual(existing.Spec.Template.Spec.Containers[0].Env, expected.Spec.Template.Spec.Containers[0].Env)
-	result = result && equalResources(existing.Spec.Template.Spec.Containers[0].Resources, expected.Spec.Template.Spec.Containers[0].Resources)
-
-	result = result && mapsEqual(existing.GetLabels(), expected.GetLabels())
-	result = result && mapsEqual(existing.Spec.Template.GetLabels(), expected.Spec.Template.GetLabels())
 	result = result && equalInt32Pointer(existing.Spec.Replicas, expected.Spec.Replicas)
-
-	result = result && mapsEqual(existing.Spec.Template.GetAnnotations(), expected.Spec.Template.GetAnnotations())
 	result = result && equalSecretMounts(existing.Spec.Template.Spec, expected.Spec.Template.Spec)
 	result = result && equalInt32Pointer(existing.Spec.RevisionHistoryLimit, expected.Spec.RevisionHistoryLimit)
+	return result
+}
+
+func equalMetadata(existing appsv1.Deployment, expected appsv1.Deployment) bool {
+	result := mapsEqual(existing.GetLabels(), expected.GetLabels())
+	result = result && mapsEqual(existing.Spec.Template.GetLabels(), expected.Spec.Template.GetLabels())
+	result = result && mapsEqual(existing.Spec.Template.GetAnnotations(), expected.Spec.Template.GetAnnotations())
+	return result
+}
+
+func equalFnContainer(existing appsv1.Deployment, expected appsv1.Deployment) bool {
+	if !(len(existing.Spec.Template.Spec.Containers) == 1 && len(expected.Spec.Template.Spec.Containers) == 1) {
+		return false
+	}
+	result := existing.Spec.Template.Spec.Containers[0].Image == expected.Spec.Template.Spec.Containers[0].Image
+	result = result && envsEqual(existing.Spec.Template.Spec.Containers[0].Env, expected.Spec.Template.Spec.Containers[0].Env)
+	result = result && equalResources(existing.Spec.Template.Spec.Containers[0].Resources, expected.Spec.Template.Spec.Containers[0].Resources)
 	return result
 }
 
