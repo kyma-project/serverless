@@ -59,7 +59,7 @@ func Test_sFnAddFinalizer(t *testing.T) {
 		require.Contains(t, obj.GetFinalizers(), r.cfg.finalizer)
 	})
 
-	t.Run("stop when no finalizer and instance is being deleted", func(t *testing.T) {
+	t.Run("stop when no finalizer and instance is being deleted, test 1234", func(t *testing.T) {
 		r := &reconciler{
 			cfg: cfg{
 				finalizer: v1alpha1.Finalizer,
