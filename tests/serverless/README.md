@@ -60,3 +60,17 @@ This project uses `go modules` as a dependency manager. To install all required 
 ```bash
 go mod download
 ```
+
+### Test flow
+
+##### Cloud Event Contract tests
+
+![eventing_flow.svg](./eventing_flow.svg)
+
+To save cloud event to memory, the functions uses two keys:
+- `ce-source`, identify what kind of the event was sent: `contract-test`or runtime name.
+- `ce-type` - type of event: `test-binary`, `test-structured`, `send-check`
+
+The same keys are used to fetch saved cloud event by sending `GET` request.
+
+Function emit cloud event when `POST` request is sent without cloud event headers.
