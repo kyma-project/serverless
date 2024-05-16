@@ -61,16 +61,16 @@ This project uses `go modules` as a dependency manager. To install all required 
 go mod download
 ```
 
-### Test flow
+### Test Flow
 
-##### Cloud Event Contract tests
+##### Cloud Event Contract Tests
 
 ![eventing_flow.svg](./eventing_flow.svg)
 
-To save cloud event to memory, the functions uses two keys:
-- `ce-source`, identify what kind of the event was sent: `contract-test`or runtime name.
+To save a cloud event to memory, Function uses two keys:
+- `ce-source`, identifies what kind of the event was sent: `contract-test` or runtime name.
 - `ce-type` - type of event: `test-binary`, `test-structured`, `send-check`
 
-The same keys are used to fetch saved cloud event by sending `GET` request.
+The same keys are used to fetch saved cloud events by sending a `GET` request.
 
-Function emit cloud event when `POST` request is sent without cloud event headers.
+Function emits cloud event when a `POST` request is sent without cloud event headers.
