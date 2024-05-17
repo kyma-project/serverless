@@ -70,7 +70,7 @@ func (ce cloudEventCheck) Name() string {
 }
 
 func (ce cloudEventCheck) Run() error {
-	ceEventType := fmt.Sprintf("test-%s", ce.encoding)
+	ceEventType := fmt.Sprintf("test-%s", ce.encoding.String())
 	expResp := cloudEventResponse{
 		CeType:             ceEventType,
 		CeSource:           "contract-test",
@@ -124,7 +124,7 @@ func (ce cloudEventCheck) createCECtx() (context.Context, string, error) {
 		ceCtx = cloudevents.WithEncodingBinary(ceCtx)
 		data = fmt.Sprintf("binary-from-%s", ce.endpoint)
 	default:
-		return nil, "", errors.Errorf("Encoding not supported: %s", ce.encoding)
+		return nil, "", errors.Errorf("Encoding not supported: %s", ce.encoding.String())
 	}
 	return ceCtx, data, nil
 }
