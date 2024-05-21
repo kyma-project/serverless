@@ -29,7 +29,7 @@ To apply values ​​from a given preset, use the **serverless.kyma-project.io/
 | - | - | - | - | - |
 | `local-dev` | `200m` | `200Mi` | `400m` | `400Mi` |
 | `slow` | `200m` | `200Mi` | `700m` | `700Mi` |
-| `normal` | `700m` | `700Mi` | `1100m` | `1100Mi`|
-| `fast` | `1100m` | `1100Mi` | `1700m` | `1100Mi`|
+| `normal` | `500m` | `700Mi` | `1100m` | `1100Mi`|
+| `fast` | `900m` | `1100Mi` | `1700m` | `1100Mi`|
 
 To apply values ​​from a given preset, use the **serverless.kyma-project.io/build-resources-preset: {PRESET}** label in the Function CR.

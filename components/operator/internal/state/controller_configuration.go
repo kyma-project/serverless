@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	slowBuildPreset   = "slow"
-	slowRuntimePreset = "XS"
-	fastBuildPreset   = "fast"
-	fastRuntimePreset = "L"
+	slowBuildPreset    = "slow"
+	slowRuntimePreset  = "XS"
+	normalBuildPreset  = "normal"
+	largeRuntimePreset = "L"
 )
 
 func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
@@ -43,8 +43,8 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 	defaultBuildPreset := slowBuildPreset
 	defaultRuntimePreset := slowRuntimePreset
 	if nodesLen > 2 {
-		defaultBuildPreset = fastBuildPreset
-		defaultRuntimePreset = fastRuntimePreset
+		defaultBuildPreset = normalBuildPreset
+		defaultRuntimePreset = largeRuntimePreset
 	}
 
 	spec := instance.Spec

@@ -69,7 +69,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		}
 	})
 
-	t.Run("update slow default to fast ones", func(t *testing.T) {
+	t.Run("update slow default to normal ones", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{},
@@ -95,8 +95,8 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, fastBuildPreset, status.DefaultBuildJobPreset)
-		require.Equal(t, fastRuntimePreset, status.DefaultRuntimePodPreset)
+		require.Equal(t, normalBuildPreset, status.DefaultBuildJobPreset)
+		require.Equal(t, largeRuntimePreset, status.DefaultRuntimePodPreset)
 
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
 		requireContainsCondition(t, status,
@@ -107,7 +107,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		)
 
 		expectedEvents := []string{
-			"Normal Configuration Default build job preset set from 'slow' to 'fast'",
+			"Normal Configuration Default build job preset set from 'slow' to 'normal'",
 			"Normal Configuration Default runtime pod preset set from 'XS' to 'L'",
 		}
 
@@ -231,8 +231,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
 }
-
-
 
 func fixTestNode(name string) *corev1.Node {
 	return &corev1.Node{

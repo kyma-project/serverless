@@ -60,7 +60,7 @@ func main() {
 			FunctionBuildExecutorArgs:        "executor-args",
 			FunctionBuildMaxSimultaneousJobs: "10",
 			HealthzLivenessTimeout:           "20",
-			DefaultBuildJobPreset:            "fast",
+			DefaultBuildJobPreset:            "normal",
 			DefaultRuntimePodPreset:          "M",
 		},
 	})
