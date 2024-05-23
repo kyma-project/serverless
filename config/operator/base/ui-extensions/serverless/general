@@ -11,5 +11,5 @@ features:
     disableCreate: true
     disableDelete: true
 description: >-
-  {{[Serverless CR](https://github.com/kyma-project/serverless-manager/blob/main/config/samples/default-serverless-cr.yaml)}}
-  specifies serverless module.
+  {{[Serverless custom resource](https://kyma-project.io/#/serverless-manager/user/resources/06-20-serverless-cr)}}
+  configures the Serverless module.
