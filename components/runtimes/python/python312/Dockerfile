@@ -1,4 +1,4 @@
-FROM python:3.12.3-alpine3.19
+FROM python:3.12.3-alpine3.20
 
 # Serverless
 LABEL source = git@github.com:kyma-project/kyma.git
