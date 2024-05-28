@@ -1,4 +1,4 @@
-FROM alpine:3.19
+FROM alpine:3.20
 
 RUN apk add --no-cache git-daemon && \
     # apache2 and apache2-utils need to be in version smaller or equal to 2.4.58-r0
