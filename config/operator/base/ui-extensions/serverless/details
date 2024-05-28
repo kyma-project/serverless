@@ -60,7 +60,12 @@ body:
       source: status.eventingEndpoint
     - name: OTLP Trace Endpoint
       source: status.tracingEndpoint
-
+    - name: Simultanous Builds Limit
+      source: status.functionBuildMaxSimultaneousJobs
+    - name: Default Job Preset
+      source: status.defaultBuildJobPreset
+    - name: Default Function Preset
+      source: status.defaultRuntimePodPreset
   - source: status.conditions
     widget: Table
     name: Reconciliation Conditions

@@ -23,3 +23,26 @@
   name: Eventing Endpoint
   simple: true
   required: false
+- path: spec.functionBuildMaxSimultaneousJobs
+  name: Simultanous Builds Limit
+  simple: true
+  required: false
+- path: spec.defaultBuildJobPreset
+  name: Default Job Preset
+  simple: true
+  required: false
+  enum:
+   - fast
+   - normal
+   - slow
+   - local-dev
+- name: Default Function Preset
+  path: spec.defaultRuntimePodPreset
+  simple: true
+  required: false
+  enum:
+   - XS
+   - S
+   - M
+   - L
+   - XL
