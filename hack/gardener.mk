@@ -8,6 +8,7 @@ include ${PROJECT_ROOT}/hack/tools.mk
 GARDENER_INFRASTRUCTURE = az
 HIBERNATION_HOUR=$(shell echo $$(( ( $(shell date +%H | sed s/^0//g) + 5 ) % 24 )))
 GIT_COMMIT_SHA=$(shell git rev-parse --short=8 HEAD)
+SHOOT=test-${GIT_COMMIT_SHA}
 ifneq (,$(GARDENER_SA_PATH))
 GARDENER_K8S_VERSION=$(shell kubectl --kubeconfig=${GARDENER_SA_PATH} get cloudprofiles.core.gardener.cloud ${GARDENER_INFRASTRUCTURE} -o=jsonpath='{.spec.kubernetes.versions[0].version}')
 else
@@ -20,7 +21,6 @@ provision-gardener: ## Provision gardener cluster with latest k8s version
 		GARDENER_SA_PATH=${GARDENER_SA_PATH} \
 		SHOOT=${SHOOT} PROJECT=${GARDENER_PROJECT} \
 		GARDENER_K8S_VERSION=${GARDENER_K8S_VERSION} \
-		GIT_COMMIT_SHA=${GIT_COMMIT_SHA} \
 		SECRET=${GARDENER_SECRET_NAME} \
 		${PROJECT_ROOT}/hack/provision_gardener.sh
 
