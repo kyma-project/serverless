@@ -1,0 +1,39 @@
+apiVersion: core.gardener.cloud/v1beta1
+kind: Shoot
+metadata:
+  name: ${SHOOT}
+spec:
+  secretBindingName: ${SECRET}
+  cloudProfileName: az
+  region: westeurope
+  purpose: evaluation
+  provider:
+    type: azure
+    infrastructureConfig:
+      apiVersion: azure.provider.extensions.gardener.cloud/v1alpha1
+      kind: InfrastructureConfig
+      networks:
+        vnet:
+          cidr: 10.250.0.0/16
+        workers: 10.250.0.0/19
+    workers:
+      - name: cpu-worker
+        minimum: 1
+        maximum: 2
+        machine:
+          type: Standard_A4_v2
+        volume:
+          type: Standard_LRS
+          size: 50Gi
+  networking:
+    type: calico
+    pods: 100.96.0.0/11
+    nodes: 10.250.0.0/16
+    services: 100.64.0.0/13
+  kubernetes:
+    version: "${GARDENER_K8S_VERSION}"
+  hibernation:
+    enabled: false
+  addons:
+    nginxIngress:
+      enabled: false
