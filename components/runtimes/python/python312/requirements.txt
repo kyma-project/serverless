@@ -1,4 +1,4 @@
-setuptools==69.5.1
+setuptools==70.0.0
 requests>=2.31.0
 bottle==0.12.25
 cheroot==10.0.1
