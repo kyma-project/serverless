@@ -13,13 +13,16 @@ GARDENER_K8S_VERSION=$(shell kubectl --kubeconfig=${GARDENER_SA_PATH} get cloudp
 else
 GARDENER_K8S_VERSION=1.29.3
 endif
-#Overwrite default kyma cli gardenlinux version because it's not supported.
-GARDENER_LINUX_VERSION=1312.3.0
 
 .PHONY: provision-gardener
-provision-gardener: kyma ## Provision gardener cluster with latest k8s version
-	${KYMA} provision gardener ${GARDENER_INFRASTRUCTURE} -c ${GARDENER_SA_PATH} -n test-${GIT_COMMIT_SHA} -p ${GARDENER_PROJECT} -s ${GARDENER_SECRET_NAME} -k ${GARDENER_K8S_VERSION}\
-		--gardenlinux-version=$(GARDENER_LINUX_VERSION) --hibernation-start="00 ${HIBERNATION_HOUR} * * ?"
+provision-gardener: ## Provision gardener cluster with latest k8s version
+	PROJECT_ROOT=${PROJECT_ROOT} \
+		GARDENER_SA_PATH=${GARDENER_SA_PATH} \
+		SHOOT=${SHOOT} PROJECT=${GARDENER_PROJECT} \
+		GARDENER_K8S_VERSION=${GARDENER_K8S_VERSION} \
+		GIT_COMMIT_SHA=${GIT_COMMIT_SHA} \
+		SECRET=${GARDENER_SECRET_NAME} \
+		${PROJECT_ROOT}/hack/provision_gardener.sh
 
 .PHONY: deprovision-gardener
 deprovision-gardener: kyma ## Deprovision gardener cluster
