@@ -228,7 +228,7 @@ containers:
             resources:
               minRequestCpu: "200m"
               minRequestMemory: "200Mi"
-              defaultPreset: "fast"
+              defaultPreset: "normal"
               presets:
                 local-dev:
                   requestCpu: "200m"
@@ -241,12 +241,12 @@ containers:
                   limitCpu: "700m"
                   limitMemory: "700Mi"
                 normal:
-                  requestCpu: "700m"
+                  requestCpu: "500m"
                   requestMemory: "700Mi"
                   limitCpu: "1100m"
                   limitMemory: "1100Mi"
                 fast:
-                  requestCpu: "1100m"
+                  requestCpu: "900m"
                   requestMemory: "1100Mi"
                   limitCpu: "1700m"
                   limitMemory: "1100Mi"
