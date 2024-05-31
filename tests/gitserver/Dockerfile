@@ -1,6 +1,6 @@
 FROM alpine:3.20
 
-RUN apk add --no-cache git-daemon && \
+RUN apk add --no-cache git-daemon=2.43.4-r0 --repository http://dl-cdn.alpinelinux.org/alpine/v3.19/main && \
     # apache2 and apache2-utils need to be in version smaller or equal to 2.4.58-r0
     # issue: https://github.com/kyma-project/serverless/issues/998
     apk add --no-cache apache2=2.4.58-r0 apache2-utils=2.4.58-r0 --repository http://dl-cdn.alpinelinux.org/alpine/v3.15/main && \
