@@ -74,27 +74,27 @@ global:
   images:
     function_controller:
       name: "function-controller"
-      version: "main"
+      version: "1.5.0"
       directory: "prod"
     function_build_init:
       name: "function-build-init"
-      version: "main"
+      version: "1.5.0"
       directory: "prod"
     function_runtime_nodejs18:
       name: "function-runtime-nodejs18"
-      version: "main"
+      version: "1.5.0"
       directory: "prod"
     function_runtime_nodejs20:
       name: "function-runtime-nodejs20"
-      version: "main"
+      version: "1.5.0"
       directory: "prod"
     function_runtime_python39:
       name: "function-runtime-python39"
-      version: "main"
+      version: "1.5.0"
       directory: "prod"
     function_runtime_python312:
       name: "function-runtime-python312"
-      version: "main"
+      version: "1.5.0"
       directory: "prod"
     kaniko_executor:
       name: "tpi/kaniko-executor"
