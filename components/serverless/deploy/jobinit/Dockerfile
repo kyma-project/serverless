@@ -23,7 +23,7 @@ RUN go build -ldflags "-s -w" -a -o jobinit ./components/serverless/cmd/jobinit/
 FROM europe-docker.pkg.dev/kyma-project/prod/external/alpine:3.20.0
 ENV LIBGIT2_VERSION=1.5.2-r0
 
-LABEL source = git@github.com:kyma-project/kyma.git
+LABEL source = git@github.com:kyma-project/serverless.git
 
 RUN apk update --no-cache && apk upgrade --no-cache
 RUN apk add --no-cache ca-certificates

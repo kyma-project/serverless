@@ -1,7 +1,7 @@
 FROM python:3.9.19-alpine3.20
 
 # Serverless
-LABEL source = git@github.com:kyma-project/kyma.git
+LABEL source = git@github.com:kyma-project/serverless.git
 
 # build-base and linux-headers are needed to install all requirements
 RUN apk add --no-cache --virtual .build-deps build-base linux-headers

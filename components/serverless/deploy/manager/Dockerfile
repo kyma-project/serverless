@@ -32,7 +32,7 @@ RUN apk update --no-cache && apk upgrade --no-cache
 RUN apk add --no-cache --update --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main openssl
 RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.18/community libgit2=${LIBGIT2_VERSION}
 
-LABEL source = git@github.com:kyma-project/kyma.git
+LABEL source = git@github.com:kyma-project/serverless.git
 
 COPY --from=builder /app /app
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
