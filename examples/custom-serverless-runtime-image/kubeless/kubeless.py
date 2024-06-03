@@ -3,21 +3,15 @@
 import importlib
 import os
 import queue
+import sys
 import threading
 
 import bottle
 import prometheus_client as prom
-import sys
 
-import tracing
-from ce import Event
-from tracing import set_req_context
-
-
-def create_service_name(pod_name: str, service_namespace: str) -> str:
-    # remove generated pods suffix ( two last sections )
-    deployment_name = '-'.join(pod_name.split('-')[0:pod_name.count('-') - 1])
-    return '.'.join([deployment_name, service_namespace])
+import lib.tracing as tracing
+from lib.ce import Event
+from lib.tracing import set_req_context
 
 
 # The reason this file has an underscore prefix in its name is to avoid a
@@ -31,7 +25,8 @@ if module_name == current_mod:
     print('Module cannot be named {} as current module'.format(current_mod), flush=True)
     exit(2)
 
-sys.path.append('/kubeless')
+function_location = os.getenv('FUNCTION_PATH', default='/kubeless')
+sys.path.append(function_location)
 
 mod = importlib.import_module(module_name)
 func_name = os.getenv('FUNC_HANDLER')
@@ -49,28 +44,30 @@ bottle.BaseRequest.MEMFILE_MAX = memfile_max
 app = application = bottle.app()
 
 function_context = {
-    'function-name': func.__name__,
+    'function-name': os.getenv('FUNC_NAME'),
+    'namespace': os.getenv('SERVICE_NAMESPACE'),
     'timeout': timeout,
     'runtime': os.getenv('FUNC_RUNTIME'),
     'memory-limit': os.getenv('FUNC_MEMORY_LIMIT'),
 }
 
-tracecollector_endpoint = os.getenv('TRACE_COLLECTOR_ENDPOINT')
-pod_name = os.getenv('HOSTNAME')
-service_namespace = os.getenv('SERVICE_NAMESPACE')
-service_name = create_service_name(pod_name, service_namespace)
-
-tracer_provider = None
-# To not create several tracer providers, when the server start forking.
 if __name__ == "__main__":
-    tracer_provider = tracing.ServerlessTracerProvider(tracecollector_endpoint, service_name)
+    tracer = tracing._setup_tracer()
 
 
 def func_with_context(e, function_context):
     ex = e.ceHeaders["extensions"]
     with set_req_context(ex["request"]):
-        return func(e, function_context)
+        with tracer.start_as_current_span("userFunction"):
+            try:
+                return func(e, function_context)
+            except Exception as e:
+                return e
 
+
+@app.get('/favicon.ico')
+def favicon():
+    return bottle.HTTPResponse(status=204)
 
 @app.get('/healthz')
 def healthz():
@@ -84,14 +81,13 @@ def metrics():
 
 
 @app.error(500)
-def exception_handler():
+def exception_handler(err):
     return 'Internal server error'
 
 
 @app.route('/<:re:.*>', method=['GET', 'POST', 'PATCH', 'DELETE'])
 def handler():
     req = bottle.request
-    tracer = tracer_provider.get_tracer(req)
     event = Event(req, tracer)
 
     method = req.method
@@ -103,12 +99,14 @@ def handler():
             t.start()
             try:
                 res = que.get(block=True, timeout=timeout)
-                if hasattr(res, 'headers') and res.headers["content-type"]:
+                if hasattr(res, 'headers') and 'content-type' in res.headers:
                     bottle.response.content_type = res.headers["content-type"]
             except queue.Empty:
                 return bottle.HTTPError(408, "Timeout while processing the function")
             else:
                 t.join()
+                if isinstance(res, Exception):
+                    raise res
                 return res
 
 
@@ -120,13 +118,18 @@ def preload():
 if __name__ == '__main__':
     import logging
     import multiprocessing as mp
+    from multiprocessing import util
     import requestlogger
+
+    # TODO: this is workaround for: CVE-2022-42919
+    # More details: https://github.com/python/cpython/issues/97514
+    util.abstract_sockets_supported = False
 
     mp_context = os.getenv('MP_CONTEXT', 'forkserver')
 
     if mp_context == "fork":
         raise ValueError(
-            '"fork" multiprocessing context is not supported because cherrypy is a '
+            '"fork" multiprocessing context is not supported because cheroot is a '
             'multithreaded server and safely forking a multithreaded process is '
             'problematic'
         )
@@ -182,7 +185,7 @@ if __name__ == '__main__':
 
     bottle.run(
         loggedapp,
-        server='cherrypy',
+        server='cheroot',
         host='0.0.0.0',
         port=func_port,
         # Set this flag to True to auto-reload the server after any source files change

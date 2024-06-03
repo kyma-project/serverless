@@ -1,10 +1,15 @@
-import requests
 import bottle
 import io
-import os
 import json
+import logging
+import os
+
+import requests
+from cloudevents.http import from_http, CloudEvent
+from cloudevents.conversion import to_structured
 
 publisher_proxy_address = os.getenv('PUBLISHER_PROXY_ADDRESS')
+
 
 class PicklableBottleRequest(bottle.BaseRequest):
     '''Bottle request that can be pickled (serialized).
@@ -40,28 +45,58 @@ class PicklableBottleRequest(bottle.BaseRequest):
         setattr(self, 'environ', env)
 
 
-class Event:
-    ceHeaders = dict()
-    tracer = None
+def resolve_data_type(event_data):
+    if type(event_data) is dict:
+        return 'application/json'
+    elif type(event_data) is str:
+        return 'text/plain'
 
+
+def build_cloud_event_attributes(req, data):
+    event = from_http(req.headers, data)
+    ceHeaders = {
+        'data': event.data,
+        'ce-type': event['type'],
+        'ce-source': event['source'],
+        'ce-id': event['id'],
+        'ce-time': event['time'],
+    }
+    if event.get('eventtypeversion') is not None:
+        ceHeaders['ce-eventtypeversion'] = event.get('eventtypeversion')
+
+    if event.get('specversion') is not None:
+        ceHeaders['ce-specversion'] = event.get('specversion')
+        
+    return ceHeaders
+
+
+def has_ce_headers(headers):
+    has = 'ce-type' in headers and 'ce-source' in headers
+    return has
+
+
+def is_cloud_event(req):
+    return 'application/cloudevents+json' in req.content_type.split(';') or has_ce_headers(req.headers)
+
+
+class Event:
     def __init__(self, req, tracer):
+        self.ceHeaders = dict()
+        self.tracer = tracer
+        self.req = req
         data = req.body.read()
         picklable_req = PicklableBottleRequest(data, req.environ.copy())
-        if req.get_header('content-type') == 'application/json':
-            data = req.json
-
-        self.req = req
-        self.tracer = tracer
-        self.ceHeaders = {
-            'data': data,
-            'ce-type': req.get_header('ce-type'),
-            'ce-source': req.get_header('ce-source'),
-            'ce-eventtypeversion': req.get_header('ce-eventtypeversion'),
-            'ce-specversion': req.get_header('ce-specversion'),
-            'ce-id': req.get_header('ce-id'),
-            'ce-time': req.get_header('ce-time'),
+        self.ceHeaders.update({
             'extensions': {'request': picklable_req}
-        }
+        })
+
+        if is_cloud_event(req):
+            ce_headers = build_cloud_event_attributes(req, data)
+            self.ceHeaders.update(ce_headers)
+        else:
+            if req.get_header('content-type') == 'application/json':
+                data = req.json
+                self.ceHeaders.update({'data': data})
 
     def __getitem__(self, item):
         return self.ceHeaders[item]
@@ -69,20 +104,29 @@ class Event:
     def __setitem__(self, name, value):
         self.ceHeaders[name] = value
 
+    def emitCloudEvent(self, type, source, data, optionalCloudEventAttributes=None):
+        attributes = {
+            "type": type,
+            "source": source,
+        }
+        if optionalCloudEventAttributes is not None:
+            attributes.update(optionalCloudEventAttributes)
+
+        event = CloudEvent(attributes, data)
+        headers, body = to_structured(event)
+
+        requests.post(publisher_proxy_address, data=body, headers=headers)
+
     def publishCloudEvent(self, data):
+        logging.warn('"publishCloudEvent" is deprecated. Use "emitCloudEvent"')
         return requests.post(
             publisher_proxy_address,
-            data = json.dumps(data),
-            headers = {"Content-Type": "application/cloudevents+json"}
-            )
-    
-    def resolveDataType(self, event_data):
-        if type(event_data) is dict:
-            return 'application/json'
-        elif type(event_data) is str:
-            return 'text/plain'
+            data=json.dumps(data, default=str),
+            headers={"Content-Type": "application/cloudevents+json"}
+        )
 
     def buildResponseCloudEvent(self, event_id, event_type, event_data):
+        logging.warn('"buildResponseCloudEvent" is deprecated. Use "emitCloudEvent"')
         return {
             'type': event_type,
             'source': self.ceHeaders['ce-source'],
@@ -90,6 +134,5 @@ class Event:
             'specversion': self.ceHeaders['ce-specversion'],
             'id': event_id,
             'data': event_data,
-            'datacontenttype': self.resolveDataType(event_data)
+            'datacontenttype': resolve_data_type(event_data)
         }
-

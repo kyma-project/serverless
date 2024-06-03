@@ -1,4 +1,4 @@
-FROM python:3.10-bullseye
+FROM python:3.12.3--slim-bookworm
 
 COPY kubeless/requirements.txt /kubeless/requirements.txt
 RUN pip install -r /kubeless/requirements.txt
