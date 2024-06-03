@@ -1,11 +1,12 @@
-import ce from './lib/ce.js';
-import helper from './lib/helper.js';
-import bodyParser from 'body-parser';
-import process from 'process';
-import morgan from "morgan";
+"use strict";
+const ce = require('./lib/ce');
+const helper = require('./lib/helper');
+const bodyParser = require('body-parser');
+const process = require("process");
+const morgan = require("morgan");
 
-import { setupTracer, startNewSpan } from './lib/tracer.js';
-import { getMetrics, setupMetrics, createFunctionDurationHistogram, createFunctionCallsTotalCounter, createFunctionFailuresTotalCounter  } from './lib/metrics.js';
+const { setupTracer, startNewSpan } = require('./lib/tracer')
+const { getMetrics, setupMetrics, createFunctionDurationHistogram, createFunctionCallsTotalCounter, createFunctionFailuresTotalCounter  } = require('./lib/metrics')
 
 
 // To catch unhandled exceptions thrown by user code async callbacks,
@@ -27,13 +28,31 @@ const failuresTotalCounter = createFunctionFailuresTotalCounter(functionName);
 const durationHistogram = createFunctionDurationHistogram(functionName);
 
 //require express must be called AFTER tracer was setup!!!!!!
-import express from "express";
+const express = require("express");
 const app = express();
 
 
 // User function.  Starts out undefined.
 let userFunction;
 
+const loadFunction = (modulepath, funcname) => {
+    // Read and load the code. It's placed there securely by the fission runtime.
+    try {
+        let startTime = process.hrtime();
+        // support v1 codepath and v2 entrypoint like 'foo', '', 'index.hello'
+        let userFunction = funcname
+            ? require(modulepath)[funcname]
+            : require(modulepath);
+        let elapsed = process.hrtime(startTime);
+        console.log(
+            `user code loaded in ${elapsed[0]}sec ${elapsed[1] / 1000000}ms`
+        );
+        return userFunction;
+    } catch (e) {
+        console.error(`user code load error: ${e}`);
+        return e;
+    }
+};
 
 // Request logger
 if (process.env["KYMA_INTERNAL_LOGGER_ENABLED"]) {
@@ -108,6 +127,7 @@ app.all("*", (req, res, next) => {
                     default:
                         res.end(body);
                 }
+                // res.send(body);
             } else if(status){
                 res.sendStatus(status);
             } else {
@@ -152,15 +172,10 @@ const server = app.listen(funcPort);
 
 helper.configureGracefulShutdown(server);
 
-let startTime = process.hrtime();
-import('./function/handler.js').then((fn) => {
-    if (helper.isFunction(fn.main)) {
-        userFunction = fn.main
-        let elapsed = process.hrtime(startTime);
-        console.log(
-            `user code loaded in ${elapsed[0]}sec ${elapsed[1] / 1000000}ms`
-        );
-    } else {
-        console.error("Content loaded is not a function. Make sure your function exports 'main' function", fn)
-    }
-});
+
+const fn = loadFunction("./function/handler", "");
+if (helper.isFunction(fn.main)) {
+    userFunction = fn.main
+} else {
+    console.error("Content loaded is not a function", fn)
+}

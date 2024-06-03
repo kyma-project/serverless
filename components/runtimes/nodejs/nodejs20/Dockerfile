@@ -16,8 +16,8 @@ RUN npm install && npm cache clean --force
 COPY --chown=root:root ./lib /usr/src/app/lib
 RUN chmod -R 755 /usr/src/app/lib
 
-COPY --chown=root:root ./server.mjs /usr/src/app/server.mjs
-RUN chmod 644 /usr/src/app/server.mjs
+COPY --chown=root:root ./server.js /usr/src/app/server.js
+RUN chmod 644 /usr/src/app/server.js
 
 CMD ["npm", "start"]
 

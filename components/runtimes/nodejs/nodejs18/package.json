@@ -5,9 +5,6 @@
   "engines": {
     "node": ">= 18.0.0"
   },
-  "scripts": {
-    "start": "node server.mjs"
-  },
   "dependencies": {
     "@opentelemetry/api": "^1.4.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.51.0",
