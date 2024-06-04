@@ -11,9 +11,8 @@ RUN chmod 644 /kubeless/requirements.txt
 
 RUN pip install --no-cache-dir -r /kubeless/requirements.txt
 
-COPY ./lib /lib
+COPY ./ /
 RUN chmod -R 755 /lib
-COPY ./kubeless.py /
 RUN chmod 644 /kubeless.py
 
 WORKDIR /
