@@ -4,7 +4,6 @@
 
 Each pull request to the repository triggers the following CI/CD jobs that verify the Serverless Operator reconciliation logic and run integration tests of the Serverless module:
 
-- `markdown / documentation-link-check` - Checks if there are no broken links in the pull request `.md` files. For the configuration, see the [mlc.config.json](https://github.com/kyma-project/serverless/blob/main/.mlc.config.json) and the [markdown.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/markdown.yaml) files.
 - `lint / operator-lint` - Is responsible for the Operator linting and static code analysis. For the configuration, see the [lint.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/lint.yaml) file.
 - `lint / serverless-lint` - Is responsible for the Serverless linting and static code analysis. For the configuration, see the [lint.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/lint.yaml) file.
 - `unit tests / operator-unit-tests` - Runs basic unit tests of Operator's logic. For the configuration, see the [unit-tests.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/unit-tests.yaml) file.
@@ -15,6 +14,7 @@ Each pull request to the repository triggers the following CI/CD jobs that verif
 
 ## CI/CD Jobs Running on the Main Branch
 
+- `markdown / documentation-link-check` - Checks if there are no broken links in `.md` files. For the configuration, see the [mlc.config.json](https://github.com/kyma-project/serverless/blob/main/.mlc.config.json) and the [markdown.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/markdown.yaml) files.
 - `integration tests (push) / operator-integration-test` - Runs the create/update/delete Serverless integration tests in k3d cluster. For the configuration, see the [integration-tests-push.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/integration-tests-push.yaml) file.
 - `integration tests (push) / serverless-integration-test` - Runs the basic functionality integration and the `tracing`, `api-gateway`, and `cloud-event` contract compatibility integration test suite for Serverless in a k3d cluster. For the configuration, see the [integration-tests-push.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/integration-tests-push.yaml) file.
 - `integration tests (push) / git-auth-integration-test` - Runs the `GitHub` and `Azure DevOps` API and authentication integration test suite for Serverless. For the configuration, see the [integration-tests-push.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/integration-tests-push.yaml) file.
