@@ -1,12 +1,7 @@
 package serverless
 
 import (
-	"errors"
-	"strings"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
-	ctrl "sigs.k8s.io/controller-runtime"
 
 	"github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/onsi/gomega"
@@ -192,46 +187,6 @@ func Test_isOnSourceChange(t *testing.T) {
 			}
 			actual := s.gitFnSrcChanged(tC.revision)
 			g.Expect(actual).To(gomega.Equal(tC.expectedResult))
-		})
-	}
-}
-
-func TestNextRequeue(t *testing.T) {
-	//GIVEN
-	testCases := []struct {
-		name           string
-		inputErr       error
-		expectedErrMsg string
-		expectedResult ctrl.Result
-	}{
-		// {
-		// 	name:           "Git unrecoverable error",
-		// 	inputErr:       git2go.MakeGitError2(int(git2go.ErrorCodeNotFound)),
-		// 	expectedErrMsg: "Stop reconciliation, reason:",
-		// 	expectedResult: ctrl.Result{Requeue: false},
-		// },
-		{
-			name:           "Git authorization error",
-			inputErr:       errors.New("unexpected http status code: 403"),
-			expectedErrMsg: "Authorization to git server failed",
-			expectedResult: ctrl.Result{Requeue: true},
-		},
-		// {
-		// 	name:           "Git generic error",
-		// 	inputErr:       git2go.MakeGitError2(int(git2go.ErrorCodeAmbiguous)),
-		// 	expectedErrMsg: "Sources update failed, reason:",
-		// 	expectedResult: ctrl.Result{Requeue: true},
-		// },
-	}
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			//WHEN
-			result, errMsg := NextRequeue(testCase.inputErr)
-
-			//THEN
-			assert.Equal(t, testCase.expectedResult, result)
-			assert.NotEmpty(t, testCase.expectedErrMsg)
-			assert.True(t, strings.HasPrefix(errMsg, testCase.expectedErrMsg), "errMsg: %s, doesn't start with: %s", errMsg, testCase.expectedErrMsg)
 		})
 	}
 }

@@ -237,15 +237,14 @@ func stateFnGitCheckSources(ctx context.Context, r *reconciler, s *systemState) 
 	revision, err = r.gitClient.LastCommit(options)
 	if err != nil {
 		r.log.Error(err, " while fetching last commit")
-		var errMsg string
-		r.result, errMsg = NextRequeue(err)
+		r.result = ctrl.Result{Requeue: true}
 		// TODO: This return masks the error from r.syncRevision() and doesn't pass it to the controller. This should be fixed in a follow up PR.
 		condition := serverlessv1alpha2.Condition{
 			Type:               serverlessv1alpha2.ConditionConfigurationReady,
 			Status:             corev1.ConditionFalse,
 			LastTransitionTime: metav1.Now(),
 			Reason:             serverlessv1alpha2.ConditionReasonSourceUpdateFailed,
-			Message:            errMsg,
+			Message:            err.Error(),
 		}
 		return buildStatusUpdateStateFnWithCondition(condition), nil
 	}
