@@ -1,7 +1,7 @@
 FROM golang:1.22.3-alpine3.20 as builder
 
 ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/serverless \
-    CGO_ENABLED=1 \
+    CGO_ENABLED=0 \
     GOOS=linux \
     GOARCH=amd64
 
@@ -20,10 +20,7 @@ FROM europe-docker.pkg.dev/kyma-project/prod/external/alpine:3.20.0 as certs
 
 RUN apk add --no-cache ca-certificates
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/alpine:3.20.0
-
-RUN apk update --no-cache && apk upgrade --no-cache
-RUN apk add --no-cache --update --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main openssl
+FROM scratch
 
 LABEL source = git@github.com:kyma-project/serverless.git
 
