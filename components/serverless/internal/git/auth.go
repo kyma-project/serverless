@@ -84,7 +84,7 @@ func toGoGitKeyAuth(options *AuthOptions) (*gitssh.PublicKeys, error) {
 		return nil, fmt.Errorf("missing field %s", KeyKey)
 	}
 
-	password, _ := options.Credentials[PasswordKey]
+	password := options.Credentials[PasswordKey]
 
 	var signer ssh.Signer
 	var err error
