@@ -29,7 +29,7 @@ func main() {
 	}
 
 	logger, _ := zap.NewProduction()
-	operator := git.NewGit2Go(logger.Sugar())
+	operator := git.NewMixedClient(logger.Sugar())
 
 	log.Println("Get auth config...")
 	gitOptions := cfg.getOptions()
@@ -37,11 +37,7 @@ func main() {
 	log.Printf("Clone repo from url: %s and commit: %s...\n", cfg.RepositoryURL, cfg.RepositoryCommit)
 	commit, err := operator.Clone(cfg.MountPath, gitOptions)
 	if err != nil {
-		if git.IsAuthErr(err) {
-			log.Printf("while cloning repository bad credentials were provided, errMsg: %s", err.Error())
-		} else {
-			log.Fatalln(errors.Wrapf(err, "while cloning repository: %s, from commit: %s", cfg.RepositoryURL, cfg.RepositoryCommit))
-		}
+		log.Fatalln(errors.Wrapf(err, "while cloning repository: %s from commit: %s: %s", cfg.RepositoryURL, cfg.RepositoryCommit, err.Error()))
 	}
 
 	log.Printf("Cloned repository: %s, from commit: %s, to path: %s", cfg.RepositoryURL, commit, cfg.MountPath)

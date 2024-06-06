@@ -10,7 +10,6 @@ The Function Controller requires the following components to be installed:
 ## Development
 
 To develop the Function Controller, you need:
-- [libgit2-dev](https://github.com/libgit2/libgit2) (v1.5)
 - [controller-gen](https://github.com/kubernetes-sigs/controller-tools/releases/tag/v0.6.2) (v0.6.2)
 - <!-- markdown-link-check-disable-line -->[kustomize](https://github.com/kubernetes-sigs/kustomize/releases/tag/kustomize%2Fv4.5.7) (v4.5.7)
 
@@ -79,71 +78,6 @@ You can customize the configuration by editing files in [hack](./hack) dir.
 | **WEBHOOK_DEFAULTING_MAXREPLICAS**        | Value of the maxReplicas which webhook should set if origin equals null                   | `1`                  |
 
 ## Troubleshooting
-
-
-### Symptom
-
-Function Controller tests keep failing with such an error message:
-`error: Invalid libgit2 version; this git2go supports libgit2 between vA.B.C and vX.Y.Z`
-
-### Cause
-
-Function Controller tests are failing due to the wrong version of the libgit2 binary. The required version of the binary is 1.1.
-
-### Remedy
-
-Build and install the libgit2 binary required by the Function Controller on macOS. Follow these steps:
-
-1. Navigate to the root directory and verify the version of git2go:
-
-   ```bash
-   cat go.mod | grep git2go
-   ```
-   You should get a result similar to this example:
-
-   ```bash
-   github.com/libgit2/git2go/v31 v31.4.14
-   ```
-2. Go to the [git2go page](https://github.com/libgit2/git2go#git2go) to check which version of libgit2 you must use. For example, for git2go v34, use libigit2 in version 1.5.
-   
-3. Clone the `libgit2` repository:
-
-   ```bash
-   git clone https://github.com/libgit2/libgit2.git
-   ```
-4. Check out the sources. In this example, the sources are for git2go v31:
-   ```bash
-   git checkout v1.1.0
-   ```
-5. Build and install the libgit2 binary:
-   ```bash
-   cmake -DCMAKE_OSX_ARCHITECTURES="x86_64" .
-   make install
-   ```
-#### Alternative Remedy
-There is an alternative method for macOS that relies on [brew](https://brew.sh/).
-If you still see the `Invalid libgit2 version` error message on macOS, follow these steps:
-
-1. Locate your brew's Cellar directory.
-
-   ```bash
-   find / -type d -name "Cellar"
-   ```
-Alternatively, you can use **⌘⇧G** in Finder to search for `Cellar`.
-
-2. Prepare the libgit2 directory.
-
-If you already have libgit2 installed via brew you need to delete previous installations found in the `libgit2` directory.
-
-Otherwise create an empty directory named `libgit2`.
-
-3. Extract `libgit.tgz` located in `./components/serverless/hack` into `Cellar/libgit2`.
-
-
-4. Link libgit2 using:
-   ```bash
-   brew link libgit2
-   ```
 
 ### Symptom
 
