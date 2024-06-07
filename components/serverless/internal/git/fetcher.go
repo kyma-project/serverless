@@ -18,6 +18,7 @@ func (g *git2goFetcher) git2goFetch(url, outputPath string, remoteCallbacks git2
 
 	remote, err := g.lookupCreateRemote(repo, url, outputPath)
 	if err != nil {
+		repo.Free()
 		return nil, errors.Wrap(err, "while creating/using remote")
 	}
 	defer remote.Free()
@@ -28,6 +29,7 @@ func (g *git2goFetcher) git2goFetch(url, outputPath string, remoteCallbacks git2
 			DownloadTags:    git2go.DownloadTagsAll,
 		}, "")
 	if err != nil {
+		repo.Free()
 		return nil, errors.Wrap(err, "while fetching remote")
 	}
 	return repo, nil
