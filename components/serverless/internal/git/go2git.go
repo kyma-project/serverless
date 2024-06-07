@@ -168,11 +168,12 @@ func (g *git2GoClient) lookupBranch(repo *git2go.Repository, branchName string) 
 			}
 			return nil, errors.Wrap(err, "while listing reference")
 		}
-		defer item.Free()
 
 		if g.isBranch(item, branchName) {
 			return item, nil
 		}
+
+		defer item.Free()
 	}
 }
 
