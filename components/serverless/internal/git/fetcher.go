@@ -18,6 +18,7 @@ func (g *git2goFetcher) git2goFetch(url, outputPath string, remoteCallbacks git2
 
 	remote, err := g.lookupCreateRemote(repo, url, outputPath)
 	if err != nil {
+		repo.Free()
 		return nil, errors.Wrap(err, "while creating/using remote")
 	}
 	defer remote.Free()
@@ -28,6 +29,7 @@ func (g *git2goFetcher) git2goFetch(url, outputPath string, remoteCallbacks git2
 			DownloadTags:    git2go.DownloadTagsAll,
 		}, "")
 	if err != nil {
+		repo.Free()
 		return nil, errors.Wrap(err, "while fetching remote")
 	}
 	return repo, nil
@@ -40,7 +42,7 @@ func (g *git2goFetcher) openInitRepo(outputPath string) (*git2go.Repository, err
 	if err == nil {
 		return repo, nil
 	}
-	g.logger.Errorf("failed to open existing repo at [%s]: %v", outputPath, err)
+	g.logger.Warnf("failed to open existing repo at [%s]: %v", outputPath, err)
 	return git2go.InitRepository(outputPath, true)
 }
 
@@ -49,6 +51,6 @@ func (g *git2goFetcher) lookupCreateRemote(repo *git2go.Repository, url, outputP
 	if err == nil {
 		return remote, nil
 	}
-	g.logger.Errorf("failed to use existing origin remote at [%s]: %v", outputPath, err)
+	g.logger.Warnf("failed to use existing origin remote at [%s]: %v", outputPath, err)
 	return repo.Remotes.Create("origin", url)
 }
