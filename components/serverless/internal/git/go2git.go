@@ -78,25 +78,30 @@ func (g *git2GoClient) LastCommit(options Options) (string, error) {
 		return "", errors.Wrap(err, "while creating temporary directory")
 	}
 	defer os.RemoveAll(repoDir)
-	
+
 	repo, err := g.fetchRepo(options, repoDir)
 	if err != nil {
 		return "", errors.Wrap(err, "while fetching the repository")
 	}
 	defer repo.Free()
+
 	//branch
 	ref, err := g.lookupBranch(repo, options.Reference)
 	if err == nil {
+		defer ref.Free()
 		return ref.Target().String(), nil
 	}
 	if !git2go.IsErrorCode(err, git2go.ErrorCodeNotFound) {
 		return "", errors.Wrap(err, "while lookup branch")
 	}
+
 	//tag
 	commit, err := g.lookupTag(repo, options.Reference)
 	if err != nil {
 		return "", errors.Wrap(err, "while lookup tag")
 	}
+	defer commit.Free()
+	
 	return commit.Id().String(), nil
 }
 
@@ -116,6 +121,7 @@ func (g *git2GoClient) Clone(path string, options Options) (string, error) {
 	if err != nil {
 		return "", errors.Wrap(err, "while lookup for commit")
 	}
+	defer commit.Free()
 
 	err = repo.ResetToCommit(commit, git2go.ResetHard, &git2go.CheckoutOptions{})
 	if err != nil {
@@ -126,6 +132,7 @@ func (g *git2GoClient) Clone(path string, options Options) (string, error) {
 	if err != nil {
 		return "", errors.Wrap(err, "while getting head")
 	}
+	defer ref.Free()
 
 	return ref.Target().String(), nil
 }
@@ -135,6 +142,7 @@ func (g *git2GoClient) cloneRepo(opts Options, path string) (*git2go.Repository,
 	if err != nil {
 		return nil, errors.Wrap(err, "while getting authentication opts")
 	}
+
 	return g.git2goClone(opts.URL, path, authCallbacks)
 }
 func (g *git2GoClient) fetchRepo(opts Options, path string) (*git2go.Repository, error) {
@@ -150,6 +158,8 @@ func (g *git2GoClient) lookupBranch(repo *git2go.Repository, branchName string) 
 	if err != nil {
 		return nil, errors.Wrap(err, "while creating reference iterator")
 	}
+	defer iter.Free()
+
 	for {
 		item, err := iter.Next()
 		if err != nil {
@@ -158,6 +168,8 @@ func (g *git2GoClient) lookupBranch(repo *git2go.Repository, branchName string) 
 			}
 			return nil, errors.Wrap(err, "while listing reference")
 		}
+		defer item.Free()
+
 		if g.isBranch(item, branchName) {
 			return item, nil
 		}
@@ -190,6 +202,7 @@ func (g *git2GoClient) lookupTag(repo *git2go.Repository, tagName string) (*git2
 		}
 		return nil, errors.Wrap(err, "while creating dwim from tag name")
 	}
+	defer ref.Free()
 
 	if err = repo.SetHeadDetached(ref.Target()); err != nil {
 		return nil, errors.Wrapf(err, "while checkout to ref: %s", ref.Target().String())
@@ -198,10 +211,13 @@ func (g *git2GoClient) lookupTag(repo *git2go.Repository, tagName string) (*git2
 	if err != nil {
 		return nil, errors.Wrap(err, "while getting head")
 	}
+	defer head.Free()
 
 	commit, err := repo.LookupCommit(head.Target())
 	if err != nil {
 		return nil, errors.Wrap(err, "while getting commit from head")
 	}
+	defer commit.Free()
+
 	return commit, nil
 }
