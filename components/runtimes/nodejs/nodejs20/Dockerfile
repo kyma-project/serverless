@@ -1,6 +1,9 @@
 # image base on node:20.13.1-alpine3.20
 FROM node@sha256:b3c9885d73a67347e607a24ce5487287caea8261cb7e0f0cadf12c0aedd7874c
 
+RUN rm /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx
+RUN apk add openssl3 nodejs npm yarn
+
 ARG NODE_ENV
 ENV NODE_ENV $NODE_ENV
 ENV npm_config_cache /tmp/
