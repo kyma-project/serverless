@@ -2,7 +2,7 @@
 
 ## Overview
 
-This example shows how to create own custom runtime for a Serverless Function based on the Python runtime and the `debian:bullseye-slim` base image to provide support for glibc.
+This example shows how to create own custom runtime for a Serverless Function based on the Python 3.12 runtime and the `python:3.12.3--slim-bookworm` base image to provide support for glibc.
 
 ## Prerequisites
 
