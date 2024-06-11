@@ -1,8 +1,10 @@
-# image base on node:20.13.1-alpine3.20
-FROM node@sha256:b3c9885d73a67347e607a24ce5487287caea8261cb7e0f0cadf12c0aedd7874c
+# alpine 3.20.0
+FROM alpine@sha256:77726ef6b57ddf65bb551896826ec38bc3e53f75cdde31354fbffb4f25238ebd
 
-RUN rm /usr/local/bin/node /usr/local/bin/npm /usr/local/bin/npx
-RUN apk add openssl3 nodejs npm yarn
+# https://pkgs.alpinelinux.org/packages?name=nodejs&branch=v3.20&repo=main&arch=&maintainer=
+ENV NODE_VERSION=20.13.1-r0
+
+RUN apk add --no-cache openssl3 nodejs=${NODE_VERSION} npm
 
 ARG NODE_ENV
 ENV NODE_ENV $NODE_ENV
