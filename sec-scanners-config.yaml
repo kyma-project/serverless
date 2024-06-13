@@ -4,8 +4,8 @@ protecode:
   - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:main
   - europe-docker.pkg.dev/kyma-project/prod/function-controller:main
   - europe-docker.pkg.dev/kyma-project/prod/function-build-init:main
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs18:main
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main
+  - europe-docker.pkg.dev/kyma-project/dev/function-runtime-nodejs18:PR-1022
+  - europe-docker.pkg.dev/kyma-project/dev/function-runtime-nodejs20:PR-1022
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python39:main
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main
   - europe-docker.pkg.dev/kyma-project/prod/tpi/kaniko-executor:1.9.2-ea54c1c7
