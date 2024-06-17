@@ -1,5 +1,10 @@
-# image base on node:18.20.3-alpine3.20
-FROM node@sha256:647dbe610886377e2e5f8a1aae4a905ad9e7a1ebc129d3699ee8d54f28b34e2c
+# alpine 3.20.0
+FROM alpine@sha256:77726ef6b57ddf65bb551896826ec38bc3e53f75cdde31354fbffb4f25238ebd
+# https://pkgs.alpinelinux.org/packages?name=nodejs&branch=v3.18&repo=main&arch=&maintainer=
+ENV NODE_VERSION=18.20.1-r0
+
+RUN apk add --no-cache openssl3 
+RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.18/main nodejs=${NODE_VERSION} npm
 
 ARG NODE_ENV
 ENV NODE_ENV $NODE_ENV
