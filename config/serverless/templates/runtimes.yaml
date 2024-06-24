@@ -6,6 +6,9 @@ metadata:
   labels:
     serverless.kyma-project.io/config: runtime
     serverless.kyma-project.io/runtime: nodejs18
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
+    app.kubernetes.io/instance: {{ template "fullname" . }}-runtime-nodejs18
+    app.kubernetes.io/component: {{ template "fullname" . }}
 data:
   Dockerfile: |-
     ARG base_image={{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.function_runtime_nodejs18) }}
@@ -34,6 +37,9 @@ metadata:
   labels:
     serverless.kyma-project.io/config: runtime
     serverless.kyma-project.io/runtime: nodejs20
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
+    app.kubernetes.io/instance: {{ template "fullname" . }}-runtime-nodejs20
+    app.kubernetes.io/component: {{ template "fullname" . }}
 data:
   Dockerfile: |-
     ARG base_image={{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.function_runtime_nodejs20) }}
@@ -62,6 +68,9 @@ metadata:
   labels:
     serverless.kyma-project.io/config: runtime
     serverless.kyma-project.io/runtime: python39
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
+    app.kubernetes.io/instance: {{ template "fullname" . }}-runtime-python39
+    app.kubernetes.io/component: {{ template "fullname" . }}
 data:
   Dockerfile: |-
     ARG base_image={{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.function_runtime_python39) }}
@@ -86,6 +95,9 @@ metadata:
   labels:
     serverless.kyma-project.io/config: runtime
     serverless.kyma-project.io/runtime: python312
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
+    app.kubernetes.io/instance: {{ template "fullname" . }}-runtime-python312
+    app.kubernetes.io/component: {{ template "fullname" . }}
 data:
   Dockerfile: |-
     ARG base_image={{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.function_runtime_python312) }}

@@ -5,5 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
+    app.kubernetes.io/instance: "serverless-{{ .Values.global.configuration.configmapName }}"
+    app.kubernetes.io/component: {{ template "fullname" . }}
 data:
   {{ .Values.global.configuration.logFilename }}: {{ include "tplValue" ( dict "value" .Values.containers.manager.logConfiguration.data "context" . ) | quote }}

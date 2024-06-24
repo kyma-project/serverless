@@ -3,6 +3,15 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.14.0
+  labels:
+    app.kubernetes.io/component: serverless
+    app.kubernetes.io/instance: functions.serverless.kyma-project.io
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: serverless
+    app.kubernetes.io/part-of: serverless
+    app.kubernetes.io/version: '{{ .Values.global.images.function_controller.version
+      }}'
+    kyma-project.io/module: serverless
   name: functions.serverless.kyma-project.io
 spec:
   group: serverless.kyma-project.io
