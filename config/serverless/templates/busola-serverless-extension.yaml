@@ -4,9 +4,11 @@ metadata:
   name: functions
   namespace: kube-public
   labels:
-    app.kubernetes.io/name: functions
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
     busola.io/extension: resource
     busola.io/extension-version: '0.5'
+    app.kubernetes.io/instance: {{ template "fullname" . }}-busola-functions
+    app.kubernetes.io/component: busola
 data:
   details: |-
     header:

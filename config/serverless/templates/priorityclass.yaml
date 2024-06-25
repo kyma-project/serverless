@@ -2,6 +2,10 @@ apiVersion: scheduling.k8s.io/v1
 kind: PriorityClass
 metadata:
   name: {{ .Values.global.serverlessPriorityClassName }}
+  labels:
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
+    app.kubernetes.io/instance: {{ template "fullname" . }}-priority-class
+    app.kubernetes.io/component: {{ template "fullname" . }}
 value: {{ .Values.global.serverlessPriorityClassValue }}
 globalDefault: false
 description: "Scheduling priority of serverless components. By default, serverless components should not be blocked by unschedulable user workloads."

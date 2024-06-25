@@ -8,6 +8,8 @@ metadata:
   {{- if .Values.services.manager.labels }}
     {{- include "tplValue" ( dict "value" .Values.services.manager.labels "context" . ) | nindent 4 }}
   {{- end }}
+    app.kubernetes.io/instance: {{ template "fullname" . }}-controller-manager
+    app.kubernetes.io/component:  {{ template "fullname" . }}
   {{- if .Values.services.manager.annotations }}
   annotations:
     {{- include "tplValue" ( dict "value" .Values.services.manager.annotations "context" . ) | nindent 4 }}

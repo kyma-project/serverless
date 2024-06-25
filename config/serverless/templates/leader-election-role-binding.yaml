@@ -5,6 +5,8 @@ metadata:
   name: {{ template "fullname" . }}-leader-election
   labels:
     {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
+    app.kubernetes.io/instance: {{ template "fullname" . }}-leader-election-role-binding
+    app.kubernetes.io/component: {{ template "fullname" . }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
