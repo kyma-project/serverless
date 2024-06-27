@@ -255,3 +255,47 @@ async function handleGet(req) {
 		},
 	}
 }
+
+func NodeJSFunctionUsingHanaClient(rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
+	src := `var hana = require('@sap/hana-client');
+
+	module.exports = {
+		main: async function (event, context) {
+			//this is fake
+			var conn_params = {
+				serverNode: "62e223c1-7de9-4c8a-bab6-411f70fdf925.hana.canary-eu10.hanacloud.ondemand.com:443",
+				uid: "DBADMIN",
+				pwd: "foo",
+			  };
+			   
+			  var conn = hana.createConnection();
+	
+			  try {
+				await conn.connect(conn_params)
+				let result = await conn.exec('SELECT 1 AS "One" FROM DUMMY')
+				return result;
+			  } catch(err) {
+				// it is expected to leave here 
+				  return err;
+			  }
+		}
+	}
+`
+	return serverlessv1alpha2.FunctionSpec{
+		Runtime: rtm,
+		Source: serverlessv1alpha2.Source{
+			Inline: &serverlessv1alpha2.InlineSource{
+				Source:       src,
+				Dependencies: `{"name": "hana-client","version": "0.0.1","dependencies": { "@sap/hana-client": "^2.21.26"} }`,
+			},
+		},
+		ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+			Function: &serverlessv1alpha2.ResourceRequirements{
+				Profile: "M",
+			},
+			Build: &serverlessv1alpha2.ResourceRequirements{
+				Profile: "fast",
+			},
+		},
+	}
+}
