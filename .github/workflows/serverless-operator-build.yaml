@@ -1,4 +1,4 @@
-name: pull-serverless-operator-build
+name: serverless operator build (pull)
 
 on:
   pull_request_target:
@@ -15,9 +15,3 @@ jobs:
       name: serverless-operator/ga
       dockerfile: components/operator/Dockerfile
       context: .
-  test-image:
-    runs-on: ubuntu-latest
-    needs: build-image
-    steps:
-      - name: Test image
-        run: echo "Testing images ${{ needs.build-image.outputs.images }}"
