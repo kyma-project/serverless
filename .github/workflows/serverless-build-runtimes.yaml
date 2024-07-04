@@ -15,12 +15,6 @@ jobs:
       name: function-runtime-nodejs18/ga
       dockerfile: nodejs18/Dockerfile
       context: components/runtimes/nodejs
-  test-image-nodejs18:
-    runs-on: ubuntu-latest
-    needs: build-image-nodejs18
-    steps:
-      - name: Test image
-        run: echo "Testing images ${{ needs.build-image-nodejs18.outputs.images }}"
 
   build-image-nodejs20:
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
@@ -28,12 +22,6 @@ jobs:
       name: function-runtime-nodejs20/ga
       dockerfile: nodejs20/Dockerfile
       context: components/runtimes/nodejs
-  test-image-nodejs20:
-    runs-on: ubuntu-latest
-    needs: build-image-nodejs18
-    steps:
-      - name: Test image
-        run: echo "Testing images ${{ needs.build-image-nodejs18.outputs.images }}"
 
   build-image-python39:
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
@@ -41,12 +29,6 @@ jobs:
       name: function-runtime-python39/ga
       dockerfile: python39/Dockerfile
       context: components/runtimes/python
-  test-image-python39:
-    runs-on: ubuntu-latest
-    needs: build-image-python39
-    steps:
-      - name: Test image
-        run: echo "Testing images ${{ needs.build-image-python39.outputs.images }}"
 
   build-image-python312:
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
@@ -54,12 +36,6 @@ jobs:
       name: function-runtime-python312/ga
       dockerfile: python312/Dockerfile
       context: components/runtimes/python
-  test-image-python312:
-    runs-on: ubuntu-latest
-    needs: build-image-python312
-    steps:
-      - name: Test image
-        run: echo "Testing images ${{ needs.build-image-python312.outputs.images }}"
 
   build-image-java17:
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
@@ -67,9 +43,3 @@ jobs:
       name: function-runtime-java17-jvm-alpha/ga
       dockerfile: Dockerfile-jvm-runtime
       context: components/runtimes/java17
-  test-image-java17:
-    runs-on: ubuntu-latest
-    needs: build-image-java17
-    steps:
-      - name: Test image
-        run: echo "Testing images ${{ needs.build-image-java17.outputs.images }}"
