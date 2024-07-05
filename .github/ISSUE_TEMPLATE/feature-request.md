@@ -41,9 +41,9 @@ Acceptance criteria might include:
 - Setting a performance benchmarks.
 - Compatibility requirements.
 Example:
-- Users should be able to configure a numeric setting via Custom Resource.
+- Users should be able to configure a numeric setting via a custom resource.
 - The new setting must be validated before its applied.
-- The new setting, when applied, is visible in the status of Custom Resource.
+- The new setting, when applied, is visible in the custom resource status.
 -->
  - [ ] expected behaviors, outcomes ... ?
  - [ ] ... new docs / update docs ... ?
@@ -58,7 +58,7 @@ Include details on:
 - target environment type: k3d, gardener, managed kyma runtime
 -->
  - automated unit test for the new logic
- - automated integration test (new test suite? extending existing test?)
+ - automated integration test (a new test suite? or extending an existing test?)
  - automated/manual test on SKR ?
 
 **Attachments**
@@ -69,6 +69,6 @@ Include details on:
 
 <!-- Include links or references to:
 - Bugs that this feature might address.
-- Other github issues that are dependent on or related to this one.
+- Other GitHub issues that are dependent on or related to this one.
 - Relevant discussions, decisions or threads.
 -->
