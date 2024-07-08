@@ -21,7 +21,7 @@ jobs:
     needs: compute-tag
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ needs.chleb.outputs.tag }}
+      - run: echo ${{ needs.compute-tag.chleb.outputs.tag }}
     #    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
 #    with:
 #      name: serverless-operator/ga
