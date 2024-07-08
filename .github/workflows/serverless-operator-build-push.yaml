@@ -1,7 +1,7 @@
 name: serverless operator build (push)
 
 on:
-  pull_request: 
+  pull_request:
   push:
     branches: [ "main", "release-*" ]
 
@@ -13,6 +13,7 @@ jobs:
   compute-tag:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - uses: ./.github/actions/compute-tag
 
   build-image:
