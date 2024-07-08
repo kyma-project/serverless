@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v4
       - id: chleb
         uses: ./.github/actions/compute-tag
-      - run: echo ${{ needs.chleb.outputs.tag }}
+      - run: echo "chleb ${{ needs.chleb.outputs.tag }} bulka"
     #    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
 #    with:
 #      name: serverless-operator/ga
