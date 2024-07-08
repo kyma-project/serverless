@@ -10,24 +10,15 @@ permissions:
   contents: read
 
 jobs:
-#  compute-tag:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v4
-#      - id: chleb
-#        uses: ./.github/actions/compute-tag
-#      -
-
   build-image:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - id: chleb
+      - id: compute-tag
         uses: ./.github/actions/compute-tag
-      - run: echo "chleb ${{ steps.chleb.outputs.tag }} bulka"
-    #    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-#    with:
-#      name: serverless-operator/ga
-#      dockerfile: components/operator/Dockerfile
-#      context: .
-#      tags: ${{ needs.compute-tag.outputs.tag }}
+      - uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+        with:
+          name: serverless-operator/ga
+          dockerfile: components/operator/Dockerfile
+          context: .
+          tags: ${{ steps.compute-tag.outputs.tag }}
