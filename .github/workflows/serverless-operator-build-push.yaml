@@ -1,6 +1,7 @@
 name: serverless operator build (push)
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main", "release-*" ]
 
@@ -11,21 +12,17 @@ permissions:
 jobs:
   compute-tag:
     runs-on: ubuntu-latest
-    outputs:
-      tag: ${{ steps.get_tag.outputs.TAG }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Get the latest tag
-        id: get_tag
-        run: echo ::set-output name=TAG::${{ github.sha }}
+      - uses: ./.github/actions/compute-tag
 
   build-image:
     needs: compute-tag
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: serverless-operator/ga
-      dockerfile: components/operator/Dockerfile
-      context: .
-      tags: ${{ needs.compute-tag.outputs.tag }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo ${{ needs.compute-tag.outputs.tag }}
+    #    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+#    with:
+#      name: serverless-operator/ga
+#      dockerfile: components/operator/Dockerfile
+#      context: .
+#      tags: ${{ needs.compute-tag.outputs.tag }}

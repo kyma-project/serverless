@@ -1,0 +1,17 @@
+name: 'Compute tag'
+description: 'Compute tag for image (push)'
+
+outputs:
+  tag:
+    description: 'Latest SHA'
+    value: ${{ steps.get_tag.outputs.TAG }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Get the latest tag
+      id: get_tag
+      shell: bash
+      run: echo ::set-output name=TAG::${{ github.sha }}
