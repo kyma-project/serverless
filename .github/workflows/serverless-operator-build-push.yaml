@@ -1,7 +1,7 @@
 name: serverless operator build (push)
 
 on:
-  workflow_dispatch:
+  pull_request: 
   push:
     branches: [ "main", "release-*" ]
 
