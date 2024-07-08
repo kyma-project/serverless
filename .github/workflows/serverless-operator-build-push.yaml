@@ -10,18 +10,22 @@ permissions:
   contents: read
 
 jobs:
-  compute-tag:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - id: chleb
-        uses: ./.github/actions/compute-tag
+#  compute-tag:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v4
+#      - id: chleb
+#        uses: ./.github/actions/compute-tag
+#      -
 
   build-image:
     needs: compute-tag
     runs-on: ubuntu-latest
     steps:
-      - run: echo ${{ needs.compute-tag.chleb.outputs.tag }}
+      - uses: actions/checkout@v4
+      - id: chleb
+        uses: ./.github/actions/compute-tag
+      - run: echo ${{ needs.chleb.outputs.tag }}
     #    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
 #    with:
 #      name: serverless-operator/ga
