@@ -19,7 +19,7 @@ jobs:
 
       - name: Get the latest tag
         id: get_tag
-        run: echo ::set-output name=TAG::${{ github.sha }}}
+        run: echo ::set-output name=TAG::${{ github.sha }}
 
   build-image:
     needs: compute-tag
