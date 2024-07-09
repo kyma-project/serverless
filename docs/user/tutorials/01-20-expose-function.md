@@ -103,7 +103,7 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
     ```bash
     curl https://$NAME.$DOMAIN
     ```
-  If successful, the `Hello World!` message appears.
+    If successful, the `Hello World!` message appears.
 
 #### **kubectl**
 
@@ -156,5 +156,6 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
     ```bash
     curl https://$NAME.$DOMAIN
     ```
+    If successful, the `Hello World!` message appears.
 
 <!-- tabs:end -->
