@@ -70,6 +70,15 @@ jobs:
       context: components/runtimes/nodejs
       tags: ${{ needs.compute-tag.outputs.tag }}
 
+  build-release-image-python39-legacy:
+    needs: compute-tag
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: function-runtime-python39/ga
+      dockerfile: python39/Dockerfile
+      context: components/runtimes/python
+      tags: ${{ needs.compute-tag.outputs.tag }}
+
   build-release-image-python39:
     needs: compute-tag
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
