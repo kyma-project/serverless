@@ -1,0 +1,48 @@
+name: serverless build (push)
+
+on:
+  push:
+    branches: [ "main", "release-*" ]
+    paths-ignore:
+      - 'docs/**'
+      - 'examples/**'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  compute-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.get_tag.outputs.TAG }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get the latest tag
+        id: get_tag
+        run: echo ::set-output name=TAG::${{ github.sha }}
+
+  build-image-serverless-controller:
+    needs: compute-tag
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: function-controller/ga
+      dockerfile: components/serverless/deploy/manager/Dockerfile
+      tags: ${{ needs.compute-tag.outputs.tag }}
+
+  build-image-serverless-webhook:
+    needs: compute-tag
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: function-webhook/ga
+      dockerfile: components/serverless/deploy/webhook/Dockerfile
+      tags: ${{ needs.compute-tag.outputs.tag }}
+
+  build-image-serverless-jobinit:
+    needs: compute-tag
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: function-build-init/ga
+      dockerfile: components/serverless/deploy/jobinit/Dockerfile
+      tags: ${{ needs.compute-tag.outputs.tag }}
