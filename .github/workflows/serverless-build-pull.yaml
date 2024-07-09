@@ -14,18 +14,15 @@ jobs:
     with:
       name: function-controller/ga
       dockerfile: components/serverless/deploy/manager/Dockerfile
-      context: .
 
   build-image-serverless-webhook:
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: function-webhook/ga
       dockerfile: components/serverless/deploy/webhook/Dockerfile
-      context: .
 
   build-image-serverless-jobinit:
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: function-build-init/ga
       dockerfile: components/serverless/deploy/jobinit/Dockerfile
-      context: .

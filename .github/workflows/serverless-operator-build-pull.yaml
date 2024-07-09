@@ -14,4 +14,3 @@ jobs:
     with:
       name: serverless-operator/ga
       dockerfile: components/operator/Dockerfile
-      context: .

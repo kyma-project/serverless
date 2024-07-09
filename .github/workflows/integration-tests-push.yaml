@@ -16,7 +16,7 @@ jobs:
           make -C components/operator deploy
           make -C tests/operator test
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator/ga:${{ github.sha }}
       - if: ${{ always() }}
         uses: ./.github/actions/collect-cluster-info
 
@@ -41,7 +41,7 @@ jobs:
           make -C components/operator deploy
           make -C tests/operator test
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator/ga:${{ github.sha }}
       - name: deprovision gardener
         if: ${{ always() }}
         run: make -C hack deprovision-gardener
@@ -60,7 +60,7 @@ jobs:
           make -C tests/serverless serverless-integration serverless-contract-tests
           make remove-serverless
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator/ga:${{ github.sha }}
 
   git-auth-integration-test:
     runs-on: ubuntu-latest
@@ -77,4 +77,4 @@ jobs:
           APP_TEST_GITHUB_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_GITHUB_SSH_KEY }}
           APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
           APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
-          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator/ga:${{ github.sha }}

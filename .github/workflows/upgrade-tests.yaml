@@ -18,7 +18,7 @@ jobs:
           make -C components/operator deploy
           make -C tests/operator test
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator/ga:${{ github.sha }}
       - if: ${{ always() }}
         uses: ./.github/actions/collect-cluster-info
 
@@ -34,4 +34,4 @@ jobs:
           make -C tests/serverless serverless-integration serverless-contract-tests
           make remove-serverless
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator/ga:${{ github.sha }}

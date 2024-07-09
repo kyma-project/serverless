@@ -29,5 +29,4 @@ jobs:
     with:
       name: serverless-operator/ga
       dockerfile: components/operator/Dockerfile
-      context: .
       tags: ${{ needs.compute-tag.outputs.tag }}
