@@ -1,4 +1,4 @@
-FROM golang:1.22.4-alpine3.20 as builder
+FROM golang:1.22.5-alpine3.20 as builder
 
 ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/serverless \
     CGO_ENABLED=1 \

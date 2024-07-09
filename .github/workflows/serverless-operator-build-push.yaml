@@ -4,6 +4,9 @@ on:
   pull_request:
   push:
     branches: [ "main", "release-*" ]
+    paths-ignore:
+      - 'docs/**'
+      - 'examples/**'
 
 permissions:
   id-token: write
@@ -22,3 +25,12 @@ jobs:
           dockerfile: components/operator/Dockerfile
           context: .
           tags: ${{ steps.compute-tag.outputs.tag }}
+
+  build-image:
+    needs: compute-tag
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: serverless-operator/ga
+      dockerfile: components/operator/Dockerfile
+      context: .
+      tags: ${{ needs.compute-tag.outputs.tag }}

@@ -4,7 +4,7 @@
 
 
 # Build the operator binary
-FROM golang:1.22.4 as builder
+FROM golang:1.22.5 as builder
 
 WORKDIR /workdir
 
