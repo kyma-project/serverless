@@ -1,4 +1,4 @@
-name: pull-serverless-runtimes-build
+name: serverless runtimes build (pull)
 
 on:
   pull_request_target:
