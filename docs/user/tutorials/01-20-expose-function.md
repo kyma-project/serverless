@@ -4,8 +4,8 @@ This tutorial shows how you can expose your Function to access it outside the cl
 
 When you complete this tutorial, you get a Function that:
 
-- Is available on an unsecured endpoint using the `no_auth` handler.
-- Allows access to the specified HTTP methods of the exposed function.
+- Uses the `no_auth` handler, allowing access on an unsecured endpoint.
+- Accepts the `GET`, `POST`, `PUT`, and `DELETE` methods.
 
 To learn more about securing your Function, see the [Expose and secure a workload with OAuth2](https://kyma-project.io/docs/kyma/latest/03-tutorials/00-api-exposure/apix-05-expose-and-secure-a-workload/apix-05-01-expose-and-secure-workload-oauth2/) or [Expose and secure a workload with JWT](https://kyma-project.io/docs/kyma/latest/03-tutorials/00-api-exposure/apix-05-expose-and-secure-a-workload/apix-05-03-expose-and-secure-workload-jwt/) tutorials.
 
