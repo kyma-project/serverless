@@ -45,7 +45,7 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
 
 5. Select **Create** to confirm your changes.
 
-6. Check if you can access the Function by selecting the HTTPS link under the **Host** column for the newly created APIRule. If successful, the `Hello World!` massage appears.
+6. Check if you can access the Function by selecting the HTTPS link under the **Host** column for the newly created APIRule. If successful, the `Hello World!` message appears.
 
 #### **Kyma CLI**
 
