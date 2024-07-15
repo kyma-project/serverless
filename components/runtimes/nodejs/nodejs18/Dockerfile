@@ -1,5 +1,5 @@
-# alpine 3.20.0
-FROM alpine@sha256:77726ef6b57ddf65bb551896826ec38bc3e53f75cdde31354fbffb4f25238ebd
+# alpine 3.20.1
+FROM alpine@sha256:b89d9c93e9ed3597455c90a0b88a8bbb5cb7188438f70953fede212a0c4394e0
 # https://pkgs.alpinelinux.org/packages?name=nodejs&branch=v3.18&repo=main&arch=&maintainer=
 ENV NODE_VERSION=18.20.1-r0
 
