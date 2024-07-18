@@ -82,6 +82,10 @@ global:
       name: "function-build-init"
       version: "main"
       directory: "prod"
+    registry_init: # https://github.com/kyma-project/docker-registry/tree/main/components/registry-init
+      name: "registry-init"
+      version: "v20240506-57d31b1d"
+      directory: "prod"
     function_runtime_nodejs18:
       name: "function-runtime-nodejs18"
       version: "main"
