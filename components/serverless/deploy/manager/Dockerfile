@@ -1,4 +1,4 @@
-FROM golang:1.22.5-alpine3.20 as builder
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.22.5-alpine as builder
 
 ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/serverless \
     CGO_ENABLED=1 \
@@ -20,11 +20,11 @@ RUN go build -ldflags "-s -w" -a -o manager ./components/serverless/cmd/manager/
     && mkdir /app \
     && mv ./manager /app/manager
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/alpine:3.20.0 as certs
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.20.1 as certs
 
 RUN apk add --no-cache ca-certificates
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/alpine:3.20.0
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.20.1
 
 ENV LIBGIT2_VERSION=1.5.2-r0
 
