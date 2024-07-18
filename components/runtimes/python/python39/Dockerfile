@@ -1,4 +1,4 @@
-FROM europe-docker.pkg.dev/kyma-project/prod/external/python:3.9.19-alpine3.20
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/python:3.9.19-alpine3.20
 
 # Serverless
 LABEL source = git@github.com:kyma-project/serverless.git
