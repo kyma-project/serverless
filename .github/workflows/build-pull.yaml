@@ -67,10 +67,3 @@ jobs:
       name: function-runtime-python312
       dockerfile: python312/Dockerfile
       context: components/runtimes/python
-
-  build-java17:
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: function-runtime-java17-jvm-alpha
-      dockerfile: Dockerfile-jvm-runtime
-      context: components/runtimes/java17
