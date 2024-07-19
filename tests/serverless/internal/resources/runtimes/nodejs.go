@@ -276,7 +276,8 @@ func NodeJSFunctionUsingHanaClient(rtm serverlessv1alpha2.Runtime) serverlessv1a
 				return result;
 			  } catch(err) {
 				// it is expected to leave here. The purpose is to check if hana client returns a known error instead of crashing the whole container with SIGSEGV
-				if(err.sqlState && err.sqlState.startsWith("HY")){
+				// HY000 means general error - https://stackoverflow.com/questions/7472884/what-is-sql-error-5-sqlstate-hy000-and-what-can-cause-this-error
+				if(err.sqlState && err.sqlState=="HY000"){
                   return "OK";
                 } 
 				return "NOK";
