@@ -62,11 +62,11 @@ func HanaClientTest(restConfig *rest.Config, cfg internal.Config, logf *logrus.E
 		executor.NewParallelRunner(logf, "Fn tests",
 			executor.NewSerialTestRunner(nodejs18Logger, "NodeJS18 test",
 				function.CreateFunction(nodejs18Logger, nodejs18Fn, "Create NodeJS18 Function", runtimes.NodeJSFunctionUsingHanaClient(serverlessv1alpha2.NodeJs18)),
-				assertion.NewHTTPCheck(nodejs18Logger, "Testing hana-client in nodejs18 function", nodejs18Fn.FunctionURL, poll, "{\"code\":10,\"sqlState\":\"28000\"}"),
+				assertion.NewHTTPCheck(nodejs18Logger, "Testing hana-client in nodejs18 function", nodejs18Fn.FunctionURL, poll, "OK"),
 			),
 			executor.NewSerialTestRunner(nodejs20Logger, "NodeJS20 test",
 				function.CreateFunction(nodejs20Logger, nodejs20Fn, "Create NodeJS20 Function", runtimes.NodeJSFunctionUsingHanaClient(serverlessv1alpha2.NodeJs20)),
-				assertion.NewHTTPCheck(nodejs18Logger, "Testing hana-client in nodejs20 function", nodejs20Fn.FunctionURL, poll, "{\"code\":10,\"sqlState\":\"28000\"}"),
+				assertion.NewHTTPCheck(nodejs18Logger, "Testing hana-client in nodejs20 function", nodejs20Fn.FunctionURL, poll, "OK"),
 			),
 		),
 	), nil

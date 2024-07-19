@@ -275,8 +275,11 @@ func NodeJSFunctionUsingHanaClient(rtm serverlessv1alpha2.Runtime) serverlessv1a
 				let result = await conn.exec('SELECT 1 AS "One" FROM DUMMY')
 				return result;
 			  } catch(err) {
-				// it is expected to leave here 
-				  return err;
+				// it is expected to leave here. The purpose is to check if hana client returns a known error instead of crashing the whole container with SIGSEGV
+				if(err.sqlState && err.sqlState.startsWith("HY")){
+                  return "OK";
+                } 
+				return "NOK";
 			  }
 		}
 	}
@@ -286,7 +289,7 @@ func NodeJSFunctionUsingHanaClient(rtm serverlessv1alpha2.Runtime) serverlessv1a
 		Source: serverlessv1alpha2.Source{
 			Inline: &serverlessv1alpha2.InlineSource{
 				Source:       src,
-				Dependencies: `{"name": "hana-client","version": "0.0.1","dependencies": { "@sap/hana-client": "^2.21.26"} }`,
+				Dependencies: `{"name": "hana-client","version": "0.0.1","dependencies": { "@sap/hana-client": "latest"} }`,
 			},
 		},
 		ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
