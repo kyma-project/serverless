@@ -4,9 +4,6 @@ on:
   pull_request:
     branches: 
       - main
-    paths: 
-      - sec-scanners-config.yaml
-      - config/serverless/values.yaml
 
 jobs:
   # check if developer doesn't change `main` images in the values.yaml and sec-scanners-config.yaml files

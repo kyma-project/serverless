@@ -6,9 +6,6 @@ on:
     types:
       - completed
   pull_request:
-    paths-ignore:
-      - 'docs/**'
-      - 'examples/**'
     types: [opened, reopened, synchronize, ready_for_review]
 
 jobs:

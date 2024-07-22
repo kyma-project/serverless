@@ -2,10 +2,6 @@ name: lint
 
 on:
   pull_request:
-    paths:
-      - 'components/operator/**'
-      - 'components/serverless/**'
-      - '.github/**'
     types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
 
 jobs:
