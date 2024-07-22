@@ -1,6 +1,7 @@
 name: integration tests (pull)
 
 on:
+  workflow_call:
   workflow_run:
     workflows: [ "serverless operator build (pull)" ]
     types:

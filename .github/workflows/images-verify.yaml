@@ -1,6 +1,7 @@
 name: images verify
 run-name: ${{github.event.pull_request.title}}
 on: 
+  workflow_call:
   pull_request:
     branches: 
       - main
