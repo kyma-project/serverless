@@ -1,6 +1,7 @@
 name: integration tests (push)
 
 on:
+  workflow_call:
   push:
     branches: [ "main", "release-*" ]
 
