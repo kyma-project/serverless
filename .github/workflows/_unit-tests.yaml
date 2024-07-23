@@ -2,8 +2,6 @@ name: unit tests
 
 on:
   workflow_call:
-  pull_request:
-    types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
 
 jobs:
   operator-unit-tests:

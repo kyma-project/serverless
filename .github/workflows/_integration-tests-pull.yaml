@@ -2,12 +2,6 @@ name: integration tests (pull)
 
 on:
   workflow_call:
-  workflow_run:
-    workflows: [ "serverless operator build (pull)" ]
-    types:
-      - completed
-  pull_request:
-    types: [opened, reopened, synchronize, ready_for_review]
 
 jobs:
   operator-integration-test:
