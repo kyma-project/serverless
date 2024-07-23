@@ -6,12 +6,12 @@ on:
 
 jobs:
   builds:
-    uses: ./.github/workflows/build-push-release.yaml
+    uses: ./.github/workflows/_build-push-release.yaml
   
   integrations:
     needs: builds
-    uses: ./.github/workflows/integration-tests-push.yaml
+    uses: ./.github/workflows/_integration-tests-push.yaml
   
   upgrades:
     needs: builds
-    uses: ./.github/workflows/upgrade-tests.yaml
+    uses: ./.github/workflows/_upgrade-tests.yaml

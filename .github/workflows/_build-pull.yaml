@@ -1,4 +1,4 @@
-name: serverless build (pull)
+name: build (pull)
 
 on:
   workflow_call:

@@ -1,4 +1,4 @@
-name: serverless build (push)
+name: build (push)
 
 on:
   workflow_call:

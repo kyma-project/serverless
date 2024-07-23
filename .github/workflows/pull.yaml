@@ -10,18 +10,18 @@ permissions:
 
 jobs:
   unit-tests:
-    uses: ./.github/workflows/unit-tests.yaml
+    uses: ./.github/workflows/_unit-tests.yaml
   
   gitleaks:
-    uses: ./.github/workflows/gitleaks.yaml
+    uses: ./.github/workflows/_gitleaks.yaml
   
   images-verify:
-    uses: ./.github/workflows/images-verify.yaml
+    uses: ./.github/workflows/_images-verify.yaml
   
   builds:
     needs: [unit-tests, gitleaks, images-verify]
-    uses: ./.github/workflows/build-pull.yaml
+    uses: ./.github/workflows/_build-pull.yaml
   
   integrations:
     needs: builds
-    uses: ./.github/workflows/integration-tests-pull.yaml
+    uses: ./.github/workflows/_integration-tests-pull.yaml
