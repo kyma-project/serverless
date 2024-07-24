@@ -9,6 +9,9 @@ permissions:
   contents: read # This is required for actions/checkout
 
 jobs:
+  lint:
+    uses: ./.github/workflows/_lint.yaml
+
   unit-tests:
     uses: ./.github/workflows/_unit-tests.yaml
   
