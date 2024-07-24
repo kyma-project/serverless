@@ -24,4 +24,6 @@ jobs:
   
   integrations:
     needs: builds
-    uses: ./.github/workflows/_integration-tests-pull.yaml
+    uses: ./.github/workflows/_integration-tests.yaml
+    with:
+      image: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
