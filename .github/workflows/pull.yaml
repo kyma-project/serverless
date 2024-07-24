@@ -20,10 +20,8 @@ jobs:
   
   builds:
     needs: [unit-tests, gitleaks, images-verify]
-    uses: ./.github/workflows/_build.yaml
+    uses: ./.github/workflows/_build-pull.yaml
   
   integrations:
     needs: builds
-    uses: ./.github/workflows/_integration-tests.yaml
-    with:
-      image: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
+    uses: ./.github/workflows/_integration-tests-pull.yaml
