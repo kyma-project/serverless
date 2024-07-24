@@ -1,18 +1,7 @@
-name: serverless build (push)
+name: build (push)
 
 on:
   workflow_call:
-  push:
-    branches: [ "main", "release-*" ]
-    paths-ignore:
-      - 'docs/**'
-      - 'examples/**'
-    tags:
-      - '^v?\d+\.\d+\.\d+(?:-.*)?$'
-
-permissions:
-  id-token: write # This is required for requesting the JWT token
-  contents: read # This is required for actions/checkout
 
 jobs:
   compute-tags:
