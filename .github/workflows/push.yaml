@@ -6,12 +6,14 @@ on:
 
 jobs:
   builds:
-    uses: ./.github/workflows/_build-push-release.yaml
+    uses: ./.github/workflows/_build.yaml
   
   integrations:
     needs: builds
-    uses: ./.github/workflows/_integration-tests-push.yaml
-  
+    uses: ./.github/workflows/_integration-tests.yaml
+    with:
+      image: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+
   upgrades:
     needs: builds
     uses: ./.github/workflows/_upgrade-tests.yaml

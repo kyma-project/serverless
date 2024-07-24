@@ -1,13 +1,20 @@
-name: integration tests (push)
+name: integration tests
 
 on:
   workflow_call:
+    inputs:
+      image:
+        description: 'The image to test'
+        required: true
+        type: string
 
 jobs:
   operator-integration-test:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-k3d-cluster
       - name: run test
@@ -15,14 +22,16 @@ jobs:
           make -C components/operator deploy
           make -C tests/operator test
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+          IMG: ${{ inputs.image }}
       - if: ${{ always() }}
         uses: ./.github/actions/collect-cluster-info
 
   gardener-integration-test:
+    if: ${{ github.event_name == 'push' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
       - name: save service-account
         shell: bash
@@ -40,7 +49,7 @@ jobs:
           make -C components/operator deploy
           make -C tests/operator test
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+          IMG: ${{ inputs.image }}
       - name: deprovision gardener
         if: ${{ always() }}
         run: make -C hack deprovision-gardener
@@ -48,9 +57,11 @@ jobs:
           GARDENER_SA_PATH: /tmp/gardener-sa.yaml
 
   serverless-integration-test:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-k3d-cluster
       - name: run test
@@ -59,12 +70,14 @@ jobs:
           make -C tests/serverless serverless-integration serverless-contract-tests
           make remove-serverless
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+          IMG: ${{ inputs.image }}
 
   git-auth-integration-test:
+    if: ${{ github.event_name == 'push' || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-k3d-cluster
       - name: run tests
@@ -76,4 +89,4 @@ jobs:
           APP_TEST_GITHUB_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_GITHUB_SSH_KEY }}
           APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
           APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
-          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+          IMG: ${{ inputs.image }}
