@@ -4,13 +4,13 @@
 shoot_template=$(envsubst < ${PROJECT_ROOT}/hack/shoot_template.yaml)
 
 export KUBECONFIG="${GARDENER_SA_PATH}"
-echo "$shoot_template" | kubectl apply -f -
+echo "$shoot_template" | kubectl --kubeconfig=$KUBECONFIG apply -f -
 
 echo "waiting fo cluster to be ready..."
-kubectl wait --for=condition=EveryNodeReady shoot/${SHOOT} --timeout=17m
+kubectl --kubeconfig=$KUBECONFIG wait --for=condition=EveryNodeReady shoot/${SHOOT} --timeout=17m
 
 # create kubeconfig request, that creates a kubeconfig which is valid for one day
-kubectl create \
+kubectl --kubeconfig=$KUBECONFIG create \
     -f <(printf '{"spec":{"expirationSeconds":86400}}') \
     --raw /apis/core.gardener.cloud/v1beta1/namespaces/garden-${PROJECT}/shoots/${SHOOT}/adminkubeconfig | \
     jq -r ".status.kubeconfig" | \
