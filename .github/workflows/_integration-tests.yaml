@@ -36,7 +36,7 @@ jobs:
       - name: provision gardener
         run: |
           echo "$GARDENER_SA" > $GARDENER_SA_PATH
-          echo "Used kubeconfig file has $(sed -n '$=' ~/Desktop/kubeconfig.yaml) lines"
+          echo "Used kubeconfig file has $(sed -n '$=' $GARDENER_SA_PATH) lines"
           make -C hack provision-gardener
         env:
           GARDENER_SECRET_NAME: ${{ secrets.GARDENER_SECRET_NAME }}
