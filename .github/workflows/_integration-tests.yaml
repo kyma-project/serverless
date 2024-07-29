@@ -33,17 +33,16 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
-      - name: save service-account
-        shell: bash
-        run: 'echo "$GARDENER_SA" > /tmp/gardener-sa.yaml'
-        env:
-          GARDENER_SA: ${{ secrets.GARDENER_SA }}
       - name: provision gardener
-        run: make -C hack provision-gardener
+        run: |
+          echo "$GARDENER_SA" > $GARDENER_SA_PATH
+          echo "Used kubeconfig file has $(sed -n '$=' ~/Desktop/kubeconfig.yaml) lines"
+          make -C hack provision-gardener
         env:
           GARDENER_SECRET_NAME: ${{ secrets.GARDENER_SECRET_NAME }}
           GARDENER_PROJECT: ${{ secrets.GARDENER_PROJECT }}
           GARDENER_SA_PATH: /tmp/gardener-sa.yaml
+          GARDENER_SA: ${{ secrets.GARDENER_SA }}
       - name: run test
         run: |
           make -C components/operator deploy
