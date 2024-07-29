@@ -1,9 +1,8 @@
 name: images verify
 run-name: ${{github.event.pull_request.title}}
-on: 
-  pull_request:
-    branches: 
-      - main
+
+on:
+  workflow_call:
 
 jobs:
   # check if developer doesn't change `main` images in the values.yaml and sec-scanners-config.yaml files

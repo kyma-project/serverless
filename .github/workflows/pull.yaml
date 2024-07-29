@@ -1,0 +1,29 @@
+name: pull
+
+on:
+  pull_request_target:
+    types: [ opened, edited, synchronize, reopened, ready_for_review ]
+
+permissions:
+  id-token: write # This is required for requesting the JWT token
+  contents: read # This is required for actions/checkout
+
+jobs:
+  unit-tests:
+    uses: ./.github/workflows/_unit-tests.yaml
+  
+  gitleaks:
+    uses: ./.github/workflows/_gitleaks.yaml
+  
+  images-verify:
+    uses: ./.github/workflows/_images-verify.yaml
+  
+  builds:
+    needs: [images-verify]
+    uses: ./.github/workflows/_build.yaml
+  
+  integrations:
+    needs: builds
+    uses: ./.github/workflows/_integration-tests.yaml
+    with:
+      image: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
