@@ -10,10 +10,12 @@ jobs:
   
   integrations:
     needs: builds
+    secrets: inherit
     uses: ./.github/workflows/_integration-tests.yaml
     with:
       image: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
 
   upgrades:
     needs: builds
+    secrets: inherit
     uses: ./.github/workflows/_upgrade-tests.yaml
