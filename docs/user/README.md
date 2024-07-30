@@ -30,7 +30,7 @@ The Serverless module allows you to install, uninstall and configure Kyma's Serv
 
 ## Serverless Operator
 
-When you enable the Serverless module, Serverless Operator takes care of installation and configuration of Serverless on your cluster. It manages the Serverless lifecycle based on the dedicated Serverless custom resource (CR).
+When you add the Serverless module, Serverless Operator takes care of installation and configuration of Serverless on your cluster. It manages the Serverless lifecycle based on the dedicated Serverless custom resource (CR).
 
 ## Useful Links
 
