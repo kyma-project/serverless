@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eo pipefail
+
 # render and applyshoot template
 shoot_template=$(envsubst < ${PROJECT_ROOT}/hack/shoot_template.yaml)
 
