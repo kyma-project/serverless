@@ -2,6 +2,12 @@ name: build
 
 on:
   workflow_call:
+    inputs:
+      tag:
+        description: 'Additional tag for built images'
+        required: false
+        type: string
+        default: ""
 
 jobs:
   compute-tags:
@@ -19,6 +25,7 @@ jobs:
             echo 'TAGS<<EOF'
             echo "${{ github.sha }}"
             echo "${{ github.ref_name}}"
+            echo "${{ inputs.tag }}"
             echo EOF
           } >> "$GITHUB_OUTPUT"
 
