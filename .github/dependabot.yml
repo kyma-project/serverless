@@ -56,6 +56,16 @@ updates:
     commit-message:
       prefix: "manager"
       include: "scope"
+  - package-ecosystem: "docker"
+    directory: "/components/serverless/deploy/webhook"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "webhook"
+      include: "scope"
 
   - package-ecosystem: "docker"
     directory: "/tests/gitserver"
@@ -66,6 +76,47 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "gitserver"
+      include: "scope"
+
+  - package-ecosystem: "docker"
+    directory: "/components/runtimes/python/python39"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "python39"
+      include: "scope"
+  - package-ecosystem: "docker"
+    directory: "/components/runtimes/python/python312"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "python312"
+      include: "scope"
+  - package-ecosystem: "docker"
+    directory: "/components/runtimes/python/nodejs18"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "nodejs18"
+      include: "scope"
+  - package-ecosystem: "docker"
+    directory: "/components/runtimes/python/nodejs20"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "nodejs20"
       include: "scope"
 
   - package-ecosystem: "pip"
