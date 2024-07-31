@@ -129,7 +129,7 @@ jobs:
 
   publish-release:
     name: Publish release
-    needs: integrations
+    needs: [integrations, create-draft]
     runs-on: ubuntu-latest
 
     steps:
