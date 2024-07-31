@@ -9,7 +9,7 @@ protecode:
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python39:main
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main
   - europe-docker.pkg.dev/kyma-project/prod/external/gcr.io/kaniko-project/executor:v1.23.2
-  - europe-docker.pkg.dev/kyma-project/prod/external/registry:2.8.3
+  - europe-docker.pkg.dev/kyma-project/prod/external/library/registry:2.8.3-v1
   - europe-docker.pkg.dev/kyma-project/prod/registry-init:v20240506-57d31b1d
 whitesource:
   language: golang-mod
