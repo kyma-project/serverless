@@ -108,8 +108,8 @@ global:
       directory: "prod/external"
     registry:
       name: "registry"
-      version: "2.8.3"
-      directory: "prod/external"
+      version: "2.8.3-v1"
+      directory: "prod/external/library"
   serverlessPriorityClassValue: 2000000
   serverlessPriorityClassName: "serverless-priority"
 images:
