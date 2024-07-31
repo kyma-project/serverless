@@ -23,9 +23,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Verify prow post jobs
-        run: ./.github/scripts/verify-serverless-jobs-status.sh ${{ github.ref_name }}
-
       - name: Verify github actions
         run: ./.github/scripts/verify-actions-status.sh ${{ github.ref_name }}
 
@@ -97,9 +94,6 @@ jobs:
           PULL_BASE_REF: ${{ github.event.inputs.name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ./.github/scripts/release.sh
-
-      - name: Verify prow release jobs
-        run: ./.github/scripts/verify-serverless-jobs-status.sh ${{ github.ref_name }}
 
     outputs:
       release_id: ${{ steps.create-draft.outputs.release_id }}
