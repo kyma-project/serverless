@@ -12,6 +12,10 @@ on:
         type: boolean
         default: false
 
+permissions: # used by build images steps
+  id-token: write # This is required for requesting the JWT token
+  contents: read # This is required for actions/checkout
+
 jobs:
   verify-head-status:
     name: Verify HEAD
@@ -60,9 +64,32 @@ jobs:
           git commit --allow-empty -m "upgrade dependencies"
           git push origin ${{ github.ref_name }}
 
+  create-tag:
+    name: Create tag
+    needs: upgrade-images
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref_name }}  # Checkout to latest branch changes
+
+      - name: Create tag
+        run: |
+          git tag ${{ github.event.inputs.name }}
+          git push origin ${{ github.event.inputs.name }}
+
+  builds:
+    needs: create-tag
+    uses: ./.github/workflows/_build.yaml
+    with:
+      tag: "${{ github.event.inputs.name }}"
+
   create-draft:
     name: Create draft release
-    needs: upgrade-images
+    needs: builds
     runs-on: ubuntu-latest
 
     steps:
@@ -82,11 +109,6 @@ jobs:
           RELEASE_ID=$(./.github/scripts/create_draft_release.sh ${{ github.event.inputs.name }})
           echo "release_id=$RELEASE_ID" >> $GITHUB_OUTPUT
 
-      - name: Create lightweight tag
-        run: |
-          git tag ${{ github.event.inputs.name }}
-          git push origin ${{ github.event.inputs.name }}
-
       - name: Create release assets
         id: create-assets
         env:
@@ -98,9 +120,16 @@ jobs:
     outputs:
       release_id: ${{ steps.create-draft.outputs.release_id }}
 
+  integrations:
+    needs: create-draft
+    secrets: inherit
+    uses: ./.github/workflows/_integration-tests.yaml
+    with:
+      image: europe-docker.pkg.dev/kyma-project/prod/dockerregistry-operator:${{ github.event.inputs.name }}
+
   publish-release:
     name: Publish release
-    needs: create-draft
+    needs: integrations
     runs-on: ubuntu-latest
 
     steps:
