@@ -14,7 +14,7 @@ on:
 
 permissions: # used by build images steps
   id-token: write # This is required for requesting the JWT token
-  contents: read # This is required for actions/checkout
+  contents: write # This is required for actions/checkout and builds
 
 jobs:
   verify-head-status:
