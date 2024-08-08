@@ -5,6 +5,9 @@ on:
     branches: [ "main", "release-*" ]
 
 jobs:
+  markdown:
+    uses: ./.github/workflows/_markdown.yaml
+
   builds:
     uses: ./.github/workflows/_build.yaml
   
