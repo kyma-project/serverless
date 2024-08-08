@@ -338,10 +338,19 @@ data:
           children:
             - path: secretName
               widget: Resource
+              overwrite: false
+              visibility: $canI('v1', 'Secret')
               resource:
                 kind: Secret
                 version: v1
                 scope: namespace
+            - simple: true
+              var: separator
+              value: ""
+            - path: secretName
+              widget: Text
+              overwrite: false
+              visibility: $not($canI('v1', 'Secret'))
             - path: type
     - path: spec.scaleConfig
       widget: FormGroup
@@ -403,7 +412,15 @@ data:
                 version: v1
                 scope: namespace
               provideVar: secret
-              visibility: $envType = 'From Secret'
+              overwrite: false
+              visibility: $canI('v1', 'Secret') and $envType = 'From Secret'
+            - simple: true
+              var: separator
+              value: ""
+            - path: valueFrom.secretKeyRef.name
+              widget: Text
+              overwrite: false
+              visibility: $not($canI('v1', 'Secret')) and $envType = 'From Secret'
             - path: valueFrom.secretKeyRef.key
               widget: Text
               enum: $keys($secret.data)
@@ -415,7 +432,15 @@ data:
                 version: v1
                 scope: namespace
               provideVar: configMap
-              visibility: $envType = 'From Config Map'
+              overwrite: false
+              visibility: $canI('v1', 'ConfgMap') and $envType = 'From Config Map'
+            - simple: true
+              var: separator
+              value: ""
+            - path: valueFrom.configMapKeyRef.name
+              widget: Text
+              overwrite: false
+              visibility: $not($canI('v1', 'ConfgMap')) and $envType = 'From Config Map'
             - path: valueFrom.configMapKeyRef.key
               widget: Text
               enum: $keys($configMap.data)
