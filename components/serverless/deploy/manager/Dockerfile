@@ -1,4 +1,4 @@
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.22.5-alpine as builder
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.22.6-alpine as builder
 
 ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/serverless \
     CGO_ENABLED=1 \
