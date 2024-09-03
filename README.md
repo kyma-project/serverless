@@ -108,3 +108,15 @@ kubectl apply -f https://github.com/kyma-project/serverless/releases/latest/down
             secretName: my-secret
     EOF
     ```
+
+## Contributing
+
+See the [Contributing Rules](CONTRIBUTING.md).
+
+## Code of Conduct
+
+See the [Code of Conduct](CODE_OF_CONDUCT.md) document.
+
+## Licensing
+
+See the [license](./LICENSE) file.
