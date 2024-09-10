@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: buildless-serverless-ctrl-mngr
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: buildless-serverless
+      app.kubernetes.io/name: buildless-serverless
+      app.kubernetes.io/instance: "{{ .Release.Name }}"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: buildless-serverless
+        app.kubernetes.io/name: buildless-serverless
+        app.kubernetes.io/instance: "{{ .Release.Name }}"
+    spec:
+      volumes:
+        - name: function-sources
+          persistentVolumeClaim:
+            claimName: buildless-serverless-nfs-pvc
+      serviceAccountName: buildless-serverless-controller-manager
+      containers:
+        - name: manager
+          volumeMounts:
+            - name: function-sources
+              mountPath: /function-sources
+          image: pprecel/buildless-serverless:latest
+          imagePullPolicy: Always
+          command:
+            - /app/manager
+          resources: {}
+          ports:
+            - containerPort: "8090"
+              name: "health"
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              port: "8090"
+              path: "/healthz/"
+            initialDelaySeconds: 50
+            timeoutSeconds: 60
+            periodSeconds: 120
+            failureThreshold: 3
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              port: "8090"
+              path: "/healthz/"
+            initialDelaySeconds: 50
+            timeoutSeconds: 60
+            periodSeconds: 120
+            failureThreshold: 3
+            successThreshold: 1
+          env:
+            - name: APP_HEALTHZ_ADDRESS
+              value: "8090"
+            - name: APP_KUBERNETES_BASE_NAMESPACE
+              value: "{{ .Release.Namespace }}"

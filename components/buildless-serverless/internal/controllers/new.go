@@ -37,5 +37,19 @@ func (r *FunctionReconciler) SetupWithManager(mgr manager.Manager) error {
 }
 
 func (r *FunctionReconciler) Reconcile(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
+	r.logger.Info("starting reconciliation for", request.NamespacedName)
+
+	// TODO: create
+
+
+
+	// TODO: update
+
+
+
+	// TODO: delete
+
+	
+
 	return reconcile.Result{}, nil
 }

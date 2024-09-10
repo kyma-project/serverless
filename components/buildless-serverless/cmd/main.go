@@ -92,11 +92,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err := mgr.AddReadyzCheck("readiness check", healthz.Ping); err != nil {
-		l.Error(fmt.Sprintf("unable to register readyz", err.Error()))
-		os.Exit(1)
-	}
-
 	fnRecon := controllers.NewFunctionReconciler(mgr.GetClient(), l)
 	if err != fnRecon.SetupWithManager(mgr) {
 		l.Error(fmt.Sprintf("unable to create Function controller", err.Error()))
