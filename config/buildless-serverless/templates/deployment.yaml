@@ -55,7 +55,7 @@ spec:
             failureThreshold: 3
             successThreshold: 1
           env:
-            - name: APP_HEALTHZ_ADDRESS
+            - name: APP_HEALTHZADDRESS
               value: "8090"
-            - name: APP_KUBERNETES_BASE_NAMESPACE
-              value: "{{ .Release.Namespace }}"
+            - name: APP_FUNCTION_SOURCES_PATH
+              value: "/function-sources"
