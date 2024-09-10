@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    server: 10.43.157.158 # requires svc ip ( name.namespace.svc.cluster.local is not supported )
+    path: "/"
+  mountOptions:
+    - nfsvers=4.2 # required!!
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: ""
+  resources:
+    requests:
+      storage: 5Gi
+  volumeName: nfs
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      role: nfs-test
+  template:
+    metadata:
+      labels:
+        role: nfs-test
+    spec:
+      containers:
+      - name: nfs-test
+        image: alpine:latest
+        command: ["sh", "-c", 'while true; do echo "touch"; touch /nfs_storage/$(date +"%H_%M_%S"); ls /nfs_storage; sleep 5; echo ""; done']
+        volumeMounts:
+          - mountPath: /nfs_storage
+            name: mynfs
+        resources: {}
+      volumes:
+        - name: mynfs
+          persistentVolumeClaim:
+            claimName: nfs

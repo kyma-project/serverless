@@ -24,13 +24,13 @@ spec:
     spec:
       containers:
       - name: nfs-server
-        # image: itsthenetwork/nfs-server-alpine:latest
+        # this image is really simple but it's based on ubuntu...
+        # https://github.com/cpuguy83/docker-nfs-server/tree/master
+        # I would suggest to migrate to alpine based on this tutorial
+        # https://wiki.alpinelinux.org/wiki/Setting_up_an_NFS_server
         image: cpuguy83/nfs-server:latest
-        # env:
-        #   - name: SHARED_DIRECTORY
-        #     value: /exports
         args:
-        # Pass the paths to share to the Docker image
+            # Pass the paths to share to the Docker image
           - /exports
         ports:
           - name: tcp
@@ -40,9 +40,6 @@ spec:
         securityContext:
           # required! 
           privileged: true
-          # alternative...
-          # capabilities:
-          #   add: ["SYS_ADMIN", "SETPCAP"]
         volumeMounts:
           - mountPath: /exports
             name: mypvc

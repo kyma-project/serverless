@@ -1,49 +1,49 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nfs
+  name: nfs-2
 spec:
   capacity:
-    storage: 1Mi
+    storage: 5Gi
   accessModes:
     - ReadWriteMany
   nfs:
-    server: 10.43.157.158
+    server: 10.43.157.158 # requires svc ip ( name.namespace.svc.cluster.local is not supported )
     path: "/"
   mountOptions:
-    - nfsvers=4.2
+    - nfsvers=4.2 # required!!
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: nfs
+  name: nfs-2
 spec:
   accessModes:
     - ReadWriteMany
   storageClassName: ""
   resources:
     requests:
-      storage: 1Mi
-  volumeName: nfs
+      storage: 5Gi
+  volumeName: nfs-2
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nfs-test
+  name: nfs-2-test
 spec:
   replicas: 1
   selector:
     matchLabels:
-      role: nfs-test
+      role: nfs-2-test
   template:
     metadata:
       labels:
-        role: nfs-test
+        role: nfs-2-test
     spec:
       containers:
-      - name: nfs-test
+      - name: nfs-2-test
         image: alpine:latest
-        command: ["sh", "-c", 'touch /nfs_storage/$(date +"%H_%M_%S"); ls /nfs_storage']
+        command: ["sh", "-c", 'while true; do echo "touch"; touch /nfs_storage/$(date +"%H_%M_%S"); ls /nfs_storage; sleep 5; echo ""; done']
         volumeMounts:
           - mountPath: /nfs_storage
             name: mynfs
