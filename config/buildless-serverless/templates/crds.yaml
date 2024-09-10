@@ -1,0 +1,618 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.14.0
+  labels:
+    app.kubernetes.io/component: serverless
+    app.kubernetes.io/instance: functions.serverless.kyma-project.io
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: serverless
+    app.kubernetes.io/part-of: serverless
+    app.kubernetes.io/version: alpha
+    kyma-project.io/module: serverless
+  name: functions.serverless.kyma-project.io
+spec:
+  group: serverless.kyma-project.io
+  names:
+    kind: Function
+    listKind: FunctionList
+    plural: functions
+    singular: function
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.type=='ConfigurationReady')].status
+      name: Configured
+      type: string
+    - jsonPath: .status.conditions[?(@.type=='BuildReady')].status
+      name: Built
+      type: string
+    - jsonPath: .status.conditions[?(@.type=='Running')].status
+      name: Running
+      type: string
+    - jsonPath: .spec.runtime
+      name: Runtime
+      type: string
+    - jsonPath: .metadata.generation
+      name: Version
+      type: integer
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha2
+    schema:
+      openAPIV3Schema:
+        description: |-
+          A simple code snippet that you can run without provisioning or managing servers.
+          It implements the exact business logic you define.
+          A Function is based on the Function custom resource (CR) and can be written in either Node.js or Python.
+          A Function can perform a business logic of its own. You can also bind it to an instance of a service
+          and configure it to be triggered whenever it receives a particular event type from the service
+          or a call is made to the service's API.
+          Functions are executed only if they are triggered by an event or an API call.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: Defines the desired state of the Function
+            properties:
+              annotations:
+                additionalProperties:
+                  type: string
+                description: Defines annotations used in Deployment's PodTemplate
+                  and applied on the Function's runtime Pod.
+                type: object
+                x-kubernetes-validations:
+                - message: Annotations has key starting with serverless.kyma-project.io/
+                    which is not allowed
+                  rule: '!(self.exists(e, e.startsWith(''serverless.kyma-project.io/'')))'
+              env:
+                description: |-
+                  Specifies an array of key-value pairs to be used as environment variables for the Function.
+                  You can define values as static strings or reference values from ConfigMaps or Secrets.
+                  For configuration details, see the [official Kubernetes documentation](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/).
+                items:
+                  description: EnvVar represents an environment variable present in
+                    a Container.
+                  properties:
+                    name:
+                      description: Name of the environment variable. Must be a C_IDENTIFIER.
+                      type: string
+                    value:
+                      description: |-
+                        Variable references $(VAR_NAME) are expanded
+                        using the previously defined environment variables in the container and
+                        any service environment variables. If a variable cannot be resolved,
+                        the reference in the input string will be unchanged. Double $$ are reduced
+                        to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e.
+                        "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)".
+                        Escaped references will never be expanded, regardless of whether the variable
+                        exists or not.
+                        Defaults to "".
+                      type: string
+                    valueFrom:
+                      description: Source for the environment variable's value. Cannot
+                        be used if value is not empty.
+                      properties:
+                        configMapKeyRef:
+                          description: Selects a key of a ConfigMap.
+                          properties:
+                            key:
+                              description: The key to select.
+                              type: string
+                            name:
+                              description: |-
+                                Name of the referent.
+                                More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                TODO: Add other useful fields. apiVersion, kind, uid?
+                              type: string
+                            optional:
+                              description: Specify whether the ConfigMap or its key
+                                must be defined
+                              type: boolean
+                          required:
+                          - key
+                          type: object
+                          x-kubernetes-map-type: atomic
+                        fieldRef:
+                          description: |-
+                            Selects a field of the pod: supports metadata.name, metadata.namespace, `metadata.labels['<KEY>']`, `metadata.annotations['<KEY>']`,
+                            spec.nodeName, spec.serviceAccountName, status.hostIP, status.podIP, status.podIPs.
+                          properties:
+                            apiVersion:
+                              description: Version of the schema the FieldPath is
+                                written in terms of, defaults to "v1".
+                              type: string
+                            fieldPath:
+                              description: Path of the field to select in the specified
+                                API version.
+                              type: string
+                          required:
+                          - fieldPath
+                          type: object
+                          x-kubernetes-map-type: atomic
+                        resourceFieldRef:
+                          description: |-
+                            Selects a resource of the container: only resources limits and requests
+                            (limits.cpu, limits.memory, limits.ephemeral-storage, requests.cpu, requests.memory and requests.ephemeral-storage) are currently supported.
+                          properties:
+                            containerName:
+                              description: 'Container name: required for volumes,
+                                optional for env vars'
+                              type: string
+                            divisor:
+                              anyOf:
+                              - type: integer
+                              - type: string
+                              description: Specifies the output format of the exposed
+                                resources, defaults to "1"
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
+                            resource:
+                              description: 'Required: resource to select'
+                              type: string
+                          required:
+                          - resource
+                          type: object
+                          x-kubernetes-map-type: atomic
+                        secretKeyRef:
+                          description: Selects a key of a secret in the pod's namespace
+                          properties:
+                            key:
+                              description: The key of the secret to select from.  Must
+                                be a valid secret key.
+                              type: string
+                            name:
+                              description: |-
+                                Name of the referent.
+                                More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                TODO: Add other useful fields. apiVersion, kind, uid?
+                              type: string
+                            optional:
+                              description: Specify whether the Secret or its key must
+                                be defined
+                              type: boolean
+                          required:
+                          - key
+                          type: object
+                          x-kubernetes-map-type: atomic
+                      type: object
+                  required:
+                  - name
+                  type: object
+                type: array
+                x-kubernetes-validations:
+                - message: 'Following envs are reserved and cannot be used: [''FUNC_RUNTIME'',''FUNC_HANDLER'',''FUNC_PORT'',''MOD_NAME'',''NODE_PATH'',''PYTHONPATH'']'
+                  rule: (self.all(e, !(e.name in ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','MOD_NAME','NODE_PATH','PYTHONPATH'])))
+              labels:
+                additionalProperties:
+                  type: string
+                description: Defines labels used in Deployment's PodTemplate and applied
+                  on the Function's runtime Pod.
+                type: object
+                x-kubernetes-validations:
+                - message: Labels has key starting with serverless.kyma-project.io/
+                    which is not allowed
+                  rule: '!(self.exists(e, e.startsWith(''serverless.kyma-project.io/'')))'
+                - message: Label value cannot be longer than 63
+                  rule: self.all(e, size(e)<64)
+              replicas:
+                default: 1
+                description: |-
+                  Defines the exact number of Function's Pods to run at a time.
+                  If **ScaleConfig** is configured, or if the Function is targeted by an external scaler,
+                  then the **Replicas** field is used by the relevant HorizontalPodAutoscaler to control the number of active replicas.
+                format: int32
+                minimum: 0
+                type: integer
+              resourceConfiguration:
+                description: Specifies resources requested by the Function and the
+                  build Job.
+                properties:
+                  build:
+                    description: Specifies resources requested by the build Job's
+                      Pod.
+                    properties:
+                      profile:
+                        description: |-
+                          Defines the name of the predefined set of values of the resource.
+                          Can't be used together with **Resources**.
+                        type: string
+                      resources:
+                        description: |-
+                          Defines the amount of resources available for the Pod.
+                          Can't be used together with **Profile**.
+                          For configuration details, see the [official Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+                        properties:
+                          claims:
+                            description: |-
+                              Claims lists the names of resources, defined in spec.resourceClaims,
+                              that are used by this container.
+
+
+                              This is an alpha field and requires enabling the
+                              DynamicResourceAllocation feature gate.
+
+
+                              This field is immutable. It can only be set for containers.
+                            items:
+                              description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+                              properties:
+                                name:
+                                  description: |-
+                                    Name must match the name of one entry in pod.spec.resourceClaims of
+                                    the Pod where this field is used. It makes that resource available
+                                    inside a container.
+                                  type: string
+                              required:
+                              - name
+                              type: object
+                            type: array
+                            x-kubernetes-list-map-keys:
+                            - name
+                            x-kubernetes-list-type: map
+                          limits:
+                            additionalProperties:
+                              anyOf:
+                              - type: integer
+                              - type: string
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
+                            description: |-
+                              Limits describes the maximum amount of compute resources allowed.
+                              More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+                            type: object
+                          requests:
+                            additionalProperties:
+                              anyOf:
+                              - type: integer
+                              - type: string
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
+                            description: |-
+                              Requests describes the minimum amount of compute resources required.
+                              If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
+                              otherwise to an implementation-defined value. Requests cannot exceed Limits.
+                              More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+                            type: object
+                        type: object
+                    type: object
+                    x-kubernetes-validations:
+                    - message: Use profile or resources
+                      rule: has(self.profile) && !has(self.resources) || !has(self.profile)
+                        && has(self.resources)
+                    - message: 'Invalid profile, please use one of: [''local-dev'',''slow'',''normal'',''fast'']'
+                      rule: (!has(self.profile) || self.profile in ['local-dev','slow','normal','fast'])
+                  function:
+                    description: Specifies resources requested by the Function's Pod.
+                    properties:
+                      profile:
+                        description: |-
+                          Defines the name of the predefined set of values of the resource.
+                          Can't be used together with **Resources**.
+                        type: string
+                      resources:
+                        description: |-
+                          Defines the amount of resources available for the Pod.
+                          Can't be used together with **Profile**.
+                          For configuration details, see the [official Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+                        properties:
+                          claims:
+                            description: |-
+                              Claims lists the names of resources, defined in spec.resourceClaims,
+                              that are used by this container.
+
+
+                              This is an alpha field and requires enabling the
+                              DynamicResourceAllocation feature gate.
+
+
+                              This field is immutable. It can only be set for containers.
+                            items:
+                              description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+                              properties:
+                                name:
+                                  description: |-
+                                    Name must match the name of one entry in pod.spec.resourceClaims of
+                                    the Pod where this field is used. It makes that resource available
+                                    inside a container.
+                                  type: string
+                              required:
+                              - name
+                              type: object
+                            type: array
+                            x-kubernetes-list-map-keys:
+                            - name
+                            x-kubernetes-list-type: map
+                          limits:
+                            additionalProperties:
+                              anyOf:
+                              - type: integer
+                              - type: string
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
+                            description: |-
+                              Limits describes the maximum amount of compute resources allowed.
+                              More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+                            type: object
+                          requests:
+                            additionalProperties:
+                              anyOf:
+                              - type: integer
+                              - type: string
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
+                            description: |-
+                              Requests describes the minimum amount of compute resources required.
+                              If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
+                              otherwise to an implementation-defined value. Requests cannot exceed Limits.
+                              More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+                            type: object
+                        type: object
+                    type: object
+                    x-kubernetes-validations:
+                    - message: Use profile or resources
+                      rule: has(self.profile) && !has(self.resources) || !has(self.profile)
+                        && has(self.resources)
+                    - message: 'Invalid profile, please use one of: [''XS'',''S'',''M'',''L'',''XL'']'
+                      rule: (!has(self.profile) || self.profile in ['XS','S','M','L','XL'])
+                type: object
+              runtime:
+                description: Specifies the runtime of the Function. The available
+                  values are `nodejs18` - deprecated, `nodejs20`, `python39` - deprecated,
+                  and `python312`.
+                enum:
+                - nodejs18
+                - nodejs20
+                - python39
+                - python312
+                type: string
+              runtimeImageOverride:
+                description: Specifies the runtime image used instead of the default
+                  one.
+                type: string
+              scaleConfig:
+                description: |-
+                  Defines the minimum and maximum number of Function's Pods to run at a time.
+                  When it is configured, a HorizontalPodAutoscaler will be deployed and will control the **Replicas** field
+                  to scale the Function based on the CPU utilisation.
+                properties:
+                  maxReplicas:
+                    description: Defines the maximum number of Function's Pods to
+                      run at a time.
+                    format: int32
+                    minimum: 1
+                    type: integer
+                  minReplicas:
+                    description: Defines the minimum number of Function's Pods to
+                      run at a time.
+                    format: int32
+                    minimum: 1
+                    type: integer
+                required:
+                - maxReplicas
+                - minReplicas
+                type: object
+                x-kubernetes-validations:
+                - message: minReplicas should be less than or equal maxReplicas
+                  rule: self.minReplicas <= self.maxReplicas
+              secretMounts:
+                description: Specifies Secrets to mount into the Function's container
+                  filesystem.
+                items:
+                  properties:
+                    mountPath:
+                      description: Specifies the path within the container where the
+                        Secret should be mounted.
+                      minLength: 1
+                      type: string
+                    secretName:
+                      description: Specifies the name of the Secret in the Function's
+                        Namespace.
+                      maxLength: 253
+                      minLength: 1
+                      type: string
+                  required:
+                  - mountPath
+                  - secretName
+                  type: object
+                type: array
+              source:
+                description: Contains the Function's source code configuration.
+                properties:
+                  gitRepository:
+                    description: Defines the Function as git-sourced. Can't be used
+                      together with **Inline**.
+                    properties:
+                      auth:
+                        description: Specifies the authentication method. Required
+                          for SSH.
+                        properties:
+                          secretName:
+                            description: |-
+                              Specifies the name of the Secret with credentials used by the Function Controller
+                              to authenticate to the Git repository in order to fetch the Function's source code and dependencies.
+                              This Secret must be stored in the same Namespace as the Function CR.
+                            type: string
+                            x-kubernetes-validations:
+                            - message: SecretName is required and cannot be empty
+                              rule: self.trim().size() != 0
+                          type:
+                            description: |-
+                              Defines the repository authentication method. The value is either `basic` if you use a password or token,
+                              or `key` if you use an SSH key.
+                            enum:
+                            - basic
+                            - key
+                            type: string
+                        required:
+                        - secretName
+                        - type
+                        type: object
+                      baseDir:
+                        description: |-
+                          Specifies the relative path to the Git directory that contains the source code
+                          from which the Function is built.
+                        type: string
+                      reference:
+                        description: |-
+                          Specifies either the branch name, tag or commit revision from which the Function Controller
+                          automatically fetches the changes in the Function's code and dependencies.
+                        type: string
+                      url:
+                        description: |-
+                          Specifies the URL of the Git repository with the Function's code and dependencies.
+                          Depending on whether the repository is public or private and what authentication method is used to access it,
+                          the URL must start with the `http(s)`, `git`, or `ssh` prefix.
+                        type: string
+                    required:
+                    - url
+                    type: object
+                    x-kubernetes-validations:
+                    - message: BaseDir is required and cannot be empty
+                      rule: has(self.baseDir) && (self.baseDir.trim().size() != 0)
+                    - message: Reference is required and cannot be empty
+                      rule: has(self.reference) && (self.reference.trim().size() !=
+                        0)
+                  inline:
+                    description: Defines the Function as the inline Function. Can't
+                      be used together with **GitRepository**.
+                    properties:
+                      dependencies:
+                        description: Specifies the Function's dependencies.
+                        type: string
+                      source:
+                        description: Specifies the Function's full source code.
+                        minLength: 1
+                        type: string
+                    required:
+                    - source
+                    type: object
+                type: object
+                x-kubernetes-validations:
+                - message: Use GitRepository or Inline source
+                  rule: has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository)
+                    && has(self.inline)
+              template:
+                description: 'Deprecated: Use **Labels** and **Annotations** to label
+                  and/or annotate Function''s Pods.'
+                properties:
+                  annotations:
+                    additionalProperties:
+                      type: string
+                    description: 'Deprecated: Use **FunctionSpec.Annotations** to
+                      annotate Function''s Pods.'
+                    type: object
+                  labels:
+                    additionalProperties:
+                      type: string
+                    description: 'Deprecated: Use **FunctionSpec.Labels**  to label
+                      Function''s Pods.'
+                    type: object
+                type: object
+                x-kubernetes-validations:
+                - message: 'Not supported: Use spec.labels and spec.annotations to
+                    label and/or annotate Function''s Pods.'
+                  rule: '!has(self.labels) && !has(self.annotations)'
+            required:
+            - runtime
+            - source
+            type: object
+          status:
+            description: FunctionStatus defines the observed state of the Function
+            properties:
+              baseDir:
+                description: |-
+                  Specifies the relative path to the Git directory that contains the source code
+                  from which the Function is built.
+                type: string
+              buildResourceProfile:
+                description: Specifies the preset used for the build job
+                type: string
+              commit:
+                description: Specifies the commit hash used to build the Function.
+                type: string
+              conditions:
+                description: Specifies an array of conditions describing the status
+                  of the parser.
+                items:
+                  properties:
+                    lastTransitionTime:
+                      description: Specifies the last time the condition transitioned
+                        from one status to another.
+                      format: date-time
+                      type: string
+                    message:
+                      description: Provides a human-readable message indicating details
+                        about the transition.
+                      type: string
+                    reason:
+                      description: Specifies the reason for the condition's last transition.
+                      type: string
+                    status:
+                      description: Specifies the status of the condition. The value
+                        is either `True`, `False`, or `Unknown`.
+                      type: string
+                    type:
+                      description: Specifies the type of the Function's condition.
+                      type: string
+                  required:
+                  - status
+                  type: object
+                type: array
+              functionResourceProfile:
+                description: Specifies the preset used for the function
+                type: string
+              podSelector:
+                description: Specifies the Pod selector used to match Pods in the
+                  Function's Deployment.
+                type: string
+              reference:
+                description: |-
+                  Specifies either the branch name, tag or commit revision from which the Function Controller
+                  automatically fetches the changes in the Function's code and dependencies.
+                type: string
+              replicas:
+                description: Specifies the total number of non-terminated Pods targeted
+                  by this Function.
+                format: int32
+                type: integer
+              runtime:
+                description: Specifies the **Runtime** type of the Function.
+                type: string
+              runtimeImage:
+                description: Specifies the image version used to build and run the
+                  Function's Pods.
+                type: string
+              runtimeImageOverride:
+                description: |-
+                  Deprecated: Specifies the runtime image version which overrides the **RuntimeImage** status parameter.
+                  **RuntimeImageOverride** exists for historical compatibility
+                  and should be removed with v1alpha3 version.
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      scale:
+        labelSelectorPath: .status.podSelector
+        specReplicasPath: .spec.replicas
+        statusReplicasPath: .status.replicas
+      status: {}

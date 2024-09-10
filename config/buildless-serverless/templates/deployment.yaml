@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: buildless-serverless-ctrl-mngr
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: buildless-serverless
+      app.kubernetes.io/name: buildless-serverless
+      app.kubernetes.io/instance: "{{ .Release.Name }}"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: buildless-serverless
+        app.kubernetes.io/name: buildless-serverless
+        app.kubernetes.io/instance: "{{ .Release.Name }}"
+        sidecar.istio.io/inject: "false"
+    spec:
+      serviceAccountName: buildless-serverless-controller-manager
+      containers:
+        - name: manager
+          image: pprecel/buildless-serverless:alpha1
+          imagePullPolicy: Always
+          command:
+            - /app/manager
+          resources: {}
+          ports:
+            - containerPort: 8090
+              name: "health"
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              port: 8090
+              path: "/healthz/"
+            initialDelaySeconds: 50
+            timeoutSeconds: 60
+            periodSeconds: 120
+            failureThreshold: 3
+            successThreshold: 1
+          readinessProbe:
+            httpGet:
+              port: 8090
+              path: "/healthz/"
+            initialDelaySeconds: 50
+            timeoutSeconds: 60
+            periodSeconds: 120
+            failureThreshold: 3
+            successThreshold: 1
+          env:
+            - name: APP_HEALTHZADDRESS
+              value: ":8090"
+            - name: APP_MODULE_NAMESPACE
+              value: "{{ .Release.Namespace }}"
+            - name: APP_NODEJS20_IMAGE
+              value: "europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main"
+            - name: APP_PYTHON312_IMAGE
+              value: "europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main"

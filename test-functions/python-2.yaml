@@ -1,0 +1,25 @@
+# no resources: status running after 1s, ready after 6s
+# XS: status running after 2s, ready after 55s
+# S: status running after 2s, ready after 35s
+# M: status running after 2s, ready after 14s
+# L: status running after 1s, ready after 8s
+# XL: status running after 1s, ready after 6s
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  name: python-deps
+spec:
+  runtime: python312
+  source:
+    inline:
+      dependencies: |
+        requests==2.31.0
+        camelcase==0.2
+      source: |
+        import requests
+        import json
+        from camelcase import CamelCase
+        def main(event, context):
+            r = requests.get('https://swapi.dev/api/people/13')
+            c = CamelCase()
+            return c.hump("response is:") + r.text

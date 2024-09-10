@@ -1,0 +1,17 @@
+# no resources: status running after 1s, ready after 2s
+# XS: status running after 2s, ready after 12s
+# S: status running after 2s, ready after 8s
+# M: status running after 2s, ready after 5s
+# L: status running after 1s, ready after 3s
+# XL: status running after 14s, ready after 15s
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  name: python
+spec:
+  runtime: python312
+  source:
+    inline:
+      source: |
+        def main(event, context):
+            return "Hello Serverless!"
