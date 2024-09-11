@@ -99,3 +99,14 @@ func buildRepoFetcherEnvVars(instance *serverlessv1alpha2.Function, gitOptions g
 
 	return vars
 }
+
+// TODO:is used only in tests - probably to remove (after move tests in proper place)
+func (r *FunctionReconciler) internalFunctionLabels(instance *serverlessv1alpha2.Function) map[string]string {
+	labels := make(map[string]string, 3)
+
+	labels[serverlessv1alpha2.FunctionNameLabel] = instance.Name
+	labels[serverlessv1alpha2.FunctionManagedByLabel] = serverlessv1alpha2.FunctionControllerValue
+	labels[serverlessv1alpha2.FunctionUUIDLabel] = string(instance.GetUID())
+
+	return labels
+}

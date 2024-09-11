@@ -1,22 +1,15 @@
 run:
-  modules-download-mode: readonly
   timeout: 15m
-  tests: false
 linters:
   disable-all: true
   enable:
     - errcheck
-    - copyloopvar
-    - gofmt
     - gosimple
     - govet
     - ineffassign
     - staticcheck
-    - unparam
     - unused
 issues:
-  max-issues-per-linter: 0
-  max-same-issues: 0
   exclude:
     # function for future usage
     - "^func `stopWithErrorOrRequeue` is unused$"

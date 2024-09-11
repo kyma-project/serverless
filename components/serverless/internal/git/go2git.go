@@ -101,7 +101,7 @@ func (g *git2GoClient) LastCommit(options Options) (string, error) {
 		return "", errors.Wrap(err, "while lookup tag")
 	}
 	defer commit.Free()
-
+	
 	return commit.Id().String(), nil
 }
 
