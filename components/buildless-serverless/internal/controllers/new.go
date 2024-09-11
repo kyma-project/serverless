@@ -48,6 +48,8 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, request reconcile.Re
 	// 3.1. save sources to pvc
 	// 3.2. ??? run npm install
 	// 4. create deploy & service
+	// 4.1 check if deployment is ready
+	// 5. update status
 
 	// TODO: update
 
@@ -55,6 +57,8 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, request reconcile.Re
 	// 2.1. update sources
 	// 2.2. ??? rerun npm install
 	// 3. ??? update deploy ( we should have hot-reload enabled on every runtime )
+	// 3.1 check if deployment is ready
+	// 4. update status
 
 	// TODO: delete
 
