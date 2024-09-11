@@ -9,8 +9,7 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: serverless
     app.kubernetes.io/part-of: serverless
-    app.kubernetes.io/version: '{{ .Values.global.images.function_controller.version
-      }}'
+    app.kubernetes.io/version: main
     kyma-project.io/module: serverless
   name: functions.serverless.kyma-project.io
 spec:

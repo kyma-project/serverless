@@ -2,7 +2,7 @@
 # since it depends on service name and namespace that are out of this kustomize package.
 # It should be run by config/default
 resources:
-- bases/serverless.kyma-project.io_functions.yaml
+  - bases/serverless.kyma-project.io_functions.yaml
 # +kubebuilder:scaffold:crdkustomizeresource
 
 # patchesStrategicMerge:
@@ -31,7 +31,7 @@ patches:
 commonLabels:
   kyma-project.io/module: serverless
   app.kubernetes.io/name: serverless
-  app.kubernetes.io/version: "{{ .Values.global.images.function_controller.version }}"
+  app.kubernetes.io/version: "main"
   app.kubernetes.io/part-of: serverless
   app.kubernetes.io/managed-by: kustomize
 
