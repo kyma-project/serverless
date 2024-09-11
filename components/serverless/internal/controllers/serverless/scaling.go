@@ -28,7 +28,7 @@ func stateFnCheckScaling(ctx context.Context, r *reconciler, s *systemState) (st
 	return stateFnCheckHPA(ctx, r, s)
 }
 
-func stateFnCheckReplicas(ctx context.Context, r *reconciler, s *systemState) (stateFn, error) {
+func stateFnCheckReplicas(_ context.Context, _ *reconciler, s *systemState) (stateFn, error) {
 	numHpa := len(s.hpas.Items)
 
 	if numHpa > 0 {
@@ -38,7 +38,7 @@ func stateFnCheckReplicas(ctx context.Context, r *reconciler, s *systemState) (s
 	return stateFnUpdateDeploymentStatus, nil
 }
 
-func stateFnCheckHPA(ctx context.Context, r *reconciler, s *systemState) (stateFn, error) {
+func stateFnCheckHPA(_ context.Context, r *reconciler, s *systemState) (stateFn, error) {
 	if !s.hpaEqual(r.cfg.fn.TargetCPUUtilizationPercentage) {
 		return stateFnUpdateDeploymentStatus, nil
 	}
