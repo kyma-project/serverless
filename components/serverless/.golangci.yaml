@@ -1,15 +1,22 @@
 run:
+  modules-download-mode: readonly
   timeout: 15m
 linters:
   disable-all: true
   enable:
     - errcheck
+    - copyloopvar
+    - gofmt
     - gosimple
     - govet
     - ineffassign
+    - revive
     - staticcheck
+    - unparam
     - unused
 issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
   exclude:
     #exclude our internal deprecated fields
     - "^SA1019: v1alpha2.Nodejs18 is deprecated:"
