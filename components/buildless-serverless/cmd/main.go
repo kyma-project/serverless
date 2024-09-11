@@ -1,8 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"github.com/pkg/errors"
 	"os"
+	"time"
 
 	"github.com/bombsimon/logrusr/v4"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controllers"
@@ -14,6 +17,7 @@ import (
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -35,6 +39,7 @@ func init() {
 type config struct {
 	HealthzAddress      string `envconfig:"default=:8090"`
 	FunctionSourcesPath string `envconfig:"default=/function-sources"`
+	ModuleNamespace     string `envconfig:"default=kyma-system"`
 }
 
 func main() {
@@ -47,6 +52,15 @@ func main() {
 	}
 
 	ctrl.SetLogger(logrusr.New(l))
+
+	l.Info("Getting NFS service IP")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	nfsServiceIp, err := getNFSServiceIP(ctx, cfg.ModuleNamespace)
+	if err != nil {
+		l.Error("unable to get NFS service IP", err.Error())
+		os.Exit(1)
+	}
 
 	l.Info("Generating Kubernetes client config")
 	restConfig := ctrl.GetConfigOrDie()
@@ -80,7 +94,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	fnRecon := controllers.NewFunctionReconciler(mgr.GetClient(), l, cfg.FunctionSourcesPath)
+	fnRecon := controllers.NewFunctionReconciler(mgr.GetClient(), l, cfg.FunctionSourcesPath, nfsServiceIp)
 	if err = fnRecon.SetupWithManager(mgr); err != nil {
 		l.Error("unable to create Function controller", err.Error())
 		os.Exit(1)
@@ -103,4 +117,24 @@ func loadConfig(prefix string) (config, error) {
 		return cfg, err
 	}
 	return cfg, nil
+}
+
+func getNFSServiceIP(ctx context.Context, namespace string) (string, error) {
+	// We are going to talk to the API server _before_ we start the manager.
+	// Since the default manager client reads from cache, we will get an error.
+	// So, we create a "serverClient" that would read from the API directly.
+	// We only use it here, this only runs at start up, so it shouldn't be to much for the API
+	serverClient, err := client.New(ctrl.GetConfigOrDie(), client.Options{
+		Scheme: scheme,
+	})
+	if err != nil {
+		return "", errors.Wrap(err, "failed to create a server client")
+	}
+
+	svc := &corev1.Service{}
+	err = serverClient.Get(ctx, client.ObjectKey{Namespace: namespace, Name: "buildless-serverless-nfs-server"}, svc)
+	if err != nil {
+		return "", errors.Wrap(err, "failed to get NFS service")
+	}
+	return svc.Spec.ClusterIP, nil
 }

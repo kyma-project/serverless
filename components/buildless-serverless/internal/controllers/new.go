@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"context"
+	"k8s.io/apimachinery/pkg/api/resource"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"os"
 	"path"
 
@@ -23,15 +25,17 @@ type FunctionReconciler struct {
 	client              client.Client
 	initLogger          *logrus.Logger
 	functionSourcesPath string
+	nfsServiceIP        string
 }
 
 const finalizerName = "serverless.kyma-project.io/function-finalizer"
 
-func NewFunctionReconciler(client client.Client, logger *logrus.Logger, functionSourcesPath string) *FunctionReconciler {
+func NewFunctionReconciler(client client.Client, logger *logrus.Logger, functionSourcesPath string, nfsServiceIP string) *FunctionReconciler {
 	return &FunctionReconciler{
 		client:              client,
 		initLogger:          logger,
 		functionSourcesPath: functionSourcesPath,
+		nfsServiceIP:        nfsServiceIP,
 	}
 }
 
@@ -76,6 +80,40 @@ func (r *FunctionReconciler) reconcile(ctx context.Context, log *logrus.Entry, r
 		return reconcile.Result{}, nil
 	}
 
+	pv := &corev1.PersistentVolume{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "nfs",
+			Namespace: f.GetNamespace(),
+		},
+		Spec: corev1.PersistentVolumeSpec{
+			Capacity: corev1.ResourceList{"storage": resource.MustParse("5Gi")},
+			PersistentVolumeSource: corev1.PersistentVolumeSource{
+				NFS: &corev1.NFSVolumeSource{
+					Server: r.nfsServiceIP, // requires svc ip ( name.namespace.svc.cluster.local is not supported )
+					Path:   "/",
+				},
+			},
+			AccessModes:                   []corev1.PersistentVolumeAccessMode{corev1.ReadWriteMany},
+			MountOptions:                  []string{"nfsvers=4.2"}, // required!!
+		},
+	}
+	errr.client.Create(ctx, pv)
+
+
+	pvc :=
+	//apiVersion: v1
+	//kind: PersistentVolumeClaim
+	//metadata:
+	//  name: nfs
+	//spec:
+	//  accessModes:
+	//    - ReadWriteMany
+	//  storageClassName: ""
+	//  resources:
+	//    requests:
+	//      storage: 5Gi
+	//  volumeName: nfs
+
 	if !instanceHasFinalizer {
 		log.Info("adding finalizer")
 		controllerutil.AddFinalizer(&f, finalizerName)
@@ -90,15 +128,29 @@ func (r *FunctionReconciler) reconcile(ctx context.Context, log *logrus.Entry, r
 		return result, err
 	}
 
+	envs := []corev1.EnvVar{
+		{Name: "FUNC_RUNTIME", Value: string(f.Spec.Runtime)},
+		{Name: "FUNC_NAME", Value: f.Name},
+		{Name: "SERVICE_NAMESPACE", Value: f.Namespace},
+		{Name: "TRACE_COLLECTOR_ENDPOINT", Value: ""},
+		{Name: "PUBLISHER_PROXY_ADDRESS", Value: ""},
+		{Name: "FUNC_HANDLER", Value: "main"},
+		{Name: "MOD_NAME", Value: "handler"},
+		{Name: "FUNC_PORT", Value: "8080"},
+	}
+
+	deployment := &appsv1.Deployment{
+		ObjectMeta: metav1.ObjectMeta{},
+		Spec:       appsv1.DeploymentSpec{},
+	}
+
 	// TODO: create
-	// 3.1. save sources to pvc
 	// 3.2. ??? run npm install
 	// 4. create deploy & service
 	// 4.1 check if deployment is ready
 	// 5. update status
 
 	// TODO: update
-	// 2.1. update sources
 	// 2.2. ??? rerun npm install
 	// 3. ??? update deploy ( we should have hot-reload enabled on every runtime )
 	// 3.1 check if deployment is ready
@@ -116,6 +168,7 @@ func (r *FunctionReconciler) writeSourceToPvc(log *logrus.Entry, f serverlessv1a
 		return reconcile.Result{}, errors.Wrap(errMkdir, "unable to create directory for Function source"), true
 	}
 	// TODO: add support for git functions
+	// TODO: add support for python
 	errWriteHandler := os.WriteFile(path.Join(functionSourcePath, "handler.js"), []byte(f.Spec.Source.Inline.Source), os.ModePerm)
 	if errWriteHandler != nil {
 		return reconcile.Result{}, errors.Wrap(errWriteHandler, "unable to write handler.js"), true

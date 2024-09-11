@@ -59,3 +59,5 @@ spec:
               value: ":8090"
             - name: APP_FUNCTION_SOURCES_PATH
               value: "/function-sources"
+            - name: APP_MODULE_NAMESPACE
+              value: "{{ .Release.Namespace }}"
