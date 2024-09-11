@@ -1,13 +1,6 @@
 FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.22.6-alpine as builder
 
-ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/serverless \
-    CGO_ENABLED=1 \
-    GOOS=linux \
-    GOARCH=amd64 \
-    LIBGIT2_VERSION=1.5.2-r0
-
-RUN apk add --no-cache gcc libc-dev
-RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.18/community libgit2-dev=${LIBGIT2_VERSION}
+ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/buildless-serverless
 
 WORKDIR ${BASE_APP_DIR}
 
@@ -16,7 +9,7 @@ WORKDIR ${BASE_APP_DIR}
 #
 COPY . ${BASE_APP_DIR}/
 
-RUN go build -ldflags "-s -w" -a -o manager ./components/serverless/cmd/manager/main.go \
+RUN go build -o manager ./components/buildless-serverless/cmd/main.go \
     && mkdir /app \
     && mv ./manager /app/manager
 
@@ -25,12 +18,6 @@ FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.20.2 as c
 RUN apk add --no-cache ca-certificates
 
 FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.20.2
-
-ENV LIBGIT2_VERSION=1.5.2-r0
-
-RUN apk update --no-cache && apk upgrade --no-cache
-RUN apk add --no-cache --update --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main openssl
-RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.18/community libgit2=${LIBGIT2_VERSION}
 
 LABEL source = git@github.com:kyma-project/serverless.git
 

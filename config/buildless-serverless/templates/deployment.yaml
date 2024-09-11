@@ -27,18 +27,18 @@ spec:
           volumeMounts:
             - name: function-sources
               mountPath: /function-sources
-          image: pprecel/buildless-serverless:latest
-          imagePullPolicy: Always
+          image: buildless-serverless:alpha1
+          imagePullPolicy: IfNotPresent
           command:
             - /app/manager
           resources: {}
           ports:
-            - containerPort: "8090"
+            - containerPort: 8090
               name: "health"
               protocol: TCP
           livenessProbe:
             httpGet:
-              port: "8090"
+              port: 8090
               path: "/healthz/"
             initialDelaySeconds: 50
             timeoutSeconds: 60
@@ -47,7 +47,7 @@ spec:
             successThreshold: 1
           readinessProbe:
             httpGet:
-              port: "8090"
+              port: 8090
               path: "/healthz/"
             initialDelaySeconds: 50
             timeoutSeconds: 60
@@ -56,6 +56,6 @@ spec:
             successThreshold: 1
           env:
             - name: APP_HEALTHZADDRESS
-              value: "8090"
+              value: ":8090"
             - name: APP_FUNCTION_SOURCES_PATH
               value: "/function-sources"
