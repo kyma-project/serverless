@@ -90,12 +90,11 @@ func Test_reconciler_Reconcile(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := &reconciler{
-				fn:     tt.fields.fn,
-				log:    tt.fields.log,
-				cache:  tt.fields.cache,
-				result: tt.fields.result,
-				k8s:    tt.fields.k8s,
-				cfg:    tt.fields.cfg,
+				fn:    tt.fields.fn,
+				log:   tt.fields.log,
+				cache: tt.fields.cache,
+				k8s:   tt.fields.k8s,
+				cfg:   tt.fields.cfg,
 			}
 			got, err := m.Reconcile(tt.args.ctx, tt.args.v)
 			if (err != nil) != tt.wantErr {
