@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"context"
+	"os"
+	"path"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/pkg/errors"
@@ -19,7 +21,7 @@ import (
 
 type FunctionReconciler struct {
 	client              client.Client
-	logger              *logrus.Logger
+	initLogger          *logrus.Logger
 	functionSourcesPath string
 }
 
@@ -28,7 +30,7 @@ const finalizerName = "serverless.kyma-project.io/function-finalizer"
 func NewFunctionReconciler(client client.Client, logger *logrus.Logger, functionSourcesPath string) *FunctionReconciler {
 	return &FunctionReconciler{
 		client:              client,
-		logger:              logger,
+		initLogger:          logger,
 		functionSourcesPath: functionSourcesPath,
 	}
 }
@@ -36,15 +38,21 @@ func NewFunctionReconciler(client client.Client, logger *logrus.Logger, function
 func (r *FunctionReconciler) SetupWithManager(mgr manager.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		Named("function-controller").
-		For(&serverlessv1alpha2.Function{}, builder.WithPredicates(predicate.Funcs{UpdateFunc: IsNotFunctionStatusUpdate(r.logger)})).
+		For(&serverlessv1alpha2.Function{}, builder.WithPredicates(predicate.Funcs{UpdateFunc: IsNotFunctionStatusUpdate(r.initLogger)})).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).
 		Complete(r)
 }
 
 func (r *FunctionReconciler) Reconcile(ctx context.Context, request reconcile.Request) (reconcile.Result, error) {
-	r.logger.Info("starting reconciliation for", request.NamespacedName)
+	log := r.initLogger.WithField("function", request.NamespacedName)
+	log.Info("starting reconciliation")
+	result, err := r.reconcile(ctx, log, request)
+	log.Info("end reconciliation")
+	return result, err
+}
 
+func (r *FunctionReconciler) reconcile(ctx context.Context, log *logrus.Entry, request reconcile.Request) (reconcile.Result, error) {
 	var f serverlessv1alpha2.Function
 	errGetF := r.client.Get(ctx, request.NamespacedName, &f)
 	if errGetF != nil {
@@ -69,12 +77,17 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, request reconcile.Re
 	}
 
 	if !instanceHasFinalizer {
-		r.logger.Info("adding finalizer to", request.NamespacedName)
+		log.Info("adding finalizer")
 		controllerutil.AddFinalizer(&f, finalizerName)
 		errUpdF := r.client.Update(ctx, &f)
 		if errUpdF != nil {
 			return reconcile.Result{}, errors.Wrap(errUpdF, "unable to update Function")
 		}
+	}
+
+	result, err, done := r.writeSourceToPvc(log, f)
+	if done {
+		return result, err
 	}
 
 	// TODO: create
@@ -92,4 +105,26 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, request reconcile.Re
 	// 4. update status
 
 	return reconcile.Result{}, nil
+}
+
+func (r *FunctionReconciler) writeSourceToPvc(log *logrus.Entry, f serverlessv1alpha2.Function) (reconcile.Result, error, bool) {
+	functionSourcePath := path.Join(r.functionSourcesPath, string(f.GetUID()))
+	log.Info("starting writing sources to ", functionSourcePath)
+
+	errMkdir := os.Mkdir(functionSourcePath, os.ModePerm)
+	if errMkdir != nil && !os.IsExist(errMkdir) {
+		return reconcile.Result{}, errors.Wrap(errMkdir, "unable to create directory for Function source"), true
+	}
+	// TODO: add support for git functions
+	errWriteHandler := os.WriteFile(path.Join(functionSourcePath, "handler.js"), []byte(f.Spec.Source.Inline.Source), os.ModePerm)
+	if errWriteHandler != nil {
+		return reconcile.Result{}, errors.Wrap(errWriteHandler, "unable to write handler.js"), true
+	}
+	errWritePackages := os.WriteFile(path.Join(functionSourcePath, "package.js"), []byte(f.Spec.Source.Inline.Dependencies), os.ModePerm)
+	if errWritePackages != nil {
+		return reconcile.Result{}, errors.Wrap(errWritePackages, "unable to write package.js"), true
+	}
+
+	log.Info("end writing sources to ", functionSourcePath)
+	return reconcile.Result{}, nil, false
 }
