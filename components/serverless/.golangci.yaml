@@ -28,3 +28,4 @@ issues:
     - "^SA1019: function.Status.RuntimeImageOverride is deprecated:"
     - "func `getConditionReason` is unused"
     - "func `getCondition` is unused"
+    - "func `\\(\\*FunctionReconciler\\).internalFunctionLabels` is unused"
