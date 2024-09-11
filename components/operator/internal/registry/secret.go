@@ -9,12 +9,12 @@ import (
 )
 
 const (
-	ServerlessRegistryDefaultSecretName              = "serverless-registry-config-default"
-	ServerlessExternalRegistryLabelConfigKey         = "serverless.kyma-project.io/config"
-	ServerlessExternalRegistryLabelConfigVal         = "credentials"
-	ServerlessRegistryIsInternalKey                  = "isInternal"
-	ServerlessDockerRegistryDeploymentName           = "serverless-docker-registry"
-	RegistryHTTPEnvKey                               = "REGISTRY_HTTP_SECRET"
+	ServerlessRegistryDefaultSecretName      = "serverless-registry-config-default"
+	ServerlessExternalRegistryLabelConfigKey = "serverless.kyma-project.io/config"
+	ServerlessExternalRegistryLabelConfigVal = "credentials"
+	ServerlessRegistryIsInternalKey          = "isInternal"
+	ServerlessDockerRegistryDeploymentName   = "serverless-docker-registry"
+	RegistryHTTPEnvKey                       = "REGISTRY_HTTP_SECRET"
 )
 
 func GetServerlessInternalRegistrySecret(ctx context.Context, c client.Client, namespace string) (*corev1.Secret, error) {

@@ -23,8 +23,8 @@ const (
 	DefaultingWebhookName = "defaulting.webhook.serverless.kyma-project.io"
 	ValidationWebhookName = "validation.webhook.serverless.kyma-project.io"
 
-	FunctionDefaultingWebhookPath       = "/defaulting/functions"
-	FunctionValidationWebhookPath       = "/validation/function"
+	FunctionDefaultingWebhookPath = "/defaulting/functions"
+	FunctionValidationWebhookPath = "/validation/function"
 )
 
 func InjectCABundleIntoWebhooks(ctx context.Context, client ctlrclient.Client, config WebhookConfig, wt WebHookType) error {
