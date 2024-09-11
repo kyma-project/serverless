@@ -4,6 +4,7 @@ import (
 	"context"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/utils/ptr"
 	"os"
 	"path"
 
@@ -80,40 +81,6 @@ func (r *FunctionReconciler) reconcile(ctx context.Context, log *logrus.Entry, r
 		return reconcile.Result{}, nil
 	}
 
-	pv := &corev1.PersistentVolume{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "nfs",
-			Namespace: f.GetNamespace(),
-		},
-		Spec: corev1.PersistentVolumeSpec{
-			Capacity: corev1.ResourceList{"storage": resource.MustParse("5Gi")},
-			PersistentVolumeSource: corev1.PersistentVolumeSource{
-				NFS: &corev1.NFSVolumeSource{
-					Server: r.nfsServiceIP, // requires svc ip ( name.namespace.svc.cluster.local is not supported )
-					Path:   "/",
-				},
-			},
-			AccessModes:                   []corev1.PersistentVolumeAccessMode{corev1.ReadWriteMany},
-			MountOptions:                  []string{"nfsvers=4.2"}, // required!!
-		},
-	}
-	errr.client.Create(ctx, pv)
-
-
-	pvc :=
-	//apiVersion: v1
-	//kind: PersistentVolumeClaim
-	//metadata:
-	//  name: nfs
-	//spec:
-	//  accessModes:
-	//    - ReadWriteMany
-	//  storageClassName: ""
-	//  resources:
-	//    requests:
-	//      storage: 5Gi
-	//  volumeName: nfs
-
 	if !instanceHasFinalizer {
 		log.Info("adding finalizer")
 		controllerutil.AddFinalizer(&f, finalizerName)
@@ -123,7 +90,17 @@ func (r *FunctionReconciler) reconcile(ctx context.Context, log *logrus.Entry, r
 		}
 	}
 
-	result, err, done := r.writeSourceToPvc(log, f)
+	errCreatePV := r.createPV(ctx, f)
+	if errCreatePV != nil {
+		return reconcile.Result{}, errCreatePV
+	}
+
+	errCreetePVC := r.createPVC(ctx, f)
+	if errCreetePVC != nil {
+		return reconcile.Result{}, errCreetePVC
+	}
+
+	result, err, done := r.writeSourceToPVC(log, f)
 	if done {
 		return result, err
 	}
@@ -159,7 +136,60 @@ func (r *FunctionReconciler) reconcile(ctx context.Context, log *logrus.Entry, r
 	return reconcile.Result{}, nil
 }
 
-func (r *FunctionReconciler) writeSourceToPvc(log *logrus.Entry, f serverlessv1alpha2.Function) (reconcile.Result, error, bool) {
+func (r *FunctionReconciler) createPVC(ctx context.Context, f serverlessv1alpha2.Function) error {
+	pvc := &corev1.PersistentVolumeClaim{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "nfs",
+			Namespace: f.GetNamespace(),
+		},
+		Spec: corev1.PersistentVolumeClaimSpec{
+			AccessModes: []corev1.PersistentVolumeAccessMode{corev1.ReadWriteMany},
+			Resources: corev1.VolumeResourceRequirements{
+				Requests: corev1.ResourceList{"storage": resource.MustParse("5Gi")},
+			},
+			VolumeName:       "nfs",
+			StorageClassName: ptr.To(""),
+		},
+	}
+	errPatchPVC := r.client.Patch(ctx, pvc, client.Apply, &client.PatchOptions{
+		Force:        ptr.To(true),
+		FieldManager: "buildless-serverless-controller",
+	})
+	if errPatchPVC != nil {
+		return errors.Wrap(errPatchPVC, "unable to patch PersistentVolumeClaim")
+	}
+	return nil
+}
+
+func (r *FunctionReconciler) createPV(ctx context.Context, f serverlessv1alpha2.Function) error {
+	pv := &corev1.PersistentVolume{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      "nfs",
+			Namespace: f.GetNamespace(),
+		},
+		Spec: corev1.PersistentVolumeSpec{
+			Capacity: corev1.ResourceList{"storage": resource.MustParse("5Gi")},
+			PersistentVolumeSource: corev1.PersistentVolumeSource{
+				NFS: &corev1.NFSVolumeSource{
+					Server: r.nfsServiceIP, // requires svc ip ( name.namespace.svc.cluster.local is not supported )
+					Path:   "/",
+				},
+			},
+			AccessModes:  []corev1.PersistentVolumeAccessMode{corev1.ReadWriteMany},
+			MountOptions: []string{"nfsvers=4.2"}, // required!!
+		},
+	}
+	errPatchPV := r.client.Patch(ctx, pv, client.Apply, &client.PatchOptions{
+		Force:        ptr.To(true),
+		FieldManager: "buildless-serverless-controller",
+	})
+	if errPatchPV != nil {
+		return errors.Wrap(errPatchPV, "unable to patch PersistentVolume")
+	}
+	return nil
+}
+
+func (r *FunctionReconciler) writeSourceToPVC(log *logrus.Entry, f serverlessv1alpha2.Function) (reconcile.Result, error, bool) {
 	functionSourcePath := path.Join(r.functionSourcesPath, string(f.GetUID()))
 	log.Info("starting writing sources to ", functionSourcePath)
 
