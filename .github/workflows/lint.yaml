@@ -9,9 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
       - uses: golangci/golangci-lint-action@v3
@@ -23,9 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/setup-libgit2
