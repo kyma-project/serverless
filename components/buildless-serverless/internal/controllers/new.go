@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/utils/ptr"
 	"os"
 	"path"
@@ -30,6 +32,10 @@ type FunctionReconciler struct {
 }
 
 const finalizerName = "serverless.kyma-project.io/function-finalizer"
+
+var (
+	svcTargetPort = intstr.FromInt32(8080)
+)
 
 func NewFunctionReconciler(client client.Client, logger *logrus.Logger, functionSourcesPath string, nfsServiceIP string) *FunctionReconciler {
 	return &FunctionReconciler{
@@ -95,9 +101,9 @@ func (r *FunctionReconciler) reconcile(ctx context.Context, log *logrus.Entry, r
 		return reconcile.Result{}, errCreatePV
 	}
 
-	errCreetePVC := r.createPVC(ctx, f)
-	if errCreetePVC != nil {
-		return reconcile.Result{}, errCreetePVC
+	errCreatePVC := r.createPVC(ctx, f)
+	if errCreatePVC != nil {
+		return reconcile.Result{}, errCreatePVC
 	}
 
 	result, err, done := r.writeSourceToPVC(log, f)
@@ -105,6 +111,54 @@ func (r *FunctionReconciler) reconcile(ctx context.Context, log *logrus.Entry, r
 		return result, err
 	}
 
+	errCreateDeployment := r.createDeployment(ctx, f)
+	if errCreateDeployment != nil {
+		return reconcile.Result{}, errCreateDeployment
+	}
+
+	errCreateService := r.createService(ctx, f)
+	if errCreateService != nil {
+		return reconcile.Result{}, errCreateService
+	}
+
+	// TODO: create
+	// 4.1 check if deployment is ready
+	// 5. update status
+
+	// TODO: update
+	// 3.1 check if deployment is ready
+	// 4. update status
+
+	return reconcile.Result{}, nil
+}
+
+func (r *FunctionReconciler) createService(ctx context.Context, f serverlessv1alpha2.Function) error {
+	service := &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      f.GetName(),
+			Namespace: f.GetNamespace(),
+		},
+		Spec: corev1.ServiceSpec{
+			Ports: []corev1.ServicePort{{
+				Name:       "http", // it has to be here for istio to work properly
+				TargetPort: svcTargetPort,
+				Port:       80,
+				Protocol:   corev1.ProtocolTCP,
+			}},
+			Selector: map[string]string{"function": f.GetName()},
+		},
+	}
+	errPatchService := r.client.Patch(ctx, service, client.Apply, &client.PatchOptions{
+		Force:        ptr.To(true),
+		FieldManager: "buildless-serverless-controller",
+	})
+	if errPatchService != nil {
+		return errors.Wrap(errPatchService, "unable to patch Service")
+	}
+	return nil
+}
+
+func (r *FunctionReconciler) createDeployment(ctx context.Context, f serverlessv1alpha2.Function) error {
 	envs := []corev1.EnvVar{
 		{Name: "FUNC_RUNTIME", Value: string(f.Spec.Runtime)},
 		{Name: "FUNC_NAME", Value: f.Name},
@@ -117,29 +171,106 @@ func (r *FunctionReconciler) reconcile(ctx context.Context, log *logrus.Entry, r
 	}
 
 	deployment := &appsv1.Deployment{
-		ObjectMeta: metav1.ObjectMeta{},
-		Spec:       appsv1.DeploymentSpec{},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      f.GetName(),
+			Namespace: f.GetNamespace(),
+		},
+		Spec: appsv1.DeploymentSpec{
+			Selector: &metav1.LabelSelector{
+				MatchLabels: map[string]string{"function": f.GetName()},
+			},
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: map[string]string{"function": f.GetName()},
+				},
+				Spec: corev1.PodSpec{
+					Volumes: []corev1.Volume{
+						{
+							Name: "sources",
+							VolumeSource: corev1.VolumeSource{
+								PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+									ClaimName: f.GetName(),
+								},
+							},
+						},
+					},
+					Containers: []corev1.Container{
+						{
+							Name:  "function-container",
+							Image: "europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main",
+							Env:   envs,
+							VolumeMounts: []corev1.VolumeMount{
+								{
+									Name:      "sources",
+									MountPath: "/usr/src/app/function",
+								},
+							},
+							Command: []string{
+								"bash",
+								"-c",
+								"cd /usr/src/app/function; npm install; cd ..; npm start",
+							},
+							/*
+								In order to mark pod as ready we need to ensure the function is actually running and ready to serve traffic.
+								We do this but first ensuring that sidecar is ready by using "proxy.istio.io/config": "{ \"holdApplicationUntilProxyStarts\": true }", annotation
+								Second thing is setting that probe which continuously
+							*/
+							StartupProbe: &corev1.Probe{
+								ProbeHandler: corev1.ProbeHandler{
+									HTTPGet: &corev1.HTTPGetAction{
+										Path: "/healthz",
+										Port: svcTargetPort,
+									},
+								},
+								InitialDelaySeconds: 0,
+								PeriodSeconds:       5,
+								SuccessThreshold:    1,
+								FailureThreshold:    30, // FailureThreshold * PeriodSeconds = 150s in this case, this should be enough for any function pod to start up
+							},
+							ReadinessProbe: &corev1.Probe{
+								ProbeHandler: corev1.ProbeHandler{
+									HTTPGet: &corev1.HTTPGetAction{
+										Path: "/healthz",
+										Port: svcTargetPort,
+									},
+								},
+								InitialDelaySeconds: 0, // startup probe exists, so delaying anything here doesn't make sense
+								FailureThreshold:    1,
+								PeriodSeconds:       5,
+								TimeoutSeconds:      2,
+							},
+							LivenessProbe: &corev1.Probe{
+								ProbeHandler: corev1.ProbeHandler{
+									HTTPGet: &corev1.HTTPGetAction{
+										Path: "/healthz",
+										Port: svcTargetPort,
+									},
+								},
+								FailureThreshold: 3,
+								PeriodSeconds:    5,
+								TimeoutSeconds:   4,
+							},
+							ImagePullPolicy: corev1.PullIfNotPresent,
+						},
+					},
+				},
+			},
+		},
 	}
-
-	// TODO: create
-	// 3.2. ??? run npm install
-	// 4. create deploy & service
-	// 4.1 check if deployment is ready
-	// 5. update status
-
-	// TODO: update
-	// 2.2. ??? rerun npm install
-	// 3. ??? update deploy ( we should have hot-reload enabled on every runtime )
-	// 3.1 check if deployment is ready
-	// 4. update status
-
-	return reconcile.Result{}, nil
+	errPatchDeployment := r.client.Patch(ctx, deployment, client.Apply, &client.PatchOptions{
+		Force:        ptr.To(true),
+		FieldManager: "buildless-serverless-controller",
+	})
+	if errPatchDeployment != nil {
+		return errors.Wrap(errPatchDeployment, "unable to patch Deployment")
+	}
+	return nil
 }
 
 func (r *FunctionReconciler) createPVC(ctx context.Context, f serverlessv1alpha2.Function) error {
 	pvc := &corev1.PersistentVolumeClaim{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "nfs",
+			Name:      f.GetName(),
 			Namespace: f.GetNamespace(),
 		},
 		Spec: corev1.PersistentVolumeClaimSpec{
@@ -147,7 +278,7 @@ func (r *FunctionReconciler) createPVC(ctx context.Context, f serverlessv1alpha2
 			Resources: corev1.VolumeResourceRequirements{
 				Requests: corev1.ResourceList{"storage": resource.MustParse("5Gi")},
 			},
-			VolumeName:       "nfs",
+			VolumeName:       f.GetName(),
 			StorageClassName: ptr.To(""),
 		},
 	}
@@ -164,7 +295,7 @@ func (r *FunctionReconciler) createPVC(ctx context.Context, f serverlessv1alpha2
 func (r *FunctionReconciler) createPV(ctx context.Context, f serverlessv1alpha2.Function) error {
 	pv := &corev1.PersistentVolume{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      "nfs",
+			Name:      f.GetName(),
 			Namespace: f.GetNamespace(),
 		},
 		Spec: corev1.PersistentVolumeSpec{
@@ -172,7 +303,7 @@ func (r *FunctionReconciler) createPV(ctx context.Context, f serverlessv1alpha2.
 			PersistentVolumeSource: corev1.PersistentVolumeSource{
 				NFS: &corev1.NFSVolumeSource{
 					Server: r.nfsServiceIP, // requires svc ip ( name.namespace.svc.cluster.local is not supported )
-					Path:   "/",
+					Path:   fmt.Sprintf("/%s", f.GetUID()),
 				},
 			},
 			AccessModes:  []corev1.PersistentVolumeAccessMode{corev1.ReadWriteMany},
