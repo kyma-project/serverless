@@ -3,18 +3,17 @@ package controllers
 import (
 	"context"
 	"fmt"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/pkg/apis/serverless/v1alpha2"
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	"k8s.io/utils/ptr"
 	"os"
 	"path"
-
-	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/pkg/apis/serverless/v1alpha2"
-	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
-	appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -96,26 +95,31 @@ func (r *FunctionReconciler) reconcile(ctx context.Context, log *logrus.Entry, r
 		}
 	}
 
+	log.Info("starting patching PersistentVolume")
 	errCreatePV := r.createPV(ctx, f)
 	if errCreatePV != nil {
 		return reconcile.Result{}, errCreatePV
 	}
 
+	log.Info("starting patching PersistentVolumeClaim")
 	errCreatePVC := r.createPVC(ctx, f)
 	if errCreatePVC != nil {
 		return reconcile.Result{}, errCreatePVC
 	}
 
+	log.Info("starting writing sources to NFS")
 	result, err, done := r.writeSourceToPVC(log, f)
 	if done {
 		return result, err
 	}
 
+	log.Info("starting creating Deployment")
 	errCreateDeployment := r.createDeployment(ctx, f)
 	if errCreateDeployment != nil {
 		return reconcile.Result{}, errCreateDeployment
 	}
 
+	log.Info("starting creating Service")
 	errCreateService := r.createService(ctx, f)
 	if errCreateService != nil {
 		return reconcile.Result{}, errCreateService
@@ -129,11 +133,16 @@ func (r *FunctionReconciler) reconcile(ctx context.Context, log *logrus.Entry, r
 	// 3.1 check if deployment is ready
 	// 4. update status
 
+	log.Info("end reconciliation")
 	return reconcile.Result{}, nil
 }
 
 func (r *FunctionReconciler) createService(ctx context.Context, f serverlessv1alpha2.Function) error {
 	service := &corev1.Service{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "v1",
+			Kind:       "Service",
+		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      f.GetName(),
 			Namespace: f.GetNamespace(),
@@ -171,6 +180,10 @@ func (r *FunctionReconciler) createDeployment(ctx context.Context, f serverlessv
 	}
 
 	deployment := &appsv1.Deployment{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "apps/v1",
+			Kind:       "Deployment",
+		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      f.GetName(),
 			Namespace: f.GetNamespace(),
@@ -206,7 +219,7 @@ func (r *FunctionReconciler) createDeployment(ctx context.Context, f serverlessv
 								},
 							},
 							Command: []string{
-								"bash",
+								"sh",
 								"-c",
 								"cd /usr/src/app/function; npm install; cd ..; npm start",
 							},
@@ -269,6 +282,10 @@ func (r *FunctionReconciler) createDeployment(ctx context.Context, f serverlessv
 
 func (r *FunctionReconciler) createPVC(ctx context.Context, f serverlessv1alpha2.Function) error {
 	pvc := &corev1.PersistentVolumeClaim{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "v1",
+			Kind:       "PersistentVolumeClaim",
+		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      f.GetName(),
 			Namespace: f.GetNamespace(),
@@ -294,6 +311,10 @@ func (r *FunctionReconciler) createPVC(ctx context.Context, f serverlessv1alpha2
 
 func (r *FunctionReconciler) createPV(ctx context.Context, f serverlessv1alpha2.Function) error {
 	pv := &corev1.PersistentVolume{
+		TypeMeta: metav1.TypeMeta{
+			APIVersion: "v1",
+			Kind:       "PersistentVolume",
+		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      f.GetName(),
 			Namespace: f.GetNamespace(),
@@ -334,9 +355,9 @@ func (r *FunctionReconciler) writeSourceToPVC(log *logrus.Entry, f serverlessv1a
 	if errWriteHandler != nil {
 		return reconcile.Result{}, errors.Wrap(errWriteHandler, "unable to write handler.js"), true
 	}
-	errWritePackages := os.WriteFile(path.Join(functionSourcePath, "package.js"), []byte(f.Spec.Source.Inline.Dependencies), os.ModePerm)
+	errWritePackages := os.WriteFile(path.Join(functionSourcePath, "package.json"), []byte(f.Spec.Source.Inline.Dependencies), os.ModePerm)
 	if errWritePackages != nil {
-		return reconcile.Result{}, errors.Wrap(errWritePackages, "unable to write package.js"), true
+		return reconcile.Result{}, errors.Wrap(errWritePackages, "unable to write package.json"), true
 	}
 
 	log.Info("end writing sources to ", functionSourcePath)
