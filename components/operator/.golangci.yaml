@@ -19,8 +19,3 @@ issues:
   exclude:
     # function for future usage
     - "^func `stopWithErrorOrRequeue` is unused$"
-    - "`shouldPropagateSpecProperties` - `deploymentName` always receives `serverlessDeploymentName`"
-    - "`shouldUpdateServerless` - `serverlessName` always receives `serverlessName`"
-    - "`shouldPropagateSpecProperties` - `registrySecretName` always receives `serverlessRegistrySecret`"
-    - 'secretContainsRequired - result 0 \(bool\) is always false'
-    - 'secretContainsSameValues - result 0 \(bool\) is always false'

@@ -11,14 +11,17 @@ import (
 	"k8s.io/utils/ptr"
 )
 
+const (
+	serverlessDeploymentName = "serverless-ctrl-mngr"
+	serverlessName           = "serverless-cr-test"
+	serverlessRegistrySecret = "serverless-registry-config-default"
+)
+
 var _ = Describe("Serverless controller", func() {
 	Context("When creating fresh instance", func() {
 		const (
-			namespaceName            = "kyma-system"
-			serverlessName           = "serverless-cr-test"
-			serverlessDeploymentName = "serverless-ctrl-mngr"
-			serverlessRegistrySecret = "serverless-registry-config-default"
-			specSecretName           = "spec-secret-name"
+			namespaceName  = "kyma-system"
+			specSecretName = "spec-secret-name"
 		)
 
 		var (
@@ -81,37 +84,37 @@ var _ = Describe("Serverless controller", func() {
 			{
 				emptyData := v1alpha1.ServerlessSpec{}
 				shouldCreateServerless(h, serverlessName, serverlessDeploymentName, emptyData)
-				shouldPropagateSpecProperties(h, serverlessDeploymentName, serverlessRegistrySecret, serverlessDataDefault)
+				shouldPropagateSpecProperties(h, serverlessDataDefault)
 			}
 			{
 				updateData := v1alpha1.ServerlessSpec{
 					Eventing: getEndpoint(serverlessDataWithChangedDependencies.EventPublisherProxyURL),
 					Tracing:  getEndpoint(serverlessDataWithChangedDependencies.TraceCollectorURL),
 				}
-				shouldUpdateServerless(h, serverlessName, updateData)
-				shouldPropagateSpecProperties(h, serverlessDeploymentName, serverlessRegistrySecret, serverlessDataWithChangedDependencies)
+				shouldUpdateServerless(h, updateData)
+				shouldPropagateSpecProperties(h, serverlessDataWithChangedDependencies)
 			}
 			{
 				registryData := serverlessDataExternalWithSecret
 				secretName := specSecretName + "-full"
 				h.createRegistrySecret(secretName, registryData.registrySecretData)
 				updateData := registryData.toServerlessSpec(secretName)
-				shouldUpdateServerless(h, serverlessName, updateData)
-				shouldPropagateSpecProperties(h, serverlessDeploymentName, serverlessRegistrySecret, registryData)
+				shouldUpdateServerless(h, updateData)
+				shouldPropagateSpecProperties(h, registryData)
 			}
 			{
 				registryData := serverlessDataExternalWithIncompleteSecret
 				secretName := specSecretName + "-incomplete"
 				h.createRegistrySecret(secretName, registryData.registrySecretData)
 				updateData := registryData.toServerlessSpec(secretName)
-				shouldUpdateServerless(h, serverlessName, updateData)
-				shouldPropagateSpecProperties(h, serverlessDeploymentName, serverlessRegistrySecret, serverlessDataIncompleteFilledByDefault)
+				shouldUpdateServerless(h, updateData)
+				shouldPropagateSpecProperties(h, serverlessDataIncompleteFilledByDefault)
 			}
 			{
 				registryData := serverlessDataExternalWithoutSecret
 				updateData := registryData.toServerlessSpec("")
-				shouldUpdateServerless(h, serverlessName, updateData)
-				shouldPropagateSpecProperties(h, serverlessDeploymentName, serverlessRegistrySecret, serverlessDataDefault)
+				shouldUpdateServerless(h, updateData)
+				shouldPropagateSpecProperties(h, serverlessDataDefault)
 			}
 
 			shouldDeleteServerless(h, serverlessName, serverlessDeploymentName)
@@ -133,19 +136,19 @@ func shouldCreateServerless(h testHelper, serverlessName, serverlessDeploymentNa
 		Should(ConditionTrueMatcher())
 }
 
-func shouldPropagateSpecProperties(h testHelper, deploymentName, registrySecretName string, expected serverlessData) {
-	Eventually(h.createCheckRegistrySecretFunc(registrySecretName, expected.registrySecretData)).
+func shouldPropagateSpecProperties(h testHelper, expected serverlessData) {
+	Eventually(h.createCheckRegistrySecretFunc(serverlessRegistrySecret, expected.registrySecretData)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 10).
 		Should(BeTrue())
 
-	Eventually(h.createCheckOptionalDependenciesFunc(deploymentName, expected)).
+	Eventually(h.createCheckOptionalDependenciesFunc(serverlessDeploymentName, expected)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 10).
 		Should(BeTrue())
 }
 
-func shouldUpdateServerless(h testHelper, serverlessName string, serverlessSpec v1alpha1.ServerlessSpec) {
+func shouldUpdateServerless(h testHelper, serverlessSpec v1alpha1.ServerlessSpec) {
 	// arrange
 	var serverless v1alpha1.Serverless
 	Eventually(h.createGetKubernetesObjectFunc(serverlessName, &serverless)).
