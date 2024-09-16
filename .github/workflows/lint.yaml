@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
       - uses: golangci/golangci-lint-action@v3
         with:
@@ -20,7 +19,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/rebase
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/setup-libgit2
       - uses: golangci/golangci-lint-action@v3
