@@ -16,10 +16,10 @@ jobs:
     uses: ./.github/workflows/_gitleaks.yaml
   
   images-verify:
+    if: github.event.pull_request.base.ref == 'main'
     uses: ./.github/workflows/_images-verify.yaml
   
   builds:
-    needs: [images-verify]
     uses: ./.github/workflows/_build.yaml
   
   integrations:
