@@ -20,15 +20,15 @@ import (
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 )
 
-func assertSuccessfulFunctionBuild(t *testing.T, resourceClient resource.Client, reconciler *FunctionReconciler, request ctrl.Request, fnLabels map[string]string, rebuilding bool) {
+const (
+	localhostPullAddr = "localhost:32132"
+)
+
+func assertSuccessfulFunctionBuild(t *testing.T, resourceClient resource.Client, reconciler *FunctionReconciler, request ctrl.Request, fnLabels map[string]string) {
 	g := gomega.NewGomegaWithT(t)
 
 	initialDeploymentCondition := corev1.ConditionUnknown
 	initialConditionsCount := 2
-	if rebuilding {
-		initialDeploymentCondition = corev1.ConditionTrue
-		initialConditionsCount = 3
-	}
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -89,7 +89,7 @@ func assertSuccessfulFunctionBuild(t *testing.T, resourceClient resource.Client,
 	g.Expect(getConditionReason(function.Status.Conditions, serverlessv1alpha2.ConditionBuildReady)).To(gomega.Equal(serverlessv1alpha2.ConditionReasonJobFinished))
 }
 
-func assertSuccessfulFunctionDeployment(t *testing.T, resourceClient resource.Client, reconciler *FunctionReconciler, request ctrl.Request, fnLabels map[string]string, regPullAddr string, redeployment bool) {
+func assertSuccessfulFunctionDeployment(t *testing.T, resourceClient resource.Client, reconciler *FunctionReconciler, request ctrl.Request, fnLabels map[string]string) {
 	g := gomega.NewGomegaWithT(t)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
@@ -119,7 +119,7 @@ func assertSuccessfulFunctionDeployment(t *testing.T, resourceClient resource.Cl
 		instance: *function,
 	}
 
-	g.Expect(deployment.Spec.Template.Spec.Containers[0].Image).To(gomega.Equal(s.buildImageAddress(regPullAddr, "some_image")))
+	g.Expect(deployment.Spec.Template.Spec.Containers[0].Image).To(gomega.Equal(s.buildImageAddress(localhostPullAddr, "some_image")))
 	g.Expect(deployment.Spec.Template.Labels).To(gomega.HaveLen(8))
 	g.Expect(deployment.Spec.Template.Labels[serverlessv1alpha2.FunctionNameLabel]).To(gomega.Equal(function.Name))
 	g.Expect(deployment.Spec.Template.Labels[serverlessv1alpha2.PodAppNameLabel]).To(gomega.Equal(function.Name))
@@ -130,22 +130,20 @@ func assertSuccessfulFunctionDeployment(t *testing.T, resourceClient resource.Cl
 	g.Expect(deployment.Spec.Template.Labels[testBindingLabel2]).To(gomega.Equal(testBindingLabelValue))
 	g.Expect(deployment.Spec.Template.Labels["foo"]).To(gomega.Equal("bar"))
 
-	if !redeployment {
-		t.Log("service creation")
-		result, err = reconciler.Reconcile(ctx, request)
-		g.Expect(err).To(gomega.BeNil())
-		g.Expect(result.Requeue).To(gomega.BeFalse())
-		g.Expect(result.RequeueAfter).To(gomega.Equal(time.Second * 1))
+	t.Log("service creation")
+	result, err = reconciler.Reconcile(ctx, request)
+	g.Expect(err).To(gomega.BeNil())
+	g.Expect(result.Requeue).To(gomega.BeFalse())
+	g.Expect(result.RequeueAfter).To(gomega.Equal(time.Second * 1))
 
-		function = &serverlessv1alpha2.Function{}
-		g.Expect(resourceClient.Get(context.TODO(), request.NamespacedName, function)).To(gomega.Succeed())
-		g.Expect(function.Status.Conditions).To(gomega.HaveLen(conditionLen))
-		g.Expect(getConditionStatus(function.Status.Conditions, serverlessv1alpha2.ConditionConfigurationReady)).To(gomega.Equal(corev1.ConditionTrue))
-		g.Expect(getConditionStatus(function.Status.Conditions, serverlessv1alpha2.ConditionBuildReady)).To(gomega.Equal(corev1.ConditionTrue))
-		g.Expect(getConditionStatus(function.Status.Conditions, serverlessv1alpha2.ConditionRunning)).To(gomega.Equal(corev1.ConditionUnknown))
+	function = &serverlessv1alpha2.Function{}
+	g.Expect(resourceClient.Get(context.TODO(), request.NamespacedName, function)).To(gomega.Succeed())
+	g.Expect(function.Status.Conditions).To(gomega.HaveLen(conditionLen))
+	g.Expect(getConditionStatus(function.Status.Conditions, serverlessv1alpha2.ConditionConfigurationReady)).To(gomega.Equal(corev1.ConditionTrue))
+	g.Expect(getConditionStatus(function.Status.Conditions, serverlessv1alpha2.ConditionBuildReady)).To(gomega.Equal(corev1.ConditionTrue))
+	g.Expect(getConditionStatus(function.Status.Conditions, serverlessv1alpha2.ConditionRunning)).To(gomega.Equal(corev1.ConditionUnknown))
 
-		g.Expect(getConditionReason(function.Status.Conditions, serverlessv1alpha2.ConditionRunning)).To(gomega.Equal(serverlessv1alpha2.ConditionReasonServiceCreated))
-	}
+	g.Expect(getConditionReason(function.Status.Conditions, serverlessv1alpha2.ConditionRunning)).To(gomega.Equal(serverlessv1alpha2.ConditionReasonServiceCreated))
 
 	t.Log("service ready")
 	jobList := &batchv1.JobList{}
@@ -167,22 +165,20 @@ func assertSuccessfulFunctionDeployment(t *testing.T, resourceClient resource.Cl
 	g.Expect(isSubset(svc.Spec.Selector, job.Spec.Template.Labels)).To(gomega.BeFalse(), "svc selector should not catch job pods")
 	g.Expect(svc.Spec.Selector).To(gomega.Equal(deployment.Spec.Selector.MatchLabels))
 
-	if !redeployment {
-		t.Log("hpa creation")
-		result, err = reconciler.Reconcile(ctx, request)
-		g.Expect(err).To(gomega.BeNil())
-		g.Expect(result.Requeue).To(gomega.BeFalse())
-		g.Expect(result.RequeueAfter).To(gomega.Equal(time.Second * 1))
+	t.Log("hpa creation")
+	result, err = reconciler.Reconcile(ctx, request)
+	g.Expect(err).To(gomega.BeNil())
+	g.Expect(result.Requeue).To(gomega.BeFalse())
+	g.Expect(result.RequeueAfter).To(gomega.Equal(time.Second * 1))
 
-		function = &serverlessv1alpha2.Function{}
-		g.Expect(resourceClient.Get(context.TODO(), request.NamespacedName, function)).To(gomega.Succeed())
-		g.Expect(function.Status.Conditions).To(gomega.HaveLen(conditionLen))
-		g.Expect(getConditionStatus(function.Status.Conditions, serverlessv1alpha2.ConditionConfigurationReady)).To(gomega.Equal(corev1.ConditionTrue))
-		g.Expect(getConditionStatus(function.Status.Conditions, serverlessv1alpha2.ConditionBuildReady)).To(gomega.Equal(corev1.ConditionTrue))
-		g.Expect(getConditionStatus(function.Status.Conditions, serverlessv1alpha2.ConditionRunning)).To(gomega.Equal(corev1.ConditionUnknown))
+	function = &serverlessv1alpha2.Function{}
+	g.Expect(resourceClient.Get(context.TODO(), request.NamespacedName, function)).To(gomega.Succeed())
+	g.Expect(function.Status.Conditions).To(gomega.HaveLen(conditionLen))
+	g.Expect(getConditionStatus(function.Status.Conditions, serverlessv1alpha2.ConditionConfigurationReady)).To(gomega.Equal(corev1.ConditionTrue))
+	g.Expect(getConditionStatus(function.Status.Conditions, serverlessv1alpha2.ConditionBuildReady)).To(gomega.Equal(corev1.ConditionTrue))
+	g.Expect(getConditionStatus(function.Status.Conditions, serverlessv1alpha2.ConditionRunning)).To(gomega.Equal(corev1.ConditionUnknown))
 
-		g.Expect(getConditionReason(function.Status.Conditions, serverlessv1alpha2.ConditionRunning)).To(gomega.Equal(serverlessv1alpha2.ConditionReasonHorizontalPodAutoscalerCreated))
-	}
+	g.Expect(getConditionReason(function.Status.Conditions, serverlessv1alpha2.ConditionRunning)).To(gomega.Equal(serverlessv1alpha2.ConditionReasonHorizontalPodAutoscalerCreated))
 
 	t.Log("hpa ready")
 

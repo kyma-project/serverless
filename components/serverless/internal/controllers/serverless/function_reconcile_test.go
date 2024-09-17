@@ -95,9 +95,9 @@ func TestFunctionReconciler_Reconcile_Scaling(t *testing.T) {
 		g.Expect(configMapList.Items[0].Data[FunctionSourceKey]).To(gomega.Equal(function.Spec.Source.Inline.Source))
 		g.Expect(configMapList.Items[0].Data[FunctionDepsKey]).To(gomega.Equal("{}"))
 
-		assertSuccessfulFunctionBuild(t, resourceClient, reconciler, request, fnLabels, false)
+		assertSuccessfulFunctionBuild(t, resourceClient, reconciler, request, fnLabels)
 
-		assertSuccessfulFunctionDeployment(t, resourceClient, reconciler, request, fnLabels, "localhost:32132", false)
+		assertSuccessfulFunctionDeployment(t, resourceClient, reconciler, request, fnLabels)
 		two := int32(2)
 		four := int32(4)
 
@@ -220,9 +220,9 @@ func TestFunctionReconciler_Reconcile_Scaling(t *testing.T) {
 		_, err := reconciler.Reconcile(ctx, request)
 		g.Expect(err).To(gomega.BeNil())
 
-		assertSuccessfulFunctionBuild(t, resourceClient, reconciler, request, fnLabels, false)
+		assertSuccessfulFunctionBuild(t, resourceClient, reconciler, request, fnLabels)
 
-		assertSuccessfulFunctionDeployment(t, resourceClient, reconciler, request, fnLabels, "localhost:32132", false)
+		assertSuccessfulFunctionDeployment(t, resourceClient, reconciler, request, fnLabels)
 
 		t.Log("update function")
 		function := &serverlessv1alpha2.Function{}
@@ -453,9 +453,9 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 		g.Expect(configMapList.Items[0].Data[FunctionSourceKey]).To(gomega.Equal(function.Spec.Source.Inline.Source))
 		g.Expect(configMapList.Items[0].Data[FunctionDepsKey]).To(gomega.Equal("{}"))
 
-		assertSuccessfulFunctionBuild(t, resourceClient, reconciler, request, fnLabels, false)
+		assertSuccessfulFunctionBuild(t, resourceClient, reconciler, request, fnLabels)
 
-		assertSuccessfulFunctionDeployment(t, resourceClient, reconciler, request, fnLabels, "localhost:32132", false)
+		assertSuccessfulFunctionDeployment(t, resourceClient, reconciler, request, fnLabels)
 	})
 	t.Run("should set proper status on deployment fail", func(t *testing.T) {
 		//GIVEN
@@ -1321,8 +1321,8 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 		t.Log("successfully deploying a function")
 		_, err := reconciler.Reconcile(ctx, request)
 		g.Expect(err).To(gomega.BeNil())
-		assertSuccessfulFunctionBuild(t, resourceClient, reconciler, request, fnLabels, false)
-		assertSuccessfulFunctionDeployment(t, resourceClient, reconciler, request, fnLabels, "localhost:32132", false)
+		assertSuccessfulFunctionBuild(t, resourceClient, reconciler, request, fnLabels)
+		assertSuccessfulFunctionDeployment(t, resourceClient, reconciler, request, fnLabels)
 
 		t.Log("updating deployment.spec.template.metadata.annotations, e.g. by using kubectl rollout restart command")
 		deployments := &appsv1.DeploymentList{}

@@ -173,3 +173,24 @@ func Test_calculateInlineImageTag(t *testing.T) {
 		})
 	}
 }
+
+// functions only used in tests
+func getConditionReason(conditions []serverlessv1alpha2.Condition, conditionType serverlessv1alpha2.ConditionType) serverlessv1alpha2.ConditionReason {
+	for _, condition := range conditions {
+		if condition.Type == conditionType {
+			return condition.Reason
+		}
+	}
+
+	return ""
+}
+
+func getCondition(conditions []serverlessv1alpha2.Condition, conditionType serverlessv1alpha2.ConditionType) serverlessv1alpha2.Condition {
+	for _, condition := range conditions {
+		if condition.Type == conditionType {
+			return condition
+		}
+	}
+
+	return serverlessv1alpha2.Condition{}
+}

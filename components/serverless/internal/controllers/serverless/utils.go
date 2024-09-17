@@ -350,26 +350,6 @@ func isScalingEnabled(instance *serverlessv1alpha2.Function) bool {
 	return !equalInt32Pointer(instance.Spec.ScaleConfig.MinReplicas, instance.Spec.ScaleConfig.MaxReplicas)
 }
 
-func getConditionReason(conditions []serverlessv1alpha2.Condition, conditionType serverlessv1alpha2.ConditionType) serverlessv1alpha2.ConditionReason {
-	for _, condition := range conditions {
-		if condition.Type == conditionType {
-			return condition.Reason
-		}
-	}
-
-	return ""
-}
-
-func getCondition(conditions []serverlessv1alpha2.Condition, conditionType serverlessv1alpha2.ConditionType) serverlessv1alpha2.Condition {
-	for _, condition := range conditions {
-		if condition.Type == conditionType {
-			return condition
-		}
-	}
-
-	return serverlessv1alpha2.Condition{}
-}
-
 func calculateInlineImageTag(instance *serverlessv1alpha2.Function, runtimeBase string) string {
 	hash := sha256.Sum256([]byte(strings.Join([]string{
 		string(instance.GetUID()),

@@ -84,10 +84,9 @@ type k8s struct {
 }
 
 type reconciler struct {
-	fn     stateFn
-	log    *zap.SugaredLogger
-	cache  chart.ManifestCache
-	result ctrl.Result
+	fn    stateFn
+	log   *zap.SugaredLogger
+	cache chart.ManifestCache
 	k8s
 	cfg
 }
