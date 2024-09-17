@@ -17,7 +17,7 @@ data:
         source: "$string($count($filter($replicas().items, function($r){
         $r.status.phase = 'Running'}))) & '/' & $string($count($replicas().items))"
         highlights:
-          negative: "$count($replicas().items) != $count($filter($replicas().items, function($r){
+          critical: "$count($replicas().items) != $count($filter($replicas().items, function($r){
         $r.status.phase = 'Running'}))"
           warning: "$count($replicas().items) = 0 and $count($filter($replicas().items, function($r){
         $r.status.phase = 'Running'}) = 0)" # this condition needs to be above 'positive'
@@ -30,10 +30,11 @@ data:
             - RUNNING
           informative:
             - INITIALIZING
-          critical:
             - DEPLOYING
+          warning:
             - BUILDING
             - PENDING
+          critical:
             - FAILED
             - ERROR
         source: >-
@@ -480,10 +481,11 @@ data:
           - RUNNING
         informative:
           - INITIALIZING
-        critical:
           - DEPLOYING
+        warning:
           - BUILDING
           - PENDING
+        critical:
           - FAILED
           - ERROR
       source: >-
