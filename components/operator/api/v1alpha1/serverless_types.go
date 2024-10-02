@@ -132,7 +132,7 @@ type ServerlessStatus struct {
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
-//+kubebuilder:resource:categories={kyma,kyma-modules,kyma-serverless}
+//+kubebuilder:resource:categories={kyma-modules,kyma-serverless}
 //+kubebuilder:printcolumn:name="Configured",type="string",JSONPath=".status.conditions[?(@.type=='Configured')].status"
 //+kubebuilder:printcolumn:name="Installed",type="string",JSONPath=".status.conditions[?(@.type=='Installed')].status"
 //+kubebuilder:printcolumn:name="generation",type="integer",JSONPath=".metadata.generation"
