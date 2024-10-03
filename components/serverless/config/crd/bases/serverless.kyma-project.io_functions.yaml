@@ -8,6 +8,8 @@ metadata:
 spec:
   group: serverless.kyma-project.io
   names:
+    categories:
+    - kyma-serverless
     kind: Function
     listKind: FunctionList
     plural: functions
