@@ -116,6 +116,7 @@ jobs:
           IMG: "europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.event.inputs.name }}"
           PULL_BASE_REF: ${{ github.event.inputs.name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_ID: ${{ steps.create-draft.outputs.release_id }}
         run: ./.github/scripts/release.sh
 
     outputs:
