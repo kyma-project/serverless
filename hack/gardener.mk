@@ -12,7 +12,7 @@ SHOOT=test-${GIT_COMMIT_SHA}
 ifneq (,$(GARDENER_SA_PATH))
 GARDENER_K8S_VERSION=$(shell kubectl --kubeconfig=${GARDENER_SA_PATH} get cloudprofiles.core.gardener.cloud ${GARDENER_INFRASTRUCTURE} -o=jsonpath='{.spec.kubernetes.versions[0].version}')
 else
-GARDENER_K8S_VERSION=1.30.0
+GARDENER_K8S_VERSION=1.30.5
 endif
 
 .PHONY: provision-gardener
