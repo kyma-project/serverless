@@ -39,6 +39,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: ${{ github.event.inputs.serverless_tag }}
+          token: ${{ secrets.BOT_TOKEN }}
 
       - name: Download release assets
         env:
