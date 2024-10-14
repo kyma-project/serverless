@@ -19,7 +19,6 @@ import (
 var (
 	rtmNodeJS18  = fnRuntime.GetRuntimeConfig(serverlessv1alpha2.NodeJs18)
 	rtmNodeJS20  = fnRuntime.GetRuntimeConfig(serverlessv1alpha2.NodeJs20)
-	rtmPython39  = fnRuntime.GetRuntimeConfig(serverlessv1alpha2.Python39)
 	rtmPython312 = fnRuntime.GetRuntimeConfig(serverlessv1alpha2.Python312)
 )
 
@@ -486,25 +485,6 @@ func TestFunctionReconciler_buildJob(t *testing.T) {
 				{Name: "runtime", MountPath: "/workspace/Dockerfile", SubPath: "Dockerfile", ReadOnly: true},
 				{Name: "credentials", MountPath: "/docker", ReadOnly: true},
 				{Name: "registry-config", MountPath: "/workspace/registry-config/.npmrc", SubPath: ".npmrc", ReadOnly: true},
-			},
-		},
-		{
-			Name:               "Success Python39",
-			Runtime:            serverlessv1alpha2.Python39,
-			ExpectedVolumesLen: 4,
-			ExpectedVolumes: []expectedVolume{
-				{name: "sources", localObjectReference: cmName},
-				{name: "runtime", localObjectReference: rtmPython39.DockerfileConfigMapName},
-				{name: "credentials", localObjectReference: dockerCfg.ActiveRegistryConfigSecretName},
-				{name: "registry-config", localObjectReference: packageRegistryConfigSecretName},
-			},
-			ExpectedMountsLen: 5,
-			ExpectedVolumeMounts: []corev1.VolumeMount{
-				{Name: "sources", MountPath: "/workspace/src/requirements.txt", SubPath: FunctionDepsKey, ReadOnly: true},
-				{Name: "sources", MountPath: "/workspace/src/handler.py", SubPath: FunctionSourceKey, ReadOnly: true},
-				{Name: "runtime", MountPath: "/workspace/Dockerfile", SubPath: "Dockerfile", ReadOnly: true},
-				{Name: "credentials", MountPath: "/docker", ReadOnly: true},
-				{Name: "registry-config", MountPath: "/workspace/registry-config/pip.conf", SubPath: "pip.conf", ReadOnly: true},
 			},
 		},
 		{

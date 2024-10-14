@@ -79,20 +79,6 @@ updates:
       include: "scope"
 
   - package-ecosystem: "docker"
-    directory: "/components/runtimes/python/python39"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "python39"
-      include: "scope"
-    ignore:
-      # ignore minor python updates, e.g. 3.9 -> 3.12
-      - dependency-name: kyma-project/prod/external/library/python
-        update-types: ["version-update:semver-minor"]
-  - package-ecosystem: "docker"
     directory: "/components/runtimes/python/python312"
     labels:
       - "area/dependency"
@@ -127,20 +113,6 @@ updates:
       prefix: "nodejs20"
       include: "scope"
 
-  - package-ecosystem: "pip"
-    directory: "/components/runtimes/python/python39"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "pip-python39"
-      include: "scope"
-    groups:
-      opentelemetry:
-        patterns:
-          - "opentelemetry-*"
   - package-ecosystem: "pip"
     directory: "/components/runtimes/python/python312"
     labels:

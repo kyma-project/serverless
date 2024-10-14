@@ -23,7 +23,6 @@ import (
 const (
 	nodejs18  = "nodejs18"
 	nodejs20  = "nodejs20"
-	python39  = "python39"
 	python312 = "python312"
 )
 
@@ -42,7 +41,6 @@ func FunctionAPIGatewayTest(restConfig *rest.Config, cfg internal.Config, logf *
 	}
 
 	python312Logger := logf.WithField(runtimeKey, "python312")
-	python39Logger := logf.WithField(runtimeKey, "python39")
 	nodejs18Logger := logf.WithField(runtimeKey, "nodejs18")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
 
@@ -53,8 +51,6 @@ func FunctionAPIGatewayTest(restConfig *rest.Config, cfg internal.Config, logf *
 		Verbose:     cfg.Verbose,
 		Log:         logf,
 	}
-
-	python39Fn := function.NewFunction("python39", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python39Logger))
 
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
 
@@ -67,10 +63,6 @@ func FunctionAPIGatewayTest(restConfig *rest.Config, cfg internal.Config, logf *
 	return executor.NewSerialTestRunner(logf, "Runtime test",
 		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
 		executor.NewParallelRunner(logf, "Fn tests",
-			executor.NewSerialTestRunner(python39Logger, "Python39 test",
-				function.CreateFunction(python39Logger, python39Fn, "Create Python39 Function", runtimes.BasicPythonFunction("Hello from python39", serverlessv1alpha2.Python39)),
-				assertion.APIGatewayFunctionCheck("python39", python39Fn, coreCli, genericContainer.Namespace, python39),
-			),
 			executor.NewSerialTestRunner(python312Logger, "Python312 test",
 				function.CreateFunction(python312Logger, python312Fn, "Create Python312 Function", runtimes.BasicPythonFunction("Hello from python312", serverlessv1alpha2.Python312)),
 				assertion.APIGatewayFunctionCheck("python312", python312Fn, coreCli, genericContainer.Namespace, python312),

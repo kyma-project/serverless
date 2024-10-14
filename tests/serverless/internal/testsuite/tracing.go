@@ -46,7 +46,6 @@ func FunctionTracingTest(restConfig *rest.Config, cfg internal.Config, logf *log
 		return nil, errors.Wrapf(err, "while creating k8s apps client")
 	}
 
-	python39Logger := logf.WithField(runtimeKey, "python39")
 	python312Logger := logf.WithField(runtimeKey, "python312")
 	nodejs18Logger := logf.WithField(runtimeKey, "nodejs18")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
@@ -58,8 +57,6 @@ func FunctionTracingTest(restConfig *rest.Config, cfg internal.Config, logf *log
 		Verbose:     cfg.Verbose,
 		Log:         logf,
 	}
-
-	python39Fn := function.NewFunction("python39", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python39Logger))
 
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
 
@@ -83,10 +80,6 @@ func FunctionTracingTest(restConfig *rest.Config, cfg internal.Config, logf *log
 		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
 		app.NewApplication("Create HTTP basic application", HTTPAppName, HTTPAppImage, int32(80), appsCli.Deployments(genericContainer.Namespace), coreCli.Services(genericContainer.Namespace), genericContainer),
 		executor.NewParallelRunner(logf, "Fn tests",
-			executor.NewSerialTestRunner(python39Logger, "Python39 test",
-				function.CreateFunction(python39Logger, python39Fn, "Create Python39 Function", runtimes.BasicTracingPythonFunction(serverlessv1alpha2.Python39, httpAppURL.String())),
-				assertion.TracingHTTPCheck(python39Logger, "Python39 tracing headers check", python39Fn.FunctionURL, poll),
-			),
 			executor.NewSerialTestRunner(python312Logger, "Python312 test",
 				function.CreateFunction(python312Logger, python312Fn, "Create Python312 Function", runtimes.BasicTracingPythonFunction(serverlessv1alpha2.Python312, httpAppURL.String())),
 				assertion.TracingHTTPCheck(python312Logger, "Python312 tracing headers check", python312Fn.FunctionURL, poll),

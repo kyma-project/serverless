@@ -35,7 +35,6 @@ func FunctionCloudEventsTest(restConfig *rest.Config, cfg internal.Config, logf 
 		return nil, errors.Wrap(err, "while creating k8s CoreV1Client")
 	}
 
-	python39Logger := logf.WithField(runtimeKey, "python39")
 	python312Logger := logf.WithField(runtimeKey, "python312")
 	nodejs18Logger := logf.WithField(runtimeKey, "nodejs18")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
@@ -49,7 +48,6 @@ func FunctionCloudEventsTest(restConfig *rest.Config, cfg internal.Config, logf 
 	}
 
 	publisherProxyMock := function.NewFunction("eventing-publisher-proxy", "kyma-system", cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
-	python39Fn := function.NewFunction("python39", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python39Logger))
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
 	nodejs18Fn := function.NewFunction("nodejs18", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs18Logger))
 	nodejs20Fn := function.NewFunction("nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
@@ -60,12 +58,6 @@ func FunctionCloudEventsTest(restConfig *rest.Config, cfg internal.Config, logf 
 		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
 		function.CreateFunction(logf, publisherProxyMock, "Create publisher proxy mock", runtimes.PythonPublisherProxyMock()),
 		executor.NewParallelRunner(logf, "Fn tests",
-			executor.NewSerialTestRunner(python39Logger, "Python39 test",
-				function.CreateFunction(python39Logger, python39Fn, "Create Python39 Function", runtimes.PythonCloudEvent(serverlessv1alpha2.Python39)),
-				assertion.CloudEventReceiveCheck(python39Logger, "Python39 cloud event structured check", cloudevents.EncodingStructured, python39Fn.FunctionURL),
-				assertion.CloudEventReceiveCheck(python39Logger, "Python39 cloud event binary check", cloudevents.EncodingBinary, python39Fn.FunctionURL),
-				assertion.CloudEventSendCheck(python39Logger, "Python39 cloud event sent check", string(serverlessv1alpha2.Python39), python39Fn.FunctionURL, publisherProxyMock.FunctionURL),
-			),
 			executor.NewSerialTestRunner(python312Logger, "Python312 test",
 				function.CreateFunction(python312Logger, python312Fn, "Create Python312 Function", runtimes.PythonCloudEvent(serverlessv1alpha2.Python312)),
 				assertion.CloudEventReceiveCheck(python312Logger, "Python312 cloud event structured check", cloudevents.EncodingStructured, python312Fn.FunctionURL),

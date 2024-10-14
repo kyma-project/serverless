@@ -38,7 +38,6 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 		return nil, errors.Wrap(err, "while creating k8s CoreV1Client")
 	}
 
-	python39Logger := logf.WithField(runtimeKey, "python39")
 	python312Logger := logf.WithField(runtimeKey, "python312")
 	nodejs18Logger := logf.WithField(runtimeKey, "nodejs18")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
@@ -50,8 +49,6 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 		Verbose:     cfg.Verbose,
 		Log:         logf,
 	}
-
-	python39Fn := function.NewFunction("python39", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python39Logger))
 
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
 
@@ -89,12 +86,6 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
 		secret.CreateSecret(logf, pkgCfgSecret, "Create package configuration secret", pkgCfgSecretData),
 		executor.NewParallelRunner(logf, "Fn tests",
-			executor.NewSerialTestRunner(python39Logger, "Python39 test",
-				function.CreateFunction(python39Logger, python39Fn, "Create Python39 Function", runtimes.BasicPythonFunction("Hello From python", serverlessv1alpha2.Python39)),
-				assertion.NewHTTPCheck(python39Logger, "Python39 pre update simple check through service", python39Fn.FunctionURL, poll, "Hello From python"),
-				function.UpdateFunction(python39Logger, python39Fn, "Update Python39 Function", runtimes.BasicPythonFunctionWithCustomDependency("Hello From updated python", serverlessv1alpha2.Python39)),
-				assertion.NewHTTPCheck(python39Logger, "Python39 post update simple check through service", python39Fn.FunctionURL, poll, "Hello From updated python"),
-			),
 			executor.NewSerialTestRunner(python312Logger, "Python312 test",
 				function.CreateFunction(python312Logger, python312Fn, "Create Python312 Function", runtimes.BasicPythonFunction("Hello From python", serverlessv1alpha2.Python312)),
 				assertion.NewHTTPCheck(python312Logger, "Python312 pre update simple check through service", python312Fn.FunctionURL, poll, "Hello From python"),
