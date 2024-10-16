@@ -90,14 +90,6 @@ jobs:
       context: components/runtimes/nodejs
       tags: ${{ needs.compute-tags.outputs.tags }}
 
-  build-python39:
-    needs: compute-tags
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: function-runtime-python39
-      dockerfile: python39/Dockerfile
-      context: components/runtimes/python
-      tags: ${{ needs.compute-tags.outputs.tags }}
 
   build-python312:
     needs: compute-tags

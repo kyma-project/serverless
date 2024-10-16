@@ -25,12 +25,6 @@ services:
     build:
       context: ../components/runtimes/nodejs
       dockerfile: nodejs20/Dockerfile
-  function_runtime_python39:
-    image: localhost:5000/kyma-project/function-runtime-python39:local
-    platform: "linux/amd64"
-    build:
-      context: ../components/runtimes/python
-      dockerfile: python39/Dockerfile
   function_runtime_python312:
     image: localhost:5000/kyma-project/function-runtime-python312:local
     platform: "linux/amd64"

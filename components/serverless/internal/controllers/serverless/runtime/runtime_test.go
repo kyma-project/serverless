@@ -15,19 +15,6 @@ func TestGetRuntimeConfig(t *testing.T) {
 		runtime serverlessv1alpha2.Runtime
 		want    runtime.Config
 	}{
-		"python39": {
-			name:    "python39",
-			runtime: serverlessv1alpha2.Python39,
-			want: runtime.Config{
-				Runtime:                 serverlessv1alpha2.Python39,
-				DependencyFile:          "requirements.txt",
-				FunctionFile:            "handler.py",
-				DockerfileConfigMapName: "dockerfile-python39",
-				RuntimeEnvs: []corev1.EnvVar{{Name: "PYTHONPATH", Value: "$(KUBELESS_INSTALL_VOLUME)/lib.python3.9/site-packages:$(KUBELESS_INSTALL_VOLUME)"},
-					{Name: "FUNC_RUNTIME", Value: "python39"},
-					{Name: "PYTHONUNBUFFERED", Value: "TRUE"}},
-			},
-		},
 		"python312": {
 			name:    "python312",
 			runtime: serverlessv1alpha2.Python312,

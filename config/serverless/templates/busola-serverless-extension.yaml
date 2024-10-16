@@ -65,7 +65,7 @@ data:
         source: 'spec.source.gitRepository ? "Git Repository" : "Inline Editor"'
       - name: header.runtime
         source: >-
-          spec.runtime = 'python39' ? 'Python 3.9 - deprecated' : (spec.runtime = 'nodejs18' ? 'Node.js 18 - deprecated' : (spec.runtime = 'python312' ? 'Python 3.12' : (spec.runtime = 'nodejs20' ? 'Node.js 20' : spec.runtime)))
+          spec.runtime = 'nodejs18' ? 'Node.js 18 - deprecated' : (spec.runtime = 'python312' ? 'Python 3.12' : (spec.runtime = 'nodejs20' ? 'Node.js 20' : spec.runtime)))
     body:
       - widget: Tabs
         children:
@@ -215,19 +215,19 @@ data:
       trigger: [language]
       dynamicValue: |
         spec.runtime in ['nodejs18', 'nodejs20'] ? 'JavaScript' :
-        spec.runtime in ['python39', 'python312'] ? 'Python' :
+        spec.runtime in ['python312'] ? 'Python' :
         ''
     - simple: true
       path: spec.runtime
       placeholder: placeholders.spec.runtime
       enum: |
         $language = 'JavaScript' ? ['nodejs18', 'nodejs20'] :
-        $language = 'Python' ? ['python39', 'python312'] :
+        $language = 'Python' ? ['python312'] :
         []
       subscribe:
         language: |
-          $language = 'JavaScript' ? ($exists($root.spec.runtime) and $root.spec.runtime != 'python39') ? $root.spec.runtime : 'nodejs20' :
-          $language = 'Python' ? 'python39' :
+          $language = 'JavaScript' ? ($exists($root.spec.runtime) and $root.spec.runtime != 'python312') ? $root.spec.runtime : 'nodejs20' :
+          $language = 'Python' ? 'python312' :
           ''
     - path: spec.resourceConfiguration.function.profile
       simple: true
@@ -471,7 +471,7 @@ data:
   list: |-
     - name: header.runtime
       source: >-
-        spec.runtime = 'python39' ? 'Python 3.9 - deprecated' : (spec.runtime = 'nodejs18' ? 'Node.js 18 - deprecated' : (spec.runtime = 'python312' ? 'Python 3.12' : (spec.runtime = 'nodejs20' ? 'Node.js 20' : spec.runtime)))
+        spec.runtime = 'nodejs18' ? 'Node.js 18 - deprecated' : (spec.runtime = 'python312' ? 'Python 3.12' : (spec.runtime = 'nodejs20' ? 'Node.js 20' : spec.runtime)))
     - name: header.sourceType
       source: 'spec.source.gitRepository ? "Git Repository" : "Inline Editor"'
     - name: header.status
@@ -584,7 +584,6 @@ data:
       'Source Type': Source Type
       spec.runtime.nodejs18: Node.js 18 - deprecated
       spec.runtime.nodejs20: Node.js 20
-      spec.runtime.python39: Python 3.9 - deprecated
       spec.runtime.python312: Python 3.12
       spec.resourceConfiguration.build: Build
       spec.resourceConfiguration.function: Function
