@@ -13,12 +13,6 @@ services:
       context: ../
       dockerfile: components/serverless/deploy/jobinit/Dockerfile
   # runtimes
-  function_runtime_nodejs18:
-    image: localhost:5000/kyma-project/function-runtime-nodejs18:local
-    platform: "linux/amd64"
-    build:
-      context: ../components/runtimes/nodejs
-      dockerfile: nodejs18/Dockerfile
   function_runtime_nodejs20:
     image: localhost:5000/kyma-project/function-runtime-nodejs20:local
     platform: "linux/amd64"

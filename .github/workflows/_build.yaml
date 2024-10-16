@@ -72,15 +72,6 @@ jobs:
       dockerfile: components/serverless/deploy/jobinit/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
 
-  build-nodejs18:
-    needs: compute-tags
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: function-runtime-nodejs18
-      dockerfile: nodejs18/Dockerfile
-      context: components/runtimes/nodejs
-      tags: ${{ needs.compute-tags.outputs.tags }}
-
   build-nodejs20:
     needs: compute-tags
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main

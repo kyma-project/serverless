@@ -370,10 +370,8 @@ spec:
                 type: object
               runtime:
                 description: Specifies the runtime of the Function. The available
-                  values are `nodejs18` - deprecated, `nodejs20`,
-                  and `python312`.
+                  values are `nodejs20` and `python312`.
                 enum:
-                - nodejs18
                 - nodejs20
                 - python312
                 type: string

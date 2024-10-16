@@ -93,16 +93,6 @@ updates:
       - dependency-name: kyma-project/prod/external/library/python
         update-types: ["version-update:semver-minor"]
   - package-ecosystem: "docker"
-    directory: "/components/runtimes/nodejs/nodejs18"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "nodejs18"
-      include: "scope"
-  - package-ecosystem: "docker"
     directory: "/components/runtimes/nodejs/nodejs20"
     labels:
       - "area/dependency"
@@ -128,20 +118,6 @@ updates:
         patterns:
           - "opentelemetry-*"
 
-  - package-ecosystem: "npm"
-    directory: "/components/runtimes/nodejs/nodejs18"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "npm-nodejs18"
-      include: "scope"
-    groups:
-      opentelemetry:
-        patterns:
-          - "@opentelemetry/*"
   - package-ecosystem: "npm"
     directory: "/components/runtimes/nodejs/nodejs20"
     labels:
