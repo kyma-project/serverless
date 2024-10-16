@@ -86,10 +86,6 @@ global:
       name: "registry-init"
       version: "v20240506-57d31b1d"
       directory: "prod"
-    function_runtime_nodejs18:
-      name: "function-runtime-nodejs18"
-      version: "main"
-      directory: "prod"
     function_runtime_nodejs20:
       name: "function-runtime-nodejs20"
       version: "main"

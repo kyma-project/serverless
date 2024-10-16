@@ -18,8 +18,6 @@ issues:
   max-same-issues: 0
   exclude:
     #exclude our internal deprecated fields
-    - "^SA1019: v1alpha2.Nodejs18 is deprecated:"
-    - "^SA1019: serverlessv1alpha2.Nodejs18 is deprecated:"
     - "^SA1019: status.RuntimeImageOverride is deprecated:"
     - "^SA1019: s.instance.Spec.Template is deprecated:"
     - "^SA1019: s.instance.Spec.Template.Labels is deprecated:"

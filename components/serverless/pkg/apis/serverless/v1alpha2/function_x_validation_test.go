@@ -299,16 +299,6 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				},
 			},
 		},
-		"allowed runtime: nodejs18": {
-			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: fixMetadata,
-				Spec: serverlessv1alpha2.FunctionSpec{
-					Runtime: serverlessv1alpha2.NodeJs18,
-					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
-				},
-			},
-		},
 		"allowed runtime: nodejs20": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
