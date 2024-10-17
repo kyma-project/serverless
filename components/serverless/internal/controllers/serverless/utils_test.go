@@ -17,7 +17,7 @@ func Test_calculateGitImageTag(t *testing.T) {
 	}{
 		{
 			name:      "should use runtime",
-			baseImage: "nodejs18:test",
+			baseImage: "nodejs20:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -29,34 +29,14 @@ func Test_calculateGitImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime: "nodejs20",
+					Runtime: "nodejs22",
 				},
 			},
-			want: "5093e1e9a1b0c94c513bbec23b8291240ba988872353a024d1b0d5b2901d421c",
+			want: "da01b5198b936f587379f6311ffc1a557e2d680c2fc88a61e6777fbc1d3dac48",
 		},
 		{
 			name:      "should use runtimeOverride",
-			baseImage: "nodejs18:test",
-			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					UID: "fn-uuid",
-				},
-				Spec: serverlessv1alpha2.FunctionSpec{
-					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{
-							Source:       "fn-source",
-							Dependencies: "",
-						},
-					},
-					Runtime:              "nodejs18",
-					RuntimeImageOverride: "nodejs20",
-				},
-			},
-			want: "5093e1e9a1b0c94c513bbec23b8291240ba988872353a024d1b0d5b2901d421c",
-		},
-		{
-			name:      "should use runtime when runtimeOverride is empty",
-			baseImage: "nodejs18:test",
+			baseImage: "nodejs20:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -69,10 +49,30 @@ func Test_calculateGitImageTag(t *testing.T) {
 						},
 					},
 					Runtime:              "nodejs20",
+					RuntimeImageOverride: "nodejs22",
+				},
+			},
+			want: "da01b5198b936f587379f6311ffc1a557e2d680c2fc88a61e6777fbc1d3dac48",
+		},
+		{
+			name:      "should use runtime when runtimeOverride is empty",
+			baseImage: "nodejs20:test",
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					UID: "fn-uuid",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source:       "fn-source",
+							Dependencies: "",
+						},
+					},
+					Runtime:              "nodejs22",
 					RuntimeImageOverride: "",
 				},
 			},
-			want: "5093e1e9a1b0c94c513bbec23b8291240ba988872353a024d1b0d5b2901d421c",
+			want: "da01b5198b936f587379f6311ffc1a557e2d680c2fc88a61e6777fbc1d3dac48",
 		},
 	}
 	for _, tt := range tests {
@@ -91,7 +91,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 	}{
 		{
 			name:      "should use runtime",
-			baseImage: "nodejs18:test",
+			baseImage: "nodejs20:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -103,7 +103,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime: "nodejs20",
+					Runtime: "nodejs22",
 				},
 				Status: serverlessv1alpha2.FunctionStatus{
 					Commit: "commit",
@@ -112,37 +112,11 @@ func Test_calculateInlineImageTag(t *testing.T) {
 					},
 				},
 			},
-			want: "3773f4e6b48ccb71c2a43f4a7cbbeb98333701d823d8ff5917d8f7373c7abbcd",
+			want: "22c34628c8c23fa46e86769359820d6809390f4064b51ced1f9529d4855af5a4",
 		},
 		{
 			name:      "should use runtimeOverride",
-			baseImage: "nodejs18:test",
-			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					UID: "fn-uuid",
-				},
-				Spec: serverlessv1alpha2.FunctionSpec{
-					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{
-							Source:       "fn-source",
-							Dependencies: "",
-						},
-					},
-					Runtime:              "nodejs18",
-					RuntimeImageOverride: "nodejs20",
-				},
-				Status: serverlessv1alpha2.FunctionStatus{
-					Commit: "commit",
-					Repository: serverlessv1alpha2.Repository{
-						BaseDir: "baseDir",
-					},
-				},
-			},
-			want: "3773f4e6b48ccb71c2a43f4a7cbbeb98333701d823d8ff5917d8f7373c7abbcd",
-		},
-		{
-			name:      "should use runtime instead of runtimeOverride",
-			baseImage: "nodejs18:test",
+			baseImage: "nodejs20:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -155,6 +129,32 @@ func Test_calculateInlineImageTag(t *testing.T) {
 						},
 					},
 					Runtime:              "nodejs20",
+					RuntimeImageOverride: "nodejs22",
+				},
+				Status: serverlessv1alpha2.FunctionStatus{
+					Commit: "commit",
+					Repository: serverlessv1alpha2.Repository{
+						BaseDir: "baseDir",
+					},
+				},
+			},
+			want: "22c34628c8c23fa46e86769359820d6809390f4064b51ced1f9529d4855af5a4",
+		},
+		{
+			name:      "should use runtime instead of runtimeOverride",
+			baseImage: "nodejs20:test",
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					UID: "fn-uuid",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source:       "fn-source",
+							Dependencies: "",
+						},
+					},
+					Runtime:              "nodejs22",
 					RuntimeImageOverride: "",
 				},
 				Status: serverlessv1alpha2.FunctionStatus{
@@ -164,7 +164,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 					},
 				},
 			},
-			want: "3773f4e6b48ccb71c2a43f4a7cbbeb98333701d823d8ff5917d8f7373c7abbcd",
+			want: "22c34628c8c23fa46e86769359820d6809390f4064b51ced1f9529d4855af5a4",
 		},
 	}
 	for _, tt := range tests {

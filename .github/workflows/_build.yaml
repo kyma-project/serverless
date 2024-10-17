@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       tag:
-        description: 'Additional tag for built images'
+        description: "Additional tag for built images"
         required: false
         type: string
         default: ""
@@ -40,13 +40,13 @@ jobs:
       dockerfile: components/operator/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
 
-#  build-gitserver:
-#    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-#    with:
-#      name: gitserver
-#      dockerfile: Dockerfile
-#      context: tests/gitserver
-#      tags: ${{ needs.compute-tags.outputs.tags }}
+  #  build-gitserver:
+  #    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+  #    with:
+  #      name: gitserver
+  #      dockerfile: Dockerfile
+  #      context: tests/gitserver
+  #      tags: ${{ needs.compute-tags.outputs.tags }}
 
   build-serverless-controller:
     needs: compute-tags
@@ -81,6 +81,14 @@ jobs:
       context: components/runtimes/nodejs
       tags: ${{ needs.compute-tags.outputs.tags }}
 
+  build-nodejs22:
+    needs: compute-tags
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: function-runtime-nodejs22
+      dockerfile: nodejs22/Dockerfile
+      context: components/runtimes/nodejs
+      tags: ${{ needs.compute-tags.outputs.tags }}
 
   build-python312:
     needs: compute-tags
