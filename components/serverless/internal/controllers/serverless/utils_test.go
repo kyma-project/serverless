@@ -112,7 +112,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 					},
 				},
 			},
-			want: "3773f4e6b48ccb71c2a43f4a7cbbeb98333701d823d8ff5917d8f7373c7abbcd",
+			want: "22c34628c8c23fa46e86769359820d6809390f4064b51ced1f9529d4855af5a4",
 		},
 		{
 			name:      "should use runtimeOverride",
@@ -138,7 +138,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 					},
 				},
 			},
-			want: "3773f4e6b48ccb71c2a43f4a7cbbeb98333701d823d8ff5917d8f7373c7abbcd",
+			want: "22c34628c8c23fa46e86769359820d6809390f4064b51ced1f9529d4855af5a4",
 		},
 		{
 			name:      "should use runtime instead of runtimeOverride",
@@ -164,7 +164,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 					},
 				},
 			},
-			want: "3773f4e6b48ccb71c2a43f4a7cbbeb98333701d823d8ff5917d8f7373c7abbcd",
+			want: "22c34628c8c23fa46e86769359820d6809390f4064b51ced1f9529d4855af5a4",
 		},
 	}
 	for _, tt := range tests {
