@@ -346,7 +346,7 @@ func TestValidation_Invalid(t *testing.T) {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
-					Runtime: serverlessv1alpha2.NodeJs20,
+					Runtime: serverlessv1alpha2.NodeJs22,
 					Source: serverlessv1alpha2.Source{
 						Inline: &serverlessv1alpha2.InlineSource{
 							Source:       "source code",
@@ -394,7 +394,7 @@ func TestValidation_Invalid(t *testing.T) {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
-					Runtime: serverlessv1alpha2.NodeJs20,
+					Runtime: serverlessv1alpha2.NodeJs22,
 					Source: serverlessv1alpha2.Source{
 						GitRepository: &serverlessv1alpha2.GitRepositorySource{
 							URL: "abc",
@@ -408,7 +408,7 @@ func TestValidation_Invalid(t *testing.T) {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
-					Runtime: serverlessv1alpha2.NodeJs20,
+					Runtime: serverlessv1alpha2.NodeJs22,
 					Source: serverlessv1alpha2.Source{
 						GitRepository: &serverlessv1alpha2.GitRepositorySource{
 							URL: "github.com/kyma-project/kyma.git",
@@ -422,7 +422,7 @@ func TestValidation_Invalid(t *testing.T) {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
-					Runtime: serverlessv1alpha2.NodeJs20,
+					Runtime: serverlessv1alpha2.NodeJs22,
 					Source: serverlessv1alpha2.Source{
 						GitRepository: &serverlessv1alpha2.GitRepositorySource{
 							URL: "g0t@github.com:kyma-project/kyma.git",
@@ -519,7 +519,7 @@ func TestValidation_Valid(t *testing.T) {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
-					Runtime: serverlessv1alpha2.NodeJs20,
+					Runtime: serverlessv1alpha2.NodeJs22,
 					Source: serverlessv1alpha2.Source{
 						Inline: &serverlessv1alpha2.InlineSource{
 							Source:       "source code",
@@ -547,7 +547,7 @@ func TestValidation_Valid(t *testing.T) {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
-					Runtime: serverlessv1alpha2.NodeJs20,
+					Runtime: serverlessv1alpha2.NodeJs22,
 					Source: serverlessv1alpha2.Source{
 						Inline: &serverlessv1alpha2.InlineSource{
 							Source: "source code",
@@ -560,7 +560,7 @@ func TestValidation_Valid(t *testing.T) {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
-					Runtime: serverlessv1alpha2.NodeJs20,
+					Runtime: serverlessv1alpha2.NodeJs22,
 					Source: serverlessv1alpha2.Source{
 						GitRepository: &serverlessv1alpha2.GitRepositorySource{
 							URL: "git@github.com:kyma-project/serverless.git",
@@ -573,7 +573,7 @@ func TestValidation_Valid(t *testing.T) {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
-					Runtime: serverlessv1alpha2.NodeJs20,
+					Runtime: serverlessv1alpha2.NodeJs22,
 					Source: serverlessv1alpha2.Source{
 						GitRepository: &serverlessv1alpha2.GitRepositorySource{
 							URL: "https://github.com/kyma-project/serverless.git",

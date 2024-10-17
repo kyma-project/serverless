@@ -39,6 +39,18 @@ func TestGetRuntimeConfig(t *testing.T) {
 				RuntimeEnvs: []corev1.EnvVar{
 					{Name: "FUNC_RUNTIME", Value: "nodejs20"}},
 			},
+		},
+		"nodejs22": {
+			name:    "nodejs22 config",
+			runtime: serverlessv1alpha2.NodeJs22,
+			want: runtime.Config{
+				Runtime:                 serverlessv1alpha2.NodeJs22,
+				DependencyFile:          "package.json",
+				FunctionFile:            "handler.js",
+				DockerfileConfigMapName: "dockerfile-nodejs22",
+				RuntimeEnvs: []corev1.EnvVar{
+					{Name: "FUNC_RUNTIME", Value: "nodejs22"}},
+			},
 		}} {
 		t.Run(testName, func(t *testing.T) {
 			//given
