@@ -102,6 +102,16 @@ updates:
     commit-message:
       prefix: "nodejs20"
       include: "scope"
+  - package-ecosystem: "docker"
+    directory: "/components/runtimes/nodejs/nodejs22"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "nodejs22"
+      include: "scope"
 
   - package-ecosystem: "pip"
     directory: "/components/runtimes/python/python312"

@@ -34,8 +34,8 @@ func HanaClientTest(restConfig *rest.Config, cfg internal.Config, logf *logrus.E
 		return nil, errors.Wrap(err, "while creating k8s CoreV1Client")
 	}
 
-	nodejs18Logger := logf.WithField(runtimeKey, "nodejs18")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
+	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
 
 	genericContainer := utils.Container{
 		DynamicCli:  dynamicCli,
@@ -45,9 +45,9 @@ func HanaClientTest(restConfig *rest.Config, cfg internal.Config, logf *logrus.E
 		Log:         logf,
 	}
 
-	nodejs18Fn := function.NewFunction("hana-nodejs18", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs18Logger))
-
 	nodejs20Fn := function.NewFunction("hana-nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
+
+	nodejs22Fn := function.NewFunction("hana-nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
 
 	logf.Infof("Testing function in namespace: %s", cfg.Namespace)
 
@@ -60,13 +60,13 @@ func HanaClientTest(restConfig *rest.Config, cfg internal.Config, logf *logrus.E
 	return executor.NewSerialTestRunner(logf, "Runtime test",
 		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
 		executor.NewParallelRunner(logf, "Fn tests",
-			executor.NewSerialTestRunner(nodejs18Logger, "NodeJS18 test",
-				function.CreateFunction(nodejs18Logger, nodejs18Fn, "Create NodeJS18 Function", runtimes.NodeJSFunctionUsingHanaClient(serverlessv1alpha2.NodeJs18)),
-				assertion.NewHTTPCheck(nodejs18Logger, "Testing hana-client in nodejs18 function", nodejs18Fn.FunctionURL, poll, "OK"),
-			),
 			executor.NewSerialTestRunner(nodejs20Logger, "NodeJS20 test",
 				function.CreateFunction(nodejs20Logger, nodejs20Fn, "Create NodeJS20 Function", runtimes.NodeJSFunctionUsingHanaClient(serverlessv1alpha2.NodeJs20)),
-				assertion.NewHTTPCheck(nodejs18Logger, "Testing hana-client in nodejs20 function", nodejs20Fn.FunctionURL, poll, "OK"),
+				assertion.NewHTTPCheck(nodejs20Logger, "Testing hana-client in nodejs20 function", nodejs20Fn.FunctionURL, poll, "OK"),
+			),
+			executor.NewSerialTestRunner(nodejs22Logger, "NodeJS22 test",
+				function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.NodeJSFunctionUsingHanaClient(serverlessv1alpha2.NodeJs22)),
+				assertion.NewHTTPCheck(nodejs22Logger, "Testing hana-client in nodejs22 function", nodejs22Fn.FunctionURL, poll, "OK"),
 			),
 		),
 	), nil
