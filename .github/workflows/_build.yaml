@@ -40,6 +40,7 @@ jobs:
       dockerfile: components/operator/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
 
+  # https://github.com/kyma-project/serverless/issues/998#issuecomment-2191556454
   #  build-gitserver:
   #    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
   #    with:
