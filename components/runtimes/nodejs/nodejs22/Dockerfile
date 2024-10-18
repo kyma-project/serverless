@@ -1,6 +1,5 @@
 FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.20.3
 
-# https://pkgs.alpinelinux.org/packages?name=nodejs&branch=v3.20&repo=main&arch=&maintainer=
 ENV NODE_VERSION=22.10.0
 
 
