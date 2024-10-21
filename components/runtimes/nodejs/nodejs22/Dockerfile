@@ -3,13 +3,13 @@ FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.20.3
 ENV NODE_VERSION=22.10.0
 
 
-RUN apk add --no-cache openssl3
-RUN wget -o node.tar.xz https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64-musl.tar.xz && \
+RUN apk add --no-cache openssl3 libgcc libstdc++
+RUN wget -O node.tar.xz https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64-musl.tar.xz && \
   tar -xJf node.tar.xz && \
-  mv node-v${NODE_VERSION}-linux-x64-musl/bin /usr && \
-  mv node-v${NODE_VERSION}-linux-x64-musl/include /usr && \
-  mv node-v${NODE_VERSION}-linux-x64-musl/lib /usr && \
-  mv node-v${NODE_VERSION}-linux-x64-musl/share /usr && \
+  cp -RT node-v${NODE_VERSION}-linux-x64-musl/bin /usr/bin && \
+  cp -RT node-v${NODE_VERSION}-linux-x64-musl/include /usr/include && \
+  cp -RT node-v${NODE_VERSION}-linux-x64-musl/lib /usr/lib && \
+  cp -RT node-v${NODE_VERSION}-linux-x64-musl/share /usr/share && \
   rm -rf node-v${NODE_VERSION}-linux-x64-musl && \
   rm node.tar.xz 
 
