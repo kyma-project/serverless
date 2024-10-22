@@ -32,7 +32,7 @@ func Test_calculateGitImageTag(t *testing.T) {
 					Runtime: "nodejs22",
 				},
 			},
-			want: "da01b5198b936f587379f6311ffc1a557e2d680c2fc88a61e6777fbc1d3dac48",
+			want: "5ad80edc898a5d2bb436fddd949a668574ad28b9830c0d0d0eadaf524b271ee0",
 		},
 		{
 			name:      "should use runtimeOverride",
@@ -52,7 +52,7 @@ func Test_calculateGitImageTag(t *testing.T) {
 					RuntimeImageOverride: "nodejs22",
 				},
 			},
-			want: "da01b5198b936f587379f6311ffc1a557e2d680c2fc88a61e6777fbc1d3dac48",
+			want: "5ad80edc898a5d2bb436fddd949a668574ad28b9830c0d0d0eadaf524b271ee0",
 		},
 		{
 			name:      "should use runtime when runtimeOverride is empty",
@@ -72,7 +72,7 @@ func Test_calculateGitImageTag(t *testing.T) {
 					RuntimeImageOverride: "",
 				},
 			},
-			want: "da01b5198b936f587379f6311ffc1a557e2d680c2fc88a61e6777fbc1d3dac48",
+			want: "5ad80edc898a5d2bb436fddd949a668574ad28b9830c0d0d0eadaf524b271ee0",
 		},
 	}
 	for _, tt := range tests {
