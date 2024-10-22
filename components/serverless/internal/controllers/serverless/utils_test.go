@@ -17,7 +17,7 @@ func Test_calculateGitImageTag(t *testing.T) {
 	}{
 		{
 			name:      "should use runtime",
-			baseImage: "nodejs20:test",
+			baseImage: "nodejs22:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -36,7 +36,7 @@ func Test_calculateGitImageTag(t *testing.T) {
 		},
 		{
 			name:      "should use runtimeOverride",
-			baseImage: "nodejs20:test",
+			baseImage: "nodejs22:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -48,7 +48,7 @@ func Test_calculateGitImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime:              "nodejs20",
+					Runtime:              "nodejs22",
 					RuntimeImageOverride: "nodejs22",
 				},
 			},
@@ -56,7 +56,7 @@ func Test_calculateGitImageTag(t *testing.T) {
 		},
 		{
 			name:      "should use runtime when runtimeOverride is empty",
-			baseImage: "nodejs20:test",
+			baseImage: "nodejs22:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -91,7 +91,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 	}{
 		{
 			name:      "should use runtime",
-			baseImage: "nodejs20:test",
+			baseImage: "nodejs22:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -116,7 +116,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 		},
 		{
 			name:      "should use runtimeOverride",
-			baseImage: "nodejs20:test",
+			baseImage: "nodejs22:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -128,7 +128,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime:              "nodejs20",
+					Runtime:              "nodejs22",
 					RuntimeImageOverride: "nodejs22",
 				},
 				Status: serverlessv1alpha2.FunctionStatus{
@@ -142,7 +142,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 		},
 		{
 			name:      "should use runtime instead of runtimeOverride",
-			baseImage: "nodejs20:test",
+			baseImage: "nodejs22:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
