@@ -228,8 +228,9 @@ spec:
                   build Job.
                 properties:
                   build:
-                    description: Specifies resources requested by the build Job's
-                      Pod.
+                    description: |-
+                      Deprecated: Specifies resources requested by the build Job's Pod.
+                      This setting should be removed from a future version when functions won't require building images.
                     properties:
                       profile:
                         description: |-
@@ -377,7 +378,7 @@ spec:
                 type: object
               runtime:
                 description: Specifies the runtime of the Function. The available
-                  values are `nodejs20` and `python312`.
+                  values are `nodejs20`, and `python312`.
                 enum:
                 - nodejs20
                 - python312
@@ -388,7 +389,9 @@ spec:
                 type: string
               scaleConfig:
                 description: |-
+                  Deprecated:
                   Defines the minimum and maximum number of Function's Pods to run at a time.
+                  This setting should be removed from a future version, serverless will no longer automatically create HPA.
                   When it is configured, a HorizontalPodAutoscaler will be deployed and will control the **Replicas** field
                   to scale the Function based on the CPU utilisation.
                 properties:
@@ -542,7 +545,9 @@ spec:
                   from which the Function is built.
                 type: string
               buildResourceProfile:
-                description: Specifies the preset used for the build job
+                description: |-
+                  Deprecated: Specifies the preset used for the build job
+                  This setting should be removed from a future version when functions won't require building images.
                 type: string
               commit:
                 description: Specifies the commit hash used to build the Function.
