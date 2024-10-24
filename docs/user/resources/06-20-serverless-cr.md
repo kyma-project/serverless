@@ -61,17 +61,17 @@ For details, see the [Serverless specification file](https://github.com/kyma-pro
 
 | Parameter                                 | Type    | Description |
 |-------------------------------------------|---------|-------------|
-| **dockerRegistry**                        | object  |             |
+| **dockerRegistry**                        | object  | **Deprecated: a future serverless version won't build images**             |
 | **dockerRegistry.&#x200b;enableInternal** | boolean | When set to `true`, the internal Docker registry is enabled           |
 | **dockerRegistry.&#x200b;secretName**     | string  | Secret used for configuration of the Docker registry            |
 | **eventing**                              | object  |             |
 | **eventing.&#x200b;endpoint** (required)  | string  | Used Eventing endpoint            |
 | **tracing**                               | object  |             |
 | **tracing.&#x200b;endpoint** (required)   | string  | Used Tracing endpoint            |
-| **targetCPUUtilizationPercentage**        | string  | Sets a custom CPU utilization threshold for scaling Function Pods            |
+| **targetCPUUtilizationPercentage**        | string  | **Deprecated: a future serverless version won't create HPAs** Sets a custom CPU utilization threshold for scaling Function Pods            |
 | **functionRequeueDuration**               | string  | Sets the requeue duration for Function. By default, the Function associated with the default configuration is requeued every 5 minutes            |
-| **functionBuildExecutorArgs**             | string  | Specifies the arguments passed to the Function build executor            |
-| **functionBuildMaxSimultaneousJobs**      | string  | A number of simultaneous jobs that can run at the same time. The default value is `5`            |
+| **functionBuildExecutorArgs**             | string  | **Deprecated: a future serverless version won't build images** Specifies the arguments passed to the Function build executor            |
+| **functionBuildMaxSimultaneousJobs**      | string  | **Deprecated: a future serverless version won't build images** A number of simultaneous jobs that can run at the same time. The default value is `5`            |
 | **healthzLivenessTimeout**                | string  | Sets the timeout for the Function health check. The default value in seconds is `10`            |
 | **defaultBuildJobPreset**                 | string  | Configures the default build Job preset to be used            |
 | **defaultRuntimePodPreset**               | string  | Configures the default runtime Pod preset to be used            |

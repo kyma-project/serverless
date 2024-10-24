@@ -59,12 +59,17 @@ spec:
             description: ServerlessSpec defines the desired state of Serverless
             properties:
               defaultBuildJobPreset:
-                description: Configures the default build Job preset to be used
+                description: |-
+                  Deprecated: Configures the default build Job preset to be used
+                  This setting should be removed from a future version when functions won't require building images.
                 type: string
               defaultRuntimePodPreset:
                 description: Configures the default runtime Pod preset to be used
                 type: string
               dockerRegistry:
+                description: |-
+                  Deprecated: Defines docker registry where built images should be pushed
+                  This setting should be removed from a future version when functions won't require building images.
                 properties:
                   enableInternal:
                     description: When set to true, the internal Docker registry is
@@ -83,12 +88,14 @@ spec:
                 - endpoint
                 type: object
               functionBuildExecutorArgs:
-                description: Specifies the arguments passed to the Function build
-                  executor
+                description: |-
+                  Deprecated: Specifies the arguments passed to the Function build executor
+                  This setting should be removed from a future version when functions won't require building images.
                 type: string
               functionBuildMaxSimultaneousJobs:
-                description: A number of simultaneous jobs that can run at the same
-                  time. The default value is `5`
+                description: |-
+                  Deprecated: A number of simultaneous jobs that can run at the same time. The default value is `5`
+                  This setting should be removed from a future version when functions won't require building images.
                 type: string
               functionRequeueDuration:
                 description: Sets the requeue duration for Function. By default, the
@@ -100,8 +107,9 @@ spec:
                   value in seconds is `10`
                 type: string
               targetCPUUtilizationPercentage:
-                description: Sets a custom CPU utilization threshold for scaling Function
-                  Pods
+                description: |-
+                  Deprecated: Sets a custom CPU utilization threshold for scaling Function Pods
+                  This setting should be removed from a future version when functions won't require building images.
                 type: string
               tracing:
                 description: Used Tracing endpoint

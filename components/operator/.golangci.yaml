@@ -19,3 +19,9 @@ issues:
   exclude:
     # function for future usage
     - "^func `stopWithErrorOrRequeue` is unused$"
+    - "^SA1019: result.DockerRegistry is deprecated:"
+    - "^SA1019: spec.TargetCPUUtilizationPercentage is deprecated:"
+    - "^SA1019: spec.FunctionBuildExecutorArgs is deprecated:"
+    - "^SA1019: spec.FunctionBuildMaxSimultaneousJobs is deprecated:"
+    - "^SA1019: spec.DefaultBuildJobPreset is deprecated:"
+    - "^SA1019: s.instance.Spec.DockerRegistry is deprecated:"
