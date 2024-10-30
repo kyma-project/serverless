@@ -1,9 +1,9 @@
 {
-  "name": "nodejs18-runtime",
+  "name": "nodejs22-runtime",
   "version": "0.1.0",
-  "description": "NodeJS v18 container for kyma serverless",
+  "description": "NodeJS v22 container for kyma serverless",
   "engines": {
-    "node": ">= 18.0.0"
+    "node": ">= 22.0.0"
   },
   "scripts": {
     "start": "node server.mjs"

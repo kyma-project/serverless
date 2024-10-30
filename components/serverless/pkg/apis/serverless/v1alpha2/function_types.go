@@ -26,9 +26,7 @@ type Runtime string
 
 const (
 	Python312 Runtime = "python312"
-	// Deprecated: Nodejs18 will be removed soon
-	NodeJs18 Runtime = "nodejs18"
-	NodeJs20 Runtime = "nodejs20"
+	NodeJs20  Runtime = "nodejs20"
 )
 
 type FunctionType string
@@ -134,7 +132,8 @@ type ScaleConfig struct {
 }
 
 type ResourceConfiguration struct {
-	// Specifies resources requested by the build Job's Pod.
+	// Deprecated: Specifies resources requested by the build Job's Pod.
+	// This setting should be removed from a future version where Functions won't require building images.
 	// +optional
 	// +kubebuilder:validation:XValidation:message="Use profile or resources",rule="has(self.profile) && !has(self.resources) || !has(self.profile) && has(self.resources)"
 	// +kubebuilder:validation:XValidation:message="Invalid profile, please use one of: ['local-dev','slow','normal','fast']",rule="(!has(self.profile) || self.profile in ['local-dev','slow','normal','fast'])"
@@ -167,8 +166,8 @@ const (
 
 // Defines the desired state of the Function
 type FunctionSpec struct {
-	// Specifies the runtime of the Function. The available values are `nodejs18` - deprecated, `nodejs20`, and `python312`.
-	// +kubebuilder:validation:Enum=nodejs18;nodejs20;python312;
+	// Specifies the runtime of the Function. The available values are `nodejs20`, and `python312`.
+	// +kubebuilder:validation:Enum=nodejs20;python312;
 	Runtime Runtime `json:"runtime"`
 
 	// Specifies the runtime image used instead of the default one.
@@ -190,7 +189,9 @@ type FunctionSpec struct {
 	// +optional
 	ResourceConfiguration *ResourceConfiguration `json:"resourceConfiguration,omitempty"`
 
+	// Deprecated:
 	// Defines the minimum and maximum number of Function's Pods to run at a time.
+	// This setting should be removed from a future version, where Serverless will no longer automatically create HPA.
 	// When it is configured, a HorizontalPodAutoscaler will be deployed and will control the **Replicas** field
 	// to scale the Function based on the CPU utilisation.
 	// +optional
@@ -290,7 +291,8 @@ type FunctionStatus struct {
 	Runtime Runtime `json:"runtime,omitempty"`
 	// Specifies the preset used for the function
 	FunctionResourceProfile string `json:"functionResourceProfile,omitempty"`
-	// Specifies the preset used for the build job
+	// Deprecated: Specifies the preset used for the build job
+	// This setting should be removed from a future version where Functions won't require building images.
 	BuildResourceProfile string `json:"buildResourceProfile,omitempty"`
 	// Specifies an array of conditions describing the status of the parser.
 	Conditions []Condition `json:"conditions,omitempty"`
