@@ -73,7 +73,7 @@ For details, see the [Serverless specification file](https://github.com/kyma-pro
 | **functionBuildExecutorArgs**             | string  | **Deprecated: a future Serverless version won't build images** Specifies the arguments passed to the Function build executor            |
 | **functionBuildMaxSimultaneousJobs**      | string  | **Deprecated: a future Serverless version won't build images** A number of simultaneous jobs that can run at the same time. The default value is `5`            |
 | **healthzLivenessTimeout**                | string  | Sets the timeout for the Function health check. The default value in seconds is `10`            |
-| **defaultBuildJobPreset**                 | string  | Configures the default build Job preset to be used            |
+| **defaultBuildJobPreset**                 | string  | **Deprecated: a future Serverless version won't build images** Configures the default build Job preset to be used            |
 | **defaultRuntimePodPreset**               | string  | Configures the default runtime Pod preset to be used            |
 
 **Status:**
