@@ -391,7 +391,7 @@ spec:
                 description: |-
                   Deprecated:
                   Defines the minimum and maximum number of Function's Pods to run at a time.
-                  This setting should be removed from a future version, serverless will no longer automatically create HPA.
+                  This setting should be removed from a future version, where Serverless will no longer automatically create HPA.
                   When it is configured, a HorizontalPodAutoscaler will be deployed and will control the **Replicas** field
                   to scale the Function based on the CPU utilisation.
                 properties:
