@@ -13,7 +13,7 @@ Later, the Serverless API was extended by the `Scale` subresource, which allows 
 However, there are some implementation conflicts between the two features. This is a design and an implementation plan to unify the UX while using Functions as scaled resources.
 
 > [!CAUTION]
-> The `spec.ScaleConfig` field will be removed in a future serverless version, users will have to create HPA manually
+> The `spec.ScaleConfig` field will be removed in a future Serverless version, where you must create HPA manually
 
 ### Goals
 - Support Function scale subresource and `spec.ScaleConfig` without conflicts.
