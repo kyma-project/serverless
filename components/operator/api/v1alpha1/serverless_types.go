@@ -37,19 +37,25 @@ type ServerlessSpec struct {
 	// Used Tracing endpoint
 	Tracing *Endpoint `json:"tracing,omitempty"`
 	// Used Eventing endpoint
-	Eventing       *Endpoint       `json:"eventing,omitempty"`
+	Eventing *Endpoint `json:"eventing,omitempty"`
+	// Deprecated: Defines docker registry where built images should be pushed
+	// This setting should be removed from a future version where Functions won't require building images.
 	DockerRegistry *DockerRegistry `json:"dockerRegistry,omitempty"`
-	// Sets a custom CPU utilization threshold for scaling Function Pods
+	// Deprecated: Sets a custom CPU utilization threshold for scaling Function Pods
+	// This setting should be removed from a future version where Functions won't require building images.
 	TargetCPUUtilizationPercentage string `json:"targetCPUUtilizationPercentage,omitempty"`
 	// Sets the requeue duration for Function. By default, the Function associated with the default configuration is requeued every 5 minutes
 	FunctionRequeueDuration string `json:"functionRequeueDuration,omitempty"`
-	// Specifies the arguments passed to the Function build executor
+	// Deprecated: Specifies the arguments passed to the Function build executor
+	// This setting should be removed from a future version where Functions won't require building images.
 	FunctionBuildExecutorArgs string `json:"functionBuildExecutorArgs,omitempty"`
-	// A number of simultaneous jobs that can run at the same time. The default value is `5`
+	// Deprecated: A number of simultaneous jobs that can run at the same time. The default value is `5`
+	// This setting should be removed from a future version where Functions won't require building images.
 	FunctionBuildMaxSimultaneousJobs string `json:"functionBuildMaxSimultaneousJobs,omitempty"`
 	// Sets the timeout for the Function health check. The default value in seconds is `10`
 	HealthzLivenessTimeout string `json:"healthzLivenessTimeout,omitempty"`
-	// Configures the default build Job preset to be used
+	// Deprecated: Configures the default build Job preset to be used
+	// This setting should be removed from a future version where Functions won't require building images.
 	DefaultBuildJobPreset string `json:"defaultBuildJobPreset,omitempty"`
 	// Configures the default runtime Pod preset to be used
 	DefaultRuntimePodPreset string `json:"defaultRuntimePodPreset,omitempty"`
