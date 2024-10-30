@@ -11,6 +11,7 @@ import (
 	v1validation "k8s.io/apimachinery/pkg/apis/meta/v1/validation"
 	utilvalidation "k8s.io/apimachinery/pkg/util/validation"
 	"k8s.io/apimachinery/pkg/util/validation/field"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"strings"
 )
 
@@ -45,7 +46,7 @@ func stateFnValidateFunction(_ context.Context, r *reconciler, s *systemState) (
 	if len(validationResults) != 0 {
 		msg := strings.Join(validationResults, ". ")
 		cond := createValidationFailedCondition(msg)
-		r.result.Requeue = false
+		r.result = ctrl.Result{Requeue: false}
 		return buildStatusUpdateStateFnWithCondition(cond), nil
 	}
 	return stateFnInitialize, nil
