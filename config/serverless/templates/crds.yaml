@@ -230,7 +230,7 @@ spec:
                   build:
                     description: |-
                       Deprecated: Specifies resources requested by the build Job's Pod.
-                      This setting should be removed from a future version when functions won't require building images.
+                      This setting should be removed from a future version when Functions won't require building images.
                     properties:
                       profile:
                         description: |-
@@ -547,7 +547,7 @@ spec:
               buildResourceProfile:
                 description: |-
                   Deprecated: Specifies the preset used for the build job
-                  This setting should be removed from a future version when functions won't require building images.
+                  This setting should be removed from a future version when Functions won't require building images.
                 type: string
               commit:
                 description: Specifies the commit hash used to build the Function.

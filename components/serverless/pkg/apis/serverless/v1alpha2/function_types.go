@@ -133,7 +133,7 @@ type ScaleConfig struct {
 
 type ResourceConfiguration struct {
 	// Deprecated: Specifies resources requested by the build Job's Pod.
-	// This setting should be removed from a future version when functions won't require building images.
+	// This setting should be removed from a future version when Functions won't require building images.
 	// +optional
 	// +kubebuilder:validation:XValidation:message="Use profile or resources",rule="has(self.profile) && !has(self.resources) || !has(self.profile) && has(self.resources)"
 	// +kubebuilder:validation:XValidation:message="Invalid profile, please use one of: ['local-dev','slow','normal','fast']",rule="(!has(self.profile) || self.profile in ['local-dev','slow','normal','fast'])"
@@ -292,7 +292,7 @@ type FunctionStatus struct {
 	// Specifies the preset used for the function
 	FunctionResourceProfile string `json:"functionResourceProfile,omitempty"`
 	// Deprecated: Specifies the preset used for the build job
-	// This setting should be removed from a future version when functions won't require building images.
+	// This setting should be removed from a future version when Functions won't require building images.
 	BuildResourceProfile string `json:"buildResourceProfile,omitempty"`
 	// Specifies an array of conditions describing the status of the parser.
 	Conditions []Condition `json:"conditions,omitempty"`
