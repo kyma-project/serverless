@@ -145,7 +145,7 @@ You can set a custom target threshold for CPU utilization. The default value is 
 ```
 
 > [!CAUTION]
-> The `spec.targetCPUUtilizationPercentage` field is deprecated and will be removed in a future version of Serverless that disables automatic HPA creation.
+> The `spec.targetCPUUtilizationPercentage` field is deprecated and will be removed in a future version of Serverless, where automatic HPA creation will be disabled.
 
 ## Configure the Function Requeue Duration
 
