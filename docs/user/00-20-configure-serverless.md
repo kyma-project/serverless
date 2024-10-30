@@ -33,7 +33,7 @@ The default configuration of the Serverless Module is following:
    ```
 
 > [!CAUTION]
-> The `spec.dockerRegistry` field is deprecated and will be removed in a future version of Serverless when functions won't require building images.
+> The `spec.dockerRegistry` field is deprecated and will be removed in a future version of Serverless where Functions won't require building images.
 
 ## Configure Docker Registry
 
@@ -174,7 +174,7 @@ Use this label to choose the [arguments](https://github.com/GoogleContainerTools
 ```
 
 > [!CAUTION]
-> The `spec.functionBuildExecutorArgs` field is deprecated and will be removed in a future version of Serverless when functions won't require building images.
+> The `spec.functionBuildExecutorArgs` field is deprecated and will be removed in a future version of Serverless where Functions won't require building images.
 
 ## Configure the Function Build Max Simultaneous Jobs
 
@@ -186,7 +186,7 @@ You can set a custom maximum number of simultaneous jobs which can run at the sa
 ```
 
 > [!CAUTION]
-> The `spec.functionBuildMaxSimultaneousJobs` field is deprecated and will be removed in a future version of Serverless when functions won't require building images.
+> The `spec.functionBuildMaxSimultaneousJobs` field is deprecated and will be removed in a future version of Serverless where Functions won't require building images.
 
 ## Configure the healthz Liveness Timeout
 
@@ -207,7 +207,7 @@ You can configure the default build Job preset to be used.
 ```
 
 > [!CAUTION]
-> The `spec.defaultBuildJobPreset` field is deprecated and will be removed in a future version of Serverless when functions won't require building images.
+> The `spec.defaultBuildJobPreset` field is deprecated and will be removed in a future version of Serverless where Functions won't require building images.
 
 ## Configure the Default Runtime Pod Preset
 

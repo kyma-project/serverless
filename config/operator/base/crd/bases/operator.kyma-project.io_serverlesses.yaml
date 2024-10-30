@@ -61,7 +61,7 @@ spec:
               defaultBuildJobPreset:
                 description: |-
                   Deprecated: Configures the default build Job preset to be used
-                  This setting should be removed from a future version when functions won't require building images.
+                  This setting should be removed from a future version where Functions won't require building images.
                 type: string
               defaultRuntimePodPreset:
                 description: Configures the default runtime Pod preset to be used
@@ -69,7 +69,7 @@ spec:
               dockerRegistry:
                 description: |-
                   Deprecated: Defines docker registry where built images should be pushed
-                  This setting should be removed from a future version when functions won't require building images.
+                  This setting should be removed from a future version where Functions won't require building images.
                 properties:
                   enableInternal:
                     description: When set to true, the internal Docker registry is
@@ -90,12 +90,12 @@ spec:
               functionBuildExecutorArgs:
                 description: |-
                   Deprecated: Specifies the arguments passed to the Function build executor
-                  This setting should be removed from a future version when functions won't require building images.
+                  This setting should be removed from a future version where Functions won't require building images.
                 type: string
               functionBuildMaxSimultaneousJobs:
                 description: |-
                   Deprecated: A number of simultaneous jobs that can run at the same time. The default value is `5`
-                  This setting should be removed from a future version when functions won't require building images.
+                  This setting should be removed from a future version where Functions won't require building images.
                 type: string
               functionRequeueDuration:
                 description: Sets the requeue duration for Function. By default, the
@@ -109,7 +109,7 @@ spec:
               targetCPUUtilizationPercentage:
                 description: |-
                   Deprecated: Sets a custom CPU utilization threshold for scaling Function Pods
-                  This setting should be removed from a future version when functions won't require building images.
+                  This setting should be removed from a future version where Functions won't require building images.
                 type: string
               tracing:
                 description: Used Tracing endpoint
