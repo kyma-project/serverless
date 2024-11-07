@@ -75,6 +75,7 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 func (r *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&serverlessv1alpha2.Function{}).
+		Owns(&appsv1.Deployment{}).
 		Named("function").
 		Complete(r)
 }
