@@ -22,11 +22,14 @@ import (
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/log"
+	"time"
 )
 
 // FunctionReconciler reconciles a Function object
@@ -62,11 +65,44 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 
 	log.Log.Info("function spec", "foo", function.Spec.Foo)
 
-	deployment := constructDeploymentForFunction(&function)
-	if err := r.Create(ctx, deployment); err != nil {
-		log.Log.Error(err, "unable to create Deployment for Function", "deployment", deployment)
-		return ctrl.Result{}, err
+	newDeployment := r.constructDeploymentForFunction(&function)
+
+	currentDeployment := &appsv1.Deployment{}
+	deploymentErr := r.Get(ctx, client.ObjectKey{
+		Namespace: function.Namespace,
+		Name:      fmt.Sprintf("%s-function-deployment", function.Name),
+	}, currentDeployment)
+	if deploymentErr != nil && apierrors.IsNotFound(deploymentErr) {
+		// Define a new Deployment
+		log.Log.Info("Creating a new Deployment", "Deployment.Namespace", newDeployment.Namespace, "Deployment.Name", newDeployment.Name)
+		if err := r.Create(ctx, newDeployment); err != nil {
+			log.Log.Error(err, "Failed to create new Deployment", "Deployment.Namespace", newDeployment.Namespace, "Deployment.Name", newDeployment.Name)
+			return ctrl.Result{}, err
+		}
+		// Requeue the request to ensure the Deployment is created
+		return ctrl.Result{RequeueAfter: time.Minute}, nil
+	} else if deploymentErr != nil {
+		log.Log.Error(deploymentErr, "unable to fetch Deployment for Function")
+		return ctrl.Result{}, deploymentErr
 	}
+
+	// Ensure the Deployment data matches the desired state
+	if currentDeployment.Spec.Template.Annotations["foo"] != newDeployment.Spec.Template.Annotations["foo"] {
+		currentDeployment.Spec.Template.Annotations["foo"] = newDeployment.Spec.Template.Annotations["foo"]
+		if err := r.Update(ctx, currentDeployment); err != nil {
+			log.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", currentDeployment.Namespace, "Deployment.Name", currentDeployment.Name)
+			return ctrl.Result{}, err
+		}
+		// Requeue the request to ensure the Deployment is updated
+		return ctrl.Result{Requeue: true}, nil
+	}
+
+	//// Update Busybox status to reflect that the Deployment is available
+	//busybox.Status.AvailableReplicas = found.Status.AvailableReplicas
+	//if err := r.Status().Update(ctx, busybox); err != nil {
+	//	log.Error(err, "Failed to update Busybox status")
+	//	return ctrl.Result{}, err
+	//}
 
 	return ctrl.Result{}, nil
 }
@@ -80,7 +116,7 @@ func (r *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
-func constructDeploymentForFunction(function *serverlessv1alpha2.Function) *appsv1.Deployment {
+func (r *FunctionReconciler) constructDeploymentForFunction(function *serverlessv1alpha2.Function) *appsv1.Deployment {
 	labels := map[string]string{
 		"app": function.Name,
 		//"foo": function.Spec.Foo,
@@ -119,5 +155,10 @@ func constructDeploymentForFunction(function *serverlessv1alpha2.Function) *apps
 			},
 		},
 	}
+
+	// Set the ownerRef for the Deployment, ensuring that the Deployment
+	// will be deleted when the Busybox CR is deleted.
+	controllerutil.SetControllerReference(function, deployment, r.Scheme)
+
 	return deployment
 }
