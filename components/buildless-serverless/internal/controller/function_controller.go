@@ -18,13 +18,15 @@ package controller
 
 import (
 	"context"
-
+	"fmt"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
+	appsv1 "k8s.io/api/apps/v1"
+	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
-
-	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 )
 
 // FunctionReconciler reconciles a Function object
@@ -49,7 +51,22 @@ type FunctionReconciler struct {
 func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	_ = log.FromContext(ctx)
 
-	// TODO(user): your logic here
+	var function serverlessv1alpha2.Function
+	if err := r.Get(ctx, req.NamespacedName, &function); err != nil {
+		log.Log.Error(err, "unable to fetch Function")
+		// we'll ignore not-found errors, since they can't be fixed by an immediate
+		// requeue (we'll need to wait for a new notification), and we can get them
+		// on deleted requests.
+		return ctrl.Result{}, client.IgnoreNotFound(err)
+	}
+
+	log.Log.Info("function spec", "foo", function.Spec.Foo)
+
+	deployment := constructDeploymentForFunction(&function)
+	if err := r.Create(ctx, deployment); err != nil {
+		log.Log.Error(err, "unable to create Deployment for Function", "deployment", deployment)
+		return ctrl.Result{}, err
+	}
 
 	return ctrl.Result{}, nil
 }
@@ -60,4 +77,46 @@ func (r *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&serverlessv1alpha2.Function{}).
 		Named("function").
 		Complete(r)
+}
+
+func constructDeploymentForFunction(function *serverlessv1alpha2.Function) *appsv1.Deployment {
+	labels := map[string]string{
+		"app": function.Name,
+		//"foo": function.Spec.Foo,
+	}
+
+	deployment := &appsv1.Deployment{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      fmt.Sprintf("%s-function-deployment", function.Name),
+			Namespace: function.Namespace,
+			Labels:    labels,
+		},
+		Spec: appsv1.DeploymentSpec{
+			Selector: &metav1.LabelSelector{
+				MatchLabels: labels,
+			},
+			Template: v1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: labels,
+					Annotations: map[string]string{
+						"foo": function.Spec.Foo,
+					},
+				},
+				Spec: v1.PodSpec{
+					Containers: []v1.Container{
+						{
+							Name:  fmt.Sprintf("%s-function-pod", function.Name),
+							Image: "nginx:latest",
+							Ports: []v1.ContainerPort{
+								{
+									ContainerPort: 80,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	return deployment
 }
