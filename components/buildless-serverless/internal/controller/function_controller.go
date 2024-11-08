@@ -28,7 +28,9 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
+	"sigs.k8s.io/controller-runtime/pkg/event"
 	pkglog "sigs.k8s.io/controller-runtime/pkg/log"
+	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"time"
 )
 
@@ -67,12 +69,12 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 
 	log.Info("function spec", "foo", function.Spec.Foo)
 
-	// examine DeletionTimestamp to determine if object is under deletion
-	if !function.ObjectMeta.DeletionTimestamp.IsZero() {
-		log.Info("function is under deletion")
-		return ctrl.Result{}, nil
-	}
-
+	//// examine DeletionTimestamp to determine if object is under deletion
+	//if !function.ObjectMeta.DeletionTimestamp.IsZero() {
+	//	log.Info("function is under deletion")
+	//	return ctrl.Result{}, nil
+	//}
+	//
 	newDeployment := r.constructDeploymentForFunction(&function)
 
 	currentDeployment := &appsv1.Deployment{}
@@ -117,8 +119,29 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 
 // SetupWithManager sets up the controller with the Manager.
 func (r *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	// Predicate to skip reconciliation when the object is being deleted
+	pred := predicate.Funcs{
+		// Allow create events
+		UpdateFunc: func(e event.UpdateEvent) bool {
+			return true
+		},
+		// Allow create events
+		CreateFunc: func(e event.CreateEvent) bool {
+			return true
+		},
+		// Don't allow delete events
+		DeleteFunc: func(e event.DeleteEvent) bool {
+			return false
+		},
+		// Allow generic events (e.g., external triggers)
+		GenericFunc: func(e event.GenericEvent) bool {
+			return true
+		},
+	}
+
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&serverlessv1alpha2.Function{}).
+		WithEventFilter(pred).
 		Owns(&appsv1.Deployment{}).
 		Named("function").
 		Complete(r)
