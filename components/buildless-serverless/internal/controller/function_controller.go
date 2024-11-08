@@ -28,7 +28,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-	"sigs.k8s.io/controller-runtime/pkg/log"
+	pkglog "sigs.k8s.io/controller-runtime/pkg/log"
 	"time"
 )
 
@@ -52,18 +52,26 @@ type FunctionReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.19.0/pkg/reconcile
 func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	log := pkglog.FromContext(ctx).WithName(req.NamespacedName.Name)
+
+	log.Info("reconciliation started")
 
 	var function serverlessv1alpha2.Function
 	if err := r.Get(ctx, req.NamespacedName, &function); err != nil {
-		log.Log.Error(err, "unable to fetch Function")
+		log.Error(err, "unable to fetch Function")
 		// we'll ignore not-found errors, since they can't be fixed by an immediate
 		// requeue (we'll need to wait for a new notification), and we can get them
 		// on deleted requests.
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	log.Log.Info("function spec", "foo", function.Spec.Foo)
+	log.Info("function spec", "foo", function.Spec.Foo)
+
+	// examine DeletionTimestamp to determine if object is under deletion
+	if !function.ObjectMeta.DeletionTimestamp.IsZero() {
+		log.Info("function is under deletion")
+		return ctrl.Result{}, nil
+	}
 
 	newDeployment := r.constructDeploymentForFunction(&function)
 
@@ -74,15 +82,15 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	}, currentDeployment)
 	if deploymentErr != nil && apierrors.IsNotFound(deploymentErr) {
 		// Define a new Deployment
-		log.Log.Info("Creating a new Deployment", "Deployment.Namespace", newDeployment.Namespace, "Deployment.Name", newDeployment.Name)
+		log.Info("creating a new Deployment", "Deployment.Namespace", newDeployment.Namespace, "Deployment.Name", newDeployment.Name)
 		if err := r.Create(ctx, newDeployment); err != nil {
-			log.Log.Error(err, "Failed to create new Deployment", "Deployment.Namespace", newDeployment.Namespace, "Deployment.Name", newDeployment.Name)
+			log.Error(err, "failed to create new Deployment", "Deployment.Namespace", newDeployment.Namespace, "Deployment.Name", newDeployment.Name)
 			return ctrl.Result{}, err
 		}
 		// Requeue the request to ensure the Deployment is created
 		return ctrl.Result{RequeueAfter: time.Minute}, nil
 	} else if deploymentErr != nil {
-		log.Log.Error(deploymentErr, "unable to fetch Deployment for Function")
+		log.Error(deploymentErr, "unable to fetch Deployment for Function")
 		return ctrl.Result{}, deploymentErr
 	}
 
@@ -90,7 +98,7 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	if currentDeployment.Spec.Template.Annotations["foo"] != newDeployment.Spec.Template.Annotations["foo"] {
 		currentDeployment.Spec.Template.Annotations["foo"] = newDeployment.Spec.Template.Annotations["foo"]
 		if err := r.Update(ctx, currentDeployment); err != nil {
-			log.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", currentDeployment.Namespace, "Deployment.Name", currentDeployment.Name)
+			log.Error(err, "Failed to update Deployment", "Deployment.Namespace", currentDeployment.Namespace, "Deployment.Name", currentDeployment.Name)
 			return ctrl.Result{}, err
 		}
 		// Requeue the request to ensure the Deployment is updated
