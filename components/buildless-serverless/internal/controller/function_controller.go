@@ -60,10 +60,6 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 
 	var function serverlessv1alpha2.Function
 	if err := r.Get(ctx, req.NamespacedName, &function); err != nil {
-		log.Error(err, "unable to fetch Function")
-		// we'll ignore not-found errors, since they can't be fixed by an immediate
-		// requeue (we'll need to wait for a new notification), and we can get them
-		// on deleted requests.
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
@@ -117,10 +113,9 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 	return ctrl.Result{}, nil
 }
 
-// SetupWithManager sets up the controller with the Manager.
-func (r *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func buildPredicates() predicate.Funcs {
 	// Predicate to skip reconciliation when the object is being deleted
-	pred := predicate.Funcs{
+	return predicate.Funcs{
 		// Allow create events
 		UpdateFunc: func(e event.UpdateEvent) bool {
 			return true
@@ -138,10 +133,13 @@ func (r *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
 			return true
 		},
 	}
+}
 
+// SetupWithManager sets up the controller with the Manager.
+func (r *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&serverlessv1alpha2.Function{}).
-		WithEventFilter(pred).
+		WithEventFilter(buildPredicates()).
 		Owns(&appsv1.Deployment{}).
 		Named("function").
 		Complete(r)
