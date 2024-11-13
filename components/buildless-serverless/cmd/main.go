@@ -19,6 +19,8 @@ package main
 import (
 	"crypto/tls"
 	"flag"
+	uberzap "go.uber.org/zap"
+	uberzapcore "go.uber.org/zap/zapcore"
 	"os"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
@@ -71,6 +73,7 @@ func main() {
 		"If set, HTTP/2 will be enabled for the metrics and webhook servers")
 	opts := zap.Options{
 		Development: true,
+		TimeEncoder: uberzapcore.TimeEncoderOfLayout("Jan 02 15:04:05.000000000"),
 	}
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
@@ -144,9 +147,21 @@ func main() {
 		os.Exit(1)
 	}
 
+	config := uberzap.NewDevelopmentConfig()
+	config.EncoderConfig.TimeKey = "timestamp"
+	config.EncoderConfig.EncodeTime = opts.TimeEncoder
+	config.DisableCaller = true
+
+	reconcilerLogger, err := config.Build()
+	if err != nil {
+		setupLog.Error(err, "unable to setup logger")
+		os.Exit(1)
+	}
+
 	if err = (&controller.FunctionReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
+		Log:    reconcilerLogger.Sugar(),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Function")
 		os.Exit(1)

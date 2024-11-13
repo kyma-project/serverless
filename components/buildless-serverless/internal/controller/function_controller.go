@@ -19,8 +19,8 @@ package controller
 import (
 	"context"
 	"fmt"
-	"github.com/go-logr/logr"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
+	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -30,7 +30,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/event"
-	pkglog "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"time"
 )
@@ -39,6 +38,8 @@ import (
 type FunctionReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
+	//TODO: Add to logger request data somehow
+	Log *zap.SugaredLogger
 }
 
 // +kubebuilder:rbac:groups=serverless.kyma-project.io,resources=functions,verbs=get;list;watch;create;update;patch;delete
@@ -55,53 +56,63 @@ type FunctionReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.19.0/pkg/reconcile
 func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	log := pkglog.FromContext(ctx).WithName(req.NamespacedName.Name)
 
-	log.Info("reconciliation started")
+	r.Log.Info("reconciliation started")
 
 	var function serverlessv1alpha2.Function
 	if err := r.Get(ctx, req.NamespacedName, &function); err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	log.Info("function spec", "foo", function.Spec.Foo)
+	r.Log.Info("function spec", "foo", function.Spec.Foo)
 
-	return r.handleDeployment(ctx, function, log)
+	return r.handleDeployment(ctx, function)
 }
 
-func (r *FunctionReconciler) handleDeployment(ctx context.Context, function serverlessv1alpha2.Function, log logr.Logger) (ctrl.Result, error) {
+func (r *FunctionReconciler) handleDeployment(ctx context.Context, function serverlessv1alpha2.Function) (ctrl.Result, error) {
 	newDeployment := r.constructDeploymentForFunction(&function)
 
+	currentDeployment, resultGet, errGet := r.getDeployment(ctx, function, newDeployment)
+	if currentDeployment == nil {
+		return resultGet, errGet
+	}
+
+	resultUpdate, errUpdate := r.updateDeploymentIfNeeded(ctx, currentDeployment, newDeployment)
+	if errUpdate != nil {
+		return resultUpdate, errUpdate
+	}
+	return ctrl.Result{}, nil
+}
+
+func (r *FunctionReconciler) getDeployment(ctx context.Context, function serverlessv1alpha2.Function, newDeployment *appsv1.Deployment) (*appsv1.Deployment, ctrl.Result, error) {
 	currentDeployment := &appsv1.Deployment{}
 	deploymentErr := r.Get(ctx, client.ObjectKey{
 		Namespace: function.Namespace,
 		Name:      fmt.Sprintf("%s-function-deployment", function.Name),
 	}, currentDeployment)
-	if deploymentErr != nil && apierrors.IsNotFound(deploymentErr) {
-		log.Info("creating a new Deployment", "Deployment.Namespace", newDeployment.Namespace, "Deployment.Name", newDeployment.Name)
-		if err := r.Create(ctx, newDeployment); err != nil {
-			log.Error(err, "failed to create new Deployment", "Deployment.Namespace", newDeployment.Namespace, "Deployment.Name", newDeployment.Name)
-			return ctrl.Result{}, err
-		}
-		return ctrl.Result{RequeueAfter: time.Minute}, nil
-	} else if deploymentErr != nil {
-		log.Error(deploymentErr, "unable to fetch Deployment for Function")
-		return ctrl.Result{}, deploymentErr
+
+	if deploymentErr == nil {
+		return currentDeployment, ctrl.Result{}, nil
+	}
+	if !apierrors.IsNotFound(deploymentErr) {
+		r.Log.Error(deploymentErr, "unable to fetch Deployment for Function")
+		return nil, ctrl.Result{}, deploymentErr
 	}
 
-	result, err := r.updateDeploymentIfNeeded(ctx, currentDeployment, newDeployment, log)
-	if err != nil {
-		return result, err
+	r.Log.Info("creating a new Deployment", "Deployment.Namespace", newDeployment.Namespace, "Deployment.Name", newDeployment.Name)
+	if err := r.Create(ctx, newDeployment); err != nil {
+		r.Log.Error(err, "failed to create new Deployment", "Deployment.Namespace", newDeployment.Namespace, "Deployment.Name", newDeployment.Name)
+		return nil, ctrl.Result{}, err
 	}
-	return ctrl.Result{}, nil
+	return nil, ctrl.Result{RequeueAfter: time.Minute}, nil
 }
 
-func (r *FunctionReconciler) updateDeploymentIfNeeded(ctx context.Context, currentDeployment *appsv1.Deployment, newDeployment *appsv1.Deployment, log logr.Logger) (ctrl.Result, error) {
+func (r *FunctionReconciler) updateDeploymentIfNeeded(ctx context.Context, currentDeployment *appsv1.Deployment, newDeployment *appsv1.Deployment) (ctrl.Result, error) {
 	// Ensure the Deployment data matches the desired state
 	if currentDeployment.Spec.Template.Annotations["foo"] != newDeployment.Spec.Template.Annotations["foo"] {
 		currentDeployment.Spec.Template.Annotations["foo"] = newDeployment.Spec.Template.Annotations["foo"]
 		if err := r.Update(ctx, currentDeployment); err != nil {
-			log.Error(err, "Failed to update Deployment", "Deployment.Namespace", currentDeployment.Namespace, "Deployment.Name", currentDeployment.Name)
+			r.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", currentDeployment.Namespace, "Deployment.Name", currentDeployment.Name)
 			return ctrl.Result{}, err
 		}
 		// Requeue the request to ensure the Deployment is updated
