@@ -19,6 +19,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"github.com/go-logr/logr"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -65,12 +66,10 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 
 	log.Info("function spec", "foo", function.Spec.Foo)
 
-	//// examine DeletionTimestamp to determine if object is under deletion
-	//if !function.ObjectMeta.DeletionTimestamp.IsZero() {
-	//	log.Info("function is under deletion")
-	//	return ctrl.Result{}, nil
-	//}
-	//
+	return r.handleDeployment(ctx, function, log)
+}
+
+func (r *FunctionReconciler) handleDeployment(ctx context.Context, function serverlessv1alpha2.Function, log logr.Logger) (ctrl.Result, error) {
 	newDeployment := r.constructDeploymentForFunction(&function)
 
 	currentDeployment := &appsv1.Deployment{}
@@ -79,19 +78,25 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		Name:      fmt.Sprintf("%s-function-deployment", function.Name),
 	}, currentDeployment)
 	if deploymentErr != nil && apierrors.IsNotFound(deploymentErr) {
-		// Define a new Deployment
 		log.Info("creating a new Deployment", "Deployment.Namespace", newDeployment.Namespace, "Deployment.Name", newDeployment.Name)
 		if err := r.Create(ctx, newDeployment); err != nil {
 			log.Error(err, "failed to create new Deployment", "Deployment.Namespace", newDeployment.Namespace, "Deployment.Name", newDeployment.Name)
 			return ctrl.Result{}, err
 		}
-		// Requeue the request to ensure the Deployment is created
 		return ctrl.Result{RequeueAfter: time.Minute}, nil
 	} else if deploymentErr != nil {
 		log.Error(deploymentErr, "unable to fetch Deployment for Function")
 		return ctrl.Result{}, deploymentErr
 	}
 
+	result, err := r.updateDeploymentIfNeeded(ctx, currentDeployment, newDeployment, log)
+	if err != nil {
+		return result, err
+	}
+	return ctrl.Result{}, nil
+}
+
+func (r *FunctionReconciler) updateDeploymentIfNeeded(ctx context.Context, currentDeployment *appsv1.Deployment, newDeployment *appsv1.Deployment, log logr.Logger) (ctrl.Result, error) {
 	// Ensure the Deployment data matches the desired state
 	if currentDeployment.Spec.Template.Annotations["foo"] != newDeployment.Spec.Template.Annotations["foo"] {
 		currentDeployment.Spec.Template.Annotations["foo"] = newDeployment.Spec.Template.Annotations["foo"]
@@ -102,14 +107,6 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		// Requeue the request to ensure the Deployment is updated
 		return ctrl.Result{Requeue: true}, nil
 	}
-
-	//// Update Busybox status to reflect that the Deployment is available
-	//busybox.Status.AvailableReplicas = found.Status.AvailableReplicas
-	//if err := r.Status().Update(ctx, busybox); err != nil {
-	//	log.Error(err, "Failed to update Busybox status")
-	//	return ctrl.Result{}, err
-	//}
-
 	return ctrl.Result{}, nil
 }
 
