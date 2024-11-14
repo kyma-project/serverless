@@ -223,12 +223,23 @@ func (r *FunctionReconciler) constructDeploymentForFunction(function *serverless
 								"-c",
 								`
 cat << EOF > handler.js
+const _ = require('lodash')
 module.exports = {
   main: function(event, context) {
-	return 'Hello World!'
+	return _.kebabCase('Hello World from Node.js 20 Function');
   }
 }
 EOF
+cat << EOF > package.json
+{
+  "name": "test-function-nodejs",
+  "version": "1.0.0",
+  "dependencies": {
+	"lodash":"^4.17.20"
+  }
+}
+EOF
+npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;
 `,
