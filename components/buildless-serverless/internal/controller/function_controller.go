@@ -109,8 +109,9 @@ func (r *FunctionReconciler) getDeployment(ctx context.Context, function serverl
 
 func (r *FunctionReconciler) updateDeploymentIfNeeded(ctx context.Context, currentDeployment *appsv1.Deployment, newDeployment *appsv1.Deployment) (ctrl.Result, error) {
 	// Ensure the Deployment data matches the desired state
+	//TODO: write better if to react to changes (not to only Annotation "Foo")
 	if currentDeployment.Spec.Template.Annotations["foo"] != newDeployment.Spec.Template.Annotations["foo"] {
-		currentDeployment.Spec.Template.Annotations["foo"] = newDeployment.Spec.Template.Annotations["foo"]
+		currentDeployment.Spec.Template = newDeployment.Spec.Template
 		if err := r.Update(ctx, currentDeployment); err != nil {
 			r.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", currentDeployment.Namespace, "Deployment.Name", currentDeployment.Name)
 			return ctrl.Result{}, err
@@ -153,11 +154,36 @@ func (r *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
+//func (r *FunctionReconciler) getRuntimeEnvs(f serverlessv1alpha2.Function) []v1.EnvVar {
+//	if f.Spec.Runtime == v1alpha2.NodeJs20 {
+//		deps := f.Spec.Source.Inline.Dependencies
+//		// npm has problems when deps are empty or not in JSON format
+//		if deps == "" {
+//			deps = "{}\n"
+//		}
+//
+//		return []v1.EnvVar{
+//			{Name: "FUNC_RUNTIME", Value: string(f.Spec.Runtime)},
+//			{Name: "FUNC_NAME", Value: f.Name},
+//			{Name: "SERVICE_NAMESPACE", Value: f.Namespace},
+//			{Name: "TRACE_COLLECTOR_ENDPOINT", Value: ""},
+//			{Name: "PUBLISHER_PROXY_ADDRESS", Value: ""},
+//			{Name: "FUNC_HANDLER", Value: "main"},
+//			{Name: "MOD_NAME", Value: "handler"},
+//			{Name: "FUNC_PORT", Value: "8080"},
+//			{Name: "FUNC_HANDLER_SOURCE", Value: f.Spec.Source.Inline.Source},
+//			{Name: "FUNC_HANDLER_DEPENDENCIES", Value: deps},
+//		}
+//	}
+//}
+
 func (r *FunctionReconciler) constructDeploymentForFunction(function *serverlessv1alpha2.Function) *appsv1.Deployment {
 	labels := map[string]string{
 		"app": function.Name,
 		//"foo": function.Spec.Foo,
 	}
+
+	workingSourcesDir := "/usr/src/app/function"
 
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -177,10 +203,42 @@ func (r *FunctionReconciler) constructDeploymentForFunction(function *serverless
 					},
 				},
 				Spec: v1.PodSpec{
+					Volumes: []v1.Volume{
+						{
+							// used for wiriting sources (code&deps) to the sources dir
+							Name: "sources",
+							VolumeSource: v1.VolumeSource{
+								EmptyDir: &v1.EmptyDirVolumeSource{},
+							},
+						},
+					},
 					Containers: []v1.Container{
 						{
 							Name:  fmt.Sprintf("%s-function-pod", function.Name),
-							Image: "nginx:latest",
+							Image: "europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main",
+							//Env:        r.getRuntimeEnvs(f),
+							WorkingDir: workingSourcesDir,
+							Command: []string{
+								"sh",
+								"-c",
+								`
+cat << EOF > handler.js
+module.exports = {
+  main: function(event, context) {
+	return 'Hello World!'
+  }
+}
+EOF
+cd ..;
+npm start;
+`,
+							},
+							VolumeMounts: []v1.VolumeMount{
+								{
+									Name:      "sources",
+									MountPath: workingSourcesDir,
+								},
+							},
 							Ports: []v1.ContainerPort{
 								{
 									ContainerPort: 80,
