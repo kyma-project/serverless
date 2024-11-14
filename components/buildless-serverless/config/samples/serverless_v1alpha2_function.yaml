@@ -6,5 +6,6 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
   name: function-sample
 spec:
+  runtime: nodejs20
   foo: bar
   # TODO(user): Add fields here

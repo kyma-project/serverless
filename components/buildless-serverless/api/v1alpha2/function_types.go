@@ -23,11 +23,19 @@ import (
 // EDIT THIS FILE!  THIS IS SCAFFOLDING FOR YOU TO OWN!
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
+// Runtime specifies the name of the Function's runtime.
+type Runtime string
+
+const (
+	Python312 Runtime = "python312"
+	NodeJs20  Runtime = "nodejs20"
+)
+
 // FunctionSpec defines the desired state of Function.
 type FunctionSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
-
+	// Specifies the runtime of the Function. The available values are `nodejs20`, and `python312`.
+	// +kubebuilder:validation:Enum=nodejs20;python312;
+	Runtime Runtime `json:"runtime"`
 	// Foo is an example field of Function. Edit function_types.go to remove/update
 	Foo string `json:"foo,omitempty"`
 }

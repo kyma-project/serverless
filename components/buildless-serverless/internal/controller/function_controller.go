@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -70,7 +71,10 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 }
 
 func (r *FunctionReconciler) handleDeployment(ctx context.Context, function serverlessv1alpha2.Function) (ctrl.Result, error) {
-	newDeployment := r.constructDeploymentForFunction(&function)
+	newDeployment, errConstruct := r.constructDeploymentForFunction(&function)
+	if errConstruct != nil {
+		return ctrl.Result{}, errConstruct
+	}
 
 	currentDeployment, resultGet, errGet := r.getDeployment(ctx, function, newDeployment)
 	if currentDeployment == nil {
@@ -154,59 +158,62 @@ func (r *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
-//func (r *FunctionReconciler) getRuntimeEnvs(f serverlessv1alpha2.Function) []v1.EnvVar {
-//	if f.Spec.Runtime == v1alpha2.NodeJs20 {
-//		deps := f.Spec.Source.Inline.Dependencies
-//		// npm has problems when deps are empty or not in JSON format
-//		if deps == "" {
-//			deps = "{}\n"
-//		}
-//
-//		return []v1.EnvVar{
-//			{Name: "FUNC_RUNTIME", Value: string(f.Spec.Runtime)},
-//			{Name: "FUNC_NAME", Value: f.Name},
-//			{Name: "SERVICE_NAMESPACE", Value: f.Namespace},
-//			{Name: "TRACE_COLLECTOR_ENDPOINT", Value: ""},
-//			{Name: "PUBLISHER_PROXY_ADDRESS", Value: ""},
-//			{Name: "FUNC_HANDLER", Value: "main"},
-//			{Name: "MOD_NAME", Value: "handler"},
-//			{Name: "FUNC_PORT", Value: "8080"},
-//			{Name: "FUNC_HANDLER_SOURCE", Value: f.Spec.Source.Inline.Source},
-//			{Name: "FUNC_HANDLER_DEPENDENCIES", Value: deps},
-//		}
-//	}
-//}
-
-func getWorkingSorucesDir() string {
-	r := "/usr/src/app/function"
-	return r
+func getWorkingSorucesDir(r serverlessv1alpha2.Runtime) (string, error) {
+	switch r {
+	case serverlessv1alpha2.NodeJs20:
+		return "/usr/src/app/function", nil
+	default:
+		return "", errors.New(fmt.Sprintf("Not supported runtime: %s", r))
+	}
 }
 
-func getFunctionSource() string {
-	funcSource := `
+func getFunctionSource(r serverlessv1alpha2.Runtime) (string, error) {
+	switch r {
+	case serverlessv1alpha2.NodeJs20:
+		return `
 const _ = require('lodash')
 	module.exports = {
 	main: function(event, context) {
 			return _.kebabCase('Hello World from Node.js 20 Function');
 		}
-	}`
-
-	return funcSource
+	}`, nil
+	default:
+		return "", errors.New(fmt.Sprintf("Not supported runtime: %s", r))
+	}
 }
 
-func getFunctionDependencies() string {
-	funcDependencies := `
+func getFunctionDependencies(r serverlessv1alpha2.Runtime) (string, error) {
+	switch r {
+	case serverlessv1alpha2.NodeJs20:
+		return `
 {
   "name": "test-function-nodejs",
   "version": "1.0.0",
   "dependencies": {
 	"lodash":"^4.17.20"
   }
-}`
-	return funcDependencies
+}`, nil
+	default:
+		return "", errors.New(fmt.Sprintf("Not supported runtime: %s", r))
+	}
 }
 
-func (r *FunctionReconciler) constructDeploymentForFunction(function *serverlessv1alpha2.Function) *appsv1.Deployment {
+func (r *FunctionReconciler) constructDeploymentForFunction(function *serverlessv1alpha2.Function) (*appsv1.Deployment, error) {
+	fRuntime := function.Spec.Runtime
+
+	workingSorucesDir, errWorkingSourcesDir := getWorkingSorucesDir(fRuntime)
+	if errWorkingSourcesDir != nil {
+		return nil, errWorkingSourcesDir
+	}
+	functionDependencies, errFunctionDependencies := getFunctionDependencies(fRuntime)
+	if errFunctionDependencies != nil {
+		return nil, errFunctionDependencies
+	}
+	functionSource, errFunctionSource := getFunctionSource(fRuntime)
+	if errFunctionSource != nil {
+		return nil, errFunctionSource
+	}
+
 	labels := map[string]string{
 		"app": function.Name,
 		//"foo": function.Spec.Foo,
@@ -244,7 +251,7 @@ func (r *FunctionReconciler) constructDeploymentForFunction(function *serverless
 							Name:  fmt.Sprintf("%s-function-pod", function.Name),
 							Image: "europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main",
 							//Env:        r.getRuntimeEnvs(f),
-							WorkingDir: getWorkingSorucesDir(),
+							WorkingDir: workingSorucesDir,
 							Command: []string{
 								"sh",
 								"-c",
@@ -259,17 +266,17 @@ npm start;
 							Env: []v1.EnvVar{
 								{
 									Name:  "FUNCTION_SOURCE",
-									Value: getFunctionSource(),
+									Value: functionSource,
 								},
 								{
 									Name:  "FUNCTION_DEPENDENCIES",
-									Value: getFunctionDependencies(),
+									Value: functionDependencies,
 								},
 							},
 							VolumeMounts: []v1.VolumeMount{
 								{
 									Name:      "sources",
-									MountPath: getWorkingSorucesDir(),
+									MountPath: workingSorucesDir,
 								},
 							},
 							Ports: []v1.ContainerPort{
@@ -288,5 +295,5 @@ npm start;
 	// will be deleted when the Busybox CR is deleted.
 	controllerutil.SetControllerReference(function, deployment, r.Scheme)
 
-	return deployment
+	return deployment, nil
 }
