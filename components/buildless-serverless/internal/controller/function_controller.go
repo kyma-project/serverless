@@ -177,13 +177,40 @@ func (r *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
 //	}
 //}
 
+func getWorkingSorucesDir() string {
+	r := "/usr/src/app/function"
+	return r
+}
+
+func getFunctionSource() string {
+	funcSource := `
+const _ = require('lodash')
+	module.exports = {
+	main: function(event, context) {
+			return _.kebabCase('Hello World from Node.js 20 Function');
+		}
+	}`
+
+	return funcSource
+}
+
+func getFunctionDependencies() string {
+	funcDependencies := `
+{
+  "name": "test-function-nodejs",
+  "version": "1.0.0",
+  "dependencies": {
+	"lodash":"^4.17.20"
+  }
+}`
+	return funcDependencies
+}
+
 func (r *FunctionReconciler) constructDeploymentForFunction(function *serverlessv1alpha2.Function) *appsv1.Deployment {
 	labels := map[string]string{
 		"app": function.Name,
 		//"foo": function.Spec.Foo,
 	}
-
-	workingSourcesDir := "/usr/src/app/function"
 
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -217,37 +244,32 @@ func (r *FunctionReconciler) constructDeploymentForFunction(function *serverless
 							Name:  fmt.Sprintf("%s-function-pod", function.Name),
 							Image: "europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main",
 							//Env:        r.getRuntimeEnvs(f),
-							WorkingDir: workingSourcesDir,
+							WorkingDir: getWorkingSorucesDir(),
 							Command: []string{
 								"sh",
 								"-c",
 								`
-cat << EOF > handler.js
-const _ = require('lodash')
-module.exports = {
-  main: function(event, context) {
-	return _.kebabCase('Hello World from Node.js 20 Function');
-  }
-}
-EOF
-cat << EOF > package.json
-{
-  "name": "test-function-nodejs",
-  "version": "1.0.0",
-  "dependencies": {
-	"lodash":"^4.17.20"
-  }
-}
-EOF
+printf "${FUNCTION_SOURCE}" > handler.js;
+printf "${FUNCTION_DEPENDENCIES}" > package.json;
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;
 `,
 							},
+							Env: []v1.EnvVar{
+								{
+									Name:  "FUNCTION_SOURCE",
+									Value: getFunctionSource(),
+								},
+								{
+									Name:  "FUNCTION_DEPENDENCIES",
+									Value: getFunctionDependencies(),
+								},
+							},
 							VolumeMounts: []v1.VolumeMount{
 								{
 									Name:      "sources",
-									MountPath: workingSourcesDir,
+									MountPath: getWorkingSorucesDir(),
 								},
 							},
 							Ports: []v1.ContainerPort{
