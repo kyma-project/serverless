@@ -73,7 +73,7 @@ spec:
 EOF
 ```
 
-#### **Python 3.9**
+#### **Python**
 
 ```bash
 cat <<EOF | kubectl apply -f -
