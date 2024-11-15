@@ -20,7 +20,6 @@ import (
 	"context"
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -71,10 +70,7 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 }
 
 func (r *FunctionReconciler) handleDeployment(ctx context.Context, function serverlessv1alpha2.Function) (ctrl.Result, error) {
-	newDeployment, errConstruct := r.constructDeploymentForFunction(&function)
-	if errConstruct != nil {
-		return ctrl.Result{}, errConstruct
-	}
+	newDeployment := r.constructDeploymentForFunction(&function)
 
 	currentDeployment, resultGet, errGet := r.getDeployment(ctx, function, newDeployment)
 	if currentDeployment == nil {
@@ -158,16 +154,16 @@ func (r *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
-func getWorkingSorucesDir(r serverlessv1alpha2.Runtime) (string, error) {
+func getWorkingSorucesDir(r serverlessv1alpha2.Runtime) string {
 	switch r {
 	case serverlessv1alpha2.NodeJs20:
-		return "/usr/src/app/function", nil
+		return "/usr/src/app/function"
 	default:
-		return "", errors.New(fmt.Sprintf("Not supported runtime: %s", r))
+		return ""
 	}
 }
 
-func getFunctionSource(r serverlessv1alpha2.Runtime) (string, error) {
+func getFunctionSource(r serverlessv1alpha2.Runtime) string {
 	switch r {
 	case serverlessv1alpha2.NodeJs20:
 		return `
@@ -176,13 +172,13 @@ const _ = require('lodash')
 	main: function(event, context) {
 			return _.kebabCase('Hello World from Node.js 20 Function');
 		}
-	}`, nil
+	}`
 	default:
-		return "", errors.New(fmt.Sprintf("Not supported runtime: %s", r))
+		return ""
 	}
 }
 
-func getFunctionDependencies(r serverlessv1alpha2.Runtime) (string, error) {
+func getFunctionDependencies(r serverlessv1alpha2.Runtime) string {
 	switch r {
 	case serverlessv1alpha2.NodeJs20:
 		return `
@@ -192,27 +188,37 @@ func getFunctionDependencies(r serverlessv1alpha2.Runtime) (string, error) {
   "dependencies": {
 	"lodash":"^4.17.20"
   }
-}`, nil
+}`
 	default:
-		return "", errors.New(fmt.Sprintf("Not supported runtime: %s", r))
+		return ""
 	}
 }
 
-func (r *FunctionReconciler) constructDeploymentForFunction(function *serverlessv1alpha2.Function) (*appsv1.Deployment, error) {
+func getRuntimeCommand(r serverlessv1alpha2.Runtime) string {
+	switch r {
+	case serverlessv1alpha2.NodeJs20:
+		return `
+printf "${FUNCTION_SOURCE}" > handler.js;
+printf "${FUNCTION_DEPENDENCIES}" > package.json;
+npm install --prefer-offline --no-audit --progress=false;
+cd ..;
+npm start;
+`
+	default:
+		return ""
+	}
+}
+
+func (r *FunctionReconciler) constructDeploymentForFunction(function *serverlessv1alpha2.Function) *appsv1.Deployment {
 	fRuntime := function.Spec.Runtime
 
-	workingSorucesDir, errWorkingSourcesDir := getWorkingSorucesDir(fRuntime)
-	if errWorkingSourcesDir != nil {
-		return nil, errWorkingSourcesDir
-	}
-	functionDependencies, errFunctionDependencies := getFunctionDependencies(fRuntime)
-	if errFunctionDependencies != nil {
-		return nil, errFunctionDependencies
-	}
-	functionSource, errFunctionSource := getFunctionSource(fRuntime)
-	if errFunctionSource != nil {
-		return nil, errFunctionSource
-	}
+	workingSorucesDir := getWorkingSorucesDir(fRuntime)
+
+	functionDependencies := getFunctionDependencies(fRuntime)
+
+	functionSource := getFunctionSource(fRuntime)
+
+	runtimeCommand := getRuntimeCommand(fRuntime)
 
 	labels := map[string]string{
 		"app": function.Name,
@@ -295,5 +301,5 @@ npm start;
 	// will be deleted when the Busybox CR is deleted.
 	controllerutil.SetControllerReference(function, deployment, r.Scheme)
 
-	return deployment, nil
+	return deployment
 }
