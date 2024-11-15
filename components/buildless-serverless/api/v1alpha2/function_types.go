@@ -36,8 +36,6 @@ type FunctionSpec struct {
 	// Specifies the runtime of the Function. The available values are `nodejs20`, and `python312`.
 	// +kubebuilder:validation:Enum=nodejs20;python312;
 	Runtime Runtime `json:"runtime"`
-	// Foo is an example field of Function. Edit function_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
 }
 
 // FunctionStatus defines the observed state of Function.

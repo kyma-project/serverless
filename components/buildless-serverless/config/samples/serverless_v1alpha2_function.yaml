@@ -7,5 +7,3 @@ metadata:
   name: function-sample
 spec:
   runtime: nodejs20
-  foo: bar
-  # TODO(user): Add fields here

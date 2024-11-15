@@ -39,10 +39,6 @@ spec:
           spec:
             description: FunctionSpec defines the desired state of Function.
             properties:
-              foo:
-                description: Foo is an example field of Function. Edit function_types.go
-                  to remove/update
-                type: string
               runtime:
                 description: Specifies the runtime of the Function. The available
                   values are `nodejs20`, and `python312`.

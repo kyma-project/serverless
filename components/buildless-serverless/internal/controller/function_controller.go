@@ -19,6 +19,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"github.com/google/go-cmp/cmp"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
@@ -56,15 +57,12 @@ type FunctionReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.19.0/pkg/reconcile
 func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-
 	r.Log.Info("reconciliation started")
 
 	var function serverlessv1alpha2.Function
 	if err := r.Get(ctx, req.NamespacedName, &function); err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
-
-	r.Log.Info("function spec", "foo", function.Spec.Foo)
 
 	return r.handleDeployment(ctx, function)
 }
@@ -109,8 +107,7 @@ func (r *FunctionReconciler) getDeployment(ctx context.Context, function serverl
 
 func (r *FunctionReconciler) updateDeploymentIfNeeded(ctx context.Context, currentDeployment *appsv1.Deployment, newDeployment *appsv1.Deployment) (ctrl.Result, error) {
 	// Ensure the Deployment data matches the desired state
-	//TODO: write better if to react to changes (not to only Annotation "Foo")
-	if currentDeployment.Spec.Template.Annotations["foo"] != newDeployment.Spec.Template.Annotations["foo"] {
+	if !cmp.Equal(currentDeployment.Spec.Template, newDeployment.Spec.Template) {
 		currentDeployment.Spec.Template = newDeployment.Spec.Template
 		if err := r.Update(ctx, currentDeployment); err != nil {
 			r.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", currentDeployment.Namespace, "Deployment.Name", currentDeployment.Name)
@@ -229,9 +226,6 @@ func (r *FunctionReconciler) constructDeploymentForFunction(function *serverless
 			Template: v1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: labels,
-					Annotations: map[string]string{
-						"foo": function.Spec.Foo,
-					},
 				},
 				Spec: v1.PodSpec{
 					Volumes: []v1.Volume{
