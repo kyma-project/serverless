@@ -212,17 +212,8 @@ npm start;
 func (r *FunctionReconciler) constructDeploymentForFunction(function *serverlessv1alpha2.Function) *appsv1.Deployment {
 	fRuntime := function.Spec.Runtime
 
-	workingSorucesDir := getWorkingSorucesDir(fRuntime)
-
-	functionDependencies := getFunctionDependencies(fRuntime)
-
-	functionSource := getFunctionSource(fRuntime)
-
-	runtimeCommand := getRuntimeCommand(fRuntime)
-
 	labels := map[string]string{
 		"app": function.Name,
-		//"foo": function.Spec.Foo,
 	}
 
 	deployment := &appsv1.Deployment{
@@ -254,35 +245,28 @@ func (r *FunctionReconciler) constructDeploymentForFunction(function *serverless
 					},
 					Containers: []v1.Container{
 						{
-							Name:  fmt.Sprintf("%s-function-pod", function.Name),
-							Image: "europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main",
-							//Env:        r.getRuntimeEnvs(f),
-							WorkingDir: workingSorucesDir,
+							Name:       fmt.Sprintf("%s-function-pod", function.Name),
+							Image:      "europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main",
+							WorkingDir: getWorkingSorucesDir(fRuntime),
 							Command: []string{
 								"sh",
 								"-c",
-								`
-printf "${FUNCTION_SOURCE}" > handler.js;
-printf "${FUNCTION_DEPENDENCIES}" > package.json;
-npm install --prefer-offline --no-audit --progress=false;
-cd ..;
-npm start;
-`,
+								getRuntimeCommand(fRuntime),
 							},
 							Env: []v1.EnvVar{
 								{
 									Name:  "FUNCTION_SOURCE",
-									Value: functionSource,
+									Value: getFunctionSource(fRuntime),
 								},
 								{
 									Name:  "FUNCTION_DEPENDENCIES",
-									Value: functionDependencies,
+									Value: getFunctionDependencies(fRuntime),
 								},
 							},
 							VolumeMounts: []v1.VolumeMount{
 								{
 									Name:      "sources",
-									MountPath: workingSorucesDir,
+									MountPath: getWorkingSorucesDir(fRuntime),
 								},
 							},
 							Ports: []v1.ContainerPort{

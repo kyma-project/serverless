@@ -43,6 +43,15 @@ spec:
                 description: Foo is an example field of Function. Edit function_types.go
                   to remove/update
                 type: string
+              runtime:
+                description: Specifies the runtime of the Function. The available
+                  values are `nodejs20`, and `python312`.
+                enum:
+                - nodejs20
+                - python312
+                type: string
+            required:
+            - runtime
             type: object
           status:
             description: FunctionStatus defines the observed state of Function.
