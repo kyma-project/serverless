@@ -68,21 +68,21 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 }
 
 func (r *FunctionReconciler) handleDeployment(ctx context.Context, function serverlessv1alpha2.Function) (ctrl.Result, error) {
-	newDeployment := r.constructDeploymentForFunction(&function)
+	builtDeployment := buildDeployment(&function)
 
-	currentDeployment, resultGet, errGet := r.getDeployment(ctx, function, newDeployment)
-	if currentDeployment == nil {
+	clusterDeployment, resultGet, errGet := r.getOrCreateDeployment(ctx, function, builtDeployment)
+	if clusterDeployment == nil {
 		return resultGet, errGet
 	}
 
-	resultUpdate, errUpdate := r.updateDeploymentIfNeeded(ctx, currentDeployment, newDeployment)
+	resultUpdate, errUpdate := r.updateDeploymentIfNeeded(ctx, clusterDeployment, builtDeployment)
 	if errUpdate != nil {
 		return resultUpdate, errUpdate
 	}
 	return ctrl.Result{}, nil
 }
 
-func (r *FunctionReconciler) getDeployment(ctx context.Context, function serverlessv1alpha2.Function, newDeployment *appsv1.Deployment) (*appsv1.Deployment, ctrl.Result, error) {
+func (r *FunctionReconciler) getOrCreateDeployment(ctx context.Context, function serverlessv1alpha2.Function, builtDeployment *appsv1.Deployment) (*appsv1.Deployment, ctrl.Result, error) {
 	currentDeployment := &appsv1.Deployment{}
 	deploymentErr := r.Get(ctx, client.ObjectKey{
 		Namespace: function.Namespace,
@@ -97,20 +97,30 @@ func (r *FunctionReconciler) getDeployment(ctx context.Context, function serverl
 		return nil, ctrl.Result{}, deploymentErr
 	}
 
-	r.Log.Info("creating a new Deployment", "Deployment.Namespace", newDeployment.Namespace, "Deployment.Name", newDeployment.Name)
-	if err := r.Create(ctx, newDeployment); err != nil {
-		r.Log.Error(err, "failed to create new Deployment", "Deployment.Namespace", newDeployment.Namespace, "Deployment.Name", newDeployment.Name)
-		return nil, ctrl.Result{}, err
-	}
-	return nil, ctrl.Result{RequeueAfter: time.Minute}, nil
+	createResult, createErr := r.createDeployment(ctx, function, builtDeployment)
+	return nil, createResult, createErr
 }
 
-func (r *FunctionReconciler) updateDeploymentIfNeeded(ctx context.Context, currentDeployment *appsv1.Deployment, newDeployment *appsv1.Deployment) (ctrl.Result, error) {
+func (r *FunctionReconciler) createDeployment(ctx context.Context, function serverlessv1alpha2.Function, deployment *appsv1.Deployment) (ctrl.Result, error) {
+	r.Log.Info("creating a new Deployment", "Deployment.Namespace", deployment.Namespace, "Deployment.Name", deployment.Name)
+
+	// Set the ownerRef for the Deployment, ensuring that the Deployment
+	// will be deleted when the Function CR is deleted.
+	controllerutil.SetControllerReference(&function, deployment, r.Scheme)
+
+	if err := r.Create(ctx, deployment); err != nil {
+		r.Log.Error(err, "failed to create new Deployment", "Deployment.Namespace", deployment.Namespace, "Deployment.Name", deployment.Name)
+		return ctrl.Result{}, err
+	}
+	return ctrl.Result{RequeueAfter: time.Minute}, nil
+}
+
+func (r *FunctionReconciler) updateDeploymentIfNeeded(ctx context.Context, clusterDeployment *appsv1.Deployment, builtDeployment *appsv1.Deployment) (ctrl.Result, error) {
 	// Ensure the Deployment data matches the desired state
-	if !cmp.Equal(currentDeployment.Spec.Template, newDeployment.Spec.Template) {
-		currentDeployment.Spec.Template = newDeployment.Spec.Template
-		if err := r.Update(ctx, currentDeployment); err != nil {
-			r.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", currentDeployment.Namespace, "Deployment.Name", currentDeployment.Name)
+	if !cmp.Equal(clusterDeployment.Spec.Template, builtDeployment.Spec.Template) {
+		clusterDeployment.Spec.Template = builtDeployment.Spec.Template
+		if err := r.Update(ctx, clusterDeployment); err != nil {
+			r.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", clusterDeployment.Namespace, "Deployment.Name", clusterDeployment.Name)
 			return ctrl.Result{}, err
 		}
 		// Requeue the request to ensure the Deployment is updated
@@ -200,7 +210,7 @@ func getFunctionDependencies(r serverlessv1alpha2.Runtime) string {
 	}
 }
 
-func (r *FunctionReconciler) getRuntimeCommand(f serverlessv1alpha2.Function) string {
+func getRuntimeCommand(f serverlessv1alpha2.Function) string {
 	runtime := f.Spec.Runtime
 	switch runtime {
 	case serverlessv1alpha2.NodeJs20:
@@ -243,7 +253,7 @@ func getRuntimeImage(runtime serverlessv1alpha2.Runtime) string {
 	}
 }
 
-func (r *FunctionReconciler) constructDeploymentForFunction(function *serverlessv1alpha2.Function) *appsv1.Deployment {
+func buildDeployment(function *serverlessv1alpha2.Function) *appsv1.Deployment {
 	fRuntime := function.Spec.Runtime
 
 	labels := map[string]string{
@@ -289,7 +299,7 @@ func (r *FunctionReconciler) constructDeploymentForFunction(function *serverless
 							Command: []string{
 								"sh",
 								"-c",
-								r.getRuntimeCommand(*function),
+								getRuntimeCommand(*function),
 							},
 							Env: getEnvs(fRuntime),
 							VolumeMounts: []v1.VolumeMount{
@@ -313,10 +323,6 @@ func (r *FunctionReconciler) constructDeploymentForFunction(function *serverless
 			},
 		},
 	}
-
-	// Set the ownerRef for the Deployment, ensuring that the Deployment
-	// will be deleted when the Busybox CR is deleted.
-	controllerutil.SetControllerReference(function, deployment, r.Scheme)
 
 	return deployment
 }
