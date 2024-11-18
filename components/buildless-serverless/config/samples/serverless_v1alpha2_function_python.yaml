@@ -1,0 +1,18 @@
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  labels:
+    app.kubernetes.io/name: buildless-serverless
+    app.kubernetes.io/managed-by: kustomize
+  name: sample-python
+spec:
+  runtime: python312
+  source:
+    inline:
+      source: |
+        import requests
+        def main(event, context):
+          r = requests.get('https://swapi.dev/api/people/13')
+          return r.json()
+      dependencies: |
+        requests==2.31.0
