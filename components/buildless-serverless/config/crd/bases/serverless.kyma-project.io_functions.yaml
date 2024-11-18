@@ -47,7 +47,9 @@ spec:
                 - python312
                 type: string
               source:
-                description: Contains the Function's source code configuration.
+                description: |-
+                  Contains the Function's source code configuration.
+                  // +kubebuilder:validation:XValidation:message="Use GitRepository or Inline source",rule="has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository) && has(self.inline)"
                 properties:
                   inline:
                     description: Defines the Function as the inline Function. Can't
@@ -64,10 +66,6 @@ spec:
                     - source
                     type: object
                 type: object
-                x-kubernetes-validations:
-                - message: Use GitRepository or Inline source
-                  rule: has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository)
-                    && has(self.inline)
             required:
             - runtime
             - source

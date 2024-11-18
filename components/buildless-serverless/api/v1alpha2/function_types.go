@@ -38,7 +38,7 @@ type FunctionSpec struct {
 	Runtime Runtime `json:"runtime"`
 
 	// Contains the Function's source code configuration.
-	// +kubebuilder:validation:XValidation:message="Use GitRepository or Inline source",rule="has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository) && has(self.inline)"
+	/*    // +kubebuilder:validation:XValidation:message="Use GitRepository or Inline source",rule="has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository) && has(self.inline)" */
 	// +kubebuilder:validation:Required
 	Source Source `json:"source"`
 }
