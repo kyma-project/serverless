@@ -291,7 +291,7 @@ func (r *FunctionReconciler) constructDeploymentForFunction(function *serverless
 								"-c",
 								r.getRuntimeCommand(*function),
 							},
-							Env: funcName(fRuntime),
+							Env: getEnvs(fRuntime),
 							VolumeMounts: []v1.VolumeMount{
 								{
 									Name:      "sources",
@@ -321,14 +321,14 @@ func (r *FunctionReconciler) constructDeploymentForFunction(function *serverless
 	return deployment
 }
 
-func funcName(runtime serverlessv1alpha2.Runtime) []v1.EnvVar {
+func getEnvs(runtime serverlessv1alpha2.Runtime) []v1.EnvVar {
 	envs := []v1.EnvVar{
 		{
-			Name:  "FUNCTION_SOURCE",
+			Name:  "FUNC_HANDLER_SOURCE",
 			Value: getFunctionSource(runtime),
 		},
 		{
-			Name:  "FUNCTION_DEPENDENCIES",
+			Name:  "FUNC_HANDLER_DEPENDENCIES",
 			Value: getFunctionDependencies(runtime),
 		},
 	}
