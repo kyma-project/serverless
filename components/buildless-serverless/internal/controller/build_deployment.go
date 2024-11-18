@@ -178,5 +178,6 @@ func getEnvs(f serverlessv1alpha2.Function) []corev1.EnvVar {
 			},
 		}...)
 	}
+	envs = append(envs, f.Spec.Env...)
 	return envs
 }

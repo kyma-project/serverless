@@ -7,12 +7,16 @@ metadata:
   name: sample-python
 spec:
   runtime: python312
+  env:
+    - name: chleb
+      value: maka
   source:
     inline:
       source: |
         import requests
+        import os
         def main(event, context):
           r = requests.get('https://swapi.dev/api/people/13')
-          return r.json()
+          return os.environ.get('chleb', 'sol')
       dependencies: |
         requests==2.31.0
