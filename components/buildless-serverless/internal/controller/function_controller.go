@@ -127,6 +127,16 @@ func (r *FunctionReconciler) updateDeploymentIfNeeded(ctx context.Context, clust
 	return ctrl.Result{}, nil
 }
 
+// SetupWithManager sets up the controller with the Manager.
+func (r *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	return ctrl.NewControllerManagedBy(mgr).
+		For(&serverlessv1alpha2.Function{}).
+		WithEventFilter(buildPredicates()).
+		Owns(&appsv1.Deployment{}).
+		Named("function").
+		Complete(r)
+}
+
 func buildPredicates() predicate.Funcs {
 	// Predicate to skip reconciliation when the object is being deleted
 	return predicate.Funcs{
@@ -147,14 +157,4 @@ func buildPredicates() predicate.Funcs {
 			return true
 		},
 	}
-}
-
-// SetupWithManager sets up the controller with the Manager.
-func (r *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	return ctrl.NewControllerManagedBy(mgr).
-		For(&serverlessv1alpha2.Function{}).
-		WithEventFilter(buildPredicates()).
-		Owns(&appsv1.Deployment{}).
-		Named("function").
-		Complete(r)
 }

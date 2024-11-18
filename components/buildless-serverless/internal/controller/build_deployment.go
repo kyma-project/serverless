@@ -29,56 +29,60 @@ func buildDeployment(function *serverlessv1alpha2.Function) *appsv1.Deployment {
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: labels,
 				},
-				Spec: corev1.PodSpec{
-					Volumes: []corev1.Volume{
-						{
-							// used for writing sources (code&deps) to the sources dir
-							Name: "sources",
-							VolumeSource: corev1.VolumeSource{
-								EmptyDir: &corev1.EmptyDirVolumeSource{},
-							},
-						},
-						{
-							// required by pip to save deps to .local dir
-							Name: "local",
-							VolumeSource: corev1.VolumeSource{
-								EmptyDir: &corev1.EmptyDirVolumeSource{},
-							},
-						},
+				Spec: buildPodSpec(function, fRuntime),
+			},
+		},
+	}
+	return deployment
+}
+
+func buildPodSpec(function *serverlessv1alpha2.Function, fRuntime serverlessv1alpha2.Runtime) corev1.PodSpec {
+	return corev1.PodSpec{
+		Volumes: []corev1.Volume{
+			{
+				// used for writing sources (code&deps) to the sources dir
+				Name: "sources",
+				VolumeSource: corev1.VolumeSource{
+					EmptyDir: &corev1.EmptyDirVolumeSource{},
+				},
+			},
+			{
+				// required by pip to save deps to .local dir
+				Name: "local",
+				VolumeSource: corev1.VolumeSource{
+					EmptyDir: &corev1.EmptyDirVolumeSource{},
+				},
+			},
+		},
+		Containers: []corev1.Container{
+			{
+				Name:       fmt.Sprintf("%s-function-pod", function.Name),
+				Image:      getRuntimeImage(fRuntime),
+				WorkingDir: getWorkingSourcesDir(fRuntime),
+				Command: []string{
+					"sh",
+					"-c",
+					getRuntimeCommand(*function),
+				},
+				Env: getEnvs(fRuntime),
+				VolumeMounts: []corev1.VolumeMount{
+					{
+						Name:      "sources",
+						MountPath: getWorkingSourcesDir(fRuntime),
 					},
-					Containers: []corev1.Container{
-						{
-							Name:       fmt.Sprintf("%s-function-pod", function.Name),
-							Image:      getRuntimeImage(fRuntime),
-							WorkingDir: getWorkingSourcesDir(fRuntime),
-							Command: []string{
-								"sh",
-								"-c",
-								getRuntimeCommand(*function),
-							},
-							Env: getEnvs(fRuntime),
-							VolumeMounts: []corev1.VolumeMount{
-								{
-									Name:      "sources",
-									MountPath: getWorkingSourcesDir(fRuntime),
-								},
-								{
-									Name:      "local",
-									MountPath: "/.local",
-								},
-							},
-							Ports: []corev1.ContainerPort{
-								{
-									ContainerPort: 80,
-								},
-							},
-						},
+					{
+						Name:      "local",
+						MountPath: "/.local",
+					},
+				},
+				Ports: []corev1.ContainerPort{
+					{
+						ContainerPort: 80,
 					},
 				},
 			},
 		},
 	}
-	return deployment
 }
 
 func getRuntimeImage(runtime serverlessv1alpha2.Runtime) string {
@@ -156,10 +160,6 @@ func getEnvs(runtime serverlessv1alpha2.Runtime) []corev1.EnvVar {
 				Name:  "FUNC_HANDLER",
 				Value: "main",
 			},
-			//{
-			//	Name:  "PYTHONPATH",
-			//	Value: "/kubeless",
-			//},
 		}...)
 	}
 	return envs
