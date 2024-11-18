@@ -36,6 +36,32 @@ type FunctionSpec struct {
 	// Specifies the runtime of the Function. The available values are `nodejs20`, and `python312`.
 	// +kubebuilder:validation:Enum=nodejs20;python312;
 	Runtime Runtime `json:"runtime"`
+
+	// Contains the Function's source code configuration.
+	// +kubebuilder:validation:XValidation:message="Use GitRepository or Inline source",rule="has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository) && has(self.inline)"
+	// +kubebuilder:validation:Required
+	Source Source `json:"source"`
+}
+
+type Source struct {
+	// Defines the Function as git-sourced. Can't be used together with **Inline**.
+	// +optional
+	//	GitRepository *GitRepositorySource `json:"gitRepository,omitempty"`
+
+	// Defines the Function as the inline Function. Can't be used together with **GitRepository**.
+	// +optional
+	Inline *InlineSource `json:"inline,omitempty"`
+}
+
+type InlineSource struct {
+	// Specifies the Function's full source code.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	Source string `json:"source"`
+
+	// Specifies the Function's dependencies.
+	//+optional
+	Dependencies string `json:"dependencies,omitempty"`
 }
 
 // FunctionStatus defines the observed state of Function.
