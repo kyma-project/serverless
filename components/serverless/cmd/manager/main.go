@@ -19,10 +19,12 @@ import (
 	"go.uber.org/zap/zapcore"
 
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/cache"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
@@ -117,6 +119,13 @@ func main() {
 			Port: config.SecretMutatingWebhookPort,
 		}),
 		HealthProbeBindAddress: config.Healthz.Address,
+		Cache: cache.Options{
+			ByObject: map[ctrlclient.Object]cache.ByObject{
+				&corev1.Secret{}: {
+					Label: labels.SelectorFromSet(labels.Set{"serverless.kyma-project.io/config": "credentials"}),
+				},
+			},
+		},
 		Client: ctrlclient.Options{
 			Cache: &ctrlclient.CacheOptions{
 				DisableFor: []ctrlclient.Object{
