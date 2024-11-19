@@ -9,7 +9,6 @@ import (
 )
 
 func buildDeployment(function *serverlessv1alpha2.Function) *appsv1.Deployment {
-	runtime := function.Spec.Runtime
 
 	labels := map[string]string{
 		"app": function.Name,
@@ -29,27 +28,30 @@ func buildDeployment(function *serverlessv1alpha2.Function) *appsv1.Deployment {
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: labels,
 				},
-				Spec: buildPodSpec(function, runtime),
+				Spec: buildPodSpec(function),
 			},
 		},
 	}
 	return deployment
 }
 
-func buildPodSpec(function *serverlessv1alpha2.Function, runtime serverlessv1alpha2.Runtime) corev1.PodSpec {
+func buildPodSpec(f *serverlessv1alpha2.Function) corev1.PodSpec {
+	runtime := f.Spec.Runtime
+
 	return corev1.PodSpec{
 		Volumes: getVolumes(runtime),
 		Containers: []corev1.Container{
 			{
-				Name:       fmt.Sprintf("%s-function-pod", function.Name),
+				Name:       fmt.Sprintf("%s-function-pod", f.Name),
 				Image:      getRuntimeImage(runtime),
 				WorkingDir: getWorkingSourcesDir(runtime),
 				Command: []string{
 					"sh",
 					"-c",
-					getRuntimeCommand(*function),
+					getRuntimeCommand(*f),
 				},
-				Env:          getEnvs(*function),
+				Resources:    getResourceConfiguration(*f),
+				Env:          getEnvs(*f),
 				VolumeMounts: getVolumeMounts(runtime),
 				Ports: []corev1.ContainerPort{
 					{
@@ -180,4 +182,11 @@ func getEnvs(f serverlessv1alpha2.Function) []corev1.EnvVar {
 	}
 	envs = append(envs, f.Spec.Env...)
 	return envs
+}
+
+func getResourceConfiguration(f serverlessv1alpha2.Function) corev1.ResourceRequirements {
+	if f.Spec.ResourceConfiguration != nil && f.Spec.ResourceConfiguration.Function != nil && f.Spec.ResourceConfiguration.Function.Resources != nil {
+		return *f.Spec.ResourceConfiguration.Function.Resources
+	}
+	return corev1.ResourceRequirements{}
 }

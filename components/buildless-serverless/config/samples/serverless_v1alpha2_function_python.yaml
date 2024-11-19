@@ -10,13 +10,18 @@ spec:
   env:
     - name: chleb
       value: maka
+  resourceConfiguration:
+    function:
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 150m
+          memory: 128Mi
   source:
     inline:
       source: |
-        import requests
         import os
         def main(event, context):
-          r = requests.get('https://swapi.dev/api/people/13')
           return os.environ.get('chleb', 'sol')
-      dependencies: |
-        requests==2.31.0
