@@ -6,6 +6,7 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
   name: sample-python
 spec:
+  replicas: 3
   runtime: python312
   env:
     - name: chleb

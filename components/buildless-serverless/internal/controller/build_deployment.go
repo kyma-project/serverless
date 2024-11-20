@@ -8,6 +8,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const DefaultDeploymentReplicas int32 = 1
+
 func buildDeployment(function *serverlessv1alpha2.Function) *appsv1.Deployment {
 
 	labels := map[string]string{
@@ -30,6 +32,7 @@ func buildDeployment(function *serverlessv1alpha2.Function) *appsv1.Deployment {
 				},
 				Spec: buildPodSpec(function),
 			},
+			Replicas: getReplicas(*function),
 		},
 	}
 	return deployment
@@ -61,6 +64,14 @@ func buildPodSpec(f *serverlessv1alpha2.Function) corev1.PodSpec {
 			},
 		},
 	}
+}
+
+func getReplicas(f serverlessv1alpha2.Function) *int32 {
+	if f.Spec.Replicas != nil {
+		return f.Spec.Replicas
+	}
+	defaultValue := DefaultDeploymentReplicas
+	return &defaultValue
 }
 
 func getVolumes(runtime serverlessv1alpha2.Runtime) []corev1.Volume {

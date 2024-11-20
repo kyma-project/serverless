@@ -52,6 +52,14 @@ type FunctionSpec struct {
 	// Specifies resources requested by the Function and the build Job.
 	// +optional
 	ResourceConfiguration *ResourceConfiguration `json:"resourceConfiguration,omitempty"`
+
+	// Defines the exact number of Function's Pods to run at a time.
+	// If  the Function is targeted by an external scaler,
+	// then the **Replicas** field is used by the relevant HorizontalPodAutoscaler to control the number of active replicas.
+	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:default:=1
+	// +optional
+	Replicas *int32 `json:"replicas,omitempty"`
 }
 
 type Source struct {

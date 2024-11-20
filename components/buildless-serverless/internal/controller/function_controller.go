@@ -115,8 +115,10 @@ func (r *FunctionReconciler) createDeployment(ctx context.Context, function serv
 
 func (r *FunctionReconciler) updateDeploymentIfNeeded(ctx context.Context, clusterDeployment *appsv1.Deployment, builtDeployment *appsv1.Deployment) (ctrl.Result, error) {
 	// Ensure the Deployment data matches the desired state
-	if !cmp.Equal(clusterDeployment.Spec.Template, builtDeployment.Spec.Template) {
+	if !cmp.Equal(clusterDeployment.Spec.Template, builtDeployment.Spec.Template) ||
+		*clusterDeployment.Spec.Replicas != *builtDeployment.Spec.Replicas {
 		clusterDeployment.Spec.Template = builtDeployment.Spec.Template
+		clusterDeployment.Spec.Replicas = builtDeployment.Spec.Replicas
 		if err := r.Update(ctx, clusterDeployment); err != nil {
 			r.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", clusterDeployment.Namespace, "Deployment.Name", clusterDeployment.Name)
 			return ctrl.Result{}, err

@@ -163,6 +163,15 @@ spec:
                 x-kubernetes-validations:
                 - message: 'Following envs are reserved and cannot be used: [''FUNC_RUNTIME'',''FUNC_HANDLER'',''FUNC_PORT'',''FUNC_HANDLER_SOURCE'',''FUNC_HANDLER_DEPENDENCIES'',''MOD_NAME'',''NODE_PATH'',''PYTHONPATH'']'
                   rule: (self.all(e, !(e.name in ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','MOD_NAME','NODE_PATH','PYTHONPATH'])))
+              replicas:
+                default: 1
+                description: |-
+                  Defines the exact number of Function's Pods to run at a time.
+                  If  the Function is targeted by an external scaler,
+                  then the **Replicas** field is used by the relevant HorizontalPodAutoscaler to control the number of active replicas.
+                format: int32
+                minimum: 0
+                type: integer
               resourceConfiguration:
                 description: Specifies resources requested by the Function and the
                   build Job.
