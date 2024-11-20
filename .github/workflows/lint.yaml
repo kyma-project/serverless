@@ -3,9 +3,9 @@ name: lint
 on:
   pull_request:
     paths:
-      - 'components/operator/**'
-      - 'components/serverless/**'
-      - '.github/**'
+      - "components/operator/**"
+      - "components/serverless/**"
+      - ".github/**"
     types: [opened, reopened, synchronize, ready_for_review, converted_to_draft]
 
 jobs:
@@ -13,21 +13,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/rebase
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: ./.github/actions/setup-go
       - uses: golangci/golangci-lint-action@v3
         with:
           version: latest
-          working-directory: 'components/operator'
+          working-directory: "components/operator"
 
   serverless-lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/rebase
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/setup-libgit2
       - uses: golangci/golangci-lint-action@v3
         with:
           version: latest
-          working-directory: 'components/serverless'
+          working-directory: "components/serverless"

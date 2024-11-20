@@ -9,11 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: ./.github/actions/rebase
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: gaurav-nelson/github-action-markdown-link-check@v1
         with:
-          use-quiet-mode: 'yes'  
-          use-verbose-mode: 'yes'
-          config-file: '.mlc.config.json'
-          folder-path: '.'
+          use-quiet-mode: "yes"
+          use-verbose-mode: "yes"
+          config-file: ".mlc.config.json"
+          folder-path: "."
           max-depth: -1
