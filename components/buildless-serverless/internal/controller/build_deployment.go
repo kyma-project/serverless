@@ -6,6 +6,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/utils/ptr"
 )
 
 const DefaultDeploymentReplicas int32 = 1
@@ -41,8 +42,10 @@ func buildDeployment(function *serverlessv1alpha2.Function) *appsv1.Deployment {
 func buildPodSpec(f *serverlessv1alpha2.Function) corev1.PodSpec {
 	runtime := f.Spec.Runtime
 
+	secretVolumes, secretVolumeMounts := buildDeploymentSecretVolumes(f.Spec.SecretMounts)
+
 	return corev1.PodSpec{
-		Volumes: getVolumes(runtime),
+		Volumes: append(getVolumes(runtime), secretVolumes...),
 		Containers: []corev1.Container{
 			{
 				Name:       fmt.Sprintf("%s-function-pod", f.Name),
@@ -55,7 +58,7 @@ func buildPodSpec(f *serverlessv1alpha2.Function) corev1.PodSpec {
 				},
 				Resources:    getResourceConfiguration(*f),
 				Env:          getEnvs(*f),
-				VolumeMounts: getVolumeMounts(runtime),
+				VolumeMounts: append(getVolumeMounts(runtime), secretVolumeMounts...),
 				Ports: []corev1.ContainerPort{
 					{
 						ContainerPort: 80,
@@ -200,4 +203,32 @@ func getResourceConfiguration(f serverlessv1alpha2.Function) corev1.ResourceRequ
 		return *f.Spec.ResourceConfiguration.Function.Resources
 	}
 	return corev1.ResourceRequirements{}
+}
+
+func buildDeploymentSecretVolumes(secretMounts []serverlessv1alpha2.SecretMount) (volumes []corev1.Volume, volumeMounts []corev1.VolumeMount) {
+	volumes = []corev1.Volume{}
+	volumeMounts = []corev1.VolumeMount{}
+	for _, secretMount := range secretMounts {
+		volumeName := secretMount.SecretName
+
+		volume := corev1.Volume{
+			Name: volumeName,
+			VolumeSource: corev1.VolumeSource{
+				Secret: &corev1.SecretVolumeSource{
+					SecretName:  secretMount.SecretName,
+					DefaultMode: ptr.To[int32](0666), //read and write only for everybody
+					Optional:    ptr.To[bool](false),
+				},
+			},
+		}
+		volumes = append(volumes, volume)
+
+		volumeMount := corev1.VolumeMount{
+			Name:      volumeName,
+			ReadOnly:  true,
+			MountPath: secretMount.MountPath,
+		}
+		volumeMounts = append(volumeMounts, volumeMount)
+	}
+	return volumes, volumeMounts
 }

@@ -60,6 +60,9 @@ type FunctionSpec struct {
 	// +kubebuilder:default:=1
 	// +optional
 	Replicas *int32 `json:"replicas,omitempty"`
+
+	// Specifies Secrets to mount into the Function's container filesystem.
+	SecretMounts []SecretMount `json:"secretMounts,omitempty"`
 }
 
 type Source struct {
@@ -109,6 +112,19 @@ type ResourceRequirements struct {
 	// For configuration details, see the [official Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
 	// +optional
 	Resources *corev1.ResourceRequirements `json:"resources,omitempty"`
+}
+
+type SecretMount struct {
+	// Specifies the name of the Secret in the Function's Namespace.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MaxLength=253
+	// +kubebuilder:validation:MinLength=1
+	SecretName string `json:"secretName"`
+
+	// Specifies the path within the container where the Secret should be mounted.
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:MinLength=1
+	MountPath string `json:"mountPath"`
 }
 
 // FunctionStatus defines the observed state of Function.
