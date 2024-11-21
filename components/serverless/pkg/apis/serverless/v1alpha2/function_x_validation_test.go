@@ -693,19 +693,6 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			fieldPath:      "spec.template",
 			expectedErrMsg: "Not supported: Use spec.labels and spec.annotations to label and/or annotate Function's Pods.",
 		},
-		"disallowed runtime: custom": {
-			fn: &serverlessv1alpha2.Function{
-				ObjectMeta: fixMetadata,
-				Spec: serverlessv1alpha2.FunctionSpec{
-					Source: serverlessv1alpha2.Source{
-						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
-					Runtime: serverlessv1alpha2.Runtime("custom"),
-				},
-			},
-			expectedCause:  metav1.CauseTypeFieldValueNotSupported,
-			fieldPath:      "spec.runtime",
-			expectedErrMsg: `Unsupported value: "custom"`,
-		},
 		"reserved env: FUNC_RUNTIME": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
@@ -961,6 +948,63 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			fieldPath:      "spec.source.gitRepository.auth.secretName",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
+	}
+	for name, tc := range testCases {
+		t.Run(name, func(t *testing.T) {
+			//WHEN
+			err := k8sClient.Create(ctx, tc.fn)
+
+			//THEN
+			require.Error(t, err)
+			errStatus, ok := err.(*k8serrors.StatusError)
+			require.True(t, ok)
+			causes := errStatus.Status().Details.Causes
+			require.Len(t, causes, 1)
+			cause := causes[0]
+			assert.Equal(t, tc.expectedCause, cause.Type)
+			assert.Equal(t, tc.fieldPath, cause.Field)
+			assert.NotEmpty(t, tc.expectedErrMsg, "cause message: %s", cause.Message)
+			//TODO: better will be Equal comparison
+			assert.Contains(t, cause.Message, tc.expectedErrMsg)
+		})
+	}
+}
+
+// in some cases k8s 1.30+ returns two reasons
+func Test_XKubernetesValidations_InvalidMultipleCauses(t *testing.T) {
+	fixMetadata := metav1.ObjectMeta{
+		GenerateName: "test",
+		Namespace:    "test",
+	}
+	ctx := context.TODO()
+	k8sClient, testEnv := testenv.Start(t)
+	defer testenv.Stop(t, testEnv)
+	testNs := corev1.Namespace{
+		ObjectMeta: metav1.ObjectMeta{Name: "test"},
+	}
+	err := k8sClient.Create(ctx, &testNs)
+	require.NoError(t, err)
+
+	//GIVEN
+	testCases := map[string]struct {
+		fn             *serverlessv1alpha2.Function
+		expectedErrMsg string
+		fieldPath      string
+		expectedCause  metav1.CauseType
+	}{
+		"disallowed runtime: custom": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
+					Runtime: serverlessv1alpha2.Runtime("custom"),
+				},
+			},
+			expectedCause:  metav1.CauseTypeFieldValueNotSupported,
+			fieldPath:      "spec.runtime",
+			expectedErrMsg: `Unsupported value: "custom"`,
+		},
 		"Git source auth has incorrect Type": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
@@ -995,13 +1039,19 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			errStatus, ok := err.(*k8serrors.StatusError)
 			require.True(t, ok)
 			causes := errStatus.Status().Details.Causes
-			require.Len(t, causes, 1)
-			cause := causes[0]
-			assert.Equal(t, tc.expectedCause, cause.Type)
-			assert.Equal(t, tc.fieldPath, cause.Field)
-			assert.NotEmpty(t, tc.expectedErrMsg, "cause message: %s", cause.Message)
-			//TODO: better will be Equal comparison
-			assert.Contains(t, cause.Message, tc.expectedErrMsg)
+			require.Len(t, causes, 2)
+			causeFound := false
+			for _, cause := range causes {
+				if cause.Type == tc.expectedCause && cause.Field == tc.fieldPath {
+					causeFound = true
+					assert.Equal(t, tc.expectedCause, cause.Type)
+					assert.Equal(t, tc.fieldPath, cause.Field)
+					assert.NotEmpty(t, tc.expectedErrMsg, "cause message: %s", cause.Message)
+					//TODO: better will be Equal comparison
+					assert.Contains(t, cause.Message, tc.expectedErrMsg)
+				}
+			}
+			assert.True(t, causeFound)
 		})
 	}
 }
