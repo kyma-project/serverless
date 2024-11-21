@@ -224,7 +224,6 @@ spec:
                 type: string
             required:
             - served
-            - state
             type: object
         type: object
     served: true
