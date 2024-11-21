@@ -32,6 +32,7 @@ func setInitialServed(ctx context.Context, r *reconciler, s *systemState) error 
 
 func setServed(servedServerless *v1alpha1.Serverless, s *systemState) error {
 	if servedServerless == nil {
+		s.setState(v1alpha1.StateProcessing)
 		s.setServed(v1alpha1.ServedTrue)
 		return nil
 	}
