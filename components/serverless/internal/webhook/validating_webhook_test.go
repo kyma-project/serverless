@@ -43,7 +43,7 @@ func TestValidatingWebHook_Handle(t *testing.T) {
 			fields: fields{
 				configV1Alpha2: fixValidationConfig(),
 				client:         fake.NewClientBuilder().Build(),
-				decoder:        decoder,
+				decoder:        &decoder,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -110,7 +110,7 @@ func TestValidatingWebHook_Handle(t *testing.T) {
 			fields: fields{
 				configV1Alpha2: fixValidationConfig(),
 				client:         fake.NewClientBuilder().Build(),
-				decoder:        decoder,
+				decoder:        &decoder,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -130,7 +130,7 @@ func TestValidatingWebHook_Handle(t *testing.T) {
 			fields: fields{
 				configV1Alpha2: fixValidationConfig(),
 				client:         fake.NewClientBuilder().Build(),
-				decoder:        decoder,
+				decoder:        &decoder,
 			},
 			args: args{
 				ctx: context.Background(),
@@ -150,7 +150,7 @@ func TestValidatingWebHook_Handle(t *testing.T) {
 			fields: fields{
 				configV1Alpha2: fixValidationConfig(),
 				client:         fake.NewClientBuilder().Build(),
-				decoder:        decoder,
+				decoder:        &decoder,
 			},
 			args: args{
 				ctx: context.Background(),
