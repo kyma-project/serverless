@@ -8,6 +8,8 @@ rules:
   - ""
   resources:
   - configmaps
+  - namespaces
+  - persistentvolumeclaims
   - secrets
   - serviceaccounts
   - services
@@ -33,36 +35,10 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - namespaces
-  verbs:
-  - create
-  - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - ""
-  resources:
   - nodes
   verbs:
   - get
   - list
-  - watch
-- apiGroups:
-  - ""
-  resources:
-  - persistentvolumeclaims
-  verbs:
-  - create
-  - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
   - watch
 - apiGroups:
   - admissionregistration.k8s.io
@@ -95,18 +71,6 @@ rules:
   - apps
   resources:
   - daemonsets
-  verbs:
-  - create
-  - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - apps
-  resources:
   - deployments
   verbs:
   - create
@@ -178,31 +142,7 @@ rules:
   - operator.kyma-project.io
   resources:
   - serverlesses
-  verbs:
-  - create
-  - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - operator.kyma-project.io
-  resources:
   - serverlesses/finalizers
-  verbs:
-  - create
-  - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - operator.kyma-project.io
-  resources:
   - serverlesses/status
   verbs:
   - create
@@ -224,18 +164,6 @@ rules:
   resources:
   - clusterrolebindings
   - clusterroles
-  verbs:
-  - create
-  - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - rbac.authorization.k8s.io
-  resources:
   - rolebindings
   - roles
   verbs:
@@ -264,18 +192,6 @@ rules:
   - serverless.kyma-project.io
   resources:
   - functions
-  verbs:
-  - create
-  - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - serverless.kyma-project.io
-  resources:
   - functions/status
   verbs:
   - create
