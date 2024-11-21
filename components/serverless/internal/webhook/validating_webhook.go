@@ -59,7 +59,7 @@ func (w *ValidatingWebHook) handleFunctionValidation(req admission.Request) admi
 	case serverlessv1alpha2.FunctionVersion:
 		{
 			fn := &serverlessv1alpha2.Function{}
-			if err := w.decoder.Decode(req, fn); err != nil {
+			if err := (*w.decoder).Decode(req, fn); err != nil {
 				return admission.Errored(http.StatusBadRequest, err)
 			}
 		}

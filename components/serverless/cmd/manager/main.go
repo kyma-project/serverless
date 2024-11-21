@@ -163,7 +163,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	err = fnCtrl.Watch(&source.Channel{Source: healthEventsCh}, &handler.EnqueueRequestForObject{})
+	err = fnCtrl.Watch(source.Channel(healthEventsCh, &handler.EnqueueRequestForObject{}))
 	if err != nil {
 		setupLog.Error(err, "unable to watch health events channel")
 		os.Exit(1)
