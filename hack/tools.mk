@@ -40,7 +40,7 @@ $(KUSTOMIZE): $(LOCALBIN)
 	test -s $(LOCALBIN)/kustomize || { curl -Ss $(KUSTOMIZE_INSTALL_SCRIPT) | bash -s -- $(subst v,,$(KUSTOMIZE_VERSION)) $(LOCALBIN); }
 
 ########## Controller-Gen ###########
-CONTROLLER_TOOLS_VERSION ?= v0.14.0
+CONTROLLER_TOOLS_VERSION ?= v0.16.5
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
 
 .PHONY: controller-gen $(CONTROLLER_GEN)
