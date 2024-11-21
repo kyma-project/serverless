@@ -6,7 +6,7 @@ import (
 
 	"github.com/kyma-project/serverless/components/serverless/internal/logging/tracing"
 
-	"github.com/bmizerany/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetMetadata(t *testing.T) {
