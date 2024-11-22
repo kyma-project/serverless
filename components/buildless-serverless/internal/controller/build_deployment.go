@@ -11,7 +11,7 @@ import (
 
 const DefaultDeploymentReplicas int32 = 1
 
-func buildDeployment(function *serverlessv1alpha2.Function) *appsv1.Deployment {
+func (r *FunctionReconciler) buildDeployment(function *serverlessv1alpha2.Function) *appsv1.Deployment {
 
 	labels := map[string]string{
 		"app": function.Name,
@@ -31,7 +31,7 @@ func buildDeployment(function *serverlessv1alpha2.Function) *appsv1.Deployment {
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: labels,
 				},
-				Spec: buildPodSpec(function),
+				Spec: r.buildPodSpec(function),
 			},
 			Replicas: getReplicas(*function),
 		},
@@ -39,7 +39,7 @@ func buildDeployment(function *serverlessv1alpha2.Function) *appsv1.Deployment {
 	return deployment
 }
 
-func buildPodSpec(f *serverlessv1alpha2.Function) corev1.PodSpec {
+func (r *FunctionReconciler) buildPodSpec(f *serverlessv1alpha2.Function) corev1.PodSpec {
 	runtime := f.Spec.Runtime
 
 	secretVolumes, secretVolumeMounts := buildDeploymentSecretVolumes(f.Spec.SecretMounts)
@@ -49,7 +49,7 @@ func buildPodSpec(f *serverlessv1alpha2.Function) corev1.PodSpec {
 		Containers: []corev1.Container{
 			{
 				Name:       fmt.Sprintf("%s-function-pod", f.Name),
-				Image:      getRuntimeImage(runtime, f.Spec.RuntimeImageOverride),
+				Image:      r.getRuntimeImage(runtime, f.Spec.RuntimeImageOverride),
 				WorkingDir: getWorkingSourcesDir(runtime),
 				Command: []string{
 					"sh",
@@ -115,16 +115,16 @@ func getVolumeMounts(runtime serverlessv1alpha2.Runtime) []corev1.VolumeMount {
 	return volumeMounts
 }
 
-func getRuntimeImage(runtime serverlessv1alpha2.Runtime, runtimeOverride string) string {
+func (r *FunctionReconciler) getRuntimeImage(runtime serverlessv1alpha2.Runtime, runtimeOverride string) string {
 	if runtimeOverride != "" {
 		return runtimeOverride
 	}
 
 	switch runtime {
 	case serverlessv1alpha2.NodeJs20:
-		return "europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main"
+		return r.Config.ImageNodeJs20
 	case serverlessv1alpha2.Python312:
-		return "europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main"
+		return r.Config.ImagePython312
 	default:
 		return ""
 	}

@@ -38,7 +38,13 @@ type FunctionReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 	//TODO: Add to logger request data somehow
-	Log *zap.SugaredLogger
+	Log    *zap.SugaredLogger
+	Config FunctionConfig
+}
+
+type FunctionConfig struct {
+	ImageNodeJs20  string
+	ImagePython312 string
 }
 
 // +kubebuilder:rbac:groups=serverless.kyma-project.io,resources=functions,verbs=get;list;watch;create;update;patch;delete
@@ -66,7 +72,7 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 }
 
 func (r *FunctionReconciler) handleDeployment(ctx context.Context, function serverlessv1alpha2.Function) (ctrl.Result, error) {
-	builtDeployment := buildDeployment(&function)
+	builtDeployment := r.buildDeployment(&function)
 
 	clusterDeployment, resultGet, errGet := r.getOrCreateDeployment(ctx, function, builtDeployment)
 	if clusterDeployment == nil {

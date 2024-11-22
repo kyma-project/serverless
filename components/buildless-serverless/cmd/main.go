@@ -19,6 +19,8 @@ package main
 import (
 	"crypto/tls"
 	"flag"
+	"fmt"
+	"github.com/vrischmann/envconfig"
 	uberzap "go.uber.org/zap"
 	uberzapcore "go.uber.org/zap/zapcore"
 	"os"
@@ -54,7 +56,18 @@ func init() {
 	// +kubebuilder:scaffold:scheme
 }
 
+type serverlessConfig struct {
+	Function controller.FunctionConfig
+}
+
 func main() {
+	config, err := loadConfig("APP")
+	if err != nil {
+		fmt.Printf("chleb %s", err)
+		setupLog.Error(err, "unable to load config")
+		os.Exit(1)
+	}
+
 	var metricsAddr string
 	var enableLeaderElection bool
 	var probeAddr string
@@ -147,12 +160,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	config := uberzap.NewDevelopmentConfig()
-	config.EncoderConfig.TimeKey = "timestamp"
-	config.EncoderConfig.EncodeTime = opts.TimeEncoder
-	config.DisableCaller = true
+	logConfig := uberzap.NewDevelopmentConfig()
+	logConfig.EncoderConfig.TimeKey = "timestamp"
+	logConfig.EncoderConfig.EncodeTime = opts.TimeEncoder
+	logConfig.DisableCaller = true
 
-	reconcilerLogger, err := config.Build()
+	reconcilerLogger, err := logConfig.Build()
 	if err != nil {
 		setupLog.Error(err, "unable to setup logger")
 		os.Exit(1)
@@ -162,6 +175,7 @@ func main() {
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 		Log:    reconcilerLogger.Sugar(),
+		Config: config.Function,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Function")
 		os.Exit(1)
@@ -182,4 +196,13 @@ func main() {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
+}
+
+func loadConfig(prefix string) (serverlessConfig, error) {
+	cfg := serverlessConfig{}
+	err := envconfig.InitWithPrefix(&cfg, prefix)
+	if err != nil {
+		return cfg, err
+	}
+	return cfg, nil
 }
