@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"github.com/google/go-cmp/cmp"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -68,7 +69,24 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (c
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	return r.handleDeployment(ctx, function)
+	result, err := r.handleDeployment(ctx, function)
+	//TODO: handle when err==nil and result has RequeueAfter
+	if err != nil {
+		return result, err
+	}
+	err = r.updateStatus(ctx, function)
+	if err != nil {
+		return ctrl.Result{}, err
+	}
+	return ctrl.Result{}, nil
+}
+
+func (r *FunctionReconciler) updateStatus(ctx context.Context, function serverlessv1alpha2.Function) error {
+	function.Status.RuntimeImage = r.getRuntimeImage(function.Spec.Runtime, function.Spec.RuntimeImageOverride)
+	if err := r.Client.Status().Update(ctx, &function); err != nil {
+		return errors.Wrap(err, "while updating function status")
+	}
+	return nil
 }
 
 func (r *FunctionReconciler) handleDeployment(ctx context.Context, function serverlessv1alpha2.Function) (ctrl.Result, error) {

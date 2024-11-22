@@ -133,8 +133,8 @@ type SecretMount struct {
 
 // FunctionStatus defines the observed state of Function.
 type FunctionStatus struct {
-	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+	// Specifies the image version used to build and run the Function's Pods.
+	RuntimeImage string `json:"runtimeImage,omitempty"`
 }
 
 // +kubebuilder:object:root=true
