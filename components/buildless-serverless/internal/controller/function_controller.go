@@ -119,26 +119,27 @@ func (r *FunctionReconciler) updateDeploymentIfNeeded(ctx context.Context, clust
 
 	if runtimeImageOverride != "" && builtImage != runtimeImageOverride {
 		clusterDeployment.Spec.Template.Spec.Containers[0].Image = runtimeImageOverride
-		if err := r.Update(ctx, clusterDeployment); err != nil {
-			r.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", clusterDeployment.Namespace, "Deployment.Name", clusterDeployment.Name)
-			return ctrl.Result{}, err
-		}
-		// Requeue the request to ensure the Deployment is updated
-		return ctrl.Result{Requeue: true}, nil
+		return r.updateDeployment(ctx, clusterDeployment)
 	}
+
 	// Ensure the Deployment data matches the desired state
 	if !cmp.Equal(clusterDeployment.Spec.Template, builtDeployment.Spec.Template) ||
 		*clusterDeployment.Spec.Replicas != *builtDeployment.Spec.Replicas {
 		clusterDeployment.Spec.Template = builtDeployment.Spec.Template
 		clusterDeployment.Spec.Replicas = builtDeployment.Spec.Replicas
-		if err := r.Update(ctx, clusterDeployment); err != nil {
-			r.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", clusterDeployment.Namespace, "Deployment.Name", clusterDeployment.Name)
-			return ctrl.Result{}, err
-		}
-		// Requeue the request to ensure the Deployment is updated
-		return ctrl.Result{Requeue: true}, nil
+		return r.updateDeployment(ctx, clusterDeployment)
 	}
+
 	return ctrl.Result{}, nil
+}
+
+func (r *FunctionReconciler) updateDeployment(ctx context.Context, clusterDeployment *appsv1.Deployment) (ctrl.Result, error) {
+	if err := r.Update(ctx, clusterDeployment); err != nil {
+		r.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", clusterDeployment.Namespace, "Deployment.Name", clusterDeployment.Name)
+		return ctrl.Result{}, err
+	}
+	// Requeue the request to ensure the Deployment is updated
+	return ctrl.Result{Requeue: true}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
