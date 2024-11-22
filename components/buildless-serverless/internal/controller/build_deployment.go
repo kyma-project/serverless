@@ -49,7 +49,7 @@ func buildPodSpec(f *serverlessv1alpha2.Function) corev1.PodSpec {
 		Containers: []corev1.Container{
 			{
 				Name:       fmt.Sprintf("%s-function-pod", f.Name),
-				Image:      getRuntimeImage(runtime),
+				Image:      getRuntimeImage(runtime, f.Spec.RuntimeImageOverride),
 				WorkingDir: getWorkingSourcesDir(runtime),
 				Command: []string{
 					"sh",
@@ -115,7 +115,11 @@ func getVolumeMounts(runtime serverlessv1alpha2.Runtime) []corev1.VolumeMount {
 	return volumeMounts
 }
 
-func getRuntimeImage(runtime serverlessv1alpha2.Runtime) string {
+func getRuntimeImage(runtime serverlessv1alpha2.Runtime, runtimeOverride string) string {
+	if runtimeOverride != "" {
+		return runtimeOverride
+	}
+
 	switch runtime {
 	case serverlessv1alpha2.NodeJs20:
 		return "europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main"

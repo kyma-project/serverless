@@ -114,14 +114,6 @@ func (r *FunctionReconciler) createDeployment(ctx context.Context, function serv
 }
 
 func (r *FunctionReconciler) updateDeploymentIfNeeded(ctx context.Context, clusterDeployment *appsv1.Deployment, builtDeployment *appsv1.Deployment, function serverlessv1alpha2.Function) (ctrl.Result, error) {
-	runtimeImageOverride := function.Spec.RuntimeImageOverride
-	builtImage := builtDeployment.Spec.Template.Spec.Containers[0].Image
-
-	if runtimeImageOverride != "" && builtImage != runtimeImageOverride {
-		clusterDeployment.Spec.Template.Spec.Containers[0].Image = runtimeImageOverride
-		return r.updateDeployment(ctx, clusterDeployment)
-	}
-
 	// Ensure the Deployment data matches the desired state
 	if !cmp.Equal(clusterDeployment.Spec.Template, builtDeployment.Spec.Template) ||
 		*clusterDeployment.Spec.Replicas != *builtDeployment.Spec.Replicas {
