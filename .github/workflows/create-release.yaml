@@ -41,6 +41,7 @@ jobs:
         with:
           token: ${{ secrets.BOT_TOKEN }}
           fetch-depth: 0
+      - uses: ./.github/actions/setup-libgit2
 
       - name: Bump values.yaml
         run: |
