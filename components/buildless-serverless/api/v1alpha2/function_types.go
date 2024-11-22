@@ -38,6 +38,10 @@ type FunctionSpec struct {
 	// +kubebuilder:validation:Enum=nodejs20;python312;
 	Runtime Runtime `json:"runtime"`
 
+	// Specifies the runtime image used instead of the default one.
+	// +optional
+	RuntimeImageOverride string `json:"runtimeImageOverride,omitempty"`
+
 	// Contains the Function's source code configuration.
 	/*    // +kubebuilder:validation:XValidation:message="Use GitRepository or Inline source",rule="has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository) && has(self.inline)" */
 	// +kubebuilder:validation:Required

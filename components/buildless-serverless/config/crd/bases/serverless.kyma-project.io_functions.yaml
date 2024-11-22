@@ -340,6 +340,10 @@ spec:
                 - nodejs20
                 - python312
                 type: string
+              runtimeImageOverride:
+                description: Specifies the runtime image used instead of the default
+                  one.
+                type: string
               secretMounts:
                 description: Specifies Secrets to mount into the Function's container
                   filesystem.

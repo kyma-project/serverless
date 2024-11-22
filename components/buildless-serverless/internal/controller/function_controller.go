@@ -73,7 +73,7 @@ func (r *FunctionReconciler) handleDeployment(ctx context.Context, function serv
 		return resultGet, errGet
 	}
 
-	resultUpdate, errUpdate := r.updateDeploymentIfNeeded(ctx, clusterDeployment, builtDeployment)
+	resultUpdate, errUpdate := r.updateDeploymentIfNeeded(ctx, clusterDeployment, builtDeployment, function)
 	if errUpdate != nil {
 		return resultUpdate, errUpdate
 	}
@@ -113,7 +113,19 @@ func (r *FunctionReconciler) createDeployment(ctx context.Context, function serv
 	return ctrl.Result{RequeueAfter: time.Minute}, nil
 }
 
-func (r *FunctionReconciler) updateDeploymentIfNeeded(ctx context.Context, clusterDeployment *appsv1.Deployment, builtDeployment *appsv1.Deployment) (ctrl.Result, error) {
+func (r *FunctionReconciler) updateDeploymentIfNeeded(ctx context.Context, clusterDeployment *appsv1.Deployment, builtDeployment *appsv1.Deployment, function serverlessv1alpha2.Function) (ctrl.Result, error) {
+	runtimeImageOverride := function.Spec.RuntimeImageOverride
+	builtImage := builtDeployment.Spec.Template.Spec.Containers[0].Image
+
+	if runtimeImageOverride != "" && builtImage != runtimeImageOverride {
+		clusterDeployment.Spec.Template.Spec.Containers[0].Image = runtimeImageOverride
+		if err := r.Update(ctx, clusterDeployment); err != nil {
+			r.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", clusterDeployment.Namespace, "Deployment.Name", clusterDeployment.Name)
+			return ctrl.Result{}, err
+		}
+		// Requeue the request to ensure the Deployment is updated
+		return ctrl.Result{Requeue: true}, nil
+	}
 	// Ensure the Deployment data matches the desired state
 	if !cmp.Equal(clusterDeployment.Spec.Template, builtDeployment.Spec.Template) ||
 		*clusterDeployment.Spec.Replicas != *builtDeployment.Spec.Replicas {
