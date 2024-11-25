@@ -11,16 +11,16 @@ import (
 
 const DefaultDeploymentReplicas int32 = 1
 
-func (r *FunctionReconciler) buildDeployment(function *serverlessv1alpha2.Function) *appsv1.Deployment {
+func (r *FunctionReconciler) buildDeployment(f *serverlessv1alpha2.Function) *appsv1.Deployment {
 
 	labels := map[string]string{
-		"app": function.Name,
+		"app": f.Name,
 	}
 
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("%s-function-deployment", function.Name),
-			Namespace: function.Namespace,
+			Name:      fmt.Sprintf("%s-function-deployment", f.Name),
+			Namespace: f.Namespace,
 			Labels:    labels,
 		},
 		Spec: appsv1.DeploymentSpec{
@@ -31,9 +31,9 @@ func (r *FunctionReconciler) buildDeployment(function *serverlessv1alpha2.Functi
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: labels,
 				},
-				Spec: r.buildPodSpec(function),
+				Spec: r.buildPodSpec(f),
 			},
-			Replicas: getReplicas(*function),
+			Replicas: getReplicas(f),
 		},
 	}
 	return deployment
@@ -54,10 +54,10 @@ func (r *FunctionReconciler) buildPodSpec(f *serverlessv1alpha2.Function) corev1
 				Command: []string{
 					"sh",
 					"-c",
-					getRuntimeCommand(*f),
+					getRuntimeCommand(f),
 				},
-				Resources:    getResourceConfiguration(*f),
-				Env:          getEnvs(*f),
+				Resources:    getResourceConfiguration(f),
+				Env:          getEnvs(f),
 				VolumeMounts: append(getVolumeMounts(runtime), secretVolumeMounts...),
 				Ports: []corev1.ContainerPort{
 					{
@@ -69,7 +69,7 @@ func (r *FunctionReconciler) buildPodSpec(f *serverlessv1alpha2.Function) corev1
 	}
 }
 
-func getReplicas(f serverlessv1alpha2.Function) *int32 {
+func getReplicas(f *serverlessv1alpha2.Function) *int32 {
 	if f.Spec.Replicas != nil {
 		return f.Spec.Replicas
 	}
@@ -141,7 +141,7 @@ func getWorkingSourcesDir(runtime serverlessv1alpha2.Runtime) string {
 	}
 }
 
-func getRuntimeCommand(f serverlessv1alpha2.Function) string {
+func getRuntimeCommand(f *serverlessv1alpha2.Function) string {
 	runtime := f.Spec.Runtime
 	dependencies := f.Spec.Source.Inline.Dependencies
 	switch runtime {
@@ -174,7 +174,7 @@ python /kubeless.py;`
 	}
 }
 
-func getEnvs(f serverlessv1alpha2.Function) []corev1.EnvVar {
+func getEnvs(f *serverlessv1alpha2.Function) []corev1.EnvVar {
 	runtime := f.Spec.Runtime
 	envs := []corev1.EnvVar{
 		{
@@ -202,9 +202,10 @@ func getEnvs(f serverlessv1alpha2.Function) []corev1.EnvVar {
 	return envs
 }
 
-func getResourceConfiguration(f serverlessv1alpha2.Function) corev1.ResourceRequirements {
-	if f.Spec.ResourceConfiguration != nil && f.Spec.ResourceConfiguration.Function != nil && f.Spec.ResourceConfiguration.Function.Resources != nil {
-		return *f.Spec.ResourceConfiguration.Function.Resources
+func getResourceConfiguration(f *serverlessv1alpha2.Function) corev1.ResourceRequirements {
+	resCfg := f.Spec.ResourceConfiguration
+	if resCfg != nil && resCfg.Function != nil && resCfg.Function.Resources != nil {
+		return *resCfg.Function.Resources
 	}
 	return corev1.ResourceRequirements{}
 }
