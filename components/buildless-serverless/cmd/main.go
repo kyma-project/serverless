@@ -20,6 +20,7 @@ import (
 	"crypto/tls"
 	"flag"
 	"fmt"
+	"github.com/kyma-project/serverless/internal/config"
 	"github.com/vrischmann/envconfig"
 	uberzap "go.uber.org/zap"
 	uberzapcore "go.uber.org/zap/zapcore"
@@ -57,7 +58,7 @@ func init() {
 }
 
 type serverlessConfig struct {
-	Function controller.FunctionConfig
+	Function config.FunctionConfig
 }
 
 func main() {

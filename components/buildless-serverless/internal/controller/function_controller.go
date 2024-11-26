@@ -18,34 +18,24 @@ package controller
 
 import (
 	"context"
-	"fmt"
-	"github.com/google/go-cmp/cmp"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	"github.com/pkg/errors"
+	"github.com/kyma-project/serverless/internal/config"
+	"github.com/kyma-project/serverless/internal/controller/state"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
-	"time"
 )
 
 // FunctionReconciler reconciles a Function object
 type FunctionReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
-	//TODO: Add to logger request data somehow
 	Log    *zap.SugaredLogger
-	Config FunctionConfig
-}
-
-type FunctionConfig struct {
-	ImageNodeJs20  string
-	ImagePython312 string
+	Config config.FunctionConfig
 }
 
 // +kubebuilder:rbac:groups=serverless.kyma-project.io,resources=functions,verbs=get;list;watch;create;update;patch;delete
@@ -54,111 +44,43 @@ type FunctionConfig struct {
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
-func (r *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	r.Log.Info("reconciliation started")
+func (fr *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	log := fr.Log.With("request", req)
+	log.Info("reconciliation started")
 
-	var function serverlessv1alpha2.Function
-	if err := r.Get(ctx, req.NamespacedName, &function); err != nil {
+	var instance serverlessv1alpha2.Function
+	if err := fr.Get(ctx, req.NamespacedName, &instance); err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	result, err := r.handleDeployment(ctx, function)
-	//TODO: handle when err==nil and result has RequeueAfter
-	if err != nil {
-		return result, err
-	}
-	err = r.updateStatus(ctx, function)
-	if err != nil {
-		return ctrl.Result{}, err
-	}
-	return ctrl.Result{}, nil
+	sm := state.NewMachine(fr.Client, fr.Config, &instance, fr.Scheme, log)
+	return sm.Reconcile(ctx)
+
+	//////////////////////
+	/*	err = r.updateStatus(ctx, function)
+		if err != nil {
+			return ctrl.Result{}, err
+		}
+		return ctrl.Result{}, nil*/
+
 }
 
-func (r *FunctionReconciler) updateStatus(ctx context.Context, function serverlessv1alpha2.Function) error {
-	function.Status.RuntimeImage = r.getRuntimeImage(function.Spec.Runtime, function.Spec.RuntimeImageOverride)
-	if err := r.Client.Status().Update(ctx, &function); err != nil {
+/*func (fr *FunctionReconciler) updateStatus(ctx context.Context, function serverlessv1alpha2.Function) error {
+	function.Status.RuntimeImage = fr.getRuntimeImage(function.Spec.Runtime, function.Spec.RuntimeImageOverride)
+	if err := fr.Client.Status().Update(ctx, &function); err != nil {
 		return errors.Wrap(err, "while updating function status")
 	}
 	return nil
-}
-
-func (r *FunctionReconciler) handleDeployment(ctx context.Context, function serverlessv1alpha2.Function) (ctrl.Result, error) {
-	builtDeployment := r.buildDeployment(&function)
-
-	clusterDeployment, resultGet, errGet := r.getOrCreateDeployment(ctx, function, builtDeployment)
-	if clusterDeployment == nil {
-		return resultGet, errGet
-	}
-
-	resultUpdate, errUpdate := r.updateDeploymentIfNeeded(ctx, clusterDeployment, builtDeployment, function)
-	if errUpdate != nil {
-		return resultUpdate, errUpdate
-	}
-	return ctrl.Result{}, nil
-}
-
-func (r *FunctionReconciler) getOrCreateDeployment(ctx context.Context, function serverlessv1alpha2.Function, builtDeployment *appsv1.Deployment) (*appsv1.Deployment, ctrl.Result, error) {
-	currentDeployment := &appsv1.Deployment{}
-	deploymentErr := r.Get(ctx, client.ObjectKey{
-		Namespace: function.Namespace,
-		Name:      fmt.Sprintf("%s-function-deployment", function.Name),
-	}, currentDeployment)
-
-	if deploymentErr == nil {
-		return currentDeployment, ctrl.Result{}, nil
-	}
-	if !apierrors.IsNotFound(deploymentErr) {
-		r.Log.Error(deploymentErr, "unable to fetch Deployment for Function")
-		return nil, ctrl.Result{}, deploymentErr
-	}
-
-	createResult, createErr := r.createDeployment(ctx, function, builtDeployment)
-	return nil, createResult, createErr
-}
-
-func (r *FunctionReconciler) createDeployment(ctx context.Context, function serverlessv1alpha2.Function, deployment *appsv1.Deployment) (ctrl.Result, error) {
-	r.Log.Info("creating a new Deployment", "Deployment.Namespace", deployment.Namespace, "Deployment.Name", deployment.Name)
-
-	// Set the ownerRef for the Deployment, ensuring that the Deployment
-	// will be deleted when the Function CR is deleted.
-	controllerutil.SetControllerReference(&function, deployment, r.Scheme)
-
-	if err := r.Create(ctx, deployment); err != nil {
-		r.Log.Error(err, "failed to create new Deployment", "Deployment.Namespace", deployment.Namespace, "Deployment.Name", deployment.Name)
-		return ctrl.Result{}, err
-	}
-	return ctrl.Result{RequeueAfter: time.Minute}, nil
-}
-
-func (r *FunctionReconciler) updateDeploymentIfNeeded(ctx context.Context, clusterDeployment *appsv1.Deployment, builtDeployment *appsv1.Deployment, function serverlessv1alpha2.Function) (ctrl.Result, error) {
-	// Ensure the Deployment data matches the desired state
-	if !cmp.Equal(clusterDeployment.Spec.Template, builtDeployment.Spec.Template) ||
-		*clusterDeployment.Spec.Replicas != *builtDeployment.Spec.Replicas {
-		clusterDeployment.Spec.Template = builtDeployment.Spec.Template
-		clusterDeployment.Spec.Replicas = builtDeployment.Spec.Replicas
-		return r.updateDeployment(ctx, clusterDeployment)
-	}
-
-	return ctrl.Result{}, nil
-}
-
-func (r *FunctionReconciler) updateDeployment(ctx context.Context, clusterDeployment *appsv1.Deployment) (ctrl.Result, error) {
-	if err := r.Update(ctx, clusterDeployment); err != nil {
-		r.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", clusterDeployment.Namespace, "Deployment.Name", clusterDeployment.Name)
-		return ctrl.Result{}, err
-	}
-	// Requeue the request to ensure the Deployment is updated
-	return ctrl.Result{Requeue: true}, nil
-}
+}*/
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (fr *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&serverlessv1alpha2.Function{}).
 		WithEventFilter(buildPredicates()).
 		Owns(&appsv1.Deployment{}).
 		Named("function").
-		Complete(r)
+		Complete(fr)
 }
 
 func buildPredicates() predicate.Funcs {
