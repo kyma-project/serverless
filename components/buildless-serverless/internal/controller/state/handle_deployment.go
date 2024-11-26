@@ -24,7 +24,7 @@ func sFnHandleDeployment(ctx context.Context, m *stateMachine) (stateFn, *contro
 	if errUpdate != nil {
 		return nil, &resultUpdate, errUpdate
 	}
-	return sFnFinish, &controllerruntime.Result{}, nil
+	return sFnAdjustStatus, nil, nil
 }
 
 func (m *stateMachine) getOrCreateDeployment(ctx context.Context, builtDeployment *v1.Deployment) (*v1.Deployment, controllerruntime.Result, error) {

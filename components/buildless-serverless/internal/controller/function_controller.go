@@ -55,23 +55,7 @@ func (fr *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 
 	sm := state.NewMachine(fr.Client, fr.Config, &instance, fr.Scheme, log)
 	return sm.Reconcile(ctx)
-
-	//////////////////////
-	/*	err = r.updateStatus(ctx, function)
-		if err != nil {
-			return ctrl.Result{}, err
-		}
-		return ctrl.Result{}, nil*/
-
 }
-
-/*func (fr *FunctionReconciler) updateStatus(ctx context.Context, function serverlessv1alpha2.Function) error {
-	function.Status.RuntimeImage = fr.getRuntimeImage(function.Spec.Runtime, function.Spec.RuntimeImageOverride)
-	if err := fr.Client.Status().Update(ctx, &function); err != nil {
-		return errors.Wrap(err, "while updating function status")
-	}
-	return nil
-}*/
 
 // SetupWithManager sets up the controller with the Manager.
 func (fr *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
