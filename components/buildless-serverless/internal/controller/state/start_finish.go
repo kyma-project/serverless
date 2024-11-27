@@ -2,7 +2,7 @@ package state
 
 import (
 	"context"
-	controllerruntime "sigs.k8s.io/controller-runtime"
+	ctrl "sigs.k8s.io/controller-runtime"
 )
 
 //TODO: Add states:
@@ -19,10 +19,10 @@ import (
 //			Message:            fmt.Sprintf("Deployment %s is ready", deploymentName),
 //		}
 
-func sFnStart(ctx context.Context, m *stateMachine) (stateFn, *controllerruntime.Result, error) {
-	return sFnHandleDeployment, &controllerruntime.Result{}, nil
+func sFnStart(ctx context.Context, m *stateMachine) (stateFn, *ctrl.Result, error) {
+	return sFnHandleDeployment, nil, nil
 }
 
-func sFnFinish(ctx context.Context, m *stateMachine) (stateFn, *controllerruntime.Result, error) {
-	return nil, &controllerruntime.Result{}, nil
+func sFnFinish(ctx context.Context, m *stateMachine) (stateFn, *ctrl.Result, error) {
+	return nil, nil, nil
 }

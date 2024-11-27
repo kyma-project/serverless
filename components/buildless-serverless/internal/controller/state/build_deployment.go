@@ -19,7 +19,7 @@ func (m *stateMachine) buildDeployment() *appsv1.Deployment {
 
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      fmt.Sprintf("%s-function-deployment", f.Name),
+			Name:      m.deploymentName(),
 			Namespace: f.Namespace,
 			Labels:    labels,
 		},
@@ -37,6 +37,10 @@ func (m *stateMachine) buildDeployment() *appsv1.Deployment {
 		},
 	}
 	return deployment
+}
+
+func (m *stateMachine) deploymentName() string {
+	return fmt.Sprintf("%s-function-deployment", m.state.instance.Name)
 }
 
 func (m *stateMachine) buildPodSpec() corev1.PodSpec {
