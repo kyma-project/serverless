@@ -129,6 +129,7 @@ jobs:
     uses: ./.github/workflows/_integration-tests.yaml
     with:
       image: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.event.inputs.name }}
+      trigger_btp: true
 
   publish-release:
     name: Publish release
