@@ -18,6 +18,7 @@ package v1alpha2
 
 import (
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -135,7 +136,27 @@ type SecretMount struct {
 type FunctionStatus struct {
 	// Specifies the image version used to build and run the Function's Pods.
 	RuntimeImage string `json:"runtimeImage,omitempty"`
+	// Specifies an array of conditions describing the status of the parser.
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
 }
+
+type ConditionType string
+
+const (
+	ConditionRunning ConditionType = "Running"
+)
+
+type ConditionReason string
+
+const (
+	ConditionReasonFunctionSpec            ConditionReason = "InvalidFunctionSpec"
+	ConditionReasonDeploymentCreated       ConditionReason = "DeploymentCreated"
+	ConditionReasonDeploymentUpdated       ConditionReason = "DeploymentUpdated"
+	ConditionReasonDeploymentFailed        ConditionReason = "DeploymentFailed"
+	ConditionReasonDeploymentWaiting       ConditionReason = "DeploymentWaiting"
+	ConditionReasonDeploymentReady         ConditionReason = "DeploymentReady"
+	ConditionReasonMinReplicasNotAvailable ConditionReason = "MinReplicasNotAvailable"
+)
 
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
@@ -160,4 +181,15 @@ type FunctionList struct {
 
 func init() {
 	SchemeBuilder.Register(&Function{}, &FunctionList{})
+}
+
+func (f *Function) UpdateCondition(c ConditionType, s metav1.ConditionStatus, r ConditionReason, msg string) {
+	condition := metav1.Condition{
+		Type:               string(c),
+		Status:             s,
+		LastTransitionTime: metav1.Now(),
+		Reason:             string(r),
+		Message:            msg,
+	}
+	meta.SetStatusCondition(&f.Status.Conditions, condition)
 }
