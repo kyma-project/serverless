@@ -14,7 +14,7 @@ import (
 )
 
 func sFnDeploymentStatus(ctx context.Context, m *stateMachine) (stateFn, *ctrl.Result, error) {
-	deploymentName := m.deploymentName()
+	deploymentName := NewDeploymentBuilder(m).deploymentName()
 	deployment := appsv1.Deployment{}
 	m.client.Get(ctx, client.ObjectKey{
 		Namespace: m.state.instance.Namespace,

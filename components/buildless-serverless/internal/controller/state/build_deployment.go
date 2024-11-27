@@ -3,6 +3,7 @@ package state
 import (
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
+	"github.com/kyma-project/serverless/internal/config"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -11,16 +12,27 @@ import (
 
 const DefaultDeploymentReplicas int32 = 1
 
-func (m *stateMachine) buildDeployment() *appsv1.Deployment {
-	f := &m.state.instance
+type deploymentBuilder struct {
+	functionConfig config.FunctionConfig
+	instance       *serverlessv1alpha2.Function
+}
+
+func NewDeploymentBuilder(m *stateMachine) *deploymentBuilder {
+	return &deploymentBuilder{
+		functionConfig: m.functionConfig,
+		instance:       &m.state.instance,
+	}
+}
+
+func (b *deploymentBuilder) buildDeployment() *appsv1.Deployment {
 	labels := map[string]string{
-		"app": f.Name,
+		"app": b.instance.Name,
 	}
 
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      m.deploymentName(),
-			Namespace: f.Namespace,
+			Name:      b.deploymentName(),
+			Namespace: b.instance.Namespace,
 			Labels:    labels,
 		},
 		Spec: appsv1.DeploymentSpec{
@@ -31,36 +43,36 @@ func (m *stateMachine) buildDeployment() *appsv1.Deployment {
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: labels,
 				},
-				Spec: m.buildPodSpec(),
+				Spec: b.buildPodSpec(),
 			},
-			Replicas: m.getReplicas(),
+			Replicas: b.getReplicas(),
 		},
 	}
 	return deployment
 }
 
-func (m *stateMachine) deploymentName() string {
-	return fmt.Sprintf("%s-function-deployment", m.state.instance.Name)
+func (b *deploymentBuilder) deploymentName() string {
+	return fmt.Sprintf("%s-function-deployment", b.instance.Name)
 }
 
-func (m *stateMachine) buildPodSpec() corev1.PodSpec {
-	secretVolumes, secretVolumeMounts := m.buildDeploymentSecretVolumes()
+func (b *deploymentBuilder) buildPodSpec() corev1.PodSpec {
+	secretVolumes, secretVolumeMounts := b.buildDeploymentSecretVolumes()
 
 	return corev1.PodSpec{
-		Volumes: append(m.getVolumes(), secretVolumes...),
+		Volumes: append(b.getVolumes(), secretVolumes...),
 		Containers: []corev1.Container{
 			{
-				Name:       fmt.Sprintf("%s-function-pod", m.state.instance.Name),
-				Image:      m.getRuntimeImage(),
-				WorkingDir: m.getWorkingSourcesDir(),
+				Name:       fmt.Sprintf("%s-function-pod", b.instance.Name),
+				Image:      b.getRuntimeImage(),
+				WorkingDir: b.getWorkingSourcesDir(),
 				Command: []string{
 					"sh",
 					"-c",
-					m.getRuntimeCommand(),
+					b.getRuntimeCommand(),
 				},
-				Resources:    m.getResourceConfiguration(),
-				Env:          m.getEnvs(),
-				VolumeMounts: append(m.getVolumeMounts(), secretVolumeMounts...),
+				Resources:    b.getResourceConfiguration(),
+				Env:          b.getEnvs(),
+				VolumeMounts: append(b.getVolumeMounts(), secretVolumeMounts...),
 				Ports: []corev1.ContainerPort{
 					{
 						ContainerPort: 80,
@@ -71,8 +83,8 @@ func (m *stateMachine) buildPodSpec() corev1.PodSpec {
 	}
 }
 
-func (m *stateMachine) getReplicas() *int32 {
-	replicas := &m.state.instance.Spec.Replicas
+func (b *deploymentBuilder) getReplicas() *int32 {
+	replicas := &b.instance.Spec.Replicas
 	if replicas != nil {
 		return *replicas
 	}
@@ -80,8 +92,8 @@ func (m *stateMachine) getReplicas() *int32 {
 	return &defaultValue
 }
 
-func (m *stateMachine) getVolumes() []corev1.Volume {
-	runtime := m.state.instance.Spec.Runtime
+func (b *deploymentBuilder) getVolumes() []corev1.Volume {
+	runtime := b.instance.Spec.Runtime
 	volumes := []corev1.Volume{
 		{
 			// used for writing sources (code&deps) to the sources dir
@@ -103,12 +115,12 @@ func (m *stateMachine) getVolumes() []corev1.Volume {
 	return volumes
 }
 
-func (m *stateMachine) getVolumeMounts() []corev1.VolumeMount {
-	runtime := m.state.instance.Spec.Runtime
+func (b *deploymentBuilder) getVolumeMounts() []corev1.VolumeMount {
+	runtime := b.instance.Spec.Runtime
 	volumeMounts := []corev1.VolumeMount{
 		{
 			Name:      "sources",
-			MountPath: m.getWorkingSourcesDir(),
+			MountPath: b.getWorkingSourcesDir(),
 		},
 	}
 	if runtime == serverlessv1alpha2.Python312 {
@@ -120,24 +132,24 @@ func (m *stateMachine) getVolumeMounts() []corev1.VolumeMount {
 	return volumeMounts
 }
 
-func (m *stateMachine) getRuntimeImage() string {
-	runtimeOverride := m.state.instance.Spec.RuntimeImageOverride
+func (b *deploymentBuilder) getRuntimeImage() string {
+	runtimeOverride := b.instance.Spec.RuntimeImageOverride
 	if runtimeOverride != "" {
 		return runtimeOverride
 	}
 
-	switch m.state.instance.Spec.Runtime {
+	switch b.instance.Spec.Runtime {
 	case serverlessv1alpha2.NodeJs20:
-		return m.functionConfig.ImageNodeJs20
+		return b.functionConfig.ImageNodeJs20
 	case serverlessv1alpha2.Python312:
-		return m.functionConfig.ImagePython312
+		return b.functionConfig.ImagePython312
 	default:
 		return ""
 	}
 }
 
-func (m *stateMachine) getWorkingSourcesDir() string {
-	switch m.state.instance.Spec.Runtime {
+func (b *deploymentBuilder) getWorkingSourcesDir() string {
+	switch b.instance.Spec.Runtime {
 	case serverlessv1alpha2.NodeJs20:
 		return "/usr/src/app/function"
 	case serverlessv1alpha2.Python312:
@@ -147,8 +159,8 @@ func (m *stateMachine) getWorkingSourcesDir() string {
 	}
 }
 
-func (m *stateMachine) getRuntimeCommand() string {
-	spec := &m.state.instance.Spec
+func (b *deploymentBuilder) getRuntimeCommand() string {
+	spec := &b.instance.Spec
 	dependencies := spec.Source.Inline.Dependencies
 	switch spec.Runtime {
 	case serverlessv1alpha2.NodeJs20:
@@ -180,8 +192,8 @@ python /kubeless.py;`
 	}
 }
 
-func (m *stateMachine) getEnvs() []corev1.EnvVar {
-	spec := &m.state.instance.Spec
+func (b *deploymentBuilder) getEnvs() []corev1.EnvVar {
+	spec := &b.instance.Spec
 	envs := []corev1.EnvVar{
 		{
 			Name:  "FUNC_HANDLER_SOURCE",
@@ -208,18 +220,18 @@ func (m *stateMachine) getEnvs() []corev1.EnvVar {
 	return envs
 }
 
-func (m *stateMachine) getResourceConfiguration() corev1.ResourceRequirements {
-	resCfg := m.state.instance.Spec.ResourceConfiguration
+func (b *deploymentBuilder) getResourceConfiguration() corev1.ResourceRequirements {
+	resCfg := b.instance.Spec.ResourceConfiguration
 	if resCfg != nil && resCfg.Function != nil && resCfg.Function.Resources != nil {
 		return *resCfg.Function.Resources
 	}
 	return corev1.ResourceRequirements{}
 }
 
-func (m *stateMachine) buildDeploymentSecretVolumes() (volumes []corev1.Volume, volumeMounts []corev1.VolumeMount) {
+func (b *deploymentBuilder) buildDeploymentSecretVolumes() (volumes []corev1.Volume, volumeMounts []corev1.VolumeMount) {
 	volumes = []corev1.Volume{}
 	volumeMounts = []corev1.VolumeMount{}
-	for _, secretMount := range m.state.instance.Spec.SecretMounts {
+	for _, secretMount := range b.instance.Spec.SecretMounts {
 		volumeName := secretMount.SecretName
 
 		volume := corev1.Volume{

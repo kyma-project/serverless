@@ -18,7 +18,7 @@ import (
 // - gitSources - stateFnGitCheckSources
 
 func sFnHandleDeployment(ctx context.Context, m *stateMachine) (stateFn, *ctrl.Result, error) {
-	builtDeployment := m.buildDeployment()
+	builtDeployment := NewDeploymentBuilder(m).buildDeployment()
 
 	clusterDeployment, resultGet, errGet := m.getOrCreateDeployment(ctx, builtDeployment)
 	if clusterDeployment == nil {
