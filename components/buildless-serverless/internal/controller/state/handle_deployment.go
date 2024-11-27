@@ -3,7 +3,6 @@ package state
 import (
 	"context"
 	"fmt"
-	"github.com/google/go-cmp/cmp"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -78,6 +77,7 @@ func (m *stateMachine) updateDeploymentIfNeeded(ctx context.Context, clusterDepl
 	// Ensure the Deployment data matches the desired state
 	deploymentChanged := deploymentChanged(clusterDeployment, builtDeployment)
 	if deploymentChanged {
+		//TODO: think if it's better to update only some fields
 		clusterDeployment.Spec.Template = builtDeployment.Spec.Template
 		clusterDeployment.Spec.Replicas = builtDeployment.Spec.Replicas
 		return m.updateDeployment(ctx, clusterDeployment)
@@ -87,8 +87,8 @@ func (m *stateMachine) updateDeploymentIfNeeded(ctx context.Context, clusterDepl
 
 func deploymentChanged(a *v1.Deployment, b *v1.Deployment) bool {
 	//TODO: fix comparison
-	return !cmp.Equal(a.Spec.Template.Spec.Containers[0].Image, b.Spec.Template.Spec.Containers[0].Image) ||
-		a.Spec.Replicas != b.Spec.Replicas
+	return a.Spec.Template.Spec.Containers[0].Image != b.Spec.Template.Spec.Containers[0].Image ||
+		*a.Spec.Replicas != *b.Spec.Replicas
 }
 
 func (m *stateMachine) updateDeployment(ctx context.Context, clusterDeployment *v1.Deployment) (*ctrl.Result, error) {
