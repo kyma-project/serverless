@@ -13,19 +13,25 @@ import (
 	"time"
 )
 
+//TODO: Add states:
+// - validate - components/serverless/internal/controllers/serverless/validation.go
+// - gitSources - stateFnGitCheckSources
+
 func sFnHandleDeployment(ctx context.Context, m *stateMachine) (stateFn, *ctrl.Result, error) {
 	builtDeployment := m.buildDeployment()
 
 	clusterDeployment, resultGet, errGet := m.getOrCreateDeployment(ctx, builtDeployment)
 	if clusterDeployment == nil {
+		//TODO: think what we should return here (in context of state machine)
 		return nil, resultGet, errGet
 	}
 
 	resultUpdate, errUpdate := m.updateDeploymentIfNeeded(ctx, clusterDeployment, builtDeployment)
 	if errUpdate != nil {
+		//TODO: think what we should return here (in context of state machine)
 		return nil, resultUpdate, errUpdate
 	}
-	return sFnAdjustStatus, nil, nil
+	return nextState(sFnAdjustStatus)
 }
 
 func (m *stateMachine) getOrCreateDeployment(ctx context.Context, builtDeployment *v1.Deployment) (*v1.Deployment, *ctrl.Result, error) {

@@ -7,5 +7,6 @@ import (
 
 func sFnAdjustStatus(_ context.Context, m *stateMachine) (stateFn, *ctrl.Result, error) {
 	m.state.instance.Status.RuntimeImage = m.getRuntimeImage()
-	return sFnDeploymentStatus, nil, nil
+	//TODO: Add more status fields
+	return nextState(sFnDeploymentStatus)
 }

@@ -89,7 +89,7 @@ type StateMachineReconciler interface {
 
 func NewMachine(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function /*recorder record.EventRecorder,*/, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger) StateMachineReconciler {
 	sm := stateMachine{
-		nextFn: sFnStart,
+		nextFn: sFnHandleDeployment,
 		state: systemState{
 			instance: *instance,
 		},

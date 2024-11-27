@@ -31,7 +31,7 @@ func sFnDeploymentStatus(ctx context.Context, m *stateMachine) (stateFn, *ctrl.R
 			serverlessv1alpha2.ConditionReasonDeploymentReady,
 			fmt.Sprintf("Deployment %s is ready", deploymentName))
 
-		return sFnFinish, &ctrl.Result{RequeueAfter: m.functionConfig.FunctionReadyRequeueDuration}, nil
+		return requeueAfter(m.functionConfig.FunctionReadyRequeueDuration)
 	}
 
 	// unhealthy deployment
@@ -44,7 +44,7 @@ func sFnDeploymentStatus(ctx context.Context, m *stateMachine) (stateFn, *ctrl.R
 			serverlessv1alpha2.ConditionReasonMinReplicasNotAvailable,
 			fmt.Sprintf("Minimum replicas not available for deployment %s", deploymentName))
 
-		return sFnFinish, nil, nil
+		return stop()
 	}
 
 	// deployment not ready
@@ -57,7 +57,7 @@ func sFnDeploymentStatus(ctx context.Context, m *stateMachine) (stateFn, *ctrl.R
 			serverlessv1alpha2.ConditionReasonDeploymentWaiting,
 			fmt.Sprintf("Deployment %s is not ready yet", deploymentName))
 
-		return sFnFinish, nil, nil
+		return stop()
 	}
 
 	// deployment failed
@@ -74,7 +74,7 @@ func sFnDeploymentStatus(ctx context.Context, m *stateMachine) (stateFn, *ctrl.R
 		serverlessv1alpha2.ConditionReasonDeploymentFailed,
 		msg)
 
-	return sFnFinish, nil, nil
+	return stop()
 }
 
 const (
