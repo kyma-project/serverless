@@ -7,6 +7,7 @@ import (
 	"k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -94,7 +95,12 @@ func (m *stateMachine) updateDeploymentIfNeeded(ctx context.Context, clusterDepl
 func deploymentChanged(a *v1.Deployment, b *v1.Deployment) bool {
 	//TODO: fix comparison
 	return a.Spec.Template.Spec.Containers[0].Image != b.Spec.Template.Spec.Containers[0].Image ||
-		*a.Spec.Replicas != *b.Spec.Replicas
+		*a.Spec.Replicas != *b.Spec.Replicas || !reflect.DeepEqual(a.Spec.Template.Spec.Containers[0].Env, b.Spec.Template.Spec.Containers[0].Env) ||
+		!reflect.DeepEqual(a.Spec.Template.Spec.Containers[0].Resources, b.Spec.Template.Spec.Containers[0].Resources) ||
+		!reflect.DeepEqual(a.Spec.Template.Spec.Containers[0].Command, b.Spec.Template.Spec.Containers[0].Command) ||
+		!reflect.DeepEqual(a.Spec.Template.Spec.Containers[0].WorkingDir, b.Spec.Template.Spec.Containers[0].WorkingDir) ||
+		!reflect.DeepEqual(a.Spec.Template.Spec.Containers[0].VolumeMounts, b.Spec.Template.Spec.Containers[0].VolumeMounts) ||
+		!reflect.DeepEqual(a.Spec.Template.ObjectMeta.Labels, b.Spec.Template.ObjectMeta.Labels)
 }
 
 func (m *stateMachine) updateDeployment(ctx context.Context, clusterDeployment *v1.Deployment) (*ctrl.Result, error) {
