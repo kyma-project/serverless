@@ -93,14 +93,17 @@ func (m *stateMachine) updateDeploymentIfNeeded(ctx context.Context, clusterDepl
 }
 
 func deploymentChanged(a *v1.Deployment, b *v1.Deployment) bool {
-	//TODO: fix comparison
-	return a.Spec.Template.Spec.Containers[0].Image != b.Spec.Template.Spec.Containers[0].Image ||
-		*a.Spec.Replicas != *b.Spec.Replicas || !reflect.DeepEqual(a.Spec.Template.Spec.Containers[0].Env, b.Spec.Template.Spec.Containers[0].Env) ||
-		!reflect.DeepEqual(a.Spec.Template.Spec.Containers[0].Resources, b.Spec.Template.Spec.Containers[0].Resources) ||
-		!reflect.DeepEqual(a.Spec.Template.Spec.Containers[0].Command, b.Spec.Template.Spec.Containers[0].Command) ||
-		!reflect.DeepEqual(a.Spec.Template.Spec.Containers[0].WorkingDir, b.Spec.Template.Spec.Containers[0].WorkingDir) ||
-		!reflect.DeepEqual(a.Spec.Template.Spec.Containers[0].VolumeMounts, b.Spec.Template.Spec.Containers[0].VolumeMounts) ||
-		!reflect.DeepEqual(a.Spec.Template.ObjectMeta.Labels, b.Spec.Template.ObjectMeta.Labels)
+	aSpec := a.Spec.Template.Spec.Containers[0]
+	bSpec := b.Spec.Template.Spec.Containers[0]
+
+	return aSpec.Image != bSpec.Image ||
+		!reflect.DeepEqual(a.Spec.Template.ObjectMeta.Labels, b.Spec.Template.ObjectMeta.Labels) ||
+		*a.Spec.Replicas != *b.Spec.Replicas ||
+		!reflect.DeepEqual(aSpec.WorkingDir, bSpec.WorkingDir) ||
+		!reflect.DeepEqual(aSpec.Command, bSpec.Command) ||
+		!reflect.DeepEqual(aSpec.Resources, bSpec.Resources) ||
+		!reflect.DeepEqual(aSpec.Env, bSpec.Env) ||
+		!reflect.DeepEqual(aSpec.VolumeMounts, bSpec.VolumeMounts)
 }
 
 func (m *stateMachine) updateDeployment(ctx context.Context, clusterDeployment *v1.Deployment) (*ctrl.Result, error) {
