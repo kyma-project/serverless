@@ -40,7 +40,7 @@ func (m *stateMachine) getOrCreateDeployment(ctx context.Context, builtDeploymen
 	f := m.state.instance
 	deploymentErr := m.client.Get(ctx, client.ObjectKey{
 		Namespace: f.Namespace,
-		Name:      fmt.Sprintf("%s-function-deployment", f.Name),
+		Name:      f.Name,
 	}, currentDeployment)
 
 	if deploymentErr == nil {

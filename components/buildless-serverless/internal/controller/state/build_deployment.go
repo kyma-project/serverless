@@ -1,7 +1,6 @@
 package state
 
 import (
-	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
 	appsv1 "k8s.io/api/apps/v1"
@@ -52,7 +51,7 @@ func (b *deploymentBuilder) buildDeployment() *appsv1.Deployment {
 }
 
 func (b *deploymentBuilder) deploymentName() string {
-	return fmt.Sprintf("%s-function-deployment", b.instance.Name)
+	return b.instance.Name
 }
 
 func (b *deploymentBuilder) buildPodSpec() corev1.PodSpec {
@@ -62,7 +61,7 @@ func (b *deploymentBuilder) buildPodSpec() corev1.PodSpec {
 		Volumes: append(b.getVolumes(), secretVolumes...),
 		Containers: []corev1.Container{
 			{
-				Name:       fmt.Sprintf("%s-function-pod", b.instance.Name),
+				Name:       b.instance.Name,
 				Image:      b.getRuntimeImage(),
 				WorkingDir: b.getWorkingSourcesDir(),
 				Command: []string{
