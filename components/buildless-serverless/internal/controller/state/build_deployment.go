@@ -25,7 +25,7 @@ func NewDeploymentBuilder(m *stateMachine) *deploymentBuilder {
 
 func (b *deploymentBuilder) buildDeployment() *appsv1.Deployment {
 	labels := map[string]string{
-		"app": b.instance.Name,
+		"app": b.deploymentName(),
 	}
 
 	deployment := &appsv1.Deployment{
@@ -61,7 +61,7 @@ func (b *deploymentBuilder) buildPodSpec() corev1.PodSpec {
 		Volumes: append(b.getVolumes(), secretVolumes...),
 		Containers: []corev1.Container{
 			{
-				Name:       b.instance.Name,
+				Name:       b.deploymentName(),
 				Image:      b.getRuntimeImage(),
 				WorkingDir: b.getWorkingSourcesDir(),
 				Command: []string{
