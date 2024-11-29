@@ -26,6 +26,7 @@ func sFnValidateFunction(_ context.Context, m *stateMachine) (stateFn, *ctrl.Res
 	}
 
 	if len(validationResults) != 0 {
+		//TODO: Use ConditionConfigure in this place
 		m.state.instance.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,

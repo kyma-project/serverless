@@ -23,7 +23,7 @@ func NewDeploymentBuilder(m *stateMachine) *deploymentBuilder {
 	}
 }
 
-func (b *deploymentBuilder) buildDeployment() *appsv1.Deployment {
+func (b *deploymentBuilder) build() *appsv1.Deployment {
 	labels := map[string]string{
 		"app": b.deploymentName(),
 	}
