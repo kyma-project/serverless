@@ -146,10 +146,10 @@ check-serverless-installation: ## Wait for Serverless CR to be in Ready state.
 	./hack/verify_serverless_status.sh || \
 		(make print-serverless-details && false)
 
-	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s || \
+	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=3m || \
 		(make print-serverless-details && false)
 
-	kubectl wait --for condition=Available -n kyma-system deployment serverless-ctrl-mngr --timeout=60s || \
+	kubectl wait --for condition=Available -n kyma-system deployment serverless-ctrl-mngr --timeout=3m || \
 		(make print-serverless-details && false)
 
 .PHONY: print-serverless-details
