@@ -57,6 +57,14 @@ jobs:
       dockerfile: components/serverless/deploy/manager/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
 
+  build-buildless-serverless-controller:
+    needs: compute-tags
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: function-buildless-controller
+      dockerfile: components/buildless-serverless/Dockerfile
+      tags: ${{ needs.compute-tags.outputs.tags }}
+
   build-serverless-webhook:
     needs: compute-tags
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
