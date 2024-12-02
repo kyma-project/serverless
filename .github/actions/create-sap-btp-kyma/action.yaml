@@ -1,0 +1,71 @@
+name: 'Create SAP BTP Kyma Environment'
+description: 'Action for creating Kyma environment in the SAP BTP Platform'
+
+inputs:
+  btp_subaccount_name:
+    description: 'btp subaccount'
+    required: true
+  btp_backend_url:
+    description: ''
+    required: true
+  btp_user: 
+    description: ''
+    required: true
+  btp_password: 
+    description: ''
+    required: true
+  btp_global_account:
+    description: ''
+    required: true
+  btp_idp_tenant: 
+    description: ''
+    required: true
+  btp_subaccount_region: 
+    description: ''
+    required: true
+  btp_kyma_region: 
+    description: ''
+    required: true
+  btp_kyma_plan: 
+    description: ''
+    required: true
+  btp_kyma_modules:
+    description: ''
+    required: false
+    default: "[{name = 'istio', channel = 'fast'},{name = 'api-gateway', channel = 'fast'},{name = 'btp-operator', channel = 'fast'}]"
+  btp_kyma_autoscaler_min:
+    description: ''
+    required: false
+    default: '3'
+
+outputs:
+  subaccount_id: 
+    value: ${{ steps.create-btp-resources.outputs.subaccount_id }}
+    description: "ID of the created subaccount"
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Create btp resources
+      id: create-btp-resources
+      run: |
+        terraform -chdir=${{ github.action_path }} init 
+        terraform -chdir=${{ github.action_path }} apply -auto-approve 
+        SUBACCOUNT_ID=$(terraform -chdir=${{ github.action_path }} output -raw subaccount_id)
+        echo ${SUBACCOUNT_ID}
+        echo "subaccount_id=$SUBACCOUNT_ID" >> "$GITHUB_OUTPUT"
+        echo "KUBECONFIG=${{ github.action_path }}/kubeconfig.yaml" >> "$GITHUB_ENV"
+      shell: bash
+      env:
+        TF_VAR_BTP_NEW_SUBACCOUNT_NAME: ${{ inputs.btp_subaccount_name }}
+        TF_VAR_BTP_NEW_SUBACCOUNT_REGION: ${{ inputs.btp_subaccount_region }}
+        TF_VAR_BTP_BACKEND_URL: ${{ inputs.btp_backend_url }}
+        TF_VAR_BTP_BOT_USER: ${{ inputs.btp_user }}
+        TF_VAR_BTP_BOT_PASSWORD: ${{ inputs.btp_password }}
+        TF_VAR_BTP_CUSTOM_IAS_TENANT: ${{ inputs.btp_idp_tenant }}
+        TF_VAR_BTP_GLOBAL_ACCOUNT: ${{ inputs.btp_global_account }}
+        TF_VAR_BTP_KYMA_PLAN: ${{ inputs.btp_kyma_plan }}
+        TF_VAR_BTP_KYMA_REGION: ${{ inputs.btp_kyma_region }}
+        TF_VAR_BTP_KYMA_MODULES_STRINGIFIED: ${{ inputs.btp_kyma_modules }}
+        TF_VAR_BTP_KYMA_AUTOSCALER_MIN: ${{ inputs.btp_kyma_autoscaler_min }}
+        
