@@ -69,4 +69,3 @@ runs:
         TF_VAR_BTP_KYMA_MODULES_STRINGIFIED: ${{ inputs.btp_kyma_modules }}
         TF_VAR_BTP_KYMA_AUTOSCALER_MIN: ${{ inputs.btp_kyma_autoscaler_min }}
         
-    

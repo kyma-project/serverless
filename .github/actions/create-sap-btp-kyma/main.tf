@@ -17,7 +17,6 @@ terraform {
   }
 }
 
-
 provider "http" {}
 provider "http-full" {}
 provider "btp" {
