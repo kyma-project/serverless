@@ -19,7 +19,6 @@ package main
 import (
 	"crypto/tls"
 	"flag"
-	"fmt"
 	"github.com/kyma-project/serverless/internal/config"
 	"github.com/vrischmann/envconfig"
 	uberzap "go.uber.org/zap"
@@ -64,7 +63,6 @@ type serverlessConfig struct {
 func main() {
 	config, err := loadConfig("APP")
 	if err != nil {
-		fmt.Printf("chleb %s", err)
 		setupLog.Error(err, "unable to load config")
 		os.Exit(1)
 	}
