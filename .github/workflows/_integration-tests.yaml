@@ -109,10 +109,13 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: ./.github/actions/setup-go
-      - uses: kyma-project/terraform-module/.github/actions/create-sap-btp-kyma@09fdecc9006cf7efff9e3634bb18b561db84d008
+      - name: compute github commit sha
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - uses: kyma-project/terraform-module/.github/actions/create-sap-btp-kyma@6af78799edd07b5301494de20aaecee28f51af27
         id: create-btp-resources
         with:
-          btp_subaccount_name: serverless-test-${{ github.sha }}-${{ github.run_attempt }}
+          btp_subaccount_name: serverless-test-${{ steps.vars.outputs.sha_short }}-${{ github.run_attempt }}
           btp_backend_url: '${{ secrets.BTP_BACKEND_URL}}'
           btp_user: '${{ secrets.BTP_BOT_USER}}'
           btp_password: '${{ secrets.BTP_BOT_PASSWORD}}'
@@ -136,7 +139,7 @@ jobs:
           APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
           APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
 
-      - uses: kyma-project/terraform-module/.github/actions/force-delete-sap-btp-subaccount@09fdecc9006cf7efff9e3634bb18b561db84d008
+      - uses: kyma-project/terraform-module/.github/actions/force-delete-sap-btp-subaccount@6af78799edd07b5301494de20aaecee28f51af27
         if: always()
         with:
           btp_subaccount_id: ${{ steps.create-btp-resources.outputs.subaccount_id }}
