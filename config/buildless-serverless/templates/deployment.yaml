@@ -1,3 +1,4 @@
+{{- $images:=.Values.global.images  }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,7 +27,8 @@ spec:
             - --health-probe-bind-address=:8081
           command:
             - /manager
-          image: mkejuu/buildless-serverless:29-11-v1
+          {{- $fc:=$images.function_controller  }}
+          image: "{{ .Values.global.containerRegistry.path }}/{{ $fc.directory }}/{{$fc.name}}:{{$fc.version}}"
           livenessProbe:
             httpGet:
               path: /healthz
@@ -54,9 +56,11 @@ spec:
                 - ALL
           env:
             - name: APP_FUNCTION_IMAGENODEJS20
-              value: "europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main"
+              {{- $js20:=$images.function_runtime_nodejs20  }}
+              value: "{{ .Values.global.containerRegistry.path }}/{{ $js20.directory }}/{{$js20.name}}:{{$js20.version}}"
             - name: APP_FUNCTION_IMAGE_PYTHON312
-              value: "europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main"
+              {{- $p312:=$images.function_runtime_python312  }}
+              value: "{{ .Values.global.containerRegistry.path }}/{{ $p312.directory }}/{{$p312.name}}:{{$p312.version}}"
       securityContext:
         runAsNonRoot: true
       serviceAccountName: buildless-serverless-controller-manager
