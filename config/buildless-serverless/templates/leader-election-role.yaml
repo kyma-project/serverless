@@ -5,6 +5,7 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: buildless-serverless
   name: buildless-serverless-leader-election-role
+  namespace: kyma-system
 rules:
   - apiGroups:
       - ""
