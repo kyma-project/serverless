@@ -1,0 +1,18 @@
+name: tmp
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Verify HEAD
+    runs-on: ubuntu-latest
+    steps:
+      - uses: kwiatekus/terraform-module/.github/actions/force-delete-sap-btp-subaccount@d0c18e2d863d91bc25a6c360bf3c0a72a932b945
+        with:
+          btp_subaccount_id: a1s2d3
+          btp_backend_url: aaa
+          btp_user: ccc
+          btp_password: fff
+          btp_global_account: ggg
+          btp_idp_tenant: hhh
