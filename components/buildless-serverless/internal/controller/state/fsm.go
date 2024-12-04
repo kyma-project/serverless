@@ -31,10 +31,9 @@ func (s *systemState) saveStatusSnapshot() {
 }
 
 type stateMachine struct {
-	nextFn stateFn
-	state  systemState
-	log    *zap.SugaredLogger
-	//	k8s
+	nextFn         stateFn
+	state          systemState
+	log            *zap.SugaredLogger
 	client         client.Client
 	functionConfig config.FunctionConfig
 	scheme         *apimachineryruntime.Scheme
@@ -87,6 +86,7 @@ type StateMachineReconciler interface {
 	Reconcile(ctx context.Context) (ctrl.Result, error)
 }
 
+// TODO: Add emiting events
 func NewMachine(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function /*recorder record.EventRecorder,*/, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger) StateMachineReconciler {
 	sm := stateMachine{
 		nextFn: sFnValidateFunction,
