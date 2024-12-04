@@ -67,6 +67,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	//TODO: Do we need all these flags?
 	var metricsAddr string
 	var enableLeaderElection bool
 	var probeAddr string
@@ -92,6 +93,7 @@ func main() {
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 
+	//TODO: Do we need this part of code (about http2)?
 	// if the enable-http2 flag is false (the default), http/2 should be disabled
 	// due to its vulnerabilities. More specifically, disabling http/2 will
 	// prevent from being vulnerable to the HTTP/2 Stream Cancellation and
