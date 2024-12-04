@@ -1,3 +1,5 @@
+#TODO: Refactor this file - we don't need some of these targets; we could change uploading go-tools, ...
+
 # Image URL to use all building/pushing image targets
 IMG ?= controller:latest
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
