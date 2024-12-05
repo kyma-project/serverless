@@ -39,18 +39,6 @@ jobs:
       name: serverless-operator
       dockerfile: components/operator/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
-      build-args: |
-        SERVERLESS_CONFIG_VERSION=config/serverless
-
-  build-operator-buildless:
-    needs: compute-tags
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: serverless-operator-buildless
-      dockerfile: components/operator/Dockerfile
-      tags: ${{ needs.compute-tags.outputs.tags }}
-      build-args: |
-        SERVERLESS_CONFIG_VERSION=config/buildless-serverless
 
   # https://github.com/kyma-project/serverless/issues/998#issuecomment-2191556454
   #  build-gitserver:
