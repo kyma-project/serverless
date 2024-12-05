@@ -11,6 +11,11 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"time"
+)
+
+const (
+	defaultRequeueTime = time.Second * 1
 )
 
 func sFnDeploymentStatus(ctx context.Context, m *stateMachine) (stateFn, *ctrl.Result, error) {
@@ -44,7 +49,7 @@ func sFnDeploymentStatus(ctx context.Context, m *stateMachine) (stateFn, *ctrl.R
 			serverlessv1alpha2.ConditionReasonMinReplicasNotAvailable,
 			fmt.Sprintf("Minimum replicas not available for deployment %s", deploymentName))
 
-		return stop()
+		return requeueAfter(defaultRequeueTime)
 	}
 
 	// deployment not ready
@@ -57,7 +62,7 @@ func sFnDeploymentStatus(ctx context.Context, m *stateMachine) (stateFn, *ctrl.R
 			serverlessv1alpha2.ConditionReasonDeploymentWaiting,
 			fmt.Sprintf("Deployment %s is not ready yet", deploymentName))
 
-		return stop()
+		return requeueAfter(defaultRequeueTime)
 	}
 
 	// deployment failed
