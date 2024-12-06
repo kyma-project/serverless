@@ -61,17 +61,22 @@ function setupTracer(){
     propagator: propagator,
   });
 
-  return opentelemetry.trace.getTracer("tracer");
+  return opentelemetry.trace.getTracer("io.kyma-project.serverless");
 };
 
 module.exports = {
     setupTracer,
-    startNewSpan
+    startNewSpan,
+    getCurrentSpan,
 }
 
 
+function getCurrentSpan(){
+  return opentelemetry.trace.getSpan(opentelemetry.context.active());
+}
+
 function startNewSpan(name, tracer){
-  const currentSpan = opentelemetry.trace.getSpan(opentelemetry.context.active());
+  const currentSpan = getCurrentSpan();
   const ctx = opentelemetry.trace.setSpan(
       opentelemetry.context.active(),
       currentSpan
