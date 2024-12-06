@@ -6,8 +6,8 @@ ENV NODE_VERSION=22.11.0-r0
 RUN apk add --no-cache openssl3 nodejs=${NODE_VERSION} npm
 
 ARG NODE_ENV
-ENV NODE_ENV $NODE_ENV
-ENV npm_config_cache /tmp/
+ENV NODE_ENV=$NODE_ENV
+ENV npm_config_cache=/tmp/
 
 RUN mkdir -p /usr/src/app
 RUN mkdir -p /usr/src/app/lib
