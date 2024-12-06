@@ -32,6 +32,8 @@ spec:
         image: controller:latest
         name: manager
         env:
+        - name: CHART_PATH
+          value: /module-chart
         - name: SERVERLESS_MANAGER_UID
           valueFrom:
             fieldRef:
