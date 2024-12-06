@@ -1,21 +1,13 @@
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.20.3
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.0
 
-ENV NODE_VERSION=22.10.0
+# https://pkgs.alpinelinux.org/packages?name=nodejs&branch=v3.21&repo=main&arch=&maintainer=
+ENV NODE_VERSION=22.11.0-r0
 
-
-RUN apk add --no-cache openssl3 libgcc libstdc++
-RUN wget -O node.tar.xz https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64-musl.tar.xz && \
-  tar -xJf node.tar.xz && \
-  cp -RT node-v${NODE_VERSION}-linux-x64-musl/bin /usr/bin && \
-  cp -RT node-v${NODE_VERSION}-linux-x64-musl/include /usr/include && \
-  cp -RT node-v${NODE_VERSION}-linux-x64-musl/lib /usr/lib && \
-  cp -RT node-v${NODE_VERSION}-linux-x64-musl/share /usr/share && \
-  rm -rf node-v${NODE_VERSION}-linux-x64-musl && \
-  rm node.tar.xz 
+RUN apk add --no-cache openssl3 nodejs=${NODE_VERSION} npm
 
 ARG NODE_ENV
-ENV NODE_ENV $NODE_ENV
-ENV npm_config_cache /tmp/
+ENV NODE_ENV=$NODE_ENV
+ENV npm_config_cache=/tmp/
 
 RUN mkdir -p /usr/src/app
 RUN mkdir -p /usr/src/app/lib
