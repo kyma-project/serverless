@@ -143,6 +143,20 @@ updates:
         patterns:
           - "@opentelemetry/*"
   - package-ecosystem: "npm"
+    directory: "/components/runtimes/nodejs/nodejs22"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "npm-nodejs22"
+      include: "scope"
+    groups:
+      opentelemetry:
+        patterns:
+          - "@opentelemetry/*"
+  - package-ecosystem: "npm"
     directory: "/tests/gitserver/repos/function"
     labels:
       - "area/dependency"
