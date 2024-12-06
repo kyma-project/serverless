@@ -1,7 +1,7 @@
 images:
-  - source: "alpine@sha256:beefdbd8a1da6d2915566fde36db9db0b524eb737fc57cd1367effd16dc0d06d"
-    tag: "3.20.3"
-  - source: "python@sha256:38e179a0f0436c97ecc76bcd378d7293ab3ee79e4b8c440fdc7113670cb6e204"
-    tag: "3.12.7-alpine3.20"
-  - source: "golang@sha256:c694a4d291a13a9f9d94933395673494fc2cc9d4777b85df3a7e70b3492d3574"
-    tag: "1.23.3-alpine3.20"
+  - source: "alpine@sha256:21dc6063fd678b478f57c0e13f47560d0ea4eeba26dfc947b2a4f81f686b9f45"
+    tag: "3.21.0"
+  - source: "python@sha256:bb94273467caf397de28b4e6dd09ca4a2dd1b53fa9b130d5b2c7c82719258356"
+    tag: "3.12.8-alpine3.20"
+  - source: "golang@sha256:9a31ef0803e6afdf564edc8ba4b4e17caed22a0b1ecd2c55e3c8fdd8d8f68f98"
+    tag: "1.23.4-alpine3.20"
