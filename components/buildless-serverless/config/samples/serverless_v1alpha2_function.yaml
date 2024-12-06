@@ -1,0 +1,26 @@
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  labels:
+    app.kubernetes.io/name: buildless-serverless
+    app.kubernetes.io/managed-by: kustomize
+  name: sample-nodejs
+spec:
+  runtime: nodejs20
+  source:
+    inline:
+      source: |
+        const _ = require('lodash')
+        module.exports = {
+          main: function(event, context) {
+            return _.kebabCase('Hello World from Node.js 20 Function');
+          }
+        }
+      dependencies: |
+        {
+          "name": "test-function-nodejs",
+          "version": "1.0.0",
+          "dependencies": {
+            "lodash":"^4.17.20"
+          }
+        }

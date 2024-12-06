@@ -1,0 +1,29 @@
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  labels:
+    app.kubernetes.io/name: buildless-serverless
+    app.kubernetes.io/managed-by: kustomize
+  name: sample-python
+spec:
+  replicas: 1
+  runtime: python312
+  runtimeImageOverride:
+  env:
+    - name: chleb
+      value: maka
+  resourceConfiguration:
+    function:
+      resources:
+        limits:
+          cpu: 200m
+          memory: 256Mi
+        requests:
+          cpu: 150m
+          memory: 128Mi
+  source:
+    inline:
+      source: |
+        import os
+        def main(event, context):
+          return os.environ.get('chleb', 'sol')

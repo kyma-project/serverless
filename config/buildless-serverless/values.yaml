@@ -1,0 +1,16 @@
+global:
+  containerRegistry:
+    path: europe-docker.pkg.dev/kyma-project
+  images:
+    function_controller:
+      name: "function-controller"
+      version: "main"
+      directory: "prod"
+    function_runtime_nodejs20:
+      name: "function-runtime-nodejs20"
+      version: "main"
+      directory: "prod"
+    function_runtime_python312:
+      name: "function-runtime-python312"
+      version: "main"
+      directory: "prod"

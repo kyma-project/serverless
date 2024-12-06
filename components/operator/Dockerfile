@@ -40,6 +40,7 @@ RUN apk update && apk add bash yq
 
 COPY components/operator/hack components/operator/hack
 COPY config/serverless config/serverless
+COPY config/buildless-serverless config/buildless-serverless
 COPY hack/ hack/
 
 RUN if [[ "dev" = "$PURPOSE" ]] ; then ./hack/replace_serverless_chart_images.sh all ; fi
@@ -54,6 +55,7 @@ FROM gcr.io/distroless/static:nonroot
 WORKDIR /
 COPY --chown=65532:65532 --from=builder /workdir/operator .
 COPY --chown=65532:65532 --from=replacer /workdir/config/serverless /module-chart
+COPY --chown=65532:65532 --from=replacer /workdir/config/buildless-serverless /buildless-module-chart
 USER 65532:65532
 
 ENTRYPOINT ["/operator"]
