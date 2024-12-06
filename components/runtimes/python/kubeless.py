@@ -58,11 +58,10 @@ if __name__ == "__main__":
 def func_with_context(e, function_context):
     ex = e.ceHeaders["extensions"]
     with set_req_context(ex["request"]):
-        with tracer.start_as_current_span("userFunction"):
-            try:
-                return func(e, function_context)
-            except Exception as e:
-                return e
+        try:
+            return func(e, function_context)
+        except Exception as e:
+            return e
 
 
 @app.get('/favicon.ico')
