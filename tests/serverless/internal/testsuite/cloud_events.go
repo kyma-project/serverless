@@ -37,6 +37,7 @@ func FunctionCloudEventsTest(restConfig *rest.Config, cfg internal.Config, logf 
 
 	python312Logger := logf.WithField(runtimeKey, "python312")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
+	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
 
 	genericContainer := utils.Container{
 		DynamicCli:  dynamicCli,
@@ -49,6 +50,7 @@ func FunctionCloudEventsTest(restConfig *rest.Config, cfg internal.Config, logf 
 	publisherProxyMock := function.NewFunction("eventing-publisher-proxy", "kyma-system", cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
 	nodejs20Fn := function.NewFunction("nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
+	nodejs22Fn := function.NewFunction("nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
 
 	logf.Infof("Testing function in namespace: %s", cfg.Namespace)
 
@@ -67,6 +69,12 @@ func FunctionCloudEventsTest(restConfig *rest.Config, cfg internal.Config, logf 
 				assertion.CloudEventReceiveCheck(nodejs20Logger, "NodeJS20 cloud event structured check", cloudevents.EncodingStructured, nodejs20Fn.FunctionURL),
 				assertion.CloudEventReceiveCheck(nodejs20Logger, "NodeJS20 cloud event binary check", cloudevents.EncodingBinary, nodejs20Fn.FunctionURL),
 				assertion.CloudEventSendCheck(nodejs20Logger, "NodeJS20 cloud event sent check", string(serverlessv1alpha2.NodeJs20), nodejs20Fn.FunctionURL, publisherProxyMock.FunctionURL),
+			),
+			executor.NewSerialTestRunner(nodejs22Logger, "NodeJS22 test",
+				function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.NodeJSFunctionWithCloudEvent(serverlessv1alpha2.NodeJs22)),
+				assertion.CloudEventReceiveCheck(nodejs22Logger, "NodeJS22 cloud event structured check", cloudevents.EncodingStructured, nodejs22Fn.FunctionURL),
+				assertion.CloudEventReceiveCheck(nodejs22Logger, "NodeJS22 cloud event binary check", cloudevents.EncodingBinary, nodejs22Fn.FunctionURL),
+				assertion.CloudEventSendCheck(nodejs22Logger, "NodeJS22 cloud event sent check", string(serverlessv1alpha2.NodeJs22), nodejs22Fn.FunctionURL, publisherProxyMock.FunctionURL),
 			),
 		),
 	), nil

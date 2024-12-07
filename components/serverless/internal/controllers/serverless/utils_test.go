@@ -17,7 +17,7 @@ func Test_calculateGitImageTag(t *testing.T) {
 	}{
 		{
 			name:      "should use runtime",
-			baseImage: "nodejs18:test",
+			baseImage: "nodejs22:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -29,14 +29,14 @@ func Test_calculateGitImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime: "nodejs20",
+					Runtime: "nodejs22",
 				},
 			},
-			want: "5093e1e9a1b0c94c513bbec23b8291240ba988872353a024d1b0d5b2901d421c",
+			want: "5ad80edc898a5d2bb436fddd949a668574ad28b9830c0d0d0eadaf524b271ee0",
 		},
 		{
 			name:      "should use runtimeOverride",
-			baseImage: "nodejs18:test",
+			baseImage: "nodejs22:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -48,15 +48,15 @@ func Test_calculateGitImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime:              "nodejs18",
-					RuntimeImageOverride: "nodejs20",
+					Runtime:              "nodejs22",
+					RuntimeImageOverride: "nodejs22",
 				},
 			},
-			want: "5093e1e9a1b0c94c513bbec23b8291240ba988872353a024d1b0d5b2901d421c",
+			want: "5ad80edc898a5d2bb436fddd949a668574ad28b9830c0d0d0eadaf524b271ee0",
 		},
 		{
 			name:      "should use runtime when runtimeOverride is empty",
-			baseImage: "nodejs18:test",
+			baseImage: "nodejs22:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -68,11 +68,11 @@ func Test_calculateGitImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime:              "nodejs20",
+					Runtime:              "nodejs22",
 					RuntimeImageOverride: "",
 				},
 			},
-			want: "5093e1e9a1b0c94c513bbec23b8291240ba988872353a024d1b0d5b2901d421c",
+			want: "5ad80edc898a5d2bb436fddd949a668574ad28b9830c0d0d0eadaf524b271ee0",
 		},
 	}
 	for _, tt := range tests {
@@ -91,7 +91,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 	}{
 		{
 			name:      "should use runtime",
-			baseImage: "nodejs18:test",
+			baseImage: "nodejs22:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -103,7 +103,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime: "nodejs20",
+					Runtime: "nodejs22",
 				},
 				Status: serverlessv1alpha2.FunctionStatus{
 					Commit: "commit",
@@ -112,11 +112,11 @@ func Test_calculateInlineImageTag(t *testing.T) {
 					},
 				},
 			},
-			want: "3773f4e6b48ccb71c2a43f4a7cbbeb98333701d823d8ff5917d8f7373c7abbcd",
+			want: "7bcecf54edf9aecbc68fd10db1349f29866b6d0157f744841371290977f09dcb",
 		},
 		{
 			name:      "should use runtimeOverride",
-			baseImage: "nodejs18:test",
+			baseImage: "nodejs22:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -128,8 +128,8 @@ func Test_calculateInlineImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime:              "nodejs18",
-					RuntimeImageOverride: "nodejs20",
+					Runtime:              "nodejs22",
+					RuntimeImageOverride: "nodejs22",
 				},
 				Status: serverlessv1alpha2.FunctionStatus{
 					Commit: "commit",
@@ -138,11 +138,11 @@ func Test_calculateInlineImageTag(t *testing.T) {
 					},
 				},
 			},
-			want: "3773f4e6b48ccb71c2a43f4a7cbbeb98333701d823d8ff5917d8f7373c7abbcd",
+			want: "7bcecf54edf9aecbc68fd10db1349f29866b6d0157f744841371290977f09dcb",
 		},
 		{
 			name:      "should use runtime instead of runtimeOverride",
-			baseImage: "nodejs18:test",
+			baseImage: "nodejs22:test",
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					UID: "fn-uuid",
@@ -154,7 +154,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 							Dependencies: "",
 						},
 					},
-					Runtime:              "nodejs20",
+					Runtime:              "nodejs22",
 					RuntimeImageOverride: "",
 				},
 				Status: serverlessv1alpha2.FunctionStatus{
@@ -164,7 +164,7 @@ func Test_calculateInlineImageTag(t *testing.T) {
 					},
 				},
 			},
-			want: "3773f4e6b48ccb71c2a43f4a7cbbeb98333701d823d8ff5917d8f7373c7abbcd",
+			want: "7bcecf54edf9aecbc68fd10db1349f29866b6d0157f744841371290977f09dcb",
 		},
 	}
 	for _, tt := range tests {
