@@ -63,6 +63,7 @@ jobs:
     with:
       name: function-buildless-controller
       dockerfile: components/buildless-serverless/Dockerfile
+      context: components/buildless-serverless
       tags: ${{ needs.compute-tags.outputs.tags }}
 
   build-serverless-webhook:
