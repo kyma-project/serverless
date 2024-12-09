@@ -26,6 +26,17 @@ updates:
           - "k8s.io/*"
 
   - package-ecosystem: "docker"
+    directory: "/components/buildless-serverless"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "buildless"
+      include: "scope"
+
+  - package-ecosystem: "docker"
     directory: "/components/operator"
     labels:
       - "area/dependency"
