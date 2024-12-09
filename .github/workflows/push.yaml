@@ -10,7 +10,7 @@ jobs:
     with:
       purpose: "dev"
       img_directory: "prod"
-      img_version: "${{ github.sha }}
+      img_version: ${{ github.sha }}
 
   integrations:
     needs: builds
