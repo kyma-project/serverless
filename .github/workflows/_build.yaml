@@ -57,7 +57,7 @@ jobs:
       build-args: |
         PURPOSE=${{ inputs.purpose }}
         IMG_DIRECTORY=${{ inputs.img_directory }}
-        IMG_VERSION=${{ github.sha }}
+        IMG_VERSION=${{ inputs.img_version }}
 
   # https://github.com/kyma-project/serverless/issues/998#issuecomment-2191556454
   #  build-gitserver:
