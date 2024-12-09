@@ -62,7 +62,7 @@ jobs:
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: function-buildless-controller
-      dockerfile: components/buildless-serverless/Dockerfile
+      dockerfile: Dockerfile
       context: components/buildless-serverless
       tags: ${{ needs.compute-tags.outputs.tags }}
 
