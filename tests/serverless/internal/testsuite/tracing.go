@@ -48,6 +48,7 @@ func FunctionTracingTest(restConfig *rest.Config, cfg internal.Config, logf *log
 
 	python312Logger := logf.WithField(runtimeKey, "python312")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
+	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
 
 	genericContainer := utils.Container{
 		DynamicCli:  dynamicCli,
@@ -60,6 +61,8 @@ func FunctionTracingTest(restConfig *rest.Config, cfg internal.Config, logf *log
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
 
 	nodejs20Fn := function.NewFunction("nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
+
+	nodejs22Fn := function.NewFunction("nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
 
 	logf.Infof("Testing function in namespace: %s", cfg.Namespace)
 
@@ -84,6 +87,10 @@ func FunctionTracingTest(restConfig *rest.Config, cfg internal.Config, logf *log
 			executor.NewSerialTestRunner(nodejs20Logger, "NodeJS20 test",
 				function.CreateFunction(nodejs20Logger, nodejs20Fn, "Create NodeJS20 Function", runtimes.BasicTracingNodeFunction(serverlessv1alpha2.NodeJs20, httpAppURL.String())),
 				assertion.TracingHTTPCheck(nodejs20Logger, "NodeJS20 tracing headers check", nodejs20Fn.FunctionURL, poll),
+			),
+			executor.NewSerialTestRunner(nodejs22Logger, "NodeJS22 test",
+				function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.BasicTracingNodeFunction(serverlessv1alpha2.NodeJs22, httpAppURL.String())),
+				assertion.TracingHTTPCheck(nodejs22Logger, "NodeJS22 tracing headers check", nodejs22Fn.FunctionURL, poll),
 			),
 		),
 	), nil

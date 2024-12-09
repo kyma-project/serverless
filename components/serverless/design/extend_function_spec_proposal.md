@@ -166,7 +166,7 @@ metadata:
   labels:
     app.kubernetes.io/name: my-function
 spec:
-  runtime: nodejs20
+  runtime: nodejs22
   source:
     ...
   secretBindings: 
@@ -215,7 +215,7 @@ metadata:
   labels:
     app.kubernetes.io/name: my-function
 spec:
-  runtime: nodejs20
+  runtime: nodejs22
   source:
     ...
   runtimeSpec: # this name is not perfect
@@ -343,7 +343,7 @@ metadata:
   labels:
     app.kubernetes.io/name: my-function
 spec:
-  runtime: nodejs20
+  runtime: nodejs22
   source:
     ...
   resourceProfiles:
@@ -421,7 +421,7 @@ metadata:
   labels:
     app.kubernetes.io/name: my-function
 spec: #Contains spec of Function and run stage (deployments, hpa)
-  runtime: nodejs20
+  runtime: nodejs22
   source:
     ...
   replicas: 1
