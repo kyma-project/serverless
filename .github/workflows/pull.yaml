@@ -24,7 +24,7 @@ jobs:
     with:
       purpose: "dev"
       img_directory: "dev"
-      img_version: ${{ github.ref_name }}
+      img_version: PR-${{ github.event.number }}
   
   integrations:
     needs: builds
