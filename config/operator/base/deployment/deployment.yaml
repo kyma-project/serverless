@@ -30,6 +30,8 @@ spec:
       - command:
         - /operator
         image: controller:latest
+        #TODO: change it to IfNotPresent
+        imagePullPolicy: Always
         name: manager
         env:
         - name: CHART_PATH
