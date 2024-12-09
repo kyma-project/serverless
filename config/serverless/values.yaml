@@ -90,6 +90,10 @@ global:
       name: "function-runtime-nodejs20"
       version: "main"
       directory: "prod"
+    function_runtime_nodejs22:
+      name: "function-runtime-nodejs22"
+      version: "main"
+      directory: "prod"
     function_runtime_python312:
       name: "function-runtime-python312"
       version: "main"
