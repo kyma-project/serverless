@@ -35,6 +35,6 @@ WORKDIR /
 
 COPY --from=builder /workdir/manager .
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-USER 1001:1001
+USER 1000:1000
 
 ENTRYPOINT ["/manager"]
