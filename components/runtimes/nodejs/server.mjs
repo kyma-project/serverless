@@ -4,7 +4,7 @@ import bodyParser from 'body-parser';
 import process from 'process';
 import morgan from "morgan";
 
-import { setupTracer, startNewSpan } from './lib/tracer.js';
+import { setupTracer, getCurrentSpan } from './lib/tracer.js';
 import { getMetrics, setupMetrics, createFunctionDurationHistogram, createFunctionCallsTotalCounter, createFunctionFailuresTotalCounter  } from './lib/metrics.js';
 
 
@@ -115,7 +115,7 @@ app.all("*", (req, res, next) => {
             }
         };
 
-        const span = startNewSpan('userFunction', tracer);
+        const currentSpan = getCurrentSpan();
 
         try {
             // Execute the user function
@@ -125,20 +125,17 @@ app.all("*", (req, res, next) => {
                     sendResponse(result)
                 })
                 .catch((err) => {
-                    helper.handleError(err, span, sendResponse)
+                    helper.handleError(err, currentSpan, sendResponse)
                     failuresTotalCounter.add(1);
-                })
-                .finally(()=>{
-                    span.end();
                 })
             } else {
                 sendResponse(out);
             }
         } catch (err) {
-            helper.handleError(err, span, sendResponse)
+            helper.handleError(err, currentSpan, sendResponse)
             failuresTotalCounter.add(1);
         } finally {
-            span.end();
+            currentSpan.end();
         }
 
         const endTime = new Date().getTime()
