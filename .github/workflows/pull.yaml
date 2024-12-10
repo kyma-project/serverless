@@ -21,6 +21,10 @@ jobs:
   
   builds:
     uses: ./.github/workflows/_build.yaml
+    with:
+      purpose: "dev"
+      img_directory: "dev"
+      img_version: PR-${{ github.event.number }}
   
   integrations:
     needs: builds
