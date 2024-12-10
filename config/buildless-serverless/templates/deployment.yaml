@@ -65,5 +65,7 @@ spec:
               value: "{{ .Values.global.containerRegistry.path }}/{{ $p312.directory }}/{{$p312.name}}:{{$p312.version}}"
       securityContext:
         runAsNonRoot: true
+        runAsGroup: 1000
+        runAsUser: 1000
       serviceAccountName: buildless-serverless-controller-manager
       terminationGracePeriodSeconds: 10
