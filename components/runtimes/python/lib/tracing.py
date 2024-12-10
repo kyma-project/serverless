@@ -42,7 +42,7 @@ def _setup_tracer() -> trace.Tracer:
     RequestsInstrumentor().instrument()
 
     # Creates a tracer from the global tracer provider
-    return trace.get_tracer(__name__)
+    return trace.get_tracer("io.kyma-project.serverless")
 
 
 @contextmanager  # type: ignore
