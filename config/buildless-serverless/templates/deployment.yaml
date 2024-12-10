@@ -29,6 +29,8 @@ spec:
             - /manager
           {{- $fc:=$images.function_controller  }}
           image: "{{ .Values.global.containerRegistry.path }}/{{ $fc.directory }}/{{$fc.name}}:{{$fc.version}}"
+          #TODO: change it to IfNotPresent
+          imagePullPolicy: Always
           livenessProbe:
             httpGet:
               path: /healthz
