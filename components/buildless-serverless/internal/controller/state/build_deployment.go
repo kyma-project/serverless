@@ -77,7 +77,8 @@ func (b *deploymentBuilder) buildPodSpec() corev1.PodSpec {
 						ContainerPort: 80,
 					},
 				},
-				SecurityContext: b.restrictiveContainerSecurityContext(),
+				//TODO: uncomment later - now we are checking problem with running npm command
+				// SecurityContext: b.restrictiveContainerSecurityContext(),
 			},
 		},
 	}
