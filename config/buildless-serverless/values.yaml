@@ -3,7 +3,7 @@ global:
     path: europe-docker.pkg.dev/kyma-project
   images:
     function_controller:
-      name: "function-controller"
+      name: "function-buildless-controller"
       version: "main"
       directory: "prod"
     function_runtime_nodejs20:
