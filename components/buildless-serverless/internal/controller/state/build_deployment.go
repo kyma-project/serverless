@@ -77,7 +77,7 @@ func (b *deploymentBuilder) buildPodSpec() corev1.PodSpec {
 						ContainerPort: 80,
 					},
 				},
-				//TODO: uncomment later - now we are checking problem with running npm command
+				//TODO: uncomment later - now we need greater privileges for running npm command
 				// SecurityContext: b.restrictiveContainerSecurityContext(),
 			},
 		},
