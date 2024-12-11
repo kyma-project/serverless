@@ -30,8 +30,11 @@ spec:
       - command:
         - /operator
         image: controller:latest
+        imagePullPolicy: IfNotPresent
         name: manager
         env:
+        - name: CHART_PATH
+          value: /module-chart
         - name: SERVERLESS_MANAGER_UID
           valueFrom:
             fieldRef:
