@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	"k8s.io/api/apps/v1"
+	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"reflect"
@@ -32,11 +32,11 @@ func sFnHandleDeployment(ctx context.Context, m *stateMachine) (stateFn, *ctrl.R
 		//TODO: think what we should return here (in context of state machine)
 		return nil, resultUpdate, errUpdate
 	}
-	return nextState(sFnAdjustStatus)
+	return nextState(sFnHandleService)
 }
 
-func (m *stateMachine) getOrCreateDeployment(ctx context.Context, builtDeployment *v1.Deployment) (*v1.Deployment, *ctrl.Result, error) {
-	currentDeployment := &v1.Deployment{}
+func (m *stateMachine) getOrCreateDeployment(ctx context.Context, builtDeployment *appsv1.Deployment) (*appsv1.Deployment, *ctrl.Result, error) {
+	currentDeployment := &appsv1.Deployment{}
 	f := m.state.instance
 	deploymentErr := m.client.Get(ctx, client.ObjectKey{
 		Namespace: f.Namespace,
@@ -55,7 +55,7 @@ func (m *stateMachine) getOrCreateDeployment(ctx context.Context, builtDeploymen
 	return nil, createResult, createErr
 }
 
-func (m *stateMachine) createDeployment(ctx context.Context, deployment *v1.Deployment) (*ctrl.Result, error) {
+func (m *stateMachine) createDeployment(ctx context.Context, deployment *appsv1.Deployment) (*ctrl.Result, error) {
 	m.log.Info("creating a new Deployment", "Deployment.Namespace", deployment.Namespace, "Deployment.Name", deployment.Name)
 
 	// Set the ownerRef for the Deployment, ensuring that the Deployment
@@ -80,19 +80,19 @@ func (m *stateMachine) createDeployment(ctx context.Context, deployment *v1.Depl
 	return &ctrl.Result{RequeueAfter: time.Minute}, nil
 }
 
-func (m *stateMachine) updateDeploymentIfNeeded(ctx context.Context, clusterDeployment *v1.Deployment, builtDeployment *v1.Deployment) (*ctrl.Result, error) {
+func (m *stateMachine) updateDeploymentIfNeeded(ctx context.Context, clusterDeployment *appsv1.Deployment, builtDeployment *appsv1.Deployment) (*ctrl.Result, error) {
 	// Ensure the Deployment data matches the desired state
-	deploymentChanged := deploymentChanged(clusterDeployment, builtDeployment)
-	if deploymentChanged {
-		//TODO: think if it's better to update only some fields
-		clusterDeployment.Spec.Template = builtDeployment.Spec.Template
-		clusterDeployment.Spec.Replicas = builtDeployment.Spec.Replicas
-		return m.updateDeployment(ctx, clusterDeployment)
+	if !deploymentChanged(clusterDeployment, builtDeployment) {
+		return nil, nil
 	}
-	return nil, nil
+
+	//TODO: think if it's better to update only some fields
+	clusterDeployment.Spec.Template = builtDeployment.Spec.Template
+	clusterDeployment.Spec.Replicas = builtDeployment.Spec.Replicas
+	return m.updateDeployment(ctx, clusterDeployment)
 }
 
-func deploymentChanged(a *v1.Deployment, b *v1.Deployment) bool {
+func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 	aSpec := a.Spec.Template.Spec.Containers[0]
 	bSpec := b.Spec.Template.Spec.Containers[0]
 
@@ -106,7 +106,7 @@ func deploymentChanged(a *v1.Deployment, b *v1.Deployment) bool {
 		!reflect.DeepEqual(aSpec.VolumeMounts, bSpec.VolumeMounts)
 }
 
-func (m *stateMachine) updateDeployment(ctx context.Context, clusterDeployment *v1.Deployment) (*ctrl.Result, error) {
+func (m *stateMachine) updateDeployment(ctx context.Context, clusterDeployment *appsv1.Deployment) (*ctrl.Result, error) {
 	if err := m.client.Update(ctx, clusterDeployment); err != nil {
 		m.log.Error(err, "Failed to update Deployment", "Deployment.Namespace", clusterDeployment.Namespace, "Deployment.Name", clusterDeployment.Name)
 		m.state.instance.UpdateCondition(

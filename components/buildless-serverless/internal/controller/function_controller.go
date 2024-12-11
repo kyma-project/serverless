@@ -23,6 +23,7 @@ import (
 	"github.com/kyma-project/serverless/internal/controller/state"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -64,6 +65,7 @@ func (fr *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&serverlessv1alpha2.Function{}).
 		WithEventFilter(buildPredicates()).
 		Owns(&appsv1.Deployment{}).
+		Owns(&corev1.Service{}).
 		Named("function").
 		Complete(fr)
 }
