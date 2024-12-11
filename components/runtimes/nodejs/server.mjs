@@ -134,8 +134,6 @@ app.all("*", (req, res, next) => {
         } catch (err) {
             helper.handleError(err, currentSpan, sendResponse)
             failuresTotalCounter.add(1);
-        } finally {
-            currentSpan.end();
         }
 
         const endTime = new Date().getTime()
