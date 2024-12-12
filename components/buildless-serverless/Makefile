@@ -1,3 +1,5 @@
+PROJECT_ROOT = ../..
+
 #TODO: Refactor this file - we don't need some of these targets; we could change uploading go-tools, ...
 
 # Image URL to use all building/pushing image targets
