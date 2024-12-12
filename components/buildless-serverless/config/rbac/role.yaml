@@ -8,7 +8,6 @@ rules:
   - apps
   resources:
   - deployments
-  - services
   verbs:
   - create
   - delete
@@ -22,9 +21,19 @@ rules:
   - apps
   resources:
   - deployments/status
-  - services/status
   verbs:
   - get
+- apiGroups:
+  - apps
+  resources:
+  - services
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - update
+  - watch
 - apiGroups:
   - serverless.kyma-project.io
   resources:
