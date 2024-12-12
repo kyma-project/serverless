@@ -7,6 +7,7 @@ rules:
       - apps
     resources:
       - deployments
+      - services
     verbs:
       - create
       - delete
@@ -20,6 +21,7 @@ rules:
       - apps
     resources:
       - deployments/status
+      - services/status
     verbs:
       - get
   - apiGroups:
