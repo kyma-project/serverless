@@ -4,6 +4,17 @@ metadata:
   name: buildless-serverless-manager-role
 rules:
   - apiGroups:
+      - ""
+    resources:
+      - services
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - update
+      - watch
+  - apiGroups:
       - apps
     resources:
       - deployments
@@ -22,17 +33,6 @@ rules:
       - deployments/status
     verbs:
       - get
-  - apiGroups:
-      - apps
-    resources:
-      - services
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - update
-      - watch
   - apiGroups:
       - serverless.kyma-project.io
     resources:
