@@ -4,6 +4,17 @@ metadata:
   name: buildless-serverless-manager-role
 rules:
   - apiGroups:
+      - ""
+    resources:
+      - services
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - update
+      - watch
+  - apiGroups:
       - apps
     resources:
       - deployments
