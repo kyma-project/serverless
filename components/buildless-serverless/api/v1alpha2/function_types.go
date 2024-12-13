@@ -145,6 +145,9 @@ const (
 	ConditionReasonDeploymentFailed        ConditionReason = "DeploymentFailed"
 	ConditionReasonDeploymentWaiting       ConditionReason = "DeploymentWaiting"
 	ConditionReasonDeploymentReady         ConditionReason = "DeploymentReady"
+	ConditionReasonServiceCreated          ConditionReason = "ServiceCreated"
+	ConditionReasonServiceUpdated          ConditionReason = "ServiceUpdated"
+	ConditionReasonServiceFailed           ConditionReason = "ServiceFailed"
 	ConditionReasonMinReplicasNotAvailable ConditionReason = "MinReplicasNotAvailable"
 )
 
@@ -183,3 +186,7 @@ func (f *Function) UpdateCondition(c ConditionType, s metav1.ConditionStatus, r 
 	}
 	meta.SetStatusCondition(&f.Status.Conditions, condition)
 }
+
+const (
+	FunctionNameLabel = "serverless.kyma-project.io/function-name"
+)

@@ -23,6 +23,7 @@ import (
 	"github.com/kyma-project/serverless/internal/controller/state"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -38,10 +39,12 @@ type FunctionReconciler struct {
 	Config config.FunctionConfig
 }
 
+//TODO: check if it's the minimum requirements for rbacs
 // +kubebuilder:rbac:groups=serverless.kyma-project.io,resources=functions,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups=serverless.kyma-project.io,resources=functions/status,verbs=get;update;patch
 // +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete;deletecollection
 // +kubebuilder:rbac:groups=apps,resources=deployments/status,verbs=get
+// +kubebuilder:rbac:groups="",resources=services,verbs=get;list;watch;create;update;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -64,6 +67,7 @@ func (fr *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&serverlessv1alpha2.Function{}).
 		WithEventFilter(buildPredicates()).
 		Owns(&appsv1.Deployment{}).
+		Owns(&corev1.Service{}).
 		Named("function").
 		Complete(fr)
 }
