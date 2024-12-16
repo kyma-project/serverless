@@ -50,7 +50,7 @@ jobs:
           jq '.spec.template.spec.containers[].env |= map(if .name == "CHART_PATH" then .value = "/buildless-module-chart" else . end)' | \
           kubectl apply -f -
           make -C components/operator apply-default-serverless-cr
-          make -C components/operator check-serverless-installation
+          make -C components/operator check-buildless-serverless-installation
           make -C tests/serverless serverless-integration serverless-contract-tests
           make remove-serverless
         env:
