@@ -73,8 +73,7 @@ def main(event, context):
 }
 
 func BasicPythonFunctionWithCustomDependency(msg string, runtime serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
-	src := fmt.Sprintf(
-		`import arrow
+	src := fmt.Sprintf(`import arrow
 def main(event, context):
 	return "%s"`, msg)
 
