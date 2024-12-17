@@ -16,7 +16,7 @@ type validator struct {
 	instance *serverlessv1alpha2.Function
 }
 
-func New(instance *serverlessv1alpha2.Function) *validator {
+func New(instance *serverlessv1alpha2.Function) Validator {
 	return &validator{
 		instance: instance,
 	}

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	deployment_builder "github.com/kyma-project/serverless/internal/controller/deployment"
+	deploymentbuilder "github.com/kyma-project/serverless/internal/controller/deployment"
 	"github.com/kyma-project/serverless/internal/controller/fsm"
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -21,7 +21,7 @@ import (
 // - gitSources - stateFnGitCheckSources
 
 func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	builtDeployment := deployment_builder.New(m).Build()
+	builtDeployment := deploymentbuilder.New(m).Build()
 
 	clusterDeployment, resultGet, errGet := getOrCreateDeployment(ctx, m, builtDeployment)
 	if clusterDeployment == nil {

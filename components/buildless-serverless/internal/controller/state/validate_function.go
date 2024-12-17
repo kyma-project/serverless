@@ -4,14 +4,14 @@ import (
 	"context"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/controller/fsm"
-	function_validator "github.com/kyma-project/serverless/internal/controller/validator"
+	functionvalidator "github.com/kyma-project/serverless/internal/controller/validator"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"strings"
 )
 
 func sFnValidateFunction(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	result := function_validator.New(&m.State.Instance).Validate()
+	result := functionvalidator.New(&m.State.Instance).Validate()
 
 	if len(result) != 0 {
 		//TODO: Use ConditionConfigure in this place
