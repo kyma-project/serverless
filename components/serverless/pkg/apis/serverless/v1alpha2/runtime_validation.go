@@ -17,7 +17,7 @@ func ValidateDependencies(runtime Runtime, dependencies string) error {
 }
 
 func ValidateRuntime(runtime Runtime) error {
-	if runtime != NodeJs20 && runtime != NodeJs22 && runtime != Python312 {
+	if len(runtime) > 0 && runtime != NodeJs20 && runtime != NodeJs22 && runtime != Python312 {
 		return fmt.Errorf("cannot find runtime: %s", runtime)
 	}
 	return nil
