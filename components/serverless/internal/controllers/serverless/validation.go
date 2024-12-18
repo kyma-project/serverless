@@ -3,6 +3,8 @@ package serverless
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	corev1 "k8s.io/api/core/v1"
 	resource "k8s.io/apimachinery/pkg/api/resource"
@@ -12,7 +14,6 @@ import (
 	utilvalidation "k8s.io/apimachinery/pkg/util/validation"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"strings"
 )
 
 var _ stateFn = stateFnValidateFunction
@@ -131,7 +132,11 @@ func secretNamesAreUnique(secretMounts []serverlessv1alpha2.SecretMount) bool {
 func validateInlineDeps(runtime serverlessv1alpha2.Runtime, inlineSource *serverlessv1alpha2.InlineSource) validationFn {
 	return func() []string {
 		if inlineSource == nil {
-			return []string{}
+			if err := serverlessv1alpha2.ValidateRuntime(runtime); err != nil {
+				return []string{
+					fmt.Sprint(err.Error()),
+				}
+			}
 		}
 		if err := serverlessv1alpha2.ValidateDependencies(runtime, inlineSource.Dependencies); err != nil {
 			return []string{
