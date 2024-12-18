@@ -58,6 +58,7 @@ func TestValidation_Invalid(t *testing.T) {
 					GenerateName: "test-fn",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Function: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
@@ -79,6 +80,7 @@ func TestValidation_Invalid(t *testing.T) {
 					GenerateName: "test-fn",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Function: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
@@ -100,6 +102,7 @@ func TestValidation_Invalid(t *testing.T) {
 					GenerateName: "test-fn",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Function: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
@@ -121,6 +124,7 @@ func TestValidation_Invalid(t *testing.T) {
 					GenerateName: "test-fn",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Function: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
@@ -142,6 +146,7 @@ func TestValidation_Invalid(t *testing.T) {
 					GenerateName: "test-fn",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Function: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
@@ -160,6 +165,7 @@ func TestValidation_Invalid(t *testing.T) {
 					GenerateName: "test-fn",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Function: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
@@ -179,6 +185,7 @@ func TestValidation_Invalid(t *testing.T) {
 					GenerateName: "test-fn",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
@@ -200,6 +207,7 @@ func TestValidation_Invalid(t *testing.T) {
 					GenerateName: "test-fn",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
@@ -221,6 +229,7 @@ func TestValidation_Invalid(t *testing.T) {
 					GenerateName: "test-fn",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
@@ -242,6 +251,7 @@ func TestValidation_Invalid(t *testing.T) {
 					GenerateName: "test-fn",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
@@ -263,6 +273,7 @@ func TestValidation_Invalid(t *testing.T) {
 					GenerateName: "test-fn",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
@@ -278,6 +289,7 @@ func TestValidation_Invalid(t *testing.T) {
 		"Build limits memory are smaller than minimum without requests": {
 			fn: serverlessv1alpha2.Function{ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 						Build: &serverlessv1alpha2.ResourceRequirements{Resources: &corev1.ResourceRequirements{
 							Limits: map[corev1.ResourceName]resource.Quantity{
@@ -294,6 +306,7 @@ func TestValidation_Invalid(t *testing.T) {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					Env: []corev1.EnvVar{
 						{Name: "1ENV"},
 						{Name: "2ENV"},
@@ -306,6 +319,7 @@ func TestValidation_Invalid(t *testing.T) {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					SecretMounts: []serverlessv1alpha2.SecretMount{
 						{
 							SecretName: "secret-name-1",
@@ -324,6 +338,7 @@ func TestValidation_Invalid(t *testing.T) {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					SecretMounts: []serverlessv1alpha2.SecretMount{
 						{
 							SecretName: "secret-name-1",
@@ -361,6 +376,7 @@ func TestValidation_Invalid(t *testing.T) {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					Labels: map[string]string{
 						".invalid-name": "value",
 					},
@@ -372,6 +388,7 @@ func TestValidation_Invalid(t *testing.T) {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					Labels: map[string]string{
 						"name": ".invalid-value",
 					},
@@ -383,6 +400,7 @@ func TestValidation_Invalid(t *testing.T) {
 			fn: serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
 				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					Annotations: map[string]string{
 						".invalid-name": "value",
 					},
@@ -439,10 +457,10 @@ func TestValidation_Invalid(t *testing.T) {
 					Labels: map[string]string{
 						"name": "fn",
 					},
-					Runtime: "nodejs18",
+					Runtime: "makapaka",
 				},
 			},
-			expectedCondMsg: "cannot find runtime: nodejs18",
+			expectedCondMsg: "cannot find runtime: makapaka",
 		},
 	}
 
