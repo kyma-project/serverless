@@ -432,6 +432,18 @@ func TestValidation_Invalid(t *testing.T) {
 			},
 			expectedCondMsg: "source.gitRepository.URL: parse \"g0t@github.com:kyma-project/kyma.git\": invalid URI for request",
 		},
+		"Invalid runtime": {
+			fn: serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{GenerateName: "test-fn"},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Labels: map[string]string{
+						"name": "fn",
+					},
+					Runtime: "nodejs18",
+				},
+			},
+			expectedCondMsg: "cannot find runtime: nodejs18",
+		},
 	}
 
 	//WHEN
