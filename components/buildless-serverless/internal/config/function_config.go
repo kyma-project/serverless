@@ -7,5 +7,5 @@ type FunctionConfig struct {
 	ImagePython312                  string
 	RequeueDuration                 time.Duration `envconfig:"default=1m"`
 	FunctionReadyRequeueDuration    time.Duration `envconfig:"default=5m"`
-	PackageRegistryConfigSecretName string        `envconfig:"default=serverless-package-registry-config"`
+	PackageRegistryConfigSecretName string        `envconfig:"default=buildless-serverless-package-registry-config"`
 }

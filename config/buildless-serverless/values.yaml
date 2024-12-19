@@ -18,4 +18,4 @@ containers:
   manager:
     configuration:
       data:
-        packageRegistryConfigSecretName: '{{ template "fullname" . }}-package-registry-config'
+        packageRegistryConfigSecretName: 'buildless-serverless-package-registry-config'
