@@ -28,7 +28,7 @@ func ValidateRuntime(runtime Runtime) error {
 	if len(runtime) == 0 {
 		return nil
 	}
-	supportedruntimes := []Runtime{NodeJs20, NodeJs20, Python312}
+	supportedruntimes := []Runtime{NodeJs20, NodeJs22, Python312}
 	if slices.Contains(supportedruntimes, runtime) {
 		return nil
 	}
