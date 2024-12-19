@@ -3,6 +3,7 @@ package v1alpha2
 import (
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 )
 
@@ -13,7 +14,7 @@ func ValidateDependencies(runtime Runtime, dependencies string) error {
 	case Python312:
 		return nil
 	}
-	return fmt.Errorf("cannot find runtime: %s", runtime)
+	return nil
 }
 
 func validateNodeJSDependencies(dependencies string) error {
@@ -21,4 +22,15 @@ func validateNodeJSDependencies(dependencies string) error {
 		return errors.New("deps should start with '{' and end with '}'")
 	}
 	return nil
+}
+
+func ValidateRuntime(runtime Runtime) error {
+	if len(runtime) == 0 {
+		return nil
+	}
+	supportedruntimes := []Runtime{NodeJs20, NodeJs20, Python312}
+	if slices.Contains(supportedruntimes, runtime) {
+		return nil
+	}
+	return fmt.Errorf("cannot find runtime: %s", runtime)
 }
