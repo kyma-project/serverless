@@ -28,6 +28,7 @@ type Runtime string
 const (
 	Python312 Runtime = "python312"
 	NodeJs20  Runtime = "nodejs20"
+	NodeJs22  Runtime = "nodejs22"
 )
 
 // FunctionSpec defines the desired state of Function.
