@@ -18,4 +18,4 @@ containers:
   manager:
     configuration:
       data:
-        packageRegistryConfigSecretName: 'buildless-serverless-package-registry-config'
+        packageRegistryConfigSecretName: 'serverless-package-registry-config'
