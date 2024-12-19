@@ -439,7 +439,7 @@ func TestValidation_Invalid(t *testing.T) {
 					Runtime: "foo",
 				},
 			},
-			expectedCondMsg: "invalid runtime value: foo",
+			expectedCondMsg: "invalid runtime value: cannot find runtime: foo",
 		},
 	}
 
