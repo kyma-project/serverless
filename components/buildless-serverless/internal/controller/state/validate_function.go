@@ -4,11 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
+	"strings"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	utilvalidation "k8s.io/apimachinery/pkg/util/validation"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"strings"
 )
 
 func sFnValidateFunction(_ context.Context, m *stateMachine) (stateFn, *ctrl.Result, error) {
@@ -16,6 +18,7 @@ func sFnValidateFunction(_ context.Context, m *stateMachine) (stateFn, *ctrl.Res
 	validationFns := []func() []string{
 		v.validateEnvs,
 		v.validateInlineDeps,
+		v.validateRuntime,
 		//TODO: add more validation functions
 	}
 
@@ -72,6 +75,17 @@ func (v *functionValidator) validateInlineDeps() []string {
 	return []string{}
 }
 
+func (v *functionValidator) validateRuntime() []string {
+	runtime := v.instance.Spec.Runtime
+
+	if err := validateRuntime(runtime); err != nil {
+		return []string{
+			fmt.Sprintf("invalid runtime value: %s", err.Error()),
+		}
+	}
+	return []string{}
+}
+
 func validateDependencies(runtime serverlessv1alpha2.Runtime, dependencies string) error {
 	switch runtime {
 	case serverlessv1alpha2.NodeJs20:
@@ -87,6 +101,17 @@ func validateNodeJSDependencies(dependencies string) error {
 		return errors.New("deps should start with '{' and end with '}'")
 	}
 	return nil
+}
+
+func validateRuntime(runtime serverlessv1alpha2.Runtime) error {
+	if len(runtime) == 0 {
+		return nil
+	}
+	supportedruntimes := []serverlessv1alpha2.Runtime{serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22, serverlessv1alpha2.Python312}
+	if slices.Contains(supportedruntimes, runtime) {
+		return nil
+	}
+	return fmt.Errorf("cannot find runtime: %s", runtime)
 }
 
 func enrichErrors(errs []string, path string, value string) []string {
