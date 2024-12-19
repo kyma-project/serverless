@@ -34,6 +34,7 @@ data:
           warning:
             - BUILDING
             - PENDING
+            - WARNING
           critical:
             - FAILED
             - ERROR
@@ -42,7 +43,7 @@ data:
           $count($.status.conditions) = 0) ? 'INITIALIZING' :
           $count($filter($.status.conditions, function($v) { $v.status = 'False' }))
           != 0 ? $count($filter($.status.conditions, function($v) { $v.type =
-          'Running' and $v.status = 'True' })) != 0 ? 'ERROR' : 'FAILED' :
+          'Running' and $v.status = 'True' })) != 0 ? 'WARNING' : 'FAILED' :
           $count($filter($.status.conditions, function($v) { $v.type =
           'ConfigurationReady' and $v.status = 'True' })) != 0 ?
           $count($filter($.status.conditions, function($v) { $v.type = 'BuildReady'
@@ -485,6 +486,7 @@ data:
         warning:
           - BUILDING
           - PENDING
+          - WARNING
         critical:
           - FAILED
           - ERROR
@@ -493,7 +495,7 @@ data:
         $count($.status.conditions) = 0) ? 'INITIALIZING' :
         $count($filter($.status.conditions, function($v) { $v.status = 'False' }))
         != 0 ? $count($filter($.status.conditions, function($v) { $v.type =
-        'Running' and $v.status = 'True' })) != 0 ? 'ERROR' : 'FAILED' :
+        'Running' and $v.status = 'True' })) != 0 ? 'WARNING' : 'FAILED' :
         $count($filter($.status.conditions, function($v) { $v.type =
         'ConfigurationReady' and $v.status = 'True' })) != 0 ?
         $count($filter($.status.conditions, function($v) { $v.type = 'BuildReady'
