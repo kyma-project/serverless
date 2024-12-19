@@ -62,6 +62,8 @@ spec:
             - name: APP_FUNCTION_IMAGE_PYTHON312
               {{- $p312:=$images.function_runtime_python312  }}
               value: "{{ .Values.global.containerRegistry.path }}/{{ $p312.directory }}/{{$p312.name}}:{{$p312.version}}"
+            - name: APP_FUNCTION_PACKAGE_REGISTRY_CONFIG_SECRET_NAME
+              value: "{{- tpl ( .Values.containers.manager.configuration.data.packageRegistryConfigSecretName) . }}"
       securityContext:
         runAsNonRoot: true
         runAsGroup: 1000
