@@ -145,10 +145,11 @@ func (b *deploymentBuilder) getVolumeMounts() []corev1.VolumeMount {
 		})
 	}
 	if runtime == serverlessv1alpha2.Python312 {
-		volumeMounts = append(volumeMounts, corev1.VolumeMount{
-			Name:      "local",
-			MountPath: "/.local",
-		},
+		volumeMounts = append(volumeMounts,
+			corev1.VolumeMount{
+				Name:      "local",
+				MountPath: "/.local",
+			},
 			corev1.VolumeMount{
 				Name:      "registry-config",
 				ReadOnly:  true,
