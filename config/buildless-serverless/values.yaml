@@ -14,3 +14,8 @@ global:
       name: "function-runtime-python312"
       version: "main"
       directory: "prod"
+containers:
+  manager:
+    configuration:
+      data:
+        packageRegistryConfigSecretName: '{{ template "fullname" . }}-package-registry-config'
