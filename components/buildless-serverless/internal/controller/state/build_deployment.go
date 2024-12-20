@@ -107,7 +107,7 @@ func (b *deploymentBuilder) getVolumes() []corev1.Volume {
 			},
 		},
 		{
-			Name: "registry-config",
+			Name: "package-registry-config",
 			VolumeSource: corev1.VolumeSource{
 				Secret: &corev1.SecretVolumeSource{
 					SecretName: b.functionConfig.PackageRegistryConfigSecretName,
@@ -138,9 +138,9 @@ func (b *deploymentBuilder) getVolumeMounts() []corev1.VolumeMount {
 	}
 	if runtime == serverlessv1alpha2.NodeJs20 {
 		volumeMounts = append(volumeMounts, corev1.VolumeMount{
-			Name:      "registry-config",
+			Name:      "package-registry-config",
 			ReadOnly:  true,
-			MountPath: path.Join(b.getWorkingSourcesDir(), "registry-config/.npmrc"),
+			MountPath: path.Join(b.getWorkingSourcesDir(), "package-registry-config/.npmrc"),
 			SubPath:   ".npmrc",
 		})
 	}
@@ -151,9 +151,9 @@ func (b *deploymentBuilder) getVolumeMounts() []corev1.VolumeMount {
 				MountPath: "/.local",
 			},
 			corev1.VolumeMount{
-				Name:      "registry-config",
+				Name:      "package-registry-config",
 				ReadOnly:  true,
-				MountPath: path.Join(b.getWorkingSourcesDir(), "registry-config/pip.conf"),
+				MountPath: path.Join(b.getWorkingSourcesDir(), "package-registry-config/pip.conf"),
 				SubPath:   "pip.conf",
 			})
 	}
@@ -208,9 +208,7 @@ npm start;`
 			// if deps are not empty use npm
 			return `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
 printf "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
-ls -la;
-export PIP_CONFIG_FILE=registry-config/pip.conf;
-pip install --user --no-cache-dir -r /kubeless/requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
 cd ..;
 python /kubeless.py;`
 		}
