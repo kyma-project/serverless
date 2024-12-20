@@ -31,13 +31,13 @@ jobs:
       tags: ${{ steps.get_tag.outputs.TAGS }}
     steps:
       - name: Checkout
-        if: ${{ github.inputs.tag == '' }} # not release
+        if: ${{ inputs.tag == '' }} # not release
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Checkout (release)
-        if: ${{ github.inputs.tag != '' }} # release
+        if: ${{ inputs.tag != '' }} # release
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref_name }} # Checkout to latest branch changes
