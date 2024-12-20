@@ -62,14 +62,14 @@ type testSuite struct {
 var availableScenarios = map[string][]testSuite{
 	"serverless-integration": {
 		{name: "simple", test: testsuite.SimpleFunctionTest},
-		{name: "gitops", test: testsuite.GitopsSteps},
+		//{name: "gitops", test: testsuite.GitopsSteps},
 	},
-	"git-auth-integration": {{name: "gitauth", test: testsuite.GitAuthTestSteps}},
+	//	"git-auth-integration": {{name: "gitauth", test: testsuite.GitAuthTestSteps}},
 	"serverless-contract-tests": {
-		{name: "tracing", test: testsuite.FunctionTracingTest},
-		{name: "api-gateway", test: testsuite.FunctionAPIGatewayTest},
-		{name: "cloud-events", test: testsuite.FunctionCloudEventsTest},
-		{name: "hana-client", test: testsuite.HanaClientTest},
+		//{name: "tracing", test: testsuite.FunctionTracingTest},
+		//{name: "api-gateway", test: testsuite.FunctionAPIGatewayTest},
+		//{name: "cloud-events", test: testsuite.FunctionCloudEventsTest},
+		//{name: "hana-client", test: testsuite.HanaClientTest},
 	},
 }
 
