@@ -208,6 +208,7 @@ npm start;`
 			// if deps are not empty use npm
 			return `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
 printf "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
+cp registry-config/pip.conf .;
 pip install --user --no-cache-dir -r /kubeless/requirements.txt;
 cd ..;
 python /kubeless.py;`
