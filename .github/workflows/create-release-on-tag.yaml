@@ -2,7 +2,7 @@
 # creates a tag because create-release.yaml pushes a new commit to the branch and building jobs can't resolve such a situation.
 # Because of this, we run the second part of the process in a separate workflow that has its own context based on the tag created.
 
-name: create release
+name: create release on tag
 
 on:
   push:
