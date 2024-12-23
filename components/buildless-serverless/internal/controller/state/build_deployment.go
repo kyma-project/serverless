@@ -7,6 +7,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/ptr"
+	"path"
 )
 
 const DefaultDeploymentReplicas int32 = 1
@@ -105,6 +106,15 @@ func (b *deploymentBuilder) getVolumes() []corev1.Volume {
 				EmptyDir: &corev1.EmptyDirVolumeSource{},
 			},
 		},
+		{
+			Name: "package-registry-config",
+			VolumeSource: corev1.VolumeSource{
+				Secret: &corev1.SecretVolumeSource{
+					SecretName: b.functionConfig.PackageRegistryConfigSecretName,
+					Optional:   ptr.To[bool](true),
+				},
+			},
+		},
 	}
 	if runtime == serverlessv1alpha2.Python312 {
 		volumes = append(volumes, corev1.Volume{
@@ -126,11 +136,26 @@ func (b *deploymentBuilder) getVolumeMounts() []corev1.VolumeMount {
 			MountPath: b.getWorkingSourcesDir(),
 		},
 	}
-	if runtime == serverlessv1alpha2.Python312 {
+	if runtime == serverlessv1alpha2.NodeJs20 {
 		volumeMounts = append(volumeMounts, corev1.VolumeMount{
-			Name:      "local",
-			MountPath: "/.local",
+			Name:      "package-registry-config",
+			ReadOnly:  true,
+			MountPath: path.Join(b.getWorkingSourcesDir(), "package-registry-config/.npmrc"),
+			SubPath:   ".npmrc",
 		})
+	}
+	if runtime == serverlessv1alpha2.Python312 {
+		volumeMounts = append(volumeMounts,
+			corev1.VolumeMount{
+				Name:      "local",
+				MountPath: "/.local",
+			},
+			corev1.VolumeMount{
+				Name:      "package-registry-config",
+				ReadOnly:  true,
+				MountPath: path.Join(b.getWorkingSourcesDir(), "package-registry-config/pip.conf"),
+				SubPath:   "pip.conf",
+			})
 	}
 	return volumeMounts
 }
@@ -183,7 +208,7 @@ npm start;`
 			// if deps are not empty use npm
 			return `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
 printf "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
-pip install --user --no-cache-dir -r /kubeless/requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
 cd ..;
 python /kubeless.py;`
 		}
