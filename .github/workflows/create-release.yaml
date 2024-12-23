@@ -88,4 +88,4 @@ jobs:
           git push origin ${{ github.event.inputs.name }}
   
 # this workload ends on creating the right tag
-# the next steps are located in the .github/workloads/create-release-tag.yaml file
+# the next steps are located in the .github/workloads/create-release-on-tag.yaml file
