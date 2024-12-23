@@ -6,6 +6,8 @@ name: create release on tag
 
 on:
   push:
+    # TODO: support strict version tag regexp for starting release pipeline ( for example 2.1.3 )
+    # to not start workflow on every tag
     tags-ignore:
       - latest
 
