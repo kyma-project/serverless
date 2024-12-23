@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/kyma-project/serverless/internal/controller/fsm"
 	"slices"
 	"strings"
 
@@ -13,8 +14,8 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
-func sFnValidateFunction(_ context.Context, m *stateMachine) (stateFn, *ctrl.Result, error) {
-	v := NewFunctionValidator(&m.state.instance)
+func sFnValidateFunction(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
+	v := NewFunctionValidator(&m.State.Instance)
 	validationFns := []func() []string{
 		v.validateEnvs,
 		v.validateInlineDeps,
@@ -30,7 +31,7 @@ func sFnValidateFunction(_ context.Context, m *stateMachine) (stateFn, *ctrl.Res
 
 	if len(validationResults) != 0 {
 		//TODO: Use ConditionConfigure in this place
-		m.state.instance.UpdateCondition(
+		m.State.Instance.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonFunctionSpec,
