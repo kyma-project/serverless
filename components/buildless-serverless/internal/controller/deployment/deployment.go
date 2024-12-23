@@ -1,8 +1,9 @@
-package state
+package deployment
 
 import (
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
+	"github.com/kyma-project/serverless/internal/controller/fsm"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -12,29 +13,44 @@ import (
 
 const DefaultDeploymentReplicas int32 = 1
 
-type deploymentBuilder struct {
+type Deployment interface {
+	Get() *appsv1.Deployment
+	RuntimeImage() string
+	Name() string
+}
+
+type deployment struct {
 	functionConfig config.FunctionConfig
 	instance       *serverlessv1alpha2.Function
+	deployment     *appsv1.Deployment
 }
 
-func NewDeploymentBuilder(m *stateMachine) *deploymentBuilder {
-	return &deploymentBuilder{
-		functionConfig: m.functionConfig,
-		instance:       &m.state.instance,
+var _ Deployment = (*deployment)(nil)
+
+func New(m *fsm.StateMachine) *deployment {
+	d := &deployment{
+		functionConfig: m.FunctionConfig,
+		instance:       &m.State.Instance,
 	}
+	d.deployment = d.construct()
+	return d
 }
 
-func (b *deploymentBuilder) build() *appsv1.Deployment {
+func (d *deployment) Get() *appsv1.Deployment {
+	return d.deployment
+}
+
+func (d *deployment) construct() *appsv1.Deployment {
 	labels := map[string]string{
-		"app": b.deploymentName(),
+		"app": d.Name(),
 		// TODO: do we need to add more labels here?
-		serverlessv1alpha2.FunctionNameLabel: b.instance.GetName(),
+		serverlessv1alpha2.FunctionNameLabel: d.instance.GetName(),
 	}
 
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      b.deploymentName(),
-			Namespace: b.instance.Namespace,
+			Name:      d.Name(),
+			Namespace: d.instance.Namespace,
 			Labels:    labels,
 		},
 		Spec: appsv1.DeploymentSpec{
@@ -45,50 +61,50 @@ func (b *deploymentBuilder) build() *appsv1.Deployment {
 				ObjectMeta: metav1.ObjectMeta{
 					Labels: labels,
 				},
-				Spec: b.buildPodSpec(),
+				Spec: d.podSpec(),
 			},
-			Replicas: b.getReplicas(),
+			Replicas: d.replicas(),
 		},
 	}
 	return deployment
 }
 
-func (b *deploymentBuilder) deploymentName() string {
-	return b.instance.Name
+func (d *deployment) Name() string {
+	return d.instance.Name
 }
 
-func (b *deploymentBuilder) buildPodSpec() corev1.PodSpec {
-	secretVolumes, secretVolumeMounts := b.buildDeploymentSecretVolumes()
+func (d *deployment) podSpec() corev1.PodSpec {
+	secretVolumes, secretVolumeMounts := d.deploymentSecretVolumes()
 
 	return corev1.PodSpec{
-		Volumes: append(b.getVolumes(), secretVolumes...),
+		Volumes: append(d.volumes(), secretVolumes...),
 		Containers: []corev1.Container{
 			{
-				Name:       b.deploymentName(),
-				Image:      b.getRuntimeImage(),
-				WorkingDir: b.getWorkingSourcesDir(),
+				Name:       d.Name(),
+				Image:      d.RuntimeImage(),
+				WorkingDir: d.workingSourcesDir(),
 				Command: []string{
 					"sh",
 					"-c",
-					b.getRuntimeCommand(),
+					d.runtimeCommand(),
 				},
-				Resources:    b.getResourceConfiguration(),
-				Env:          b.getEnvs(),
-				VolumeMounts: append(b.getVolumeMounts(), secretVolumeMounts...),
+				Resources:    d.resourceConfiguration(),
+				Env:          d.envs(),
+				VolumeMounts: append(d.volumeMounts(), secretVolumeMounts...),
 				Ports: []corev1.ContainerPort{
 					{
 						ContainerPort: 80,
 					},
 				},
 				//TODO: uncomment later - now we need greater privileges for running npm command
-				// SecurityContext: b.restrictiveContainerSecurityContext(),
+				// SecurityContext: d.restrictiveContainerSecurityContext(),
 			},
 		},
 	}
 }
 
-func (b *deploymentBuilder) getReplicas() *int32 {
-	replicas := &b.instance.Spec.Replicas
+func (d *deployment) replicas() *int32 {
+	replicas := &d.instance.Spec.Replicas
 	if replicas != nil {
 		return *replicas
 	}
@@ -96,8 +112,8 @@ func (b *deploymentBuilder) getReplicas() *int32 {
 	return &defaultValue
 }
 
-func (b *deploymentBuilder) getVolumes() []corev1.Volume {
-	runtime := b.instance.Spec.Runtime
+func (d *deployment) volumes() []corev1.Volume {
+	runtime := d.instance.Spec.Runtime
 	volumes := []corev1.Volume{
 		{
 			// used for writing sources (code&deps) to the sources dir
@@ -110,7 +126,7 @@ func (b *deploymentBuilder) getVolumes() []corev1.Volume {
 			Name: "package-registry-config",
 			VolumeSource: corev1.VolumeSource{
 				Secret: &corev1.SecretVolumeSource{
-					SecretName: b.functionConfig.PackageRegistryConfigSecretName,
+					SecretName: d.functionConfig.PackageRegistryConfigSecretName,
 					Optional:   ptr.To[bool](true),
 				},
 			},
@@ -128,19 +144,19 @@ func (b *deploymentBuilder) getVolumes() []corev1.Volume {
 	return volumes
 }
 
-func (b *deploymentBuilder) getVolumeMounts() []corev1.VolumeMount {
-	runtime := b.instance.Spec.Runtime
+func (d *deployment) volumeMounts() []corev1.VolumeMount {
+	runtime := d.instance.Spec.Runtime
 	volumeMounts := []corev1.VolumeMount{
 		{
 			Name:      "sources",
-			MountPath: b.getWorkingSourcesDir(),
+			MountPath: d.workingSourcesDir(),
 		},
 	}
 	if runtime == serverlessv1alpha2.NodeJs20 {
 		volumeMounts = append(volumeMounts, corev1.VolumeMount{
 			Name:      "package-registry-config",
 			ReadOnly:  true,
-			MountPath: path.Join(b.getWorkingSourcesDir(), "package-registry-config/.npmrc"),
+			MountPath: path.Join(d.workingSourcesDir(), "package-registry-config/.npmrc"),
 			SubPath:   ".npmrc",
 		})
 	}
@@ -153,31 +169,31 @@ func (b *deploymentBuilder) getVolumeMounts() []corev1.VolumeMount {
 			corev1.VolumeMount{
 				Name:      "package-registry-config",
 				ReadOnly:  true,
-				MountPath: path.Join(b.getWorkingSourcesDir(), "package-registry-config/pip.conf"),
+				MountPath: path.Join(d.workingSourcesDir(), "package-registry-config/pip.conf"),
 				SubPath:   "pip.conf",
 			})
 	}
 	return volumeMounts
 }
 
-func (b *deploymentBuilder) getRuntimeImage() string {
-	runtimeOverride := b.instance.Spec.RuntimeImageOverride
+func (d *deployment) RuntimeImage() string {
+	runtimeOverride := d.instance.Spec.RuntimeImageOverride
 	if runtimeOverride != "" {
 		return runtimeOverride
 	}
 
-	switch b.instance.Spec.Runtime {
+	switch d.instance.Spec.Runtime {
 	case serverlessv1alpha2.NodeJs20:
-		return b.functionConfig.ImageNodeJs20
+		return d.functionConfig.ImageNodeJs20
 	case serverlessv1alpha2.Python312:
-		return b.functionConfig.ImagePython312
+		return d.functionConfig.ImagePython312
 	default:
 		return ""
 	}
 }
 
-func (b *deploymentBuilder) getWorkingSourcesDir() string {
-	switch b.instance.Spec.Runtime {
+func (d *deployment) workingSourcesDir() string {
+	switch d.instance.Spec.Runtime {
 	case serverlessv1alpha2.NodeJs20:
 		return "/usr/src/app/function"
 	case serverlessv1alpha2.Python312:
@@ -187,8 +203,8 @@ func (b *deploymentBuilder) getWorkingSourcesDir() string {
 	}
 }
 
-func (b *deploymentBuilder) getRuntimeCommand() string {
-	spec := &b.instance.Spec
+func (d *deployment) runtimeCommand() string {
+	spec := &d.instance.Spec
 	dependencies := spec.Source.Inline.Dependencies
 	switch spec.Runtime {
 	case serverlessv1alpha2.NodeJs20:
@@ -220,8 +236,8 @@ python /kubeless.py;`
 	}
 }
 
-func (b *deploymentBuilder) getEnvs() []corev1.EnvVar {
-	spec := &b.instance.Spec
+func (d *deployment) envs() []corev1.EnvVar {
+	spec := &d.instance.Spec
 	envs := []corev1.EnvVar{
 		{
 			Name:  "FUNC_HANDLER_SOURCE",
@@ -248,18 +264,18 @@ func (b *deploymentBuilder) getEnvs() []corev1.EnvVar {
 	return envs
 }
 
-func (b *deploymentBuilder) getResourceConfiguration() corev1.ResourceRequirements {
-	resCfg := b.instance.Spec.ResourceConfiguration
+func (d *deployment) resourceConfiguration() corev1.ResourceRequirements {
+	resCfg := d.instance.Spec.ResourceConfiguration
 	if resCfg != nil && resCfg.Function != nil && resCfg.Function.Resources != nil {
 		return *resCfg.Function.Resources
 	}
 	return corev1.ResourceRequirements{}
 }
 
-func (b *deploymentBuilder) buildDeploymentSecretVolumes() (volumes []corev1.Volume, volumeMounts []corev1.VolumeMount) {
+func (d *deployment) deploymentSecretVolumes() (volumes []corev1.Volume, volumeMounts []corev1.VolumeMount) {
 	volumes = []corev1.Volume{}
 	volumeMounts = []corev1.VolumeMount{}
-	for _, secretMount := range b.instance.Spec.SecretMounts {
+	for _, secretMount := range d.instance.Spec.SecretMounts {
 		volumeName := secretMount.SecretName
 
 		volume := corev1.Volume{
@@ -286,7 +302,7 @@ func (b *deploymentBuilder) buildDeploymentSecretVolumes() (volumes []corev1.Vol
 
 // security context is set to fulfill the baseline security profile
 // based on https://raw.githubusercontent.com/kyma-project/community/main/concepts/psp-replacement/baseline-pod-spec.yaml
-func (b *deploymentBuilder) restrictiveContainerSecurityContext() *corev1.SecurityContext {
+func (d *deployment) restrictiveContainerSecurityContext() *corev1.SecurityContext {
 	defaultProcMount := corev1.DefaultProcMount
 	return &corev1.SecurityContext{
 		Privileged: ptr.To[bool](false),
