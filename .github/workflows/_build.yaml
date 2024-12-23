@@ -31,16 +31,9 @@ jobs:
       tags: ${{ steps.get_tag.outputs.TAGS }}
     steps:
       - name: Checkout
-        if: ${{ inputs.tag == '' }} # not release
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - name: Checkout (release)
-        if: ${{ inputs.tag != '' }} # release
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }} # Checkout to latest branch changes
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - if: ${{ !startsWith(github.event_name, 'pull_request') }}
         name: Get the latest tag
