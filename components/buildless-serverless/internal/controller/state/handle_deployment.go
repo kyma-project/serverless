@@ -21,7 +21,7 @@ import (
 // - gitSources - stateFnGitCheckSources
 
 func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	builtDeployment := deployment.New(m).Get()
+	builtDeployment := deployment.New(m)
 
 	clusterDeployment, resultGet, errGet := getOrCreateDeployment(ctx, m, builtDeployment)
 	if clusterDeployment == nil {
@@ -37,7 +37,7 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	return nextState(sFnHandleService)
 }
 
-func getOrCreateDeployment(ctx context.Context, m *fsm.StateMachine, builtDeployment *appsv1.Deployment) (*appsv1.Deployment, *ctrl.Result, error) {
+func getOrCreateDeployment(ctx context.Context, m *fsm.StateMachine, builtDeployment *deployment.Deployment) (*appsv1.Deployment, *ctrl.Result, error) {
 	currentDeployment := &appsv1.Deployment{}
 	f := m.State.Instance
 	deploymentErr := m.Client.Get(ctx, client.ObjectKey{
@@ -57,7 +57,7 @@ func getOrCreateDeployment(ctx context.Context, m *fsm.StateMachine, builtDeploy
 	return nil, createResult, createErr
 }
 
-func createDeployment(ctx context.Context, m *fsm.StateMachine, deployment *appsv1.Deployment) (*ctrl.Result, error) {
+func createDeployment(ctx context.Context, m *fsm.StateMachine, deployment *deployment.Deployment) (*ctrl.Result, error) {
 	m.Log.Info("creating a new Deployment", "Deployment.Namespace", deployment.Namespace, "Deployment.Name", deployment.Name)
 
 	// Set the ownerRef for the Deployment, ensuring that the Deployment
@@ -82,7 +82,7 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine, deployment *apps
 	return &ctrl.Result{RequeueAfter: time.Minute}, nil
 }
 
-func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment, builtDeployment *appsv1.Deployment) (*ctrl.Result, error) {
+func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment, builtDeployment *deployment.Deployment) (*ctrl.Result, error) {
 	// Ensure the Deployment data matches the desired state
 	if !deploymentChanged(clusterDeployment, builtDeployment) {
 		return nil, nil
@@ -94,7 +94,7 @@ func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterD
 	return updateDeployment(ctx, m, clusterDeployment)
 }
 
-func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
+func deploymentChanged(a *appsv1.Deployment, b *deployment.Deployment) bool {
 	aSpec := a.Spec.Template.Spec.Containers[0]
 	bSpec := b.Spec.Template.Spec.Containers[0]
 

@@ -13,32 +13,22 @@ var (
 	svcTargetPort = intstr.FromInt32(8080)
 )
 
-type Service interface {
-	Get() *corev1.Service
-}
-
-type service struct {
+type Service struct {
+	*corev1.Service
 	functionConfig config.FunctionConfig
 	function       *serverlessv1alpha2.Function
-	service        *corev1.Service
 }
 
-var _ Service = (*service)(nil)
-
-func New(m *fsm.StateMachine) *service {
-	s := &service{
+func New(m *fsm.StateMachine) *Service {
+	s := &Service{
 		functionConfig: m.FunctionConfig,
 		function:       &m.State.Instance,
 	}
-	s.service = s.construct()
+	s.Service = s.construct()
 	return s
 }
 
-func (s *service) Get() *corev1.Service {
-	return s.service
-}
-
-func (s *service) construct() *corev1.Service {
+func (s *Service) construct() *corev1.Service {
 	service := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      s.function.Name,

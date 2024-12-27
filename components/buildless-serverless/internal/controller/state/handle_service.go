@@ -16,7 +16,7 @@ import (
 )
 
 func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	builtService := service.New(m).Get()
+	builtService := service.New(m)
 
 	clusterService, resultGet, errGet := getOrCreateService(ctx, m, builtService)
 	if clusterService == nil {
@@ -32,7 +32,7 @@ func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 	return nextState(sFnAdjustStatus)
 }
 
-func getOrCreateService(ctx context.Context, m *fsm.StateMachine, builtService *corev1.Service) (*corev1.Service, *ctrl.Result, error) {
+func getOrCreateService(ctx context.Context, m *fsm.StateMachine, builtService *service.Service) (*corev1.Service, *ctrl.Result, error) {
 	currentService := &corev1.Service{}
 	f := m.State.Instance
 	serviceErr := m.Client.Get(ctx, client.ObjectKey{
@@ -52,7 +52,7 @@ func getOrCreateService(ctx context.Context, m *fsm.StateMachine, builtService *
 	return nil, createResult, createErr
 }
 
-func createService(ctx context.Context, m *fsm.StateMachine, service *corev1.Service) (*ctrl.Result, error) {
+func createService(ctx context.Context, m *fsm.StateMachine, service *service.Service) (*ctrl.Result, error) {
 	m.Log.Info("creating a new Service", "Service.Namespace", service.Namespace, "Service.Name", service.Name)
 
 	// Set the ownerRef for the Service, ensuring that the Service
@@ -77,7 +77,7 @@ func createService(ctx context.Context, m *fsm.StateMachine, service *corev1.Ser
 	return &ctrl.Result{RequeueAfter: time.Minute}, nil
 }
 
-func updateServiceIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterService *corev1.Service, builtService *corev1.Service) (*ctrl.Result, error) {
+func updateServiceIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterService *corev1.Service, builtService *service.Service) (*ctrl.Result, error) {
 	// Ensure the Deployment data matches the desired state
 	if !serviceChanged(clusterService, builtService) {
 		return nil, nil
@@ -91,7 +91,7 @@ func updateServiceIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterServ
 	return updateService(ctx, m, clusterService)
 }
 
-func serviceChanged(a *corev1.Service, b *corev1.Service) bool {
+func serviceChanged(a *corev1.Service, b *service.Service) bool {
 	return !mapsEqual(a.Spec.Selector, b.Spec.Selector) ||
 		!mapsEqual(a.Labels, b.Labels) ||
 		len(a.Spec.Ports) != 1 ||
