@@ -1,4 +1,4 @@
-package service
+package resources
 
 import (
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
@@ -16,7 +16,7 @@ type Service struct {
 	function *serverlessv1alpha2.Function
 }
 
-func New(f *serverlessv1alpha2.Function) *Service {
+func NewService(f *serverlessv1alpha2.Function) *Service {
 	s := &Service{
 		function: f,
 	}

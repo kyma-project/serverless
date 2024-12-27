@@ -5,7 +5,7 @@ import (
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
-	"github.com/kyma-project/serverless/internal/controller/deployment"
+	"github.com/kyma-project/serverless/internal/controller/resources"
 	"reflect"
 	"runtime"
 	"strings"
@@ -21,7 +21,7 @@ type StateFn func(context.Context, *StateMachine) (StateFn, *ctrl.Result, error)
 type SystemState struct {
 	Function       serverlessv1alpha2.Function
 	statusSnapshot serverlessv1alpha2.FunctionStatus
-	Deployment     *deployment.Deployment
+	Deployment     *resources.Deployment
 }
 
 func (s *SystemState) saveStatusSnapshot() {

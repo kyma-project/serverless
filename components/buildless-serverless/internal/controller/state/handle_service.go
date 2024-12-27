@@ -5,7 +5,7 @@ import (
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/controller/fsm"
-	"github.com/kyma-project/serverless/internal/controller/service"
+	"github.com/kyma-project/serverless/internal/controller/resources"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -16,7 +16,7 @@ import (
 )
 
 func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	builtService := service.New(&m.State.Function).Service
+	builtService := resources.NewService(&m.State.Function).Service
 
 	clusterService, resultGet, errGet := getOrCreateService(ctx, m, builtService)
 	if clusterService == nil {

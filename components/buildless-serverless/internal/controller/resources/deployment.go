@@ -1,4 +1,4 @@
-package deployment
+package resources
 
 import (
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
@@ -18,7 +18,7 @@ type Deployment struct {
 	function       *serverlessv1alpha2.Function
 }
 
-func New(f *serverlessv1alpha2.Function, c *config.FunctionConfig) *Deployment {
+func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig) *Deployment {
 	d := &Deployment{
 		functionConfig: c,
 		function:       f,
