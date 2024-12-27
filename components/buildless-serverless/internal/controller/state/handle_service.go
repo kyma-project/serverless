@@ -34,7 +34,7 @@ func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 
 func getOrCreateService(ctx context.Context, m *fsm.StateMachine, builtService *corev1.Service) (*corev1.Service, *ctrl.Result, error) {
 	currentService := &corev1.Service{}
-	f := m.State.Instance
+	f := m.State.Function
 	serviceErr := m.Client.Get(ctx, client.ObjectKey{
 		Namespace: f.GetNamespace(),
 		Name:      f.GetName(),
@@ -57,18 +57,18 @@ func createService(ctx context.Context, m *fsm.StateMachine, service *corev1.Ser
 
 	// Set the ownerRef for the Service, ensuring that the Service
 	// will be deleted when the Function CR is deleted.
-	controllerutil.SetControllerReference(&m.State.Instance, service, m.Scheme)
+	controllerutil.SetControllerReference(&m.State.Function, service, m.Scheme)
 
 	if err := m.Client.Create(ctx, service); err != nil {
 		m.Log.Error(err, "failed to create new Service", "Service.Namespace", service.GetNamespace(), "Service.Name", service.GetName())
-		m.State.Instance.UpdateCondition(
+		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonServiceFailed,
 			fmt.Sprintf("Service %s/%s create failed: %s", service.GetNamespace(), service.GetName(), err.Error()))
 		return nil, err
 	}
-	m.State.Instance.UpdateCondition(
+	m.State.Function.UpdateCondition(
 		serverlessv1alpha2.ConditionRunning,
 		metav1.ConditionUnknown,
 		serverlessv1alpha2.ConditionReasonServiceCreated,
@@ -102,14 +102,14 @@ func serviceChanged(a *corev1.Service, b *corev1.Service) bool {
 func updateService(ctx context.Context, m *fsm.StateMachine, clusterService *corev1.Service) (*ctrl.Result, error) {
 	if err := m.Client.Update(ctx, clusterService); err != nil {
 		m.Log.Error(err, "Failed to update Service", "Service.Namespace", clusterService.GetNamespace(), "Service.Name", clusterService.GetName())
-		m.State.Instance.UpdateCondition(
+		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonServiceFailed,
 			fmt.Sprintf("Service %s/%s update failed: %s", clusterService.GetNamespace(), clusterService.GetName(), err.Error()))
 		return nil, err
 	}
-	m.State.Instance.UpdateCondition(
+	m.State.Function.UpdateCondition(
 		serverlessv1alpha2.ConditionRunning,
 		metav1.ConditionUnknown,
 		serverlessv1alpha2.ConditionReasonServiceUpdated,

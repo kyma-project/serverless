@@ -22,7 +22,7 @@ type Service struct {
 func New(m *fsm.StateMachine) *Service {
 	s := &Service{
 		functionConfig: m.FunctionConfig,
-		function:       &m.State.Instance,
+		function:       &m.State.Function,
 	}
 	s.Service = s.construct()
 	return s

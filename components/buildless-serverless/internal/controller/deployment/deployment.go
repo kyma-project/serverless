@@ -22,7 +22,7 @@ type Deployment struct {
 func New(m *fsm.StateMachine) *Deployment {
 	d := &Deployment{
 		functionConfig: m.FunctionConfig,
-		instance:       &m.State.Instance,
+		instance:       &m.State.Function,
 	}
 	d.Deployment = d.construct()
 	return d
@@ -57,6 +57,10 @@ func (d *Deployment) construct() *appsv1.Deployment {
 	return deployment
 }
 
+func (d *Deployment) RuntimeImage() string {
+	return d.Spec.Template.Spec.Containers[0].Image
+}
+
 func (d *Deployment) name() string {
 	return d.instance.Name
 }
@@ -69,7 +73,7 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 		Containers: []corev1.Container{
 			{
 				Name:       d.name(),
-				Image:      d.RuntimeImage(),
+				Image:      d.runtimeImage(),
 				WorkingDir: d.workingSourcesDir(),
 				Command: []string{
 					"sh",
@@ -164,7 +168,7 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 	return volumeMounts
 }
 
-func (d *Deployment) RuntimeImage() string {
+func (d *Deployment) runtimeImage() string {
 	runtimeOverride := d.instance.Spec.RuntimeImageOverride
 	if runtimeOverride != "" {
 		return runtimeOverride

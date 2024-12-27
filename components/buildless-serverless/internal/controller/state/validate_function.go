@@ -15,7 +15,7 @@ import (
 )
 
 func sFnValidateFunction(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	v := NewFunctionValidator(&m.State.Instance)
+	v := NewFunctionValidator(&m.State.Function)
 	validationFns := []func() []string{
 		v.validateEnvs,
 		v.validateInlineDeps,
@@ -31,7 +31,7 @@ func sFnValidateFunction(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *
 
 	if len(validationResults) != 0 {
 		//TODO: Use ConditionConfigure in this place
-		m.State.Instance.UpdateCondition(
+		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonFunctionSpec,

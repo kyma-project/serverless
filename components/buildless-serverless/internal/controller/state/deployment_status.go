@@ -24,7 +24,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	deploymentName := deployment.New(m).GetName()
 	deployment := appsv1.Deployment{}
 	m.Client.Get(ctx, client.ObjectKey{
-		Namespace: m.State.Instance.GetNamespace(),
+		Namespace: m.State.Function.GetNamespace(),
 		Name:      deploymentName,
 	}, &deployment)
 
@@ -32,7 +32,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	if isDeploymentReady(deployment) {
 		m.Log.Info(fmt.Sprintf("deployment %s ready", deploymentName))
 
-		m.State.Instance.UpdateCondition(
+		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionTrue,
 			serverlessv1alpha2.ConditionReasonDeploymentReady,
@@ -45,7 +45,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	if hasDeploymentConditionFalseStatusWithReason(deployment.Status.Conditions, appsv1.DeploymentAvailable, MinimumReplicasUnavailable) {
 		m.Log.Info(fmt.Sprintf("deployment unhealthy: %q", deploymentName))
 
-		m.State.Instance.UpdateCondition(
+		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionUnknown,
 			serverlessv1alpha2.ConditionReasonMinReplicasNotAvailable,
@@ -58,7 +58,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	if hasDeploymentConditionTrueStatus(deployment.Status.Conditions, appsv1.DeploymentProgressing) {
 		m.Log.Info(fmt.Sprintf("deployment %q not ready", deploymentName))
 
-		m.State.Instance.UpdateCondition(
+		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionUnknown,
 			serverlessv1alpha2.ConditionReasonDeploymentWaiting,
@@ -75,7 +75,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 		return nil, nil, errors.Wrap(err, "while parsing deployment status")
 	}
 	msg := fmt.Sprintf("Deployment %s failed with condition: \n%s", deploymentName, yamlConditions)
-	m.State.Instance.UpdateCondition(
+	m.State.Function.UpdateCondition(
 		serverlessv1alpha2.ConditionRunning,
 		metav1.ConditionFalse,
 		serverlessv1alpha2.ConditionReasonDeploymentFailed,

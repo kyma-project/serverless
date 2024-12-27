@@ -21,7 +21,8 @@ import (
 // - gitSources - stateFnGitCheckSources
 
 func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	builtDeployment := deployment.New(m).Deployment
+	m.State.Deployment = deployment.New(m)
+	builtDeployment := m.State.Deployment.Deployment
 
 	clusterDeployment, resultGet, errGet := getOrCreateDeployment(ctx, m, builtDeployment)
 	if clusterDeployment == nil {
@@ -39,7 +40,7 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 
 func getOrCreateDeployment(ctx context.Context, m *fsm.StateMachine, builtDeployment *appsv1.Deployment) (*appsv1.Deployment, *ctrl.Result, error) {
 	currentDeployment := &appsv1.Deployment{}
-	f := m.State.Instance
+	f := m.State.Function
 	deploymentErr := m.Client.Get(ctx, client.ObjectKey{
 		Namespace: f.GetNamespace(),
 		Name:      f.GetName(),
@@ -62,18 +63,18 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine, deployment *apps
 
 	// Set the ownerRef for the Deployment, ensuring that the Deployment
 	// will be deleted when the Function CR is deleted.
-	controllerutil.SetControllerReference(&m.State.Instance, deployment, m.Scheme)
+	controllerutil.SetControllerReference(&m.State.Function, deployment, m.Scheme)
 
 	if err := m.Client.Create(ctx, deployment); err != nil {
 		m.Log.Error(err, "failed to create new Deployment", "Deployment.Namespace", deployment.GetNamespace(), "Deployment.Name", deployment.GetName())
-		m.State.Instance.UpdateCondition(
+		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonDeploymentFailed,
 			fmt.Sprintf("Deployment %s/%s create failed: %s", deployment.GetNamespace(), deployment.GetName(), err.Error()))
 		return nil, err
 	}
-	m.State.Instance.UpdateCondition(
+	m.State.Function.UpdateCondition(
 		serverlessv1alpha2.ConditionRunning,
 		metav1.ConditionUnknown,
 		serverlessv1alpha2.ConditionReasonDeploymentCreated,
@@ -111,14 +112,14 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 func updateDeployment(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment) (*ctrl.Result, error) {
 	if err := m.Client.Update(ctx, clusterDeployment); err != nil {
 		m.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", clusterDeployment.GetNamespace(), "Deployment.Name", clusterDeployment.GetName())
-		m.State.Instance.UpdateCondition(
+		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonDeploymentFailed,
 			fmt.Sprintf("Deployment %s/%s update failed: %s", clusterDeployment.GetNamespace(), clusterDeployment.GetName(), err.Error()))
 		return nil, err
 	}
-	m.State.Instance.UpdateCondition(
+	m.State.Function.UpdateCondition(
 		serverlessv1alpha2.ConditionRunning,
 		metav1.ConditionUnknown,
 		serverlessv1alpha2.ConditionReasonDeploymentUpdated,

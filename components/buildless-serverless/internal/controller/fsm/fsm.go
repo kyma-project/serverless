@@ -5,6 +5,7 @@ import (
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
+	"github.com/kyma-project/serverless/internal/controller/deployment"
 	"reflect"
 	"runtime"
 	"strings"
@@ -18,12 +19,13 @@ import (
 type StateFn func(context.Context, *StateMachine) (StateFn, *ctrl.Result, error)
 
 type SystemState struct {
-	Instance       serverlessv1alpha2.Function
+	Function       serverlessv1alpha2.Function
 	statusSnapshot serverlessv1alpha2.FunctionStatus
+	Deployment     *deployment.Deployment
 }
 
 func (s *SystemState) saveStatusSnapshot() {
-	result := s.Instance.Status.DeepCopy()
+	result := s.Function.Status.DeepCopy()
 	if result == nil {
 		result = &serverlessv1alpha2.FunctionStatus{}
 	}
@@ -91,7 +93,7 @@ func New(client client.Client, functionConfig config.FunctionConfig, instance *s
 	sm := StateMachine{
 		nextFn: startState,
 		State: SystemState{
-			Instance: *instance,
+			Function: *instance,
 		},
 		Log:            log,
 		FunctionConfig: functionConfig,
@@ -104,9 +106,9 @@ func New(client client.Client, functionConfig config.FunctionConfig, instance *s
 
 func updateFunctionStatus(ctx context.Context, m *StateMachine) error {
 	s := &m.State
-	if !reflect.DeepEqual(s.Instance.Status, s.statusSnapshot) {
-		m.Log.Debug(fmt.Sprintf("updating serverless status to '%+v'", s.Instance.Status))
-		err := m.Client.Status().Update(ctx, &s.Instance)
+	if !reflect.DeepEqual(s.Function.Status, s.statusSnapshot) {
+		m.Log.Debug(fmt.Sprintf("updating serverless status to '%+v'", s.Function.Status))
+		err := m.Client.Status().Update(ctx, &s.Function)
 		//emitEvent(r, s)
 		s.saveStatusSnapshot()
 		return err
