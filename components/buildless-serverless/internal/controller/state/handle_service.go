@@ -36,8 +36,8 @@ func getOrCreateService(ctx context.Context, m *fsm.StateMachine, builtService *
 	currentService := &corev1.Service{}
 	f := m.State.Instance
 	serviceErr := m.Client.Get(ctx, client.ObjectKey{
-		Namespace: f.Namespace,
-		Name:      f.Name,
+		Namespace: f.GetNamespace(),
+		Name:      f.GetName(),
 	}, currentService)
 
 	if serviceErr == nil {
@@ -53,26 +53,26 @@ func getOrCreateService(ctx context.Context, m *fsm.StateMachine, builtService *
 }
 
 func createService(ctx context.Context, m *fsm.StateMachine, service *service.Service) (*ctrl.Result, error) {
-	m.Log.Info("creating a new Service", "Service.Namespace", service.Namespace, "Service.Name", service.Name)
+	m.Log.Info("creating a new Service", "Service.Namespace", service.GetNamespace(), "Service.Name", service.GetName())
 
 	// Set the ownerRef for the Service, ensuring that the Service
 	// will be deleted when the Function CR is deleted.
 	controllerutil.SetControllerReference(&m.State.Instance, service, m.Scheme)
 
 	if err := m.Client.Create(ctx, service); err != nil {
-		m.Log.Error(err, "failed to create new Service", "Service.Namespace", service.Namespace, "Service.Name", service.Name)
+		m.Log.Error(err, "failed to create new Service", "Service.Namespace", service.GetNamespace(), "Service.Name", service.GetName())
 		m.State.Instance.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonServiceFailed,
-			fmt.Sprintf("Service %s/%s create failed: %s", service.Namespace, service.Name, err.Error()))
+			fmt.Sprintf("Service %s/%s create failed: %s", service.GetNamespace(), service.GetName(), err.Error()))
 		return nil, err
 	}
 	m.State.Instance.UpdateCondition(
 		serverlessv1alpha2.ConditionRunning,
 		metav1.ConditionUnknown,
 		serverlessv1alpha2.ConditionReasonServiceCreated,
-		fmt.Sprintf("Service %s/%s updated", service.Namespace, service.Name))
+		fmt.Sprintf("Service %s/%s updated", service.GetNamespace(), service.GetName()))
 
 	return &ctrl.Result{RequeueAfter: time.Minute}, nil
 }
@@ -101,19 +101,19 @@ func serviceChanged(a *corev1.Service, b *service.Service) bool {
 
 func updateService(ctx context.Context, m *fsm.StateMachine, clusterService *corev1.Service) (*ctrl.Result, error) {
 	if err := m.Client.Update(ctx, clusterService); err != nil {
-		m.Log.Error(err, "Failed to update Service", "Service.Namespace", clusterService.Namespace, "Service.Name", clusterService.Name)
+		m.Log.Error(err, "Failed to update Service", "Service.Namespace", clusterService.GetNamespace(), "Service.Name", clusterService.GetName())
 		m.State.Instance.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonServiceFailed,
-			fmt.Sprintf("Service %s/%s update failed: %s", clusterService.Namespace, clusterService.Name, err.Error()))
+			fmt.Sprintf("Service %s/%s update failed: %s", clusterService.GetNamespace(), clusterService.GetName(), err.Error()))
 		return nil, err
 	}
 	m.State.Instance.UpdateCondition(
 		serverlessv1alpha2.ConditionRunning,
 		metav1.ConditionUnknown,
 		serverlessv1alpha2.ConditionReasonServiceUpdated,
-		fmt.Sprintf("Service %s/%s updated", clusterService.Namespace, clusterService.Name))
+		fmt.Sprintf("Service %s/%s updated", clusterService.GetNamespace(), clusterService.GetName()))
 	// Requeue the request to ensure the Deployment is updated
 	//TODO: rethink if it's better solution
 	return &ctrl.Result{Requeue: true}, nil

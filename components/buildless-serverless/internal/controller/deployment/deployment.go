@@ -30,14 +30,14 @@ func New(m *fsm.StateMachine) *Deployment {
 
 func (d *Deployment) construct() *appsv1.Deployment {
 	labels := map[string]string{
-		"app": d.Name(),
+		"app": d.name(),
 		// TODO: do we need to add more labels here?
 		serverlessv1alpha2.FunctionNameLabel: d.instance.GetName(),
 	}
 
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      d.Name(),
+			Name:      d.name(),
 			Namespace: d.instance.Namespace,
 			Labels:    labels,
 		},
@@ -57,7 +57,7 @@ func (d *Deployment) construct() *appsv1.Deployment {
 	return deployment
 }
 
-func (d *Deployment) Name() string {
+func (d *Deployment) name() string {
 	return d.instance.Name
 }
 
@@ -68,7 +68,7 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 		Volumes: append(d.volumes(), secretVolumes...),
 		Containers: []corev1.Container{
 			{
-				Name:       d.Name(),
+				Name:       d.name(),
 				Image:      d.RuntimeImage(),
 				WorkingDir: d.workingSourcesDir(),
 				Command: []string{

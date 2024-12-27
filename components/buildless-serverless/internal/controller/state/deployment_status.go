@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	deployment2 "github.com/kyma-project/serverless/internal/controller/deployment"
+	"github.com/kyma-project/serverless/internal/controller/deployment"
 	"github.com/kyma-project/serverless/internal/controller/fsm"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
@@ -21,10 +21,10 @@ const (
 )
 
 func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	deploymentName := deployment2.New(m).Name()
+	deploymentName := deployment.New(m).GetName()
 	deployment := appsv1.Deployment{}
 	m.Client.Get(ctx, client.ObjectKey{
-		Namespace: m.State.Instance.Namespace,
+		Namespace: m.State.Instance.GetNamespace(),
 		Name:      deploymentName,
 	}, &deployment)
 
