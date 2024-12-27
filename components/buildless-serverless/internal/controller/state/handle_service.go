@@ -16,7 +16,7 @@ import (
 )
 
 func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	builtService := service.New(m).Service
+	builtService := service.New(&m.State.Function).Service
 
 	clusterService, resultGet, errGet := getOrCreateService(ctx, m, builtService)
 	if clusterService == nil {

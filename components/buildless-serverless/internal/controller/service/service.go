@@ -2,8 +2,6 @@ package service
 
 import (
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	"github.com/kyma-project/serverless/internal/config"
-	"github.com/kyma-project/serverless/internal/controller/fsm"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -15,14 +13,12 @@ var (
 
 type Service struct {
 	*corev1.Service
-	functionConfig config.FunctionConfig
-	function       *serverlessv1alpha2.Function
+	function *serverlessv1alpha2.Function
 }
 
-func New(m *fsm.StateMachine) *Service {
+func New(f *serverlessv1alpha2.Function) *Service {
 	s := &Service{
-		functionConfig: m.FunctionConfig,
-		function:       &m.State.Function,
+		function: f,
 	}
 	s.Service = s.construct()
 	return s

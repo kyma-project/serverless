@@ -3,7 +3,6 @@ package deployment
 import (
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
-	"github.com/kyma-project/serverless/internal/controller/fsm"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -15,14 +14,14 @@ const DefaultDeploymentReplicas int32 = 1
 
 type Deployment struct {
 	*appsv1.Deployment
-	functionConfig config.FunctionConfig
-	instance       *serverlessv1alpha2.Function
+	functionConfig *config.FunctionConfig
+	function       *serverlessv1alpha2.Function
 }
 
-func New(m *fsm.StateMachine) *Deployment {
+func New(f *serverlessv1alpha2.Function, c *config.FunctionConfig) *Deployment {
 	d := &Deployment{
-		functionConfig: m.FunctionConfig,
-		instance:       &m.State.Function,
+		functionConfig: c,
+		function:       f,
 	}
 	d.Deployment = d.construct()
 	return d
@@ -32,13 +31,13 @@ func (d *Deployment) construct() *appsv1.Deployment {
 	labels := map[string]string{
 		"app": d.name(),
 		// TODO: do we need to add more labels here?
-		serverlessv1alpha2.FunctionNameLabel: d.instance.GetName(),
+		serverlessv1alpha2.FunctionNameLabel: d.function.GetName(),
 	}
 
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      d.name(),
-			Namespace: d.instance.Namespace,
+			Namespace: d.function.Namespace,
 			Labels:    labels,
 		},
 		Spec: appsv1.DeploymentSpec{
@@ -62,7 +61,7 @@ func (d *Deployment) RuntimeImage() string {
 }
 
 func (d *Deployment) name() string {
-	return d.instance.Name
+	return d.function.Name
 }
 
 func (d *Deployment) podSpec() corev1.PodSpec {
@@ -96,7 +95,7 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 }
 
 func (d *Deployment) replicas() *int32 {
-	replicas := &d.instance.Spec.Replicas
+	replicas := &d.function.Spec.Replicas
 	if replicas != nil {
 		return *replicas
 	}
@@ -105,7 +104,7 @@ func (d *Deployment) replicas() *int32 {
 }
 
 func (d *Deployment) volumes() []corev1.Volume {
-	runtime := d.instance.Spec.Runtime
+	runtime := d.function.Spec.Runtime
 	volumes := []corev1.Volume{
 		{
 			// used for writing sources (code&deps) to the sources dir
@@ -137,7 +136,7 @@ func (d *Deployment) volumes() []corev1.Volume {
 }
 
 func (d *Deployment) volumeMounts() []corev1.VolumeMount {
-	runtime := d.instance.Spec.Runtime
+	runtime := d.function.Spec.Runtime
 	volumeMounts := []corev1.VolumeMount{
 		{
 			Name:      "sources",
@@ -169,12 +168,12 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 }
 
 func (d *Deployment) runtimeImage() string {
-	runtimeOverride := d.instance.Spec.RuntimeImageOverride
+	runtimeOverride := d.function.Spec.RuntimeImageOverride
 	if runtimeOverride != "" {
 		return runtimeOverride
 	}
 
-	switch d.instance.Spec.Runtime {
+	switch d.function.Spec.Runtime {
 	case serverlessv1alpha2.NodeJs20:
 		return d.functionConfig.ImageNodeJs20
 	case serverlessv1alpha2.Python312:
@@ -185,7 +184,7 @@ func (d *Deployment) runtimeImage() string {
 }
 
 func (d *Deployment) workingSourcesDir() string {
-	switch d.instance.Spec.Runtime {
+	switch d.function.Spec.Runtime {
 	case serverlessv1alpha2.NodeJs20:
 		return "/usr/src/app/function"
 	case serverlessv1alpha2.Python312:
@@ -196,7 +195,7 @@ func (d *Deployment) workingSourcesDir() string {
 }
 
 func (d *Deployment) runtimeCommand() string {
-	spec := &d.instance.Spec
+	spec := &d.function.Spec
 	dependencies := spec.Source.Inline.Dependencies
 	switch spec.Runtime {
 	case serverlessv1alpha2.NodeJs20:
@@ -229,7 +228,7 @@ python /kubeless.py;`
 }
 
 func (d *Deployment) envs() []corev1.EnvVar {
-	spec := &d.instance.Spec
+	spec := &d.function.Spec
 	envs := []corev1.EnvVar{
 		{
 			Name:  "FUNC_HANDLER_SOURCE",
@@ -257,7 +256,7 @@ func (d *Deployment) envs() []corev1.EnvVar {
 }
 
 func (d *Deployment) resourceConfiguration() corev1.ResourceRequirements {
-	resCfg := d.instance.Spec.ResourceConfiguration
+	resCfg := d.function.Spec.ResourceConfiguration
 	if resCfg != nil && resCfg.Function != nil && resCfg.Function.Resources != nil {
 		return *resCfg.Function.Resources
 	}
@@ -267,7 +266,7 @@ func (d *Deployment) resourceConfiguration() corev1.ResourceRequirements {
 func (d *Deployment) deploymentSecretVolumes() (volumes []corev1.Volume, volumeMounts []corev1.VolumeMount) {
 	volumes = []corev1.Volume{}
 	volumeMounts = []corev1.VolumeMount{}
-	for _, secretMount := range d.instance.Spec.SecretMounts {
+	for _, secretMount := range d.function.Spec.SecretMounts {
 		volumeName := secretMount.SecretName
 
 		volume := corev1.Volume{
