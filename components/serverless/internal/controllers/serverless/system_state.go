@@ -386,25 +386,20 @@ func (s *systemState) podAnnotations() map[string]string {
 	if s.instance.Spec.Annotations != nil {
 		result = labels.Merge(s.instance.Spec.Annotations, result)
 	}
-	result = labels.Merge(s.specialDeploymentAnnotations(), result)
+
+	// merge old and new annotations to allow other components to annotate functions deployment
+	// for example in case when someone use `kubectl rollout restart` on it
+	result = labels.Merge(s.currentAnnotations(), result)
 	return result
 }
 
-func (s *systemState) specialDeploymentAnnotations() map[string]string {
+func (s *systemState) currentAnnotations() map[string]string {
 	deployments := s.deployments.Items
 	if len(deployments) == 0 {
 		return map[string]string{}
 	}
-	deploymentAnnotations := deployments[0].Spec.Template.GetAnnotations()
-	specialDeploymentAnnotations := map[string]string{}
-	for _, k := range []string{
-		"kubectl.kubernetes.io/restartedAt",
-	} {
-		if v, found := deploymentAnnotations[k]; found {
-			specialDeploymentAnnotations[k] = v
-		}
-	}
-	return specialDeploymentAnnotations
+
+	return deployments[0].Spec.Template.GetAnnotations()
 }
 
 type buildDeploymentArgs struct {
