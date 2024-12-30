@@ -20,6 +20,7 @@ import (
 	"context"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
+	"github.com/kyma-project/serverless/internal/controller/fsm"
 	"github.com/kyma-project/serverless/internal/controller/state"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
@@ -57,7 +58,7 @@ func (fr *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
 
-	sm := state.NewMachine(fr.Client, fr.Config, &instance, fr.Scheme, log)
+	sm := fsm.New(fr.Client, fr.Config, &instance, state.StartState(), fr.Scheme, log)
 	return sm.Reconcile(ctx)
 }
 

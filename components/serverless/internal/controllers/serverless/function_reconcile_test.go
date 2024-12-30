@@ -1324,7 +1324,7 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 		assertSuccessfulFunctionBuild(t, resourceClient, reconciler, request, fnLabels)
 		assertSuccessfulFunctionDeployment(t, resourceClient, reconciler, request, fnLabels)
 
-		t.Log("updating deployment.spec.template.metadata.annotations, e.g. by using kubectl rollout restart command")
+		t.Log("updating deployment.spec.template.metadata.annotations, e.g. by using kubectl rollout restart command and one custom annotation")
 		deployments := &appsv1.DeploymentList{}
 		g.Expect(resourceClient.ListByLabel(context.TODO(), request.Namespace, fnLabels, deployments)).To(gomega.Succeed())
 		g.Expect(len(deployments.Items)).To(gomega.Equal(1))
@@ -1336,8 +1336,11 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 		copiedDeploy := deployment.DeepCopy()
 		const restartedAtAnnotationKey = "kubectl.kubernetes.io/restartedAt"
 		const restartedAtAnnotationValue = "2021-03-10T11:28:01+01:00"
+		const customAnnotationKey = "test"
+		const customAnnotationValue = "value"
 		restartedAtAnnotation := map[string]string{
 			restartedAtAnnotationKey: restartedAtAnnotationValue, // example annotation added by kubectl
+			customAnnotationKey:      customAnnotationValue,
 		}
 		copiedDeploy.Spec.Template.Annotations = restartedAtAnnotation
 		g.Expect(resourceClient.Update(context.Background(), copiedDeploy))
@@ -1373,6 +1376,7 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 		g.Expect(deployment).ToNot(gomega.BeNil())
 
 		g.Expect(deployment.Spec.Template.Annotations).To(gomega.HaveKeyWithValue(restartedAtAnnotationKey, restartedAtAnnotationValue))
+		g.Expect(deployment.Spec.Template.Annotations).To(gomega.HaveKeyWithValue(customAnnotationKey, customAnnotationValue))
 	})
 
 	t.Run("should reconcile function with RuntimeImageOverride", func(t *testing.T) {

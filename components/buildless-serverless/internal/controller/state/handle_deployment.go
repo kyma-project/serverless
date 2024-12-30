@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
+	"github.com/kyma-project/serverless/internal/controller/fsm"
+	"github.com/kyma-project/serverless/internal/controller/resources"
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -18,16 +20,17 @@ import (
 // - validate - components/serverless/internal/controllers/serverless/validation.go
 // - gitSources - stateFnGitCheckSources
 
-func sFnHandleDeployment(ctx context.Context, m *stateMachine) (stateFn, *ctrl.Result, error) {
-	builtDeployment := NewDeploymentBuilder(m).build()
+func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
+	m.State.Deployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig)
+	builtDeployment := m.State.Deployment.Deployment
 
-	clusterDeployment, resultGet, errGet := m.getOrCreateDeployment(ctx, builtDeployment)
+	clusterDeployment, resultGet, errGet := getOrCreateDeployment(ctx, m, builtDeployment)
 	if clusterDeployment == nil {
 		//TODO: think what we should return here (in context of state machine)
 		return nil, resultGet, errGet
 	}
 
-	resultUpdate, errUpdate := m.updateDeploymentIfNeeded(ctx, clusterDeployment, builtDeployment)
+	resultUpdate, errUpdate := updateDeploymentIfNeeded(ctx, m, clusterDeployment, builtDeployment)
 	if errUpdate != nil {
 		//TODO: think what we should return here (in context of state machine)
 		return nil, resultUpdate, errUpdate
@@ -35,52 +38,52 @@ func sFnHandleDeployment(ctx context.Context, m *stateMachine) (stateFn, *ctrl.R
 	return nextState(sFnHandleService)
 }
 
-func (m *stateMachine) getOrCreateDeployment(ctx context.Context, builtDeployment *appsv1.Deployment) (*appsv1.Deployment, *ctrl.Result, error) {
+func getOrCreateDeployment(ctx context.Context, m *fsm.StateMachine, builtDeployment *appsv1.Deployment) (*appsv1.Deployment, *ctrl.Result, error) {
 	currentDeployment := &appsv1.Deployment{}
-	f := m.state.instance
-	deploymentErr := m.client.Get(ctx, client.ObjectKey{
-		Namespace: f.Namespace,
-		Name:      f.Name,
+	f := m.State.Function
+	deploymentErr := m.Client.Get(ctx, client.ObjectKey{
+		Namespace: f.GetNamespace(),
+		Name:      f.GetName(),
 	}, currentDeployment)
 
 	if deploymentErr == nil {
 		return currentDeployment, nil, nil
 	}
 	if !errors.IsNotFound(deploymentErr) {
-		m.log.Error(deploymentErr, "unable to fetch Deployment for Function")
+		m.Log.Error(deploymentErr, "unable to fetch Deployment for Function")
 		return nil, nil, deploymentErr
 	}
 
-	createResult, createErr := m.createDeployment(ctx, builtDeployment)
+	createResult, createErr := createDeployment(ctx, m, builtDeployment)
 	return nil, createResult, createErr
 }
 
-func (m *stateMachine) createDeployment(ctx context.Context, deployment *appsv1.Deployment) (*ctrl.Result, error) {
-	m.log.Info("creating a new Deployment", "Deployment.Namespace", deployment.Namespace, "Deployment.Name", deployment.Name)
+func createDeployment(ctx context.Context, m *fsm.StateMachine, deployment *appsv1.Deployment) (*ctrl.Result, error) {
+	m.Log.Info("creating a new Deployment", "Deployment.Namespace", deployment.GetNamespace(), "Deployment.Name", deployment.GetName())
 
 	// Set the ownerRef for the Deployment, ensuring that the Deployment
 	// will be deleted when the Function CR is deleted.
-	controllerutil.SetControllerReference(&m.state.instance, deployment, m.scheme)
+	controllerutil.SetControllerReference(&m.State.Function, deployment, m.Scheme)
 
-	if err := m.client.Create(ctx, deployment); err != nil {
-		m.log.Error(err, "failed to create new Deployment", "Deployment.Namespace", deployment.Namespace, "Deployment.Name", deployment.Name)
-		m.state.instance.UpdateCondition(
+	if err := m.Client.Create(ctx, deployment); err != nil {
+		m.Log.Error(err, "failed to create new Deployment", "Deployment.Namespace", deployment.GetNamespace(), "Deployment.Name", deployment.GetName())
+		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonDeploymentFailed,
-			fmt.Sprintf("Deployment %s/%s create failed: %s", deployment.Namespace, deployment.Name, err.Error()))
+			fmt.Sprintf("Deployment %s/%s create failed: %s", deployment.GetNamespace(), deployment.GetName(), err.Error()))
 		return nil, err
 	}
-	m.state.instance.UpdateCondition(
+	m.State.Function.UpdateCondition(
 		serverlessv1alpha2.ConditionRunning,
 		metav1.ConditionUnknown,
 		serverlessv1alpha2.ConditionReasonDeploymentCreated,
-		fmt.Sprintf("Deployment %s/%s updated", deployment.Namespace, deployment.Name))
+		fmt.Sprintf("Deployment %s/%s updated", deployment.GetNamespace(), deployment.GetName()))
 
 	return &ctrl.Result{RequeueAfter: time.Minute}, nil
 }
 
-func (m *stateMachine) updateDeploymentIfNeeded(ctx context.Context, clusterDeployment *appsv1.Deployment, builtDeployment *appsv1.Deployment) (*ctrl.Result, error) {
+func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment, builtDeployment *appsv1.Deployment) (*ctrl.Result, error) {
 	// Ensure the Deployment data matches the desired state
 	if !deploymentChanged(clusterDeployment, builtDeployment) {
 		return nil, nil
@@ -89,7 +92,7 @@ func (m *stateMachine) updateDeploymentIfNeeded(ctx context.Context, clusterDepl
 	//TODO: think if it's better to update only some fields
 	clusterDeployment.Spec.Template = builtDeployment.Spec.Template
 	clusterDeployment.Spec.Replicas = builtDeployment.Spec.Replicas
-	return m.updateDeployment(ctx, clusterDeployment)
+	return updateDeployment(ctx, m, clusterDeployment)
 }
 
 func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
@@ -106,21 +109,21 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 		!reflect.DeepEqual(aSpec.VolumeMounts, bSpec.VolumeMounts)
 }
 
-func (m *stateMachine) updateDeployment(ctx context.Context, clusterDeployment *appsv1.Deployment) (*ctrl.Result, error) {
-	if err := m.client.Update(ctx, clusterDeployment); err != nil {
-		m.log.Error(err, "Failed to update Deployment", "Deployment.Namespace", clusterDeployment.Namespace, "Deployment.Name", clusterDeployment.Name)
-		m.state.instance.UpdateCondition(
+func updateDeployment(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment) (*ctrl.Result, error) {
+	if err := m.Client.Update(ctx, clusterDeployment); err != nil {
+		m.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", clusterDeployment.GetNamespace(), "Deployment.Name", clusterDeployment.GetName())
+		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonDeploymentFailed,
-			fmt.Sprintf("Deployment %s/%s update failed: %s", clusterDeployment.Namespace, clusterDeployment.Name, err.Error()))
+			fmt.Sprintf("Deployment %s/%s update failed: %s", clusterDeployment.GetNamespace(), clusterDeployment.GetName(), err.Error()))
 		return nil, err
 	}
-	m.state.instance.UpdateCondition(
+	m.State.Function.UpdateCondition(
 		serverlessv1alpha2.ConditionRunning,
 		metav1.ConditionUnknown,
 		serverlessv1alpha2.ConditionReasonDeploymentUpdated,
-		fmt.Sprintf("Deployment %s/%s updated", clusterDeployment.Namespace, clusterDeployment.Name))
+		fmt.Sprintf("Deployment %s/%s updated", clusterDeployment.GetNamespace(), clusterDeployment.GetName()))
 	// Requeue the request to ensure the Deployment is updated
 	//TODO: rethink if it's better solution
 	return &ctrl.Result{Requeue: true}, nil
