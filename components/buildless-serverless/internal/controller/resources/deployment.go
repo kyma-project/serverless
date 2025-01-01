@@ -34,7 +34,7 @@ func (d *Deployment) construct() *appsv1.Deployment {
 		serverlessv1alpha2.FunctionNameLabel:      d.function.GetName(),
 		serverlessv1alpha2.FunctionManagedByLabel: serverlessv1alpha2.FunctionControllerValue,
 		serverlessv1alpha2.FunctionResourceLabel:  "",
-		serverlessv1alpha2.FunctionUUIDLabel:      "",
+		serverlessv1alpha2.FunctionUUIDLabel:      string(d.function.GetUID()),
 	}
 
 	deployment := &appsv1.Deployment{
