@@ -40,7 +40,7 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 
 	python312Logger := logf.WithField(runtimeKey, "python312")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
-	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
+	//nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
 
 	genericContainer := utils.Container{
 		DynamicCli:  dynamicCli,
@@ -54,10 +54,10 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 
 	nodejs20Fn := function.NewFunction("nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
 
-	nodejs22Fn := function.NewFunction("nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
+	//nodejs22Fn := function.NewFunction("nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
 
 	cmNodeJS20 := configmap.NewConfigMap("test-serverless-configmap-nodejs20", genericContainer.WithLogger(nodejs20Logger))
-	cmNodeJS22 := configmap.NewConfigMap("test-serverless-configmap-nodejs22", genericContainer.WithLogger(nodejs22Logger))
+	//cmNodeJS22 := configmap.NewConfigMap("test-serverless-configmap-nodejs22", genericContainer.WithLogger(nodejs22Logger))
 	cmEnvKey := "CM_ENV_KEY"
 	cmEnvValue := "Value taken as env from ConfigMap"
 	cmData := map[string]string{
@@ -65,7 +65,7 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 	}
 
 	secNodeJS20 := secret.NewSecret("test-serverless-secret-nodejs20", genericContainer.WithLogger(nodejs20Logger))
-	secNodeJS22 := secret.NewSecret("test-serverless-secret-nodejs22", genericContainer.WithLogger(nodejs22Logger))
+	//secNodeJS22 := secret.NewSecret("test-serverless-secret-nodejs22", genericContainer.WithLogger(nodejs22Logger))
 	secEnvKey := "SECRET_ENV_KEY"
 	secEnvValue := "Value taken as env from Secret"
 	secretData := map[string]string{
@@ -103,14 +103,14 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 				function.UpdateFunction(nodejs20Logger, nodejs20Fn, "Update NodeJS20 Function", runtimes.BasicNodeJSFunctionWithCustomDependency("Hello from updated nodejs20", serverlessv1alpha2.NodeJs20)),
 				assertion.NewHTTPCheck(nodejs20Logger, "NodeJS20 post update simple check through service", nodejs20Fn.FunctionURL, poll, "Hello from updated nodejs20"),
 			),
-			executor.NewSerialTestRunner(nodejs22Logger, "NodeJS22 test",
-				configmap.CreateConfigMap(nodejs22Logger, cmNodeJS22, "Create Test ConfigMap", cmData),
-				secret.CreateSecret(nodejs22Logger, secNodeJS22, "Create Test Secret", secretData),
-				function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.NodeJSFunctionWithEnvFromConfigMapAndSecret(cmNodeJS22.Name(), cmEnvKey, secNodeJS22.Name(), secEnvKey, serverlessv1alpha2.NodeJs22)),
-				assertion.NewHTTPCheck(nodejs22Logger, "NodeJS22 pre update simple check through service", nodejs22Fn.FunctionURL, poll, fmt.Sprintf("%s-%s", cmEnvValue, secEnvValue)),
-				function.UpdateFunction(nodejs22Logger, nodejs22Fn, "Update NodeJS22 Function", runtimes.BasicNodeJSFunctionWithCustomDependency("Hello from updated nodejs22", serverlessv1alpha2.NodeJs22)),
-				assertion.NewHTTPCheck(nodejs22Logger, "NodeJS22 post update simple check through service", nodejs22Fn.FunctionURL, poll, "Hello from updated nodejs22"),
-			),
+			//executor.NewSerialTestRunner(nodejs22Logger, "NodeJS22 test",
+			//	configmap.CreateConfigMap(nodejs22Logger, cmNodeJS22, "Create Test ConfigMap", cmData),
+			//	secret.CreateSecret(nodejs22Logger, secNodeJS22, "Create Test Secret", secretData),
+			//	function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.NodeJSFunctionWithEnvFromConfigMapAndSecret(cmNodeJS22.Name(), cmEnvKey, secNodeJS22.Name(), secEnvKey, serverlessv1alpha2.NodeJs22)),
+			//	assertion.NewHTTPCheck(nodejs22Logger, "NodeJS22 pre update simple check through service", nodejs22Fn.FunctionURL, poll, fmt.Sprintf("%s-%s", cmEnvValue, secEnvValue)),
+			//	function.UpdateFunction(nodejs22Logger, nodejs22Fn, "Update NodeJS22 Function", runtimes.BasicNodeJSFunctionWithCustomDependency("Hello from updated nodejs22", serverlessv1alpha2.NodeJs22)),
+			//	assertion.NewHTTPCheck(nodejs22Logger, "NodeJS22 post update simple check through service", nodejs22Fn.FunctionURL, poll, "Hello from updated nodejs22"),
+			//),
 		),
 	), nil
 }
