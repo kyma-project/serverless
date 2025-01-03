@@ -7,6 +7,8 @@ IMG ?= controller:latest
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.31.0
 
+APP_NAME = "buildless-serverless"
+
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(shell go env GOBIN))
 GOBIN=$(shell go env GOPATH)/bin
@@ -137,6 +139,21 @@ build-installer: manifests generate kustomize ## Generate a consolidated YAML wi
 	mkdir -p dist
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
 	$(KUSTOMIZE) build config/default > dist/install.yaml
+
+build-image: ## Build buildless serverless backend image
+	docker build -t $(APP_NAME) -f Dockerfile .
+
+######## disable operator to prevent undo of local image update to k3d
+disable-operator:
+	kubectl scale deployment serverless-operator -n kyma-system --replicas=0
+
+.PHONY: install-buildless
+install-buildless: build-image disable-operator## Build buildless serverless image and install it on local k3d cluster
+	$(eval HASH_TAG=$(shell docker images $(APP_NAME):latest --quiet))
+	docker tag $(APP_NAME) $(APP_NAME):$(HASH_TAG)
+
+	k3d image import $(APP_NAME):$(HASH_TAG) -c kyma
+	kubectl set image deployment -n kyma-system buildless-serverless-controller-manager manager=$(APP_NAME):$(HASH_TAG)
 
 ##@ Deployment
 

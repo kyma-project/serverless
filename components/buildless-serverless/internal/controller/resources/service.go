@@ -42,7 +42,10 @@ func (s *Service) construct() *corev1.Service {
 			}},
 			Selector: map[string]string{
 				// TODO: do we need to add more labels here?
-				serverlessv1alpha2.FunctionNameLabel: s.function.GetName(),
+				serverlessv1alpha2.FunctionNameLabel:      s.function.GetName(),
+				serverlessv1alpha2.FunctionManagedByLabel: serverlessv1alpha2.FunctionControllerValue,
+				serverlessv1alpha2.FunctionResourceLabel:  serverlessv1alpha2.FunctionResourceLabelDeploymentValue,
+				serverlessv1alpha2.FunctionUUIDLabel:      string(s.function.GetUID()),
 			},
 		},
 	}

@@ -189,5 +189,10 @@ func (f *Function) UpdateCondition(c ConditionType, s metav1.ConditionStatus, r 
 }
 
 const (
-	FunctionNameLabel = "serverless.kyma-project.io/function-name"
+	FunctionNameLabel                    = "serverless.kyma-project.io/function-name"
+	FunctionManagedByLabel               = "serverless.kyma-project.io/managed-by"
+	FunctionControllerValue              = "buildless-function-controller"
+	FunctionUUIDLabel                    = "serverless.kyma-project.io/uuid"
+	FunctionResourceLabel                = "serverless.kyma-project.io/resource"
+	FunctionResourceLabelDeploymentValue = "deployment"
 )
