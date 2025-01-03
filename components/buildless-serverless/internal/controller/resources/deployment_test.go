@@ -807,34 +807,6 @@ npm start;`,
 	}
 }
 
-//	func TestDeployment_podSpec(t *testing.T) {
-//		type fields struct {
-//			Deployment     *appsv1.Deployment
-//			functionConfig *config.FunctionConfig
-//			function       *serverlessv1alpha2.Function
-//		}
-//		tests := []struct {
-//			name   string
-//			fields fields
-//			want   v1.PodSpec
-//		}{
-//			// TODO: Add test cases.
-//		}
-//		for _, tt := range tests {
-//			t.Run(tt.name, func(t *testing.T) {
-//				d := &Deployment{
-//					Deployment:     tt.fields.Deployment,
-//					functionConfig: tt.fields.functionConfig,
-//					function:       tt.fields.function,
-//				}
-//				if got := d.podSpec(); !reflect.DeepEqual(got, tt.want) {
-//					t.Errorf("podSpec() = %v, want %v", got, tt.want)
-//				}
-//			})
-//		}
-//	}
-//
-
 func minimalFunction() *serverlessv1alpha2.Function {
 	return &serverlessv1alpha2.Function{
 		ObjectMeta: metav1.ObjectMeta{
