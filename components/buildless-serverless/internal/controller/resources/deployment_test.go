@@ -428,65 +428,385 @@ func TestDeployment_resourceConfiguration(t *testing.T) {
 	}
 }
 
-//	func TestDeployment_deploymentSecretVolumes(t *testing.T) {
-//		type fields struct {
-//			Deployment     *appsv1.Deployment
-//			functionConfig *config.FunctionConfig
-//			function       *serverlessv1alpha2.Function
-//		}
-//		tests := []struct {
-//			name             string
-//			fields           fields
-//			wantVolumes      []corev1.Volume
-//			wantVolumeMounts []corev1.VolumeMount
-//		}{
-//			// TODO: Add test cases.
-//		}
-//		for _, tt := range tests {
-//			t.Run(tt.name, func(t *testing.T) {
-//				d := &Deployment{
-//					Deployment:     tt.fields.Deployment,
-//					functionConfig: tt.fields.functionConfig,
-//					function:       tt.fields.function,
-//				}
-//				gotVolumes, gotVolumeMounts := d.deploymentSecretVolumes()
-//				if !reflect.DeepEqual(gotVolumes, tt.wantVolumes) {
-//					t.Errorf("deploymentSecretVolumes() gotVolumes = %v, want %v", gotVolumes, tt.wantVolumes)
-//				}
-//				if !reflect.DeepEqual(gotVolumeMounts, tt.wantVolumeMounts) {
-//					t.Errorf("deploymentSecretVolumes() gotVolumeMounts = %v, want %v", gotVolumeMounts, tt.wantVolumeMounts)
-//				}
-//			})
-//		}
-//	}
-//
-//	func TestDeployment_envs(t *testing.T) {
-//		type fields struct {
-//			Deployment     *appsv1.Deployment
-//			functionConfig *config.FunctionConfig
-//			function       *serverlessv1alpha2.Function
-//		}
-//		tests := []struct {
-//			name   string
-//			fields fields
-//			want   []corev1.EnvVar
-//		}{
-//			// TODO: Add test cases.
-//		}
-//		for _, tt := range tests {
-//			t.Run(tt.name, func(t *testing.T) {
-//				d := &Deployment{
-//					Deployment:     tt.fields.Deployment,
-//					functionConfig: tt.fields.functionConfig,
-//					function:       tt.fields.function,
-//				}
-//				if got := d.envs(); !reflect.DeepEqual(got, tt.want) {
-//					t.Errorf("envs() = %v, want %v", got, tt.want)
-//				}
-//			})
-//		}
-//	}
-//
+func TestDeployment_volumeMounts(t *testing.T) {
+	tests := []struct {
+		name    string
+		runtime serverlessv1alpha2.Runtime
+		want    []corev1.VolumeMount
+	}{
+		{
+			name:    "build volume mounts for nodejs20 based on function",
+			runtime: serverlessv1alpha2.NodeJs20,
+			want: []corev1.VolumeMount{
+				{
+					Name:      "sources",
+					MountPath: "/usr/src/app/function",
+				},
+				{
+					Name:      "package-registry-config",
+					ReadOnly:  true,
+					MountPath: "/usr/src/app/function/package-registry-config/.npmrc",
+					SubPath:   ".npmrc",
+				},
+			},
+		},
+		{
+			name:    "build volume mounts for python312 based on function",
+			runtime: serverlessv1alpha2.Python312,
+			want: []corev1.VolumeMount{
+				{
+					Name:      "sources",
+					MountPath: "/kubeless",
+				},
+				{
+					Name:      "local",
+					MountPath: "/.local",
+				},
+				{
+					Name:      "package-registry-config",
+					ReadOnly:  true,
+					MountPath: "/kubeless/package-registry-config/pip.conf",
+					SubPath:   "pip.conf",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			d := &Deployment{
+				function: &serverlessv1alpha2.Function{
+					Spec: serverlessv1alpha2.FunctionSpec{
+						Runtime: tt.runtime,
+					},
+				},
+			}
+
+			r := d.volumeMounts()
+
+			assert.Equal(t, tt.want, r)
+		})
+	}
+}
+
+func TestDeployment_volumes(t *testing.T) {
+	c := &config.FunctionConfig{
+		PackageRegistryConfigSecretName: "test-secret-name",
+	}
+	tests := []struct {
+		name    string
+		runtime serverlessv1alpha2.Runtime
+		want    []corev1.Volume
+	}{
+		{
+			name:    "build volumes for nodejs20 based on function",
+			runtime: serverlessv1alpha2.NodeJs20,
+			want: []corev1.Volume{
+				{
+					Name: "sources",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+				{
+					Name: "package-registry-config",
+					VolumeSource: corev1.VolumeSource{
+						Secret: &corev1.SecretVolumeSource{
+							SecretName: "test-secret-name",
+							Optional:   ptr.To[bool](true),
+						},
+					},
+				},
+			},
+		},
+		{
+			name:    "build volumes for python312 based on function",
+			runtime: serverlessv1alpha2.Python312,
+			want: []corev1.Volume{
+				{
+					Name: "sources",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+				{
+					Name: "package-registry-config",
+					VolumeSource: corev1.VolumeSource{
+						Secret: &corev1.SecretVolumeSource{
+							SecretName: "test-secret-name",
+							Optional:   ptr.To[bool](true),
+						},
+					},
+				},
+				{
+					Name: "local",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			d := &Deployment{
+				functionConfig: c,
+				function: &serverlessv1alpha2.Function{
+					Spec: serverlessv1alpha2.FunctionSpec{
+						Runtime: tt.runtime,
+					},
+				},
+			}
+
+			r := d.volumes()
+
+			assert.Equal(t, tt.want, r)
+		})
+	}
+}
+
+func TestDeployment_deploymentSecretVolumes(t *testing.T) {
+	tests := []struct {
+		name             string
+		secretMounts     []serverlessv1alpha2.SecretMount
+		wantVolumes      []corev1.Volume
+		wantVolumeMounts []corev1.VolumeMount
+	}{
+		{
+			name: "build secret volumes based on function",
+			secretMounts: []serverlessv1alpha2.SecretMount{
+				{
+					SecretName: "secret-name-1",
+					MountPath:  "mount-path-1",
+				},
+				{
+					SecretName: "secret-name-2",
+					MountPath:  "mount-path-2",
+				},
+			},
+			wantVolumes: []corev1.Volume{
+				{
+					Name: "secret-name-1",
+					VolumeSource: corev1.VolumeSource{
+						Secret: &corev1.SecretVolumeSource{
+							SecretName:  "secret-name-1",
+							DefaultMode: ptr.To[int32](0666),
+							Optional:    ptr.To[bool](false),
+						},
+					},
+				},
+				{
+					Name: "secret-name-2",
+					VolumeSource: corev1.VolumeSource{
+						Secret: &corev1.SecretVolumeSource{
+							SecretName:  "secret-name-2",
+							DefaultMode: ptr.To[int32](0666),
+							Optional:    ptr.To[bool](false),
+						},
+					},
+				},
+			},
+			wantVolumeMounts: []corev1.VolumeMount{
+				{
+					Name:      "secret-name-1",
+					ReadOnly:  true,
+					MountPath: "mount-path-1",
+				},
+				{
+					Name:      "secret-name-2",
+					ReadOnly:  true,
+					MountPath: "mount-path-2",
+				},
+			},
+		},
+		{
+			name:             "build empty secret volumes based on function",
+			secretMounts:     []serverlessv1alpha2.SecretMount{},
+			wantVolumes:      []corev1.Volume{},
+			wantVolumeMounts: []corev1.VolumeMount{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			d := &Deployment{
+				function: &serverlessv1alpha2.Function{
+					Spec: serverlessv1alpha2.FunctionSpec{
+						SecretMounts: tt.secretMounts,
+					},
+				},
+			}
+			rV, rVM := d.deploymentSecretVolumes()
+			assert.Equal(t, tt.wantVolumes, rV)
+			assert.Equal(t, tt.wantVolumeMounts, rVM)
+		})
+	}
+}
+
+func TestDeployment_envs(t *testing.T) {
+	tests := []struct {
+		name     string
+		function *serverlessv1alpha2.Function
+		want     []corev1.EnvVar
+	}{
+		{
+			name: "build envs based on nodejs20 function",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs20,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source:       "function-source",
+							Dependencies: "function-dependencies",
+						},
+					},
+				},
+			},
+			want: []corev1.EnvVar{
+				{
+					Name:  "FUNC_HANDLER_SOURCE",
+					Value: "function-source",
+				},
+				{
+					Name:  "FUNC_HANDLER_DEPENDENCIES",
+					Value: "function-dependencies",
+				},
+			},
+		},
+		{
+			name: "build envs based on python312 function",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python312,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source:       "function-source-py",
+							Dependencies: "function-dependencies-py",
+						},
+					},
+				},
+			},
+			want: []corev1.EnvVar{
+				{
+					Name:  "FUNC_HANDLER_SOURCE",
+					Value: "function-source-py",
+				},
+				{
+					Name:  "FUNC_HANDLER_DEPENDENCIES",
+					Value: "function-dependencies-py",
+				},
+				{
+					Name:  "MOD_NAME",
+					Value: "handler",
+				},
+				{
+					Name:  "FUNC_HANDLER",
+					Value: "main",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			d := &Deployment{
+				function: tt.function,
+			}
+
+			r := d.envs()
+
+			assert.Equal(t, tt.want, r)
+		})
+	}
+}
+
+func TestDeployment_runtimeCommand(t *testing.T) {
+	tests := []struct {
+		name     string
+		function *serverlessv1alpha2.Function
+		want     string
+	}{
+		{
+			name: "build runtime command for python312 without dependencies",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python312,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source: "function-source",
+						},
+					},
+				},
+			},
+			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
+cd ..;
+python /kubeless.py;`,
+		},
+		{
+			name: "build runtime command for python312 with dependencies",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python312,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source:       "function-source",
+							Dependencies: "function-dependencies",
+						},
+					},
+				},
+			},
+			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
+printf "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
+cd ..;
+python /kubeless.py;`,
+		},
+		{
+			name: "build runtime command for nodejs20 without dependencies",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs20,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source: "function-source",
+						},
+					},
+				},
+			},
+			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
+cd ..;
+npm start;`,
+		},
+		{
+			name: "build runtime command for nodejs20 with dependencies",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs20,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source:       "function-source",
+							Dependencies: "function-dependencies",
+						},
+					},
+				},
+			},
+			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
+printf "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
+npm install --prefer-offline --no-audit --progress=false;
+cd ..;
+npm start;`,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			d := &Deployment{
+				function: tt.function,
+			}
+
+			r := d.runtimeCommand()
+
+			assert.Equal(t, tt.want, r)
+		})
+	}
+}
+
 //	func TestDeployment_podSpec(t *testing.T) {
 //		type fields struct {
 //			Deployment     *appsv1.Deployment
@@ -509,87 +829,6 @@ func TestDeployment_resourceConfiguration(t *testing.T) {
 //				}
 //				if got := d.podSpec(); !reflect.DeepEqual(got, tt.want) {
 //					t.Errorf("podSpec() = %v, want %v", got, tt.want)
-//				}
-//			})
-//		}
-//	}
-//
-//	func TestDeployment_runtimeCommand(t *testing.T) {
-//		type fields struct {
-//			Deployment     *appsv1.Deployment
-//			functionConfig *config.FunctionConfig
-//			function       *serverlessv1alpha2.Function
-//		}
-//		tests := []struct {
-//			name   string
-//			fields fields
-//			want   string
-//		}{
-//			// TODO: Add test cases.
-//		}
-//		for _, tt := range tests {
-//			t.Run(tt.name, func(t *testing.T) {
-//				d := &Deployment{
-//					Deployment:     tt.fields.Deployment,
-//					functionConfig: tt.fields.functionConfig,
-//					function:       tt.fields.function,
-//				}
-//				if got := d.runtimeCommand(); got != tt.want {
-//					t.Errorf("runtimeCommand() = %v, want %v", got, tt.want)
-//				}
-//			})
-//		}
-//	}
-//
-//	func TestDeployment_volumeMounts(t *testing.T) {
-//		type fields struct {
-//			Deployment     *appsv1.Deployment
-//			functionConfig *config.FunctionConfig
-//			function       *serverlessv1alpha2.Function
-//		}
-//		tests := []struct {
-//			name   string
-//			fields fields
-//			want   []corev1.VolumeMount
-//		}{
-//			// TODO: Add test cases.
-//		}
-//		for _, tt := range tests {
-//			t.Run(tt.name, func(t *testing.T) {
-//				d := &Deployment{
-//					Deployment:     tt.fields.Deployment,
-//					functionConfig: tt.fields.functionConfig,
-//					function:       tt.fields.function,
-//				}
-//				if got := d.volumeMounts(); !reflect.DeepEqual(got, tt.want) {
-//					t.Errorf("volumeMounts() = %v, want %v", got, tt.want)
-//				}
-//			})
-//		}
-//	}
-//
-//	func TestDeployment_volumes(t *testing.T) {
-//		type fields struct {
-//			Deployment     *appsv1.Deployment
-//			functionConfig *config.FunctionConfig
-//			function       *serverlessv1alpha2.Function
-//		}
-//		tests := []struct {
-//			name   string
-//			fields fields
-//			want   []corev1.Volume
-//		}{
-//			// TODO: Add test cases.
-//		}
-//		for _, tt := range tests {
-//			t.Run(tt.name, func(t *testing.T) {
-//				d := &Deployment{
-//					Deployment:     tt.fields.Deployment,
-//					functionConfig: tt.fields.functionConfig,
-//					function:       tt.fields.function,
-//				}
-//				if got := d.volumes(); !reflect.DeepEqual(got, tt.want) {
-//					t.Errorf("volumes() = %v, want %v", got, tt.want)
 //				}
 //			})
 //		}
