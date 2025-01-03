@@ -95,9 +95,9 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 }
 
 func (d *Deployment) replicas() *int32 {
-	replicas := &d.function.Spec.Replicas
+	replicas := d.function.Spec.Replicas
 	if replicas != nil {
-		return *replicas
+		return replicas
 	}
 	defaultValue := DefaultDeploymentReplicas
 	return &defaultValue
@@ -293,16 +293,16 @@ func (d *Deployment) deploymentSecretVolumes() (volumes []corev1.Volume, volumeM
 
 // security context is set to fulfill the baseline security profile
 // based on https://raw.githubusercontent.com/kyma-project/community/main/concepts/psp-replacement/baseline-pod-spec.yaml
-func (d *Deployment) restrictiveContainerSecurityContext() *corev1.SecurityContext {
-	defaultProcMount := corev1.DefaultProcMount
-	return &corev1.SecurityContext{
-		Privileged: ptr.To[bool](false),
-		Capabilities: &corev1.Capabilities{
-			Drop: []corev1.Capability{
-				"ALL",
-			},
-		},
-		ProcMount:              &defaultProcMount,
-		ReadOnlyRootFilesystem: ptr.To[bool](true),
-	}
-}
+//func (d *Deployment) restrictiveContainerSecurityContext() *corev1.SecurityContext {
+//	defaultProcMount := corev1.DefaultProcMount
+//	return &corev1.SecurityContext{
+//		Privileged: ptr.To[bool](false),
+//		Capabilities: &corev1.Capabilities{
+//			Drop: []corev1.Capability{
+//				"ALL",
+//			},
+//		},
+//		ProcMount:              &defaultProcMount,
+//		ReadOnlyRootFilesystem: ptr.To[bool](true),
+//	}
+//}
