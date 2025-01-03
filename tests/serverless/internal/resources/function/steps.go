@@ -1,11 +1,10 @@
 package function
 
 import (
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-
-	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 )
 
 type newFunction struct {

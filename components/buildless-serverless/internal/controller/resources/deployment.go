@@ -87,8 +87,43 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 				VolumeMounts: append(d.volumeMounts(), secretVolumeMounts...),
 				Ports: []corev1.ContainerPort{
 					{
-						ContainerPort: 80,
+						ContainerPort: 8080,
 					},
+				},
+				StartupProbe: &corev1.Probe{
+					ProbeHandler: corev1.ProbeHandler{
+						HTTPGet: &corev1.HTTPGetAction{
+							Path: "/healthz",
+							Port: svcTargetPort,
+						},
+					},
+					InitialDelaySeconds: 0,
+					PeriodSeconds:       5,
+					SuccessThreshold:    1,
+					FailureThreshold:    30, // FailureThreshold * PeriodSeconds = 150s in this case, this should be enough for any function pod to start up
+				},
+				ReadinessProbe: &corev1.Probe{
+					ProbeHandler: corev1.ProbeHandler{
+						HTTPGet: &corev1.HTTPGetAction{
+							Path: "/healthz",
+							Port: svcTargetPort,
+						},
+					},
+					InitialDelaySeconds: 0, // startup probe exists, so delaying anything here doesn't make sense
+					FailureThreshold:    1,
+					PeriodSeconds:       5,
+					TimeoutSeconds:      2,
+				},
+				LivenessProbe: &corev1.Probe{
+					ProbeHandler: corev1.ProbeHandler{
+						HTTPGet: &corev1.HTTPGetAction{
+							Path: "/healthz",
+							Port: svcTargetPort,
+						},
+					},
+					FailureThreshold: 3,
+					PeriodSeconds:    5,
+					TimeoutSeconds:   4,
 				},
 				//TODO: uncomment later - now we need greater privileges for running npm command
 				// SecurityContext: d.restrictiveContainerSecurityContext(),
@@ -241,6 +276,10 @@ func (d *Deployment) envs() []corev1.EnvVar {
 			Name:  "FUNC_HANDLER_DEPENDENCIES",
 			Value: spec.Source.Inline.Dependencies,
 		},
+		{Name: "TRACE_COLLECTOR_ENDPOINT",
+			Value: "http://telemetry-otlp-traces.kyma-system.svc.cluster.local:4318/v1/traces"}, //TODO: move it to values.yaml
+		{Name: "PUBLISHER_PROXY_ADDRESS",
+			Value: "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"}, //TODO: move it to values.yaml
 	}
 	if spec.Runtime == serverlessv1alpha2.Python312 {
 		envs = append(envs, []corev1.EnvVar{
@@ -254,7 +293,7 @@ func (d *Deployment) envs() []corev1.EnvVar {
 			},
 		}...)
 	}
-	envs = append(envs, spec.Env...)
+	envs = append(envs, spec.Env...) //TODO: this order is critical, should we provide option for users to override envs?
 	return envs
 }
 

@@ -9,7 +9,7 @@ import (
 )
 
 func TestCloudEventCheckLocally(t *testing.T) {
-	t.Skip("Used only to local development")
+	//t.Skip("Used only to local development")
 	t.Run("cloud event check", func(t *testing.T) {
 		testCases := map[string]struct {
 			cloudevents.Encoding
@@ -25,7 +25,7 @@ func TestCloudEventCheckLocally(t *testing.T) {
 			t.Run(name, func(t *testing.T) {
 				//GIVEN
 				log := logrus.New().WithField("test", "cloud event")
-				fnURL, err := url.Parse("http://localhost:8091")
+				fnURL, err := url.Parse("http://localhost:12345")
 				if err != nil {
 					panic(err)
 				}

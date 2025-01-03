@@ -106,7 +106,8 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 		!reflect.DeepEqual(aSpec.Command, bSpec.Command) ||
 		!reflect.DeepEqual(aSpec.Resources, bSpec.Resources) ||
 		!reflect.DeepEqual(aSpec.Env, bSpec.Env) ||
-		!reflect.DeepEqual(aSpec.VolumeMounts, bSpec.VolumeMounts)
+		!reflect.DeepEqual(aSpec.VolumeMounts, bSpec.VolumeMounts) ||
+		!reflect.DeepEqual(aSpec.Ports, bSpec.Ports)
 }
 
 func updateDeployment(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment) (*ctrl.Result, error) {
