@@ -275,6 +275,10 @@ func (d *Deployment) envs() []corev1.EnvVar {
 			Name:  "FUNC_HANDLER_DEPENDENCIES",
 			Value: spec.Source.Inline.Dependencies,
 		},
+		{
+			Name:  "PUBLISHER_PROXY_ADDRESS",
+			Value: d.functionConfig.FunctionPublisherProxyAddress,
+		},
 	}
 	if spec.Runtime == serverlessv1alpha2.Python312 {
 		envs = append(envs, []corev1.EnvVar{
@@ -288,7 +292,7 @@ func (d *Deployment) envs() []corev1.EnvVar {
 			},
 		}...)
 	}
-	envs = append(envs, spec.Env...)
+	envs = append(envs, spec.Env...) //TODO: this order is critical, should we provide option for users to override envs?
 	return envs
 }
 
