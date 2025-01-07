@@ -124,8 +124,6 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 					PeriodSeconds:    5,
 					TimeoutSeconds:   4,
 				},
-				//TODO: uncomment later - now we need greater privileges for running npm command
-				// SecurityContext: d.restrictiveContainerSecurityContext(),
 			},
 		},
 	}
