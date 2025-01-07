@@ -83,6 +83,9 @@ func TestDeployment_construct(t *testing.T) {
 		expectedLabels := map[string]string{
 			"app": "test-function-name",
 			"serverless.kyma-project.io/function-name": "test-function-name",
+			"serverless.kyma-project.io/managed-by":    "buildless-function-controller",
+			"serverless.kyma-project.io/resource":      "deployment",
+			"serverless.kyma-project.io/uuid":          "test-uid",
 		}
 
 		r := d.construct()
@@ -812,6 +815,7 @@ func minimalFunction() *serverlessv1alpha2.Function {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      "test-function-name",
 			Namespace: "test-function-namespace",
+			UID:       "test-uid",
 		},
 		Spec: serverlessv1alpha2.FunctionSpec{
 			Runtime: "python312",
