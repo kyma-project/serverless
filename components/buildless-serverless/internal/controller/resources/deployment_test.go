@@ -648,6 +648,7 @@ func TestDeployment_envs(t *testing.T) {
 	tests := []struct {
 		name     string
 		function *serverlessv1alpha2.Function
+		fnConfig config.FunctionConfig
 		want     []corev1.EnvVar
 	}{
 		{
@@ -671,6 +672,10 @@ func TestDeployment_envs(t *testing.T) {
 				{
 					Name:  "FUNC_HANDLER_DEPENDENCIES",
 					Value: "function-dependencies",
+				},
+				{
+					Name:  "PUBLISHER_PROXY_ADDRESS",
+					Value: "test-proxy-address",
 				},
 			},
 		},
@@ -697,6 +702,10 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "function-dependencies-py",
 				},
 				{
+					Name:  "PUBLISHER_PROXY_ADDRESS",
+					Value: "test-proxy-address",
+				},
+				{
 					Name:  "MOD_NAME",
 					Value: "handler",
 				},
@@ -711,6 +720,9 @@ func TestDeployment_envs(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			d := &Deployment{
 				function: tt.function,
+				functionConfig: &config.FunctionConfig{
+					FunctionPublisherProxyAddress: "test-proxy-address",
+				},
 			}
 
 			r := d.envs()
