@@ -83,6 +83,9 @@ func TestDeployment_construct(t *testing.T) {
 		expectedLabels := map[string]string{
 			"app": "test-function-name",
 			"serverless.kyma-project.io/function-name": "test-function-name",
+			"serverless.kyma-project.io/managed-by":    "buildless-function-controller",
+			"serverless.kyma-project.io/resource":      "deployment",
+			"serverless.kyma-project.io/uuid":          "",
 		}
 
 		r := d.construct()
