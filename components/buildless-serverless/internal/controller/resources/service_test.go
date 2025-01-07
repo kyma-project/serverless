@@ -16,6 +16,7 @@ func TestNewService(t *testing.T) {
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "test-function-name",
 				Namespace: "test-function-namespace",
+				UID:       "test-uid",
 			},
 			Spec:   serverlessv1alpha2.FunctionSpec{},
 			Status: serverlessv1alpha2.FunctionStatus{},
@@ -34,6 +35,9 @@ func TestNewService(t *testing.T) {
 				}},
 				Selector: map[string]string{
 					"serverless.kyma-project.io/function-name": "test-function-name",
+					"serverless.kyma-project.io/managed-by":    "buildless-function-controller",
+					"serverless.kyma-project.io/resource":      "deployment",
+					"serverless.kyma-project.io/uuid":          "test-uid",
 				},
 			},
 		}

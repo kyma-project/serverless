@@ -65,6 +65,7 @@ func (fr *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 // SetupWithManager sets up the controller with the Manager.
 func (fr *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
+		Named("buildless-function-controller").
 		For(&serverlessv1alpha2.Function{}).
 		WithEventFilter(buildPredicates()).
 		Owns(&appsv1.Deployment{}).
