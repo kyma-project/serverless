@@ -19,3 +19,4 @@ containers:
     configuration:
       data:
         packageRegistryConfigSecretName: 'serverless-package-registry-config'
+        functionPublisherProxyAddress: "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
