@@ -277,6 +277,10 @@ func (d *Deployment) envs() []corev1.EnvVar {
 			Value: spec.Source.Inline.Dependencies,
 		},
 		{
+			Name:  "TRACE_COLLECTOR_ENDPOINT",
+			Value: d.functionConfig.FunctionTraceCollectorEndpoint,
+		},
+		{
 			Name:  "PUBLISHER_PROXY_ADDRESS",
 			Value: d.functionConfig.FunctionPublisherProxyAddress,
 		},
