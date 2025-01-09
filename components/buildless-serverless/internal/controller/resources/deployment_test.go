@@ -1,6 +1,8 @@
 package resources
 
 import (
+	"testing"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
 	"github.com/stretchr/testify/assert"
@@ -10,7 +12,6 @@ import (
 	k8sresource "k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/ptr"
-	"testing"
 )
 
 func TestNewDeployment(t *testing.T) {
@@ -301,6 +302,11 @@ func TestDeployment_workingSourcesDir(t *testing.T) {
 			want:    "/usr/src/app/function",
 		},
 		{
+			name:    "get working dir for nodejs22",
+			runtime: serverlessv1alpha2.NodeJs22,
+			want:    "/usr/src/app/function",
+		},
+		{
 			name:    "get working dir for python312",
 			runtime: serverlessv1alpha2.Python312,
 			want:    "/kubeless",
@@ -326,6 +332,7 @@ func TestDeployment_workingSourcesDir(t *testing.T) {
 func TestDeployment_runtimeImage(t *testing.T) {
 	c := &config.FunctionConfig{
 		ImageNodeJs20:  "image-for-nodejs20",
+		ImageNodeJs22:  "image-for-nodejs22",
 		ImagePython312: "image-for-python312",
 	}
 	type fields struct {
@@ -354,9 +361,25 @@ func TestDeployment_runtimeImage(t *testing.T) {
 			want: "image-for-nodejs20",
 		},
 		{
+			name: "get nodejs22 image from function config",
+			fields: fields{
+				runtime:              serverlessv1alpha2.NodeJs22,
+				runtimeImageOverride: "",
+			},
+			want: "image-for-nodejs22",
+		},
+		{
 			name: "get overridden image name from function",
 			fields: fields{
 				runtime:              serverlessv1alpha2.NodeJs20,
+				runtimeImageOverride: "overridden-image",
+			},
+			want: "overridden-image",
+		},
+		{
+			name: "get overridden image name from function",
+			fields: fields{
+				runtime:              serverlessv1alpha2.NodeJs22,
 				runtimeImageOverride: "overridden-image",
 			},
 			want: "overridden-image",
@@ -454,6 +477,22 @@ func TestDeployment_volumeMounts(t *testing.T) {
 			},
 		},
 		{
+			name:    "build volume mounts for nodejs22 based on function",
+			runtime: serverlessv1alpha2.NodeJs22,
+			want: []corev1.VolumeMount{
+				{
+					Name:      "sources",
+					MountPath: "/usr/src/app/function",
+				},
+				{
+					Name:      "package-registry-config",
+					ReadOnly:  true,
+					MountPath: "/usr/src/app/function/package-registry-config/.npmrc",
+					SubPath:   ".npmrc",
+				},
+			},
+		},
+		{
 			name:    "build volume mounts for python312 based on function",
 			runtime: serverlessv1alpha2.Python312,
 			want: []corev1.VolumeMount{
@@ -503,6 +542,27 @@ func TestDeployment_volumes(t *testing.T) {
 		{
 			name:    "build volumes for nodejs20 based on function",
 			runtime: serverlessv1alpha2.NodeJs20,
+			want: []corev1.Volume{
+				{
+					Name: "sources",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+				{
+					Name: "package-registry-config",
+					VolumeSource: corev1.VolumeSource{
+						Secret: &corev1.SecretVolumeSource{
+							SecretName: "test-secret-name",
+							Optional:   ptr.To[bool](true),
+						},
+					},
+				},
+			},
+		},
+		{
+			name:    "build volumes for nodejs22 based on function",
+			runtime: serverlessv1alpha2.NodeJs22,
 			want: []corev1.Volume{
 				{
 					Name: "sources",
@@ -680,6 +740,34 @@ func TestDeployment_envs(t *testing.T) {
 			},
 		},
 		{
+			name: "build envs based on nodejs22 function",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source:       "function-source",
+							Dependencies: "function-dependencies",
+						},
+					},
+				},
+			},
+			want: []corev1.EnvVar{
+				{
+					Name:  "FUNC_HANDLER_SOURCE",
+					Value: "function-source",
+				},
+				{
+					Name:  "FUNC_HANDLER_DEPENDENCIES",
+					Value: "function-dependencies",
+				},
+				{
+					Name:  "PUBLISHER_PROXY_ADDRESS",
+					Value: "test-proxy-address",
+				},
+			},
+		},
+		{
 			name: "build envs based on python312 function",
 			function: &serverlessv1alpha2.Function{
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -794,6 +882,41 @@ npm start;`,
 			function: &serverlessv1alpha2.Function{
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.NodeJs20,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source:       "function-source",
+							Dependencies: "function-dependencies",
+						},
+					},
+				},
+			},
+			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
+printf "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
+npm install --prefer-offline --no-audit --progress=false;
+cd ..;
+npm start;`,
+		},
+		{
+			name: "build runtime command for nodejs22 without dependencies",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source: "function-source",
+						},
+					},
+				},
+			},
+			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
+cd ..;
+npm start;`,
+		},
+		{
+			name: "build runtime command for nodejs22 with dependencies",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
 					Source: serverlessv1alpha2.Source{
 						Inline: &serverlessv1alpha2.InlineSource{
 							Source:       "function-source",
