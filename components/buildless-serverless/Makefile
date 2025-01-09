@@ -25,6 +25,9 @@ CONTAINER_TOOL ?= docker
 SHELL = /usr/bin/env bash -o pipefail
 .SHELLFLAGS = -ec
 
+# Setting APP_NAME for local development
+APP_NAME = "buildless-serverless"
+
 .PHONY: all
 all: build
 
@@ -138,6 +141,20 @@ build-installer: manifests generate kustomize ## Generate a consolidated YAML wi
 	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
 	$(KUSTOMIZE) build config/default > dist/install.yaml
 
+build-image: ## Build buildless serverless backend image
+	docker build -t $(APP_NAME) -f Dockerfile .
+
+######## disable operator to prevent undo of local image update to k3d
+disable-operator:
+	kubectl scale deployment serverless-operator -n kyma-system --replicas=0
+
+.PHONY: install-buildless
+install-buildless: build-image disable-operator## Build buildless serverless image and install it on local k3d cluster
+	$(eval HASH_TAG=$(shell docker images $(APP_NAME):latest --quiet))
+	docker tag $(APP_NAME) $(APP_NAME):$(HASH_TAG)
+
+	k3d image import $(APP_NAME):$(HASH_TAG) -c kyma
+	kubectl set image deployment -n kyma-system buildless-serverless-controller-manager manager=$(APP_NAME):$(HASH_TAG)
 ##@ Deployment
 
 ifndef ignore-not-found

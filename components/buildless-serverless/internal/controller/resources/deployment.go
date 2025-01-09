@@ -29,9 +29,11 @@ func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig) *De
 
 func (d *Deployment) construct() *appsv1.Deployment {
 	labels := map[string]string{
-		"app": d.name(),
-		// TODO: do we need to add more labels here?
+		"app":                                d.name(),
 		serverlessv1alpha2.FunctionNameLabel: d.function.GetName(),
+		serverlessv1alpha2.FunctionManagedByLabel: serverlessv1alpha2.FunctionControllerValue,
+		serverlessv1alpha2.FunctionResourceLabel:  serverlessv1alpha2.FunctionResourceLabelDeploymentValue,
+		serverlessv1alpha2.FunctionUUIDLabel:      string(d.function.GetUID()),
 	}
 
 	deployment := &appsv1.Deployment{
@@ -84,20 +86,53 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 				VolumeMounts: append(d.volumeMounts(), secretVolumeMounts...),
 				Ports: []corev1.ContainerPort{
 					{
-						ContainerPort: 80,
+						ContainerPort: 8080,
 					},
 				},
-				//TODO: uncomment later - now we need greater privileges for running npm command
-				// SecurityContext: d.restrictiveContainerSecurityContext(),
+				StartupProbe: &corev1.Probe{
+					ProbeHandler: corev1.ProbeHandler{
+						HTTPGet: &corev1.HTTPGetAction{
+							Path: "/healthz",
+							Port: svcTargetPort,
+						},
+					},
+					InitialDelaySeconds: 0,
+					PeriodSeconds:       5,
+					SuccessThreshold:    1,
+					FailureThreshold:    30, // FailureThreshold * PeriodSeconds = 150s in this case, this should be enough for any function pod to start up
+				},
+				ReadinessProbe: &corev1.Probe{
+					ProbeHandler: corev1.ProbeHandler{
+						HTTPGet: &corev1.HTTPGetAction{
+							Path: "/healthz",
+							Port: svcTargetPort,
+						},
+					},
+					InitialDelaySeconds: 0, // startup probe exists, so delaying anything here doesn't make sense
+					FailureThreshold:    1,
+					PeriodSeconds:       5,
+					TimeoutSeconds:      2,
+				},
+				LivenessProbe: &corev1.Probe{
+					ProbeHandler: corev1.ProbeHandler{
+						HTTPGet: &corev1.HTTPGetAction{
+							Path: "/healthz",
+							Port: svcTargetPort,
+						},
+					},
+					FailureThreshold: 3,
+					PeriodSeconds:    5,
+					TimeoutSeconds:   4,
+				},
 			},
 		},
 	}
 }
 
 func (d *Deployment) replicas() *int32 {
-	replicas := &d.function.Spec.Replicas
+	replicas := d.function.Spec.Replicas
 	if replicas != nil {
-		return *replicas
+		return replicas
 	}
 	defaultValue := DefaultDeploymentReplicas
 	return &defaultValue
@@ -238,6 +273,10 @@ func (d *Deployment) envs() []corev1.EnvVar {
 			Name:  "FUNC_HANDLER_DEPENDENCIES",
 			Value: spec.Source.Inline.Dependencies,
 		},
+		{
+			Name:  "PUBLISHER_PROXY_ADDRESS",
+			Value: d.functionConfig.FunctionPublisherProxyAddress,
+		},
 	}
 	if spec.Runtime == serverlessv1alpha2.Python312 {
 		envs = append(envs, []corev1.EnvVar{
@@ -251,7 +290,7 @@ func (d *Deployment) envs() []corev1.EnvVar {
 			},
 		}...)
 	}
-	envs = append(envs, spec.Env...)
+	envs = append(envs, spec.Env...) //TODO: this order is critical, should we provide option for users to override envs?
 	return envs
 }
 
@@ -289,20 +328,4 @@ func (d *Deployment) deploymentSecretVolumes() (volumes []corev1.Volume, volumeM
 		volumeMounts = append(volumeMounts, volumeMount)
 	}
 	return volumes, volumeMounts
-}
-
-// security context is set to fulfill the baseline security profile
-// based on https://raw.githubusercontent.com/kyma-project/community/main/concepts/psp-replacement/baseline-pod-spec.yaml
-func (d *Deployment) restrictiveContainerSecurityContext() *corev1.SecurityContext {
-	defaultProcMount := corev1.DefaultProcMount
-	return &corev1.SecurityContext{
-		Privileged: ptr.To[bool](false),
-		Capabilities: &corev1.Capabilities{
-			Drop: []corev1.Capability{
-				"ALL",
-			},
-		},
-		ProcMount:              &defaultProcMount,
-		ReadOnlyRootFilesystem: ptr.To[bool](true),
-	}
 }
