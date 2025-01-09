@@ -255,9 +255,10 @@ spec:
                 type: object
               runtime:
                 description: Specifies the runtime of the Function. The available
-                  values are `nodejs20`, and `python312`.
+                  values are `nodejs20`, `nodejs22`, and `python312`.
                 enum:
                 - nodejs20
+                - nodejs22
                 - python312
                 type: string
               runtimeImageOverride:
