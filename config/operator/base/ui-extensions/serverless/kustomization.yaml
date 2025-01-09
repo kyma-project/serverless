@@ -1,6 +1,5 @@
 configMapGenerator:
 - name: operator.kyma-project.io
-  namespace: kyma-system
   files:
   - general
   - form
