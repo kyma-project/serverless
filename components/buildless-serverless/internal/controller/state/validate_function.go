@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/kyma-project/serverless/internal/controller/fsm"
 	"slices"
 	"strings"
+
+	"github.com/kyma-project/serverless/internal/controller/fsm"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -89,7 +90,7 @@ func (v *functionValidator) validateRuntime() []string {
 
 func validateDependencies(runtime serverlessv1alpha2.Runtime, dependencies string) error {
 	switch runtime {
-	case serverlessv1alpha2.NodeJs20:
+	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
 		return validateNodeJSDependencies(dependencies)
 	case serverlessv1alpha2.Python312:
 		return nil

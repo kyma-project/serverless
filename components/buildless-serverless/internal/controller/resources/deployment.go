@@ -1,13 +1,14 @@
 package resources
 
 import (
+	"path"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/ptr"
-	"path"
 )
 
 const DefaultDeploymentReplicas int32 = 1
@@ -178,7 +179,7 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 			MountPath: d.workingSourcesDir(),
 		},
 	}
-	if runtime == serverlessv1alpha2.NodeJs20 {
+	if runtime == serverlessv1alpha2.NodeJs20 || runtime == serverlessv1alpha2.NodeJs22 {
 		volumeMounts = append(volumeMounts, corev1.VolumeMount{
 			Name:      "package-registry-config",
 			ReadOnly:  true,
@@ -211,6 +212,8 @@ func (d *Deployment) runtimeImage() string {
 	switch d.function.Spec.Runtime {
 	case serverlessv1alpha2.NodeJs20:
 		return d.functionConfig.ImageNodeJs20
+	case serverlessv1alpha2.NodeJs22:
+		return d.functionConfig.ImageNodeJs22
 	case serverlessv1alpha2.Python312:
 		return d.functionConfig.ImagePython312
 	default:
@@ -220,7 +223,7 @@ func (d *Deployment) runtimeImage() string {
 
 func (d *Deployment) workingSourcesDir() string {
 	switch d.function.Spec.Runtime {
-	case serverlessv1alpha2.NodeJs20:
+	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
 		return "/usr/src/app/function"
 	case serverlessv1alpha2.Python312:
 		return "/kubeless"
@@ -233,7 +236,7 @@ func (d *Deployment) runtimeCommand() string {
 	spec := &d.function.Spec
 	dependencies := spec.Source.Inline.Dependencies
 	switch spec.Runtime {
-	case serverlessv1alpha2.NodeJs20:
+	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
 		if dependencies != "" {
 			// if deps are not empty use pip
 			return `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
