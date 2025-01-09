@@ -2,7 +2,7 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: functions
-  namespace: kube-public
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
     busola.io/extension: resource
