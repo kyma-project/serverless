@@ -151,12 +151,7 @@ def main(event, context):
 				Dependencies: dpd,
 			},
 		},
-		Env: []v1.EnvVar{
-			{
-				Name:  "PUBLISHER_PROXY_ADDRESS",
-				Value: "localhost:8080",
-			},
-		},
+		Env: []v1.EnvVar{},
 		ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 			Function: &serverlessv1alpha2.ResourceRequirements{
 				Profile: "L",
@@ -227,10 +222,6 @@ def main(event, context):
 			},
 		},
 		Env: []v1.EnvVar{
-			{
-				Name:  "PUBLISHER_PROXY_ADDRESS",
-				Value: "localhost:8080",
-			},
 			{
 				Name:  "CE_SOURCE",
 				Value: string(runtime),
