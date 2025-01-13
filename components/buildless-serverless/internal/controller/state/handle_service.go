@@ -72,7 +72,7 @@ func createService(ctx context.Context, m *fsm.StateMachine, service *corev1.Ser
 		serverlessv1alpha2.ConditionRunning,
 		metav1.ConditionUnknown,
 		serverlessv1alpha2.ConditionReasonServiceCreated,
-		fmt.Sprintf("Service %s/%s updated", service.GetNamespace(), service.GetName()))
+		fmt.Sprintf("Service %s/%s created", service.GetNamespace(), service.GetName()))
 
 	return &ctrl.Result{RequeueAfter: time.Minute}, nil
 }
