@@ -9,6 +9,6 @@ type FunctionConfig struct {
 	RequeueDuration                 time.Duration `envconfig:"default=1m"`
 	FunctionReadyRequeueDuration    time.Duration `envconfig:"default=5m"`
 	PackageRegistryConfigSecretName string        `envconfig:"default=buildless-serverless-package-registry-config"`
-	FunctionTraceCollectorEndpoint  string        `envconfig:"default=http://telemetry-otlp-traces.kyma-system.svc.cluster.local:4318/v1/traces"`
-	FunctionPublisherProxyAddress   string        `envconfig:"default=http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"`
+	FunctionTraceCollectorEndpoint  string        `envconfig:"default=http://telemetry-otlp-traces.kyma-system.svc.cluster.local:4318/v1/traces"` //TODO should it be optional?
+	FunctionPublisherProxyAddress   string        `envconfig:"default=http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"`     //TODO should it be optional?
 }

@@ -67,6 +67,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	//log, err := logging.ConfigureLogger(logCfg.LogLevel, logCfg.LogFormat, atomic)
+	//if err != nil {
+	//	setupLog.Error(err, "unable to configure log")
+	//	os.Exit(1)
+	//}
+
 	//TODO: Do we need all these flags?
 	var metricsAddr string
 	var enableLeaderElection bool
