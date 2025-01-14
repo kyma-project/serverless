@@ -71,7 +71,7 @@ func Test_sFnHandleService(t *testing.T) {
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionUnknown,
 			serverlessv1alpha2.ConditionReasonServiceCreated,
-			"Service busy-banach-ns/brave-babbage-name created")
+			"Service brave-babbage-name created")
 		// service has been applied to k8s
 		appliedSvc := &corev1.Service{}
 		getErr := k8sClient.Get(context.Background(), client.ObjectKey{
@@ -168,7 +168,7 @@ func Test_sFnHandleService(t *testing.T) {
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonServiceFailed,
-			"Service inspiring-bhaskara-ns/mystifying-mayer-name create failed: sweet-dirac error message")
+			"Service mystifying-mayer-name create failed: sweet-dirac error message")
 	})
 	t.Run("when service exists on kubernetes but we do not need changes should keep it without changes and go to the next state", func(t *testing.T) {
 		// Arrange
@@ -262,7 +262,7 @@ func Test_sFnHandleService(t *testing.T) {
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionUnknown,
 			serverlessv1alpha2.ConditionReasonServiceUpdated,
-			"Service kind-tu-ns/wizardly-allen-name updated")
+			"Service wizardly-allen-name updated")
 		// service has not been created (updated only)
 		require.False(t, createWasCalled)
 		// service has been updated on k8s
@@ -320,7 +320,7 @@ func Test_sFnHandleService(t *testing.T) {
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonServiceFailed,
-			"Service zen-newton-ns/youthful-gates-name update failed: quirky-elion error message")
+			"Service youthful-gates-name update failed: quirky-elion error message")
 	})
 }
 

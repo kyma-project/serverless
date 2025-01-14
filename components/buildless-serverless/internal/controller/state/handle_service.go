@@ -65,14 +65,14 @@ func createService(ctx context.Context, m *fsm.StateMachine, service *corev1.Ser
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonServiceFailed,
-			fmt.Sprintf("Service %s/%s create failed: %s", service.GetNamespace(), service.GetName(), err.Error()))
+			fmt.Sprintf("Service %s create failed: %s", service.GetName(), err.Error()))
 		return nil, err
 	}
 	m.State.Function.UpdateCondition(
 		serverlessv1alpha2.ConditionRunning,
 		metav1.ConditionUnknown,
 		serverlessv1alpha2.ConditionReasonServiceCreated,
-		fmt.Sprintf("Service %s/%s created", service.GetNamespace(), service.GetName()))
+		fmt.Sprintf("Service %s created", service.GetName()))
 
 	return &ctrl.Result{RequeueAfter: time.Minute}, nil
 }
@@ -106,14 +106,14 @@ func updateService(ctx context.Context, m *fsm.StateMachine, clusterService *cor
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonServiceFailed,
-			fmt.Sprintf("Service %s/%s update failed: %s", clusterService.GetNamespace(), clusterService.GetName(), err.Error()))
+			fmt.Sprintf("Service %s update failed: %s", clusterService.GetName(), err.Error()))
 		return nil, err
 	}
 	m.State.Function.UpdateCondition(
 		serverlessv1alpha2.ConditionRunning,
 		metav1.ConditionUnknown,
 		serverlessv1alpha2.ConditionReasonServiceUpdated,
-		fmt.Sprintf("Service %s/%s updated", clusterService.GetNamespace(), clusterService.GetName()))
+		fmt.Sprintf("Service %s updated", clusterService.GetName()))
 	// Requeue the request to ensure the Deployment is updated
 	//TODO: rethink if it's better solution
 	return &ctrl.Result{Requeue: true}, nil
