@@ -24,7 +24,7 @@ import (
 func Test_sFnHandleService(t *testing.T) {
 	t.Run("when service does not exist on kubernetes should create service and apply it", func(t *testing.T) {
 		// Arrange
-		// some service on K8s, but it is not the service we expect
+		// some service on k8s, but it is not the service we expect
 		someSvc := corev1.Service{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "angry-archimedes-name",
@@ -266,15 +266,15 @@ func Test_sFnHandleService(t *testing.T) {
 		// service has not been created (updated only)
 		require.False(t, createWasCalled)
 		// service has been updated on k8s
-		updatedK8sSvc := &corev1.Service{}
+		updatedSvc := &corev1.Service{}
 		getErr := k8sClient.Get(context.Background(), client.ObjectKey{
 			Name:      "wizardly-allen-name",
 			Namespace: "kind-tu-ns",
-		}, updatedK8sSvc)
+		}, updatedSvc)
 		require.NoError(t, getErr)
 		// service should have updated some specific fields
-		require.Contains(t, updatedK8sSvc.Spec.Selector, serverlessv1alpha2.FunctionNameLabel)
-		require.Equal(t, "wizardly-allen-name", updatedK8sSvc.Spec.Selector[serverlessv1alpha2.FunctionNameLabel])
+		require.Contains(t, updatedSvc.Spec.Selector, serverlessv1alpha2.FunctionNameLabel)
+		require.Equal(t, "wizardly-allen-name", updatedSvc.Spec.Selector[serverlessv1alpha2.FunctionNameLabel])
 	})
 	t.Run("when service exists on kubernetes and update fails should stop processing", func(t *testing.T) {
 		// Arrange
@@ -303,7 +303,6 @@ func Test_sFnHandleService(t *testing.T) {
 			Client: k8sClient,
 			Scheme: scheme}
 
-		// jest serwis na k8s, ale jest zmiana, updaye się nie udaje -> updateujemy serwis pobrany; conditiony bez zmian; idziemy do następnego stanu
 		// Act
 		next, result, err := sFnHandleService(context.Background(), &m)
 
