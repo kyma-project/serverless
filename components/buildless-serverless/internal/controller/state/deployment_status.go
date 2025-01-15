@@ -22,6 +22,7 @@ const (
 func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	deploymentName := m.State.Deployment.GetName()
 	deployment := appsv1.Deployment{}
+	// TODO: should not we check error?
 	m.Client.Get(ctx, client.ObjectKey{
 		Namespace: m.State.Deployment.GetNamespace(),
 		Name:      deploymentName,
@@ -37,6 +38,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 			serverlessv1alpha2.ConditionReasonDeploymentReady,
 			fmt.Sprintf("Deployment %s is ready", deploymentName))
 
+		// TODO: requeue with sleep should be in the last state (now this is the last state bat it will be changed)
 		return requeueAfter(m.FunctionConfig.FunctionReadyRequeueDuration)
 	}
 
