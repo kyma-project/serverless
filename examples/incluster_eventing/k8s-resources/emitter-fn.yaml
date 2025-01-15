@@ -9,8 +9,8 @@ spec:
     runtime: nodejs20
     source:
       gitRepository: 
-        url: https://github.com/kyma-project/examples.git
-        baseDir: /incluster_eventing/src/emitter-fn/
+        url: https://github.com/kyma-project/serverless.git
+        baseDir: /examples/incluster_eventing/src/emitter-fn/
         reference: main
 ---
 apiVersion: gateway.kyma-project.io/v1beta1
