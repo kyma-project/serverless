@@ -4,7 +4,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.16.4
   labels:
-    app.kubernetes.io/version: 1.6.6
+    app.kubernetes.io/version: 1.6.7
   name: functions.serverless.kyma-project.io
 spec:
   group: serverless.kyma-project.io
