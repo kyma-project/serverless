@@ -109,9 +109,9 @@ You can create a Function either with kubectl or Kyma dashboard:
      runtime: nodejs20
      source:
        gitRepository:
-         baseDir: orders-service/function
+         baseDir: examples/orders-service
          reference: main
-         url: https://github.com/kyma-project/examples.git
+         url: https://github.com/kyma-project/serverless.git
    EOF
    ```
 
