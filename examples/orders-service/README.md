@@ -4,7 +4,7 @@ A serverless Function with the ability to expose HTTP endpoints used to read all
 
 ## Prerequisites
 
-- Kyma installed locally or on a cluster
+- Serverless module installed locally or on a cluster
 
 ## Deploy Function
 
