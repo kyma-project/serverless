@@ -173,8 +173,8 @@ data:
       enum: [JavaScript, Python]
       trigger: [language]
       dynamicValue: |
-        spec.runtime in ['nodejs20', 'nodejs22'] ? 'JavaScript' :
-        spec.runtime in ['python312'] ? 'Python' :
+        $contains(status.runtime, 'nodejs') ? 'JavaScript' :
+        $contains(status.runtime, 'python') ? 'Python' :
         ''
     - simple: true
       path: spec.runtime
