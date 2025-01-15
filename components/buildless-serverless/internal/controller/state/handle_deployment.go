@@ -78,7 +78,7 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine, deployment *apps
 		serverlessv1alpha2.ConditionRunning,
 		metav1.ConditionUnknown,
 		serverlessv1alpha2.ConditionReasonDeploymentCreated,
-		fmt.Sprintf("Deployment %s/%s updated", deployment.GetNamespace(), deployment.GetName()))
+		fmt.Sprintf("Deployment %s/%s created", deployment.GetNamespace(), deployment.GetName()))
 
 	return &ctrl.Result{RequeueAfter: time.Minute}, nil
 }
@@ -96,18 +96,33 @@ func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterD
 }
 
 func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
+	if len(a.Spec.Template.Spec.Containers) != 1 ||
+		len(a.Spec.Template.Spec.Containers) != 1 {
+		return true
+	}
 	aSpec := a.Spec.Template.Spec.Containers[0]
 	bSpec := b.Spec.Template.Spec.Containers[0]
 
-	return aSpec.Image != bSpec.Image ||
-		!reflect.DeepEqual(a.Spec.Template.ObjectMeta.Labels, b.Spec.Template.ObjectMeta.Labels) ||
-		*a.Spec.Replicas != *b.Spec.Replicas ||
-		!reflect.DeepEqual(aSpec.WorkingDir, bSpec.WorkingDir) ||
-		!reflect.DeepEqual(aSpec.Command, bSpec.Command) ||
-		!reflect.DeepEqual(aSpec.Resources, bSpec.Resources) ||
-		!reflect.DeepEqual(aSpec.Env, bSpec.Env) ||
-		!reflect.DeepEqual(aSpec.VolumeMounts, bSpec.VolumeMounts) ||
-		!reflect.DeepEqual(aSpec.Ports, bSpec.Ports)
+	imageChanged := aSpec.Image != bSpec.Image
+	labelsChanged := !reflect.DeepEqual(a.Spec.Template.ObjectMeta.Labels, b.Spec.Template.ObjectMeta.Labels)
+	replicasChanged := (a.Spec.Replicas == nil && b.Spec.Replicas != nil) ||
+		(a.Spec.Replicas != nil && b.Spec.Replicas == nil) ||
+		(a.Spec.Replicas != nil && b.Spec.Replicas != nil && *a.Spec.Replicas != *b.Spec.Replicas)
+	workingDirChanged := !reflect.DeepEqual(aSpec.WorkingDir, bSpec.WorkingDir)
+	commandChanged := !reflect.DeepEqual(aSpec.Command, bSpec.Command)
+	resourcesChanged := !reflect.DeepEqual(aSpec.Resources, bSpec.Resources)
+	envChanged := !reflect.DeepEqual(aSpec.Env, bSpec.Env)
+	volumeMountsChanged := !reflect.DeepEqual(aSpec.VolumeMounts, bSpec.VolumeMounts)
+	portsChanged := !reflect.DeepEqual(aSpec.Ports, bSpec.Ports)
+	return imageChanged ||
+		labelsChanged ||
+		replicasChanged ||
+		workingDirChanged ||
+		commandChanged ||
+		resourcesChanged ||
+		envChanged ||
+		volumeMountsChanged ||
+		portsChanged
 }
 
 func updateDeployment(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment) (*ctrl.Result, error) {
