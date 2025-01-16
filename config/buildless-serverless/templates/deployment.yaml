@@ -59,6 +59,9 @@ spec:
             - name: APP_FUNCTION_IMAGENODEJS20
               {{- $js20:=$images.function_runtime_nodejs20  }}
               value: "{{ .Values.global.containerRegistry.path }}/{{ $js20.directory }}/{{$js20.name}}:{{$js20.version}}"
+            - name: APP_FUNCTION_IMAGENODEJS22
+              {{- $js22:=$images.function_runtime_nodejs22  }}
+              value: "{{ .Values.global.containerRegistry.path }}/{{ $js22.directory }}/{{$js22.name}}:{{$js22.version}}"
             - name: APP_FUNCTION_IMAGE_PYTHON312
               {{- $p312:=$images.function_runtime_python312  }}
               value: "{{ .Values.global.containerRegistry.path }}/{{ $p312.directory }}/{{$p312.name}}:{{$p312.version}}"
