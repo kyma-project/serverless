@@ -22,7 +22,6 @@ import (
 )
 
 func Test_sFnHandleService(t *testing.T) {
-	//1
 	t.Run("when service does not exist on kubernetes should create service and apply it", func(t *testing.T) {
 		// Arrange
 		// some service on k8s, but it is not the service we expect
@@ -85,7 +84,6 @@ func Test_sFnHandleService(t *testing.T) {
 		require.Equal(t, "Function", appliedSvc.OwnerReferences[0].Kind)
 		require.Equal(t, "brave-babbage-name", appliedSvc.OwnerReferences[0].Name)
 	})
-	//2
 	t.Run("when cannot get service from kubernetes should stop processing", func(t *testing.T) {
 		// Arrange
 		// scheme and fake client
@@ -132,7 +130,6 @@ func Test_sFnHandleService(t *testing.T) {
 		// service has not been created or updated
 		require.False(t, createOrUpdateWasCalled)
 	})
-	//3
 	t.Run("when service does not exist on kubernetes and create fails should stop processing", func(t *testing.T) {
 		// Arrange
 		// scheme and fake client
@@ -173,7 +170,6 @@ func Test_sFnHandleService(t *testing.T) {
 			serverlessv1alpha2.ConditionReasonServiceFailed,
 			"Service mystifying-mayer-name create failed: sweet-dirac error message")
 	})
-	//4
 	t.Run("when service exists on kubernetes but we do not need changes should keep it without changes and go to the next state", func(t *testing.T) {
 		// Arrange
 		f := serverlessv1alpha2.Function{
@@ -221,7 +217,6 @@ func Test_sFnHandleService(t *testing.T) {
 		// function conditions remain unchanged
 		require.Empty(t, m.State.Function.Status.Conditions)
 	})
-	//5
 	t.Run("when service exists on kubernetes and we need changes should update it and go to the next state", func(t *testing.T) {
 		// Arrange
 		// service which will be returned from kubernetes - empty so there will be a difference
@@ -281,7 +276,6 @@ func Test_sFnHandleService(t *testing.T) {
 		require.Contains(t, updatedSvc.Spec.Selector, serverlessv1alpha2.FunctionNameLabel)
 		require.Equal(t, "wizardly-allen-name", updatedSvc.Spec.Selector[serverlessv1alpha2.FunctionNameLabel])
 	})
-	//6
 	t.Run("when service exists on kubernetes and update fails should stop processing", func(t *testing.T) {
 		// Arrange
 		// service which will be returned from kubernetes - empty so there will be a difference

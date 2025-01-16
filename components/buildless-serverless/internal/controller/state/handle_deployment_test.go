@@ -24,7 +24,6 @@ import (
 )
 
 func Test_sFnHandleDeployment(t *testing.T) {
-	//1
 	t.Run("when deployment does not exist on kubernetes should create deployment and apply it", func(t *testing.T) {
 		// Arrange
 		// some deployment on k8s, but it is not the deployment we expect
@@ -90,7 +89,6 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.Equal(t, "Function", appliedDeployment.OwnerReferences[0].Kind)
 		require.Equal(t, "peaceful-merkle-name", appliedDeployment.OwnerReferences[0].Name)
 	})
-	//2
 	t.Run("when cannot get deployment from kubernetes should stop processing", func(t *testing.T) {
 		// Arrange
 		// scheme and fake client
@@ -142,7 +140,6 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		// deployment has not been created or updated
 		require.False(t, createOrUpdateWasCalled)
 	})
-	//3
 	t.Run("when deployment does not exist on kubernetes and create fails should stop processing", func(t *testing.T) {
 		// Arrange
 		// scheme and fake client
@@ -188,7 +185,6 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			serverlessv1alpha2.ConditionReasonDeploymentFailed,
 			"Deployment nostalgic-hugle-name create failed: competent-goldwasser error message")
 	})
-	//4
 	t.Run("when deployment exists on kubernetes but we do not need changes should keep it without changes and go to the next state", func(t *testing.T) {
 		// Arrange
 		f := serverlessv1alpha2.Function{
@@ -250,7 +246,6 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			corev1.EnvVar{Name: "FUNC_HANDLER_SOURCE", Value: "affectionate-mclean"})
 		require.Equal(t, "boring-bartik", m.State.Deployment.Deployment.Spec.Template.Spec.Containers[0].Image)
 	})
-	//5
 	t.Run("when deployment exists on kubernetes and we need changes should update it and go to the next state", func(t *testing.T) {
 		// Arrange
 		// deployment which will be returned from kubernetes - empty so there will be a difference
@@ -318,7 +313,6 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			corev1.EnvVar{Name: "FUNC_HANDLER_SOURCE", Value: "brave-euclid"})
 		require.Equal(t, "flamboyant-chatelet", updatedDeployment.Spec.Template.Spec.Containers[0].Image)
 	})
-	//6
 	t.Run("when deployment exists on kubernetes and update fails should stop processing", func(t *testing.T) {
 		// Arrange
 		// deployment which will be returned from kubernetes - empty so there will be a difference
@@ -372,8 +366,6 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			"Deployment affectionate-shockley-name update failed: happy-pare error message")
 	})
 }
-
-// 6. jest deployment, mamy zmiany, błąd update -> ustawimy condition i kończymy z błędem
 
 func Test_deploymentChanged(t *testing.T) {
 	type args struct {
