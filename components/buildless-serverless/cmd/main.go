@@ -46,7 +46,7 @@ import (
 
 var (
 	scheme   = runtime.NewScheme()
-	setupLog = ctrl.Log.WithName("setup")
+	setupLog = zap.New().WithName("setup")
 )
 
 func init() {
