@@ -9,8 +9,8 @@ spec:
     runtime: nodejs20
     source:
       gitRepository: 
-        url: https://github.com/kyma-project/examples.git
-        baseDir: /incluster_eventing/src/receiver-fn/
+        url: https://github.com/kyma-project/serverless.git
+        baseDir: /examples/incluster_eventing/src/receiver-fn/
         reference: main
 ---
 apiVersion: eventing.kyma-project.io/v1alpha1
