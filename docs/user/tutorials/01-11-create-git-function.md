@@ -1,6 +1,6 @@
 # Create a Git Function
 
-This tutorial shows how you can build a Function from code and dependencies stored in a Git repository, which is an alternative way to keeping the code in the Function CR. The tutorial is based on the Function from the [`orders service` example](https://github.com/kyma-project/examples/tree/main/orders-service). It describes steps required to fetch the Function's source code and dependencies from a public Git repository that does not need any authentication method. However, it also provides additional guidance on how to secure it if you are using a private repository.
+This tutorial shows how you can build a Function from code and dependencies stored in a Git repository, which is an alternative way to keeping the code in the Function CR. The tutorial is based on the Function from the [`orders service` example](https://github.com/kyma-project/serverless/tree/main/examples/orders-service). It describes steps required to fetch the Function's source code and dependencies from a public Git repository that does not need any authentication method. However, it also provides additional guidance on how to secure it if you are using a private repository.
 
 To learn more about Git repository sources for Functions and different ways of securing your repository, read about the [Git source type](../technical-reference/07-40-git-source-type.md).
 
@@ -48,8 +48,8 @@ You can create a Function either with kubectl or Kyma dashboard:
 6. Choose `JavaScript` from the **Language** dropdown and select the proper runtime.
 
 7. Click on the **Git Repository** section and enter the following values:
-   - Repository **URL**: `https://github.com/kyma-project/examples.git`
-   - **Base Dir**:`orders-service/function`
+   - Repository **URL**: `https://github.com/kyma-project/serverless.git`
+   - **Base Dir**:`examples/orders-service`
    - **Reference**:`main`
 
     > [!NOTE]
@@ -109,9 +109,9 @@ You can create a Function either with kubectl or Kyma dashboard:
      runtime: nodejs20
      source:
        gitRepository:
-         baseDir: orders-service/function
+         baseDir: examples/orders-service
          reference: main
-         url: https://github.com/kyma-project/examples.git
+         url: https://github.com/kyma-project/serverless.git
    EOF
    ```
 
@@ -140,7 +140,7 @@ You can create a Function either with kubectl or Kyma dashboard:
     > To avoid performance degradation caused by large Git repositories and large monorepos, [Function Controller](../resources/06-10-function-cr.md#related-resources-and-components) implements a configurable backoff period for the source checkout based on `APP_FUNCTION_REQUEUE_DURATION`. If you want to allow the controller to perform the source checkout with every reconciliation loop, disable the backoff period by marking the Function CR with the annotation `serverless.kyma-project.io/continuousGitCheckout: true`
 
     > [!NOTE]
-    > See this [Function's code and dependencies](https://github.com/kyma-project/examples/tree/main/orders-service).
+    > See this [Function's code and dependencies](https://github.com/kyma-project/serverless/tree/main/examples/orders-service).
 
 4. Check if your Function was created and all conditions are set to `True`:
 
