@@ -2,7 +2,7 @@ package state
 
 import (
 	"context"
-	function_validator "github.com/kyma-project/serverless/internal/controller/function-validator"
+	"github.com/kyma-project/serverless/internal/controller/functionvalidator"
 	"strings"
 
 	"github.com/kyma-project/serverless/internal/controller/fsm"
@@ -13,7 +13,7 @@ import (
 )
 
 func sFnValidateFunction(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	v := function_validator.NewFunctionValidator(&m.State.Function)
+	v := functionvalidator.New(&m.State.Function)
 	validationResults := v.Validate()
 	if len(validationResults) != 0 {
 		//TODO: Use ConditionConfigure in this place

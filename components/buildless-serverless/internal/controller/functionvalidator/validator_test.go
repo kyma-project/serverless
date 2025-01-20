@@ -1,4 +1,4 @@
-package function_validator
+package functionvalidator
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ func TestNewFunctionValidator(t *testing.T) {
 				Name:      "compassionate-villani-name",
 				Namespace: "vigorous-jang-ns"}}
 
-		r := NewFunctionValidator(f)
+		r := New(f)
 
 		require.NotNil(t, r)
 		require.NotNil(t, r.instance)
@@ -27,14 +27,14 @@ func TestNewFunctionValidator(t *testing.T) {
 
 func Test_functionValidator_Validate(t *testing.T) {
 	t.Run("when function is valid should return empty list", func(t *testing.T) {
-		v := NewFunctionValidator(&serverlessv1alpha2.Function{})
+		v := New(&serverlessv1alpha2.Function{})
 
 		r := v.Validate()
 
 		require.Len(t, r, 0)
 	})
 	t.Run("when function is invalid should return list with all errors", func(t *testing.T) {
-		v := NewFunctionValidator(&serverlessv1alpha2.Function{
+		v := New(&serverlessv1alpha2.Function{
 			Spec: serverlessv1alpha2.FunctionSpec{
 				Env:     []corev1.EnvVar{{Name: "goofy-kare;;;;;"}},
 				Source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{}},
@@ -84,7 +84,7 @@ func Test_functionValidator_validateEnvs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := NewFunctionValidator(&serverlessv1alpha2.Function{
+			v := New(&serverlessv1alpha2.Function{
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Env: tt.envs,
 				}})
@@ -161,7 +161,7 @@ func Test_functionValidator_validateInlineDeps(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := NewFunctionValidator(&serverlessv1alpha2.Function{
+			v := New(&serverlessv1alpha2.Function{
 				Spec: tt.spec,
 			})
 			r := v.validateInlineDeps()
@@ -199,7 +199,7 @@ func Test_functionValidator_validateRuntime(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := NewFunctionValidator(&serverlessv1alpha2.Function{
+			v := New(&serverlessv1alpha2.Function{
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: tt.runtime,
 				},

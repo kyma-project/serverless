@@ -1,4 +1,4 @@
-package function_validator
+package functionvalidator
 
 import (
 	"errors"
@@ -13,7 +13,7 @@ type functionValidator struct {
 	instance *serverlessv1alpha2.Function
 }
 
-func NewFunctionValidator(instance *serverlessv1alpha2.Function) *functionValidator {
+func New(instance *serverlessv1alpha2.Function) *functionValidator {
 	return &functionValidator{
 		instance: instance,
 	}
