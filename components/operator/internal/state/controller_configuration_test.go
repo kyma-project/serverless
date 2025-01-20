@@ -42,7 +42,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			fixTestNode("node-1"),
 			fixTestNode("node-2"),
 		).Build()
-		eventRecorder := record.NewFakeRecorder(2)
+		eventRecorder := record.NewFakeRecorder(4)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
 		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
 		require.Nil(t, err)
@@ -89,7 +89,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			fixTestNode("node-3"),
 			fixTestNode("node-4"),
 		).Build()
-		eventRecorder := record.NewFakeRecorder(2)
+		eventRecorder := record.NewFakeRecorder(4)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
 		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
 		require.Nil(t, err)
@@ -223,7 +223,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 			k8s: k8s{
 				client:        fake.NewClientBuilder().WithObjects(secret).Build(),
-				EventRecorder: record.NewFakeRecorder(2),
+				EventRecorder: record.NewFakeRecorder(4),
 			},
 		}
 
