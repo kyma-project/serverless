@@ -119,6 +119,12 @@ spec:
                 required:
                 - endpoint
                 type: object
+              logFormat:
+                description: Sets desired log format to be used. The default value is "json"
+                type: string
+              logLevel:
+                description: Sets desired log level to be used. The default value is "info"
+                type: string
             type: object
           status:
             properties:
@@ -198,6 +204,10 @@ spec:
               functionRequeueDuration:
                 type: string
               healthzLivenessTimeout:
+                type: string
+              logFormat:
+                type: string
+              logLevel:
                 type: string
               served:
                 description: |-

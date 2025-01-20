@@ -23,6 +23,8 @@ const (
 	healthzLivenessTimeoutTest = "test-healthz-liveness-timeout"
 	buildJobPresetTest         = "test=default-build-job-preset"
 	runtimePodPresetTest       = "test-default-runtime-pod-preset"
+	logLevelTest               = "test-log-level"
+	logFormatTest              = "test-log-format"
 )
 
 func Test_sFnControllerConfiguration(t *testing.T) {
@@ -127,6 +129,8 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 					HealthzLivenessTimeout:           healthzLivenessTimeoutTest,
 					DefaultBuildJobPreset:            buildJobPresetTest,
 					DefaultRuntimePodPreset:          runtimePodPresetTest,
+					LogLevel:                         logLevelTest,
+					LogFormat:                        logFormatTest,
 				},
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
@@ -148,6 +152,8 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		require.Equal(t, healthzLivenessTimeoutTest, status.HealthzLivenessTimeout)
 		require.Equal(t, buildJobPresetTest, status.DefaultBuildJobPreset)
 		require.Equal(t, runtimePodPresetTest, status.DefaultRuntimePodPreset)
+		require.Equal(t, logLevelTest, status.LogLevel)
+		require.Equal(t, logFormatTest, status.LogFormat)
 
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
 		requireContainsCondition(t, status,
@@ -165,6 +171,8 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			"Normal Configuration Duration of health check set from '' to 'test-healthz-liveness-timeout'",
 			"Normal Configuration Default build job preset set from '' to 'test=default-build-job-preset'",
 			"Normal Configuration Default runtime pod preset set from '' to 'test-default-runtime-pod-preset'",
+			"Normal Configuration Log level set from '' to 'test-log-level'",
+			"Normal Configuration Log format set from '' to 'test-log-format'",
 		}
 
 		for _, expectedEvent := range expectedEvents {

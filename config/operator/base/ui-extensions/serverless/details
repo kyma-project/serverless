@@ -23,6 +23,10 @@ body:
       source: status.defaultBuildJobPreset
     - name: Default Function Preset
       source: status.defaultRuntimePodPreset
+    - name: Log Level
+      source: status.logLevel
+    - name: Log Format
+      source: status.logFormat
   - widget: EventList
     filter: '$matchEvents($$, $root.kind, $root.metadata.name)'
     name: events

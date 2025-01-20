@@ -74,6 +74,14 @@ func verifyStatus(serverless *v1alpha1.Serverless) error {
 		return err
 	}
 
+	if err := isSpecValueReflectedInStatus(spec.LogLevel, status.LogLevel); err != nil {
+		return err
+	}
+
+	if err := isSpecValueReflectedInStatus(spec.LogFormat, status.LogFormat); err != nil {
+		return err
+	}
+
 	if spec.Eventing != nil {
 		if err := isSpecValueReflectedInStatus(spec.Eventing.Endpoint, status.EventingEndpoint); err != nil {
 			return err
