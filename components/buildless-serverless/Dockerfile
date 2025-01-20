@@ -3,25 +3,29 @@ FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.23.4-alpi
 ARG TARGETOS
 ARG TARGETARCH
 
-WORKDIR /workdir
+ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/serverless \
+    GOOS=linux \
+    GOARCH=amd64
+WORKDIR ${BASE_APP_DIR}
 # Copy the Go Modules manifests
-COPY go.mod go.mod
-COPY go.sum go.sum
-# cache deps before building and copying source so that we don't need to re-download as much
-# and so that source changes don't invalidate our downloaded layer
+RUN pwd && ls
+COPY go.mod ${BASE_APP_DIR}/go.mod
+COPY go.sum ${BASE_APP_DIR}/go.sum
+
 RUN go mod download
 
-# Copy the go source
-COPY cmd/main.go cmd/main.go
-COPY api/ api/
-COPY internal/ internal/
+# cache deps before building and copying source so that we don't need to re-download as much
+# and so that source changes don't invalidate our downloaded layer
+COPY . ${BASE_APP_DIR}/
 
 # Build
 # the GOARCH has not a default value to allow the binary be built according to the host where the command
 # was called. For example, if we call make docker-build in a local env which has the Apple Silicon M1 SO
 # the docker BUILDPLATFORM arg will be linux/arm64 when for Apple x86 it will be linux/amd64. Therefore,
 # by leaving it empty we can ensure that the container and binary shipped on it will have the same platform.
-RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o manager cmd/main.go
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o manager ./components/buildless-serverless/cmd/main.go \
+    && mkdir /app \
+    && mv ./manager /app/manager
 
 FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.0 as certs
 
@@ -29,12 +33,16 @@ RUN apk add --no-cache ca-certificates
 
 # Use distroless as minimal base image to package the manager binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
-FROM scratch
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.0
 
 WORKDIR /
 
-COPY --from=builder /workdir/manager .
+RUN apk update --no-cache && apk upgrade --no-cache
+RUN apk add --no-cache --update --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main openssl
+
+
+COPY --from=builder /app /app
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 USER 1000:1000
 
-ENTRYPOINT ["/manager"]
+ENTRYPOINT ["/app/manager"]

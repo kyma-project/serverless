@@ -3,8 +3,8 @@ package resources
 import (
 	"testing"
 
-	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	"github.com/kyma-project/serverless/internal/config"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	appsv1 "k8s.io/api/apps/v1"

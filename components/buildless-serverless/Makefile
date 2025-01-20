@@ -1,4 +1,5 @@
 PROJECT_ROOT = ../..
+COMPONENT_ROOT=$(PROJECT_ROOT)/components/buildless-serverless
 
 #TODO: Refactor this file - we don't need some of these targets; we could change uploading go-tools, ...
 
@@ -142,7 +143,7 @@ build-installer: manifests generate kustomize ## Generate a consolidated YAML wi
 	$(KUSTOMIZE) build config/default > dist/install.yaml
 
 build-image: ## Build buildless serverless backend image
-	docker build -t $(APP_NAME) -f Dockerfile .
+	docker build -t $(APP_NAME) -f $(COMPONENT_ROOT)/Dockerfile $(PROJECT_ROOT)
 
 ######## disable operator to prevent undo of local image update to k3d
 disable-operator:

@@ -25,8 +25,6 @@ spec:
             - --metrics-bind-address=:8443
             - --leader-elect
             - --health-probe-bind-address=:8081
-          command:
-            - /manager
           {{- $fc:=$images.function_controller  }}
           image: "{{ .Values.global.containerRegistry.path }}/{{ $fc.directory }}/{{$fc.name}}:{{$fc.version}}"
           imagePullPolicy: IfNotPresent
@@ -56,6 +54,9 @@ spec:
               drop:
                 - ALL
           env:
+            - name: APP_FUNCTION_IMAGENODEJS22
+              {{- $js22:=$images.function_runtime_nodejs22  }}
+              value: "{{ .Values.global.containerRegistry.path }}/{{ $js22.directory }}/{{$js22.name}}:{{$js22.version}}"
             - name: APP_FUNCTION_IMAGENODEJS20
               {{- $js20:=$images.function_runtime_nodejs20  }}
               value: "{{ .Values.global.containerRegistry.path }}/{{ $js20.directory }}/{{$js20.name}}:{{$js20.version}}"

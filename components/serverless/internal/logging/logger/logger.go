@@ -1,13 +1,11 @@
 package logger
 
 import (
-	"context"
 	"os"
 
 	"github.com/pkg/errors"
 
 	"github.com/go-logr/zapr"
-	"github.com/kyma-project/serverless/components/serverless/internal/logging/tracing"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"k8s.io/klog/v2"
@@ -56,14 +54,14 @@ func new(format Format, levelEnabler zapcore.LevelEnabler, additionalCores ...za
 	return &Logger{zap.New(zapcore.NewTee(cores...), zap.AddCaller()).Sugar()}, nil
 }
 
-func (l *Logger) WithTracing(ctx context.Context) *zap.SugaredLogger {
-	newLogger := *l
-	for key, val := range tracing.GetMetadata(ctx) {
-		newLogger.zapLogger = newLogger.zapLogger.With(key, val)
-	}
-
-	return newLogger.WithContext()
-}
+//func (l *Logger) WithTracing(ctx context.Context) *zap.SugaredLogger {
+//	newLogger := *l
+//	for key, val := range tracing.GetMetadata(ctx) {
+//		newLogger.zapLogger = newLogger.zapLogger.With(key, val)
+//	}
+//
+//	return newLogger.WithContext()
+//}
 
 func (l *Logger) WithContext() *zap.SugaredLogger {
 	return l.zapLogger.With(zap.Namespace("context"))

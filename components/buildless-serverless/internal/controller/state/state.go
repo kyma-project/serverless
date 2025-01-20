@@ -1,7 +1,7 @@
 package state
 
 import (
-	"github.com/kyma-project/serverless/internal/controller/fsm"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"time"
 )

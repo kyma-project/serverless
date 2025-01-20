@@ -3,9 +3,9 @@ package fsm
 import (
 	"context"
 	"fmt"
-	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	"github.com/kyma-project/serverless/internal/config"
-	"github.com/kyma-project/serverless/internal/controller/resources"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/resources"
 	"reflect"
 	"runtime"
 	"strings"

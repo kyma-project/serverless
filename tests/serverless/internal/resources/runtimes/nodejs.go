@@ -36,7 +36,8 @@ func BasicTracingNodeFunction(rtm serverlessv1alpha2.Runtime, externalSvcURL str
     "axios":"0.26.1"
   }
 }`
-	src := fmt.Sprintf(`const axios = require("axios")
+	src := fmt.Sprintf(`const { SpanStatusCode } = require("@opentelemetry/api/build/src/trace/status")
+const axios = require("axios")
 
 
 module.exports = {

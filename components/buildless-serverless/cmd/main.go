@@ -19,7 +19,7 @@ package main
 import (
 	"crypto/tls"
 	"flag"
-	"github.com/kyma-project/serverless/internal/config"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/vrischmann/envconfig"
 	uberzap "go.uber.org/zap"
 	uberzapcore "go.uber.org/zap/zapcore"
@@ -39,8 +39,8 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	"github.com/kyma-project/serverless/internal/controller"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -67,6 +67,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	//logCfg, err := fileconfig.LoadLogConfig(config.LogConfigPath)
+	//if err != nil {
+	//	setupLog.Error(err, "unable to load configuration file")
+	//	os.Exit(1)
+	//}
+	//
 	//log, err := logging.ConfigureLogger(logCfg.LogLevel, logCfg.LogFormat, atomic)
 	//if err != nil {
 	//	setupLog.Error(err, "unable to configure log")
