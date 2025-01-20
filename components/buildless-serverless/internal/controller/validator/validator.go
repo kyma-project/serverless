@@ -1,4 +1,4 @@
-package functionvalidator
+package validator
 
 import (
 	"errors"
@@ -9,17 +9,17 @@ import (
 	"strings"
 )
 
-type functionValidator struct {
+type validator struct {
 	instance *serverlessv1alpha2.Function
 }
 
-func New(instance *serverlessv1alpha2.Function) *functionValidator {
-	return &functionValidator{
+func New(instance *serverlessv1alpha2.Function) *validator {
+	return &validator{
 		instance: instance,
 	}
 }
 
-func (v *functionValidator) Validate() []string {
+func (v *validator) Validate() []string {
 	fns := []func() []string{
 		v.validateEnvs,
 		v.validateInlineDeps,
@@ -35,7 +35,7 @@ func (v *functionValidator) Validate() []string {
 	return r
 }
 
-func (v *functionValidator) validateEnvs() []string {
+func (v *validator) validateEnvs() []string {
 	for _, env := range v.instance.Spec.Env {
 		vr := utilvalidation.IsEnvVarName(env.Name)
 		if len(vr) != 0 {
@@ -45,7 +45,7 @@ func (v *functionValidator) validateEnvs() []string {
 	return []string{}
 }
 
-func (v *functionValidator) validateInlineDeps() []string {
+func (v *validator) validateInlineDeps() []string {
 	runtime := v.instance.Spec.Runtime
 	inlineSource := v.instance.Spec.Source.Inline
 	if inlineSource == nil {
@@ -59,7 +59,7 @@ func (v *functionValidator) validateInlineDeps() []string {
 	return []string{}
 }
 
-func (v *functionValidator) validateRuntime() []string {
+func (v *validator) validateRuntime() []string {
 	runtime := v.instance.Spec.Runtime
 
 	if err := validateRuntime(runtime); err != nil {

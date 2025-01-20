@@ -1,4 +1,4 @@
-package functionvalidator
+package validator
 
 import (
 	"fmt"
