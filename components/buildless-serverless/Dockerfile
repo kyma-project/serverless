@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.23.4-alpine3.21 AS builder
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.23.5-alpine3.21 AS builder
 ARG TARGETOS
 ARG TARGETARCH
 
@@ -23,7 +23,7 @@ COPY internal/ internal/
 # by leaving it empty we can ensure that the container and binary shipped on it will have the same platform.
 RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o manager cmd/main.go
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.0 as certs
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.2 as certs
 
 RUN apk add --no-cache ca-certificates
 
