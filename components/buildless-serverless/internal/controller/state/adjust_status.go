@@ -10,5 +10,5 @@ func sFnAdjustStatus(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl
 	//TODO: Move set statuses to the final state
 	m.State.Function.Status.RuntimeImage = m.State.Deployment.RuntimeImage()
 	//TODO: Add more status fields
-	return nextState(sFnDeploymentStatus)
+	return requeueAfter(m.FunctionConfig.FunctionReadyRequeueDuration)
 }

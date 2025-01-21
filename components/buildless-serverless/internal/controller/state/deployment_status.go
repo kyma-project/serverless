@@ -38,8 +38,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 			serverlessv1alpha2.ConditionReasonDeploymentReady,
 			fmt.Sprintf("Deployment %s is ready", deploymentName))
 
-		// TODO: requeue with sleep should be in the last state (now this is the last state bat it will be changed)
-		return requeueAfter(m.FunctionConfig.FunctionReadyRequeueDuration)
+		return nextState(sFnAdjustStatus)
 	}
 
 	// unhealthy deployment
