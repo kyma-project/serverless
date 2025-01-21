@@ -14,6 +14,8 @@ const (
 	slowRuntimePreset  = "XS"
 	normalBuildPreset  = "normal"
 	largeRuntimePreset = "L"
+	defaultLogLevel    = "info"
+	defaultLogFormat   = "json"
 )
 
 func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
@@ -56,6 +58,8 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 		{spec.HealthzLivenessTimeout, &instance.Status.HealthzLivenessTimeout, "Duration of health check", ""},
 		{spec.DefaultBuildJobPreset, &instance.Status.DefaultBuildJobPreset, "Default build job preset", defaultBuildPreset},
 		{spec.DefaultRuntimePodPreset, &instance.Status.DefaultRuntimePodPreset, "Default runtime pod preset", defaultRuntimePreset},
+		{spec.LogLevel, &instance.Status.LogLevel, "Log level", defaultLogLevel},
+		{spec.LogFormat, &instance.Status.LogFormat, "Log format", defaultLogFormat},
 	}
 
 	updateStatusFields(r.k8s, instance, fields)
@@ -74,7 +78,9 @@ func configureControllerConfigurationFlags(s *systemState) {
 		WithDefaultPresetFlags(
 			s.instance.Status.DefaultBuildJobPreset,
 			s.instance.Status.DefaultRuntimePodPreset,
-		)
+		).
+		WithLogLevel(s.instance.Status.LogLevel).
+		WithLogFormat(s.instance.Status.LogFormat)
 }
 
 func getNodesLen(ctx context.Context, c client.Client) (int, error) {

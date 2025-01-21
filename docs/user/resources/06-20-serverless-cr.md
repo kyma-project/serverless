@@ -33,6 +33,8 @@ The following Serverless custom resource (CR) shows configuration of Serverless 
      healthzLivenessTimeout: "10s"
      defaultBuildJobPreset: "normal"
      defaultRuntimePodPreset: "M"
+     logLevel: "info"
+     logFormat: "json"
    status:
      conditions:
      - lastTransitionTime: "2023-04-28T10:09:37Z"
@@ -59,22 +61,24 @@ For details, see the [Serverless specification file](https://github.com/kyma-pro
 
 **Spec:**
 
-| Parameter                                 | Type    | Description |
-|-------------------------------------------|---------|-------------|
-| **dockerRegistry**                        | object  | **Deprecated: a future Serverless version won't build images**             |
-| **dockerRegistry.&#x200b;enableInternal** | boolean | When set to `true`, the internal Docker registry is enabled           |
-| **dockerRegistry.&#x200b;secretName**     | string  | Secret used for configuration of the Docker registry            |
-| **eventing**                              | object  |             |
-| **eventing.&#x200b;endpoint** (required)  | string  | Used Eventing endpoint            |
-| **tracing**                               | object  |             |
-| **tracing.&#x200b;endpoint** (required)   | string  | Used Tracing endpoint            |
-| **targetCPUUtilizationPercentage**        | string  | **Deprecated: a future Serverless version won't create HPAs** Sets a custom CPU utilization threshold for scaling Function Pods            |
-| **functionRequeueDuration**               | string  | Sets the requeue duration for Function. By default, the Function associated with the default configuration is requeued every 5 minutes            |
-| **functionBuildExecutorArgs**             | string  | **Deprecated: a future Serverless version won't build images** Specifies the arguments passed to the Function build executor            |
-| **functionBuildMaxSimultaneousJobs**      | string  | **Deprecated: a future Serverless version won't build images** A number of simultaneous jobs that can run at the same time. The default value is `5`            |
-| **healthzLivenessTimeout**                | string  | Sets the timeout for the Function health check. The default value in seconds is `10`            |
-| **defaultBuildJobPreset**                 | string  | **Deprecated: a future Serverless version won't build images** Configures the default build Job preset to be used            |
-| **defaultRuntimePodPreset**               | string  | Configures the default runtime Pod preset to be used            |
+| Parameter                                 | Type    | Description                                                                                                                                          |
+|-------------------------------------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **dockerRegistry**                        | object  | **Deprecated: a future Serverless version won't build images**                                                                                       |
+| **dockerRegistry.&#x200b;enableInternal** | boolean | When set to `true`, the internal Docker registry is enabled                                                                                          |
+| **dockerRegistry.&#x200b;secretName**     | string  | Secret used for configuration of the Docker registry                                                                                                 |
+| **eventing**                              | object  |                                                                                                                                                      |
+| **eventing.&#x200b;endpoint** (required)  | string  | Used Eventing endpoint                                                                                                                               |
+| **tracing**                               | object  |                                                                                                                                                      |
+| **tracing.&#x200b;endpoint** (required)   | string  | Used Tracing endpoint                                                                                                                                |
+| **targetCPUUtilizationPercentage**        | string  | **Deprecated: a future Serverless version won't create HPAs** Sets a custom CPU utilization threshold for scaling Function Pods                      |
+| **functionRequeueDuration**               | string  | Sets the requeue duration for Function. By default, the Function associated with the default configuration is requeued every 5 minutes               |
+| **functionBuildExecutorArgs**             | string  | **Deprecated: a future Serverless version won't build images** Specifies the arguments passed to the Function build executor                         |
+| **functionBuildMaxSimultaneousJobs**      | string  | **Deprecated: a future Serverless version won't build images** A number of simultaneous jobs that can run at the same time. The default value is `5` |
+| **healthzLivenessTimeout**                | string  | Sets the timeout for the Function health check. The default value in seconds is `10`                                                                 |
+| **defaultBuildJobPreset**                 | string  | **Deprecated: a future Serverless version won't build images** Configures the default build Job preset to be used                                    |
+| **defaultRuntimePodPreset**               | string  | Configures the default runtime Pod preset to be used                                                                                                 |
+| **logLevel**                              | string  | Sets desired log level to be used. The default value is "info"                                                                                       |
+| **logFormat**                             | string  | Sets desired log format to be used. The default value is "json"                                                                                      |
 
 **Status:**
 
@@ -93,12 +97,14 @@ For details, see the [Serverless specification file](https://github.com/kyma-pro
 | **state**                                            | string     | Signifies the current state of Serverless. Value can be one of `Ready`, `Processing`, `Error`, or `Deleting`.                                                                                                                                                                                                                                                  |
 | **tracingEndpoint**                                  | string     | Used Tracing endpoint.                                                                                                                                                                                                                                                                                                                                         |
 | **targetCPUUtilizationPercentage**                   | string     | Used target CPU utilization percentage.                                                                                                                                                                                                                                                                                                                        |
-| **functionRequeueDuration**                          | string     | Used the Function requeue duration.                                                                                                                                                                                                                                                                                                                                |
-| **functionBuildExecutorArgs**                        | string     | Used the Function build executor arguments.                                                                                                                                                                                                                                                                                                                        |
-| **functionBuildMaxSimultaneousJobs**                 | string     | Used the Function build max number of simultaneous jobs.                                                                                                                                                                                                                                                                                                           |
-| **healthzLivenessTimeout**                           | string     | Used the healthz liveness timeout.                                                                                                                                                                                                                                                                                                           |
-| **defaultBuildJobPreset**                            | string     | Used the default build Job preset.                                                                                                                                                                                                                                                                                                                                 |
-| **defaultRuntimePodPreset**                          | string     | Used the default runtime Pod preset.                                                                                                                                                                                                                                                                                                                               |
+| **functionRequeueDuration**                          | string     | Used the Function requeue duration.                                                                                                                                                                                                                                                                                                                            |
+| **functionBuildExecutorArgs**                        | string     | Used the Function build executor arguments.                                                                                                                                                                                                                                                                                                                    |
+| **functionBuildMaxSimultaneousJobs**                 | string     | Used the Function build max number of simultaneous jobs.                                                                                                                                                                                                                                                                                                       |
+| **healthzLivenessTimeout**                           | string     | Used the healthz liveness timeout.                                                                                                                                                                                                                                                                                                                             |
+| **defaultBuildJobPreset**                            | string     | Used the default build Job preset.                                                                                                                                                                                                                                                                                                                             |
+| **defaultRuntimePodPreset**                          | string     | Used the default runtime Pod preset.                                                                                                                                                                                                                                                                                                                           |
+| **logLevel**                                         | string     | Used the log level.                                                                                                                                                                                                                                                                                                                                            |
+| **logFormat**                                        | string     | Used the log format.                                                                                                                                                                                                                                                                                                                                           |
 
 <!-- TABLE-END -->
 

@@ -59,6 +59,10 @@ type ServerlessSpec struct {
 	DefaultBuildJobPreset string `json:"defaultBuildJobPreset,omitempty"`
 	// Configures the default runtime Pod preset to be used
 	DefaultRuntimePodPreset string `json:"defaultRuntimePodPreset,omitempty"`
+	// Sets desired log level to be used. The default value is "info"
+	LogLevel string `json:"logLevel,omitempty"`
+	// Sets desired log format to be used. The default value is "json"
+	LogFormat string `json:"logFormat,omitempty"`
 }
 
 type State string
@@ -114,6 +118,8 @@ type ServerlessStatus struct {
 	HealthzLivenessTimeout   string `json:"healthzLivenessTimeout,omitempty"`
 	DefaultBuildJobPreset    string `json:"defaultBuildJobPreset,omitempty"`
 	DefaultRuntimePodPreset  string `json:"defaultRuntimePodPreset,omitempty"`
+	LogLevel                 string `json:"logLevel,omitempty"`
+	LogFormat                string `json:"logFormat,omitempty"`
 
 	// Used registry configuration.
 	// Contains registry URL or "internal"

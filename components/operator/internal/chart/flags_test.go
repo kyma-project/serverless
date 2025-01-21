@@ -39,6 +39,12 @@ func Test_flagsBuilder_Build(t *testing.T) {
 							},
 						},
 					},
+					"logConfiguration": map[string]interface{}{
+						"data": map[string]interface{}{
+							"logLevel":  "testLogLevel",
+							"logFormat": "testLogFormat",
+						},
+					},
 				},
 			},
 			"docker-registry": map[string]interface{}{
@@ -71,7 +77,9 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				"testBuildExecutorArgs",
 				"testMaxSimultaneousJobs",
 				"testHealthzLivenessTimeout",
-			).Build()
+			).
+			WithLogFormat("testLogFormat").
+			WithLogLevel("testLogLevel").Build()
 
 		require.Equal(t, expectedFlags, flags)
 	})
