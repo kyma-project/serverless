@@ -15,6 +15,8 @@ type FlagsBuilder interface {
 	WithRegistryEnableInternal(enableInternal bool) *flagsBuilder
 	WithRegistryHttpSecret(httpSecret string) *flagsBuilder
 	WithNodePort(nodePort int64) *flagsBuilder
+	WithLogLevel(logLevel string) *flagsBuilder
+	WithLogFormat(logFormat string) *flagsBuilder
 }
 
 type flagsBuilder struct {
@@ -129,5 +131,21 @@ func (fb *flagsBuilder) WithDefaultPresetFlags(defaultBuildJobPreset, defaultRun
 
 func (fb *flagsBuilder) WithNodePort(nodePort int64) *flagsBuilder {
 	fb.flags["global.registryNodePort"] = nodePort
+	return fb
+}
+
+func (fb *flagsBuilder) WithLogLevel(logLevel string) *flagsBuilder {
+	if logLevel != "" {
+		fb.flags["containers.manager.logConfiguration.data.logLevel"] = logLevel
+	}
+
+	return fb
+}
+
+func (fb *flagsBuilder) WithLogFormat(logFormat string) *flagsBuilder {
+	if logFormat != "" {
+		fb.flags["containers.manager.logConfiguration.data.logFormat"] = logFormat
+	}
+
 	return fb
 }
