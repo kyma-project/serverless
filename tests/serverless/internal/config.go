@@ -17,7 +17,7 @@ type Config struct {
 	WaitTimeout         time.Duration        `envconfig:"default=15m"`
 	MaxPollingTime      time.Duration        `envconfig:"default=5m"`
 	InsecureSkipVerify  bool                 `envconfig:"default=true"`
-	Cleanup             executor.CleanupMode `envconfig:"default=yes"`
+	Cleanup             executor.CleanupMode `envconfig:"default=no"`
 	// change gitserver version to main after fixing the issue:
 	// https://github.com/kyma-project/serverless/issues/998
 	GitServerImage                  string `envconfig:"default=europe-docker.pkg.dev/kyma-project/prod/gitserver:c78bc4083a3c30409784ce6a874165c8a60c00e6"`
