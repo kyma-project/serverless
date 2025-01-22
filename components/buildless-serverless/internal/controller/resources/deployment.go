@@ -88,6 +88,7 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 				Ports: []corev1.ContainerPort{
 					{
 						ContainerPort: 8080,
+						Protocol:      "TCP",
 					},
 				},
 				StartupProbe: &corev1.Probe{
