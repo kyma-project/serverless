@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: buildless-serverless
     control-plane: controller-manager
   name: buildless-serverless-controller-manager
-  namespace: kyma-system
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
   selector:
