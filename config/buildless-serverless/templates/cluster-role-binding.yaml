@@ -12,4 +12,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: buildless-serverless-controller-manager
-    namespace: kyma-system
+    namespace: {{ .Release.Namespace }}
