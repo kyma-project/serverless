@@ -67,6 +67,10 @@ func (d *Deployment) name() string {
 	return d.function.Name
 }
 
+func (d *Deployment) userGroup() *int64 {
+	return ptr.To[int64](10001)
+}
+
 func (d *Deployment) podSpec() corev1.PodSpec {
 	secretVolumes, secretVolumeMounts := d.deploymentSecretVolumes()
 
@@ -125,6 +129,13 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 					FailureThreshold: 3,
 					PeriodSeconds:    5,
 					TimeoutSeconds:   4,
+				},
+				SecurityContext: &corev1.SecurityContext{
+					RunAsGroup: d.userGroup(),
+					RunAsUser:  d.userGroup(),
+					SeccompProfile: &corev1.SeccompProfile{
+						Type: corev1.SeccompProfileTypeRuntimeDefault,
+					},
 				},
 			},
 		},
