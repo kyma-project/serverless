@@ -16,14 +16,18 @@ func sFnValidateFunction(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *
 	v := validator.New(&m.State.Function)
 	validationResults := v.Validate()
 	if len(validationResults) != 0 {
-		//TODO: Use ConditionConfigure in this place
 		m.State.Function.UpdateCondition(
-			serverlessv1alpha2.ConditionRunning,
+			serverlessv1alpha2.ConditionConfigurationReady,
 			metav1.ConditionFalse,
-			serverlessv1alpha2.ConditionReasonFunctionSpec,
+			serverlessv1alpha2.ConditionReasonInvalidFunctionSpec,
 			strings.Join(validationResults, ". "))
 		return stop()
 	}
 
+	m.State.Function.UpdateCondition(
+		serverlessv1alpha2.ConditionConfigurationReady,
+		metav1.ConditionTrue,
+		serverlessv1alpha2.ConditionReasonFunctionSpecValidated,
+		"function spec validated")
 	return nextState(sFnHandleDeployment)
 }

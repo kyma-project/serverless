@@ -134,13 +134,15 @@ type FunctionStatus struct {
 type ConditionType string
 
 const (
-	ConditionRunning ConditionType = "Running"
+	ConditionRunning            ConditionType = "Running"
+	ConditionConfigurationReady ConditionType = "ConfigurationReady"
 )
 
 type ConditionReason string
 
 const (
-	ConditionReasonFunctionSpec            ConditionReason = "InvalidFunctionSpec"
+	ConditionReasonInvalidFunctionSpec     ConditionReason = "InvalidFunctionSpec"
+	ConditionReasonFunctionSpecValidated   ConditionReason = "FunctionSpecValidated"
 	ConditionReasonDeploymentCreated       ConditionReason = "DeploymentCreated"
 	ConditionReasonDeploymentUpdated       ConditionReason = "DeploymentUpdated"
 	ConditionReasonDeploymentFailed        ConditionReason = "DeploymentFailed"

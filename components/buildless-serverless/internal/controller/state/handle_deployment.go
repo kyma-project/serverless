@@ -86,7 +86,7 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine, deployment *apps
 	return &ctrl.Result{RequeueAfter: time.Minute}, nil
 }
 
-func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment, builtDeployment *appsv1.Deployment) (bool, error) {
+func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment, builtDeployment *appsv1.Deployment) (requeueNeeded bool, err error) {
 	// Ensure the Deployment data matches the desired state
 	if !deploymentChanged(clusterDeployment, builtDeployment) {
 		return false, nil
@@ -128,15 +128,15 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 		portsChanged
 }
 
-func updateDeployment(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment) (bool, error) {
-	if err := m.Client.Update(ctx, clusterDeployment); err != nil {
-		m.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", clusterDeployment.GetNamespace(), "Deployment.Name", clusterDeployment.GetName())
+func updateDeployment(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment) (requeueNeeded bool, err error) {
+	if errUpdate := m.Client.Update(ctx, clusterDeployment); errUpdate != nil {
+		m.Log.Error(errUpdate, "Failed to update Deployment", "Deployment.Namespace", clusterDeployment.GetNamespace(), "Deployment.Name", clusterDeployment.GetName())
 		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonDeploymentFailed,
-			fmt.Sprintf("Deployment %s update failed: %s", clusterDeployment.GetName(), err.Error()))
-		return false, err
+			fmt.Sprintf("Deployment %s update failed: %s", clusterDeployment.GetName(), errUpdate.Error()))
+		return false, errUpdate
 	}
 	m.State.Function.UpdateCondition(
 		serverlessv1alpha2.ConditionRunning,
