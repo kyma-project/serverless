@@ -226,7 +226,7 @@ You can configure the desired log level to be used.
 
 ```yaml
    spec:
-      logLevel: "json"
+      logLevel: "debug"
 ```
 
 ## Configure the Log Format
@@ -235,5 +235,5 @@ You can configure the desired log format to be used.
 
 ```yaml
    spec:
-      logFormat: "json"
+      logFormat: "yaml"
 ```
