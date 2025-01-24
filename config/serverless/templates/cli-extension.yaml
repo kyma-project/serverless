@@ -41,7 +41,7 @@ data:
         Functions are resources allowing running code without taking care about
         writing servers and maintaining them. 
         
-        There are two main families of possible runtimes: nodejs and python.
+        There are two possible runtime variants: nodejs and python.
 
         You can find more details here:
         https://kyma-project.io/#/serverless-manager/user/resources/06-10-function-cr
