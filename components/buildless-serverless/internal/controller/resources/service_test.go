@@ -35,7 +35,7 @@ func TestNewService(t *testing.T) {
 				}},
 				Selector: map[string]string{
 					"serverless.kyma-project.io/function-name": "test-function-name",
-					"serverless.kyma-project.io/managed-by":    "buildless-function-controller",
+					"serverless.kyma-project.io/managed-by":    "function-controller",
 					"serverless.kyma-project.io/resource":      "deployment",
 					"serverless.kyma-project.io/uuid":          "test-uid",
 				},
