@@ -25,6 +25,11 @@ func TestNewService(t *testing.T) {
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "test-function-name",
 				Namespace: "test-function-namespace",
+				Labels: map[string]string{
+					"serverless.kyma-project.io/function-name": "test-function-name",
+					"serverless.kyma-project.io/managed-by":    "function-controller",
+					"serverless.kyma-project.io/uuid":          "test-uid",
+				},
 			},
 			Spec: corev1.ServiceSpec{
 				Ports: []corev1.ServicePort{{
