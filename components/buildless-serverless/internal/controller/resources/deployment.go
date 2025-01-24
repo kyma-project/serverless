@@ -67,8 +67,8 @@ func (d *Deployment) name() string {
 	return d.function.Name
 }
 
-func (d *Deployment) userGroup() *int64 {
-	return ptr.To[int64](10001)
+func (d *Deployment) podRunAsUserUID() *int64 {
+	return ptr.To[int64](1000) // runAsUser 1000 is the most popular and standard value for non-root user
 }
 
 func (d *Deployment) podSpec() corev1.PodSpec {
@@ -131,8 +131,8 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 					TimeoutSeconds:   4,
 				},
 				SecurityContext: &corev1.SecurityContext{
-					RunAsGroup: d.userGroup(),
-					RunAsUser:  d.userGroup(),
+					RunAsGroup: d.podRunAsUserUID(), // set to 1000 because default value is root(0)
+					RunAsUser:  d.podRunAsUserUID(),
 					SeccompProfile: &corev1.SeccompProfile{
 						Type: corev1.SeccompProfileTypeRuntimeDefault,
 					},
