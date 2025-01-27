@@ -19,6 +19,8 @@ The Serverless CR becomes an API to configure the Serverless module. You can use
 - override the Function timeout
 - override the default build Job preset
 - override the default runtime Pod preset
+- override the default log level
+- override the default log format
 
 The default configuration of the Serverless Module is following:
 
@@ -216,4 +218,22 @@ You can configure the default runtime Pod preset to be used.
 ```yaml
    spec:
       defaultRuntimePodPreset: "M"
+```
+
+## Configure the Log Level
+
+You can configure the desired log level to be used.
+
+```yaml
+   spec:
+      logLevel: "debug"
+```
+
+## Configure the Log Format
+
+You can configure the desired log format to be used.
+
+```yaml
+   spec:
+      logFormat: "yaml"
 ```
