@@ -38,7 +38,7 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 		// machine with our function
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				Deployment: &resources.Deployment{
+				BuiltDeployment: &resources.Deployment{
 					Deployment: &appsv1.Deployment{
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      "strange-chebyshev-name",
@@ -87,7 +87,7 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 		// machine with our function
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				Deployment: &resources.Deployment{
+				BuiltDeployment: &resources.Deployment{
 					Deployment: &appsv1.Deployment{
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      "peaceful-rhodes-name",
@@ -136,7 +136,7 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 		// machine with our function
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				Deployment: &resources.Deployment{
+				BuiltDeployment: &resources.Deployment{
 					Deployment: &appsv1.Deployment{
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      "eloquent-stonebraker-name",
@@ -186,7 +186,7 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 		// machine with our function
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
-				Deployment: &resources.Deployment{
+				BuiltDeployment: &resources.Deployment{
 					Deployment: &appsv1.Deployment{
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      "infallible-carver-name",

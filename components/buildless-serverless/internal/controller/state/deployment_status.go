@@ -20,13 +20,14 @@ const (
 )
 
 func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	deploymentName := m.State.Deployment.GetName()
+	deploymentName := m.State.BuiltDeployment.GetName()
 	deployment := appsv1.Deployment{}
 	// TODO: should not we check error?
 	m.Client.Get(ctx, client.ObjectKey{
-		Namespace: m.State.Deployment.GetNamespace(),
+		Namespace: m.State.BuiltDeployment.GetNamespace(),
 		Name:      deploymentName,
 	}, &deployment)
+	m.State.ClusterDeployment = &deployment
 
 	// ready deployment
 	if isDeploymentReady(deployment) {
