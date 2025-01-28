@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: serverless.function.cli
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
+    kyma-cli/extension: resource
+    app.kubernetes.io/instance: {{ template "fullname" . }}-cli-functions
+    app.kubernetes.io/component: cli
+data:
+  rootCommand: |
+    name: function
+    description: Set of commands for managing Functions
+    descriptionLong: Use this command manage Functions
+  resource: |
+    scope: namespace
+    kind: Function
+    version: v1alpha2
+    group: serverless.kyma-project.io
+  templateCommands: |
+    get:
+      description: "get functions"
+      descriptionLong: "use this command to get functions from a cluster"
+      parameters:
+      - path: '.status.conditions[] | select(.type=="ConfigurationReady") | .status'
+        name: "configured"
+      - path: '.status.conditions[] | select(.type=="BuildReady") | .status'
+        name: "built"
+      - path: '.status.conditions[] | select(.type=="Running") | .status'
+        name: "running"
+      - path: ".spec.runtime"
+        name: "runtime"
+      - path: ".metadata.generation"
+        name: "generation"
+    explain:
+      description: "explain functions"
+      descriptionLong: "use this command to explain what function is"
+      output: |
+        Functions are resources allowing running code without taking care about
+        writing servers and maintaining them. 
+        
+        There are two possible runtime variants: nodejs and python.
+
+        You can find more details here:
+        https://kyma-project.io/#/serverless-manager/user/resources/06-10-function-cr
+    delete:
+      description: "delete function"
+      descriptionLong: "use this command to remove function from a cluster"
+    create:
+      description: "create function"
+      descriptionLong: "use this command to create function on a cluster"
+      customFlags:
+      - type: string
+        name: "runtime"
+        description: "function runtime"
+        shorthand: "r"
+        path: ".spec.runtime"
+        default: "nodejs22"
+      - type: int64
+        name: "replicas"
+        description: "function replicas"
+        path: ".spec.replicas"
+        default: 1
+      - type: path
+        name: "source"
+        description: "function source file path"
+        shorthand: "s"
+        path: ".spec.source.inline.source"
+        default: |
+          module.exports = {
+            main: function(event, context) {
+              return 'Hello World!'
+            }
+          }
+      - type: path
+        name: "dependencies"
+        description: "function dependencies file path"
+        shorthand: "d"
+        path: ".spec.source.inline.dependencies"
