@@ -4,7 +4,7 @@
 * [From Code to Function](/serverless-manager/user/00-10-from-code-to-function.md)
 * [Serverless Configuration](/serverless-manager/user/00-20-configure-serverless.md)
 * [Development Toolkit](/serverless-manager/user/00-30-development-toolkit.md)
-* [Security Considerations](/serverless-manager/user/00-40-security-considerations.md)
+* [Function Security](/serverless-manager/user/00-40-security-considerations.md)
 * [Limitations](/serverless-manager/user/00-50-limitations.md)
 * [Tutorials](/serverless-manager/user/tutorials/README.md)
   * [Create an Inline Function](/serverless-manager/user/tutorials/01-10-create-inline-function.md)
