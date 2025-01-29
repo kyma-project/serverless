@@ -17,7 +17,7 @@ func sFnAdjustStatus(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl
 	s.Replicas = m.State.ClusterDeployment.Status.Replicas
 
 	// set scale sub-resource
-	selector, err := metav1.LabelSelectorAsSelector(&metav1.LabelSelector{MatchLabels: m.State.BuiltDeployment.DeploymentSelectorLabels()})
+	selector, err := metav1.LabelSelectorAsSelector(&metav1.LabelSelector{MatchLabels: m.State.Function.SelectorLabels()})
 	if err != nil {
 		m.Log.Warnf("failed to get selector for labelSelector: %w", err)
 		return stopWithEventualError(errors.Wrap(err, "while getting selectors"))

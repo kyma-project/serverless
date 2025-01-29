@@ -1,7 +1,6 @@
 package resources
 
 import (
-	"k8s.io/apimachinery/pkg/labels"
 	"path"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
@@ -34,15 +33,15 @@ func (d *Deployment) construct() *appsv1.Deployment {
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      d.name(),
 			Namespace: d.function.Namespace,
-			Labels:    d.functionLabels(),
+			Labels:    d.function.FunctionLabels(),
 		},
 		Spec: appsv1.DeploymentSpec{
 			Selector: &metav1.LabelSelector{
-				MatchLabels: d.DeploymentSelectorLabels(),
+				MatchLabels: d.function.SelectorLabels(),
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels: d.podLabels(),
+					Labels: d.function.PodLabels(),
 				},
 				Spec: d.podSpec(),
 			},
@@ -336,39 +335,4 @@ func (d *Deployment) deploymentSecretVolumes() (volumes []corev1.Volume, volumeM
 		volumeMounts = append(volumeMounts, volumeMount)
 	}
 	return volumes, volumeMounts
-}
-
-func (d *Deployment) internalFunctionLabels() map[string]string {
-	f := d.function
-	intLabels := make(map[string]string, 3)
-
-	intLabels[serverlessv1alpha2.FunctionNameLabel] = f.GetName()
-	intLabels[serverlessv1alpha2.FunctionManagedByLabel] = serverlessv1alpha2.FunctionControllerValue
-	intLabels[serverlessv1alpha2.FunctionUUIDLabel] = string(f.GetUID())
-
-	return intLabels
-}
-
-func (d *Deployment) functionLabels() map[string]string {
-	internalLabels := d.internalFunctionLabels()
-	functionLabels := d.function.GetLabels()
-
-	return labels.Merge(functionLabels, internalLabels)
-}
-
-func (d *Deployment) DeploymentSelectorLabels() map[string]string {
-	return labels.Merge(
-		map[string]string{
-			serverlessv1alpha2.FunctionResourceLabel: serverlessv1alpha2.FunctionResourceLabelDeploymentValue,
-		},
-		d.internalFunctionLabels(),
-	)
-}
-
-func (d *Deployment) podLabels() map[string]string {
-	result := d.DeploymentSelectorLabels()
-	if d.function.Spec.Labels != nil {
-		result = labels.Merge(d.function.Spec.Labels, result)
-	}
-	return labels.Merge(result, map[string]string{serverlessv1alpha2.PodAppNameLabel: d.function.GetName()})
 }

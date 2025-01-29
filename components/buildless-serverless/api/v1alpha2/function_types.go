@@ -20,6 +20,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 )
 
 // Runtime specifies the name of the Function's runtime.
@@ -221,3 +222,37 @@ const (
 	FunctionResourceLabelDeploymentValue = "deployment"
 	PodAppNameLabel                      = "app.kubernetes.io/name"
 )
+
+func (f *Function) internalFunctionLabels() map[string]string {
+	intLabels := make(map[string]string, 3)
+
+	intLabels[FunctionNameLabel] = f.GetName()
+	intLabels[FunctionManagedByLabel] = FunctionControllerValue
+	intLabels[FunctionUUIDLabel] = string(f.GetUID())
+
+	return intLabels
+}
+
+func (f *Function) FunctionLabels() map[string]string {
+	internalLabels := f.internalFunctionLabels()
+	functionLabels := f.GetLabels()
+
+	return labels.Merge(functionLabels, internalLabels)
+}
+
+func (f *Function) SelectorLabels() map[string]string {
+	return labels.Merge(
+		map[string]string{
+			FunctionResourceLabel: FunctionResourceLabelDeploymentValue,
+		},
+		f.internalFunctionLabels(),
+	)
+}
+
+func (f *Function) PodLabels() map[string]string {
+	result := f.SelectorLabels()
+	if f.Spec.Labels != nil {
+		result = labels.Merge(f.Spec.Labels, result)
+	}
+	return labels.Merge(result, map[string]string{PodAppNameLabel: f.GetName()})
+}
