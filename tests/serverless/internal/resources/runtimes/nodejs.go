@@ -29,13 +29,14 @@ func BasicNodeJSFunction(msg string, rtm serverlessv1alpha2.Runtime) serverlessv
 }
 
 func BasicTracingNodeFunction(rtm serverlessv1alpha2.Runtime, externalSvcURL string) serverlessv1alpha2.FunctionSpec {
+
 	dpd := `{
-  "name": "sanitise-fn",
-  "version": "0.0.1",
-  "dependencies": {
-    "axios":"0.26.1"
-  }
-}`
+	 "name": "sanitise-fn",
+	 "version": "0.0.1",
+	 "dependencies": {
+	   "axios":"0.26.1"
+	 }
+	}`
 	src := fmt.Sprintf(`const axios = require("axios")
 
 
