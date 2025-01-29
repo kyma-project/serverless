@@ -57,51 +57,51 @@ Follow these steps to use the external Docker registry in Serverless:
        --from-literal=registryAddress={REGISTRY_URL}
    ```
 
-> [!TIP]
-> In case of DockerHub, usually the Docker registry address is the same as the account name.
+   > [!TIP]
+   > In case of DockerHub, usually the Docker registry address is the same as the account name.
 
-Examples:
+   Examples:
 
-<!-- tabs:start -->
+   <!-- tabs:start -->
 
-### **Docker Hub**
+   ### **Docker Hub**
 
-   ```bash
-   kubectl create secret generic my-registry-config \
-      --namespace kyma-system \
-      --from-literal=username={USERNAME} \
-      --from-literal=password={PASSWORD} \
-      --from-literal=serverAddress=https://index.docker.io/v1/ \
-      --from-literal=registryAddress={USERNAME}
-   ```
+      ```bash
+      kubectl create secret generic my-registry-config \
+         --namespace kyma-system \
+         --from-literal=username={USERNAME} \
+         --from-literal=password={PASSWORD} \
+         --from-literal=serverAddress=https://index.docker.io/v1/ \
+         --from-literal=registryAddress={USERNAME}
+      ```
 
-### **Artifact Registry**
+   ### **Artifact Registry**
 
-   ```bash
-   kubectl create secret generic my-registry-config \
-       --namespace kyma-system \
-       --from-literal=username=_json_key \
-       --from-literal=password={GCR_KEY_JSON} \
-       --from-literal=serverAddress=gcr.io \
-       --from-literal=registryAddress=gcr.io/{YOUR_GCR_PROJECT}
-   ```
+      ```bash
+      kubectl create secret generic my-registry-config \
+          --namespace kyma-system \
+          --from-literal=username=_json_key \
+          --from-literal=password={GCR_KEY_JSON} \
+          --from-literal=serverAddress=gcr.io \
+          --from-literal=registryAddress=gcr.io/{YOUR_GCR_PROJECT}
+      ```
 
-For more information on how to set up authentication for Docker with Artifact Registry, see the [Artifact Registry documentation](https://cloud.google.com/artifact-registry/docs/docker/authentication#json-key).
+   For more information on how to set up authentication for Docker with Artifact Registry, see the [Artifact Registry documentation](https://cloud.google.com/artifact-registry/docs/docker/authentication#json-key).
 
-### **ACR**
+   ### **ACR**
 
-   ```bash
-   kubectl create secret generic my-registry-config \
-       --namespace kyma-system \
-       --from-literal=username=00000000-0000-0000-0000-000000000000 \
-       --from-literal=password={ACR_TOKEN} \
-       --from-literal=serverAddress={AZ_REGISTRY_NAME}.azurecr.io \
-       --from-literal=registryAddress={AZ_REGISTRY_NAME}.azurecr.io
-   ```
+      ```bash
+      kubectl create secret generic my-registry-config \
+          --namespace kyma-system \
+          --from-literal=username=00000000-0000-0000-0000-000000000000 \
+          --from-literal=password={ACR_TOKEN} \
+          --from-literal=serverAddress={AZ_REGISTRY_NAME}.azurecr.io \
+          --from-literal=registryAddress={AZ_REGISTRY_NAME}.azurecr.io
+      ```
 
-For more information on how to authenticate with ACR, see the [ACR documentation](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli#az-acr-login-with---expose-token).
+   For more information on how to authenticate with ACR, see the [ACR documentation](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli#az-acr-login-with---expose-token).
 
-<!-- tabs:end -->
+   <!-- tabs:end -->
 
 2. Reference the Secret in the Serverless CR:
 
@@ -168,8 +168,8 @@ Use this label to choose the [arguments](https://github.com/GoogleContainerTools
 - `--skip-unused-stages` - executor skips any stages that aren't used for the current execution
 - `--log-format=text` - executor uses logs in a given format
 - `--cache=true` - enables caching for the executor
-- `--compressed-caching=false` - Prevents tar compression for cached layers. This will increase the runtime of the build, but decrease the memory usage especially for large builds.
-- `--use-new-run` - Improves performance by avoiding the full filesystem snapshots.
+- `--compressed-caching=false` - prevents tar compression for cached layers. This will increase the runtime of the build, but decrease the memory usage especially for large builds.
+- `--use-new-run` - improves performance by avoiding the full filesystem snapshots.
 
 ```yaml
    spec:

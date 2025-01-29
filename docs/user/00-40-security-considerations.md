@@ -1,3 +1,4 @@
+<!-- This document is a part of the Secure Development in the Kyma Environment section on HP -->
 # Function Security
 
 To eliminate potential security risks when using Functions, bear in mind these facts:
