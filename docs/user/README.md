@@ -19,16 +19,36 @@ The Serverless module provides the following features:
 - Function management with Kubernetes resources like [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), [Services](https://kubernetes.io/docs/concepts/services-networking/service/), and [HorizontalPodAutoscalers](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
 - Docker image creation with [Kubernetes Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/)
 
-## Serverless Operator
+## Architecture
 
-When you add the Serverless module, Serverless Operator takes care of installation and configuration of Serverless on your cluster. It manages the Serverless lifecycle based on the dedicated Serverless custom resource (CR).
+![Serverless module diagram](../assets/svls_architecture_new.png)
 
-## Useful Links
+1. User applies the Serverless CR.
+2. Serverless Operator watches the Serverless CR.
+3. Serverless Operator reconciles the Serverless workloads.
 
-If you want to perform some simple and more advanced tasks, check the [Serverless tutorials](tutorials/README.md).
+### Serverless Operator
 
-To troubleshoot Serverless-related issues, see the [troubleshooting guides](troubleshooting-guides/README.md).
+When you add the Serverless module, Serverless Operator takes care of installation and configuration of Serverless on your cluster. It manages the Serverless lifecycle based on the dedicated Serverless CR.
 
-To analyze Function specification and configuration files and to understand technicalities behind Serverless implementation, visit [technical reference](technical-reference/README.md).
+## API/Custom Resource Definitions
 
-For more information on the Serverless custom resources, see [Resources](resources/README.md).
+The API of the Serverless module is based on Kubernetes CustomResourceDefinitions (CRDs), which extend the Kubernetes API with custom additions. To inspect the specification of the Serverless module API, see:
+
+- [Function CRD](https://kyma-project.io/#/serverless-manager/user/resources/06-10-function-cr)
+- [Serverless CRD](https://kyma-project.io/#/serverless-manager/user/resources/06-20-serverless-cr)
+
+## Security Considerations
+
+To learn how to avoid any potential threats while using Functions, see [Function Security](00-40-security-considerations.md).
+
+## Resource Consumption
+
+To learn more about the resources used by the Serverless module, [see Kyma Modules' Sizing](https://help.sap.com/docs/btp/sap-business-technology-platform/kyma-modules-sizing?locale=en-US#loio3a924906857b4f01969cb684ccd25309__section_serverless).
+
+## Related Information
+
+- [Function Security](00-40-security-considerations.md)
+- [Serverless module tutorials](tutorials/README.md)
+- [Serverless module technical reference](technical-reference/README.md)
+- [Serverless module troubleshooting guides](troubleshooting-guides/README.md)

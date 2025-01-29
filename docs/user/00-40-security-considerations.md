@@ -1,4 +1,4 @@
-# Security Considerations
+# Function Security
 
 To eliminate potential security risks when using Functions, bear in mind these facts:
 

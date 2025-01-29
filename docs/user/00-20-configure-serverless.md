@@ -9,7 +9,7 @@ The Serverless CR is an API to configure the Serverless module. You can use it t
 - Enable or disable the internal Docker registry
 - Configure the external Docker registry
 - Override endpoint for traces collected by the Serverless Functions
-- Override endpoint for eventing
+- Override endpoint for Eventing
 - Override the target CPU utilization percentage
 - Override the Function requeue duration
 - Override the Function build executor arguments
@@ -77,8 +77,6 @@ Examples:
 
 ### **Artifact Registry**
 
-For more information on how to set up authentication for Docker with Artifact Registry, see the [Artifact Registry documentation](https://cloud.google.com/artifact-registry/docs/docker/authentication#json-key).
-
    ```bash
    kubectl create secret generic my-registry-config \
        --namespace kyma-system \
@@ -88,9 +86,9 @@ For more information on how to set up authentication for Docker with Artifact Re
        --from-literal=registryAddress=gcr.io/{YOUR_GCR_PROJECT}
    ```
 
-### **ACR**
+For more information on how to set up authentication for Docker with Artifact Registry, see the [Artifact Registry documentation](https://cloud.google.com/artifact-registry/docs/docker/authentication#json-key).
 
-For more information on how to authenticate with ACR, see the [ACR documentation](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli#az-acr-login-with---expose-token).
+### **ACR**
 
    ```bash
    kubectl create secret generic my-registry-config \
@@ -100,6 +98,8 @@ For more information on how to authenticate with ACR, see the [ACR documentation
        --from-literal=serverAddress={AZ_REGISTRY_NAME}.azurecr.io \
        --from-literal=registryAddress={AZ_REGISTRY_NAME}.azurecr.io
    ```
+
+For more information on how to authenticate with ACR, see the [ACR documentation](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli#az-acr-login-with---expose-token).
 
 <!-- tabs:end -->
 
