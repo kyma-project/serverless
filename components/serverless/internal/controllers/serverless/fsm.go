@@ -210,7 +210,17 @@ func stateFnGitCheckSources(ctx context.Context, r *reconciler, s *systemState) 
 		}
 
 		if err := r.client.Get(ctx, key, &secret); err != nil {
-			return nil, errors.Wrap(err, "while getting secret")
+			r.log.Error(err, " while getting secret")
+			var errMsg string
+			r.result, errMsg = NextRequeue(err)
+			condition := serverlessv1alpha2.Condition{
+				Type:               serverlessv1alpha2.ConditionConfigurationReady,
+				Status:             corev1.ConditionFalse,
+				LastTransitionTime: metav1.Now(),
+				Reason:             serverlessv1alpha2.ConditionReasonSourceUpdateFailed,
+				Message:            errMsg,
+			}
+			return buildStatusUpdateStateFnWithCondition(condition), nil
 		}
 
 		auth = &git.AuthOptions{
