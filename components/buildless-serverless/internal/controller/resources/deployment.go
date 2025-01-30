@@ -88,7 +88,6 @@ cd ..;`,
 			Env:          d.envs(),
 			VolumeMounts: d.volumeMounts(),
 			SecurityContext: &corev1.SecurityContext{
-				Privileged:             ptr.To[bool](true),
 				ReadOnlyRootFilesystem: ptr.To[bool](false),
 			},
 		},
@@ -307,8 +306,7 @@ cd ..;
 npm start;`
 	case serverlessv1alpha2.Python312:
 		if dependencies != "" {
-			return `while :; do sleep 2073600; done;
-python /kubeless.py;`
+			return `python /kubeless.py;`
 		}
 		return `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
 cd ..;
