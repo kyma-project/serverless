@@ -25,7 +25,7 @@ patches:
 commonLabels:
   kyma-project.io/module: serverless
   app.kubernetes.io/name: serverless
-  app.kubernetes.io/version: "1.6.7"
+  app.kubernetes.io/version: "1.6.8"
   app.kubernetes.io/part-of: serverless
   app.kubernetes.io/managed-by: kustomize
 # the following config is for teaching kustomize how to do kustomization for CRDs.
