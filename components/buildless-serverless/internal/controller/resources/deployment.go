@@ -29,27 +29,19 @@ func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig) *De
 }
 
 func (d *Deployment) construct() *appsv1.Deployment {
-	labels := map[string]string{
-		"app":                                d.name(),
-		serverlessv1alpha2.FunctionNameLabel: d.function.GetName(),
-		serverlessv1alpha2.FunctionManagedByLabel: serverlessv1alpha2.FunctionControllerValue,
-		serverlessv1alpha2.FunctionResourceLabel:  serverlessv1alpha2.FunctionResourceLabelDeploymentValue,
-		serverlessv1alpha2.FunctionUUIDLabel:      string(d.function.GetUID()),
-	}
-
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      d.name(),
 			Namespace: d.function.Namespace,
-			Labels:    labels,
+			Labels:    d.function.FunctionLabels(),
 		},
 		Spec: appsv1.DeploymentSpec{
 			Selector: &metav1.LabelSelector{
-				MatchLabels: labels,
+				MatchLabels: d.function.SelectorLabels(),
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels: labels,
+					Labels: d.function.PodLabels(),
 				},
 				Spec: d.podSpec(),
 			},
@@ -65,6 +57,10 @@ func (d *Deployment) RuntimeImage() string {
 
 func (d *Deployment) name() string {
 	return d.function.Name
+}
+
+func (d *Deployment) podRunAsUserUID() *int64 {
+	return ptr.To[int64](1000) // runAsUser 1000 is the most popular and standard value for non-root user
 }
 
 func (d *Deployment) podSpec() corev1.PodSpec {
@@ -88,6 +84,7 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 				Ports: []corev1.ContainerPort{
 					{
 						ContainerPort: 8080,
+						Protocol:      "TCP",
 					},
 				},
 				StartupProbe: &corev1.Probe{
@@ -124,6 +121,13 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 					FailureThreshold: 3,
 					PeriodSeconds:    5,
 					TimeoutSeconds:   4,
+				},
+				SecurityContext: &corev1.SecurityContext{
+					RunAsGroup: d.podRunAsUserUID(), // set to 1000 because default value is root(0)
+					RunAsUser:  d.podRunAsUserUID(),
+					SeccompProfile: &corev1.SeccompProfile{
+						Type: corev1.SeccompProfileTypeRuntimeDefault,
+					},
 				},
 			},
 		},

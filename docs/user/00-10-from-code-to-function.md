@@ -1,10 +1,10 @@
 # From Code to Function
 
-Pick the programming language for the Function and decide where you want to keep the source code. Serverless will create the workload out of it for you.
+Pick the programming language for the Function and decide where you want to keep the source code. The Serverless module uses it to create the workload.
 
-## Runtimes
+## Serverless Runtimes
 
-Functions support multiple languages by using the underlying execution environments known as runtimes. Currently, you can create both Node.js and Python Functions in Kyma.
+Functions support programming languages by using the underlying execution environments known as runtimes. You can create both Node.js and Python Functions in Kyma.
 
 > [!TIP]
 > See [sample Functions](technical-reference/07-10-sample-functions.md) for each available runtime.

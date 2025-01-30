@@ -1,5 +1,9 @@
 status:
   body:
+    - name: status.logLevel
+      source: status.logLevel
+    - name: status.logFormat
+      source: status.logFormat
     - name: Condition details
       widget: ConditionList
       source: status.conditions
@@ -23,10 +27,6 @@ body:
       source: status.defaultBuildJobPreset
     - name: Default Function Preset
       source: status.defaultRuntimePodPreset
-    - name: Log Level
-      source: status.logLevel
-    - name: Log Format
-      source: status.logFormat
   - widget: EventList
     filter: '$matchEvents($$, $root.kind, $root.metadata.name)'
     name: events

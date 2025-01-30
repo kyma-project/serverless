@@ -241,10 +241,10 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		// function conditions remain unchanged
 		require.Empty(t, m.State.Function.Status.Conditions)
 		// fsm stores the generated deployment for next states
-		require.NotNil(t, m.State.Deployment)
-		require.Contains(t, m.State.Deployment.Deployment.Spec.Template.Spec.Containers[0].Env,
+		require.NotNil(t, m.State.BuiltDeployment)
+		require.Contains(t, m.State.BuiltDeployment.Deployment.Spec.Template.Spec.Containers[0].Env,
 			corev1.EnvVar{Name: "FUNC_HANDLER_SOURCE", Value: "affectionate-mclean"})
-		require.Equal(t, "boring-bartik", m.State.Deployment.Deployment.Spec.Template.Spec.Containers[0].Image)
+		require.Equal(t, "boring-bartik", m.State.BuiltDeployment.Deployment.Spec.Template.Spec.Containers[0].Image)
 	})
 	t.Run("when deployment exists on kubernetes and we need changes should update it and go to the next state", func(t *testing.T) {
 		// Arrange

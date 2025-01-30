@@ -20,6 +20,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 )
 
 // Runtime specifies the name of the Function's runtime.
@@ -66,6 +67,12 @@ type FunctionSpec struct {
 
 	// Specifies Secrets to mount into the Function's container filesystem.
 	SecretMounts []SecretMount `json:"secretMounts,omitempty"`
+
+	// Defines labels used in Deployment's PodTemplate and applied on the Function's runtime Pod.
+	// +optional
+	// +kubebuilder:validation:XValidation:message="Labels has key starting with serverless.kyma-project.io/ which is not allowed",rule="!(self.exists(e, e.startsWith('serverless.kyma-project.io/')))"
+	// +kubebuilder:validation:XValidation:message="Label value cannot be longer than 63",rule="self.all(e, size(e)<64)"
+	Labels map[string]string `json:"labels,omitempty"`
 }
 
 type Source struct {
@@ -125,22 +132,40 @@ type SecretMount struct {
 
 // FunctionStatus defines the observed state of Function.
 type FunctionStatus struct {
+	// Specifies the **Runtime** type of the Function.
+	Runtime Runtime `json:"runtime,omitempty"`
 	// Specifies the image version used to build and run the Function's Pods.
 	RuntimeImage string `json:"runtimeImage,omitempty"`
+	// Specifies the total number of non-terminated Pods targeted by this Function.
+	Replicas int32 `json:"replicas,omitempty"`
+	// Specifies the Pod selector used to match Pods in the Function's Deployment.
+	PodSelector string `json:"podSelector,omitempty"`
+	// Specifies the preset used for the function
+	FunctionResourceProfile string `json:"functionResourceProfile,omitempty"`
 	// Specifies an array of conditions describing the status of the parser.
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
+
+	// TODO: add Commit field with github support
+	// Specifies the commit hash used to build the Function.
+	// Commit string `json:"commit,omitempty"`
+	// TODO: add Repository field with github support
+	// Specify the repository which was used to build the function.
+	// Repository `json:",inline,omitempty"`
+
 }
 
 type ConditionType string
 
 const (
-	ConditionRunning ConditionType = "Running"
+	ConditionRunning            ConditionType = "Running"
+	ConditionConfigurationReady ConditionType = "ConfigurationReady"
 )
 
 type ConditionReason string
 
 const (
-	ConditionReasonFunctionSpec            ConditionReason = "InvalidFunctionSpec"
+	ConditionReasonInvalidFunctionSpec     ConditionReason = "InvalidFunctionSpec"
+	ConditionReasonFunctionSpecValidated   ConditionReason = "FunctionSpecValidated"
 	ConditionReasonDeploymentCreated       ConditionReason = "DeploymentCreated"
 	ConditionReasonDeploymentUpdated       ConditionReason = "DeploymentUpdated"
 	ConditionReasonDeploymentFailed        ConditionReason = "DeploymentFailed"
@@ -191,8 +216,43 @@ func (f *Function) UpdateCondition(c ConditionType, s metav1.ConditionStatus, r 
 const (
 	FunctionNameLabel                    = "serverless.kyma-project.io/function-name"
 	FunctionManagedByLabel               = "serverless.kyma-project.io/managed-by"
-	FunctionControllerValue              = "buildless-function-controller"
+	FunctionControllerValue              = "function-controller"
 	FunctionUUIDLabel                    = "serverless.kyma-project.io/uuid"
 	FunctionResourceLabel                = "serverless.kyma-project.io/resource"
 	FunctionResourceLabelDeploymentValue = "deployment"
+	PodAppNameLabel                      = "app.kubernetes.io/name"
 )
+
+func (f *Function) internalFunctionLabels() map[string]string {
+	intLabels := make(map[string]string, 3)
+
+	intLabels[FunctionNameLabel] = f.GetName()
+	intLabels[FunctionManagedByLabel] = FunctionControllerValue
+	intLabels[FunctionUUIDLabel] = string(f.GetUID())
+
+	return intLabels
+}
+
+func (f *Function) FunctionLabels() map[string]string {
+	internalLabels := f.internalFunctionLabels()
+	functionLabels := f.GetLabels()
+
+	return labels.Merge(functionLabels, internalLabels)
+}
+
+func (f *Function) SelectorLabels() map[string]string {
+	return labels.Merge(
+		map[string]string{
+			FunctionResourceLabel: FunctionResourceLabelDeploymentValue,
+		},
+		f.internalFunctionLabels(),
+	)
+}
+
+func (f *Function) PodLabels() map[string]string {
+	result := f.SelectorLabels()
+	if f.Spec.Labels != nil {
+		result = labels.Merge(f.Spec.Labels, result)
+	}
+	return labels.Merge(result, map[string]string{PodAppNameLabel: f.GetName()})
+}

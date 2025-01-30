@@ -81,20 +81,34 @@ func TestDeployment_construct(t *testing.T) {
 	})
 	t.Run("create labels based on function", func(t *testing.T) {
 		d := minimalDeployment()
-		expectedLabels := map[string]string{
-			"app": "test-function-name",
-			"serverless.kyma-project.io/function-name": "test-function-name",
-			"serverless.kyma-project.io/managed-by":    "buildless-function-controller",
-			"serverless.kyma-project.io/resource":      "deployment",
-			"serverless.kyma-project.io/uuid":          "test-uid",
+		d.function.Spec.Labels = map[string]string{
+			"shtern": "stoic",
+			"boyd":   "vigilant",
 		}
 
 		r := d.construct()
 
 		require.NotNil(t, r)
-		require.Equal(t, expectedLabels, r.ObjectMeta.Labels)
-		require.Equal(t, expectedLabels, r.Spec.Selector.MatchLabels)
-		require.Equal(t, expectedLabels, r.Spec.Template.ObjectMeta.Labels)
+		require.Equal(t, map[string]string{
+			"serverless.kyma-project.io/function-name": "test-function-name",
+			"serverless.kyma-project.io/managed-by":    "function-controller",
+			"serverless.kyma-project.io/uuid":          "test-uid",
+		}, r.ObjectMeta.Labels)
+		require.Equal(t, map[string]string{
+			"serverless.kyma-project.io/function-name": "test-function-name",
+			"serverless.kyma-project.io/managed-by":    "function-controller",
+			"serverless.kyma-project.io/resource":      "deployment",
+			"serverless.kyma-project.io/uuid":          "test-uid",
+		}, r.Spec.Selector.MatchLabels)
+		require.Equal(t, map[string]string{
+			"serverless.kyma-project.io/function-name": "test-function-name",
+			"serverless.kyma-project.io/managed-by":    "function-controller",
+			"serverless.kyma-project.io/resource":      "deployment",
+			"serverless.kyma-project.io/uuid":          "test-uid",
+			"app.kubernetes.io/name":                   "test-function-name",
+			"shtern":                                   "stoic",
+			"boyd":                                     "vigilant",
+		}, r.Spec.Template.ObjectMeta.Labels)
 	})
 	t.Run("use container name from function", func(t *testing.T) {
 		d := minimalDeployment()

@@ -2,23 +2,25 @@
 
 ## Overview
 
-The Serverless module has its own operator (Serverless operator). It watches the Serverless custom resource (CR) and reconfigures (reconciles) the Serverless workloads.
+The Serverless module has its own operator (Serverless Operator). It watches the Serverless custom resource (CR) and reconfigures (reconciles) the Serverless workloads.
 
-The Serverless CR becomes an API to configure the Serverless module. You can use it to:
+The Serverless CR is an API to configure the Serverless module. You can use it to perform the following actions:
 
-- enable or disable the internal Docker registry
-- configure the external Docker registry
-- override endpoint for traces collected by the Serverless Functions
-- override endpoint for eventing
-- override the target CPU utilization percentage
-- override the Function requeue duration
-- override the Function build executor arguments
-- override the Function build max simultaneous jobs
-- override the healthz liveness timeout
-- override the Function request body limit
-- override the Function timeout
-- override the default build Job preset
-- override the default runtime Pod preset
+- Enable or disable the internal Docker registry
+- Configure the external Docker registry
+- Override endpoint for traces collected by the Serverless Functions
+- Override endpoint for Eventing
+- Override the target CPU utilization percentage
+- Override the Function requeue duration
+- Override the Function build executor arguments
+- Override the Function build max simultaneous jobs
+- Override the healthz liveness timeout
+- Override the Function request body limit
+- Override the Function timeout
+- Override the default build Job preset
+- Override the default runtime Pod preset
+- Override the default log level
+- Override the default log format
 
 The default configuration of the Serverless Module is following:
 
@@ -39,7 +41,8 @@ The default configuration of the Serverless Module is following:
 
 By default, Serverless uses PersistentVolume (PV) as the internal registry to store Docker images for Functions. The default storage size of a single volume is 20 GB. This internal registry is suitable for local development.
 
-If you use Serverless for production purposes, it is recommended that you use an external registry, such as Docker Hub, Artifact Registry, or Azure Container Registry (ACR).
+> [!ATTENTION]
+> If you use Serverless for production purposes, it is recommended that you use an external registry, such as Docker Hub, Artifact Registry, or Azure Container Registry (ACR).
 
 Follow these steps to use the external Docker registry in Serverless:
 
@@ -54,51 +57,51 @@ Follow these steps to use the external Docker registry in Serverless:
        --from-literal=registryAddress={REGISTRY_URL}
    ```
 
-> [!TIP]
-> In case of DockerHub, usually the Docker registry address is the same as the account name.
+   > [!TIP]
+   > In case of DockerHub, usually the Docker registry address is the same as the account name.
 
-Examples:
+   Examples:
 
-<!-- tabs:start -->
+   <!-- tabs:start -->
 
-### **Docker Hub**
+   ### **Docker Hub**
 
-   ```bash
-   kubectl create secret generic my-registry-config \
-      --namespace kyma-system \
-      --from-literal=username={USERNAME} \
-      --from-literal=password={PASSWORD} \
-      --from-literal=serverAddress=https://index.docker.io/v1/ \
-      --from-literal=registryAddress={USERNAME}
-   ```
+      ```bash
+      kubectl create secret generic my-registry-config \
+         --namespace kyma-system \
+         --from-literal=username={USERNAME} \
+         --from-literal=password={PASSWORD} \
+         --from-literal=serverAddress=https://index.docker.io/v1/ \
+         --from-literal=registryAddress={USERNAME}
+      ```
 
-### **Artifact Registry**
+   ### **Artifact Registry**
 
-To learn how to set up authentication for Docker with Artifact Registry, visit the [Artifact Registry documentation](https://cloud.google.com/artifact-registry/docs/docker/authentication#json-key).
+      ```bash
+      kubectl create secret generic my-registry-config \
+          --namespace kyma-system \
+          --from-literal=username=_json_key \
+          --from-literal=password={GCR_KEY_JSON} \
+          --from-literal=serverAddress=gcr.io \
+          --from-literal=registryAddress=gcr.io/{YOUR_GCR_PROJECT}
+      ```
 
-   ```bash
-   kubectl create secret generic my-registry-config \
-       --namespace kyma-system \
-       --from-literal=username=_json_key \
-       --from-literal=password={GCR_KEY_JSON} \
-       --from-literal=serverAddress=gcr.io \
-       --from-literal=registryAddress=gcr.io/{YOUR_GCR_PROJECT}
-   ```
+   For more information on how to set up authentication for Docker with Artifact Registry, see the [Artifact Registry documentation](https://cloud.google.com/artifact-registry/docs/docker/authentication#json-key).
 
-### **ACR**
+   ### **ACR**
 
-To learn how to authenticate with ACR, visit the [ACR documentation](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli#az-acr-login-with---expose-token).
+      ```bash
+      kubectl create secret generic my-registry-config \
+          --namespace kyma-system \
+          --from-literal=username=00000000-0000-0000-0000-000000000000 \
+          --from-literal=password={ACR_TOKEN} \
+          --from-literal=serverAddress={AZ_REGISTRY_NAME}.azurecr.io \
+          --from-literal=registryAddress={AZ_REGISTRY_NAME}.azurecr.io
+      ```
 
-   ```bash
-   kubectl create secret generic my-registry-config \
-       --namespace kyma-system \
-       --from-literal=username=00000000-0000-0000-0000-000000000000 \
-       --from-literal=password={ACR_TOKEN} \
-       --from-literal=serverAddress={AZ_REGISTRY_NAME}.azurecr.io \
-       --from-literal=registryAddress={AZ_REGISTRY_NAME}.azurecr.io
-   ```
+   For more information on how to authenticate with ACR, see the [ACR documentation](https://learn.microsoft.com/en-us/azure/container-registry/container-registry-authentication?tabs=azure-cli#az-acr-login-with---expose-token).
 
-<!-- tabs:end -->
+   <!-- tabs:end -->
 
 2. Reference the Secret in the Serverless CR:
 
@@ -125,7 +128,7 @@ The currently used trace endpoint is visible in the Serverless CR status.
 
 ## Configure Eventing Endpoint
 
-You can configure a custom eventing endpoint, so when you use SDK for sending events from your Functions, it is used to publish events.
+You can configure a custom Eventing endpoint to publish events sent from your Functions.
 The currently used trace endpoint is visible in the Serverless CR status.
 By default `http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish` is used.
 
@@ -165,8 +168,8 @@ Use this label to choose the [arguments](https://github.com/GoogleContainerTools
 - `--skip-unused-stages` - executor skips any stages that aren't used for the current execution
 - `--log-format=text` - executor uses logs in a given format
 - `--cache=true` - enables caching for the executor
-- `--compressed-caching=false` - Prevents tar compression for cached layers. This will increase the runtime of the build, but decrease the memory usage especially for large builds.
-- `--use-new-run` - Improves performance by avoiding the full filesystem snapshots.
+- `--compressed-caching=false` - prevents tar compression for cached layers. This will increase the runtime of the build, but decrease the memory usage especially for large builds.
+- `--use-new-run` - improves performance by avoiding the full filesystem snapshots.
 
 ```yaml
    spec:
@@ -216,4 +219,24 @@ You can configure the default runtime Pod preset to be used.
 ```yaml
    spec:
       defaultRuntimePodPreset: "M"
+```
+
+For more information on presets, see [Available Presets](https://kyma-project.io/#/serverless-manager/user/technical-reference/07-80-available-presets).
+
+## Configure the Log Level
+
+You can configure the desired log level to be used.
+
+```yaml
+   spec:
+      logLevel: "debug"
+```
+
+## Configure the Log Format
+
+You can configure the desired log format to be used.
+
+```yaml
+   spec:
+      logFormat: "yaml"
 ```
