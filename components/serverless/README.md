@@ -180,7 +180,7 @@ To resolve the issue, use the `-ldflags` option with the `-r` flag set to `/usr/
 
 Example usage:
 
-`go build -ldflags "-s -w -r=/usr/local/lib" -a -o manager ./components/serverless/cmd/manager/main.go`
+`go build -ldflags "-r=/usr/local/lib" -a -o manager ./components/serverless/cmd/manager/main.go`
 
 
 
