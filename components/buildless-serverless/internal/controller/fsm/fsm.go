@@ -6,6 +6,7 @@ import (
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
 	"github.com/kyma-project/serverless/internal/controller/resources"
+	appsv1 "k8s.io/api/apps/v1"
 	"reflect"
 	"runtime"
 	"strings"
@@ -19,9 +20,10 @@ import (
 type StateFn func(context.Context, *StateMachine) (StateFn, *ctrl.Result, error)
 
 type SystemState struct {
-	Function       serverlessv1alpha2.Function
-	statusSnapshot serverlessv1alpha2.FunctionStatus
-	Deployment     *resources.Deployment
+	Function          serverlessv1alpha2.Function
+	statusSnapshot    serverlessv1alpha2.FunctionStatus
+	BuiltDeployment   *resources.Deployment
+	ClusterDeployment *appsv1.Deployment
 }
 
 func (s *SystemState) saveStatusSnapshot() {

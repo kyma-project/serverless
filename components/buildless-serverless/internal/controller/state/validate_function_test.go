@@ -31,8 +31,12 @@ func Test_sFnValidateFunction(t *testing.T) {
 		// with expected next state
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnHandleDeployment, next)
-		// function conditions remain unchanged
-		require.Empty(t, m.State.Function.Status.Conditions)
+		// function has proper condition
+		requireContainsCondition(t, m.State.Function.Status,
+			serverlessv1alpha2.ConditionConfigurationReady,
+			metav1.ConditionTrue,
+			serverlessv1alpha2.ConditionReasonFunctionSpecValidated,
+			"function spec validated")
 	})
 	t.Run("when function is invalid should stop processing", func(t *testing.T) {
 		// Arrange
@@ -58,9 +62,9 @@ func Test_sFnValidateFunction(t *testing.T) {
 		require.Nil(t, next)
 		// function has proper condition
 		requireContainsCondition(t, m.State.Function.Status,
-			serverlessv1alpha2.ConditionRunning,
+			serverlessv1alpha2.ConditionConfigurationReady,
 			metav1.ConditionFalse,
-			serverlessv1alpha2.ConditionReasonFunctionSpec,
+			serverlessv1alpha2.ConditionReasonInvalidFunctionSpec,
 			"invalid runtime value: cannot find runtime: gracious-bardeen")
 	})
 }
