@@ -71,11 +71,37 @@ func (d *Deployment) podRunAsUserUID() *int64 {
 	return ptr.To[int64](1000) // runAsUser 1000 is the most popular and standard value for non-root user
 }
 
+func (d *Deployment) initContainers() []corev1.Container {
+	return []corev1.Container{
+		{
+			Name:       "init-install-dependencies",
+			Image:      d.runtimeImage(),
+			WorkingDir: d.workingSourcesDir(),
+			Command: []string{
+				"sh",
+				"-c",
+				`printf "${FUNC_HANDLER_SOURCE}" > handler.py;
+printf "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install -t /usr/local/lib/python3.12/site-packages --no-cache-dir -r /kubeless/requirements.txt;
+cd ..;`,
+			},
+			Env:          d.envs(),
+			VolumeMounts: d.volumeMounts(),
+			SecurityContext: &corev1.SecurityContext{
+				Privileged:             ptr.To[bool](true),
+				ReadOnlyRootFilesystem: ptr.To[bool](false),
+			},
+		},
+	}
+}
+
 func (d *Deployment) podSpec() corev1.PodSpec {
 	secretVolumes, secretVolumeMounts := d.deploymentSecretVolumes()
+	defaultProcMount := corev1.DefaultProcMount
 
 	return corev1.PodSpec{
-		Volumes: append(d.volumes(), secretVolumes...),
+		Volumes:        append(d.volumes(), secretVolumes...),
+		InitContainers: d.initContainers(),
 		Containers: []corev1.Container{
 			{
 				Name:       d.name(),
@@ -131,12 +157,22 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 					TimeoutSeconds:   4,
 				},
 				SecurityContext: &corev1.SecurityContext{
-					RunAsGroup: d.podRunAsUserUID(), // set to 1000 because default value is root(0)
-					RunAsUser:  d.podRunAsUserUID(),
-					SeccompProfile: &corev1.SeccompProfile{
-						Type: corev1.SeccompProfileTypeRuntimeDefault,
+					Privileged: ptr.To[bool](false),
+					Capabilities: &corev1.Capabilities{
+						Drop: []corev1.Capability{
+							"ALL",
+						},
 					},
+					ProcMount:              &defaultProcMount,
+					ReadOnlyRootFilesystem: ptr.To[bool](true),
 				},
+			},
+		},
+		SecurityContext: &corev1.PodSecurityContext{
+			RunAsUser:  d.podRunAsUserUID(),
+			RunAsGroup: d.podRunAsUserUID(),
+			SeccompProfile: &corev1.SeccompProfile{
+				Type: corev1.SeccompProfileTypeRuntimeDefault,
 			},
 		},
 	}
@@ -157,6 +193,12 @@ func (d *Deployment) volumes() []corev1.Volume {
 		{
 			// used for writing sources (code&deps) to the sources dir
 			Name: "sources",
+			VolumeSource: corev1.VolumeSource{
+				EmptyDir: &corev1.EmptyDirVolumeSource{},
+			},
+		},
+		{
+			Name: "tmp",
 			VolumeSource: corev1.VolumeSource{
 				EmptyDir: &corev1.EmptyDirVolumeSource{},
 			},
@@ -189,6 +231,10 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 		{
 			Name:      "sources",
 			MountPath: d.workingSourcesDir(),
+		},
+		{
+			Name:      "tmp",
+			MountPath: "/tmp",
 		},
 	}
 	if runtime == serverlessv1alpha2.NodeJs20 || runtime == serverlessv1alpha2.NodeJs22 {
@@ -250,7 +296,6 @@ func (d *Deployment) runtimeCommand() string {
 	switch spec.Runtime {
 	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
 		if dependencies != "" {
-			// if deps are not empty use pip
 			return `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
 printf "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
 npm install --prefer-offline --no-audit --progress=false;
@@ -262,11 +307,7 @@ cd ..;
 npm start;`
 	case serverlessv1alpha2.Python312:
 		if dependencies != "" {
-			// if deps are not empty use npm
-			return `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
-printf "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
-cd ..;
+			return `while :; do sleep 2073600; done;
 python /kubeless.py;`
 		}
 		return `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
@@ -280,6 +321,10 @@ python /kubeless.py;`
 func (d *Deployment) envs() []corev1.EnvVar {
 	spec := &d.function.Spec
 	envs := []corev1.EnvVar{
+		{
+			Name:  "SERVICE_NAMESPACE",
+			Value: d.function.Namespace,
+		},
 		{
 			Name:  "FUNC_HANDLER_SOURCE",
 			Value: spec.Source.Inline.Source,
