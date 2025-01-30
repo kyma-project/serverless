@@ -14,6 +14,7 @@ type FlagsBuilder interface {
 	WithRegistryCredentials(username string, password string) *flagsBuilder
 	WithRegistryEnableInternal(enableInternal bool) *flagsBuilder
 	WithRegistryHttpSecret(httpSecret string) *flagsBuilder
+	WithManagedByLabel(string) *flagsBuilder
 	WithNodePort(nodePort int64) *flagsBuilder
 	WithLogLevel(logLevel string) *flagsBuilder
 	WithLogFormat(logFormat string) *flagsBuilder
@@ -32,10 +33,39 @@ func NewFlagsBuilder() FlagsBuilder {
 func (fb *flagsBuilder) Build() map[string]interface{} {
 	flags := map[string]interface{}{}
 	for key, value := range fb.flags {
-		flagPath := strings.Split(key, ".")
+		flagPath := strings.FieldsFunc(key, fieldsFuncWithExtrudes(key))
+		flagPath = removeExcludesFromFlagPath(flagPath)
 		appendFlag(flags, flagPath, value)
 	}
 	return flags
+}
+
+func fieldsFuncWithExtrudes(flag string) func(rune) bool {
+	index := 0
+	return func(r rune) bool {
+		split := shouldBeSplit(flag, index, r)
+
+		// increase index to know on which rune we are right now
+		index++
+
+		// return false if
+		return split
+	}
+}
+
+func shouldBeSplit(flag string, index int, r rune) bool {
+	if r != '.' {
+		return false
+	}
+
+	return index > 0 && flag[index-1] != '\\'
+}
+
+func removeExcludesFromFlagPath(flagPath []string) []string {
+	for i := range flagPath {
+		flagPath[i] = strings.ReplaceAll(flagPath[i], "\\", "")
+	}
+	return flagPath
 }
 
 func appendFlag(flags map[string]interface{}, flagPath []string, value interface{}) {
@@ -126,6 +156,11 @@ func (fb *flagsBuilder) WithDefaultPresetFlags(defaultBuildJobPreset, defaultRun
 		fb.flags["containers.manager.configuration.data.resourcesConfiguration.buildJob.resources.defaultPreset"] = defaultBuildJobPreset
 	}
 
+	return fb
+}
+
+func (fb *flagsBuilder) WithManagedByLabel(managedBy string) *flagsBuilder {
+	fb.flags["global.commonLabels.app\\.kubernetes\\.io/managed-by"] = managedBy
 	return fb
 }
 

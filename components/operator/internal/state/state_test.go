@@ -53,7 +53,13 @@ func fixManifestCache(manifest string) chart.ManifestCache {
 	_ = cache.Set(context.Background(), types.NamespacedName{
 		Name:      testInstalledServerless.GetName(),
 		Namespace: testInstalledServerless.GetNamespace(),
-	}, chart.ServerlessSpecManifest{Manifest: manifest, CustomFlags: map[string]interface{}{}})
+	}, chart.ServerlessSpecManifest{Manifest: manifest, CustomFlags: map[string]interface{}{
+		"global": map[string]interface{}{
+			"commonLabels": map[string]interface{}{
+				"app.kubernetes.io/managed-by": "serverless-operator",
+			},
+		},
+	}})
 
 	return cache
 }

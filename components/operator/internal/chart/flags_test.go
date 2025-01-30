@@ -59,6 +59,9 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				"username":        "testUsername",
 			},
 			"global": map[string]interface{}{
+				"commonLabels": map[string]interface{}{
+					"app.kubernetes.io/managed-by": "test-runner",
+				},
 				"registryNodePort": int64(1234),
 			},
 		}
@@ -79,7 +82,8 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				"testHealthzLivenessTimeout",
 			).
 			WithLogFormat("testLogFormat").
-			WithLogLevel("testLogLevel").Build()
+			WithLogLevel("testLogLevel").
+			WithManagedByLabel("test-runner").Build()
 
 		require.Equal(t, expectedFlags, flags)
 	})
