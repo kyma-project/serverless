@@ -161,3 +161,26 @@ The Docker engine uses Rosetta for virtualization, which causes issues on M1 Mac
 ### Remedy
 
 Disable the `Use Rosetta for x86/amd64 emulation on Apple Silicon` option in the Docker Desktop general settings.
+
+### Symptom
+
+The Serverless build fails, with the following error message:
+```
+dyld[18077]: Library not loaded: @rpath/libgit2.1.5.dylib
+  Referenced from: <EE8B6DDF-D4F5-31D6-D722-3406DEBA716B> /Users/I758687/Library/Caches/JetBrains/GoLand2024.3/tmp/GoLand/___go_build_github_com_kyma_project_serverless_components_serverless_cmd_manager
+  Reason: no LC_RPATH's found
+```
+
+### Cause
+
+In the 2023 release notes for Xcode, Apple mentioned that the linker was rewritten, which could be the root cause of the issue. If you are experiencing similar symptoms, this discussion may be helpful: `https://forums.developer.apple.com/forums/thread/737920#766944022`
+
+### Remedy
+To resolve the issue, use the `-ldflags` option with the `-r` flag set to `/usr/local/lib` when building Serverless.
+
+Example usage:
+
+`go build -ldflags "-r=/usr/local/lib" -a -o manager ./components/serverless/cmd/manager/main.go`
+
+
+
