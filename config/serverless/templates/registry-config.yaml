@@ -12,6 +12,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     serverless.kyma-project.io/config: credentials
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
 data:
   username: "{{ $username | b64enc }}"
   password: "{{ $password | b64enc }}"
