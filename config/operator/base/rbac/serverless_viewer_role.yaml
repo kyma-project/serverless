@@ -9,6 +9,7 @@ metadata:
     app.kubernetes.io/created-by: serverless-operator
     app.kubernetes.io/part-of: serverless-operator
     app.kubernetes.io/managed-by: kustomize
+    kyma-project.io/module: serverless
   name: operator-viewer-role
 rules:
 - apiGroups:

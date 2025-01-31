@@ -9,6 +9,12 @@ configMapGenerator:
   options:
     disableNameSuffixHash: true
     labels:
-      app.kubernetes.io/name: serverlesses.operator.kyma-project.io
       busola.io/extension: resource
       busola.io/extension-version: "0.5"
+      app.kubernetes.io/component: busola
+      app.kubernetes.io/instance: busola-serverless
+      app.kubernetes.io/managed-by: kustomize
+      app.kubernetes.io/name: serverless-operator
+      app.kubernetes.io/part-of: serverless-operator
+      app.kubernetes.io/version: main
+      kyma-project.io/module: serverless
