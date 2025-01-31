@@ -10,8 +10,11 @@ namePrefix: serverless-
 
 # Labels to add to all resources and selectors.
 commonLabels:
-  app.kubernetes.io/component: serverless-operator.kyma-project.io
-
+  app.kubernetes.io/managed-by: kustomize
+  app.kubernetes.io/name: serverless-operator
+  app.kubernetes.io/part-of: serverless-operator
+  app.kubernetes.io/version: main
+  kyma-project.io/module: serverless
 
 resources:
 - ./crd

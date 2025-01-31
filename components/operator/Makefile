@@ -9,6 +9,9 @@ include ${PROJECT_ROOT}/hack/help.mk
 # Image URL to use all building/pushing image targets
 IMG ?= europe-docker.pkg.dev/kyma-project/prod/serverless-operator:main
 
+# Module Version used to set common labels for all operator resources
+MODULE_VERSION ?= local
+
 # Setting SHELL to bash allows bash commands to be executed by recipes.
 # Options are set to exit when a recipe line exits non-zero or a piped command fails.
 SHELL = /usr/bin/env bash -o pipefail
@@ -124,7 +127,7 @@ undeploy: ## Undeploy operator from the K8s cluster specified in ~/.kube/config.
 
 .PHONY: render-manifest
 render-manifest: manifests kustomize ## Render serverless-operator.yaml manifest with image from IMG env.
-	cd $(CONFIG_OPERATOR)/deployment && $(KUSTOMIZE) edit set image controller=${IMG}
+	cd $(CONFIG_OPERATOR)/deployment && $(KUSTOMIZE) edit set image controller=${IMG} && $(KUSTOMIZE) edit add label app.kubernetes.io/version:$(MODULE_VERSION) --force
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/serverless-operator.yaml
 
 
