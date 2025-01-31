@@ -106,6 +106,14 @@ spec:
                 description: Sets the timeout for the Function health check. The default
                   value in seconds is `10`
                 type: string
+              logFormat:
+                description: Sets desired log format to be used. The default value
+                  is "json"
+                type: string
+              logLevel:
+                description: Sets desired log level to be used. The default value
+                  is "info"
+                type: string
               targetCPUUtilizationPercentage:
                 description: |-
                   Deprecated: Sets a custom CPU utilization threshold for scaling Function Pods
@@ -119,12 +127,6 @@ spec:
                 required:
                 - endpoint
                 type: object
-              logFormat:
-                description: Sets desired log format to be used. The default value is "json"
-                type: string
-              logLevel:
-                description: Sets desired log level to be used. The default value is "info"
-                type: string
             type: object
           status:
             properties:
