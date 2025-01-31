@@ -33,7 +33,7 @@ uploadFile() {
 }
 
 echo "IMG: ${IMG}"
-IMG=${IMG} make -C components/operator/ render-manifest
+IMG=${IMG} MODULE_VERSION=${PULL_BASE_REF} make -C components/operator/ render-manifest
 
 echo "Generated serverless-operator.yaml:"
 cat serverless-operator.yaml
