@@ -34,7 +34,7 @@ func (fb *flagsBuilder) Build() map[string]interface{} {
 	flags := map[string]interface{}{}
 	for key, value := range fb.flags {
 		flagPath := strings.FieldsFunc(key, fieldsFuncWithExtrudes(key))
-		flagPath = removeExcludesFromFlagPath(flagPath)
+		flagPath = removeEscapesFromFlagPath(flagPath)
 		appendFlag(flags, flagPath, value)
 	}
 	return flags
@@ -60,7 +60,7 @@ func shouldBeSplit(flag string, index int, r rune) bool {
 	return index > 0 && flag[index-1] != '\\'
 }
 
-func removeExcludesFromFlagPath(flagPath []string) []string {
+func removeEscapesFromFlagPath(flagPath []string) []string {
 	for i := range flagPath {
 		flagPath[i] = strings.ReplaceAll(flagPath[i], "\\", "")
 	}
