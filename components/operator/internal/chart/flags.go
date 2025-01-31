@@ -48,7 +48,6 @@ func fieldsFuncWithExtrudes(flag string) func(rune) bool {
 		// increase index to know on which rune we are right now
 		index++
 
-		// return false if
 		return split
 	}
 }
