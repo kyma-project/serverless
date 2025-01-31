@@ -80,10 +80,7 @@ func (d *Deployment) initContainers() []corev1.Container {
 			Command: []string{
 				"sh",
 				"-c",
-				`printf "${FUNC_HANDLER_SOURCE}" > handler.py;
-printf "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install -t /usr/local/lib/python3.12/site-packages --no-cache-dir -r /kubeless/requirements.txt;
-cd ..;`,
+				d.podInitRuntimeCommand(),
 			},
 			Env:          d.envs(),
 			VolumeMounts: d.volumeMounts(),
@@ -289,7 +286,7 @@ func (d *Deployment) workingSourcesDir() string {
 	}
 }
 
-func (d *Deployment) runtimeCommand() string {
+func (d *Deployment) podInitRuntimeCommand() string {
 	spec := &d.function.Spec
 	dependencies := spec.Source.Inline.Dependencies
 	switch spec.Runtime {
@@ -298,7 +295,29 @@ func (d *Deployment) runtimeCommand() string {
 			return `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
 printf "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
 npm install --prefer-offline --no-audit --progress=false;
-cd ..;
+cd ..;`
+		}
+		return ""
+	case serverlessv1alpha2.Python312:
+		if dependencies != "" {
+			return `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
+printf "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install -t /usr/local/lib/python3.12/site-packages --no-cache-dir -r /kubeless/requirements.txt;
+cd ..;`
+		}
+		return ""
+	default:
+		return ""
+	}
+}
+
+func (d *Deployment) runtimeCommand() string {
+	spec := &d.function.Spec
+	dependencies := spec.Source.Inline.Dependencies
+	switch spec.Runtime {
+	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
+		if dependencies != "" {
+			return `while :; do sleep 2073600; done;
 npm start;`
 		}
 		return `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
@@ -306,7 +325,8 @@ cd ..;
 npm start;`
 	case serverlessv1alpha2.Python312:
 		if dependencies != "" {
-			return `python /kubeless.py;`
+			return `while :; do sleep 2073600; done;
+python /kubeless.py;`
 		}
 		return `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
 cd ..;
