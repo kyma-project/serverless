@@ -8,3 +8,37 @@ resources:
 - role.yaml
 - role_binding.yaml
 
+patches:
+  - patch: |
+      - op: add
+        path: "/metadata/labels"
+        value: 
+          app.kubernetes.io/component: serverless-rbac
+          app.kubernetes.io/instance: serverless-operator-clusterrole
+    target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: ClusterRole
+      name: operator-role
+  - patch: |
+      - op: add
+        path: "/metadata/labels"
+        value: 
+          app.kubernetes.io/component: serverless-rbac
+          app.kubernetes.io/instance: serverless-operator-clusterrolebinding
+    target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: ClusterRoleBinding
+      name: operator-rolebinding
+  - patch: |
+      - op: add
+        path: "/metadata/labels"
+        value: 
+          app.kubernetes.io/component: serverless-rbac
+          app.kubernetes.io/instance: serverless-operator-sa
+    target:
+      group: ""
+      version: v1
+      kind: ServiceAccount
+      name: operator

@@ -21,10 +21,3 @@ patches:
       version: v1
       kind: CustomResourceDefinition
       name: functions.serverless.kyma-project.io
-
-commonLabels:
-  kyma-project.io/module: serverless
-  app.kubernetes.io/name: serverless-operator
-  app.kubernetes.io/version: "main"
-  app.kubernetes.io/part-of: serverless-operator
-  app.kubernetes.io/managed-by: kustomize
