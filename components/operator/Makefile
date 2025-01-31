@@ -127,7 +127,8 @@ undeploy: ## Undeploy operator from the K8s cluster specified in ~/.kube/config.
 
 .PHONY: render-manifest
 render-manifest: manifests kustomize ## Render serverless-operator.yaml manifest with image from IMG env.
-	cd $(CONFIG_OPERATOR)/deployment && $(KUSTOMIZE) edit set image controller=${IMG} && $(KUSTOMIZE) edit add label app.kubernetes.io/version:$(MODULE_VERSION) --force
+	cd $(CONFIG_OPERATOR) && $(KUSTOMIZE) edit add label app.kubernetes.io/version:$(MODULE_VERSION) --force
+	cd $(CONFIG_OPERATOR)/deployment && $(KUSTOMIZE) edit set image controller=${IMG}
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/serverless-operator.yaml
 
 
