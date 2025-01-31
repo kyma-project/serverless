@@ -5,12 +5,13 @@ metadata:
   namespace: system
   labels:
     control-plane: operator
-    app.kubernetes.io/name: deployment
+    app.kubernetes.io/component: serverless-operator
     app.kubernetes.io/instance: serverless-operator
-    app.kubernetes.io/component: operator
-    app.kubernetes.io/created-by: serverless-operator
-    app.kubernetes.io/part-of: serverless-operator
     app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: serverless-operator
+    app.kubernetes.io/part-of: serverless-operator
+    app.kubernetes.io/version: main
+    kyma-project.io/module: serverless
 spec:
   selector:
     matchLabels:
