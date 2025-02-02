@@ -6,10 +6,8 @@ metadata:
   name: {{ template "docker-registry.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ template "docker-registry.fullname" . }}
-    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
 spec:
   accessModes:
     - {{ .Values.persistence.accessMode | quote }}
