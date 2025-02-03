@@ -218,4 +218,40 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 			serverlessv1alpha2.ConditionReasonDeploymentFailed,
 			expectedMsg)
 	})
+	t.Run("when deployment not exists should requeue", func(t *testing.T) {
+		// Arrange
+		// scheme and fake client without deployment
+		scheme := runtime.NewScheme()
+		require.NoError(t, serverlessv1alpha2.AddToScheme(scheme))
+		require.NoError(t, appsv1.AddToScheme(scheme))
+		k8sClient := fake.NewClientBuilder().WithScheme(scheme).Build()
+		// machine with our function
+		m := fsm.StateMachine{
+			State: fsm.SystemState{
+				BuiltDeployment: &resources.Deployment{
+					Deployment: &appsv1.Deployment{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:      "adoring-driscoll-name",
+							Namespace: "hardcore-yonath-ns"}}},
+				Function: serverlessv1alpha2.Function{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      "adoring-driscoll-name",
+						Namespace: "hardcore-yonath-ns"}}},
+			Log:    zap.NewNop().Sugar(),
+			Client: k8sClient,
+			Scheme: scheme}
+
+		// Act
+		next, result, err := sFnDeploymentStatus(context.Background(), &m)
+
+		// Assert
+		// we expect error
+		require.NotNil(t, err)
+		require.EqualError(t, err, "while getting deployments: deployments.apps \"adoring-driscoll-name\" not found")
+		// we expect stop and requeue
+		require.NotNil(t, result)
+		require.Equal(t, ctrl.Result{RequeueAfter: defaultRequeueTime}, *result)
+		// no next state (we will stop)
+		require.Nil(t, next)
+	})
 }

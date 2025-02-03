@@ -1,6 +1,7 @@
 package state
 
 import (
+	"context"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
 	"github.com/kyma-project/serverless/internal/controller/fsm"
@@ -43,7 +44,7 @@ func Test_sFnAdjustStatus(t *testing.T) {
 		}
 
 		// Act
-		next, result, err := sFnAdjustStatus(nil, &m)
+		next, result, err := sFnAdjustStatus(context.Background(), &m)
 
 		// Assert
 		// no errors

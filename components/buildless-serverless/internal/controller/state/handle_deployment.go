@@ -66,7 +66,15 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine, deployment *apps
 
 	// Set the ownerRef for the Deployment, ensuring that the Deployment
 	// will be deleted when the Function CR is deleted.
-	controllerutil.SetControllerReference(&m.State.Function, deployment, m.Scheme)
+	if err := controllerutil.SetControllerReference(&m.State.Function, deployment, m.Scheme); err != nil {
+		m.Log.Error(err, "failed to set controller reference for new Deployment", "Deployment.Namespace", deployment.GetNamespace(), "Deployment.Name", deployment.GetName())
+		m.State.Function.UpdateCondition(
+			serverlessv1alpha2.ConditionRunning,
+			metav1.ConditionFalse,
+			serverlessv1alpha2.ConditionReasonDeploymentFailed,
+			fmt.Sprintf("Deployment %s create failed: %s", deployment.GetName(), err.Error()))
+		return nil, err
+	}
 
 	if err := m.Client.Create(ctx, deployment); err != nil {
 		m.Log.Error(err, "failed to create new Deployment", "Deployment.Namespace", deployment.GetNamespace(), "Deployment.Name", deployment.GetName())
@@ -100,7 +108,7 @@ func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterD
 
 func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 	if len(a.Spec.Template.Spec.Containers) != 1 ||
-		len(a.Spec.Template.Spec.Containers) != 1 {
+		len(b.Spec.Template.Spec.Containers) != 1 {
 		return true
 	}
 	aSpec := a.Spec.Template.Spec.Containers[0]
