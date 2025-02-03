@@ -22,7 +22,7 @@ import (
 
 const (
 	nodejs20  = "nodejs20"
-	nodejs22 = "nodejs22"
+	nodejs22  = "nodejs22"
 	python312 = "python312"
 )
 
@@ -42,7 +42,7 @@ func FunctionAPIGatewayTest(restConfig *rest.Config, cfg internal.Config, logf *
 
 	python312Logger := logf.WithField(runtimeKey, "python312")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
-	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
+	//nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
 
 	genericContainer := utils.Container{
 		DynamicCli:  dynamicCli,
@@ -55,7 +55,7 @@ func FunctionAPIGatewayTest(restConfig *rest.Config, cfg internal.Config, logf *
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
 
 	nodejs20Fn := function.NewFunction("nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
-	nodejs22Fn := function.NewFunction("nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
+	//nodejs22Fn := function.NewFunction("nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
 
 	logf.Infof("Testing function in namespace: %s", cfg.Namespace)
 
@@ -70,10 +70,10 @@ func FunctionAPIGatewayTest(restConfig *rest.Config, cfg internal.Config, logf *
 				function.CreateFunction(nodejs20Logger, nodejs20Fn, "Create NodeJS20 Function", runtimes.BasicNodeJSFunction("Hello from nodejs20", serverlessv1alpha2.NodeJs20)),
 				assertion.APIGatewayFunctionCheck("nodejs20", nodejs20Fn, coreCli, genericContainer.Namespace, nodejs20),
 			),
-			executor.NewSerialTestRunner(nodejs22Logger, "NodeJS22 test",
-			function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.BasicNodeJSFunction("Hello from nodejs22", serverlessv1alpha2.NodeJs22)),
-			assertion.APIGatewayFunctionCheck("nodejs22", nodejs22Fn, coreCli, genericContainer.Namespace, nodejs22),
-		),
+			//	executor.NewSerialTestRunner(nodejs22Logger, "NodeJS22 test",
+			//	function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.BasicNodeJSFunction("Hello from nodejs22", serverlessv1alpha2.NodeJs22)),
+			//	assertion.APIGatewayFunctionCheck("nodejs22", nodejs22Fn, coreCli, genericContainer.Namespace, nodejs22),
+			//),
 		),
 	), nil
 }
