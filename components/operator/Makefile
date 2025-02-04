@@ -121,7 +121,7 @@ undeploy: ## Undeploy operator from the K8s cluster specified in ~/.kube/config.
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
 
 .PHONY: render-manifest
-render-manifest: manifests kustomize ## Render serverless-operator.yaml manifest.
+render-manifest: kustomize ## Render serverless-operator.yaml manifest.
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/serverless-operator.yaml
 
 .PHONY: apply-default-serverless-cr
