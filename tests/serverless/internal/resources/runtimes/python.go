@@ -36,11 +36,6 @@ arrow==0.15.8`
 }
 
 func BasicTracingPythonFunction(runtime serverlessv1alpha2.Runtime, externalURL string) serverlessv1alpha2.FunctionSpec {
-
-	dpd := `opentelemetry-instrumentation==0.43b0
-opentelemetry-instrumentation-requests==0.43b0
-requests>=2.31.0`
-
 	src := fmt.Sprintf(`import json
 
 import requests
@@ -65,8 +60,7 @@ def main(event, context):
 		Runtime: runtime,
 		Source: serverlessv1alpha2.Source{
 			Inline: &serverlessv1alpha2.InlineSource{
-				Source:       src,
-				Dependencies: dpd,
+				Source: src,
 			},
 		},
 	}
