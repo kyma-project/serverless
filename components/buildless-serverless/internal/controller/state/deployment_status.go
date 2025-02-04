@@ -22,11 +22,13 @@ const (
 func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	deploymentName := m.State.BuiltDeployment.GetName()
 	deployment := appsv1.Deployment{}
-	// TODO: should not we check error?
-	m.Client.Get(ctx, client.ObjectKey{
+	err := m.Client.Get(ctx, client.ObjectKey{
 		Namespace: m.State.BuiltDeployment.GetNamespace(),
 		Name:      deploymentName,
 	}, &deployment)
+	if err != nil {
+		return nil, &ctrl.Result{RequeueAfter: defaultRequeueTime}, errors.Wrap(err, "while getting deployments")
+	}
 	m.State.ClusterDeployment = &deployment
 
 	// ready deployment
