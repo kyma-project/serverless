@@ -32,10 +32,6 @@ func stopWithEventualError(err error) (fsm.StateFn, *ctrl.Result, error) {
 	return nil, nil, err
 }
 
-func stopWithErrorOrRequeue(err error) (fsm.StateFn, *ctrl.Result, error) {
-	return nil, requeueResult, err
-}
-
 func StartState() fsm.StateFn {
 	return sFnValidateFunction
 }
