@@ -28,11 +28,16 @@ jobs:
       - name: Bump values.yaml
         run: |
           ./hack/replace_serverless_chart_images.sh all .
-          ./hack/replace_serverless_crd_version.sh
         env:
           IMG_DIRECTORY: "prod"
           IMG_VERSION: ${{ github.event.inputs.name }}
           PROJECT_ROOT: "."
+      
+      - name: Bump operator kustomize
+        run: ./.github/scripts/upgrade-operator-kustomize.sh
+        env:
+          IMG: "europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.event.inputs.name }}"
+          MODULE_VERSION: ${{ github.event.inputs.name }}
 
       - name: Bump sec-scanners-config.yaml based on values.yaml
         run: ./.github/scripts/upgrade-sec-scanners-config.sh

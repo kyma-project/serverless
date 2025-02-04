@@ -5,12 +5,13 @@ metadata:
   namespace: system
   labels:
     control-plane: operator
-    app.kubernetes.io/component: serverless-operator
-    app.kubernetes.io/instance: serverless-operator
+    app.kubernetes.io/component: serverless-operator.kyma-project.io
+    app.kubernetes.io/instance: serverless-operator-deployment
 spec:
   selector:
     matchLabels:
       control-plane: operator
+      app.kubernetes.io/component: serverless-operator.kyma-project.io
   replicas: 1
   template:
     metadata:
@@ -19,6 +20,7 @@ spec:
       labels:
         control-plane: operator
         sidecar.istio.io/inject: "false"
+        app.kubernetes.io/component: serverless-operator.kyma-project.io
     spec:
       securityContext:
         runAsNonRoot: true

@@ -14,8 +14,8 @@ patches:
       - op: add
         path: "/metadata/labels"
         value: 
-          app.kubernetes.io/component: serverless-operator
-          app.kubernetes.io/instance: serverless-operator.kyma-project.io
+          app.kubernetes.io/component: serverless-operator.kyma-project.io
+          app.kubernetes.io/instance: serverless-operator-crd
     target:
       group: apiextensions.k8s.io
       version: v1
