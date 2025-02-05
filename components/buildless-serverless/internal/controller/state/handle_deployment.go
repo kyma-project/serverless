@@ -111,20 +111,21 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 		len(b.Spec.Template.Spec.Containers) != 1 {
 		return true
 	}
-	aSpec := a.Spec.Template.Spec.Containers[0]
-	bSpec := b.Spec.Template.Spec.Containers[0]
+	aContainer := a.Spec.Template.Spec.Containers[0]
+	bContainer := b.Spec.Template.Spec.Containers[0]
 
-	imageChanged := aSpec.Image != bSpec.Image
+	imageChanged := aContainer.Image != bContainer.Image
 	labelsChanged := !reflect.DeepEqual(a.Spec.Template.ObjectMeta.Labels, b.Spec.Template.ObjectMeta.Labels)
 	replicasChanged := (a.Spec.Replicas == nil && b.Spec.Replicas != nil) ||
 		(a.Spec.Replicas != nil && b.Spec.Replicas == nil) ||
 		(a.Spec.Replicas != nil && b.Spec.Replicas != nil && *a.Spec.Replicas != *b.Spec.Replicas)
-	workingDirChanged := !reflect.DeepEqual(aSpec.WorkingDir, bSpec.WorkingDir)
-	commandChanged := !reflect.DeepEqual(aSpec.Command, bSpec.Command)
-	resourcesChanged := !reflect.DeepEqual(aSpec.Resources, bSpec.Resources)
-	envChanged := !reflect.DeepEqual(aSpec.Env, bSpec.Env)
-	volumeMountsChanged := !reflect.DeepEqual(aSpec.VolumeMounts, bSpec.VolumeMounts)
-	portsChanged := !reflect.DeepEqual(aSpec.Ports, bSpec.Ports)
+	workingDirChanged := !reflect.DeepEqual(aContainer.WorkingDir, bContainer.WorkingDir)
+	commandChanged := !reflect.DeepEqual(aContainer.Command, bContainer.Command)
+	resourcesChanged := !reflect.DeepEqual(aContainer.Resources, bContainer.Resources)
+	envChanged := !reflect.DeepEqual(aContainer.Env, bContainer.Env)
+	volumeMountsChanged := !reflect.DeepEqual(aContainer.VolumeMounts, bContainer.VolumeMounts)
+	portsChanged := !reflect.DeepEqual(aContainer.Ports, bContainer.Ports)
+
 	return imageChanged ||
 		labelsChanged ||
 		replicasChanged ||
