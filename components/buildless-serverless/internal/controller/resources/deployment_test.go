@@ -150,7 +150,7 @@ func TestDeployment_construct(t *testing.T) {
 			[]string{
 				"sh",
 				"-c",
-				`printf "${FUNC_HANDLER_SOURCE}" > handler.py;
+				`echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 cd ..;
 python /kubeless.py;`,
 			},
@@ -728,6 +728,9 @@ func TestDeployment_envs(t *testing.T) {
 		{
 			name: "build envs based on nodejs20 function",
 			function: &serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "function-namespace",
+				},
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.NodeJs20,
 					Source: serverlessv1alpha2.Source{
@@ -740,12 +743,20 @@ func TestDeployment_envs(t *testing.T) {
 			},
 			want: []corev1.EnvVar{
 				{
+					Name:  "SERVICE_NAMESPACE",
+					Value: "function-namespace",
+				},
+				{
 					Name:  "FUNC_HANDLER_SOURCE",
 					Value: "function-source",
 				},
 				{
 					Name:  "FUNC_HANDLER_DEPENDENCIES",
 					Value: "function-dependencies",
+				},
+				{
+					Name:  "TRACE_COLLECTOR_ENDPOINT",
+					Value: "test-trace-collector-endpoint",
 				},
 				{
 					Name:  "PUBLISHER_PROXY_ADDRESS",
@@ -756,6 +767,9 @@ func TestDeployment_envs(t *testing.T) {
 		{
 			name: "build envs based on nodejs22 function",
 			function: &serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "function-namespace",
+				},
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.NodeJs22,
 					Source: serverlessv1alpha2.Source{
@@ -768,12 +782,20 @@ func TestDeployment_envs(t *testing.T) {
 			},
 			want: []corev1.EnvVar{
 				{
+					Name:  "SERVICE_NAMESPACE",
+					Value: "function-namespace",
+				},
+				{
 					Name:  "FUNC_HANDLER_SOURCE",
 					Value: "function-source",
 				},
 				{
 					Name:  "FUNC_HANDLER_DEPENDENCIES",
 					Value: "function-dependencies",
+				},
+				{
+					Name:  "TRACE_COLLECTOR_ENDPOINT",
+					Value: "test-trace-collector-endpoint",
 				},
 				{
 					Name:  "PUBLISHER_PROXY_ADDRESS",
@@ -784,6 +806,9 @@ func TestDeployment_envs(t *testing.T) {
 		{
 			name: "build envs based on python312 function",
 			function: &serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "function-namespace",
+				},
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.Python312,
 					Source: serverlessv1alpha2.Source{
@@ -796,12 +821,20 @@ func TestDeployment_envs(t *testing.T) {
 			},
 			want: []corev1.EnvVar{
 				{
+					Name:  "SERVICE_NAMESPACE",
+					Value: "function-namespace",
+				},
+				{
 					Name:  "FUNC_HANDLER_SOURCE",
 					Value: "function-source-py",
 				},
 				{
 					Name:  "FUNC_HANDLER_DEPENDENCIES",
 					Value: "function-dependencies-py",
+				},
+				{
+					Name:  "TRACE_COLLECTOR_ENDPOINT",
+					Value: "test-trace-collector-endpoint",
 				},
 				{
 					Name:  "PUBLISHER_PROXY_ADDRESS",
@@ -823,7 +856,8 @@ func TestDeployment_envs(t *testing.T) {
 			d := &Deployment{
 				function: tt.function,
 				functionConfig: &config.FunctionConfig{
-					FunctionPublisherProxyAddress: "test-proxy-address",
+					FunctionPublisherProxyAddress:  "test-proxy-address",
+					FunctionTraceCollectorEndpoint: "test-trace-collector-endpoint",
 				},
 			}
 
@@ -852,7 +886,7 @@ func TestDeployment_runtimeCommand(t *testing.T) {
 					},
 				},
 			},
-			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
+			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 cd ..;
 python /kubeless.py;`,
 		},
@@ -869,8 +903,8 @@ python /kubeless.py;`,
 					},
 				},
 			},
-			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
-printf "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
+			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
+echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
 cd ..;
 python /kubeless.py;`,
@@ -887,7 +921,7 @@ python /kubeless.py;`,
 					},
 				},
 			},
-			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
+			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 cd ..;
 npm start;`,
 		},
@@ -904,8 +938,8 @@ npm start;`,
 					},
 				},
 			},
-			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
-printf "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
+			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
+echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
@@ -922,7 +956,7 @@ npm start;`,
 					},
 				},
 			},
-			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
+			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 cd ..;
 npm start;`,
 		},
@@ -939,8 +973,8 @@ npm start;`,
 					},
 				},
 			},
-			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
-printf "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
+			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
+echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
