@@ -33,6 +33,29 @@ jobs:
       - if: ${{ always() }}
         uses: ./.github/actions/collect-cluster-info
 
+  buildless-serverless-integration-test:
+    if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - uses: ./.github/actions/setup-go
+      - uses: ./.github/actions/create-k3d-cluster
+      - name: run test
+        run: |
+          make -C components/operator deploy
+          kubectl get deployment serverless-operator -n kyma-system -o json | \
+          jq '.spec.template.spec.containers[].env |= map(if .name == "CHART_PATH" then .value = "/buildless-module-chart" else . end)' | \
+          kubectl apply -f -
+          make -C components/operator apply-default-serverless-cr
+          make -C components/operator check-buildless-serverless-installation
+          make -C tests/serverless serverless-integration serverless-contract-tests
+          make remove-serverless
+        env:
+          IMG: ${{ inputs.image }}
+
   serverless-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest

@@ -152,6 +152,20 @@ check-serverless-installation: ## Wait for Serverless CR to be in Ready state.
 	kubectl wait --for condition=Available -n kyma-system deployment serverless-ctrl-mngr --timeout=60s || \
 		(make print-serverless-details && false)
 
+.PHONY: check-buildless-serverless-installation
+check-buildless-serverless-installation: ## Wait for Serverless CR to be in Ready state.
+	# wait some time to make sure operator starts the reconciliation first
+	sleep 10
+
+	./hack/verify_serverless_status.sh || \
+		(make print-serverless-details && false)
+
+	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s || \
+		(make print-serverless-details && false)
+
+	kubectl wait --for condition=Available -n kyma-system deployment buildless-serverless-controller-manager --timeout=60s || \
+		(make print-serverless-details && false)
+
 .PHONY: print-serverless-details
 print-serverless-details: ## Print all pods, deploys and serverless CRs in the kyma-system namespace.
 	kubectl get serverless -n kyma-system -oyaml
