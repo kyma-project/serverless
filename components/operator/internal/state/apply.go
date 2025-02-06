@@ -23,7 +23,7 @@ func sFnApplyResources(_ context.Context, r *reconciler, s *systemState) (stateF
 	s.flagsBuilder.WithManagedByLabel("serverless-operator")
 
 	// install component
-	err := chart.Install(s.chartConfig, s.flagsBuilder.Build())
+	err := install(s)
 	if err != nil {
 		fmt.Println(err)
 		r.log.Warnf("error while installing resource %s: %s",
@@ -39,4 +39,13 @@ func sFnApplyResources(_ context.Context, r *reconciler, s *systemState) (stateF
 
 	// switch state verify
 	return nextState(sFnVerifyResources)
+}
+
+func install(s *systemState) error {
+	flags, err := s.flagsBuilder.Build()
+	if err != nil {
+		return err
+	}
+
+	return chart.Install(s.chartConfig, flags)
 }

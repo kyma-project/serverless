@@ -8,7 +8,8 @@ import (
 
 func Test_flagsBuilder_Build(t *testing.T) {
 	t.Run("build empty flags", func(t *testing.T) {
-		flags := NewFlagsBuilder().Build()
+		flags, err := NewFlagsBuilder().Build()
+		require.NoError(t, err)
 		require.Equal(t, map[string]interface{}{}, flags)
 	})
 
@@ -66,7 +67,7 @@ func Test_flagsBuilder_Build(t *testing.T) {
 			},
 		}
 
-		flags := NewFlagsBuilder().
+		flags, err := NewFlagsBuilder().
 			WithNodePort(1234).
 			WithDefaultPresetFlags("testJobPreset", "testPodPreset").
 			WithOptionalDependencies("testPublisherURL", "testCollectorURL").
@@ -85,6 +86,7 @@ func Test_flagsBuilder_Build(t *testing.T) {
 			WithLogLevel("testLogLevel").
 			WithManagedByLabel("test-runner").Build()
 
+		require.NoError(t, err)
 		require.Equal(t, expectedFlags, flags)
 	})
 
@@ -98,11 +100,12 @@ func Test_flagsBuilder_Build(t *testing.T) {
 			},
 		}
 
-		flags := NewFlagsBuilder().
+		flags, err := NewFlagsBuilder().
 			WithRegistryAddresses("testRegistryAddress", "testServerAddress").
 			WithRegistryCredentials("testUsername", "testPassword").
 			Build()
 
+		require.NoError(t, err)
 		require.Equal(t, expectedFlags, flags)
 	})
 
@@ -121,7 +124,7 @@ func Test_flagsBuilder_Build(t *testing.T) {
 			},
 		}
 
-		flags := NewFlagsBuilder().
+		flags, err := NewFlagsBuilder().
 			WithControllerConfiguration(
 				"testCPUUtilizationPercentage",
 				"",
@@ -130,6 +133,7 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				"testHealthzLivenessTimeout",
 			).Build()
 
+		require.NoError(t, err)
 		require.Equal(t, expectedFlags, flags)
 	})
 }
