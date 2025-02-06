@@ -108,7 +108,8 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 		_, _, err := sFnOptionalDependencies(context.Background(), r, s)
 		require.NoError(t, err)
 
-		currentFlags := s.flagsBuilder.Build()
+		currentFlags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
 
 		overrideURL, found := getFlagByPath(currentFlags, "containers", "manager", "configuration", "data", "functionTraceCollectorEndpoint", "value")
 		require.True(t, found)

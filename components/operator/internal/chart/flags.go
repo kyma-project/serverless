@@ -2,11 +2,13 @@ package chart
 
 import (
 	"fmt"
-	"strings"
+
+	"github.com/pkg/errors"
+	"helm.sh/helm/v3/pkg/strvals"
 )
 
 type FlagsBuilder interface {
-	Build() map[string]interface{}
+	Build() (map[string]interface{}, error)
 	WithControllerConfiguration(CPUUtilizationPercentage string, requeueDuration string, buildExecutorArgs string, maxSimultaneousJobs string, healthzLivenessTimeout string) *flagsBuilder
 	WithDefaultPresetFlags(defaultBuildJobPreset string, defaultRuntimePodPreset string) *flagsBuilder
 	WithOptionalDependencies(publisherURL string, traceCollectorURL string) *flagsBuilder
@@ -30,67 +32,16 @@ func NewFlagsBuilder() FlagsBuilder {
 	}
 }
 
-func (fb *flagsBuilder) Build() map[string]interface{} {
+func (fb *flagsBuilder) Build() (map[string]interface{}, error) {
 	flags := map[string]interface{}{}
 	for key, value := range fb.flags {
-		flagPath := strings.FieldsFunc(key, fieldsFuncWithExtrudes(key))
-		flagPath = removeEscapesFromFlagPath(flagPath)
-		appendFlag(flags, flagPath, value)
-	}
-	return flags
-}
-
-func fieldsFuncWithExtrudes(flag string) func(rune) bool {
-	index := 0
-	return func(r rune) bool {
-		split := shouldBeSplit(flag, index, r)
-
-		// increase index to know on which rune we are right now
-		index++
-
-		return split
-	}
-}
-
-func shouldBeSplit(flag string, index int, r rune) bool {
-	if r != '.' {
-		return false
-	}
-
-	return index > 0 && flag[index-1] != '\\'
-}
-
-func removeEscapesFromFlagPath(flagPath []string) []string {
-	for i := range flagPath {
-		flagPath[i] = strings.ReplaceAll(flagPath[i], "\\", "")
-	}
-	return flagPath
-}
-
-func appendFlag(flags map[string]interface{}, flagPath []string, value interface{}) {
-	currentFlag := flags
-	for i, pathPart := range flagPath {
-		createIfEmpty(currentFlag, pathPart)
-		if lastElement(flagPath, i) {
-			currentFlag[pathPart] = value
-		} else {
-			currentFlag = nextDeeperFlag(currentFlag, pathPart)
+		flag := fmt.Sprintf("%s=%v", key, value)
+		err := strvals.ParseInto(flag, flags)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to parse %s flag", flag)
 		}
 	}
-}
-
-func createIfEmpty(flags map[string]interface{}, key string) {
-	if _, ok := flags[key]; !ok {
-		flags[key] = map[string]interface{}{}
-	}
-}
-
-func lastElement(values []string, i int) bool {
-	return i == len(values)-1
-}
-
-func nextDeeperFlag(currentFlag map[string]interface{}, path string) map[string]interface{} {
-	return currentFlag[path].(map[string]interface{})
+	return flags, nil
 }
 
 func (fb *flagsBuilder) WithControllerConfiguration(CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout string) *flagsBuilder {
