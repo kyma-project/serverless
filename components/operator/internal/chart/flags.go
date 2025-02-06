@@ -7,7 +7,7 @@ import (
 )
 
 type FlagsBuilder interface {
-	Build() map[string]interface{}
+	Build() (map[string]interface{}, error)
 	WithControllerConfiguration(CPUUtilizationPercentage string, requeueDuration string, buildExecutorArgs string, maxSimultaneousJobs string, healthzLivenessTimeout string) *flagsBuilder
 	WithDefaultPresetFlags(defaultBuildJobPreset string, defaultRuntimePodPreset string) *flagsBuilder
 	WithOptionalDependencies(publisherURL string, traceCollectorURL string) *flagsBuilder
@@ -31,17 +31,15 @@ func NewFlagsBuilder() FlagsBuilder {
 	}
 }
 
-func (fb *flagsBuilder) Build() map[string]interface{} {
+func (fb *flagsBuilder) Build() (map[string]interface{}, error) {
 	flags := map[string]interface{}{}
 	for key, value := range fb.flags {
 		err := strvals.ParseInto(fmt.Sprintf("%s=%v", key, value), flags)
 		if err != nil {
-			// this may happen only if input key format or value type are incorrect
-			// in our case this is impossible because we control both data
-			fmt.Println("ERR:", err)
+			return nil, err
 		}
 	}
-	return flags
+	return flags, nil
 }
 
 func (fb *flagsBuilder) WithControllerConfiguration(CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout string) *flagsBuilder {

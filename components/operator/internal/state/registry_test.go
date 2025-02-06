@@ -49,7 +49,10 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnOptionalDependencies, next)
 
-		require.EqualValues(t, expectedFlags, s.flagsBuilder.Build())
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+
+		require.EqualValues(t, expectedFlags, flags)
 		require.Equal(t, "internal", s.instance.Status.DockerRegistry)
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
@@ -106,7 +109,10 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnOptionalDependencies, next)
 
-		require.Equal(t, expectedFlags, s.flagsBuilder.Build())
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+
+		require.Equal(t, expectedFlags, flags)
 		require.Equal(t, string(secret.Data["serverAddress"]), s.instance.Status.DockerRegistry)
 		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
 	})
@@ -146,7 +152,10 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnOptionalDependencies, next)
 
-		require.Equal(t, expectedFlags, s.flagsBuilder.Build())
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+
+		require.Equal(t, expectedFlags, flags)
 		require.Equal(t, v1alpha1.DefaultRegistryAddress, s.instance.Status.DockerRegistry)
 	})
 
