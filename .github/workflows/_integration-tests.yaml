@@ -50,6 +50,7 @@ jobs:
           make remove-serverless
         env:
           IMG: ${{ inputs.image }}
+          INCLUDE_GITOPS_TEST: false
 
   serverless-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
@@ -68,6 +69,7 @@ jobs:
           make remove-serverless
         env:
           IMG: ${{ inputs.image }}
+          INCLUDE_GITOPS_TEST: true
 
   git-auth-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}

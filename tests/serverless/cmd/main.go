@@ -62,7 +62,6 @@ type testSuite struct {
 var availableScenarios = map[string][]testSuite{
 	"serverless-integration": {
 		{name: "simple", test: testsuite.SimpleFunctionTest},
-		{name: "gitops", test: testsuite.GitopsSteps},
 	},
 	"git-auth-integration": {{name: "gitauth", test: testsuite.GitAuthTestSteps}},
 	"serverless-contract-tests": {
@@ -94,6 +93,12 @@ func main() {
 	scenarioName := os.Args[1]
 	logf.Printf("Scenario: %s", scenarioName)
 	os.Args = os.Args[1:]
+
+	// If this test is run by the serverless, the gitops test should be included
+	if os.Getenv("INCLUDE_GITOPS_TEST") == "true" {
+		availableScenarios["serverless-integration"] = append(availableScenarios["serverless-integration"], testSuite{name: "gitops", test: testsuite.GitopsSteps})
+	}
+
 	pickedScenario, exists := availableScenarios[scenarioName]
 	if !exists {
 		logf.Errorf("Scenario %s not exist", scenarioName)
