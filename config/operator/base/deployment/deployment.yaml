@@ -11,7 +11,6 @@ spec:
   selector:
     matchLabels:
       control-plane: operator
-      app.kubernetes.io/component: serverless-operator.kyma-project.io
   replicas: 1
   template:
     metadata:
