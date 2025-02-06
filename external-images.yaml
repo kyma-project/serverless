@@ -3,5 +3,5 @@ images:
     tag: "3.21.2"
   - source: "python@sha256:54bec49592c8455de8d5983d984efff76b6417a6af9b5dcc8d0237bf6ad3bd20"
     tag: "3.12.8-alpine3.21"
-  - source: "golang@sha256:47d337594bd9e667d35514b241569f95fb6d95727c24b19468813d596d5ae596"
-    tag: "1.23.5-alpine3.21"
+  - source: "golang@sha256:2c49857f2295e89b23b28386e57e018a86620a8fede5003900f2d138ba9c4037"
+    tag: "1.23.6-alpine3.21"
