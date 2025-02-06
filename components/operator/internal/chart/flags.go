@@ -3,6 +3,7 @@ package chart
 import (
 	"fmt"
 
+	"github.com/pkg/errors"
 	"helm.sh/helm/v3/pkg/strvals"
 )
 
@@ -34,9 +35,10 @@ func NewFlagsBuilder() FlagsBuilder {
 func (fb *flagsBuilder) Build() (map[string]interface{}, error) {
 	flags := map[string]interface{}{}
 	for key, value := range fb.flags {
-		err := strvals.ParseInto(fmt.Sprintf("%s=%v", key, value), flags)
+		flag := fmt.Sprintf("%s=%v", key, value)
+		err := strvals.ParseInto(flag, flags)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrapf(err, "failed to parse %s flag", flag)
 		}
 	}
 	return flags, nil
