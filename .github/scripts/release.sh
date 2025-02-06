@@ -30,7 +30,6 @@ uploadFile() {
   fi
 }
 
-echo "IMG: ${IMG}"
 make -C components/operator/ render-manifest
 
 echo "Generated serverless-operator.yaml:"
