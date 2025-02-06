@@ -1,13 +1,6 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  labels:
-    app.kubernetes.io/name: clusterrolebinding
-    app.kubernetes.io/instance: serverless-operator-rolebinding
-    app.kubernetes.io/component: rbac
-    app.kubernetes.io/created-by: serverless-operator
-    app.kubernetes.io/part-of: serverless-operator
-    app.kubernetes.io/managed-by: kustomize
   name: operator-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io

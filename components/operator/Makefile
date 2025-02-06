@@ -79,7 +79,6 @@ install-operator-k3d: build-image-operator ## Build and replace serverless opera
 	k3d image import $(OPERATOR_NAME):$(HASH_TAG) -c kyma
 	kubectl set image deployment serverless-operator -n kyma-system manager=$(OPERATOR_NAME):$(HASH_TAG)
 
-
 .PHONY: install
 install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR)/crd | kubectl apply -f -
@@ -92,7 +91,6 @@ uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified 
 deploy-main: manifests kustomize ## Deploy operator to the K8s cluster specified in ~/.kube/config.
 	kubectl create namespace kyma-system || true
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR_MAIN) | kubectl apply -f -
-
 
 .PHONY: generate-kustomization-dev
 generate-kustomization-dev:
@@ -123,10 +121,8 @@ undeploy: ## Undeploy operator from the K8s cluster specified in ~/.kube/config.
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
 
 .PHONY: render-manifest
-render-manifest: manifests kustomize ## Render serverless-operator.yaml manifest with image from IMG env.
-	cd $(CONFIG_OPERATOR)/deployment && $(KUSTOMIZE) edit set image controller=${IMG}
+render-manifest: kustomize ## Render serverless-operator.yaml manifest.
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/serverless-operator.yaml
-
 
 .PHONY: apply-default-serverless-cr
 apply-default-serverless-cr: ## Apply the k3d serverless CR.
@@ -136,7 +132,6 @@ apply-default-serverless-cr: ## Apply the k3d serverless CR.
 .PHONY: remove-default-serverless-cr
 remove-serverless: ## Remove Serverless CR
 	kubectl delete serverless -n kyma-system default --timeout 2m || (kubectl get serverless -n kyma-system -oyaml && false)
-
 
 .PHONY: check-serverless-installation
 check-serverless-installation: ## Wait for Serverless CR to be in Ready state.
@@ -157,7 +152,6 @@ print-serverless-details: ## Print all pods, deploys and serverless CRs in the k
 	kubectl get serverless -n kyma-system -oyaml
 	kubectl get deploy -n kyma-system -oyaml
 	kubectl get pods -n kyma-system -oyaml
-
 
 ##@ Module
 
