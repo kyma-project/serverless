@@ -43,8 +43,6 @@ jobs:
       - name: Create release assets
         id: create-assets
         env:
-          IMG: "europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.ref_name }}"
-          PULL_BASE_REF: ${{ github.ref_name }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_ID: ${{ steps.create-draft.outputs.release_id }}
         run: ./.github/scripts/release.sh
