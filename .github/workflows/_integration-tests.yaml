@@ -45,12 +45,7 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run test
         run: |
-          make -C components/operator deploy
-          kubectl get deployment serverless-operator -n kyma-system -o json | \
-          jq '.spec.template.spec.containers[].env |= map(if .name == "CHART_PATH" then .value = "/buildless-module-chart" else . end)' | \
-          kubectl apply -f -
-          make -C components/operator apply-default-serverless-cr
-          make -C components/operator check-buildless-serverless-installation
+          make install-buildless-serverless-custom-operator
           make -C tests/serverless serverless-integration serverless-contract-tests
           make remove-serverless
         env:

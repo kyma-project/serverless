@@ -109,6 +109,12 @@ deploy: manifests kustomize generate-kustomization-dev ## Deploy operator to the
 	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit set image europe-docker.pkg.dev/kyma-project/prod/serverless-operator=${IMG}
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR_DEV) | kubectl apply -f -
 
+.PHONY: deploy-buildless
+deploy-buidless: deploy
+	kubectl get deployment serverless-operator -n kyma-system -o json | \
+	jq '.spec.template.spec.containers[].env |= map(if .name == "CHART_PATH" then .value = "/buildless-module-chart" else . end)' | \
+	kubectl apply -f -
+
 .PHONY: deploy-local
 deploy-local: build-image-operator ## Deploy operator to the K8s cluster specified in ~/.kube/config with locally build image.
 	$(eval HASH_TAG=$(shell docker images $(OPERATOR_NAME):latest --quiet))
