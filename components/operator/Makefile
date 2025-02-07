@@ -108,7 +108,7 @@ deploy: manifests kustomize generate-kustomization-dev ## Deploy operator to the
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR_DEV) | kubectl apply -f -
 
 .PHONY: deploy-buildless
-deploy-buidless: deploy
+deploy-buildless: deploy
 	kubectl get deployment serverless-operator -n kyma-system -o json | \
 	jq '.spec.template.spec.containers[].env |= map(if .name == "CHART_PATH" then .value = "/buildless-module-chart" else . end)' | \
 	kubectl apply -f -
