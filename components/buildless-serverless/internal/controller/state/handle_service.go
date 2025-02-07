@@ -29,7 +29,7 @@ func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 		//TODO: think what we should return here (in context of state machine)
 		return nil, resultUpdate, errUpdate
 	}
-	return nextState(sFnAdjustStatus)
+	return nextState(sFnDeploymentStatus)
 }
 
 func getOrCreateService(ctx context.Context, m *fsm.StateMachine, builtService *corev1.Service) (*corev1.Service, *ctrl.Result, error) {
