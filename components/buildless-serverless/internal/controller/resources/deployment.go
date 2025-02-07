@@ -173,6 +173,12 @@ func (d *Deployment) volumes() []corev1.Volume {
 				},
 			},
 		},
+		{
+			Name: "tmp",
+			VolumeSource: corev1.VolumeSource{
+				EmptyDir: &corev1.EmptyDirVolumeSource{},
+			},
+		},
 	}
 	if runtime == serverlessv1alpha2.Python312 {
 		volumes = append(volumes, corev1.Volume{
@@ -192,6 +198,11 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 		{
 			Name:      "sources",
 			MountPath: d.workingSourcesDir(),
+		},
+		{
+			Name:      "tmp",
+			ReadOnly:  false,
+			MountPath: "/tmp",
 		},
 	}
 	if runtime == serverlessv1alpha2.NodeJs20 || runtime == serverlessv1alpha2.NodeJs22 {
