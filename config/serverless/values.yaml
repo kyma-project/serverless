@@ -52,10 +52,10 @@ tests:
 global:
   domainName: "kyma.example.com"
   commonLabels:
-    app: 'serverless'
+    app: '{{ template "name" . }}'
     version: "{{ .Values.global.images.function_controller.version }}"
     kyma-project.io/module: 'serverless'
-    app.kubernetes.io/name: 'serverless'
+    app.kubernetes.io/name: '{{ template "name" . }}'
     app.kubernetes.io/version: "{{ .Values.global.images.function_controller.version }}"
     app.kubernetes.io/part-of: 'serverless'
     app.kubernetes.io/managed-by: "Helm"
