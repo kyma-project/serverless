@@ -107,6 +107,12 @@ deploy: manifests kustomize generate-kustomization-dev ## Deploy operator to the
 	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit set image europe-docker.pkg.dev/kyma-project/prod/serverless-operator=${IMG}
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR_DEV) | kubectl apply -f -
 
+.PHONY: deploy-buildless
+deploy-buildless: deploy
+	kubectl get deployment serverless-operator -n kyma-system -o json | \
+	jq '.spec.template.spec.containers[].env |= map(if .name == "CHART_PATH" then .value = "/buildless-module-chart" else . end)' | \
+	kubectl apply -f -
+
 .PHONY: deploy-local
 deploy-local: build-image-operator ## Deploy operator to the K8s cluster specified in ~/.kube/config with locally build image.
 	$(eval HASH_TAG=$(shell docker images $(OPERATOR_NAME):latest --quiet))
@@ -145,6 +151,20 @@ check-serverless-installation: ## Wait for Serverless CR to be in Ready state.
 		(make print-serverless-details && false)
 
 	kubectl wait --for condition=Available -n kyma-system deployment serverless-ctrl-mngr --timeout=60s || \
+		(make print-serverless-details && false)
+
+.PHONY: check-buildless-serverless-installation
+check-buildless-serverless-installation: ## Wait for Serverless CR to be in Ready state.
+	# wait some time to make sure operator starts the reconciliation first
+	sleep 10
+
+	./hack/verify_serverless_status.sh || \
+		(make print-serverless-details && false)
+
+	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s || \
+		(make print-serverless-details && false)
+
+	kubectl wait --for condition=Available -n kyma-system deployment buildless-serverless-controller-manager --timeout=60s || \
 		(make print-serverless-details && false)
 
 .PHONY: print-serverless-details
