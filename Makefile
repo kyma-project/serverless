@@ -13,6 +13,11 @@ install-serverless-custom-operator: ## Install serverless with operator from IMG
 	$(call check-var,IMG)
 	make -C ${OPERATOR_ROOT} deploy apply-default-serverless-cr check-serverless-installation
 
+.PHONY: install-buildless-serverless-custom-operator
+install-buildless-serverless-custom-operator: ## Install buildless serverless with operator from IMG env using default serverless cr
+	$(call check-var,IMG)
+	make -C ${OPERATOR_ROOT} deploy-buildless apply-default-serverless-cr check-buildless-serverless-installation
+
 .PHONY: install-serverless-latest-release
 install-serverless-latest-release:## Install serverless from latest release
 	make -C ${OPERATOR_ROOT} deploy-release
