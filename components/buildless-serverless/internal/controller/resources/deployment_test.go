@@ -524,6 +524,11 @@ func TestDeployment_volumeMounts(t *testing.T) {
 					MountPath: "/kubeless/package-registry-config/pip.conf",
 					SubPath:   "pip.conf",
 				},
+				{
+					Name:      "tmp",
+					ReadOnly:  false,
+					MountPath: "/tmp",
+				},
 			},
 		},
 	}
@@ -616,6 +621,12 @@ func TestDeployment_volumes(t *testing.T) {
 				},
 				{
 					Name: "local",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+				{
+					Name: "tmp",
 					VolumeSource: corev1.VolumeSource{
 						EmptyDir: &corev1.EmptyDirVolumeSource{},
 					},
