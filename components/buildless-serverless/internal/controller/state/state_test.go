@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"reflect"
+	"regexp"
 	"runtime"
 	"strings"
 	"testing"
@@ -15,6 +16,7 @@ import (
 // names returned from the package may be different for any go/dlv compiler version
 // for go1.22 returned name is in format:
 // github.com/kyma-project/keda-manager/pkg/reconciler.Test_sFnServedFilter.func4.sFnUpdateStatus.3
+// we assume that function name starts with "sFn"
 func requireEqualFunc(t *testing.T, expected, actual fsm.StateFn) {
 	expectedFnName := getFnName(expected)
 	actualFnName := getFnName(actual)
@@ -43,8 +45,12 @@ func requireEqualFunc(t *testing.T, expected, actual fsm.StateFn) {
 }
 
 func getDirectFnName(nameSuffix string) string {
-	elements := strings.Split(nameSuffix, ".")
-	return elements[len(elements)-2]
+	// try to find something starts with "sFn" on the beginning or immediately after the dot
+	nameMatch := regexp.MustCompile(`(^|\.)(sFn[^.]+)`).FindStringSubmatch(nameSuffix)
+	if len(nameMatch) != 3 {
+		return nameSuffix
+	}
+	return nameMatch[2]
 }
 
 func getFnName(fn fsm.StateFn) string {

@@ -163,6 +163,18 @@ spec:
                 x-kubernetes-validations:
                 - message: 'Following envs are reserved and cannot be used: [''FUNC_RUNTIME'',''FUNC_HANDLER'',''FUNC_PORT'',''FUNC_HANDLER_SOURCE'',''FUNC_HANDLER_DEPENDENCIES'',''MOD_NAME'',''NODE_PATH'',''PYTHONPATH'']'
                   rule: (self.all(e, !(e.name in ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','MOD_NAME','NODE_PATH','PYTHONPATH'])))
+              labels:
+                additionalProperties:
+                  type: string
+                description: Defines labels used in Deployment's PodTemplate and applied
+                  on the Function's runtime Pod.
+                type: object
+                x-kubernetes-validations:
+                - message: Labels has key starting with serverless.kyma-project.io/
+                    which is not allowed
+                  rule: '!(self.exists(e, e.startsWith(''serverless.kyma-project.io/'')))'
+                - message: Label value cannot be longer than 63
+                  rule: self.all(e, size(e)<64)
               replicas:
                 default: 1
                 description: |-
@@ -372,6 +384,21 @@ spec:
                   - type
                   type: object
                 type: array
+              functionResourceProfile:
+                description: Specifies the preset used for the function
+                type: string
+              podSelector:
+                description: Specifies the Pod selector used to match Pods in the
+                  Function's Deployment.
+                type: string
+              replicas:
+                description: Specifies the total number of non-terminated Pods targeted
+                  by this Function.
+                format: int32
+                type: integer
+              runtime:
+                description: Specifies the **Runtime** type of the Function.
+                type: string
               runtimeImage:
                 description: Specifies the image version used to build and run the
                   Function's Pods.
