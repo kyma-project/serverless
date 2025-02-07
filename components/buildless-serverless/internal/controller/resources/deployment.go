@@ -173,16 +173,17 @@ func (d *Deployment) volumes() []corev1.Volume {
 				},
 			},
 		},
+		{
+			Name: "tmp",
+			VolumeSource: corev1.VolumeSource{
+				EmptyDir: &corev1.EmptyDirVolumeSource{},
+			},
+		},
 	}
 	if runtime == serverlessv1alpha2.Python312 {
 		volumes = append(volumes, corev1.Volume{
 			// required by pip to save deps to .local dir
 			Name: "local",
-			VolumeSource: corev1.VolumeSource{
-				EmptyDir: &corev1.EmptyDirVolumeSource{},
-			},
-		}, corev1.Volume{
-			Name: "tmp",
 			VolumeSource: corev1.VolumeSource{
 				EmptyDir: &corev1.EmptyDirVolumeSource{},
 			},
@@ -197,6 +198,11 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 		{
 			Name:      "sources",
 			MountPath: d.workingSourcesDir(),
+		},
+		{
+			Name:      "tmp",
+			ReadOnly:  false,
+			MountPath: "/tmp",
 		},
 	}
 	if runtime == serverlessv1alpha2.NodeJs20 || runtime == serverlessv1alpha2.NodeJs22 {
@@ -218,11 +224,6 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 				ReadOnly:  true,
 				MountPath: path.Join(d.workingSourcesDir(), "package-registry-config/pip.conf"),
 				SubPath:   "pip.conf",
-			},
-			corev1.VolumeMount{
-				Name:      "tmp",
-				ReadOnly:  false,
-				MountPath: "/tmp",
 			})
 	}
 	return volumeMounts

@@ -483,6 +483,11 @@ func TestDeployment_volumeMounts(t *testing.T) {
 					MountPath: "/usr/src/app/function",
 				},
 				{
+					Name:      "tmp",
+					ReadOnly:  false,
+					MountPath: "/tmp",
+				},
+				{
 					Name:      "package-registry-config",
 					ReadOnly:  true,
 					MountPath: "/usr/src/app/function/package-registry-config/.npmrc",
@@ -497,6 +502,11 @@ func TestDeployment_volumeMounts(t *testing.T) {
 				{
 					Name:      "sources",
 					MountPath: "/usr/src/app/function",
+				},
+				{
+					Name:      "tmp",
+					ReadOnly:  false,
+					MountPath: "/tmp",
 				},
 				{
 					Name:      "package-registry-config",
@@ -515,6 +525,11 @@ func TestDeployment_volumeMounts(t *testing.T) {
 					MountPath: "/kubeless",
 				},
 				{
+					Name:      "tmp",
+					ReadOnly:  false,
+					MountPath: "/tmp",
+				},
+				{
 					Name:      "local",
 					MountPath: "/.local",
 				},
@@ -523,11 +538,6 @@ func TestDeployment_volumeMounts(t *testing.T) {
 					ReadOnly:  true,
 					MountPath: "/kubeless/package-registry-config/pip.conf",
 					SubPath:   "pip.conf",
-				},
-				{
-					Name:      "tmp",
-					ReadOnly:  false,
-					MountPath: "/tmp",
 				},
 			},
 		},
@@ -577,6 +587,12 @@ func TestDeployment_volumes(t *testing.T) {
 						},
 					},
 				},
+				{
+					Name: "tmp",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
 			},
 		},
 		{
@@ -596,6 +612,12 @@ func TestDeployment_volumes(t *testing.T) {
 							SecretName: "test-secret-name",
 							Optional:   ptr.To[bool](true),
 						},
+					},
+				},
+				{
+					Name: "tmp",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
 					},
 				},
 			},
@@ -620,13 +642,13 @@ func TestDeployment_volumes(t *testing.T) {
 					},
 				},
 				{
-					Name: "local",
+					Name: "tmp",
 					VolumeSource: corev1.VolumeSource{
 						EmptyDir: &corev1.EmptyDirVolumeSource{},
 					},
 				},
 				{
-					Name: "tmp",
+					Name: "local",
 					VolumeSource: corev1.VolumeSource{
 						EmptyDir: &corev1.EmptyDirVolumeSource{},
 					},
