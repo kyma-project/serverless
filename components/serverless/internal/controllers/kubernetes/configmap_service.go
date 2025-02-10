@@ -3,6 +3,7 @@ package kubernetes
 import (
 	"context"
 	"fmt"
+	"github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 
 	"go.uber.org/zap"
 
@@ -14,10 +15,13 @@ import (
 	"github.com/kyma-project/serverless/components/serverless/internal/resource"
 )
 
+const cfgConfigMapFinalizerName = "serverless.kyma-project.io/deletion-hook"
+
 type ConfigMapService interface {
 	IsBase(configMap *corev1.ConfigMap) bool
 	ListBase(ctx context.Context) ([]corev1.ConfigMap, error)
 	UpdateNamespace(ctx context.Context, logger *zap.SugaredLogger, namespace string, baseInstance *corev1.ConfigMap) error
+	HandleFinalizer(ctx context.Context, logger *zap.SugaredLogger, configMap *corev1.ConfigMap, namespaces []string) error
 }
 
 var _ ConfigMapService = &configMapService{}
@@ -61,6 +65,33 @@ func (r *configMapService) UpdateNamespace(ctx context.Context, logger *zap.Suga
 	return r.updateConfigMap(ctx, logger, instance, baseInstance)
 }
 
+func (r *configMapService) HandleFinalizer(ctx context.Context, logger *zap.SugaredLogger, instance *corev1.ConfigMap, namespaces []string) error {
+	if instance.ObjectMeta.DeletionTimestamp.IsZero() {
+		if containsString(instance.ObjectMeta.Finalizers, cfgConfigMapFinalizerName) {
+			return nil
+		}
+		instance.ObjectMeta.Finalizers = append(instance.ObjectMeta.Finalizers, cfgConfigMapFinalizerName)
+		if err := r.client.Update(context.Background(), instance); err != nil {
+			return err
+		}
+	} else {
+		if !containsString(instance.ObjectMeta.Finalizers, cfgConfigMapFinalizerName) {
+			return nil
+		}
+		for _, namespace := range namespaces {
+			logger.Debug(fmt.Sprintf("Deleting ConfigMap '%s/%s'", instance.Namespace, instance.Name))
+			if err := r.deleteConfigMap(ctx, logger, namespace, instance.Name); err != nil {
+				return err
+			}
+		}
+		instance.ObjectMeta.Finalizers = removeString(instance.ObjectMeta.Finalizers, cfgConfigMapFinalizerName)
+		if err := r.client.Update(context.Background(), instance); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (r *configMapService) createConfigMap(ctx context.Context, logger *zap.SugaredLogger, namespace string, baseInstance *corev1.ConfigMap) error {
 	configMap := corev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
@@ -92,6 +123,21 @@ func (r *configMapService) updateConfigMap(ctx context.Context, logger *zap.Suga
 	if err := r.client.Update(ctx, copy); err != nil {
 		logger.Error(err, fmt.Sprintf("Updating ConfigMap '%s/%s' failed", copy.GetNamespace(), copy.GetName()))
 		return err
+	}
+
+	return nil
+}
+
+func (r *configMapService) deleteConfigMap(ctx context.Context, logger *zap.SugaredLogger, namespace, baseInstanceName string) error {
+	instance := &corev1.ConfigMap{}
+	if err := r.client.Get(ctx, client.ObjectKey{Namespace: namespace, Name: baseInstanceName}, instance); err != nil {
+		return client.IgnoreNotFound(err)
+	}
+	if instance.Labels[v1alpha2.FunctionManagedByLabel] == v1alpha2.FunctionResourceLabelUserValue {
+		return nil
+	}
+	if err := r.client.Delete(ctx, instance); err != nil {
+		logger.Error(err, fmt.Sprintf("Deleting ConfigMap '%s/%s' failed", namespace, baseInstanceName))
 	}
 
 	return nil
