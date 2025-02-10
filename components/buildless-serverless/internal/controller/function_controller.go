@@ -57,6 +57,9 @@ func (fr *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 	if err := fr.Get(ctx, req.NamespacedName, &instance); err != nil {
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
+	if !instance.DeletionTimestamp.IsZero() {
+		return ctrl.Result{}, nil
+	}
 
 	sm := fsm.New(fr.Client, fr.Config, &instance, state.StartState(), fr.Scheme, log)
 	return sm.Reconcile(ctx)
