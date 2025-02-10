@@ -22,6 +22,7 @@ spec:
         sidecar.istio.io/inject: "false"
         app.kubernetes.io/component: serverless-operator.kyma-project.io
     spec:
+      priorityClassName: "operator-priority"
       securityContext:
         runAsNonRoot: true
       containers:
