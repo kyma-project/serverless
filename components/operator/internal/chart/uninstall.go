@@ -56,33 +56,39 @@ func uninstallObjects(config *Config, objs []unstructured.Unstructured, filterFu
 	return nil
 }
 
-func UninstallSecrets(config *Config, filterFunc ...FilterFunc) (error, bool) {
-	spec, err := config.Cache.Get(config.Ctx, config.CacheKey)
-	if err != nil {
-		return fmt.Errorf("could not render manifest from chart: %s", err.Error()), false
+func UninstallResourcesByType(config *Config, resourceTypes []string, filterFunc ...FilterFunc) (error, bool) {
+	for _, resourceType := range resourceTypes {
+		spec, err := config.Cache.Get(config.Ctx, config.CacheKey)
+		if err != nil {
+			return fmt.Errorf("could not render manifest from chart: %s", err.Error()), false
+		}
+
+		objs, err := parseManifest(spec.Manifest)
+		if err != nil {
+			return fmt.Errorf("could not parse chart manifest: %s", err.Error()), false
+		}
+
+		err2, done := uninstallResourcesByType(config, objs, resourceType, filterFunc...)
+		if err2 != nil {
+			return err2, false
+		}
+
+		if !done {
+			return nil, false
+		}
 	}
 
-	objs, err := parseManifest(spec.Manifest)
-	if err != nil {
-		return fmt.Errorf("could not parse chart manifest: %s", err.Error()), false
-	}
-
-	err2, done := uninstallSecrets(config, objs, filterFunc...)
-	if err2 != nil {
-		return err2, false
-	}
-
-	return nil, done
+	return nil, true
 }
 
-func uninstallSecrets(config *Config, objs []unstructured.Unstructured, filterFunc ...FilterFunc) (error, bool) {
+func uninstallResourcesByType(config *Config, objs []unstructured.Unstructured, resourceType string, filterFunc ...FilterFunc) (error, bool) {
 	done := true
 	for i := range objs {
 		u := objs[i]
 		if !fitToFilters(u, filterFunc...) {
 			continue
 		}
-		if u.GetKind() != "Secret" {
+		if u.GetKind() != resourceType {
 			continue
 		}
 

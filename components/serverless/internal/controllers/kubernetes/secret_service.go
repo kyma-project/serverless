@@ -16,7 +16,7 @@ import (
 	"github.com/kyma-project/serverless/components/serverless/internal/resource"
 )
 
-const cfgSecretFinalizerName = "serverless.kyma-project.io/finalizer-registry-config"
+const cfgSecretFinalizerName = "serverless.kyma-project.io/finalizer"
 
 type SecretService interface {
 	IsBase(secret *corev1.Secret) bool
