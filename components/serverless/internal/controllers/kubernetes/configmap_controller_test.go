@@ -59,8 +59,11 @@ func TestConfigMapReconciler_Reconcile(t *testing.T) {
 	g.Expect(k8sClient.Get(context.TODO(), types.NamespacedName{Namespace: namespace, Name: baseConfigMap.GetName()}, configMap)).To(gomega.Succeed())
 	compareConfigMaps(g, configMap, baseConfigMap)
 
+	refreshedBaseConfigMap := &corev1.ConfigMap{}
+	g.Expect(k8sClient.Get(context.TODO(), types.NamespacedName{Namespace: baseConfigMap.GetNamespace(), Name: baseConfigMap.GetName()}, refreshedBaseConfigMap)).To(gomega.Succeed())
+
 	t.Log("updating the base ConfigMap")
-	cmCopy := baseConfigMap.DeepCopy()
+	cmCopy := refreshedBaseConfigMap.DeepCopy()
 	cmCopy.Labels["test"] = "value"
 	cmCopy.Data["test123"] = "321tset"
 	g.Expect(k8sClient.Update(context.TODO(), cmCopy)).To(gomega.Succeed())
