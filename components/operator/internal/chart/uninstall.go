@@ -56,7 +56,7 @@ func uninstallObjects(config *Config, objs []unstructured.Unstructured, filterFu
 	return nil
 }
 
-func UninstallSecrets(config *Config, filterFunc ...FilterFunc) (error, bool) {
+func UninstallResourcesByType(config *Config, resourceType string, filterFunc ...FilterFunc) (error, bool) {
 	spec, err := config.Cache.Get(config.Ctx, config.CacheKey)
 	if err != nil {
 		return fmt.Errorf("could not render manifest from chart: %s", err.Error()), false
@@ -67,7 +67,7 @@ func UninstallSecrets(config *Config, filterFunc ...FilterFunc) (error, bool) {
 		return fmt.Errorf("could not parse chart manifest: %s", err.Error()), false
 	}
 
-	err2, done := uninstallSecrets(config, objs, filterFunc...)
+	err2, done := uninstallResourcesByType(config, objs, resourceType, filterFunc...)
 	if err2 != nil {
 		return err2, false
 	}
@@ -75,14 +75,14 @@ func UninstallSecrets(config *Config, filterFunc ...FilterFunc) (error, bool) {
 	return nil, done
 }
 
-func uninstallSecrets(config *Config, objs []unstructured.Unstructured, filterFunc ...FilterFunc) (error, bool) {
+func uninstallResourcesByType(config *Config, objs []unstructured.Unstructured, resourceType string, filterFunc ...FilterFunc) (error, bool) {
 	done := true
 	for i := range objs {
 		u := objs[i]
 		if !fitToFilters(u, filterFunc...) {
 			continue
 		}
-		if u.GetKind() != "Secret" {
+		if u.GetKind() != resourceType {
 			continue
 		}
 

@@ -75,12 +75,16 @@ func sFnSafeDeletionState(_ context.Context, r *reconciler, s *systemState) (sta
 }
 
 func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...chart.FilterFunc) (stateFn, *ctrl.Result, error) {
-	err, done := chart.UninstallSecrets(s.chartConfig, filterFuncs...)
-	if err != nil {
-		return uninstallSecretsError(r, s, err)
-	}
-	if !done {
-		return awaitingSecretsRemoval(s)
+	resourceTypesToUninstall := []string{"Secret", "ConfigMap"}
+
+	for _, resourceType := range resourceTypesToUninstall {
+		err, done := chart.UninstallResourcesByType(s.chartConfig, resourceType, filterFuncs...)
+		if err != nil {
+			return uninstallResourcesError(r, s, err)
+		}
+		if !done {
+			return awaitingResourcesRemoval(s, resourceType)
+		}
 	}
 
 	if err := chart.Uninstall(s.chartConfig, filterFuncs...); err != nil {
@@ -110,26 +114,14 @@ func uninstallResourcesError(r *reconciler, s *systemState, err error) (stateFn,
 	return stopWithEventualError(err)
 }
 
-func awaitingSecretsRemoval(s *systemState) (stateFn, *ctrl.Result, error) {
+func awaitingResourcesRemoval(s *systemState, resourceType string) (stateFn, *ctrl.Result, error) {
 	s.setState(v1alpha1.StateDeleting)
+
 	s.instance.UpdateConditionTrue(
 		v1alpha1.ConditionTypeDeleted,
 		v1alpha1.ConditionReasonDeletion,
-		"Deleting secrets",
-	)
+		"Deleting "+resourceType)
 
 	// wait one sec until ctrl-mngr remove finalizers from secrets
 	return requeueAfter(time.Second)
-}
-
-func uninstallSecretsError(r *reconciler, s *systemState, err error) (stateFn, *ctrl.Result, error) {
-	r.log.Warnf("error while uninstalling secrets %s: %s",
-		client.ObjectKeyFromObject(&s.instance), err.Error())
-	s.setState(v1alpha1.StateError)
-	s.instance.UpdateConditionFalse(
-		v1alpha1.ConditionTypeDeleted,
-		v1alpha1.ConditionReasonDeletionErr,
-		err,
-	)
-	return stopWithEventualError(err)
 }
