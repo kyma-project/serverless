@@ -3,9 +3,8 @@ package kubernetes
 import (
 	"context"
 	"github.com/kyma-project/serverless/components/serverless/internal/testenv"
-	"testing"
-
 	"go.uber.org/zap"
+	"testing"
 
 	"k8s.io/client-go/kubernetes/scheme"
 
@@ -113,7 +112,7 @@ func TestConfigMapReconciler_predicate(t *testing.T) {
 		deleteEventUnlabelledSrvAcc := event.DeleteEvent{Object: unlabelledConfigMap}
 
 		g.Expect(preds.Delete(deleteEventPod)).To(gomega.BeFalse())
-		g.Expect(preds.Delete(deleteEventLabelledSrvAcc)).To(gomega.BeFalse())
+		g.Expect(preds.Delete(deleteEventLabelledSrvAcc)).To(gomega.BeTrue())
 		g.Expect(preds.Delete(deleteEventUnlabelledSrvAcc)).To(gomega.BeFalse())
 		g.Expect(preds.Delete(event.DeleteEvent{})).To(gomega.BeFalse())
 	})

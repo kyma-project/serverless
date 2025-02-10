@@ -15,7 +15,7 @@ import (
 	"github.com/kyma-project/serverless/components/serverless/internal/resource"
 )
 
-const cfgConfigMapFinalizerName = "serverless.kyma-project.io/config-map-finalizer"
+const cfgConfigMapFinalizerName = "serverless.kyma-project.io/deletion-hook"
 
 type ConfigMapService interface {
 	IsBase(configMap *corev1.ConfigMap) bool
@@ -66,7 +66,7 @@ func (r *configMapService) UpdateNamespace(ctx context.Context, logger *zap.Suga
 }
 
 func (r *configMapService) HandleFinalizer(ctx context.Context, logger *zap.SugaredLogger, instance *corev1.ConfigMap, namespaces []string) error {
-	if instance.DeletionTimestamp.IsZero() {
+	if instance.ObjectMeta.DeletionTimestamp.IsZero() {
 		if containsString(instance.ObjectMeta.Finalizers, cfgConfigMapFinalizerName) {
 			return nil
 		}

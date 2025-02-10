@@ -56,29 +56,23 @@ func uninstallObjects(config *Config, objs []unstructured.Unstructured, filterFu
 	return nil
 }
 
-func UninstallResourcesByType(config *Config, resourceTypes []string, filterFunc ...FilterFunc) (error, bool) {
-	for _, resourceType := range resourceTypes {
-		spec, err := config.Cache.Get(config.Ctx, config.CacheKey)
-		if err != nil {
-			return fmt.Errorf("could not render manifest from chart: %s", err.Error()), false
-		}
-
-		objs, err := parseManifest(spec.Manifest)
-		if err != nil {
-			return fmt.Errorf("could not parse chart manifest: %s", err.Error()), false
-		}
-
-		err2, done := uninstallResourcesByType(config, objs, resourceType, filterFunc...)
-		if err2 != nil {
-			return err2, false
-		}
-
-		if !done {
-			return nil, false
-		}
+func UninstallResourcesByType(config *Config, resourceType string, filterFunc ...FilterFunc) (error, bool) {
+	spec, err := config.Cache.Get(config.Ctx, config.CacheKey)
+	if err != nil {
+		return fmt.Errorf("could not render manifest from chart: %s", err.Error()), false
 	}
 
-	return nil, true
+	objs, err := parseManifest(spec.Manifest)
+	if err != nil {
+		return fmt.Errorf("could not parse chart manifest: %s", err.Error()), false
+	}
+
+	err2, done := uninstallResourcesByType(config, objs, resourceType, filterFunc...)
+	if err2 != nil {
+		return err2, false
+	}
+
+	return nil, done
 }
 
 func uninstallResourcesByType(config *Config, objs []unstructured.Unstructured, resourceType string, filterFunc ...FilterFunc) (error, bool) {
