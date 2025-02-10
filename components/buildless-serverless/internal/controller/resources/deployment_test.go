@@ -81,20 +81,34 @@ func TestDeployment_construct(t *testing.T) {
 	})
 	t.Run("create labels based on function", func(t *testing.T) {
 		d := minimalDeployment()
-		expectedLabels := map[string]string{
-			"app": "test-function-name",
-			"serverless.kyma-project.io/function-name": "test-function-name",
-			"serverless.kyma-project.io/managed-by":    "function-controller",
-			"serverless.kyma-project.io/resource":      "deployment",
-			"serverless.kyma-project.io/uuid":          "test-uid",
+		d.function.Spec.Labels = map[string]string{
+			"shtern": "stoic",
+			"boyd":   "vigilant",
 		}
 
 		r := d.construct()
 
 		require.NotNil(t, r)
-		require.Equal(t, expectedLabels, r.ObjectMeta.Labels)
-		require.Equal(t, expectedLabels, r.Spec.Selector.MatchLabels)
-		require.Equal(t, expectedLabels, r.Spec.Template.ObjectMeta.Labels)
+		require.Equal(t, map[string]string{
+			"serverless.kyma-project.io/function-name": "test-function-name",
+			"serverless.kyma-project.io/managed-by":    "function-controller",
+			"serverless.kyma-project.io/uuid":          "test-uid",
+		}, r.ObjectMeta.Labels)
+		require.Equal(t, map[string]string{
+			"serverless.kyma-project.io/function-name": "test-function-name",
+			"serverless.kyma-project.io/managed-by":    "function-controller",
+			"serverless.kyma-project.io/resource":      "deployment",
+			"serverless.kyma-project.io/uuid":          "test-uid",
+		}, r.Spec.Selector.MatchLabels)
+		require.Equal(t, map[string]string{
+			"serverless.kyma-project.io/function-name": "test-function-name",
+			"serverless.kyma-project.io/managed-by":    "function-controller",
+			"serverless.kyma-project.io/resource":      "deployment",
+			"serverless.kyma-project.io/uuid":          "test-uid",
+			"app.kubernetes.io/name":                   "test-function-name",
+			"shtern":                                   "stoic",
+			"boyd":                                     "vigilant",
+		}, r.Spec.Template.ObjectMeta.Labels)
 	})
 	t.Run("use container name from function", func(t *testing.T) {
 		d := minimalDeployment()
@@ -136,7 +150,7 @@ func TestDeployment_construct(t *testing.T) {
 			[]string{
 				"sh",
 				"-c",
-				`printf "${FUNC_HANDLER_SOURCE}" > handler.py;
+				`echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 cd ..;
 python /kubeless.py;`,
 			},
@@ -469,6 +483,11 @@ func TestDeployment_volumeMounts(t *testing.T) {
 					MountPath: "/usr/src/app/function",
 				},
 				{
+					Name:      "tmp",
+					ReadOnly:  false,
+					MountPath: "/tmp",
+				},
+				{
 					Name:      "package-registry-config",
 					ReadOnly:  true,
 					MountPath: "/usr/src/app/function/package-registry-config/.npmrc",
@@ -485,6 +504,11 @@ func TestDeployment_volumeMounts(t *testing.T) {
 					MountPath: "/usr/src/app/function",
 				},
 				{
+					Name:      "tmp",
+					ReadOnly:  false,
+					MountPath: "/tmp",
+				},
+				{
 					Name:      "package-registry-config",
 					ReadOnly:  true,
 					MountPath: "/usr/src/app/function/package-registry-config/.npmrc",
@@ -499,6 +523,11 @@ func TestDeployment_volumeMounts(t *testing.T) {
 				{
 					Name:      "sources",
 					MountPath: "/kubeless",
+				},
+				{
+					Name:      "tmp",
+					ReadOnly:  false,
+					MountPath: "/tmp",
 				},
 				{
 					Name:      "local",
@@ -558,6 +587,12 @@ func TestDeployment_volumes(t *testing.T) {
 						},
 					},
 				},
+				{
+					Name: "tmp",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
 			},
 		},
 		{
@@ -579,6 +614,12 @@ func TestDeployment_volumes(t *testing.T) {
 						},
 					},
 				},
+				{
+					Name: "tmp",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
 			},
 		},
 		{
@@ -598,6 +639,12 @@ func TestDeployment_volumes(t *testing.T) {
 							SecretName: "test-secret-name",
 							Optional:   ptr.To[bool](true),
 						},
+					},
+				},
+				{
+					Name: "tmp",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
 					},
 				},
 				{
@@ -714,6 +761,9 @@ func TestDeployment_envs(t *testing.T) {
 		{
 			name: "build envs based on nodejs20 function",
 			function: &serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "function-namespace",
+				},
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.NodeJs20,
 					Source: serverlessv1alpha2.Source{
@@ -726,12 +776,20 @@ func TestDeployment_envs(t *testing.T) {
 			},
 			want: []corev1.EnvVar{
 				{
+					Name:  "SERVICE_NAMESPACE",
+					Value: "function-namespace",
+				},
+				{
 					Name:  "FUNC_HANDLER_SOURCE",
 					Value: "function-source",
 				},
 				{
 					Name:  "FUNC_HANDLER_DEPENDENCIES",
 					Value: "function-dependencies",
+				},
+				{
+					Name:  "TRACE_COLLECTOR_ENDPOINT",
+					Value: "test-trace-collector-endpoint",
 				},
 				{
 					Name:  "PUBLISHER_PROXY_ADDRESS",
@@ -742,6 +800,9 @@ func TestDeployment_envs(t *testing.T) {
 		{
 			name: "build envs based on nodejs22 function",
 			function: &serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "function-namespace",
+				},
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.NodeJs22,
 					Source: serverlessv1alpha2.Source{
@@ -754,12 +815,20 @@ func TestDeployment_envs(t *testing.T) {
 			},
 			want: []corev1.EnvVar{
 				{
+					Name:  "SERVICE_NAMESPACE",
+					Value: "function-namespace",
+				},
+				{
 					Name:  "FUNC_HANDLER_SOURCE",
 					Value: "function-source",
 				},
 				{
 					Name:  "FUNC_HANDLER_DEPENDENCIES",
 					Value: "function-dependencies",
+				},
+				{
+					Name:  "TRACE_COLLECTOR_ENDPOINT",
+					Value: "test-trace-collector-endpoint",
 				},
 				{
 					Name:  "PUBLISHER_PROXY_ADDRESS",
@@ -770,6 +839,9 @@ func TestDeployment_envs(t *testing.T) {
 		{
 			name: "build envs based on python312 function",
 			function: &serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "function-namespace",
+				},
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.Python312,
 					Source: serverlessv1alpha2.Source{
@@ -782,12 +854,20 @@ func TestDeployment_envs(t *testing.T) {
 			},
 			want: []corev1.EnvVar{
 				{
+					Name:  "SERVICE_NAMESPACE",
+					Value: "function-namespace",
+				},
+				{
 					Name:  "FUNC_HANDLER_SOURCE",
 					Value: "function-source-py",
 				},
 				{
 					Name:  "FUNC_HANDLER_DEPENDENCIES",
 					Value: "function-dependencies-py",
+				},
+				{
+					Name:  "TRACE_COLLECTOR_ENDPOINT",
+					Value: "test-trace-collector-endpoint",
 				},
 				{
 					Name:  "PUBLISHER_PROXY_ADDRESS",
@@ -809,7 +889,8 @@ func TestDeployment_envs(t *testing.T) {
 			d := &Deployment{
 				function: tt.function,
 				functionConfig: &config.FunctionConfig{
-					FunctionPublisherProxyAddress: "test-proxy-address",
+					FunctionPublisherProxyAddress:  "test-proxy-address",
+					FunctionTraceCollectorEndpoint: "test-trace-collector-endpoint",
 				},
 			}
 
@@ -838,7 +919,7 @@ func TestDeployment_runtimeCommand(t *testing.T) {
 					},
 				},
 			},
-			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
+			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 cd ..;
 python /kubeless.py;`,
 		},
@@ -855,8 +936,8 @@ python /kubeless.py;`,
 					},
 				},
 			},
-			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
-printf "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
+			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
+echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
 cd ..;
 python /kubeless.py;`,
@@ -873,7 +954,7 @@ python /kubeless.py;`,
 					},
 				},
 			},
-			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
+			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 cd ..;
 npm start;`,
 		},
@@ -890,8 +971,8 @@ npm start;`,
 					},
 				},
 			},
-			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
-printf "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
+			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
+echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
@@ -908,7 +989,7 @@ npm start;`,
 					},
 				},
 			},
-			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
+			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 cd ..;
 npm start;`,
 		},
@@ -925,8 +1006,8 @@ npm start;`,
 					},
 				},
 			},
-			want: `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
-printf "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
+			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
+echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,

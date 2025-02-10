@@ -7,8 +7,6 @@ set -E          # needs to be set if we want the ERR trap
 set -o pipefail # prevents errors in a pipeline from being masked
 
 # Expected variables:
-IMG=${IMG?"Define IMG env"} # operator image
-PULL_BASE_REF=${PULL_BASE_REF?"Define PULL_BASE_REF env"} # name of the tag
 GITHUB_TOKEN=${GITHUB_TOKEN?"Define GITHUB_TOKEN env"} # github token used to upload the template yaml
 RELEASE_ID=${RELEASE_ID?"Define RELEASE_ID env"} # github token used to upload the template yaml
 
@@ -32,8 +30,7 @@ uploadFile() {
   fi
 }
 
-echo "IMG: ${IMG}"
-IMG=${IMG} make -C components/operator/ render-manifest
+make -C components/operator/ render-manifest
 
 echo "Generated serverless-operator.yaml:"
 cat serverless-operator.yaml

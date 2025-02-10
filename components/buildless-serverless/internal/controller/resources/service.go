@@ -24,24 +24,13 @@ func NewService(f *serverlessv1alpha2.Function) *Service {
 	return s
 }
 
-func (s *Service) functionLabels() map[string]string {
-	return map[string]string{
-		serverlessv1alpha2.FunctionNameLabel:      s.function.GetName(),
-		serverlessv1alpha2.FunctionManagedByLabel: serverlessv1alpha2.FunctionControllerValue,
-		serverlessv1alpha2.FunctionUUIDLabel:      string(s.function.GetUID()),
-	}
-}
-
 func (s *Service) construct() *corev1.Service {
-	selectorLabes := s.functionLabels()
-	selectorLabes[serverlessv1alpha2.FunctionResourceLabel] = serverlessv1alpha2.FunctionResourceLabelDeploymentValue
-
 	service := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      s.function.Name,
 			Namespace: s.function.Namespace,
-			//TODO: do we need to add labels or annotations here?
-			Labels: s.functionLabels(),
+			Labels:    s.function.FunctionLabels(),
+			//TODO: do we need to add annotations here?
 			//Annotations: s.functionAnnotations(),
 		},
 		Spec: corev1.ServiceSpec{
@@ -51,7 +40,7 @@ func (s *Service) construct() *corev1.Service {
 				Port:       80,
 				Protocol:   corev1.ProtocolTCP,
 			}},
-			Selector: selectorLabes,
+			Selector: s.function.SelectorLabels(),
 		},
 	}
 

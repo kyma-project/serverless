@@ -79,7 +79,6 @@ install-operator-k3d: build-image-operator ## Build and replace serverless opera
 	k3d image import $(OPERATOR_NAME):$(HASH_TAG) -c kyma
 	kubectl set image deployment serverless-operator -n kyma-system manager=$(OPERATOR_NAME):$(HASH_TAG)
 
-
 .PHONY: install
 install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR)/crd | kubectl apply -f -
@@ -92,7 +91,6 @@ uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified 
 deploy-main: manifests kustomize ## Deploy operator to the K8s cluster specified in ~/.kube/config.
 	kubectl create namespace kyma-system || true
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR_MAIN) | kubectl apply -f -
-
 
 .PHONY: generate-kustomization-dev
 generate-kustomization-dev:
@@ -109,6 +107,12 @@ deploy: manifests kustomize generate-kustomization-dev ## Deploy operator to the
 	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit set image europe-docker.pkg.dev/kyma-project/prod/serverless-operator=${IMG}
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR_DEV) | kubectl apply -f -
 
+.PHONY: deploy-buildless
+deploy-buildless: deploy
+	kubectl get deployment serverless-operator -n kyma-system -o json | \
+	jq '.spec.template.spec.containers[].env |= map(if .name == "CHART_PATH" then .value = "/buildless-module-chart" else . end)' | \
+	kubectl apply -f -
+
 .PHONY: deploy-local
 deploy-local: build-image-operator ## Deploy operator to the K8s cluster specified in ~/.kube/config with locally build image.
 	$(eval HASH_TAG=$(shell docker images $(OPERATOR_NAME):latest --quiet))
@@ -123,10 +127,8 @@ undeploy: ## Undeploy operator from the K8s cluster specified in ~/.kube/config.
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) | kubectl delete --ignore-not-found=$(IGNORE_NOT_FOUND) -f -
 
 .PHONY: render-manifest
-render-manifest: manifests kustomize ## Render serverless-operator.yaml manifest with image from IMG env.
-	cd $(CONFIG_OPERATOR)/deployment && $(KUSTOMIZE) edit set image controller=${IMG}
+render-manifest: kustomize ## Render serverless-operator.yaml manifest.
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/serverless-operator.yaml
-
 
 .PHONY: apply-default-serverless-cr
 apply-default-serverless-cr: ## Apply the k3d serverless CR.
@@ -136,7 +138,6 @@ apply-default-serverless-cr: ## Apply the k3d serverless CR.
 .PHONY: remove-default-serverless-cr
 remove-serverless: ## Remove Serverless CR
 	kubectl delete serverless -n kyma-system default --timeout 2m || (kubectl get serverless -n kyma-system -oyaml && false)
-
 
 .PHONY: check-serverless-installation
 check-serverless-installation: ## Wait for Serverless CR to be in Ready state.
@@ -152,12 +153,25 @@ check-serverless-installation: ## Wait for Serverless CR to be in Ready state.
 	kubectl wait --for condition=Available -n kyma-system deployment serverless-ctrl-mngr --timeout=60s || \
 		(make print-serverless-details && false)
 
+.PHONY: check-buildless-serverless-installation
+check-buildless-serverless-installation: ## Wait for Serverless CR to be in Ready state.
+	# wait some time to make sure operator starts the reconciliation first
+	sleep 10
+
+	./hack/verify_serverless_status.sh || \
+		(make print-serverless-details && false)
+
+	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s || \
+		(make print-serverless-details && false)
+
+	kubectl wait --for condition=Available -n kyma-system deployment buildless-serverless-controller-manager --timeout=60s || \
+		(make print-serverless-details && false)
+
 .PHONY: print-serverless-details
 print-serverless-details: ## Print all pods, deploys and serverless CRs in the kyma-system namespace.
 	kubectl get serverless -n kyma-system -oyaml
 	kubectl get deploy -n kyma-system -oyaml
 	kubectl get pods -n kyma-system -oyaml
-
 
 ##@ Module
 

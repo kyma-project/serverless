@@ -6,9 +6,8 @@ metadata:
   name: {{ template "docker-registry.fullname" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: {{ template "docker-registry.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-    release: {{ .Release.Name }}
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
 spec:
   selector:
     matchLabels:
@@ -22,8 +21,8 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ template "docker-registry.name" . }}
         release: {{ .Release.Name }}
+        {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 8 }}
         {{- if .Values.podLabels }}
 {{ toYaml .Values.podLabels | indent 8 }}
         {{- end }}

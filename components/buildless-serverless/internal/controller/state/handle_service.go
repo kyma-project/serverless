@@ -29,7 +29,7 @@ func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 		//TODO: think what we should return here (in context of state machine)
 		return nil, resultUpdate, errUpdate
 	}
-	return nextState(sFnAdjustStatus)
+	return nextState(sFnDeploymentStatus)
 }
 
 func getOrCreateService(ctx context.Context, m *fsm.StateMachine, builtService *corev1.Service) (*corev1.Service, *ctrl.Result, error) {
@@ -57,7 +57,15 @@ func createService(ctx context.Context, m *fsm.StateMachine, service *corev1.Ser
 
 	// Set the ownerRef for the Service, ensuring that the Service
 	// will be deleted when the Function CR is deleted.
-	controllerutil.SetControllerReference(&m.State.Function, service, m.Scheme)
+	if err := controllerutil.SetControllerReference(&m.State.Function, service, m.Scheme); err != nil {
+		m.Log.Error(err, "failed to set controller reference for new Service", "Service.Namespace", service.GetNamespace(), "Service.Name", service.GetName())
+		m.State.Function.UpdateCondition(
+			serverlessv1alpha2.ConditionRunning,
+			metav1.ConditionFalse,
+			serverlessv1alpha2.ConditionReasonServiceFailed,
+			fmt.Sprintf("Service %s create failed: %s", service.GetName(), err.Error()))
+		return nil, err
+	}
 
 	if err := m.Client.Create(ctx, service); err != nil {
 		m.Log.Error(err, "failed to create new Service", "Service.Namespace", service.GetNamespace(), "Service.Name", service.GetName())

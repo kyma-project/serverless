@@ -54,10 +54,10 @@ global:
   commonLabels:
     app: '{{ template "name" . }}'
     version: "{{ .Values.global.images.function_controller.version }}"
-    kyma-project.io/module: '{{ template "name" . }}'
+    kyma-project.io/module: 'serverless'
     app.kubernetes.io/name: '{{ template "name" . }}'
     app.kubernetes.io/version: "{{ .Values.global.images.function_controller.version }}"
-    app.kubernetes.io/part-of: '{{ template "name" . }}'
+    app.kubernetes.io/part-of: 'serverless'
     app.kubernetes.io/managed-by: "Helm"
     helm.sh/chart: '{{ include "chart" . }}'
   registryServicePort: 5000

@@ -21,8 +21,8 @@ import (
 // - gitSources - stateFnGitCheckSources
 
 func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	m.State.Deployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig)
-	builtDeployment := m.State.Deployment.Deployment
+	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig)
+	builtDeployment := m.State.BuiltDeployment.Deployment
 
 	clusterDeployment, resultGet, errGet := getOrCreateDeployment(ctx, m, builtDeployment)
 	if clusterDeployment == nil {
@@ -66,7 +66,15 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine, deployment *apps
 
 	// Set the ownerRef for the Deployment, ensuring that the Deployment
 	// will be deleted when the Function CR is deleted.
-	controllerutil.SetControllerReference(&m.State.Function, deployment, m.Scheme)
+	if err := controllerutil.SetControllerReference(&m.State.Function, deployment, m.Scheme); err != nil {
+		m.Log.Error(err, "failed to set controller reference for new Deployment", "Deployment.Namespace", deployment.GetNamespace(), "Deployment.Name", deployment.GetName())
+		m.State.Function.UpdateCondition(
+			serverlessv1alpha2.ConditionRunning,
+			metav1.ConditionFalse,
+			serverlessv1alpha2.ConditionReasonDeploymentFailed,
+			fmt.Sprintf("Deployment %s create failed: %s", deployment.GetName(), err.Error()))
+		return nil, err
+	}
 
 	if err := m.Client.Create(ctx, deployment); err != nil {
 		m.Log.Error(err, "failed to create new Deployment", "Deployment.Namespace", deployment.GetNamespace(), "Deployment.Name", deployment.GetName())
@@ -86,7 +94,7 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine, deployment *apps
 	return &ctrl.Result{RequeueAfter: time.Minute}, nil
 }
 
-func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment, builtDeployment *appsv1.Deployment) (bool, error) {
+func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment, builtDeployment *appsv1.Deployment) (requeueNeeded bool, err error) {
 	// Ensure the Deployment data matches the desired state
 	if !deploymentChanged(clusterDeployment, builtDeployment) {
 		return false, nil
@@ -100,23 +108,24 @@ func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterD
 
 func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 	if len(a.Spec.Template.Spec.Containers) != 1 ||
-		len(a.Spec.Template.Spec.Containers) != 1 {
+		len(b.Spec.Template.Spec.Containers) != 1 {
 		return true
 	}
-	aSpec := a.Spec.Template.Spec.Containers[0]
-	bSpec := b.Spec.Template.Spec.Containers[0]
+	aContainer := a.Spec.Template.Spec.Containers[0]
+	bContainer := b.Spec.Template.Spec.Containers[0]
 
-	imageChanged := aSpec.Image != bSpec.Image
+	imageChanged := aContainer.Image != bContainer.Image
 	labelsChanged := !reflect.DeepEqual(a.Spec.Template.ObjectMeta.Labels, b.Spec.Template.ObjectMeta.Labels)
 	replicasChanged := (a.Spec.Replicas == nil && b.Spec.Replicas != nil) ||
 		(a.Spec.Replicas != nil && b.Spec.Replicas == nil) ||
 		(a.Spec.Replicas != nil && b.Spec.Replicas != nil && *a.Spec.Replicas != *b.Spec.Replicas)
-	workingDirChanged := !reflect.DeepEqual(aSpec.WorkingDir, bSpec.WorkingDir)
-	commandChanged := !reflect.DeepEqual(aSpec.Command, bSpec.Command)
-	resourcesChanged := !reflect.DeepEqual(aSpec.Resources, bSpec.Resources)
-	envChanged := !reflect.DeepEqual(aSpec.Env, bSpec.Env)
-	volumeMountsChanged := !reflect.DeepEqual(aSpec.VolumeMounts, bSpec.VolumeMounts)
-	portsChanged := !reflect.DeepEqual(aSpec.Ports, bSpec.Ports)
+	workingDirChanged := !reflect.DeepEqual(aContainer.WorkingDir, bContainer.WorkingDir)
+	commandChanged := !reflect.DeepEqual(aContainer.Command, bContainer.Command)
+	resourcesChanged := !reflect.DeepEqual(aContainer.Resources, bContainer.Resources)
+	envChanged := !reflect.DeepEqual(aContainer.Env, bContainer.Env)
+	volumeMountsChanged := !reflect.DeepEqual(aContainer.VolumeMounts, bContainer.VolumeMounts)
+	portsChanged := !reflect.DeepEqual(aContainer.Ports, bContainer.Ports)
+
 	return imageChanged ||
 		labelsChanged ||
 		replicasChanged ||
@@ -128,15 +137,15 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 		portsChanged
 }
 
-func updateDeployment(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment) (bool, error) {
-	if err := m.Client.Update(ctx, clusterDeployment); err != nil {
-		m.Log.Error(err, "Failed to update Deployment", "Deployment.Namespace", clusterDeployment.GetNamespace(), "Deployment.Name", clusterDeployment.GetName())
+func updateDeployment(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment) (requeueNeeded bool, err error) {
+	if errUpdate := m.Client.Update(ctx, clusterDeployment); errUpdate != nil {
+		m.Log.Error(errUpdate, "Failed to update Deployment", "Deployment.Namespace", clusterDeployment.GetNamespace(), "Deployment.Name", clusterDeployment.GetName())
 		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonDeploymentFailed,
-			fmt.Sprintf("Deployment %s update failed: %s", clusterDeployment.GetName(), err.Error()))
-		return false, err
+			fmt.Sprintf("Deployment %s update failed: %s", clusterDeployment.GetName(), errUpdate.Error()))
+		return false, errUpdate
 	}
 	m.State.Function.UpdateCondition(
 		serverlessv1alpha2.ConditionRunning,

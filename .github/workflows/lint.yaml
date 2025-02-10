@@ -26,13 +26,12 @@ jobs:
           version: latest
           working-directory: 'components/serverless'
 
-# TODO: uncomment when buildless-serverless is ready
-#  buildless-serverless-lint:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v4
-#      - uses: ./.github/actions/setup-go
-#      - uses: golangci/golangci-lint-action@639cd343e1d3b897ff35927a75193d57cfcba299
-#        with:
-#          version: latest
-#          working-directory: 'components/buildless-serverless'
+  buildless-serverless-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-go
+      - uses: golangci/golangci-lint-action@639cd343e1d3b897ff35927a75193d57cfcba299
+        with:
+          version: latest
+          working-directory: 'components/buildless-serverless'

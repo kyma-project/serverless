@@ -35,6 +35,19 @@ func Test_buildSFnApplyResources(t *testing.T) {
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnVerifyResources, next)
 
+		expectedFlags := map[string]interface{}{
+			"global": map[string]interface{}{
+				"commonLabels": map[string]interface{}{
+					"app.kubernetes.io/managed-by": "serverless-operator",
+				},
+			},
+		}
+
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+
+		require.Equal(t, expectedFlags, flags)
+
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
 		requireContainsCondition(t, status,

@@ -33,6 +33,25 @@ jobs:
       - if: ${{ always() }}
         uses: ./.github/actions/collect-cluster-info
 
+  buildless-serverless-integration-test:
+    if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - uses: ./.github/actions/setup-go
+      - uses: ./.github/actions/create-k3d-cluster
+      - name: run test
+        run: |
+          make install-buildless-serverless-custom-operator
+          make -C tests/serverless serverless-integration serverless-contract-tests
+          make remove-serverless
+        env:
+          IMG: ${{ inputs.image }}
+          INCLUDE_GITOPS_TEST: false
+
   serverless-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
@@ -50,6 +69,7 @@ jobs:
           make remove-serverless
         env:
           IMG: ${{ inputs.image }}
+          INCLUDE_GITOPS_TEST: true
 
   git-auth-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}

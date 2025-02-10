@@ -2,11 +2,13 @@ package chart
 
 import (
 	"fmt"
-	"strings"
+
+	"github.com/pkg/errors"
+	"helm.sh/helm/v3/pkg/strvals"
 )
 
 type FlagsBuilder interface {
-	Build() map[string]interface{}
+	Build() (map[string]interface{}, error)
 	WithControllerConfiguration(CPUUtilizationPercentage string, requeueDuration string, buildExecutorArgs string, maxSimultaneousJobs string, healthzLivenessTimeout string) *flagsBuilder
 	WithDefaultPresetFlags(defaultBuildJobPreset string, defaultRuntimePodPreset string) *flagsBuilder
 	WithOptionalDependencies(publisherURL string, traceCollectorURL string) *flagsBuilder
@@ -14,6 +16,7 @@ type FlagsBuilder interface {
 	WithRegistryCredentials(username string, password string) *flagsBuilder
 	WithRegistryEnableInternal(enableInternal bool) *flagsBuilder
 	WithRegistryHttpSecret(httpSecret string) *flagsBuilder
+	WithManagedByLabel(string) *flagsBuilder
 	WithNodePort(nodePort int64) *flagsBuilder
 	WithLogLevel(logLevel string) *flagsBuilder
 	WithLogFormat(logFormat string) *flagsBuilder
@@ -29,39 +32,16 @@ func NewFlagsBuilder() FlagsBuilder {
 	}
 }
 
-func (fb *flagsBuilder) Build() map[string]interface{} {
+func (fb *flagsBuilder) Build() (map[string]interface{}, error) {
 	flags := map[string]interface{}{}
 	for key, value := range fb.flags {
-		flagPath := strings.Split(key, ".")
-		appendFlag(flags, flagPath, value)
-	}
-	return flags
-}
-
-func appendFlag(flags map[string]interface{}, flagPath []string, value interface{}) {
-	currentFlag := flags
-	for i, pathPart := range flagPath {
-		createIfEmpty(currentFlag, pathPart)
-		if lastElement(flagPath, i) {
-			currentFlag[pathPart] = value
-		} else {
-			currentFlag = nextDeeperFlag(currentFlag, pathPart)
+		flag := fmt.Sprintf("%s=%v", key, value)
+		err := strvals.ParseInto(flag, flags)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to parse %s flag", flag)
 		}
 	}
-}
-
-func createIfEmpty(flags map[string]interface{}, key string) {
-	if _, ok := flags[key]; !ok {
-		flags[key] = map[string]interface{}{}
-	}
-}
-
-func lastElement(values []string, i int) bool {
-	return i == len(values)-1
-}
-
-func nextDeeperFlag(currentFlag map[string]interface{}, path string) map[string]interface{} {
-	return currentFlag[path].(map[string]interface{})
+	return flags, nil
 }
 
 func (fb *flagsBuilder) WithControllerConfiguration(CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout string) *flagsBuilder {
@@ -126,6 +106,11 @@ func (fb *flagsBuilder) WithDefaultPresetFlags(defaultBuildJobPreset, defaultRun
 		fb.flags["containers.manager.configuration.data.resourcesConfiguration.buildJob.resources.defaultPreset"] = defaultBuildJobPreset
 	}
 
+	return fb
+}
+
+func (fb *flagsBuilder) WithManagedByLabel(managedBy string) *flagsBuilder {
+	fb.flags["global.commonLabels.app\\.kubernetes\\.io/managed-by"] = managedBy
 	return fb
 }
 

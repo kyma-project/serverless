@@ -29,27 +29,19 @@ func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig) *De
 }
 
 func (d *Deployment) construct() *appsv1.Deployment {
-	labels := map[string]string{
-		"app":                                d.name(),
-		serverlessv1alpha2.FunctionNameLabel: d.function.GetName(),
-		serverlessv1alpha2.FunctionManagedByLabel: serverlessv1alpha2.FunctionControllerValue,
-		serverlessv1alpha2.FunctionResourceLabel:  serverlessv1alpha2.FunctionResourceLabelDeploymentValue,
-		serverlessv1alpha2.FunctionUUIDLabel:      string(d.function.GetUID()),
-	}
-
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      d.name(),
 			Namespace: d.function.Namespace,
-			Labels:    labels,
+			Labels:    d.function.FunctionLabels(),
 		},
 		Spec: appsv1.DeploymentSpec{
 			Selector: &metav1.LabelSelector{
-				MatchLabels: labels,
+				MatchLabels: d.function.SelectorLabels(),
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels: labels,
+					Labels: d.function.PodLabels(),
 				},
 				Spec: d.podSpec(),
 			},
@@ -73,6 +65,7 @@ func (d *Deployment) podRunAsUserUID() *int64 {
 
 func (d *Deployment) podSpec() corev1.PodSpec {
 	secretVolumes, secretVolumeMounts := d.deploymentSecretVolumes()
+	defaultProcMount := corev1.DefaultProcMount
 
 	return corev1.PodSpec{
 		Volumes: append(d.volumes(), secretVolumes...),
@@ -131,12 +124,22 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 					TimeoutSeconds:   4,
 				},
 				SecurityContext: &corev1.SecurityContext{
-					RunAsGroup: d.podRunAsUserUID(), // set to 1000 because default value is root(0)
-					RunAsUser:  d.podRunAsUserUID(),
-					SeccompProfile: &corev1.SeccompProfile{
-						Type: corev1.SeccompProfileTypeRuntimeDefault,
+					Privileged: ptr.To[bool](false),
+					Capabilities: &corev1.Capabilities{
+						Drop: []corev1.Capability{
+							"ALL",
+						},
 					},
+					ProcMount:              &defaultProcMount,
+					ReadOnlyRootFilesystem: ptr.To[bool](true),
 				},
+			},
+		},
+		SecurityContext: &corev1.PodSecurityContext{
+			RunAsUser:  d.podRunAsUserUID(),
+			RunAsGroup: d.podRunAsUserUID(),
+			SeccompProfile: &corev1.SeccompProfile{
+				Type: corev1.SeccompProfileTypeRuntimeDefault,
 			},
 		},
 	}
@@ -170,6 +173,12 @@ func (d *Deployment) volumes() []corev1.Volume {
 				},
 			},
 		},
+		{
+			Name: "tmp",
+			VolumeSource: corev1.VolumeSource{
+				EmptyDir: &corev1.EmptyDirVolumeSource{},
+			},
+		},
 	}
 	if runtime == serverlessv1alpha2.Python312 {
 		volumes = append(volumes, corev1.Volume{
@@ -189,6 +198,11 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 		{
 			Name:      "sources",
 			MountPath: d.workingSourcesDir(),
+		},
+		{
+			Name:      "tmp",
+			ReadOnly:  false,
+			MountPath: "/tmp",
 		},
 	}
 	if runtime == serverlessv1alpha2.NodeJs20 || runtime == serverlessv1alpha2.NodeJs22 {
@@ -250,26 +264,24 @@ func (d *Deployment) runtimeCommand() string {
 	switch spec.Runtime {
 	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
 		if dependencies != "" {
-			// if deps are not empty use pip
-			return `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
-printf "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
+			return `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
+echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`
 		}
-		return `printf "${FUNC_HANDLER_SOURCE}" > handler.js;
+		return `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 cd ..;
 npm start;`
 	case serverlessv1alpha2.Python312:
 		if dependencies != "" {
-			// if deps are not empty use npm
-			return `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
-printf "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
+			return `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
+echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
 cd ..;
 python /kubeless.py;`
 		}
-		return `printf "${FUNC_HANDLER_SOURCE}" > handler.py;
+		return `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 cd ..;
 python /kubeless.py;`
 	default:
@@ -281,12 +293,20 @@ func (d *Deployment) envs() []corev1.EnvVar {
 	spec := &d.function.Spec
 	envs := []corev1.EnvVar{
 		{
+			Name:  "SERVICE_NAMESPACE",
+			Value: d.function.Namespace,
+		},
+		{
 			Name:  "FUNC_HANDLER_SOURCE",
 			Value: spec.Source.Inline.Source,
 		},
 		{
 			Name:  "FUNC_HANDLER_DEPENDENCIES",
 			Value: spec.Source.Inline.Dependencies,
+		},
+		{
+			Name:  "TRACE_COLLECTOR_ENDPOINT",
+			Value: d.functionConfig.FunctionTraceCollectorEndpoint,
 		},
 		{
 			Name:  "PUBLISHER_PROXY_ADDRESS",

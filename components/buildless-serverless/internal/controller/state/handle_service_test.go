@@ -211,7 +211,7 @@ func Test_sFnHandleService(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnAdjustStatus, next)
+		requireEqualFunc(t, sFnDeploymentStatus, next)
 		// service has not been created or updated
 		require.False(t, createOrUpdateWasCalled)
 		// function conditions remain unchanged
@@ -256,7 +256,7 @@ func Test_sFnHandleService(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnAdjustStatus, next)
+		requireEqualFunc(t, sFnDeploymentStatus, next)
 		// function has proper condition
 		requireContainsCondition(t, m.State.Function.Status,
 			serverlessv1alpha2.ConditionRunning,

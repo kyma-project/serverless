@@ -20,13 +20,16 @@ const (
 )
 
 func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	deploymentName := m.State.Deployment.GetName()
+	deploymentName := m.State.BuiltDeployment.GetName()
 	deployment := appsv1.Deployment{}
-	// TODO: should not we check error?
-	m.Client.Get(ctx, client.ObjectKey{
-		Namespace: m.State.Deployment.GetNamespace(),
+	err := m.Client.Get(ctx, client.ObjectKey{
+		Namespace: m.State.BuiltDeployment.GetNamespace(),
 		Name:      deploymentName,
 	}, &deployment)
+	if err != nil {
+		return nil, &ctrl.Result{RequeueAfter: defaultRequeueTime}, errors.Wrap(err, "while getting deployments")
+	}
+	m.State.ClusterDeployment = &deployment
 
 	// ready deployment
 	if isDeploymentReady(deployment) {
@@ -38,8 +41,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 			serverlessv1alpha2.ConditionReasonDeploymentReady,
 			fmt.Sprintf("Deployment %s is ready", deploymentName))
 
-		// TODO: requeue with sleep should be in the last state (now this is the last state bat it will be changed)
-		return requeueAfter(m.FunctionConfig.FunctionReadyRequeueDuration)
+		return nextState(sFnAdjustStatus)
 	}
 
 	// unhealthy deployment
