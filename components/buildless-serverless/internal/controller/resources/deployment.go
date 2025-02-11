@@ -1,6 +1,7 @@
 package resources
 
 import (
+	"fmt"
 	"path"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
@@ -60,7 +61,7 @@ func (d *Deployment) name() string {
 }
 
 func (d *Deployment) podRunAsUserUID() *int64 {
-	return ptr.To[int64](1000) // runAsUser 1000 is the most popular and standard value for non-root user
+	return ptr.To[int64](0) // runAsUser 1000 is the most popular and standard value for non-root user
 }
 
 func (d *Deployment) podSpec() corev1.PodSpec {
@@ -69,6 +70,29 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 
 	return corev1.PodSpec{
 		Volumes: append(d.volumes(), secretVolumes...),
+		InitContainers: []corev1.Container{
+			{
+				Name:       fmt.Sprintf("%s-init", d.name()),
+				Image:      "europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.2",
+				WorkingDir: d.workingSourcesDir(),
+				Command: []string{
+					"sh",
+					"-c",
+					"echo ala > makapaka.txt;",
+				},
+				VolumeMounts: append(d.volumeMounts(), secretVolumeMounts...),
+				SecurityContext: &corev1.SecurityContext{
+					Privileged: ptr.To[bool](false),
+					Capabilities: &corev1.Capabilities{
+						Drop: []corev1.Capability{
+							"ALL",
+						},
+					},
+					ProcMount:              &defaultProcMount,
+					ReadOnlyRootFilesystem: ptr.To[bool](false),
+				},
+			},
+		},
 		Containers: []corev1.Container{
 			{
 				Name:       d.name(),
@@ -131,7 +155,7 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 						},
 					},
 					ProcMount:              &defaultProcMount,
-					ReadOnlyRootFilesystem: ptr.To[bool](true),
+					ReadOnlyRootFilesystem: ptr.To[bool](false),
 				},
 			},
 		},
@@ -266,12 +290,19 @@ func (d *Deployment) runtimeCommand() string {
 		if dependencies != "" {
 			return `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
+ls
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
+echo "makapaka1"
 npm start;`
 		}
-		return `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
+		return `echo "makapaka2.1"
+ls
+echo "makapaka2.2"
+cat makapaka.txt
+echo "makapaka2.3"
 cd ..;
+echo "makapaka2.4"
 npm start;`
 	case serverlessv1alpha2.Python312:
 		if dependencies != "" {
@@ -279,10 +310,12 @@ npm start;`
 echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
 cd ..;
+echo "makapaka3"
 python /kubeless.py;`
 		}
 		return `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 cd ..;
+echo "makapaka4"
 python /kubeless.py;`
 	default:
 		return ""
