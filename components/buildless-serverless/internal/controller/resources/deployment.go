@@ -74,12 +74,12 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 		InitContainers: []corev1.Container{
 			{
 				Name:       fmt.Sprintf("%s-init", d.name()),
-				Image:      "europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.2",
+				Image:      "europe-docker.pkg.dev/kyma-project/prod/alpine-git:v20250212-39c86988",
 				WorkingDir: d.workingSourcesDir(),
 				Command: []string{
 					"sh",
 					"-c",
-					"cd /test; echo chlebek; touch chlebcio.yaml; echo ala > makapaka.txt;",
+					"git clone https://github.com/kyma-project/serverless.git /test;",
 				},
 				VolumeMounts: []corev1.VolumeMount{
 					{
@@ -300,6 +300,7 @@ func (d *Deployment) workingSourcesDir() string {
 	}
 }
 
+//TODO: we could create more generic method using sth like strategy, builder to create command based on runtime, git/inline and dependencies
 func (d *Deployment) runtimeCommand() string {
 	spec := &d.function.Spec
 	dependencies := spec.Source.Inline.Dependencies
@@ -312,6 +313,7 @@ ls
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 echo "makapaka1"
+ls -la /test;
 while true; do sleep 86400; done;
 npm start;`
 		}
@@ -322,6 +324,7 @@ cat makapaka.txt
 echo "makapaka2.3"
 cd ..;
 echo "makapaka2.4"
+ls -la /test;
 while true; do sleep 86400; done;
 npm start;`
 	case serverlessv1alpha2.Python312:
