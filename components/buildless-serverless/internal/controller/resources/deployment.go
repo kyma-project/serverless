@@ -3,6 +3,7 @@ package resources
 import (
 	"fmt"
 	"path"
+	"strings"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
@@ -78,9 +79,15 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 				Command: []string{
 					"sh",
 					"-c",
-					"echo ala > makapaka.txt;",
+					"cd /test; echo chlebek; touch chlebcio.yaml; echo ala > makapaka.txt;",
 				},
-				VolumeMounts: append(d.volumeMounts(), secretVolumeMounts...),
+				VolumeMounts: []corev1.VolumeMount{
+					{
+						Name:      "test",
+						ReadOnly:  false,
+						MountPath: "/test",
+					},
+				},
 				SecurityContext: &corev1.SecurityContext{
 					Privileged: ptr.To[bool](false),
 					Capabilities: &corev1.Capabilities{
@@ -203,6 +210,12 @@ func (d *Deployment) volumes() []corev1.Volume {
 				EmptyDir: &corev1.EmptyDirVolumeSource{},
 			},
 		},
+		{
+			Name: "test",
+			VolumeSource: corev1.VolumeSource{
+				EmptyDir: &corev1.EmptyDirVolumeSource{},
+			},
+		},
 	}
 	if runtime == serverlessv1alpha2.Python312 {
 		volumes = append(volumes, corev1.Volume{
@@ -227,6 +240,11 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 			Name:      "tmp",
 			ReadOnly:  false,
 			MountPath: "/tmp",
+		},
+		{
+			Name:      "test",
+			ReadOnly:  false,
+			MountPath: strings.Join([]string{d.workingSourcesDir(), "/test"}, ""),
 		},
 	}
 	if runtime == serverlessv1alpha2.NodeJs20 || runtime == serverlessv1alpha2.NodeJs22 {
@@ -294,6 +312,7 @@ ls
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 echo "makapaka1"
+while true; do sleep 86400; done;
 npm start;`
 		}
 		return `echo "makapaka2.1"
@@ -303,6 +322,7 @@ cat makapaka.txt
 echo "makapaka2.3"
 cd ..;
 echo "makapaka2.4"
+while true; do sleep 86400; done;
 npm start;`
 	case serverlessv1alpha2.Python312:
 		if dependencies != "" {
