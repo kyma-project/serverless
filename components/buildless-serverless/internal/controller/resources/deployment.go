@@ -79,13 +79,13 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 				Command: []string{
 					"sh",
 					"-c",
-					"git clone https://github.com/kyma-project/serverless.git /test;",
+					"git clone https://github.com/kyma-project/serverless.git /git-repository;",
 				},
 				VolumeMounts: []corev1.VolumeMount{
 					{
-						Name:      "test",
+						Name:      "git-repository",
 						ReadOnly:  false,
-						MountPath: "/test",
+						MountPath: "/git-repository",
 					},
 				},
 				SecurityContext: &corev1.SecurityContext{
@@ -211,7 +211,7 @@ func (d *Deployment) volumes() []corev1.Volume {
 			},
 		},
 		{
-			Name: "test",
+			Name: "git-repository",
 			VolumeSource: corev1.VolumeSource{
 				EmptyDir: &corev1.EmptyDirVolumeSource{},
 			},
@@ -242,9 +242,9 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 			MountPath: "/tmp",
 		},
 		{
-			Name:      "test",
+			Name:      "git-repository",
 			ReadOnly:  false,
-			MountPath: strings.Join([]string{d.workingSourcesDir(), "/test"}, ""),
+			MountPath: strings.Join([]string{d.workingSourcesDir(), "/git-repository"}, ""),
 		},
 	}
 	if runtime == serverlessv1alpha2.NodeJs20 || runtime == serverlessv1alpha2.NodeJs22 {
@@ -300,49 +300,40 @@ func (d *Deployment) workingSourcesDir() string {
 	}
 }
 
-//TODO: we could create more generic method using sth like strategy, builder to create command based on runtime, git/inline and dependencies
+// TODO: we could create more generic method using sth like strategy, builder to create command based on runtime, git/inline and dependencies
 func (d *Deployment) runtimeCommand() string {
 	spec := &d.function.Spec
 	dependencies := spec.Source.Inline.Dependencies
+	result := []string{}
 	switch spec.Runtime {
 	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
 		if dependencies != "" {
-			return `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
+			result = append(result, `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
-ls
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
-echo "makapaka1"
-ls -la /test;
-while true; do sleep 86400; done;
-npm start;`
-		}
-		return `echo "makapaka2.1"
-ls
-echo "makapaka2.2"
-cat makapaka.txt
-echo "makapaka2.3"
+npm start;`)
+		} else {
+			result = append(result, `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 cd ..;
-echo "makapaka2.4"
-ls -la /test;
-while true; do sleep 86400; done;
-npm start;`
+npm start;`)
+
+		}
 	case serverlessv1alpha2.Python312:
 		if dependencies != "" {
-			return `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
+			result = append(result, `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
 cd ..;
-echo "makapaka3"
-python /kubeless.py;`
-		}
-		return `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
+python /kubeless.py;`)
+		} else {
+			result = append(result, `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 cd ..;
-echo "makapaka4"
-python /kubeless.py;`
-	default:
-		return ""
+python /kubeless.py;`)
+		}
 	}
+
+	return strings.Join(result, "\n")
 }
 
 func (d *Deployment) envs() []corev1.EnvVar {

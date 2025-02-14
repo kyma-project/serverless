@@ -488,6 +488,11 @@ func TestDeployment_volumeMounts(t *testing.T) {
 					MountPath: "/tmp",
 				},
 				{
+					Name:      "git-repository",
+					ReadOnly:  false,
+					MountPath: "/usr/src/app/function/git-repository",
+				},
+				{
 					Name:      "package-registry-config",
 					ReadOnly:  true,
 					MountPath: "/usr/src/app/function/package-registry-config/.npmrc",
@@ -509,6 +514,11 @@ func TestDeployment_volumeMounts(t *testing.T) {
 					MountPath: "/tmp",
 				},
 				{
+					Name:      "git-repository",
+					ReadOnly:  false,
+					MountPath: "/usr/src/app/function/git-repository",
+				},
+				{
 					Name:      "package-registry-config",
 					ReadOnly:  true,
 					MountPath: "/usr/src/app/function/package-registry-config/.npmrc",
@@ -528,6 +538,11 @@ func TestDeployment_volumeMounts(t *testing.T) {
 					Name:      "tmp",
 					ReadOnly:  false,
 					MountPath: "/tmp",
+				},
+				{
+					Name:      "git-repository",
+					ReadOnly:  false,
+					MountPath: "/kubeless/git-repository",
 				},
 				{
 					Name:      "local",
@@ -593,6 +608,12 @@ func TestDeployment_volumes(t *testing.T) {
 						EmptyDir: &corev1.EmptyDirVolumeSource{},
 					},
 				},
+				{
+					Name: "git-repository",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
 			},
 		},
 		{
@@ -620,6 +641,12 @@ func TestDeployment_volumes(t *testing.T) {
 						EmptyDir: &corev1.EmptyDirVolumeSource{},
 					},
 				},
+				{
+					Name: "git-repository",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
 			},
 		},
 		{
@@ -643,6 +670,12 @@ func TestDeployment_volumes(t *testing.T) {
 				},
 				{
 					Name: "tmp",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+				{
+					Name: "git-repository",
 					VolumeSource: corev1.VolumeSource{
 						EmptyDir: &corev1.EmptyDirVolumeSource{},
 					},
