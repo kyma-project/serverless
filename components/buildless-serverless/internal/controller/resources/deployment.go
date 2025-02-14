@@ -79,7 +79,8 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 				Command: []string{
 					"sh",
 					"-c",
-					"git clone https://github.com/kyma-project/serverless.git /git-repository;",
+					"git clone https://github.com/kyma-project/serverless.git /git-repository;", // TODO: use url from config; use reference
+					// TODO: add cp /git-repository/{base-dir} /src
 				},
 				VolumeMounts: []corev1.VolumeMount{
 					{
@@ -300,40 +301,69 @@ func (d *Deployment) workingSourcesDir() string {
 	}
 }
 
-// TODO: we could create more generic method using sth like strategy, builder to create command based on runtime, git/inline and dependencies
 func (d *Deployment) runtimeCommand() string {
-	spec := &d.function.Spec
-	dependencies := spec.Source.Inline.Dependencies
-	result := []string{}
-	switch spec.Runtime {
-	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
-		if dependencies != "" {
-			result = append(result, `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
-echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
-npm install --prefer-offline --no-audit --progress=false;
-cd ..;
-npm start;`)
-		} else {
-			result = append(result, `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
-cd ..;
-npm start;`)
-
-		}
-	case serverlessv1alpha2.Python312:
-		if dependencies != "" {
-			result = append(result, `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
-echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
-cd ..;
-python /kubeless.py;`)
-		} else {
-			result = append(result, `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
-cd ..;
-python /kubeless.py;`)
-		}
-	}
+	var result []string
+	result = append(result, d.runtimeCommandSources())
+	result = append(result, d.runtimeCommandInstall())
+	result = append(result, d.runtimeCommandStart())
 
 	return strings.Join(result, "\n")
+}
+
+func (d *Deployment) runtimeCommandSources() string {
+	spec := &d.function.Spec
+	if spec.Source.GitRepository != nil {
+		return d.runtimeCommandGitSources()
+	}
+	return d.runtimeCommandInlineSources()
+}
+
+func (d *Deployment) runtimeCommandGitSources() string {
+	return "cp /git-repository/src/* .;"
+}
+
+func (d *Deployment) runtimeCommandInlineSources() string {
+	var result []string
+	spec := &d.function.Spec
+	dependencies := spec.Source.Inline.Dependencies
+
+	handlerName, dependenciesName := "", ""
+	switch spec.Runtime {
+	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
+		handlerName, dependenciesName = "handler.js", "package.json"
+	case serverlessv1alpha2.Python312:
+		handlerName, dependenciesName = "handler.py", "requirements.txt"
+	}
+
+	result = append(result, fmt.Sprintf(`echo "${FUNC_HANDLER_SOURCE}" > %s;`, handlerName))
+	if dependencies != "" {
+		result = append(result, fmt.Sprintf(`echo "${FUNC_HANDLER_DEPENDENCIES}" > %s;`, dependenciesName))
+	}
+	return strings.Join(result, "\n")
+}
+
+func (d *Deployment) runtimeCommandInstall() string {
+	spec := &d.function.Spec
+	switch spec.Runtime {
+	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
+		return `npm install --prefer-offline --no-audit --progress=false;`
+	case serverlessv1alpha2.Python312:
+		return `PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;`
+	}
+	return ""
+}
+
+func (d *Deployment) runtimeCommandStart() string {
+	spec := &d.function.Spec
+	switch spec.Runtime {
+	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
+		return `cd ..;
+npm start;`
+	case serverlessv1alpha2.Python312:
+		return `cd ..;
+python /kubeless.py;`
+	}
+	return ""
 }
 
 func (d *Deployment) envs() []corev1.EnvVar {

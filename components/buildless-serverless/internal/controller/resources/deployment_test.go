@@ -151,6 +151,7 @@ func TestDeployment_construct(t *testing.T) {
 				"sh",
 				"-c",
 				`echo "${FUNC_HANDLER_SOURCE}" > handler.py;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
 cd ..;
 python /kubeless.py;`,
 			},
@@ -941,7 +942,7 @@ func TestDeployment_runtimeCommand(t *testing.T) {
 		want     string
 	}{
 		{
-			name: "build runtime command for python312 without dependencies",
+			name: "build runtime command for inline python312 without dependencies",
 			function: &serverlessv1alpha2.Function{
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.Python312,
@@ -953,11 +954,12 @@ func TestDeployment_runtimeCommand(t *testing.T) {
 				},
 			},
 			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
 cd ..;
 python /kubeless.py;`,
 		},
 		{
-			name: "build runtime command for python312 with dependencies",
+			name: "build runtime command for inline python312 with dependencies",
 			function: &serverlessv1alpha2.Function{
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.Python312,
@@ -976,7 +978,28 @@ cd ..;
 python /kubeless.py;`,
 		},
 		{
-			name: "build runtime command for nodejs20 without dependencies",
+			name: "build runtime command for git python312",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.Python312,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							URL: "/some/url",
+							Repository: serverlessv1alpha2.Repository{
+								BaseDir:   "/some/dir",
+								Reference: "some-reference",
+							},
+						},
+					},
+				},
+			},
+			want: `cp /git-repository/src/* .;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
+cd ..;
+python /kubeless.py;`,
+		},
+		{
+			name: "build runtime command for inline nodejs20 without dependencies",
 			function: &serverlessv1alpha2.Function{
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.NodeJs20,
@@ -988,11 +1011,12 @@ python /kubeless.py;`,
 				},
 			},
 			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
+npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
 		},
 		{
-			name: "build runtime command for nodejs20 with dependencies",
+			name: "build runtime command for inline nodejs20 with dependencies",
 			function: &serverlessv1alpha2.Function{
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.NodeJs20,
@@ -1011,7 +1035,28 @@ cd ..;
 npm start;`,
 		},
 		{
-			name: "build runtime command for nodejs22 without dependencies",
+			name: "build runtime command for git nodejs20",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs20,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							URL: "/some/url",
+							Repository: serverlessv1alpha2.Repository{
+								BaseDir:   "/some/dir",
+								Reference: "some-reference",
+							},
+						},
+					},
+				},
+			},
+			want: `cp /git-repository/src/* .;
+npm install --prefer-offline --no-audit --progress=false;
+cd ..;
+npm start;`,
+		},
+		{
+			name: "build runtime command for inline nodejs22 without dependencies",
 			function: &serverlessv1alpha2.Function{
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.NodeJs22,
@@ -1023,11 +1068,12 @@ npm start;`,
 				},
 			},
 			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
+npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
 		},
 		{
-			name: "build runtime command for nodejs22 with dependencies",
+			name: "build runtime command for inline nodejs22 with dependencies",
 			function: &serverlessv1alpha2.Function{
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.NodeJs22,
@@ -1041,6 +1087,27 @@ npm start;`,
 			},
 			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
+npm install --prefer-offline --no-audit --progress=false;
+cd ..;
+npm start;`,
+		},
+		{
+			name: "build runtime command for git nodejs22",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							URL: "/some/url",
+							Repository: serverlessv1alpha2.Repository{
+								BaseDir:   "/some/dir",
+								Reference: "some-reference",
+							},
+						},
+					},
+				},
+			},
+			want: `cp /git-repository/src/* .;
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
