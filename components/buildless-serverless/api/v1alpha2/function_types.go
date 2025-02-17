@@ -43,7 +43,7 @@ type FunctionSpec struct {
 	RuntimeImageOverride string `json:"runtimeImageOverride,omitempty"`
 
 	// Contains the Function's source code configuration.
-	/*    // +kubebuilder:validation:XValidation:message="Use GitRepository or Inline source",rule="has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository) && has(self.inline)" */
+	// +kubebuilder:validation:XValidation:message="Use GitRepository or Inline source",rule="has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository) && has(self.inline)"
 	// +kubebuilder:validation:Required
 	Source Source `json:"source"`
 
@@ -282,4 +282,12 @@ func (f *Function) PodLabels() map[string]string {
 		result = labels.Merge(f.Spec.Labels, result)
 	}
 	return labels.Merge(result, map[string]string{PodAppNameLabel: f.GetName()})
+}
+
+func (f *Function) HasGitSources() bool {
+	return f.Spec.Source.GitRepository != nil
+}
+
+func (f *Function) HasInlineSources() bool {
+	return f.Spec.Source.Inline != nil
 }

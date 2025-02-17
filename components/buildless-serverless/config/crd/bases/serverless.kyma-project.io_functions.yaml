@@ -300,9 +300,7 @@ spec:
                   type: object
                 type: array
               source:
-                description: |-
-                  Contains the Function's source code configuration.
-                  // +kubebuilder:validation:XValidation:message="Use GitRepository or Inline source",rule="has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository) && has(self.inline)"
+                description: Contains the Function's source code configuration.
                 properties:
                   gitRepository:
                     description: Defines the Function as git-sourced. Can't be used
@@ -348,6 +346,10 @@ spec:
                     - source
                     type: object
                 type: object
+                x-kubernetes-validations:
+                - message: Use GitRepository or Inline source
+                  rule: has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository)
+                    && has(self.inline)
             required:
             - runtime
             - source
