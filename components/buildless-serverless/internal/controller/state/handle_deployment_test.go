@@ -810,6 +810,96 @@ func Test_deploymentChanged(t *testing.T) {
 			},
 			want: false,
 		},
+		{
+			name: "when there are no init containers should return true",
+			args: args{
+				a: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{},
+								Containers:     []corev1.Container{{}}}}}},
+				b: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{},
+								Containers:     []corev1.Container{{}}}}}},
+			},
+			want: true,
+		},
+		{
+			name: "when init containers count is different should return true",
+			args: args{
+				a: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									Image: "vibrant-booth",
+								}},
+								Containers: []corev1.Container{{}}}}}},
+				b: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{},
+								Containers:     []corev1.Container{{}}}}}},
+			},
+			want: true,
+		},
+		{
+			name: "when init container commands are different should return true",
+			args: args{
+				a: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									Image:   "gracious-mclaren",
+									Command: []string{"nice-mahavira"},
+								}},
+								Containers: []corev1.Container{{}}}}}},
+				b: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									Image:   "gracious-mclaren",
+									Command: []string{"modest-kepler"},
+								}},
+								Containers: []corev1.Container{{}}}}}},
+			},
+			want: true,
+		},
+		{
+			name: "when init container volume mounts are different should return true",
+			args: args{
+				a: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									Image: "thirsty-matsumoto",
+									VolumeMounts: []corev1.VolumeMount{{
+										Name:      "name",
+										MountPath: "/sweet/carver",
+									}}}},
+								Containers: []corev1.Container{{}}}}}},
+				b: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									Image: "thirsty-matsumoto",
+									VolumeMounts: []corev1.VolumeMount{{
+										Name:      "name",
+										MountPath: "/focused/thompson",
+									}}}},
+								Containers: []corev1.Container{{}}}}}},
+			},
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

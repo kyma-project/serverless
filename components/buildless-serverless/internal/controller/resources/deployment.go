@@ -67,40 +67,10 @@ func (d *Deployment) podRunAsUserUID() *int64 {
 
 func (d *Deployment) podSpec() corev1.PodSpec {
 	secretVolumes, secretVolumeMounts := d.deploymentSecretVolumes()
-	defaultProcMount := corev1.DefaultProcMount
 
 	return corev1.PodSpec{
-		Volumes: append(d.volumes(), secretVolumes...),
-		InitContainers: []corev1.Container{
-			{
-				Name:       fmt.Sprintf("%s-init", d.name()),
-				Image:      "europe-docker.pkg.dev/kyma-project/prod/alpine-git:v20250212-39c86988",
-				WorkingDir: d.workingSourcesDir(),
-				Command: []string{
-					"sh",
-					"-c",
-					"git clone https://github.com/kyma-project/serverless.git /git-repository;", // TODO: use url from config; use reference
-					// TODO: add cp /git-repository/{base-dir} /src
-				},
-				VolumeMounts: []corev1.VolumeMount{
-					{
-						Name:      "git-repository",
-						ReadOnly:  false,
-						MountPath: "/git-repository",
-					},
-				},
-				SecurityContext: &corev1.SecurityContext{
-					Privileged: ptr.To[bool](false),
-					Capabilities: &corev1.Capabilities{
-						Drop: []corev1.Capability{
-							"ALL",
-						},
-					},
-					ProcMount:              &defaultProcMount,
-					ReadOnlyRootFilesystem: ptr.To[bool](false),
-				},
-			},
-		},
+		Volumes:        append(d.volumes(), secretVolumes...),
+		InitContainers: d.initContainerForGitRepository(),
 		Containers: []corev1.Container{
 			{
 				Name:       d.name(),
@@ -162,7 +132,7 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 							"ALL",
 						},
 					},
-					ProcMount:              &defaultProcMount,
+					ProcMount:              ptr.To(corev1.DefaultProcMount),
 					ReadOnlyRootFilesystem: ptr.To[bool](false),
 				},
 			},
@@ -175,6 +145,53 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 			},
 		},
 	}
+}
+
+func (d *Deployment) initContainerForGitRepository() []corev1.Container {
+	if !d.function.HasGitSources() {
+		return []corev1.Container{}
+	}
+	return []corev1.Container{
+		{
+			Name: fmt.Sprintf("%s-init", d.name()),
+			//TODO: should we use this image?
+			Image:      "europe-docker.pkg.dev/kyma-project/prod/alpine-git:v20250212-39c86988",
+			WorkingDir: d.workingSourcesDir(),
+			Command: []string{
+				"sh",
+				"-c",
+				d.initContainerCommand(),
+			},
+			VolumeMounts: []corev1.VolumeMount{
+				{
+					Name:      "git-repository",
+					ReadOnly:  false,
+					MountPath: "/git-repository",
+				},
+			},
+			SecurityContext: &corev1.SecurityContext{
+				Privileged: ptr.To[bool](false),
+				Capabilities: &corev1.Capabilities{
+					Drop: []corev1.Capability{
+						"ALL",
+					},
+				},
+				ProcMount:              ptr.To(corev1.DefaultProcMount),
+				ReadOnlyRootFilesystem: ptr.To[bool](false),
+			},
+		},
+	}
+}
+
+func (d *Deployment) initContainerCommand() string {
+	gitRepo := d.function.Spec.Source.GitRepository
+	return fmt.Sprintf(`git clone --depth 1 --branch %s %s /git-repository/repo; 
+mkdir /git-repository/src; 
+cp /git-repository/repo/%s/* /git-repository/src`,
+		gitRepo.Reference,
+		gitRepo.URL,
+		strings.Trim(gitRepo.BaseDir, "/ "),
+	)
 }
 
 func (d *Deployment) replicas() *int32 {
@@ -244,14 +261,12 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 		},
 		{
 			Name:      "git-repository",
-			ReadOnly:  false,
-			MountPath: strings.Join([]string{d.workingSourcesDir(), "/git-repository"}, ""),
+			MountPath: "/git-repository",
 		},
 	}
 	if runtime == serverlessv1alpha2.NodeJs20 || runtime == serverlessv1alpha2.NodeJs22 {
 		volumeMounts = append(volumeMounts, corev1.VolumeMount{
 			Name:      "package-registry-config",
-			ReadOnly:  true,
 			MountPath: path.Join(d.workingSourcesDir(), "package-registry-config/.npmrc"),
 			SubPath:   ".npmrc",
 		})
@@ -264,7 +279,6 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 			},
 			corev1.VolumeMount{
 				Name:      "package-registry-config",
-				ReadOnly:  true,
 				MountPath: path.Join(d.workingSourcesDir(), "package-registry-config/pip.conf"),
 				SubPath:   "pip.conf",
 			})
@@ -303,9 +317,26 @@ func (d *Deployment) workingSourcesDir() string {
 
 func (d *Deployment) runtimeCommand() string {
 	var result []string
+	//result = append(result, "echo ==========COMMAND-START;")
+	//result = append(result, "echo ===PWD;")
+	//result = append(result, "pwd;")
 	result = append(result, d.runtimeCommandSources())
+	//result = append(result, "echo ==========COMMAND-0;")
+	//result = append(result, "echo ===PWD;")
+	//result = append(result, "pwd;")
+	//result = append(result, "echo ===LS;")
+	//result = append(result, "ls;")
+	//result = append(result, "echo ===LS-usr-src-app-function;")
+	//result = append(result, "ls /usr/src/app/function;")
+	//result = append(result, "echo ===LS-git-repository;")
+	//result = append(result, "ls /git-repository;")
+	//result = append(result, "echo ===LS-git-repository-src;")
+	//result = append(result, "ls /git-repository/src;")
+	//result = append(result, "echo ==========COMMAND-1;")
 	result = append(result, d.runtimeCommandInstall())
+	//result = append(result, "echo ==========COMMAND-2;")
 	result = append(result, d.runtimeCommandStart())
+	//result = append(result, "echo ==========COMMAND-FINISH;")
 
 	return strings.Join(result, "\n")
 }
@@ -374,14 +405,6 @@ func (d *Deployment) envs() []corev1.EnvVar {
 			Value: d.function.Namespace,
 		},
 		{
-			Name:  "FUNC_HANDLER_SOURCE",
-			Value: spec.Source.Inline.Source,
-		},
-		{
-			Name:  "FUNC_HANDLER_DEPENDENCIES",
-			Value: spec.Source.Inline.Dependencies,
-		},
-		{
 			Name:  "TRACE_COLLECTOR_ENDPOINT",
 			Value: d.functionConfig.FunctionTraceCollectorEndpoint,
 		},
@@ -389,6 +412,18 @@ func (d *Deployment) envs() []corev1.EnvVar {
 			Name:  "PUBLISHER_PROXY_ADDRESS",
 			Value: d.functionConfig.FunctionPublisherProxyAddress,
 		},
+	}
+	if d.function.HasInlineSources() {
+		envs = append(envs, []corev1.EnvVar{
+			{
+				Name:  "FUNC_HANDLER_SOURCE",
+				Value: spec.Source.Inline.Source,
+			},
+			{
+				Name:  "FUNC_HANDLER_DEPENDENCIES",
+				Value: spec.Source.Inline.Dependencies,
+			},
+		}...)
 	}
 	if spec.Runtime == serverlessv1alpha2.Python312 {
 		envs = append(envs, []corev1.EnvVar{

@@ -491,7 +491,7 @@ func TestDeployment_volumeMounts(t *testing.T) {
 				{
 					Name:      "git-repository",
 					ReadOnly:  false,
-					MountPath: "/usr/src/app/function/git-repository",
+					MountPath: "/git-repository",
 				},
 				{
 					Name:      "package-registry-config",
@@ -517,7 +517,7 @@ func TestDeployment_volumeMounts(t *testing.T) {
 				{
 					Name:      "git-repository",
 					ReadOnly:  false,
-					MountPath: "/usr/src/app/function/git-repository",
+					MountPath: "/git-repository",
 				},
 				{
 					Name:      "package-registry-config",
@@ -543,7 +543,7 @@ func TestDeployment_volumeMounts(t *testing.T) {
 				{
 					Name:      "git-repository",
 					ReadOnly:  false,
-					MountPath: "/kubeless/git-repository",
+					MountPath: "/git-repository",
 				},
 				{
 					Name:      "local",
@@ -793,7 +793,7 @@ func TestDeployment_envs(t *testing.T) {
 		want     []corev1.EnvVar
 	}{
 		{
-			name: "build envs based on nodejs20 function",
+			name: "build envs based on inline nodejs20 function",
 			function: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: "function-namespace",
@@ -832,7 +832,7 @@ func TestDeployment_envs(t *testing.T) {
 			},
 		},
 		{
-			name: "build envs based on nodejs22 function",
+			name: "build envs based on inline nodejs22 function",
 			function: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: "function-namespace",
@@ -871,7 +871,41 @@ func TestDeployment_envs(t *testing.T) {
 			},
 		},
 		{
-			name: "build envs based on python312 function",
+			name: "build envs based on git nodejs22 function",
+			function: &serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					Namespace: "function-namespace",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs22,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							URL: "/some/url",
+							Repository: serverlessv1alpha2.Repository{
+								BaseDir:   "/some/dir",
+								Reference: "some-reference",
+							},
+						},
+					},
+				},
+			},
+			want: []corev1.EnvVar{
+				{
+					Name:  "SERVICE_NAMESPACE",
+					Value: "function-namespace",
+				},
+				{
+					Name:  "TRACE_COLLECTOR_ENDPOINT",
+					Value: "test-trace-collector-endpoint",
+				},
+				{
+					Name:  "PUBLISHER_PROXY_ADDRESS",
+					Value: "test-proxy-address",
+				},
+			},
+		},
+		{
+			name: "build envs based on inline python312 function",
 			function: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: "function-namespace",
@@ -930,7 +964,7 @@ func TestDeployment_envs(t *testing.T) {
 
 			r := d.envs()
 
-			assert.Equal(t, tt.want, r)
+			assert.ElementsMatch(t, tt.want, r)
 		})
 	}
 }
