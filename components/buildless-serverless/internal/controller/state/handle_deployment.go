@@ -108,13 +108,6 @@ func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterD
 }
 
 func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
-	// there are no init containers for inline function and one init container for git function
-	// when count of init containers is not equal function type has been changed
-	if len(a.Spec.Template.Spec.InitContainers) > 1 ||
-		len(b.Spec.Template.Spec.InitContainers) > 1 ||
-		len(a.Spec.Template.Spec.InitContainers) != len(b.Spec.Template.Spec.InitContainers) {
-		return true
-	}
 	if len(a.Spec.Template.Spec.Containers) != 1 ||
 		len(b.Spec.Template.Spec.Containers) != 1 {
 		return true
@@ -135,12 +128,6 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 	volumeMountsChanged := !reflect.DeepEqual(aContainer.VolumeMounts, bContainer.VolumeMounts)
 	portsChanged := !reflect.DeepEqual(aContainer.Ports, bContainer.Ports)
 
-	aInitContainer := a.Spec.Template.Spec.InitContainers[0]
-	bInitContainer := b.Spec.Template.Spec.InitContainers[0]
-
-	initCommandChanged := !reflect.DeepEqual(aInitContainer.Command, bInitContainer.Command)
-	initVolumeMountsChanged := !reflect.DeepEqual(aInitContainer.VolumeMounts, bInitContainer.VolumeMounts)
-
 	return imageChanged ||
 		labelsChanged ||
 		replicasChanged ||
@@ -150,7 +137,26 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 		envChanged ||
 		volumeMountsChanged ||
 		portsChanged ||
-		initCommandChanged ||
+		initContainerChanged(a, b)
+}
+
+func initContainerChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
+	// there are no init containers for inline function and one init container for git function
+	// when count of init containers is not equal function type has been changed
+	if len(a.Spec.Template.Spec.InitContainers) > 1 ||
+		len(b.Spec.Template.Spec.InitContainers) > 1 ||
+		len(a.Spec.Template.Spec.InitContainers) != len(b.Spec.Template.Spec.InitContainers) {
+		return true
+	}
+	if len(a.Spec.Template.Spec.InitContainers) == 0 {
+		return false
+	}
+	aInitContainer := a.Spec.Template.Spec.InitContainers[0]
+	bInitContainer := b.Spec.Template.Spec.InitContainers[0]
+
+	initCommandChanged := !reflect.DeepEqual(aInitContainer.Command, bInitContainer.Command)
+	initVolumeMountsChanged := !reflect.DeepEqual(aInitContainer.VolumeMounts, bInitContainer.VolumeMounts)
+	return initCommandChanged ||
 		initVolumeMountsChanged
 }
 

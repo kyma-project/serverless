@@ -185,8 +185,8 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 
 func (d *Deployment) initContainerCommand() string {
 	gitRepo := d.function.Spec.Source.GitRepository
-	return fmt.Sprintf(`git clone --depth 1 --branch %s %s /git-repository/repo; 
-mkdir /git-repository/src; 
+	return fmt.Sprintf(`git clone --depth 1 --branch %s %s /git-repository/repo;
+mkdir /git-repository/src;
 cp /git-repository/repo/%s/* /git-repository/src`,
 		gitRepo.Reference,
 		gitRepo.URL,

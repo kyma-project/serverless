@@ -215,7 +215,6 @@ python /kubeless.py;`,
 			r.Spec.Template.Spec.Containers[0].VolumeMounts,
 			corev1.VolumeMount{
 				Name:      "package-registry-config",
-				ReadOnly:  true,
 				MountPath: "/kubeless/package-registry-config/pip.conf",
 				SubPath:   "pip.conf",
 			})
@@ -259,6 +258,34 @@ python /kubeless.py;`,
 					},
 				},
 			})
+	})
+	t.Run("doesn't create init container for inline function", func(t *testing.T) {
+		d := minimalDeployment()
+
+		r := d.construct()
+
+		require.NotNil(t, r)
+		require.Empty(t, r.Spec.Template.Spec.InitContainers)
+	})
+	t.Run("create init container for git function with data based on function", func(t *testing.T) {
+		d := minimalDeployment()
+		d.function.Spec.Source = serverlessv1alpha2.Source{
+			GitRepository: &serverlessv1alpha2.GitRepositorySource{
+				URL: "wonderful-germain",
+				Repository: serverlessv1alpha2.Repository{
+					BaseDir:   "recursing-mcnulty",
+					Reference: "epic-mendel"}}}
+
+		r := d.construct()
+
+		require.NotNil(t, r)
+		require.Len(t, r.Spec.Template.Spec.InitContainers, 1)
+		c := r.Spec.Template.Spec.InitContainers[0]
+		expectedCommand := []string{"sh", "-c",
+			`git clone --depth 1 --branch epic-mendel wonderful-germain /git-repository/repo;
+mkdir /git-repository/src;
+cp /git-repository/repo/recursing-mcnulty/* /git-repository/src`}
+		require.Equal(t, expectedCommand, c.Command)
 	})
 }
 
@@ -495,7 +522,7 @@ func TestDeployment_volumeMounts(t *testing.T) {
 				},
 				{
 					Name:      "package-registry-config",
-					ReadOnly:  true,
+					ReadOnly:  false,
 					MountPath: "/usr/src/app/function/package-registry-config/.npmrc",
 					SubPath:   ".npmrc",
 				},
@@ -521,7 +548,7 @@ func TestDeployment_volumeMounts(t *testing.T) {
 				},
 				{
 					Name:      "package-registry-config",
-					ReadOnly:  true,
+					ReadOnly:  false,
 					MountPath: "/usr/src/app/function/package-registry-config/.npmrc",
 					SubPath:   ".npmrc",
 				},
@@ -551,7 +578,7 @@ func TestDeployment_volumeMounts(t *testing.T) {
 				},
 				{
 					Name:      "package-registry-config",
-					ReadOnly:  true,
+					ReadOnly:  false,
 					MountPath: "/kubeless/package-registry-config/pip.conf",
 					SubPath:   "pip.conf",
 				},

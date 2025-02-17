@@ -811,7 +811,7 @@ func Test_deploymentChanged(t *testing.T) {
 			want: false,
 		},
 		{
-			name: "when there are no init containers should return true",
+			name: "when there are no init containers should return false",
 			args: args{
 				a: &appsv1.Deployment{
 					Spec: appsv1.DeploymentSpec{
@@ -826,7 +826,7 @@ func Test_deploymentChanged(t *testing.T) {
 								InitContainers: []corev1.Container{},
 								Containers:     []corev1.Container{{}}}}}},
 			},
-			want: true,
+			want: false,
 		},
 		{
 			name: "when init containers count is different should return true",
