@@ -62,7 +62,7 @@ func (d *Deployment) name() string {
 }
 
 func (d *Deployment) podRunAsUserUID() *int64 {
-	return ptr.To[int64](0) // runAsUser 1000 is the most popular and standard value for non-root user
+	return ptr.To[int64](1000) // runAsUser 1000 is the most popular and standard value for non-root user
 }
 
 func (d *Deployment) podSpec() corev1.PodSpec {
