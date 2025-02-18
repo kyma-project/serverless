@@ -300,10 +300,37 @@ spec:
                   type: object
                 type: array
               source:
-                description: |-
-                  Contains the Function's source code configuration.
-                  // +kubebuilder:validation:XValidation:message="Use GitRepository or Inline source",rule="has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository) && has(self.inline)"
+                description: Contains the Function's source code configuration.
                 properties:
+                  gitRepository:
+                    description: Defines the Function as git-sourced. Can't be used
+                      together with **Inline**.
+                    properties:
+                      baseDir:
+                        description: |-
+                          Specifies the relative path to the Git directory that contains the source code
+                          from which the Function is built.
+                        type: string
+                      reference:
+                        description: |-
+                          Specifies either the branch name, tag or commit revision from which the Function Controller
+                          automatically fetches the changes in the Function's code and dependencies.
+                        type: string
+                      url:
+                        description: |-
+                          Specifies the URL of the Git repository with the Function's code and dependencies.
+                          Depending on whether the repository is public or private and what authentication method is used to access it,
+                          the URL must start with the `http(s)`, `git`, or `ssh` prefix.
+                        type: string
+                    required:
+                    - url
+                    type: object
+                    x-kubernetes-validations:
+                    - message: BaseDir is required and cannot be empty
+                      rule: has(self.baseDir) && (self.baseDir.trim().size() != 0)
+                    - message: Reference is required and cannot be empty
+                      rule: has(self.reference) && (self.reference.trim().size() !=
+                        0)
                   inline:
                     description: Defines the Function as the inline Function. Can't
                       be used together with **GitRepository**.
@@ -319,6 +346,10 @@ spec:
                     - source
                     type: object
                 type: object
+                x-kubernetes-validations:
+                - message: Use GitRepository or Inline source
+                  rule: has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository)
+                    && has(self.inline)
             required:
             - runtime
             - source
