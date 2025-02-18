@@ -64,7 +64,10 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run test
         run: |
-          make install-serverless-custom-operator
+          # we modify install-serverless-custom-operator target with a custom CR to get faster git reconcilation
+          make -C components/operator deploy
+          kubectl apply -f config/samples/default-serverless-cr-fast-requeue.yaml
+          make -C components/operator check-serverless-installation
           make -C tests/serverless serverless-integration serverless-contract-tests
           make remove-serverless
         env:
@@ -140,4 +143,3 @@ jobs:
           btp_password: ${{ secrets.BTP_BOT_PASSWORD}}
           btp_global_account: ${{ secrets.BTP_GLOBAL_ACCOUNT }}
           btp_idp_tenant: ${{ secrets.BTP_CUSTOM_IAS_TENANT }}
-
