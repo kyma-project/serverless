@@ -250,7 +250,6 @@ func (d *Deployment) volumes() []corev1.Volume {
 }
 
 func (d *Deployment) volumeMounts() []corev1.VolumeMount {
-	runtime := d.function.Spec.Runtime
 	volumeMounts := []corev1.VolumeMount{
 		{
 			Name:      "sources",
@@ -268,14 +267,14 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 			MountPath: "/git-repository",
 		})
 	}
-	if runtime == serverlessv1alpha2.NodeJs20 || runtime == serverlessv1alpha2.NodeJs22 {
+	if d.function.HasNodejsRuntime() {
 		volumeMounts = append(volumeMounts, corev1.VolumeMount{
 			Name:      "package-registry-config",
 			MountPath: path.Join(d.workingSourcesDir(), "package-registry-config/.npmrc"),
 			SubPath:   ".npmrc",
 		})
 	}
-	if runtime == serverlessv1alpha2.Python312 {
+	if d.function.HasPythonRuntime() {
 		volumeMounts = append(volumeMounts,
 			corev1.VolumeMount{
 				Name:      "local",
@@ -309,14 +308,12 @@ func (d *Deployment) runtimeImage() string {
 }
 
 func (d *Deployment) workingSourcesDir() string {
-	switch d.function.Spec.Runtime {
-	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
+	if d.function.HasNodejsRuntime() {
 		return "/usr/src/app/function"
-	case serverlessv1alpha2.Python312:
+	} else if d.function.HasPythonRuntime() {
 		return "/kubeless"
-	default:
-		return ""
 	}
+	return ""
 }
 
 func (d *Deployment) runtimeCommand() string {
@@ -346,10 +343,9 @@ func (d *Deployment) runtimeCommandInlineSources() string {
 	dependencies := spec.Source.Inline.Dependencies
 
 	handlerName, dependenciesName := "", ""
-	switch spec.Runtime {
-	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
+	if d.function.HasNodejsRuntime() {
 		handlerName, dependenciesName = "handler.js", "package.json"
-	case serverlessv1alpha2.Python312:
+	} else if d.function.HasPythonRuntime() {
 		handlerName, dependenciesName = "handler.py", "requirements.txt"
 	}
 
@@ -361,23 +357,19 @@ func (d *Deployment) runtimeCommandInlineSources() string {
 }
 
 func (d *Deployment) runtimeCommandInstall() string {
-	spec := &d.function.Spec
-	switch spec.Runtime {
-	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
+	if d.function.HasNodejsRuntime() {
 		return `npm install --prefer-offline --no-audit --progress=false;`
-	case serverlessv1alpha2.Python312:
+	} else if d.function.HasPythonRuntime() {
 		return `PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;`
 	}
 	return ""
 }
 
 func (d *Deployment) runtimeCommandStart() string {
-	spec := &d.function.Spec
-	switch spec.Runtime {
-	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
+	if d.function.HasNodejsRuntime() {
 		return `cd ..;
 npm start;`
-	case serverlessv1alpha2.Python312:
+	} else if d.function.HasPythonRuntime() {
 		return `cd ..;
 python /kubeless.py;`
 	}

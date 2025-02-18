@@ -291,3 +291,13 @@ func (f *Function) HasGitSources() bool {
 func (f *Function) HasInlineSources() bool {
 	return f.Spec.Source.Inline != nil
 }
+
+func (f *Function) HasPythonRuntime() bool {
+	runtime := f.Spec.Runtime
+	return runtime == Python312
+}
+
+func (f *Function) HasNodejsRuntime() bool {
+	runtime := f.Spec.Runtime
+	return runtime == NodeJs20 || runtime == NodeJs22
+}
