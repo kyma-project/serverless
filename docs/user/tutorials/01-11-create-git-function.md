@@ -24,9 +24,9 @@ You can create a Function either with kubectl or Kyma dashboard:
 
     If you use a secured repository, you must first create a Secret with either basic (username and password or token) or SSH key authentication to this repository in the same namespace as the Function. To do that, follow these sub-steps:
 
-    - Open your namespace view. In the left navigation panel, go to **Configuration** > **Secrets** and select the **Create Secret** button.
+    - Open your namespace view. In the left navigation panel, go to **Configuration** > **Secrets** and choose **Create**.
 
-    - Open the **Advanced** view and enter the Secret name and type.
+    - Enter the Secret name and type.
 
     - Under **Data**, enter these key-value pairs with credentials:
 
@@ -39,11 +39,11 @@ You can create a Function either with kubectl or Kyma dashboard:
 
     - Confirm by selecting **Create**.
 
-3. To connect the repository, go to **Workloads** > **Functions** > **Create Function**.
+3. To connect the repository, go to **Workloads** > **Functions** > **Create**.
 
-4. Provide or generate the Function's name.
+4. Provide the Function's name.
 
-5. Go to **Advanced**, change **Source Type** from **Inline** to **Git Repository**.
+5. Change **Source Type** from **Inline** to **Git Repository**.
 
 6. Choose `JavaScript` from the **Language** dropdown and select the proper runtime.
 
@@ -76,7 +76,7 @@ You can create a Function either with kubectl or Kyma dashboard:
     - Basic authentication (username and password or token) to this repository in the same namespace as the Function:
   
     1. Generate a [personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) and copy it.
-    2. Create a Secret containg your username and the generated token.
+    2. Create a Secret containing your username and the generated token.
 
        ```bash
        kubectl -n $NAMESPACE create secret generic git-creds-basic --from-literal=username={GITHUB_USERNAME} --from-literal=password={GENERATED_PERSONAL_TOKEN}
@@ -125,6 +125,7 @@ You can create a Function either with kubectl or Kyma dashboard:
         type: # "basic" or "key"
         secretName: # "git-creds-basic" or "git-creds-ssh"
     ```
+
     If you use the `key` type authentication, the SSH URL format must be used to configure the Function URL:
 
     ```yaml
