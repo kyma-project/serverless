@@ -204,7 +204,6 @@ func (d *Deployment) replicas() *int32 {
 }
 
 func (d *Deployment) volumes() []corev1.Volume {
-	runtime := d.function.Spec.Runtime
 	volumes := []corev1.Volume{
 		{
 			// used for writing sources (code&deps) to the sources dir
@@ -237,7 +236,7 @@ func (d *Deployment) volumes() []corev1.Volume {
 			},
 		})
 	}
-	if runtime == serverlessv1alpha2.Python312 {
+	if d.function.HasPythonRuntime() {
 		volumes = append(volumes, corev1.Volume{
 			// required by pip to save deps to .local dir
 			Name: "local",
