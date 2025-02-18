@@ -228,12 +228,14 @@ func (d *Deployment) volumes() []corev1.Volume {
 				EmptyDir: &corev1.EmptyDirVolumeSource{},
 			},
 		},
-		{
+	}
+	if d.function.HasGitSources() {
+		volumes = append(volumes, corev1.Volume{
 			Name: "git-repository",
 			VolumeSource: corev1.VolumeSource{
 				EmptyDir: &corev1.EmptyDirVolumeSource{},
 			},
-		},
+		})
 	}
 	if runtime == serverlessv1alpha2.Python312 {
 		volumes = append(volumes, corev1.Volume{
@@ -259,10 +261,12 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 			ReadOnly:  false,
 			MountPath: "/tmp",
 		},
-		{
+	}
+	if d.function.HasGitSources() {
+		volumeMounts = append(volumeMounts, corev1.VolumeMount{
 			Name:      "git-repository",
 			MountPath: "/git-repository",
-		},
+		})
 	}
 	if runtime == serverlessv1alpha2.NodeJs20 || runtime == serverlessv1alpha2.NodeJs22 {
 		volumeMounts = append(volumeMounts, corev1.VolumeMount{
@@ -317,26 +321,9 @@ func (d *Deployment) workingSourcesDir() string {
 
 func (d *Deployment) runtimeCommand() string {
 	var result []string
-	//result = append(result, "echo ==========COMMAND-START;")
-	//result = append(result, "echo ===PWD;")
-	//result = append(result, "pwd;")
 	result = append(result, d.runtimeCommandSources())
-	//result = append(result, "echo ==========COMMAND-0;")
-	//result = append(result, "echo ===PWD;")
-	//result = append(result, "pwd;")
-	//result = append(result, "echo ===LS;")
-	//result = append(result, "ls;")
-	//result = append(result, "echo ===LS-usr-src-app-function;")
-	//result = append(result, "ls /usr/src/app/function;")
-	//result = append(result, "echo ===LS-git-repository;")
-	//result = append(result, "ls /git-repository;")
-	//result = append(result, "echo ===LS-git-repository-src;")
-	//result = append(result, "ls /git-repository/src;")
-	//result = append(result, "echo ==========COMMAND-1;")
 	result = append(result, d.runtimeCommandInstall())
-	//result = append(result, "echo ==========COMMAND-2;")
 	result = append(result, d.runtimeCommandStart())
-	//result = append(result, "echo ==========COMMAND-FINISH;")
 
 	return strings.Join(result, "\n")
 }

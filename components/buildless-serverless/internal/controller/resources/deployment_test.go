@@ -500,11 +500,13 @@ func TestDeployment_volumeMounts(t *testing.T) {
 	tests := []struct {
 		name    string
 		runtime serverlessv1alpha2.Runtime
+		source  serverlessv1alpha2.Source
 		want    []corev1.VolumeMount
 	}{
 		{
-			name:    "build volume mounts for nodejs20 based on function",
+			name:    "build volume mounts for inline nodejs20 based on function",
 			runtime: serverlessv1alpha2.NodeJs20,
+			source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{Source: "x", Dependencies: "x"}},
 			want: []corev1.VolumeMount{
 				{
 					Name:      "sources",
@@ -516,11 +518,6 @@ func TestDeployment_volumeMounts(t *testing.T) {
 					MountPath: "/tmp",
 				},
 				{
-					Name:      "git-repository",
-					ReadOnly:  false,
-					MountPath: "/git-repository",
-				},
-				{
 					Name:      "package-registry-config",
 					ReadOnly:  false,
 					MountPath: "/usr/src/app/function/package-registry-config/.npmrc",
@@ -529,8 +526,58 @@ func TestDeployment_volumeMounts(t *testing.T) {
 			},
 		},
 		{
-			name:    "build volume mounts for nodejs22 based on function",
+			name:    "build volume mounts for inline nodejs22 based on function",
 			runtime: serverlessv1alpha2.NodeJs22,
+			source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{Source: "x", Dependencies: "x"}},
+			want: []corev1.VolumeMount{
+				{
+					Name:      "sources",
+					MountPath: "/usr/src/app/function",
+				},
+				{
+					Name:      "tmp",
+					ReadOnly:  false,
+					MountPath: "/tmp",
+				},
+				{
+					Name:      "package-registry-config",
+					ReadOnly:  false,
+					MountPath: "/usr/src/app/function/package-registry-config/.npmrc",
+					SubPath:   ".npmrc",
+				},
+			},
+		},
+		{
+			name:    "build volume mounts for inline python312 based on function",
+			runtime: serverlessv1alpha2.Python312,
+			source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{Source: "x", Dependencies: "x"}},
+			want: []corev1.VolumeMount{
+				{
+					Name:      "sources",
+					MountPath: "/kubeless",
+				},
+				{
+					Name:      "tmp",
+					ReadOnly:  false,
+					MountPath: "/tmp",
+				},
+				{
+					Name:      "local",
+					MountPath: "/.local",
+				},
+				{
+					Name:      "package-registry-config",
+					ReadOnly:  false,
+					MountPath: "/kubeless/package-registry-config/pip.conf",
+					SubPath:   "pip.conf",
+				},
+			},
+		},
+		{
+			name:    "build volume mounts for git nodejs22 based on function",
+			runtime: serverlessv1alpha2.NodeJs22,
+			source: serverlessv1alpha2.Source{GitRepository: &serverlessv1alpha2.GitRepositorySource{
+				URL: "x", Repository: serverlessv1alpha2.Repository{BaseDir: "x", Reference: "x"}}},
 			want: []corev1.VolumeMount{
 				{
 					Name:      "sources",
@@ -555,8 +602,10 @@ func TestDeployment_volumeMounts(t *testing.T) {
 			},
 		},
 		{
-			name:    "build volume mounts for python312 based on function",
+			name:    "build volume mounts for git python312 based on function",
 			runtime: serverlessv1alpha2.Python312,
+			source: serverlessv1alpha2.Source{GitRepository: &serverlessv1alpha2.GitRepositorySource{
+				URL: "x", Repository: serverlessv1alpha2.Repository{BaseDir: "x", Reference: "x"}}},
 			want: []corev1.VolumeMount{
 				{
 					Name:      "sources",
@@ -591,6 +640,7 @@ func TestDeployment_volumeMounts(t *testing.T) {
 				function: &serverlessv1alpha2.Function{
 					Spec: serverlessv1alpha2.FunctionSpec{
 						Runtime: tt.runtime,
+						Source:  tt.source,
 					},
 				},
 			}
@@ -609,11 +659,13 @@ func TestDeployment_volumes(t *testing.T) {
 	tests := []struct {
 		name    string
 		runtime serverlessv1alpha2.Runtime
+		source  serverlessv1alpha2.Source
 		want    []corev1.Volume
 	}{
 		{
-			name:    "build volumes for nodejs20 based on function",
+			name:    "build volumes for inline nodejs20 based on function",
 			runtime: serverlessv1alpha2.NodeJs20,
+			source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{Source: "x", Dependencies: "x"}},
 			want: []corev1.Volume{
 				{
 					Name: "sources",
@@ -636,17 +688,75 @@ func TestDeployment_volumes(t *testing.T) {
 						EmptyDir: &corev1.EmptyDirVolumeSource{},
 					},
 				},
-				{
-					Name: "git-repository",
-					VolumeSource: corev1.VolumeSource{
-						EmptyDir: &corev1.EmptyDirVolumeSource{},
-					},
-				},
 			},
 		},
 		{
-			name:    "build volumes for nodejs22 based on function",
+			name:    "build volumes for inline nodejs22 based on function",
 			runtime: serverlessv1alpha2.NodeJs22,
+			source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{Source: "x", Dependencies: "x"}},
+			want: []corev1.Volume{
+				{
+					Name: "sources",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+				{
+					Name: "package-registry-config",
+					VolumeSource: corev1.VolumeSource{
+						Secret: &corev1.SecretVolumeSource{
+							SecretName: "test-secret-name",
+							Optional:   ptr.To[bool](true),
+						},
+					},
+				},
+				{
+					Name: "tmp",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+			},
+		},
+		{
+			name:    "build volumes for inline python312 based on function",
+			runtime: serverlessv1alpha2.Python312,
+			source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{Source: "x", Dependencies: "x"}},
+			want: []corev1.Volume{
+				{
+					Name: "sources",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+				{
+					Name: "package-registry-config",
+					VolumeSource: corev1.VolumeSource{
+						Secret: &corev1.SecretVolumeSource{
+							SecretName: "test-secret-name",
+							Optional:   ptr.To[bool](true),
+						},
+					},
+				},
+				{
+					Name: "tmp",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+				{
+					Name: "local",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+			},
+		},
+		{
+			name:    "build volumes for git nodejs22 based on function",
+			runtime: serverlessv1alpha2.NodeJs22,
+			source: serverlessv1alpha2.Source{GitRepository: &serverlessv1alpha2.GitRepositorySource{
+				URL: "x", Repository: serverlessv1alpha2.Repository{BaseDir: "x", Reference: "x"}}},
 			want: []corev1.Volume{
 				{
 					Name: "sources",
@@ -678,8 +788,10 @@ func TestDeployment_volumes(t *testing.T) {
 			},
 		},
 		{
-			name:    "build volumes for python312 based on function",
+			name:    "build volumes for inline python312 based on function",
 			runtime: serverlessv1alpha2.Python312,
+			source: serverlessv1alpha2.Source{GitRepository: &serverlessv1alpha2.GitRepositorySource{
+				URL: "x", Repository: serverlessv1alpha2.Repository{BaseDir: "x", Reference: "x"}}},
 			want: []corev1.Volume{
 				{
 					Name: "sources",
@@ -724,6 +836,7 @@ func TestDeployment_volumes(t *testing.T) {
 				function: &serverlessv1alpha2.Function{
 					Spec: serverlessv1alpha2.FunctionSpec{
 						Runtime: tt.runtime,
+						Source:  tt.source,
 					},
 				},
 			}
