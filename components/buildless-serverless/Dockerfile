@@ -23,7 +23,7 @@ COPY internal/ internal/
 # by leaving it empty we can ensure that the container and binary shipped on it will have the same platform.
 RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o manager cmd/main.go
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.2 as certs
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.3 as certs
 
 RUN apk add --no-cache ca-certificates
 
