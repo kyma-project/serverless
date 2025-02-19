@@ -12,7 +12,7 @@ To learn more about Function's signature, `event` and `context` objects, and cus
 
 * You have the Serverless module added.
 
-## Steps
+## Procedure
 
 You can create a Function with Kyma dashboard, Kyma CLI, or kubectl:
 
