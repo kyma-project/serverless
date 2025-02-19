@@ -16,7 +16,7 @@ Read also about [Function’s specification](../technical-reference/07-70-functi
 - You have an [existing Function](01-10-create-inline-function.md)
 - You have the API Gateway and Serverless modules added
 
-## Steps
+## Procedure
 
 You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
 

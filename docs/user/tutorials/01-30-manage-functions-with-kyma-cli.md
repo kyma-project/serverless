@@ -19,7 +19,7 @@ Before you start, make sure you have these tools installed:
 - [Kyma CLI](https://github.com/kyma-project/cli)
 - Serverless module
 
-## Steps
+## Procedure
 
 Follow these steps:
 
