@@ -24,6 +24,7 @@ type SystemState struct {
 	statusSnapshot    serverlessv1alpha2.FunctionStatus
 	BuiltDeployment   *resources.Deployment
 	ClusterDeployment *appsv1.Deployment
+	Commit            string
 }
 
 func (s *SystemState) saveStatusSnapshot() {
