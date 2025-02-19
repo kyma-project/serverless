@@ -36,7 +36,7 @@ func Test_sFnAdjustStatus(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Function:        f,
-				BuiltDeployment: resources.NewDeployment(&f, &fc),
+				BuiltDeployment: resources.NewDeployment(&f, &fc, "test-commit"),
 				ClusterDeployment: &appsv1.Deployment{
 					Status: appsv1.DeploymentStatus{
 						Replicas: int32(686)}}},

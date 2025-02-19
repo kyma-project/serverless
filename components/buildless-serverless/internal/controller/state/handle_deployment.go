@@ -21,7 +21,7 @@ import (
 // - gitSources - stateFnGitCheckSources
 
 func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig)
+	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig, m.State.Commit)
 	builtDeployment := m.State.BuiltDeployment.Deployment
 	//TODO: refactor this method - split get from create
 
