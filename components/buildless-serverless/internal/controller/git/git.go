@@ -6,7 +6,15 @@ import (
 	"github.com/go-git/go-git/v5/storage/memory"
 )
 
-func GetLatestCommit(url, reference string) (string, error) {
+//go:generate mockery --name=LastCommitChecker --output=automock --outpkg=automock --case=underscore
+type LastCommitChecker interface {
+	GetLatestCommit(url, reference string) (string, error)
+}
+
+type GoGitCommitChecker struct {
+}
+
+func (g GoGitCommitChecker) GetLatestCommit(url, reference string) (string, error) {
 
 	r, err := git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
 		URL:           url,

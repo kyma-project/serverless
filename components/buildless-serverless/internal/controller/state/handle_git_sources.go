@@ -5,11 +5,13 @@ import (
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/controller/fsm"
-	"github.com/kyma-project/serverless/internal/controller/git"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
+// dla inlienów state commit pusty, nextState
+// latestCommit istnieje i nie ma errora spodziewamy sie commita, nextState, nie zminiły się conditiony
+// latestCommit pusty, zmienił się condition, stop
 func sFnHandleGitSources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 
 	if !m.State.Function.HasGitSources() {
@@ -18,14 +20,14 @@ func sFnHandleGitSources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *
 
 	gitRepository := m.State.Function.Spec.Source.GitRepository
 
-	latestCommit, err := git.GetLatestCommit(gitRepository.URL, gitRepository.Reference)
+	latestCommit, err := m.GitClient.GetLatestCommit(gitRepository.URL, gitRepository.Reference)
 	if err != nil {
 		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionConfigurationReady,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonGitSourceCheckFailed,
 			fmt.Sprintf("Git repository: %s source check failed: %s", gitRepository.URL, err.Error()))
-		return stop()
+		return nil, nil, err
 	}
 
 	m.State.Commit = latestCommit
