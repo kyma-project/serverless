@@ -13,9 +13,6 @@ import (
 	"testing"
 )
 
-// dla inlienów state commit pusty, nextState
-// latestCommit istnieje i nie ma errora spodziewamy sie commita, nextState, nie zminiły się conditiony
-// latestCommit pusty, zmienił się condition, stop
 func Test_sFnHandleGitSources(t *testing.T) {
 	t.Run("for inline function where the commit should be empty and move to the nextState", func(t *testing.T) {
 		// Arrange

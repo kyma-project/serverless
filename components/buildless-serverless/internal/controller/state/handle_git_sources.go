@@ -9,9 +9,6 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
-// dla inlienów state commit pusty, nextState
-// latestCommit istnieje i nie ma errora spodziewamy sie commita, nextState, nie zminiły się conditiony
-// latestCommit pusty, zmienił się condition, stop
 func sFnHandleGitSources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 
 	if !m.State.Function.HasGitSources() {
