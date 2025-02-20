@@ -200,7 +200,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			ImageNodeJs22: "boring-bartik",
 		}
 		// identical deployment will be generated inside sFnHandleDeployment
-		deployment := resources.NewDeployment(&f, &fc).Deployment
+		deployment := resources.NewDeployment(&f, &fc, "test-commit").Deployment
 		// scheme and fake client
 		scheme := runtime.NewScheme()
 		require.NoError(t, serverlessv1alpha2.AddToScheme(scheme))
