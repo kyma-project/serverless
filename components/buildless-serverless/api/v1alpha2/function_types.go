@@ -43,7 +43,7 @@ type FunctionSpec struct {
 	RuntimeImageOverride string `json:"runtimeImageOverride,omitempty"`
 
 	// Contains the Function's source code configuration.
-	/*    // +kubebuilder:validation:XValidation:message="Use GitRepository or Inline source",rule="has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository) && has(self.inline)" */
+	// +kubebuilder:validation:XValidation:message="Use GitRepository or Inline source",rule="has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository) && has(self.inline)"
 	// +kubebuilder:validation:Required
 	Source Source `json:"source"`
 
@@ -78,7 +78,7 @@ type FunctionSpec struct {
 type Source struct {
 	// Defines the Function as git-sourced. Can't be used together with **Inline**.
 	// +optional
-	//	GitRepository *GitRepositorySource `json:"gitRepository,omitempty"`
+	GitRepository *GitRepositorySource `json:"gitRepository,omitempty"`
 
 	// Defines the Function as the inline Function. Can't be used together with **GitRepository**.
 	// +optional
@@ -94,6 +94,33 @@ type InlineSource struct {
 	// Specifies the Function's dependencies.
 	//+optional
 	Dependencies string `json:"dependencies,omitempty"`
+}
+
+type GitRepositorySource struct {
+	// +kubebuilder:validation:Required
+
+	// Specifies the URL of the Git repository with the Function's code and dependencies.
+	// Depending on whether the repository is public or private and what authentication method is used to access it,
+	// the URL must start with the `http(s)`, `git`, or `ssh` prefix.
+	URL string `json:"url"`
+
+	// // Specifies the authentication method. Required for SSH.
+	// // +optional
+	// Auth *RepositoryAuth `json:"auth,omitempty"`
+
+	// +kubebuilder:validation:XValidation:message="BaseDir is required and cannot be empty",rule="has(self.baseDir) && (self.baseDir.trim().size() != 0)"
+	// +kubebuilder:validation:XValidation:message="Reference is required and cannot be empty",rule="has(self.reference) && (self.reference.trim().size() != 0)"
+	Repository `json:",inline"`
+}
+
+type Repository struct {
+	// Specifies the relative path to the Git directory that contains the source code
+	// from which the Function is built.
+	BaseDir string `json:"baseDir,omitempty"`
+
+	// Specifies either the branch name, tag or commit revision from which the Function Controller
+	// automatically fetches the changes in the Function's code and dependencies.
+	Reference string `json:"reference,omitempty"`
 }
 
 type ResourceConfiguration struct {
@@ -255,4 +282,22 @@ func (f *Function) PodLabels() map[string]string {
 		result = labels.Merge(f.Spec.Labels, result)
 	}
 	return labels.Merge(result, map[string]string{PodAppNameLabel: f.GetName()})
+}
+
+func (f *Function) HasGitSources() bool {
+	return f.Spec.Source.GitRepository != nil
+}
+
+func (f *Function) HasInlineSources() bool {
+	return f.Spec.Source.Inline != nil
+}
+
+func (f *Function) HasPythonRuntime() bool {
+	runtime := f.Spec.Runtime
+	return runtime == Python312
+}
+
+func (f *Function) HasNodejsRuntime() bool {
+	runtime := f.Spec.Runtime
+	return runtime == NodeJs20 || runtime == NodeJs22
 }
