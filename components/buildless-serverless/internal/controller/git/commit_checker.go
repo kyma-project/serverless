@@ -15,7 +15,6 @@ type GoGitCommitChecker struct {
 }
 
 func (g GoGitCommitChecker) GetLatestCommit(url, reference string) (string, error) {
-
 	r, err := git.Clone(memory.NewStorage(), nil, &git.CloneOptions{
 		URL:           url,
 		ReferenceName: plumbing.ReferenceName(reference),
