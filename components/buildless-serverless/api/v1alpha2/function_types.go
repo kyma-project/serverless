@@ -193,6 +193,7 @@ type ConditionReason string
 const (
 	ConditionReasonInvalidFunctionSpec     ConditionReason = "InvalidFunctionSpec"
 	ConditionReasonFunctionSpecValidated   ConditionReason = "FunctionSpecValidated"
+	ConditionReasonGitSourceCheckFailed    ConditionReason = "GitSourceCheckFailed"
 	ConditionReasonDeploymentCreated       ConditionReason = "DeploymentCreated"
 	ConditionReasonDeploymentUpdated       ConditionReason = "DeploymentUpdated"
 	ConditionReasonDeploymentFailed        ConditionReason = "DeploymentFailed"
