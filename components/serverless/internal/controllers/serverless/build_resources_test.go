@@ -101,7 +101,6 @@ func TestFunctionReconciler_buildDeployment(t *testing.T) {
 			}
 
 			got := s.buildDeployment(buildDeploymentArgs{}, cfg{
-				runtimeBaseImage: "some_image",
 				fn: FunctionConfig{
 					ResourceConfig: ResourceConfig{
 						Function: FunctionResourceConfig{
@@ -212,7 +211,6 @@ func TestFunctionReconciler_buildDeploymentWithResources(t *testing.T) {
 			s := systemState{instance: *tt.args.instance}
 
 			got := s.buildDeployment(buildDeploymentArgs{}, cfg{
-				runtimeBaseImage: "some_image",
 				fn: FunctionConfig{
 					ResourceConfig: ResourceConfig{
 						Function: FunctionResourceConfig{
