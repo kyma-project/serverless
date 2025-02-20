@@ -20,7 +20,7 @@ func sFnHandleGitSources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *
 
 	gitRepository := m.State.Function.Spec.Source.GitRepository
 
-	latestCommit, err := m.GitClient.GetLatestCommit(gitRepository.URL, gitRepository.Reference)
+	latestCommit, err := m.GitChecker.GetLatestCommit(gitRepository.URL, gitRepository.Reference)
 	if err != nil {
 		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionConfigurationReady,

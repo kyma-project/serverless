@@ -43,7 +43,7 @@ type StateMachine struct {
 	Client         client.Client
 	FunctionConfig config.FunctionConfig
 	Scheme         *apimachineryruntime.Scheme
-	GitClient      git.LastCommitChecker
+	GitChecker     git.LastCommitChecker
 }
 
 func (m *StateMachine) stateFnName() string {
@@ -104,7 +104,7 @@ func New(client client.Client, functionConfig config.FunctionConfig, instance *s
 		FunctionConfig: functionConfig,
 		Client:         client,
 		Scheme:         scheme,
-		GitClient:      git.GoGitCommitChecker{},
+		GitChecker:     git.GoGitCommitChecker{},
 	}
 	sm.State.saveStatusSnapshot()
 	return &sm

@@ -71,8 +71,8 @@ func Test_sFnHandleGitSources(t *testing.T) {
 									Reference: "test-reference",
 								},
 							}}}}},
-			Log:       zap.NewNop().Sugar(),
-			GitClient: gitMock,
+			Log:        zap.NewNop().Sugar(),
+			GitChecker: gitMock,
 		}
 
 		// Act
@@ -112,8 +112,8 @@ func Test_sFnHandleGitSources(t *testing.T) {
 									Reference: "test-reference",
 								},
 							}}}}},
-			Log:       zap.NewNop().Sugar(),
-			GitClient: gitMock,
+			Log:        zap.NewNop().Sugar(),
+			GitChecker: gitMock,
 		}
 
 		// Act
