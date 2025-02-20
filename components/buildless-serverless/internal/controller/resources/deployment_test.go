@@ -269,6 +269,7 @@ python /kubeless.py;`,
 	})
 	t.Run("create init container for git function with data based on function", func(t *testing.T) {
 		d := minimalDeployment()
+		d.commit = "test-commit"
 		d.function.Spec.Source = serverlessv1alpha2.Source{
 			GitRepository: &serverlessv1alpha2.GitRepositorySource{
 				URL: "wonderful-germain",
@@ -283,8 +284,8 @@ python /kubeless.py;`,
 		c := r.Spec.Template.Spec.InitContainers[0]
 		expectedCommand := []string{"sh", "-c",
 			`git clone --depth 1 --branch epic-mendel wonderful-germain /git-repository/repo;
-mkdir /git-repository/src;
-cp /git-repository/repo/recursing-mcnulty/* /git-repository/src`}
+cd /git-repository/repo;git reset --hard test-commit; cd ../..;
+mkdir /git-repository/src;cp /git-repository/repo/recursing-mcnulty/* /git-repository/src;`}
 		require.Equal(t, expectedCommand, c.Command)
 	})
 }

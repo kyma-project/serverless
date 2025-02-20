@@ -193,11 +193,11 @@ func (d *Deployment) initContainerCommand() string {
 
 	if d.commit != "" {
 		arr = append(arr,
-			fmt.Sprintf("cd /git-repository/repo;git reset --hard %s; cd ../..", d.commit))
+			fmt.Sprintf("cd /git-repository/repo;git reset --hard %s; cd ../..;", d.commit))
 	}
 
 	arr = append(arr,
-		fmt.Sprintf("mkdir /git-repository/src;\ncp /git-repository/repo/%s/* /git-repository/src", strings.Trim(gitRepo.BaseDir, "/ ")))
+		fmt.Sprintf("mkdir /git-repository/src;cp /git-repository/repo/%s/* /git-repository/src;", strings.Trim(gitRepo.BaseDir, "/ ")))
 
 	return strings.Join(arr, "\n")
 }
