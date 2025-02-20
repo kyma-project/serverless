@@ -10,7 +10,6 @@ import (
 )
 
 func sFnHandleGitSources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-
 	if !m.State.Function.HasGitSources() {
 		return nextState(sFnHandleDeployment)
 	}
