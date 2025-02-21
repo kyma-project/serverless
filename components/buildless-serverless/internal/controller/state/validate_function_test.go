@@ -30,7 +30,7 @@ func Test_sFnValidateFunction(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnHandleDeployment, next)
+		requireEqualFunc(t, sFnHandleGitSources, next)
 		// function has proper condition
 		requireContainsCondition(t, m.State.Function.Status,
 			serverlessv1alpha2.ConditionConfigurationReady,

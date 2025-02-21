@@ -19,12 +19,14 @@ type Deployment struct {
 	*appsv1.Deployment
 	functionConfig *config.FunctionConfig
 	function       *serverlessv1alpha2.Function
+	commit         string
 }
 
-func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig) *Deployment {
+func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, commit string) *Deployment {
 	d := &Deployment{
 		functionConfig: c,
 		function:       f,
+		commit:         commit,
 	}
 	d.Deployment = d.construct()
 	return d
@@ -185,13 +187,19 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 
 func (d *Deployment) initContainerCommand() string {
 	gitRepo := d.function.Spec.Source.GitRepository
-	return fmt.Sprintf(`git clone --depth 1 --branch %s %s /git-repository/repo;
-mkdir /git-repository/src;
-cp /git-repository/repo/%s/* /git-repository/src`,
-		gitRepo.Reference,
-		gitRepo.URL,
-		strings.Trim(gitRepo.BaseDir, "/ "),
-	)
+	var arr []string
+	arr = append(arr,
+		fmt.Sprintf("git clone --depth 1 --branch %s %s /git-repository/repo;", gitRepo.Reference, gitRepo.URL))
+
+	if d.commit != "" {
+		arr = append(arr,
+			fmt.Sprintf("cd /git-repository/repo;git reset --hard %s; cd ../..;", d.commit))
+	}
+
+	arr = append(arr,
+		fmt.Sprintf("mkdir /git-repository/src;cp /git-repository/repo/%s/* /git-repository/src;", strings.Trim(gitRepo.BaseDir, "/ ")))
+
+	return strings.Join(arr, "\n")
 }
 
 func (d *Deployment) replicas() *int32 {
