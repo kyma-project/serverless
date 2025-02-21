@@ -357,6 +357,14 @@ spec:
           status:
             description: FunctionStatus defines the observed state of Function.
             properties:
+              baseDir:
+                description: |-
+                  Specifies the relative path to the Git directory that contains the source code
+                  from which the Function is built.
+                type: string
+              commit:
+                description: Specifies the commit hash used to build the Function.
+                type: string
               conditions:
                 description: Specifies an array of conditions describing the status
                   of the parser.
@@ -421,6 +429,11 @@ spec:
               podSelector:
                 description: Specifies the Pod selector used to match Pods in the
                   Function's Deployment.
+                type: string
+              reference:
+                description: |-
+                  Specifies either the branch name, tag or commit revision from which the Function Controller
+                  automatically fetches the changes in the Function's code and dependencies.
                 type: string
               replicas:
                 description: Specifies the total number of non-terminated Pods targeted
