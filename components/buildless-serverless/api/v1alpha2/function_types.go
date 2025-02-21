@@ -171,14 +171,12 @@ type FunctionStatus struct {
 	FunctionResourceProfile string `json:"functionResourceProfile,omitempty"`
 	// Specifies an array of conditions describing the status of the parser.
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
-
-	// TODO: add Commit field with github support
 	// Specifies the commit hash used to build the Function.
-	// Commit string `json:"commit,omitempty"`
-	// TODO: add Repository field with github support
+	Commit string `json:"commit,omitempty"`
 	// Specify the repository which was used to build the function.
-	// Repository `json:",inline,omitempty"`
+	Repository `json:",inline,omitempty"`
 
+	//TODO Should we add the GitRepository URL here?
 }
 
 type ConditionType string
