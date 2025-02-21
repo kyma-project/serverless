@@ -16,13 +16,10 @@ import (
 	"time"
 )
 
-//TODO: Add states:
-// - validate - components/serverless/internal/controllers/serverless/validation.go
-// - gitSources - stateFnGitCheckSources
-
 func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig)
+	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig, m.State.Commit)
 	builtDeployment := m.State.BuiltDeployment.Deployment
+	//TODO: refactor this method - split get from create
 
 	clusterDeployment, resultGet, errGet := getOrCreateDeployment(ctx, m, builtDeployment)
 	if clusterDeployment == nil {
@@ -111,6 +108,7 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 		len(b.Spec.Template.Spec.Containers) != 1 {
 		return true
 	}
+
 	aContainer := a.Spec.Template.Spec.Containers[0]
 	bContainer := b.Spec.Template.Spec.Containers[0]
 
@@ -134,7 +132,28 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 		resourcesChanged ||
 		envChanged ||
 		volumeMountsChanged ||
-		portsChanged
+		portsChanged ||
+		initContainerChanged(a, b)
+}
+
+func initContainerChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
+	// there are no init containers for inline function and one init container for git function
+	// when count of init containers is not equal function type has been changed
+	if len(a.Spec.Template.Spec.InitContainers) > 1 ||
+		len(b.Spec.Template.Spec.InitContainers) > 1 ||
+		len(a.Spec.Template.Spec.InitContainers) != len(b.Spec.Template.Spec.InitContainers) {
+		return true
+	}
+	if len(a.Spec.Template.Spec.InitContainers) == 0 {
+		return false
+	}
+	aInitContainer := a.Spec.Template.Spec.InitContainers[0]
+	bInitContainer := b.Spec.Template.Spec.InitContainers[0]
+
+	initCommandChanged := !reflect.DeepEqual(aInitContainer.Command, bInitContainer.Command)
+	initVolumeMountsChanged := !reflect.DeepEqual(aInitContainer.VolumeMounts, bInitContainer.VolumeMounts)
+	return initCommandChanged ||
+		initVolumeMountsChanged
 }
 
 func updateDeployment(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment) (requeueNeeded bool, err error) {

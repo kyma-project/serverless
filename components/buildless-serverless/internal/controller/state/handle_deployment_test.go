@@ -200,7 +200,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			ImageNodeJs22: "boring-bartik",
 		}
 		// identical deployment will be generated inside sFnHandleDeployment
-		deployment := resources.NewDeployment(&f, &fc).Deployment
+		deployment := resources.NewDeployment(&f, &fc, "test-commit").Deployment
 		// scheme and fake client
 		scheme := runtime.NewScheme()
 		require.NoError(t, serverlessv1alpha2.AddToScheme(scheme))
@@ -809,6 +809,96 @@ func Test_deploymentChanged(t *testing.T) {
 							Reason: "thirsty-jemison"}}}},
 			},
 			want: false,
+		},
+		{
+			name: "when there are no init containers should return false",
+			args: args{
+				a: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{},
+								Containers:     []corev1.Container{{}}}}}},
+				b: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{},
+								Containers:     []corev1.Container{{}}}}}},
+			},
+			want: false,
+		},
+		{
+			name: "when init containers count is different should return true",
+			args: args{
+				a: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									Image: "vibrant-booth",
+								}},
+								Containers: []corev1.Container{{}}}}}},
+				b: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{},
+								Containers:     []corev1.Container{{}}}}}},
+			},
+			want: true,
+		},
+		{
+			name: "when init container commands are different should return true",
+			args: args{
+				a: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									Image:   "gracious-mclaren",
+									Command: []string{"nice-mahavira"},
+								}},
+								Containers: []corev1.Container{{}}}}}},
+				b: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									Image:   "gracious-mclaren",
+									Command: []string{"modest-kepler"},
+								}},
+								Containers: []corev1.Container{{}}}}}},
+			},
+			want: true,
+		},
+		{
+			name: "when init container volume mounts are different should return true",
+			args: args{
+				a: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									Image: "thirsty-matsumoto",
+									VolumeMounts: []corev1.VolumeMount{{
+										Name:      "name",
+										MountPath: "/sweet/carver",
+									}}}},
+								Containers: []corev1.Container{{}}}}}},
+				b: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									Image: "thirsty-matsumoto",
+									VolumeMounts: []corev1.VolumeMount{{
+										Name:      "name",
+										MountPath: "/focused/thompson",
+									}}}},
+								Containers: []corev1.Container{{}}}}}},
+			},
+			want: true,
 		},
 	}
 	for _, tt := range tests {

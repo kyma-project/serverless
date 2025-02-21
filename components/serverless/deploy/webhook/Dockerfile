@@ -1,4 +1,4 @@
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.23.6-alpine3.21 as builder
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.24.0-alpine3.21 as builder
 
 ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/serverless \
     CGO_ENABLED=0 \
@@ -16,7 +16,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o webhook-server ./compon
     && mv ./webhook-server /app/webhook-server
 
 # get latest CA certs from alpine:3.17.4
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.2 as certs
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.3 as certs
 RUN apk add --no-cache ca-certificates
 
 FROM scratch
