@@ -2,9 +2,6 @@ package serverless
 
 import (
 	"context"
-	"fmt"
-	"regexp"
-	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -13,7 +10,6 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	autoscalingv1 "k8s.io/api/autoscaling/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -142,16 +138,6 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, request ctrl.Request
 
 	contextLogger.Debug("starting state machine")
 
-	runtime := instance.Status.Runtime
-	if runtime == "" {
-		runtime = instance.Spec.Runtime
-	}
-
-	latestRuntimeImage, err := r.getRuntimeImageFromConfigMap(ctx, instance.GetNamespace(), runtime)
-	if err != nil {
-		return ctrl.Result{}, errors.Wrap(err, "failed to fetch runtime image from config map")
-	}
-
 	stateReconciler := reconciler{
 		fn:  r.initStateFunction,
 		log: contextLogger,
@@ -161,9 +147,8 @@ func (r *FunctionReconciler) Reconcile(ctx context.Context, request ctrl.Request
 			statsCollector: r.statsCollector,
 		},
 		cfg: cfg{
-			fn:               r.config,
-			docker:           dockerCfg,
-			runtimeBaseImage: latestRuntimeImage,
+			fn:     r.config,
+			docker: dockerCfg,
 		},
 		gitClient: r.gitFactory.GetGitClient(contextLogger),
 	}
@@ -208,21 +193,4 @@ func (r *FunctionReconciler) readDockerConfig(ctx context.Context, instance *ser
 		}, nil
 	}
 
-}
-
-func (r *FunctionReconciler) getRuntimeImageFromConfigMap(ctx context.Context, namespace string, runtime serverlessv1alpha2.Runtime) (string, error) {
-	instance := &corev1.ConfigMap{}
-	dockerfileConfigMapName := fmt.Sprintf("dockerfile-%s", runtime)
-	err := r.client.Get(ctx, types.NamespacedName{Namespace: namespace, Name: dockerfileConfigMapName}, instance)
-	if err != nil {
-		return "", errors.Wrap(err, "while extracting correct config map for given runtime")
-	}
-	baseImage := instance.Data["Dockerfile"]
-	re := regexp.MustCompile(`base_image=.*`)
-	matchedLines := re.FindStringSubmatch(baseImage)
-	if len(matchedLines) == 0 {
-		return "", errors.Errorf("could not find the base image from %s", dockerfileConfigMapName)
-	}
-	runtimeImage := strings.TrimPrefix(matchedLines[0], "base_image=")
-	return runtimeImage, err
 }
