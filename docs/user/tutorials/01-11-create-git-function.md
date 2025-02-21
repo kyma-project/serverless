@@ -71,6 +71,7 @@ You can create a Function either with kubectl or Kyma dashboard:
     ```bash
     export GIT_FUNCTION={GIT_FUNCTION_NAME}
     export NAMESPACE={FUNCTION_NAMESPACE}
+    export KUBECONFIG={PATH_TO_YOUR_KUBECONFIG}
     ```
 
 2. Create a Secret (optional).

@@ -113,6 +113,7 @@ If you decide to modify your Function, click **Edit** and confirm changes afterw
     ```bash
     export NAME={FUNCTION_NAME}
     export NAMESPACE={FUNCTION_NAMESPACE}
+    export KUBECONFIG={PATH_TO_YOUR_KUBECONFIG}
     ```
 
 2. Create a Function CR that specifies the Function's logic:

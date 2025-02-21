@@ -66,6 +66,7 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
     ```bash
     export NAME={FUNCTION_NAME}
     export NAMESPACE={NAMESPACE_NAME}
+    export KUBECONFIG={PATH_TO_YOUR_KUBECONFIG}
     ```
 
 4. Download the latest configuration of the Function from the cluster. This way, you update the local `config.yaml` file with the Function's code.
@@ -136,6 +137,7 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
     ```bash
     export NAME={FUNCTION_NAME}
     export NAMESPACE={FUNCTION_NAMESPACE}
+    export KUBECONFIG={PATH_TO_YOUR_KUBECONFIG}
     ```
 
     > [!NOTE]
