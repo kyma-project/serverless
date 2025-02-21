@@ -287,12 +287,7 @@ func stateFnInitialize(ctx context.Context, r *reconciler, s *systemState) (stat
 		return nil, errors.Wrap(err, "context error")
 	}
 
-	instanceRuntime := s.instance.Status.Runtime
-	if instanceRuntime == "" {
-		instanceRuntime = s.instance.Spec.Runtime
-	}
-
-	latestRuntimeImage, err := r.getRuntimeImageFromConfigMap(ctx, s.instance.GetNamespace(), instanceRuntime)
+	latestRuntimeImage, err := r.getRuntimeImageFromConfigMap(ctx, s.instance.GetNamespace(), s.instance.Spec.Runtime)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to fetch runtime image from config map")
 	}
@@ -322,10 +317,10 @@ func skipGitSourceCheck(f serverlessv1alpha2.Function, cfg cfg) bool {
 	return time.Since(configured.LastTransitionTime.Time) < cfg.fn.FunctionReadyRequeueDuration
 }
 
-func (m *reconciler) getRuntimeImageFromConfigMap(ctx context.Context, namespace string, runtime serverlessv1alpha2.Runtime) (string, error) {
+func (r *reconciler) getRuntimeImageFromConfigMap(ctx context.Context, namespace string, runtime serverlessv1alpha2.Runtime) (string, error) {
 	instance := &corev1.ConfigMap{}
 	dockerfileConfigMapName := fmt.Sprintf("dockerfile-%s", runtime)
-	err := m.client.Get(ctx, types.NamespacedName{Namespace: namespace, Name: dockerfileConfigMapName}, instance)
+	err := r.client.Get(ctx, types.NamespacedName{Namespace: namespace, Name: dockerfileConfigMapName}, instance)
 	if err != nil {
 		return "", errors.Wrap(err, "while extracting correct config map for given runtime")
 	}

@@ -41,8 +41,8 @@ func TestValidation_Invalid(t *testing.T) {
 	//GIVEN
 	ctx := context.TODO()
 
-	k8sClient := fake.NewClientBuilder().WithStatusSubresource(&serverlessv1alpha2.Function{}).Build()
 	require.NoError(t, serverlessv1alpha2.AddToScheme(scheme.Scheme))
+	k8sClient := fake.NewClientBuilder().WithScheme(scheme.Scheme).WithStatusSubresource(&serverlessv1alpha2.Function{}).Build()
 	resourceClient := serverlessResource.New(k8sClient, scheme.Scheme)
 
 	statsCollector := &automock.StatsCollector{}
@@ -602,9 +602,7 @@ func TestValidation_Valid(t *testing.T) {
 				cfg: cfg{fn: FunctionConfig{ResourceConfig: minResourcesCfg}}}
 
 			//WHEN
-			nextFn, err := stateFnValidateFunction(ctx, r, s)
-			require.NoError(t, err)
-			_, err = nextFn(context.TODO(), r, s)
+			_, err := stateFnValidateFunction(ctx, r, s)
 
 			//THEN
 			require.NoError(t, err)
