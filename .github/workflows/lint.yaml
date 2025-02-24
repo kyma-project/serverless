@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-go
-      - uses: golangci/golangci-lint-action@639cd343e1d3b897ff35927a75193d57cfcba299
+      - uses: golangci/golangci-lint-action@v6
         with:
           version: latest
           working-directory: 'components/operator'
@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/setup-libgit2
-      - uses: golangci/golangci-lint-action@639cd343e1d3b897ff35927a75193d57cfcba299
+      - uses: golangci/golangci-lint-action@v6
         with:
           version: latest
           working-directory: 'components/serverless'
@@ -31,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-go
-      - uses: golangci/golangci-lint-action@639cd343e1d3b897ff35927a75193d57cfcba299
+      - uses: golangci/golangci-lint-action@v6
         with:
           version: latest
           working-directory: 'components/buildless-serverless'
