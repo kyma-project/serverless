@@ -65,7 +65,7 @@ func buildStateFnCheckImageJob(expectedJob batchv1.Job) stateFn {
 			return buildStatusUpdateStateFnWithCondition(condition), nil
 		}
 
-		s.fnImage = s.buildImageAddress(r.cfg.docker.PullAddress, r.cfg.runtimeBaseImage)
+		s.fnImage = s.buildImageAddress(r.cfg.docker.PullAddress, s.runtimeBaseImage)
 
 		diffRuntimeImage := functionRuntimeChanged(ctx, r, s)
 
@@ -102,7 +102,7 @@ func functionRuntimeChanged(_ context.Context, r *reconciler, s *systemState) bo
 		return !result
 	}
 
-	result := r.cfg.runtimeBaseImage == functionRuntimeImage
+	result := s.runtimeBaseImage == functionRuntimeImage
 	return !result
 }
 
@@ -139,7 +139,7 @@ func buildStateFnRunJob(expectedJob batchv1.Job) stateFn {
 			Message:            fmt.Sprintf("Job %s created", expectedJob.GetName()),
 		}
 
-		s.instance.Status.RuntimeImage = r.cfg.runtimeBaseImage
+		s.instance.Status.RuntimeImage = s.runtimeBaseImage
 		return buildStatusUpdateStateFnWithCondition(condition), nil
 	}
 }

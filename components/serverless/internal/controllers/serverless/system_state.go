@@ -27,13 +27,14 @@ type SystemState interface{}
 
 // TODO extract interface
 type systemState struct {
-	instance    serverlessv1alpha2.Function
-	fnImage     string               // TODO make sure this is needed
-	configMaps  corev1.ConfigMapList // TODO create issue to refactor this (only 1 config map should be here)
-	deployments appsv1.DeploymentList
-	jobs        batchv1.JobList
-	services    corev1.ServiceList
-	hpas        autoscalingv1.HorizontalPodAutoscalerList
+	instance         serverlessv1alpha2.Function
+	fnImage          string               // TODO make sure this is needed
+	configMaps       corev1.ConfigMapList // TODO create issue to refactor this (only 1 config map should be here)
+	deployments      appsv1.DeploymentList
+	jobs             batchv1.JobList
+	services         corev1.ServiceList
+	hpas             autoscalingv1.HorizontalPodAutoscalerList
+	runtimeBaseImage string
 }
 
 var _ SystemState = systemState{}
@@ -240,7 +241,7 @@ func (s *systemState) buildGitJobRepoFetcherContainer(gitOptions git.Options, cf
 }
 
 func (s *systemState) buildJobExecutorContainer(cfg cfg, volumeMounts []corev1.VolumeMount) corev1.Container {
-	imageName := s.buildImageAddress(cfg.docker.PushAddress, cfg.runtimeBaseImage)
+	imageName := s.buildImageAddress(cfg.docker.PushAddress, s.runtimeBaseImage)
 	args := append(cfg.fn.Build.ExecutorArgs,
 		fmt.Sprintf("%s=%s", destinationArg, imageName),
 		fmt.Sprintf("--context=dir://%s", workspaceMountPath))
@@ -410,7 +411,7 @@ type buildDeploymentArgs struct {
 }
 
 func (s *systemState) buildDeployment(args buildDeploymentArgs, cfg cfg) appsv1.Deployment {
-	imageName := s.buildImageAddress(args.DockerPullAddress, cfg.runtimeBaseImage)
+	imageName := s.buildImageAddress(args.DockerPullAddress, s.runtimeBaseImage)
 
 	const volumeName = "tmp-dir"
 	emptyDirVolumeSize := resource.MustParse("100Mi")

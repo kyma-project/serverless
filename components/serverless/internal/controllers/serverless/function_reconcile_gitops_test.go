@@ -152,7 +152,7 @@ func TestGitOpsWithContinuousGitCheckout(t *testing.T) {
 				config:            testCfg,
 				gitFactory:        factory,
 				statsCollector:    statsCollector,
-				initStateFunction: stateFnGitCheckSources,
+				initStateFunction: stateFnInitialize,
 			}
 
 			fnLabels := reconciler.internalFunctionLabels(inFunction)
@@ -477,7 +477,7 @@ func TestGitOpsWithoutContinuousGitCheckout(t *testing.T) {
 				config:            testCfg,
 				gitFactory:        factory,
 				statsCollector:    statsCollector,
-				initStateFunction: stateFnGitCheckSources,
+				initStateFunction: stateFnInitialize,
 			}
 
 			fnLabels := reconciler.internalFunctionLabels(inFunction)
