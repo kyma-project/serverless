@@ -62,9 +62,7 @@ Follow these steps:
   ```
 
   > [!TIP]
-  > To apply a Function from a different location, use the `--filename` flag followed by the full path to the `config.yaml` file.
-
-  Alternatively, use the `--dry-run` flag to list the file that will be created before you apply it. You can also preview the file's content in the format of your choice by adding the `--output {FILE_FORMAT}` flag, such as `--output yaml`.
+  > To apply a Function from a different location, use the `--filename` flag followed by the full path to the `config.yaml` file. Alternatively, use the `--dry-run` flag to list the file that will be created before you apply it. You can also preview the file's content in the format of your choice by adding the `--output {FILE_FORMAT}` flag, such as `--output yaml`.
 
 3. Once applied, view the Function's details in the cluster:
 

@@ -10,7 +10,8 @@ To learn more about Function's signature, `event` and `context` objects, and cus
 
 ## Prerequisites
 
-* You have the Serverless module added.
+* You have the [Serverless module added](https://kyma-project.io/#/02-get-started/01-quick-install).
+* For the Kyma CLI scenario, you have Kyma CLI installed.
 
 ## Procedure
 
@@ -19,9 +20,6 @@ You can create a Function with Kyma dashboard, Kyma CLI, or kubectl:
 <!-- tabs:start -->
 
 #### **Kyma Dashboard**
-
-> [!NOTE]
-> Kyma dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
 
 1. Create a namespace or select one from the drop-down list in the navigation panel.
 

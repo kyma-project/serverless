@@ -14,7 +14,8 @@ Read also about [Function’s specification](../technical-reference/07-70-functi
 ## Prerequisites
 
 - You have an [existing Function](01-10-create-inline-function.md).
-- You have the API Gateway and Serverless modules added
+- You have the [Istio, API Gateway and Serverless modules added](https://kyma-project.io/#/02-get-started/01-quick-install).
+- For the Kyma CLI scenario, you have Kyma CLI installed.
 
 ## Procedure
 
@@ -104,13 +105,13 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
     kubectl get apirules $NAME -n $NAMESPACE
     ```
 
-8. Check that the APIRule was created successfully and has the status `OK`:
+If successful, the APIRule has the status `OK`.
 
     ```bash
     kubectl get apirules $NAME -n $NAMESPACE -o=jsonpath='{.status.APIRuleStatus.code}'
     ```
 
-9. Call the Function's external address:
+1. Call the Function's external address:
 
     ```bash
     curl https://$NAME.$DOMAIN
