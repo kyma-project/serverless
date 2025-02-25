@@ -5,7 +5,7 @@ This tutorial shows how you can build a Function from code and dependencies stor
 To learn more about Git repository sources for Functions and different ways of securing your repository, read about the [Git source type](../technical-reference/07-40-git-source-type.md).
 
 > [!NOTE]
-> Read about [Istio sidecars in Kyma and why you want them](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-03-istio-sidecars-in-kyma/). Then, check how to [enable automatic Istio sidecar proxy injection](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/smsh-01-istio-enable-sidecar-injection/). For more details, see [Default Istio setup in Kyma](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-02-default-istio-setup-in-kyma/).
+> Read about the [purpose and benefits of Istio sidecar proxies](https://kyma-project.io/#/istio/user/00-00-istio-sidecar-proxies?id=purpose-and-benefits-of-istio-sidecar-proxies). Then, check how to [enable Istio sidecar proxy injection](https://kyma-project.io/#/istio/user/tutorials/01-40-enable-sidecar-injection). For more details, see [Default Istio Configuration](https://kyma-project.io/#/istio/user/00-15-overview-istio-setup?id=default-istio-configuration).
 
 ## Prerequisites
 
@@ -131,7 +131,7 @@ You can create a Function either with kubectl or Kyma dashboard:
         secretName: # "git-creds-basic" or "git-creds-ssh"
     ```
 
-    If you use the `key` type authentication, the SSH URL format must be used to configure the Function URL:
+    If you use the `key` type authentication, you must use the SSH URL format to configure the Function URL:
 
     ```yaml
     gitRepository:

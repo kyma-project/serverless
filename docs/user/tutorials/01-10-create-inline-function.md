@@ -23,7 +23,7 @@ You can create a Function with Kyma dashboard, Kyma CLI, or kubectl:
 > [!NOTE]
 > Kyma dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
 
-1. Create a namespace or select one from the drop-down list in the top navigation panel.
+1. Create a namespace or select one from the drop-down list in the navigation panel.
 
 2. Go to **Workloads** > **Functions** and choose **Create**.
 
@@ -48,7 +48,7 @@ You can create a Function with Kyma dashboard, Kyma CLI, or kubectl:
 
 Wait for the **Status** field to change into `RUNNING`, confirming that the Function was created successfully.
 
-If you decide to modify your Function, click **Edit** and confirm changes afterward by selecting the **Save** button. You will see the message at the bottom of the screen confirming the Function was updated.
+If you decide to modify your Function, choose **Edit**, make the changes, and choose the **Save** button. If successful, the message at the bottom of the screen confirms that the Function was updated.
 
 #### **Kyma CLI**
 

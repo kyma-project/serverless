@@ -13,7 +13,7 @@ Read also about [Function’s specification](../technical-reference/07-70-functi
 
 ## Prerequisites
 
-- You have an [existing Function](01-10-create-inline-function.md)
+- You have an [existing Function](01-10-create-inline-function.md).
 - You have the API Gateway and Serverless modules added
 
 ## Procedure
@@ -24,7 +24,7 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
 
 #### **Kyma Dashboard**
 
-1. Select a namespace from the drop-down list in the top navigation panel. Make sure the namespace includes the Function that you want to expose using the APIRule CR.
+1. Select a namespace from the drop-down list in the navigation panel. Make sure the namespace includes the Function that you want to expose using the APIRule CR.
 
 2. Go to **Discovery and Network** > **API Rules**, and choose **Create**.
 

@@ -42,7 +42,7 @@ Follow these steps:
    > See the detailed description of all fields available in the [`config.yaml` file](../technical-reference/07-60-function-configuration-file.md).
 
    - `handler.py` with the Function's code and the simple "Hello World" logic
-   - `requirements.txt` with an empty file for your Function's custom dependencies
+   - `requirements.txt` - an empty file for your Function's custom dependencies
 
   The `kyma init` command also sets **sourcePath** in the `config.yaml` file to the full path of the workspace folder:
 
@@ -55,7 +55,7 @@ Follow these steps:
       sourcePath: {FULL_PATH_TO_WORKSPACE_FOLDER}
   ```
 
-2. Run the `apply` Kyma CLI command to create a Function CR in the YAML format on your cluster:
+2. Run the `apply` Kyma CLI command to create a Function CR in the YAML format in your cluster:
 
   ```bash
   kyma apply function
