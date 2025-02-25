@@ -239,6 +239,15 @@ func (f *Function) UpdateCondition(c ConditionType, s metav1.ConditionStatus, r 
 	meta.SetStatusCondition(&f.Status.Conditions, condition)
 }
 
+func (s *FunctionStatus) Condition(c ConditionType) *metav1.Condition {
+	for _, cond := range s.Conditions {
+		if cond.Type == string(c) {
+			return &cond
+		}
+	}
+	return nil
+}
+
 const (
 	FunctionNameLabel                    = "serverless.kyma-project.io/function-name"
 	FunctionManagedByLabel               = "serverless.kyma-project.io/managed-by"
