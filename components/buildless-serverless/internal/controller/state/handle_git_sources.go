@@ -44,7 +44,7 @@ func sFnHandleGitSources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *
 }
 
 func skipGitSourceCheck(f serverlessv1alpha2.Function, cfg config.FunctionConfig) bool {
-	if v, ok := f.ObjectMeta.Annotations[continuousGitCheckoutAnnotation]; ok && strings.ToLower(v) == "true" {
+	if v, ok := f.Annotations[continuousGitCheckoutAnnotation]; ok && strings.ToLower(v) == "true" {
 		return false
 	}
 
