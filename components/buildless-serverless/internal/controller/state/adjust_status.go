@@ -25,8 +25,16 @@ func sFnAdjustStatus(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl
 	s.PodSelector = selector.String()
 
 	s.FunctionResourceProfile = getUsedResourceFunctionPreset(m.State.Function.Spec.ResourceConfiguration, m.FunctionConfig)
+	
+	if m.State.Function.HasGitSources() {
+		s.Repository.BaseDir = m.State.Function.Spec.Source.GitRepository.BaseDir
+		s.Repository.Reference = m.State.Function.Spec.Source.GitRepository.Reference
+		s.Commit = m.State.Commit
+	} else {
+		s.Repository = serverlessv1alpha2.Repository{}
+		s.Commit = ""
+	}
 
-	//TODO: Add more status fields
 	return requeueAfter(m.FunctionConfig.FunctionReadyRequeueDuration)
 }
 
