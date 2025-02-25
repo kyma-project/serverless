@@ -105,13 +105,13 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
     kubectl get apirules $NAME -n $NAMESPACE
     ```
 
-If successful, the APIRule has the status `OK`.
+   If successful, the APIRule has the status `OK`.
 
     ```bash
     kubectl get apirules $NAME -n $NAMESPACE -o=jsonpath='{.status.APIRuleStatus.code}'
     ```
 
-1. Call the Function's external address:
+8. Call the Function's external address:
 
     ```bash
     curl https://$NAME.$DOMAIN
