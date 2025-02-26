@@ -17,9 +17,9 @@ Before you start, make sure you have these tools installed:
 
 - [Docker](https://www.docker.com/)
 - [Kyma CLI](https://github.com/kyma-project/cli)
-- [Serverless module installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/08-install-uninstall-upgrade-kyma-module/) locally or in a cluster
+- Serverless module
 
-## Steps
+## Procedure
 
 Follow these steps:
 
@@ -32,17 +32,17 @@ Follow these steps:
   You can also use the `--dir {FULL_FOLDER_PATH}` flag to point to the directory where you want to create the Function's source files.
 
   > [!NOTE]
-  > Python 3.9 is only one of the available runtimes. Read about all [supported runtimes and sample Functions to run on them](../technical-reference/07-10-sample-functions.md).
+  > Python 3.12 is only one of the available runtimes. Read about all [supported runtimes and sample Functions to run on them](../technical-reference/07-10-sample-functions.md).
 
   The `init` command creates these files in your workspace folder:
 
-  - `config.yaml` with the Function's configuration
+   - `config.yaml` with the Function's configuration
 
    > [!NOTE]
    > See the detailed description of all fields available in the [`config.yaml` file](../technical-reference/07-60-function-configuration-file.md).
 
-  - `handler.py` with the Function's code and the simple "Hello World" logic
-  - `requirements.txt` with an empty file for your Function's custom dependencies
+   - `handler.py` with the Function's code and the simple "Hello World" logic
+   - `requirements.txt` - an empty file for your Function's custom dependencies
 
   The `kyma init` command also sets **sourcePath** in the `config.yaml` file to the full path of the workspace folder:
 
@@ -55,16 +55,14 @@ Follow these steps:
       sourcePath: {FULL_PATH_TO_WORKSPACE_FOLDER}
   ```
 
-1. Run the `apply` Kyma CLI command to create a Function CR in the YAML format on your cluster:
+2. Run the `apply` Kyma CLI command to create a Function CR in the YAML format in your cluster:
 
   ```bash
   kyma apply function
   ```
 
   > [!TIP]
-  > To apply a Function from a different location, use the `--filename` flag followed by the full path to the `config.yaml` file.
-
-  Alternatively, use the `--dry-run` flag to list the file that will be created before you apply it. You can also preview the file's content in the format of your choice by adding the `--output {FILE_FORMAT}` flag, such as `--output yaml`.
+  > To apply a Function from a different location, use the `--filename` flag followed by the full path to the `config.yaml` file. Alternatively, use the `--dry-run` flag to list the file that will be created before you apply it. You can also preview the file's content in the format of your choice by adding the `--output {FILE_FORMAT}` flag, such as `--output yaml`.
 
 3. Once applied, view the Function's details in the cluster:
 
