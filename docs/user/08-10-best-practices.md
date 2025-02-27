@@ -28,9 +28,6 @@ Focus on the Function code and develop it from your favorite IDE. Configure your
 
 Kyma CLI helps you run your code locally with a single `kyma run function` command. You can run your Function using your local Docker daemon with the same runtime Docker context, as if it was run in Kyma runtime.
 
-> [!TIP]
-> Use `kyma run function` with `--hot-deploy` and spare yourself unnecessary restarts of the Functions whenever you test a changed Function logic. Also, use [`--debug` option](tutorials/01-40-debug-function.md) to allow connecting with your favorite debugger.
-
 ![kyma-cli-functions](../assets/svls-kyma-cli-functions.png)
 
 Having written and tested your Function locally, simply deploy it to the Kyma runtime with the `kyma apply function` command, used in the folder of your Function's workspace. The command reads the files, translates them to the Kubernetes manifests, and deploys the Function.
