@@ -1,7 +1,8 @@
 module github.com/kyma-project/serverless
 
-go 1.22.0
-toolchain go1.23.3
+go 1.23.0
+
+toolchain go1.24.0
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
