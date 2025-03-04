@@ -157,12 +157,30 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 		{
 			Name: fmt.Sprintf("%s-init", d.name()),
 			//TODO: should we use this image?
-			Image:      "europe-docker.pkg.dev/kyma-project/prod/alpine-git:v20250212-39c86988",
+			Image:      "anoipm/masza:0.0.2",
 			WorkingDir: d.workingSourcesDir(),
 			Command: []string{
 				"sh",
 				"-c",
 				d.initContainerCommand(),
+			},
+			Env: []corev1.EnvVar{
+				{
+					Name:  "APP_REPOSITORY_URL",
+					Value: d.function.Spec.Source.GitRepository.URL,
+				},
+				{
+					Name:  "APP_REPOSITORY_REFERENCE",
+					Value: d.function.Spec.Source.GitRepository.Repository.Reference,
+				},
+				{
+					Name:  "APP_REPOSITORY_COMMIT",
+					Value: "79ac1a81acd1dc7f50cf4ac67c3ea23f31afb5af",
+				},
+				{
+					Name:  "APP_DESTINATION_PATH",
+					Value: "/git-repository/repo",
+				},
 			},
 			VolumeMounts: []corev1.VolumeMount{
 				{
@@ -188,13 +206,13 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 func (d *Deployment) initContainerCommand() string {
 	gitRepo := d.function.Spec.Source.GitRepository
 	var arr []string
-	arr = append(arr,
-		fmt.Sprintf("git clone --depth 1 --branch %s %s /git-repository/repo;", gitRepo.Reference, gitRepo.URL))
+	//arr = append(arr,
+	//	fmt.Sprintf("git clone --depth 1 --branch %s %s /git-repository/repo;", gitRepo.Reference, gitRepo.URL))
 
-	if d.commit != "" {
-		arr = append(arr,
-			fmt.Sprintf("cd /git-repository/repo;git reset --hard %s; cd ../..;", d.commit))
-	}
+	//if d.commit != "" {
+	//	arr = append(arr,
+	//		fmt.Sprintf("cd /git-repository/repo;git reset --hard %s; cd ../..;", d.commit))
+	//}
 
 	arr = append(arr,
 		fmt.Sprintf("mkdir /git-repository/src;cp /git-repository/repo/%s/* /git-repository/src;", strings.Trim(gitRepo.BaseDir, "/ ")))
