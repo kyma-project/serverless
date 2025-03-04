@@ -1,6 +1,7 @@
 module-name: serverless
+kind: kyma
 rc-tag: 1.5.0
-protecode:
+bdba:
   - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:main
   - europe-docker.pkg.dev/kyma-project/prod/function-controller:main
   - europe-docker.pkg.dev/kyma-project/prod/function-build-init:main
@@ -10,9 +11,13 @@ protecode:
   - europe-docker.pkg.dev/kyma-project/prod/external/gcr.io/kaniko-project/executor:v1.23.2
   - europe-docker.pkg.dev/kyma-project/prod/external/library/registry:2.8.3-v1
   - europe-docker.pkg.dev/kyma-project/prod/registry-init:v20240506-57d31b1d
-whitesource:
+mend:
   language: golang-mod
-  subprojects: false
+  exclude:
+    - "**/test/**"
+    - "**/*_test.go"
+checkmarx-one:
+  preset: go-default
   exclude:
     - "**/test/**"
     - "**/*_test.go"
