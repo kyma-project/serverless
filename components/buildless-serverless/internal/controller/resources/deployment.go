@@ -209,6 +209,8 @@ func (d *Deployment) initContainerCommand() string {
 	//arr = append(arr,
 	//	fmt.Sprintf("git clone --depth 1 --branch %s %s /git-repository/repo;", gitRepo.Reference, gitRepo.URL))
 
+	arr = append(arr, "/gitcloner")
+
 	//if d.commit != "" {
 	//	arr = append(arr,
 	//		fmt.Sprintf("cd /git-repository/repo;git reset --hard %s; cd ../..;", d.commit))
