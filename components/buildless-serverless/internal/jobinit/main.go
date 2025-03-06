@@ -1,7 +1,15 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"github.com/go-git/go-git/v5/plumbing/transport"
+	"github.com/go-git/go-git/v5/plumbing/transport/http"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 	"log"
 	"os"
 
@@ -11,7 +19,6 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
 	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/pkg/errors"
-	"github.com/vrischmann/envconfig"
 	crypto_ssh "golang.org/x/crypto/ssh"
 )
 
@@ -22,19 +29,22 @@ type initConfig struct {
 	RepositoryReference string
 	RepositoryCommit    string
 	DestinationPath     string
-	//RepositoryAuthType git.RepositoryAuthType `envconfig:"optional"`
-	RepositoryUsername string `envconfig:"optional"`
-	RepositoryPassword string `envconfig:"optional"`
-	RepositoryKey      string `envconfig:"optional"`
+	AuthSecretName      string `envconfig:"optional"`
 }
 
 func main() {
 	log.Println("Start repo fetcher...")
 
-	cfg := initConfig{}
-	if err := envconfig.InitWithPrefix(&cfg, envPrefix); err != nil {
-		log.Fatalf("while reading env variables: %s", err.Error())
+	cfg := initConfig{
+		RepositoryURL:       "git@github.com:PrivateGitTestorinio/git-test-private.git",
+		RepositoryReference: "main",
+		RepositoryCommit:    "08dcedd1fa405e5e917555d503324741e2fc4e65",
+		DestinationPath:     "/tmp/alamakata",
+		AuthSecretName:      "xenia4-secret",
 	}
+	//if err := envconfig.InitWithPrefix(&cfg, envPrefix); err != nil {
+	//	log.Fatalf("while reading env variables: %s", err.Error())
+	//}
 
 	// test: list (in-memory) remotes
 	remote := git.NewRemote(memory.NewStorage(), &config.RemoteConfig{
@@ -42,13 +52,34 @@ func main() {
 		URLs: []string{cfg.RepositoryURL},
 	})
 
-	fmt.Print(cfg.RepositoryKey)
-	auth, err := ssh.NewPublicKeys("git", []byte(cfg.RepositoryKey), "")
+	//kubeconfig, err := rest.InClusterConfig()
+	//if err != nil {
+	//	failOnErr(errors.Wrap(err, "unable to load in-cluster config"))
+	//}
+
+	restConfig, err := restConfig("")
 	failOnErr(err)
 
-	// set callback to func that always returns nil while checking known hosts
-	// this disables known hosts validation
-	auth.HostKeyCallback = crypto_ssh.InsecureIgnoreHostKey()
+	client, err := kubernetes.NewForConfig(restConfig)
+	if err != nil {
+		failOnErr(errors.Wrap(err, "unable to create a client"))
+	}
+
+	//secret := corev1.Secret{}
+	secret, err := client.CoreV1().Secrets("default").Get(context.Background(), cfg.AuthSecretName, metav1.GetOptions{
+		//TypeMeta: metav1.TypeMeta{
+		//	Kind:       "Secret",
+		//	APIVersion: "metav1",
+		//},
+	})
+	failOnErr(err)
+
+	fmt.Println(secret)
+
+	//fmt.Print(cfg.RepositoryKey)
+
+	auth, err := chooseAuth(cfg, secret)
+	failOnErr(err)
 
 	fmt.Println("list remotes")
 	rfs, _ := remote.List(&git.ListOptions{
@@ -66,7 +97,7 @@ func main() {
 	//gitOptions := cfg.getOptions()
 
 	log.Printf("Clone repo from url: %s and commit: %s...\n", cfg.RepositoryURL, cfg.RepositoryCommit)
-	err = clone(cfg)
+	err = clone(cfg, auth)
 	if err != nil {
 		//if git.IsAuthErr(err) {
 		//	log.Printf("while cloning repository bad credentials were provided, errMsg: %s", err.Error())
@@ -78,14 +109,7 @@ func main() {
 	log.Printf("Cloned repository: %s, from commit: %s, to path: %s", cfg.RepositoryURL, cfg.RepositoryCommit, cfg.DestinationPath)
 }
 
-func clone(c initConfig) error {
-	auth, _ := ssh.NewPublicKeys("git", []byte(c.RepositoryKey), "")
-	//failOnErr(err)
-
-	// set callback to func that always returns nil while checking known hosts
-	// this disables known hosts validation
-	auth.HostKeyCallback = crypto_ssh.InsecureIgnoreHostKey()
-
+func clone(c initConfig, auth transport.AuthMethod) error {
 	r, err := git.PlainClone(c.DestinationPath, false, &git.CloneOptions{
 		URL:           c.RepositoryURL,
 		ReferenceName: plumbing.ReferenceName(c.RepositoryReference),
@@ -120,4 +144,43 @@ func failOnErr(err error) {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
+}
+
+// restConfig loads the rest configuration needed by k8s clients to interact with clusters based on the kubeconfig.
+// Loading rules are based on standard defined kubernetes config loading.
+func restConfig(kubeconfig string) (*rest.Config, error) {
+	// Default PathOptions gets kubeconfig in this order: the explicit path given, KUBECONFIG current context, recommended file path
+	po := clientcmd.NewDefaultPathOptions()
+	po.LoadingRules.ExplicitPath = kubeconfig
+
+	cfg, err := clientcmd.BuildConfigFromKubeconfigGetter("", po.GetStartingConfig)
+	if err != nil {
+		return nil, err
+	}
+	cfg.WarningHandler = rest.NoWarnings{}
+	return cfg, nil
+}
+
+func chooseAuth(c initConfig, secret *corev1.Secret) (transport.AuthMethod, error) {
+	if secret.Type == "kubernetes.io/ssh-auth" {
+		sshPrivateKey := secret.Data["ssh-privatekey"]
+		auth, err := ssh.NewPublicKeys("git", sshPrivateKey, "")
+		failOnErr(err)
+
+		// set callback to func that always returns nil while checking known hosts
+		// this disables known hosts validation
+		auth.HostKeyCallback = crypto_ssh.InsecureIgnoreHostKey()
+
+		return auth, nil
+	}
+	if secret.Type == "kubernetes.io/basic-auth" {
+		username := secret.Data["username"]
+		password := secret.Data["password"]
+		return &http.BasicAuth{
+			Username: string(username),
+			Password: string(password),
+		}, nil
+	}
+
+	return nil, errors.New("unknown secret type")
 }
