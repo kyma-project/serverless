@@ -45,26 +45,20 @@ func main() {
 	//}
 
 	restConfig, err := restConfig("")
-	failOnErr(err)
+	failOnErr(err, "unable to load k8s config")
 
 	client, err := kubernetes.NewForConfig(restConfig)
-	if err != nil {
-		failOnErr(errors.Wrap(err, "unable to create a client"))
-	}
+	failOnErr(err, "unable to create a client")
 
 	secret, err := client.CoreV1().Secrets("default").Get(context.Background(), cfg.AuthSecretName, metav1.GetOptions{})
-	failOnErr(err)
-
-	fmt.Println(secret)
+	failOnErr(err, "unable to get secret")
 
 	auth, err := chooseAuth(secret)
-	failOnErr(err)
+	failOnErr(err, "unable to choose auth")
 
 	log.Printf("Clone repo from url: %s and commit: %s...\n", cfg.RepositoryURL, cfg.RepositoryCommit)
 	err = clone(cfg, auth)
-	if err != nil {
-		log.Fatalln(errors.Wrapf(err, "while cloning repository: %s, from commit: %s", cfg.RepositoryURL, cfg.RepositoryCommit))
-	}
+	failOnErr(err, "while cloning repository from commit")
 
 	log.Printf("Cloned repository: %s, from commit: %s, to path: %s", cfg.RepositoryURL, cfg.RepositoryCommit, cfg.DestinationPath)
 }
@@ -95,8 +89,11 @@ func clone(c initConfig, auth transport.AuthMethod) error {
 	return nil
 }
 
-func failOnErr(err error) {
+func failOnErr(err error, msg string) {
 	if err != nil {
+		if msg != "" {
+			err = errors.Wrap(err, msg)
+		}
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
@@ -173,7 +170,7 @@ func sshAuthForKubernetesSecret(secret *corev1.Secret) (transport.AuthMethod, er
 
 func sshAuth(sshPrivateKey []byte, sshPassword string) (transport.AuthMethod, error) {
 	auth, err := ssh.NewPublicKeys("git", sshPrivateKey, sshPassword)
-	failOnErr(err)
+	failOnErr(err, "unable to parse private key")
 
 	// set callback to func that always returns nil while checking known hosts
 	// this disables known hosts validation
