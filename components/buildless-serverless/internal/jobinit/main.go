@@ -14,10 +14,8 @@ import (
 	"os"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
-	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/pkg/errors"
 	crypto_ssh "golang.org/x/crypto/ssh"
 )
@@ -46,17 +44,6 @@ func main() {
 	//	log.Fatalf("while reading env variables: %s", err.Error())
 	//}
 
-	// test: list (in-memory) remotes
-	remote := git.NewRemote(memory.NewStorage(), &config.RemoteConfig{
-		Name: "origin",
-		URLs: []string{cfg.RepositoryURL},
-	})
-
-	//kubeconfig, err := rest.InClusterConfig()
-	//if err != nil {
-	//	failOnErr(errors.Wrap(err, "unable to load in-cluster config"))
-	//}
-
 	restConfig, err := restConfig("")
 	failOnErr(err)
 
@@ -65,45 +52,18 @@ func main() {
 		failOnErr(errors.Wrap(err, "unable to create a client"))
 	}
 
-	//secret := corev1.Secret{}
-	secret, err := client.CoreV1().Secrets("default").Get(context.Background(), cfg.AuthSecretName, metav1.GetOptions{
-		//TypeMeta: metav1.TypeMeta{
-		//	Kind:       "Secret",
-		//	APIVersion: "metav1",
-		//},
-	})
+	secret, err := client.CoreV1().Secrets("default").Get(context.Background(), cfg.AuthSecretName, metav1.GetOptions{})
 	failOnErr(err)
 
 	fmt.Println(secret)
 
-	//fmt.Print(cfg.RepositoryKey)
-
 	auth, err := chooseAuth(secret)
 	failOnErr(err)
-
-	fmt.Println("list remotes")
-	rfs, _ := remote.List(&git.ListOptions{
-		Auth: auth,
-	})
-	//failOnErr(err)
-
-	fmt.Println("printing rfs")
-	for _, rf := range rfs {
-		fmt.Printf("Hash: %s\n\tName: %s\n\tType: %s\n\tTarget: %s\n", rf.Hash().String(), rf.Name().Short(), rf.Type().String(), rf.Target())
-		fmt.Printf("\tIsTag: %v\n\tIsBranch: %v\n\tIsRemote: %v\n", rf.Name().IsTag(), rf.Name().IsBranch(), rf.Name().IsRemote())
-	}
-
-	//log.Println("Get auth config...")
-	//gitOptions := cfg.getOptions()
 
 	log.Printf("Clone repo from url: %s and commit: %s...\n", cfg.RepositoryURL, cfg.RepositoryCommit)
 	err = clone(cfg, auth)
 	if err != nil {
-		//if git.IsAuthErr(err) {
-		//	log.Printf("while cloning repository bad credentials were provided, errMsg: %s", err.Error())
-		//} else {
 		log.Fatalln(errors.Wrapf(err, "while cloning repository: %s, from commit: %s", cfg.RepositoryURL, cfg.RepositoryCommit))
-		//}
 	}
 
 	log.Printf("Cloned repository: %s, from commit: %s, to path: %s", cfg.RepositoryURL, cfg.RepositoryCommit, cfg.DestinationPath)
@@ -114,11 +74,7 @@ func clone(c initConfig, auth transport.AuthMethod) error {
 		URL:           c.RepositoryURL,
 		ReferenceName: plumbing.ReferenceName(c.RepositoryReference),
 		SingleBranch:  true,
-		// Auth: &http.BasicAuth{
-		// 	Username: c.RepositoryUsername,
-		// 	Password: c.RepositoryPassword,
-		// },
-		Auth: auth,
+		Auth:          auth,
 	})
 	if err != nil {
 		return err
