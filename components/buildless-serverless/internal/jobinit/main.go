@@ -78,7 +78,7 @@ func main() {
 
 	//fmt.Print(cfg.RepositoryKey)
 
-	auth, err := chooseAuth(cfg, secret)
+	auth, err := chooseAuth(secret)
 	failOnErr(err)
 
 	fmt.Println("list remotes")
