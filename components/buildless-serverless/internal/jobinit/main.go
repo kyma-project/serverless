@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
+	"github.com/vrischmann/envconfig"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -33,16 +34,10 @@ type initConfig struct {
 func main() {
 	log.Println("Start repo fetcher...")
 
-	cfg := initConfig{
-		RepositoryURL:       "git@github.com:PrivateGitTestorinio/git-test-private.git",
-		RepositoryReference: "main",
-		RepositoryCommit:    "08dcedd1fa405e5e917555d503324741e2fc4e65",
-		DestinationPath:     "/tmp/alamakata",
-		AuthSecretName:      "xenia4-secret",
+	cfg := initConfig{}
+	if err := envconfig.InitWithPrefix(&cfg, envPrefix); err != nil {
+		log.Fatalf("while reading env variables: %s", err.Error())
 	}
-	//if err := envconfig.InitWithPrefix(&cfg, envPrefix); err != nil {
-	//	log.Fatalf("while reading env variables: %s", err.Error())
-	//}
 
 	restConfig, err := restConfig("")
 	failOnErr(err, "unable to load k8s config")
