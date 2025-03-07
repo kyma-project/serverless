@@ -162,25 +162,59 @@ func restConfig(kubeconfig string) (*rest.Config, error) {
 }
 
 func chooseAuth(c initConfig, secret *corev1.Secret) (transport.AuthMethod, error) {
-	if secret.Type == "kubernetes.io/ssh-auth" {
-		sshPrivateKey := secret.Data["ssh-privatekey"]
-		auth, err := ssh.NewPublicKeys("git", sshPrivateKey, "")
-		failOnErr(err)
 
-		// set callback to func that always returns nil while checking known hosts
-		// this disables known hosts validation
-		auth.HostKeyCallback = crypto_ssh.InsecureIgnoreHostKey()
+	switch secret.Type {
+	case "kubernetes.io/ssh-auth":
+		privateKey, ok := secret.Data["ssh-privatekey"]
+		if !ok {
+			return nil, errors.New("missing ssh-privatekey")
+		}
+		return sshAuth(privateKey, "")
 
-		return auth, nil
+	case "kubernetes.io/basic-auth":
+		username, usernameFound := secret.Data["username"]
+		password, passwordFound := secret.Data["password"]
+		if !usernameFound || !passwordFound {
+			return nil, errors.New("missing username or password")
+		}
+		return basicAuth(string(username), string(password))
+
+	default:
+		// It is for compatibility with the previous implementation
+		key, keyFound := secret.Data["key"]
+		if keyFound {
+			password, passwordFound := secret.Data["password"]
+			if passwordFound {
+				return sshAuth(key, string(password))
+			}
+			return sshAuth(key, "")
+		}
+		username, usernameFound := secret.Data["username"]
+		password, passwordFound := secret.Data["password"]
+		if !usernameFound || !passwordFound {
+			return nil, errors.New("missing username, password or key")
+		}
+		return basicAuth(string(username), string(password))
 	}
-	if secret.Type == "kubernetes.io/basic-auth" {
-		username := secret.Data["username"]
-		password := secret.Data["password"]
-		return &http.BasicAuth{
-			Username: string(username),
-			Password: string(password),
-		}, nil
-	}
-
 	return nil, errors.New("unknown secret type")
+}
+
+func sshAuth(sshPrivateKey []byte, sshPassword string) (transport.AuthMethod, error) {
+
+	auth, err := ssh.NewPublicKeys("git", sshPrivateKey, sshPassword)
+	failOnErr(err)
+
+	// set callback to func that always returns nil while checking known hosts
+	// this disables known hosts validation
+	auth.HostKeyCallback = crypto_ssh.InsecureIgnoreHostKey()
+
+	return auth, nil
+
+}
+
+func basicAuth(username, password string) (transport.AuthMethod, error) {
+	return &http.BasicAuth{
+		Username: string(username),
+		Password: string(password),
+	}, nil
 }
