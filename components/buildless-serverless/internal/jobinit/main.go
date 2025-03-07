@@ -161,46 +161,61 @@ func restConfig(kubeconfig string) (*rest.Config, error) {
 	return cfg, nil
 }
 
-func chooseAuth(c initConfig, secret *corev1.Secret) (transport.AuthMethod, error) {
-
+func chooseAuth(secret *corev1.Secret) (transport.AuthMethod, error) {
 	switch secret.Type {
 	case "kubernetes.io/ssh-auth":
-		privateKey, ok := secret.Data["ssh-privatekey"]
-		if !ok {
-			return nil, errors.New("missing ssh-privatekey")
-		}
-		return sshAuth(privateKey, "")
-
+		return sshAuthForKubernetesSecret(secret)
 	case "kubernetes.io/basic-auth":
-		username, usernameFound := secret.Data["username"]
-		password, passwordFound := secret.Data["password"]
-		if !usernameFound || !passwordFound {
-			return nil, errors.New("missing username or password")
-		}
-		return basicAuth(string(username), string(password))
-
+		return basicAuthForKubernetesSecret(secret)
 	default:
 		// It is for compatibility with the previous implementation
-		key, keyFound := secret.Data["key"]
-		if keyFound {
-			password, passwordFound := secret.Data["password"]
-			if passwordFound {
-				return sshAuth(key, string(password))
-			}
-			return sshAuth(key, "")
+		if _, keyFound := secret.Data["key"]; keyFound {
+			return sshAuthForOldServerlessSecret(secret)
 		}
-		username, usernameFound := secret.Data["username"]
-		password, passwordFound := secret.Data["password"]
-		if !usernameFound || !passwordFound {
-			return nil, errors.New("missing username, password or key")
-		}
-		return basicAuth(string(username), string(password))
+		return basicAuthForOldServerlessSecret(secret)
 	}
 	return nil, errors.New("unknown secret type")
 }
 
-func sshAuth(sshPrivateKey []byte, sshPassword string) (transport.AuthMethod, error) {
+func basicAuthForOldServerlessSecret(secret *corev1.Secret) (transport.AuthMethod, error) {
+	username, usernameFound := secret.Data["username"]
+	password, passwordFound := secret.Data["password"]
+	if !usernameFound || !passwordFound {
+		return nil, errors.New("missing username, password or key")
+	}
+	return basicAuth(string(username), string(password))
+}
 
+func basicAuthForKubernetesSecret(secret *corev1.Secret) (transport.AuthMethod, error) {
+	username, usernameFound := secret.Data["username"]
+	password, passwordFound := secret.Data["password"]
+	if !usernameFound || !passwordFound {
+		return nil, errors.New("missing username or password")
+	}
+	return basicAuth(string(username), string(password))
+}
+
+func sshAuthForOldServerlessSecret(secret *corev1.Secret) (transport.AuthMethod, error) {
+	key, keyFound := secret.Data["key"]
+	if !keyFound {
+		return nil, errors.New("missing key")
+	}
+	password, passwordFound := secret.Data["password"]
+	if passwordFound {
+		return sshAuth(key, string(password))
+	}
+	return sshAuth(key, "")
+}
+
+func sshAuthForKubernetesSecret(secret *corev1.Secret) (transport.AuthMethod, error) {
+	privateKey, ok := secret.Data["ssh-privatekey"]
+	if !ok {
+		return nil, errors.New("missing ssh-privatekey")
+	}
+	return sshAuth(privateKey, "")
+}
+
+func sshAuth(sshPrivateKey []byte, sshPassword string) (transport.AuthMethod, error) {
 	auth, err := ssh.NewPublicKeys("git", sshPrivateKey, sshPassword)
 	failOnErr(err)
 
@@ -209,12 +224,11 @@ func sshAuth(sshPrivateKey []byte, sshPassword string) (transport.AuthMethod, er
 	auth.HostKeyCallback = crypto_ssh.InsecureIgnoreHostKey()
 
 	return auth, nil
-
 }
 
 func basicAuth(username, password string) (transport.AuthMethod, error) {
 	return &http.BasicAuth{
-		Username: string(username),
-		Password: string(password),
+		Username: username,
+		Password: password,
 	}, nil
 }
