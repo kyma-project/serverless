@@ -122,7 +122,6 @@ func chooseAuth(secret *corev1.Secret) (transport.AuthMethod, error) {
 		}
 		return basicAuthForOldServerlessSecret(secret)
 	}
-	return nil, errors.New("unknown secret type")
 }
 
 func basicAuthForOldServerlessSecret(secret *corev1.Secret) (transport.AuthMethod, error) {
