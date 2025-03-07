@@ -157,7 +157,7 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 		{
 			Name: fmt.Sprintf("%s-init", d.name()),
 			//TODO: should we use this image?
-			Image:      "anoipm/masza:0.0.2",
+			Image:      "anoipm/masza:0.0.3",
 			WorkingDir: d.workingSourcesDir(),
 			Command: []string{
 				"sh",
@@ -180,6 +180,10 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 				{
 					Name:  "APP_DESTINATION_PATH",
 					Value: "/git-repository/repo",
+				},
+				{
+					Name:  "APP_AUTH_SECRET_NAME",
+					Value: "git-secret",
 				},
 			},
 			VolumeMounts: []corev1.VolumeMount{
