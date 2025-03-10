@@ -1,6 +1,7 @@
 package resources
 
 import (
+	"errors"
 	"fmt"
 	"path"
 	"strings"
@@ -20,13 +21,15 @@ type Deployment struct {
 	functionConfig *config.FunctionConfig
 	function       *serverlessv1alpha2.Function
 	commit         string
+	gitAuthSecret  *corev1.Secret
 }
 
-func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, commit string) *Deployment {
+func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, commit string, secret *corev1.Secret) *Deployment {
 	d := &Deployment{
 		functionConfig: c,
 		function:       f,
 		commit:         commit,
+		gitAuthSecret:  secret,
 	}
 	d.Deployment = d.construct()
 	return d
@@ -153,6 +156,8 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 	if !d.function.HasGitSources() {
 		return []corev1.Container{}
 	}
+
+	gitEnvs, err
 	return []corev1.Container{
 		{
 			Name: fmt.Sprintf("%s-init", d.name()),
@@ -164,28 +169,7 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 				"-c",
 				d.initContainerCommand(),
 			},
-			Env: []corev1.EnvVar{
-				{
-					Name:  "APP_REPOSITORY_URL",
-					Value: d.function.Spec.Source.GitRepository.URL,
-				},
-				{
-					Name:  "APP_REPOSITORY_REFERENCE",
-					Value: d.function.Spec.Source.GitRepository.Repository.Reference,
-				},
-				{
-					Name:  "APP_REPOSITORY_COMMIT",
-					Value: "79ac1a81acd1dc7f50cf4ac67c3ea23f31afb5af",
-				},
-				{
-					Name:  "APP_DESTINATION_PATH",
-					Value: "/git-repository/repo",
-				},
-				{
-					Name:  "APP_AUTH_SECRET_NAME",
-					Value: "git-secret",
-				},
-			},
+			Env: d.initContainerEnvs(),
 			VolumeMounts: []corev1.VolumeMount{
 				{
 					Name:      "git-repository",
@@ -205,6 +189,169 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 			},
 		},
 	}
+}
+
+func (d *Deployment) initContainerEnvs() ([]corev1.EnvVar, error) {
+	gitEnvs, err := d.chooseAuth()
+	envs := []corev1.EnvVar{
+		{
+			Name:  "APP_REPOSITORY_URL",
+			Value: d.function.Spec.Source.GitRepository.URL,
+		},
+		{
+			Name:  "APP_REPOSITORY_REFERENCE",
+			Value: d.function.Spec.Source.GitRepository.Repository.Reference,
+		},
+		{
+			Name:  "APP_REPOSITORY_COMMIT",
+			Value: "79ac1a81acd1dc7f50cf4ac67c3ea23f31afb5af",
+		},
+		{
+			Name:  "APP_DESTINATION_PATH",
+			Value: "/git-repository/repo",
+		},
+	}
+	if d.gitAuthSecret != nil {
+		envs = append(envs, gitEnvs...)
+	}
+
+	return envs, err
+}
+
+func (d *Deployment) chooseAuth() ([]corev1.EnvVar, error) {
+	switch d.gitAuthSecret.Type {
+	case "kubernetes.io/ssh-auth":
+		return d.envsForSshAuthForKubernetesSecret()
+	case "kubernetes.io/basic-auth":
+		return d.envsForBasicAuthForKubernetesSecret()
+	default:
+		// It is for compatibility with the previous implementation
+		if _, keyFound := d.gitAuthSecret.Data["key"]; keyFound {
+			return d.envsForSshAuthForOldServerlessSecret()
+		}
+		return d.envsForBasicAuthForOldServerlessSecret()
+	}
+}
+
+func (d *Deployment) envsForBasicAuthForOldServerlessSecret() ([]corev1.EnvVar, error) {
+	_, usernameFound := d.gitAuthSecret.Data["username"]
+	_, passwordFound := d.gitAuthSecret.Data["password"]
+	if !usernameFound || !passwordFound {
+		return nil, errors.New("missing username, password or key")
+	}
+
+	return []corev1.EnvVar{
+		{
+			Name: "APP_REPOSITORY_USERNAME",
+			ValueFrom: &corev1.EnvVarSource{
+				SecretKeyRef: &corev1.SecretKeySelector{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: d.function.Spec.Source.GitRepository.Auth.SecretName,
+					},
+					Key: "username",
+				},
+			},
+		},
+		{
+			Name: "APP_REPOSITORY_PASSWORD",
+			ValueFrom: &corev1.EnvVarSource{
+				SecretKeyRef: &corev1.SecretKeySelector{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: d.function.Spec.Source.GitRepository.Auth.SecretName,
+					},
+					Key: "password",
+				},
+			},
+		},
+	}, nil
+}
+
+func (d *Deployment) envsForBasicAuthForKubernetesSecret() ([]corev1.EnvVar, error) {
+	_, usernameFound := d.gitAuthSecret.Data["username"]
+	_, passwordFound := d.gitAuthSecret.Data["password"]
+	if !usernameFound || !passwordFound {
+		return nil, errors.New("missing username or password")
+	}
+	return []corev1.EnvVar{
+		{
+			Name: "APP_REPOSITORY_USERNAME",
+			ValueFrom: &corev1.EnvVarSource{
+				SecretKeyRef: &corev1.SecretKeySelector{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: d.function.Spec.Source.GitRepository.Auth.SecretName,
+					},
+					Key: "username",
+				},
+			},
+		},
+		{
+			Name: "APP_REPOSITORY_PASSWORD",
+			ValueFrom: &corev1.EnvVarSource{
+				SecretKeyRef: &corev1.SecretKeySelector{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: d.function.Spec.Source.GitRepository.Auth.SecretName,
+					},
+					Key: "password",
+				},
+			},
+		},
+	}, nil
+}
+
+func (d *Deployment) envsForSshAuthForOldServerlessSecret() ([]corev1.EnvVar, error) {
+	_, keyFound := d.gitAuthSecret.Data["key"]
+	if !keyFound {
+		return nil, errors.New("missing key")
+	}
+
+	envs := []corev1.EnvVar{
+		{
+			Name: "APP_REPOSITORY_KEY",
+			ValueFrom: &corev1.EnvVarSource{
+				SecretKeyRef: &corev1.SecretKeySelector{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: d.function.Spec.Source.GitRepository.Auth.SecretName,
+					},
+					Key: "key",
+				},
+			},
+		},
+	}
+
+	_, passwordFound := d.gitAuthSecret.Data["password"]
+	if passwordFound {
+		envs = append(envs, corev1.EnvVar{
+			Name: "APP_REPOSITORY_PASSWORD",
+			ValueFrom: &corev1.EnvVarSource{
+				SecretKeyRef: &corev1.SecretKeySelector{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: d.function.Spec.Source.GitRepository.Auth.SecretName,
+					},
+					Key: "password",
+				},
+			},
+		})
+	}
+	return envs, nil
+}
+
+func (d *Deployment) envsForSshAuthForKubernetesSecret() ([]corev1.EnvVar, error) {
+	if _, ok := d.gitAuthSecret.Data["ssh-privatekey"]; !ok {
+		return nil, errors.New("missing ssh-privatekey")
+	}
+	return []corev1.EnvVar{
+		{
+			Name: "APP_REPOSITORY_KEY",
+			ValueFrom: &corev1.EnvVarSource{
+				SecretKeyRef: &corev1.SecretKeySelector{
+					LocalObjectReference: corev1.LocalObjectReference{
+						Name: d.function.Spec.Source.GitRepository.Auth.SecretName,
+					},
+					Key: "ssh-privatekey",
+				},
+			},
+		},
+	}, nil
 }
 
 func (d *Deployment) initContainerCommand() string {

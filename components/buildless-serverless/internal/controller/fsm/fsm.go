@@ -8,6 +8,7 @@ import (
 	"github.com/kyma-project/serverless/internal/controller/git"
 	"github.com/kyma-project/serverless/internal/controller/resources"
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	"reflect"
 	"runtime"
 	"strings"
@@ -26,6 +27,7 @@ type SystemState struct {
 	BuiltDeployment   *resources.Deployment
 	ClusterDeployment *appsv1.Deployment
 	Commit            string
+	GitAuthSecret     *corev1.Secret
 }
 
 func (s *SystemState) saveStatusSnapshot() {
