@@ -8,7 +8,6 @@ import (
 	"github.com/kyma-project/serverless/internal/controller/git"
 	"github.com/kyma-project/serverless/internal/controller/resources"
 	appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
 	"reflect"
 	"runtime"
 	"strings"
@@ -27,7 +26,7 @@ type SystemState struct {
 	BuiltDeployment   *resources.Deployment
 	ClusterDeployment *appsv1.Deployment
 	Commit            string
-	GitAuthSecret     *corev1.Secret
+	GitAuth           *git.GitAuth
 }
 
 func (s *SystemState) saveStatusSnapshot() {
@@ -46,6 +45,7 @@ type StateMachine struct {
 	FunctionConfig config.FunctionConfig
 	Scheme         *apimachineryruntime.Scheme
 	GitChecker     git.LastCommitChecker
+	GitAuth        *git.GitAuth
 }
 
 func (m *StateMachine) stateFnName() string {

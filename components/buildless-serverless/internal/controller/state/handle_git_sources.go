@@ -6,9 +6,8 @@ import (
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
 	"github.com/kyma-project/serverless/internal/controller/fsm"
-	"github.com/pkg/errors"
+	"github.com/kyma-project/serverless/internal/controller/git"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"strings"
 	"time"
@@ -30,14 +29,17 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 		return nextState(sFnHandleDeployment)
 	}
 
-	err := getGitAuthSecret(ctx, m, gitRepository)
-	if err != nil {
-		return nil, nil, err
+	if m.State.Function.HasGitAuth() {
+		gitAuth, err := git.NewGitAuth(ctx, m.Client, &m.State.Function)
+		if err != nil {
+			return nil, nil, err
+		}
+		m.State.GitAuth = gitAuth
 	}
 
 	//TODO add handling for getting info from secret with handling errors
 
-	latestCommit, err := m.GitChecker.GetLatestCommit(gitRepository.URL, gitRepository.Reference, m.State.GitAuthSecret)
+	latestCommit, err := m.GitChecker.GetLatestCommit(gitRepository.URL, gitRepository.Reference, m.State.GitAuth)
 	if err != nil {
 		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionConfigurationReady,
@@ -50,19 +52,6 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	m.State.Commit = latestCommit
 
 	return nextState(sFnHandleDeployment)
-}
-
-func getGitAuthSecret(ctx context.Context, m *fsm.StateMachine, gitRepository *serverlessv1alpha2.GitRepositorySource) error {
-	if gitRepository.Auth != nil {
-		err := m.Client.Get(ctx, types.NamespacedName{
-			Namespace: m.State.Function.GetNamespace(),
-			Name:      gitRepository.Auth.SecretName,
-		}, m.State.GitAuthSecret)
-		if err != nil {
-			return errors.New(fmt.Sprintf("failed to get secret: %s", err.Error()))
-		}
-	}
-	return nil
 }
 
 func skipGitSourceCheck(f serverlessv1alpha2.Function, cfg config.FunctionConfig) bool {

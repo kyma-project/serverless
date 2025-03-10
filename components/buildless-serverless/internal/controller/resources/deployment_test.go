@@ -19,7 +19,7 @@ func TestNewDeployment(t *testing.T) {
 		f := minimalFunction()
 		c := minimalFunctionConfig()
 
-		r := NewDeployment(f, c, "test-commit")
+		r := NewDeployment(f, c, "test-commit", nil)
 
 		require.NotNil(t, r)
 		d := r.Deployment
