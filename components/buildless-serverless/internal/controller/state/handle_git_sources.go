@@ -24,17 +24,17 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 
 	gitRepository := m.State.Function.Spec.Source.GitRepository
 
-	if skipGitSourceCheck(m.State.Function, m.FunctionConfig) {
-		m.Log.Info(fmt.Sprintf("skipping function [%s] source check", m.State.Function.Name))
-		return nextState(sFnHandleDeployment)
-	}
-
 	if m.State.Function.HasGitAuth() {
 		gitAuth, err := git.NewGitAuth(ctx, m.Client, &m.State.Function)
 		if err != nil {
 			return nil, nil, err
 		}
 		m.State.GitAuth = gitAuth
+	}
+
+	if skipGitSourceCheck(m.State.Function, m.FunctionConfig) {
+		m.Log.Info(fmt.Sprintf("skipping function [%s] source check", m.State.Function.Name))
+		return nextState(sFnHandleDeployment)
 	}
 
 	//TODO add handling for getting info from secret with handling errors
