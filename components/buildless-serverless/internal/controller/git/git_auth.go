@@ -96,6 +96,10 @@ func (a *GitAuth) GetAuthMethod() (transport.AuthMethod, error) {
 func (a *GitAuth) GetAuthEnvs() []corev1.EnvVar {
 	s := a.secretName
 	var envs []corev1.EnvVar
+	envs = append(envs, corev1.EnvVar{
+		Name:  repositoryAuthTypeEnvVarName,
+		Value: string(a.authType),
+	})
 	envs = addEnvVar(envs, a.sshKey, s)
 	envs = addEnvVar(envs, a.username, s)
 	envs = addEnvVar(envs, a.password, s)
@@ -109,6 +113,7 @@ const (
 	oldServerlessKeyFieldName      = "key"
 	oldServerlessUsernameFieldName = "username"
 	oldServerlessPasswordFieldName = "password"
+	repositoryAuthTypeEnvVarName   = "APP_REPOSITORY_AUTH_TYPE"
 	usernameEnvVarName             = "APP_REPOSITORY_USERNAME"
 	passwordEnvVarName             = "APP_REPOSITORY_PASSWORD"
 	sshKeyEnvVarName               = "APP_REPOSITORY_KEY"

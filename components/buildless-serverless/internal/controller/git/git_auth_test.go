@@ -415,6 +415,7 @@ func TestGitAuth_GetAuthMethod(t *testing.T) {
 func TestGitAuth_GetAuthEnvs(t *testing.T) {
 	type fields struct {
 		secretName string
+		authType   serverlessv1alpha2.RepositoryAuthType
 		username   *dataField[string]
 		password   *dataField[string]
 		sshKey     *dataField[[]byte]
@@ -427,6 +428,7 @@ func TestGitAuth_GetAuthEnvs(t *testing.T) {
 		{
 			name: "ssh key",
 			fields: fields{
+				authType:   serverlessv1alpha2.RepositoryAuthSSHKey,
 				secretName: "quizzical-goodall",
 				sshKey: &dataField[[]byte]{
 					envName:   "clever-meninsky",
@@ -434,6 +436,10 @@ func TestGitAuth_GetAuthEnvs(t *testing.T) {
 				},
 			},
 			want: []corev1.EnvVar{
+				{
+					Name:  repositoryAuthTypeEnvVarName,
+					Value: string(serverlessv1alpha2.RepositoryAuthSSHKey),
+				},
 				{
 					Name:      "clever-meninsky",
 					ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{LocalObjectReference: corev1.LocalObjectReference{Name: "quizzical-goodall"}, Key: "laughing-dhawan"}},
@@ -443,6 +449,7 @@ func TestGitAuth_GetAuthEnvs(t *testing.T) {
 		{
 			name: "basic auth",
 			fields: fields{
+				authType:   serverlessv1alpha2.RepositoryAuthBasic,
 				secretName: "crazy-easley",
 				username: &dataField[string]{
 					envName:   "friendly-keller",
@@ -454,6 +461,10 @@ func TestGitAuth_GetAuthEnvs(t *testing.T) {
 				},
 			},
 			want: []corev1.EnvVar{
+				{
+					Name:  repositoryAuthTypeEnvVarName,
+					Value: string(serverlessv1alpha2.RepositoryAuthBasic),
+				},
 				{
 					Name:      "friendly-keller",
 					ValueFrom: &corev1.EnvVarSource{SecretKeyRef: &corev1.SecretKeySelector{LocalObjectReference: corev1.LocalObjectReference{Name: "crazy-easley"}, Key: "reverent-allen"}},
@@ -469,6 +480,7 @@ func TestGitAuth_GetAuthEnvs(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Arrange
 			a := &GitAuth{
+				authType:   tt.fields.authType,
 				secretName: tt.fields.secretName,
 				username:   tt.fields.username,
 				password:   tt.fields.password,

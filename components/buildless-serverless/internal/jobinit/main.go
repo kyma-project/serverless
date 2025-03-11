@@ -1,16 +1,11 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/vrischmann/envconfig"
-	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
 	"log"
 	"os"
 
@@ -28,7 +23,10 @@ type initConfig struct {
 	RepositoryReference string
 	RepositoryCommit    string
 	DestinationPath     string
-	AuthSecretName      string `envconfig:"optional"`
+	RepositoryAuthType  serverlessv1alpha2.RepositoryAuthType `envconfig:"optional"`
+	RepositoryUsername  string                                `envconfig:"optional"`
+	RepositoryPassword  string                                `envconfig:"optional"`
+	RepositoryKey       string                                `envconfig:"optional"`
 }
 
 func main() {
@@ -39,16 +37,7 @@ func main() {
 		log.Fatalf("while reading env variables: %s", err.Error())
 	}
 
-	restConfig, err := restConfig("")
-	failOnErr(err, "unable to load k8s config")
-
-	client, err := kubernetes.NewForConfig(restConfig)
-	failOnErr(err, "unable to create a client")
-
-	secret, err := client.CoreV1().Secrets("default").Get(context.Background(), cfg.AuthSecretName, metav1.GetOptions{})
-	failOnErr(err, "unable to get secret")
-
-	auth, err := chooseAuth(secret)
+	auth, err := chooseAuth(cfg)
 	failOnErr(err, "unable to choose auth")
 
 	log.Printf("Clone repo from url: %s and commit: %s...\n", cfg.RepositoryURL, cfg.RepositoryCommit)
@@ -94,72 +83,19 @@ func failOnErr(err error, msg string) {
 	}
 }
 
-// restConfig loads the rest configuration needed by k8s clients to interact with clusters based on the kubeconfig.
-// Loading rules are based on standard defined kubernetes config loading.
-func restConfig(kubeconfig string) (*rest.Config, error) {
-	// Default PathOptions gets kubeconfig in this order: the explicit path given, KUBECONFIG current context, recommended file path
-	po := clientcmd.NewDefaultPathOptions()
-	po.LoadingRules.ExplicitPath = kubeconfig
-
-	cfg, err := clientcmd.BuildConfigFromKubeconfigGetter("", po.GetStartingConfig)
-	if err != nil {
-		return nil, err
+func chooseAuth(cfg initConfig) (transport.AuthMethod, error) {
+	if cfg.RepositoryAuthType == "" {
+		log.Printf("Repository auth type not provided, skipping authorization")
+		return nil, nil
 	}
-	cfg.WarningHandler = rest.NoWarnings{}
-	return cfg, nil
-}
-
-func chooseAuth(secret *corev1.Secret) (transport.AuthMethod, error) {
-	switch secret.Type {
-	case "kubernetes.io/ssh-auth":
-		return sshAuthForKubernetesSecret(secret)
-	case "kubernetes.io/basic-auth":
-		return basicAuthForKubernetesSecret(secret)
+	switch cfg.RepositoryAuthType {
+	case serverlessv1alpha2.RepositoryAuthSSHKey:
+		return sshAuth([]byte(cfg.RepositoryKey), cfg.RepositoryPassword)
+	case serverlessv1alpha2.RepositoryAuthBasic:
+		return basicAuth(cfg.RepositoryUsername, cfg.RepositoryPassword)
 	default:
-		// It is for compatibility with the previous implementation
-		if _, keyFound := secret.Data["key"]; keyFound {
-			return sshAuthForOldServerlessSecret(secret)
-		}
-		return basicAuthForOldServerlessSecret(secret)
+		return nil, fmt.Errorf("unknown repository auth type: %s", cfg.RepositoryAuthType)
 	}
-}
-
-func basicAuthForOldServerlessSecret(secret *corev1.Secret) (transport.AuthMethod, error) {
-	username, usernameFound := secret.Data["username"]
-	password, passwordFound := secret.Data["password"]
-	if !usernameFound || !passwordFound {
-		return nil, errors.New("missing username, password or key")
-	}
-	return basicAuth(string(username), string(password))
-}
-
-func basicAuthForKubernetesSecret(secret *corev1.Secret) (transport.AuthMethod, error) {
-	username, usernameFound := secret.Data["username"]
-	password, passwordFound := secret.Data["password"]
-	if !usernameFound || !passwordFound {
-		return nil, errors.New("missing username or password")
-	}
-	return basicAuth(string(username), string(password))
-}
-
-func sshAuthForOldServerlessSecret(secret *corev1.Secret) (transport.AuthMethod, error) {
-	key, keyFound := secret.Data["key"]
-	if !keyFound {
-		return nil, errors.New("missing key")
-	}
-	password, passwordFound := secret.Data["password"]
-	if passwordFound {
-		return sshAuth(key, string(password))
-	}
-	return sshAuth(key, "")
-}
-
-func sshAuthForKubernetesSecret(secret *corev1.Secret) (transport.AuthMethod, error) {
-	privateKey, ok := secret.Data["ssh-privatekey"]
-	if !ok {
-		return nil, errors.New("missing ssh-privatekey")
-	}
-	return sshAuth(privateKey, "")
 }
 
 func sshAuth(sshPrivateKey []byte, sshPassword string) (transport.AuthMethod, error) {
