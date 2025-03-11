@@ -7,7 +7,7 @@ LABEL source = git@github.com:kyma-project/serverless.git
 RUN apk add --no-cache --virtual .build-deps build-base linux-headers
 
 # cmake is required for some packages
-RUN apk add --no-cache --virtual cmake
+RUN apk add --no-cache cmake
 
 COPY ./python312/requirements.txt /kubeless/requirements.txt
 RUN chmod 644 /kubeless/requirements.txt
