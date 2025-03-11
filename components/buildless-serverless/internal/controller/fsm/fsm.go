@@ -45,7 +45,6 @@ type StateMachine struct {
 	FunctionConfig config.FunctionConfig
 	Scheme         *apimachineryruntime.Scheme
 	GitChecker     git.LastCommitChecker
-	GitAuth        *git.GitAuth
 }
 
 func (m *StateMachine) stateFnName() string {
