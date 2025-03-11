@@ -19,7 +19,7 @@ const (
 
 func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	if !m.State.Function.HasGitSources() {
-		return nextState(sFnHandleDeployment)
+		return nextState(sFnConfigurationReady)
 	}
 
 	gitRepository := m.State.Function.Spec.Source.GitRepository
@@ -34,10 +34,8 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 
 	if skipGitSourceCheck(m.State.Function, m.FunctionConfig) {
 		m.Log.Info(fmt.Sprintf("skipping function [%s] source check", m.State.Function.Name))
-		return nextState(sFnHandleDeployment)
+		return nextState(sFnConfigurationReady)
 	}
-
-	//TODO add handling for getting info from secret with handling errors
 
 	latestCommit, err := m.GitChecker.GetLatestCommit(gitRepository.URL, gitRepository.Reference, m.State.GitAuth)
 	if err != nil {
@@ -51,7 +49,7 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 
 	m.State.Commit = latestCommit
 
-	return nextState(sFnHandleDeployment)
+	return nextState(sFnConfigurationReady)
 }
 
 func skipGitSourceCheck(f serverlessv1alpha2.Function, cfg config.FunctionConfig) bool {

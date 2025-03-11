@@ -161,7 +161,7 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 		{
 			Name: fmt.Sprintf("%s-init", d.name()),
 			//TODO: should we use this image?
-			Image:      "anoipm/masza:0.0.3",
+			Image:      "anoipm/masza:0.0.4",
 			WorkingDir: d.workingSourcesDir(),
 			Command: []string{
 				"sh",
@@ -191,7 +191,6 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 }
 
 func (d *Deployment) initContainerEnvs() []corev1.EnvVar {
-	//	gitEnvs, _ := d.chooseAuth()
 	envs := []corev1.EnvVar{
 		{
 			Name:  "APP_REPOSITORY_URL",
@@ -203,7 +202,7 @@ func (d *Deployment) initContainerEnvs() []corev1.EnvVar {
 		},
 		{
 			Name:  "APP_REPOSITORY_COMMIT",
-			Value: "79ac1a81acd1dc7f50cf4ac67c3ea23f31afb5af",
+			Value: d.commit,
 		},
 		{
 			Name:  "APP_DESTINATION_PATH",

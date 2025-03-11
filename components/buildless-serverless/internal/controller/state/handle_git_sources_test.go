@@ -45,7 +45,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnHandleDeployment, next)
+		requireEqualFunc(t, sFnConfigurationReady, next)
 		// function conditions remain unchanged
 		require.Empty(t, m.State.Function.Status.Conditions)
 		// no commit change, it should be changed only for git functions
@@ -86,7 +86,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnHandleDeployment, next)
+		requireEqualFunc(t, sFnConfigurationReady, next)
 		// function conditions remain unchanged
 		require.Empty(t, m.State.Function.Status.Conditions)
 		// commit change, it should be changed only for git functions
@@ -190,7 +190,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnHandleDeployment, next)
+		requireEqualFunc(t, sFnConfigurationReady, next)
 		// function has proper condition
 		requireContainsCondition(t, m.State.Function.Status,
 			serverlessv1alpha2.ConditionConfigurationReady,
@@ -238,7 +238,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnHandleDeployment, next)
+		requireEqualFunc(t, sFnConfigurationReady, next)
 		// function conditions remain unchanged
 		require.Nil(t, m.State.Function.Status.Conditions)
 		// commit change
@@ -298,7 +298,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnHandleDeployment, next)
+		requireEqualFunc(t, sFnConfigurationReady, next)
 		// function conditions remain unchanged
 		require.Empty(t, m.State.Function.Status.Conditions)
 		// commit change, it should be changed only for git functions
