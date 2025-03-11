@@ -147,13 +147,19 @@ func initContainerChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 	if len(a.Spec.Template.Spec.InitContainers) == 0 {
 		return false
 	}
-	aInitContainer := a.Spec.Template.Spec.InitContainers[0]
-	bInitContainer := b.Spec.Template.Spec.InitContainers[0]
+	aContainer := a.Spec.Template.Spec.InitContainers[0]
+	bContainer := b.Spec.Template.Spec.InitContainers[0]
 
-	initCommandChanged := !reflect.DeepEqual(aInitContainer.Command, bInitContainer.Command)
-	initVolumeMountsChanged := !reflect.DeepEqual(aInitContainer.VolumeMounts, bInitContainer.VolumeMounts)
-	return initCommandChanged ||
-		initVolumeMountsChanged
+	imageChanged := aContainer.Image != bContainer.Image
+	workingDirChanged := !reflect.DeepEqual(aContainer.WorkingDir, bContainer.WorkingDir)
+	commandChanged := !reflect.DeepEqual(aContainer.Command, bContainer.Command)
+	envChanged := !reflect.DeepEqual(aContainer.Env, bContainer.Env)
+	volumeMountsChanged := !reflect.DeepEqual(aContainer.VolumeMounts, bContainer.VolumeMounts)
+	return imageChanged ||
+		workingDirChanged ||
+		commandChanged ||
+		envChanged ||
+		volumeMountsChanged
 }
 
 func updateDeployment(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment) (requeueNeeded bool, err error) {
