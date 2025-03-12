@@ -73,6 +73,8 @@ type FunctionSpec struct {
 	// +kubebuilder:validation:XValidation:message="Labels has key starting with serverless.kyma-project.io/ which is not allowed",rule="!(self.exists(e, e.startsWith('serverless.kyma-project.io/')))"
 	// +kubebuilder:validation:XValidation:message="Label value cannot be longer than 63",rule="self.all(e, size(e)<64)"
 	Labels map[string]string `json:"labels,omitempty"`
+
+	//TODO: add Annotations
 }
 
 type Source struct {
@@ -105,7 +107,7 @@ type GitRepositorySource struct {
 	URL string `json:"url"`
 
 	// Specifies the authentication method. Required for SSH.
-	//+optional
+	// +optional
 	Auth *RepositoryAuth `json:"auth,omitempty"`
 
 	// +kubebuilder:validation:XValidation:message="BaseDir is required and cannot be empty",rule="has(self.baseDir) && (self.baseDir.trim().size() != 0)"
