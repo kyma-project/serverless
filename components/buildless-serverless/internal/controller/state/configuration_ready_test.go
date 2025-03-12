@@ -31,6 +31,6 @@ func Test_sFnConfigurationReady(t *testing.T) {
 			serverlessv1alpha2.ConditionConfigurationReady,
 			metav1.ConditionTrue,
 			serverlessv1alpha2.ConditionReasonFunctionSpecValidated,
-			"function spec validated")
+			"function configured")
 	})
 }

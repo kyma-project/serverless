@@ -283,8 +283,7 @@ python /kubeless.py;`,
 		require.Len(t, r.Spec.Template.Spec.InitContainers, 1)
 		c := r.Spec.Template.Spec.InitContainers[0]
 		expectedCommand := []string{"sh", "-c",
-			`git clone --depth 1 --branch epic-mendel wonderful-germain /git-repository/repo;
-cd /git-repository/repo;git reset --hard test-commit; cd ../..;
+			`/gitcloner
 mkdir /git-repository/src;cp /git-repository/repo/recursing-mcnulty/* /git-repository/src;`}
 		require.Equal(t, expectedCommand, c.Command)
 	})

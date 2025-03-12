@@ -218,19 +218,10 @@ func (d *Deployment) initContainerEnvs() []corev1.EnvVar {
 func (d *Deployment) initContainerCommand() string {
 	gitRepo := d.function.Spec.Source.GitRepository
 	var arr []string
-	//arr = append(arr,
-	//	fmt.Sprintf("git clone --depth 1 --branch %s %s /git-repository/repo;", gitRepo.Reference, gitRepo.URL))
-
 	arr = append(arr, "/gitcloner")
-
-	//if d.commit != "" {
-	//	arr = append(arr,
-	//		fmt.Sprintf("cd /git-repository/repo;git reset --hard %s; cd ../..;", d.commit))
-	//}
-
 	arr = append(arr,
-		fmt.Sprintf("mkdir /git-repository/src;cp /git-repository/repo/%s/* /git-repository/src;", strings.Trim(gitRepo.BaseDir, "/ ")))
-
+		fmt.Sprintf("mkdir /git-repository/src;cp /git-repository/repo/%s/* /git-repository/src;",
+			strings.Trim(gitRepo.BaseDir, "/ ")))
 	return strings.Join(arr, "\n")
 }
 
