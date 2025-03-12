@@ -305,6 +305,31 @@ spec:
                     description: Defines the Function as git-sourced. Can't be used
                       together with **Inline**.
                     properties:
+                      auth:
+                        description: Specifies the authentication method. Required
+                          for SSH.
+                        properties:
+                          secretName:
+                            description: |-
+                              Specifies the name of the Secret with credentials used by the Function Controller
+                              to authenticate to the Git repository in order to fetch the Function's source code and dependencies.
+                              This Secret must be stored in the same Namespace as the Function CR.
+                            type: string
+                            x-kubernetes-validations:
+                            - message: SecretName is required and cannot be empty
+                              rule: self.trim().size() != 0
+                          type:
+                            description: |-
+                              Defines the repository authentication method. The value is either `basic` if you use a password or token,
+                              or `key` if you use an SSH key.
+                            enum:
+                            - basic
+                            - key
+                            type: string
+                        required:
+                        - secretName
+                        - type
+                        type: object
                       baseDir:
                         description: |-
                           Specifies the relative path to the Git directory that contains the source code

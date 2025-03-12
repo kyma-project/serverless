@@ -104,14 +104,39 @@ type GitRepositorySource struct {
 	// the URL must start with the `http(s)`, `git`, or `ssh` prefix.
 	URL string `json:"url"`
 
-	// // Specifies the authentication method. Required for SSH.
-	// // +optional
-	// Auth *RepositoryAuth `json:"auth,omitempty"`
+	// Specifies the authentication method. Required for SSH.
+	//+optional
+	Auth *RepositoryAuth `json:"auth,omitempty"`
 
 	// +kubebuilder:validation:XValidation:message="BaseDir is required and cannot be empty",rule="has(self.baseDir) && (self.baseDir.trim().size() != 0)"
 	// +kubebuilder:validation:XValidation:message="Reference is required and cannot be empty",rule="has(self.reference) && (self.reference.trim().size() != 0)"
 	Repository `json:",inline"`
 }
+
+// RepositoryAuth defines authentication method used for repository operations
+type RepositoryAuth struct {
+	// +kubebuilder:validation:Required
+	// Defines the repository authentication method. The value is either `basic` if you use a password or token,
+	// or `key` if you use an SSH key.
+	Type RepositoryAuthType `json:"type"`
+
+	// +kubebuilder:validation:Required
+	// +kubebuilder:validation:XValidation:message="SecretName is required and cannot be empty",rule="self.trim().size() != 0"
+
+	// Specifies the name of the Secret with credentials used by the Function Controller
+	// to authenticate to the Git repository in order to fetch the Function's source code and dependencies.
+	// This Secret must be stored in the same Namespace as the Function CR.
+	SecretName string `json:"secretName"`
+}
+
+// RepositoryAuthType is the enum of available authentication types
+// +kubebuilder:validation:Enum=basic;key
+type RepositoryAuthType string
+
+const (
+	RepositoryAuthBasic  RepositoryAuthType = "basic"
+	RepositoryAuthSSHKey RepositoryAuthType = "key"
+)
 
 type Repository struct {
 	// Specifies the relative path to the Git directory that contains the source code
@@ -294,6 +319,10 @@ func (f *Function) PodLabels() map[string]string {
 
 func (f *Function) HasGitSources() bool {
 	return f.Spec.Source.GitRepository != nil
+}
+
+func (f *Function) HasGitAuth() bool {
+	return f.Spec.Source.GitRepository != nil && f.Spec.Source.GitRepository.Auth != nil
 }
 
 func (f *Function) HasInlineSources() bool {
