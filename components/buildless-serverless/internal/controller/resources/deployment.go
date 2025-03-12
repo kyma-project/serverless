@@ -159,9 +159,8 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 
 	return []corev1.Container{
 		{
-			Name: fmt.Sprintf("%s-init", d.name()),
-			//TODO: should we use this image?
-			Image:      "anoipm/masza:0.0.4",
+			Name:       fmt.Sprintf("%s-init", d.name()),
+			Image:      d.functionConfig.ImageRepoFetcher,
 			WorkingDir: d.workingSourcesDir(),
 			Command: []string{
 				"sh",

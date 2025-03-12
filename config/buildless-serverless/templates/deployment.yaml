@@ -72,6 +72,9 @@ spec:
               value: "{{.Values.containers.manager.configuration.data.functionTraceCollectorEndpoint }}"
             - name: APP_FUNCTION_PUBLISHER_PROXY_ADDRESS
               value: "{{.Values.containers.manager.configuration.data.functionPublisherProxyAddress }}"
+            - name: APP_FUNCTION_IMAGE_REPO_FETCHER
+              value: "anoipm/masza:0.0.4"
+              # "{{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.function_init)}}"
       securityContext:
         runAsNonRoot: true
         runAsGroup: 1000
