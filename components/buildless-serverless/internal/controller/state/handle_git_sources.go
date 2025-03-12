@@ -32,10 +32,11 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 		m.State.GitAuth = gitAuth
 	}
 
-	if skipGitSourceCheck(m.State.Function, m.FunctionConfig) {
-		m.Log.Info(fmt.Sprintf("skipping function [%s] source check", m.State.Function.Name))
-		return nextState(sFnConfigurationReady)
-	}
+	// TODO: it doesn't work properly - sometimes we create deployment with empty commit and repo fetcher fails
+	//if skipGitSourceCheck(m.State.Function, m.FunctionConfig) {
+	//	m.Log.Info(fmt.Sprintf("skipping function [%s] source check", m.State.Function.Name))
+	//	return nextState(sFnConfigurationReady)
+	//}
 
 	latestCommit, err := m.GitChecker.GetLatestCommit(gitRepository.URL, gitRepository.Reference, m.State.GitAuth)
 	if err != nil {
