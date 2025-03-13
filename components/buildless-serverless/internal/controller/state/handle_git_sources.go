@@ -4,13 +4,10 @@ import (
 	"context"
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	"github.com/kyma-project/serverless/internal/config"
 	"github.com/kyma-project/serverless/internal/controller/fsm"
 	"github.com/kyma-project/serverless/internal/controller/git"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"strings"
-	"time"
 )
 
 const (
@@ -53,6 +50,7 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	return nextState(sFnConfigurationReady)
 }
 
+/*
 func skipGitSourceCheck(f serverlessv1alpha2.Function, cfg config.FunctionConfig) bool {
 	if v, ok := f.Annotations[continuousGitCheckoutAnnotation]; ok && strings.ToLower(v) == "true" {
 		return false
@@ -67,3 +65,4 @@ func skipGitSourceCheck(f serverlessv1alpha2.Function, cfg config.FunctionConfig
 
 	return time.Since(configured.LastTransitionTime.Time) < cfg.FunctionReadyRequeueDuration
 }
+*/
