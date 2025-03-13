@@ -2,6 +2,7 @@ package resources
 
 import (
 	"fmt"
+	"github.com/kyma-project/serverless/internal/controller/git"
 	"path"
 	"strings"
 
@@ -20,13 +21,15 @@ type Deployment struct {
 	functionConfig *config.FunctionConfig
 	function       *serverlessv1alpha2.Function
 	commit         string
+	gitAuth        *git.GitAuth
 }
 
-func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, commit string) *Deployment {
+func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, commit string, gitAuth *git.GitAuth) *Deployment {
 	d := &Deployment{
 		functionConfig: c,
 		function:       f,
 		commit:         commit,
+		gitAuth:        gitAuth,
 	}
 	d.Deployment = d.construct()
 	return d
@@ -153,17 +156,18 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 	if !d.function.HasGitSources() {
 		return []corev1.Container{}
 	}
+
 	return []corev1.Container{
 		{
-			Name: fmt.Sprintf("%s-init", d.name()),
-			//TODO: should we use this image?
-			Image:      "europe-docker.pkg.dev/kyma-project/prod/alpine-git:v20250212-39c86988",
+			Name:       fmt.Sprintf("%s-init", d.name()),
+			Image:      d.functionConfig.ImageRepoFetcher,
 			WorkingDir: d.workingSourcesDir(),
 			Command: []string{
 				"sh",
 				"-c",
 				d.initContainerCommand(),
 			},
+			Env: d.initContainerEnvs(),
 			VolumeMounts: []corev1.VolumeMount{
 				{
 					Name:      "git-repository",
@@ -185,20 +189,39 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 	}
 }
 
+func (d *Deployment) initContainerEnvs() []corev1.EnvVar {
+	envs := []corev1.EnvVar{
+		{
+			Name:  "APP_REPOSITORY_URL",
+			Value: d.function.Spec.Source.GitRepository.URL,
+		},
+		{
+			Name:  "APP_REPOSITORY_REFERENCE",
+			Value: d.function.Spec.Source.GitRepository.Repository.Reference,
+		},
+		{
+			Name:  "APP_REPOSITORY_COMMIT",
+			Value: d.commit,
+		},
+		{
+			Name:  "APP_DESTINATION_PATH",
+			Value: "/git-repository/repo",
+		},
+	}
+	if d.gitAuth != nil {
+		envs = append(envs, d.gitAuth.GetAuthEnvs()...)
+	}
+
+	return envs
+}
+
 func (d *Deployment) initContainerCommand() string {
 	gitRepo := d.function.Spec.Source.GitRepository
 	var arr []string
+	arr = append(arr, "/gitcloner")
 	arr = append(arr,
-		fmt.Sprintf("git clone --depth 1 --branch %s %s /git-repository/repo;", gitRepo.Reference, gitRepo.URL))
-
-	if d.commit != "" {
-		arr = append(arr,
-			fmt.Sprintf("cd /git-repository/repo;git reset --hard %s; cd ../..;", d.commit))
-	}
-
-	arr = append(arr,
-		fmt.Sprintf("mkdir /git-repository/src;cp /git-repository/repo/%s/* /git-repository/src;", strings.Trim(gitRepo.BaseDir, "/ ")))
-
+		fmt.Sprintf("mkdir /git-repository/src;cp /git-repository/repo/%s/* /git-repository/src;",
+			strings.Trim(gitRepo.BaseDir, "/ ")))
 	return strings.Join(arr, "\n")
 }
 
