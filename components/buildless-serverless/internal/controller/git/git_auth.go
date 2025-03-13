@@ -139,10 +139,10 @@ func (a *GitAuth) parseBasicAuthKubernetesSecret() error {
 	if a.authType != serverlessv1alpha2.RepositoryAuthBasic {
 		return errors.New(fmt.Sprintf("inconsistent secret type: %s, %s", a.authType, corev1.SecretTypeBasicAuth))
 	}
-	username, usernameFound := a.secret.Data["username"]
-	password, passwordFound := a.secret.Data["password"]
+	username, usernameFound := a.secret.Data[kubernetesUsernameFieldName]
+	password, passwordFound := a.secret.Data[kubernetesPasswordFieldName]
 	if !usernameFound || !passwordFound {
-		return errors.New("missing 'username' or 'password'")
+		return errors.New(fmt.Sprintf("missing '%s' or '%s'", kubernetesUsernameFieldName, kubernetesPasswordFieldName))
 	}
 	a.username = &dataField[string]{
 		value:     string(username),
@@ -158,16 +158,16 @@ func (a *GitAuth) parseBasicAuthKubernetesSecret() error {
 }
 
 func (a *GitAuth) parseSshAuthOldServerlessSecret() error {
-	key, keyFound := a.secret.Data["key"]
+	key, keyFound := a.secret.Data[oldServerlessKeyFieldName]
 	if !keyFound {
-		return errors.New("missing 'key'")
+		return errors.New(fmt.Sprintf("missing '%s'", oldServerlessKeyFieldName))
 	}
 	a.sshKey = &dataField[[]byte]{
 		value:     key,
 		fieldName: oldServerlessKeyFieldName,
 		envName:   sshKeyEnvVarName,
 	}
-	password, passwordFound := a.secret.Data["password"]
+	password, passwordFound := a.secret.Data[oldServerlessPasswordFieldName]
 	if passwordFound {
 		a.password = &dataField[string]{
 			value:     string(password),
@@ -179,10 +179,10 @@ func (a *GitAuth) parseSshAuthOldServerlessSecret() error {
 }
 
 func (a *GitAuth) parseBasicAuthOldServerlessSecret() error {
-	username, usernameFound := a.secret.Data["username"]
-	password, passwordFound := a.secret.Data["password"]
+	username, usernameFound := a.secret.Data[oldServerlessUsernameFieldName]
+	password, passwordFound := a.secret.Data[oldServerlessPasswordFieldName]
 	if !usernameFound || !passwordFound {
-		return errors.New("missing 'username' or 'password'")
+		return errors.New(fmt.Sprintf("missing '%s' or '%s'", oldServerlessUsernameFieldName, oldServerlessPasswordFieldName))
 	}
 	a.username = &dataField[string]{
 		value:     string(username),
