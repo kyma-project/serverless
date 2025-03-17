@@ -57,6 +57,9 @@ spec:
               drop:
                 - ALL
           env:
+            - name: APP_FUNCTION_IMAGE_REPO_FETCHER
+              {{- $fetcher:=$images.function_init  }}
+              value: "{{ .Values.global.containerRegistry.path }}/{{ $fetcher.directory }}/{{$fetcher.name}}:{{$fetcher.version}}"
             - name: APP_FUNCTION_IMAGENODEJS20
               {{- $js20:=$images.function_runtime_nodejs20  }}
               value: "{{ .Values.global.containerRegistry.path }}/{{ $js20.directory }}/{{$js20.name}}:{{$js20.version}}"

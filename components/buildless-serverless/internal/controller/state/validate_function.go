@@ -24,10 +24,5 @@ func sFnValidateFunction(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *
 		return stop()
 	}
 
-	m.State.Function.UpdateCondition(
-		serverlessv1alpha2.ConditionConfigurationReady,
-		metav1.ConditionTrue,
-		serverlessv1alpha2.ConditionReasonFunctionSpecValidated,
-		"function spec validated")
 	return nextState(sFnHandleGitSources)
 }
