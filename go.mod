@@ -2,7 +2,7 @@ module github.com/kyma-project/serverless
 
 go 1.23.0
 
-toolchain go1.24.0
+toolchain go1.24.1
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
@@ -37,7 +37,7 @@ require (
 	k8s.io/client-go v0.31.6
 	k8s.io/klog/v2 v2.130.1
 	k8s.io/utils v0.0.0-20241104163129-6fe5fd82f078
-	sigs.k8s.io/controller-runtime v0.19.6
+	sigs.k8s.io/controller-runtime v0.19.7
 )
 
 require (
