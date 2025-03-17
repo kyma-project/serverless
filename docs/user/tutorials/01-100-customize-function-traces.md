@@ -24,29 +24,21 @@ The following code samples illustrate how to enrich the default trace with custo
 
    ```javascript
 
-   const { SpanStatusCode } = require("@opentelemetry/api/build/src/trace/status");
+   const { SpanStatusCode } = require("@opentelemetry/api");
    const axios = require("axios")
    module.exports = {
       main: async function (event, context) {
-
-         const data = {
-            name: "John",
-            surname: "Doe",
-            type: "Employee",
-            id: "1234-5678"
-         }
-
-         const span = event.tracer.startSpan('call-to-acme-service');
-         return await callAcme(data)
+         const pplId = '1';
+         const span = event.tracer.startSpan('call-to-swapi-service');
+         return await callSwapi(pplId)
             .then(resp => {
                if(resp.status!==200){
-                  throw new Error("Unexpected response from acme service");
+                  throw new Error("Unexpected response from swapi service");
                }
-               span.addEvent("Data sent");
-               span.setAttribute("data-type", data.type);
-               span.setAttribute("data-id", data.id);
+               span.addEvent("swapi_read");
+               span.setAttribute("ppl-id", pplId);
                span.setStatus({code: SpanStatusCode.OK});
-               return "Data sent";
+               return resp.data;
             }).catch(err=> {
                console.error(err)
                span.setStatus({
@@ -60,8 +52,8 @@ The following code samples illustrate how to enrich the default trace with custo
       }
    }
 
-   let callAcme = (data)=>{
-      return axios.post('https://acme.com/api/people', data)
+   let callSwapi = (id)=>{
+      return axios.get('https://swapi.dev/api/people/'+id)
    }
    ```
 
