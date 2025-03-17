@@ -31,12 +31,8 @@ func Test_sFnValidateFunction(t *testing.T) {
 		// with expected next state
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnHandleGitSources, next)
-		// function has proper condition
-		requireContainsCondition(t, m.State.Function.Status,
-			serverlessv1alpha2.ConditionConfigurationReady,
-			metav1.ConditionTrue,
-			serverlessv1alpha2.ConditionReasonFunctionSpecValidated,
-			"function spec validated")
+		// function has unchanged conditions
+		require.Empty(t, m.State.Function.Status.Conditions)
 	})
 	t.Run("when function is invalid should stop processing", func(t *testing.T) {
 		// Arrange

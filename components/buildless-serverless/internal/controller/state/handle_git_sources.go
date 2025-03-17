@@ -4,31 +4,38 @@ import (
 	"context"
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	"github.com/kyma-project/serverless/internal/config"
 	"github.com/kyma-project/serverless/internal/controller/fsm"
+	"github.com/kyma-project/serverless/internal/controller/git"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"strings"
-	"time"
 )
 
 const (
 	continuousGitCheckoutAnnotation = "serverless.kyma-project.io/continuousGitCheckout"
 )
 
-func sFnHandleGitSources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
+func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	if !m.State.Function.HasGitSources() {
-		return nextState(sFnHandleDeployment)
+		return nextState(sFnConfigurationReady)
 	}
 
 	gitRepository := m.State.Function.Spec.Source.GitRepository
 
-	if skipGitSourceCheck(m.State.Function, m.FunctionConfig) {
-		m.Log.Info(fmt.Sprintf("skipping function [%s] source check", m.State.Function.Name))
-		return nextState(sFnHandleDeployment)
+	if m.State.Function.HasGitAuth() {
+		gitAuth, err := git.NewGitAuth(ctx, m.Client, &m.State.Function)
+		if err != nil {
+			return nil, nil, err
+		}
+		m.State.GitAuth = gitAuth
 	}
 
-	latestCommit, err := m.GitChecker.GetLatestCommit(gitRepository.URL, gitRepository.Reference)
+	// TODO: it doesn't work properly - sometimes we create deployment with empty commit and repo fetcher fails
+	//if skipGitSourceCheck(m.State.Function, m.FunctionConfig) {
+	//	m.Log.Info(fmt.Sprintf("skipping function [%s] source check", m.State.Function.Name))
+	//	return nextState(sFnConfigurationReady)
+	//}
+
+	latestCommit, err := m.GitChecker.GetLatestCommit(gitRepository.URL, gitRepository.Reference, m.State.GitAuth)
 	if err != nil {
 		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionConfigurationReady,
@@ -40,9 +47,10 @@ func sFnHandleGitSources(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *
 
 	m.State.Commit = latestCommit
 
-	return nextState(sFnHandleDeployment)
+	return nextState(sFnConfigurationReady)
 }
 
+/*
 func skipGitSourceCheck(f serverlessv1alpha2.Function, cfg config.FunctionConfig) bool {
 	if v, ok := f.Annotations[continuousGitCheckoutAnnotation]; ok && strings.ToLower(v) == "true" {
 		return false
@@ -57,3 +65,4 @@ func skipGitSourceCheck(f serverlessv1alpha2.Function, cfg config.FunctionConfig
 
 	return time.Since(configured.LastTransitionTime.Time) < cfg.FunctionReadyRequeueDuration
 }
+*/
