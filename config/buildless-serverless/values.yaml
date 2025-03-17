@@ -6,6 +6,10 @@ global:
       name: "function-buildless-controller"
       version: "main"
       directory: "prod"
+    function_init:
+      name: "function-buildless-init"
+      version: "main"
+      directory: "prod"
     function_runtime_nodejs20:
       name: "function-runtime-nodejs20"
       version: "main"

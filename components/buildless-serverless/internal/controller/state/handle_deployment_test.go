@@ -200,7 +200,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			ImageNodeJs22: "boring-bartik",
 		}
 		// identical deployment will be generated inside sFnHandleDeployment
-		deployment := resources.NewDeployment(&f, &fc, "test-commit").Deployment
+		deployment := resources.NewDeployment(&f, &fc, "test-commit", nil).Deployment
 		// scheme and fake client
 		scheme := runtime.NewScheme()
 		require.NoError(t, serverlessv1alpha2.AddToScheme(scheme))
@@ -735,8 +735,7 @@ func Test_deploymentChanged(t *testing.T) {
 										EmptyDir: &corev1.EmptyDirVolumeSource{
 											Medium: corev1.StorageMediumMemory}}}},
 								InitContainers: []corev1.Container{{
-									Name:  "dazzling-tharp",
-									Image: "dazzling-tharp"}},
+									Name: "dazzling-tharp"}},
 								Containers: []corev1.Container{{
 									Name:            "dazzling-tharp",
 									Args:            []string{"dazzling-tharp"},
@@ -785,8 +784,7 @@ func Test_deploymentChanged(t *testing.T) {
 										EmptyDir: &corev1.EmptyDirVolumeSource{
 											Medium: corev1.StorageMediumHugePages}}}},
 								InitContainers: []corev1.Container{{
-									Name:  "thirsty-jemison",
-									Image: "thirsty-jemison"}},
+									Name: "thirsty-jemison"}},
 								Containers: []corev1.Container{{
 									Name:            "thirsty-jemison",
 									Args:            []string{"thirsty-jemison"},
@@ -896,6 +894,68 @@ func Test_deploymentChanged(t *testing.T) {
 										Name:      "name",
 										MountPath: "/focused/thompson",
 									}}}},
+								Containers: []corev1.Container{{}}}}}},
+			},
+			want: true,
+		},
+		{
+			name: "when init container env are different should return true",
+			args: args{
+				a: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									Env: []corev1.EnvVar{
+										{Name: "kalam", Value: "admiring"}}}},
+								Containers: []corev1.Container{{}}}}}},
+				b: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									Env: []corev1.EnvVar{
+										{Name: "yalow", Value: "nostalgic"}}}},
+								Containers: []corev1.Container{{}}}}}},
+			},
+			want: true,
+		},
+		{
+			name: "when init container workingDir are different should return true",
+			args: args{
+				a: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									WorkingDir: "vibrant-wozniak"}},
+								Containers: []corev1.Container{{}}}}}},
+				b: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									WorkingDir: "romantic-shockley"}},
+								Containers: []corev1.Container{{}}}}}},
+			},
+			want: true,
+		},
+		{
+			name: "when init container images are different should return true",
+			args: args{
+				a: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									Image: "intelligent-galois"}},
+								Containers: []corev1.Container{{}}}}}},
+				b: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								InitContainers: []corev1.Container{{
+									Image: "beautiful-rhodes"}},
 								Containers: []corev1.Container{{}}}}}},
 			},
 			want: true,

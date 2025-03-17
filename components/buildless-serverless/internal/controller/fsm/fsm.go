@@ -26,6 +26,7 @@ type SystemState struct {
 	BuiltDeployment   *resources.Deployment
 	ClusterDeployment *appsv1.Deployment
 	Commit            string
+	GitAuth           *git.GitAuth
 }
 
 func (s *SystemState) saveStatusSnapshot() {
