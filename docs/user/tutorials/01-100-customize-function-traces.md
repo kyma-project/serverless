@@ -22,76 +22,68 @@ The following code samples illustrate how to enrich the default trace with custo
 
 #### **Node.js**
 
-      ```javascript
+   ```javascript
 
-      const { SpanStatusCode } = require("@opentelemetry/api/build/src/trace/status");
-      const axios = require("axios")
-      module.exports = {
-         main: async function (event, context) {
-
-            const data = {
-               name: "John",
-               surname: "Doe",
-               type: "Employee",
-               id: "1234-5678"
-            }
-
-            const span = event.tracer.startSpan('call-to-acme-service');
-            return await callAcme(data)
-               .then(resp => {
-                  if(resp.status!==200){
-                    throw new Error("Unexpected response from acme service");
-                  }
-                  span.addEvent("Data sent");
-                  span.setAttribute("data-type", data.type);
-                  span.setAttribute("data-id", data.id);
-                  span.setStatus({code: SpanStatusCode.OK});
-                  return "Data sent";
-               }).catch(err=> {
-                  console.error(err)
-                  span.setStatus({
-                    code: SpanStatusCode.ERROR,
-                    message: err.message,
-                  });
-                  return err.message;
-               }).finally(()=>{
-                  span.end();
+   const { SpanStatusCode } = require("@opentelemetry/api");
+   const axios = require("axios")
+   module.exports = {
+      main: async function (event, context) {
+         const pplId = '1';
+         const span = event.tracer.startSpan('call-to-swapi-service');
+         return await callSwapi(pplId)
+            .then(resp => {
+               if(resp.status!==200){
+                  throw new Error("Unexpected response from swapi service");
+               }
+               span.addEvent("swapi_read");
+               span.setAttribute("ppl-id", pplId);
+               span.setStatus({code: SpanStatusCode.OK});
+               return resp.data;
+            }).catch(err=> {
+               console.error(err)
+               span.setStatus({
+                  code: SpanStatusCode.ERROR,
+                  message: err.message,
                });
-         }
+               return err.message;
+            }).finally(()=>{
+               span.end();
+            });
       }
+   }
 
-      let callAcme = (data)=>{
-         return axios.post('https://acme.com/api/people', data)
-      }
-      ```
+   let callSwapi = (id)=>{
+      return axios.get('https://swapi.dev/api/people/'+id)
+   }
+   ```
 
 #### **Python**
 
-      [OpenTelemetry SDK](https://opentelemetry.io/docs/instrumentation/python/manual/#traces) allows you to customize trace spans and events.
+   [OpenTelemetry SDK](https://opentelemetry.io/docs/instrumentation/python/manual/#traces) allows you to customize trace spans and events.
 
-      ```python
-      import requests
-      import time
+   ```python
+   import requests
+   import time
 
-      def main(event, context):
-         # Create a new span to track some work
-         with event.tracer.start_as_current_span("parent"):
-            time.sleep(1)
-
-            # Create a nested span to track nested work
-            with event.tracer.start_as_current_span("child"):
-               time.sleep(2)
-               # the nested span is closed when it's out of scope
-
-         # Now the parent span is the current span again
+   def main(event, context):
+      # Create a new span to track some work
+      with event.tracer.start_as_current_span("parent"):
          time.sleep(1)
 
-         # This span is also closed when it goes out of scope
+         # Create a nested span to track nested work
+         with event.tracer.start_as_current_span("child"):
+            time.sleep(2)
+            # the nested span is closed when it's out of scope
 
-         # This request will be auto-intrumented
-         r = requests.get('https://swapi.dev/api/people/2')
-         return r.json()
-      ```
+      # Now the parent span is the current span again
+      time.sleep(1)
+
+      # This span is also closed when it goes out of scope
+
+      # This request will be auto-intrumented
+      r = requests.get('https://swapi.dev/api/people/2')
+      return r.json()
+   ```
 
 <!-- tabs:end -->
 
