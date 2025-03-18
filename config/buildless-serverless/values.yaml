@@ -4,23 +4,23 @@ global:
   images:
     function_controller:
       name: "function-buildless-controller"
-      version: "main"
+      version: "1.7.0"
       directory: "prod"
     function_init:
       name: "function-buildless-init"
-      version: "main"
+      version: "1.7.0"
       directory: "prod"
     function_runtime_nodejs20:
       name: "function-runtime-nodejs20"
-      version: "main"
+      version: "1.7.0"
       directory: "prod"
     function_runtime_nodejs22:
       name: "function-runtime-nodejs22"
-      version: "main"
+      version: "1.7.0"
       directory: "prod"
     function_runtime_python312:
       name: "function-runtime-python312"
-      version: "main"
+      version: "1.7.0"
       directory: "prod"
 containers:
   manager:
