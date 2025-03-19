@@ -20,6 +20,9 @@ data:
     group: serverless.kyma-project.io
   coreCommands: |
     - actionID: function_init
+      vars:
+        pythonLatestRuntime: python312
+        nodejsLatestRuntime: nodejs22
   templateCommands: |
     get:
       description: "get functions"
