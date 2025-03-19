@@ -71,11 +71,8 @@ Follow these steps:
      source:
        inline:
          source: |
-           module.exports = {
-             main: function(event, context) {
-               return 'Hello World!'
-             }
-           }
+           def main(event, context):
+             return "hello world"
    EOF
    ```
 
