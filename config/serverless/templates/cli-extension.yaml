@@ -20,9 +20,34 @@ data:
     group: serverless.kyma-project.io
   coreCommands: |
     - actionID: function_init
-      vars:
-        pythonLatestRuntime: python312
-        nodejsLatestRuntime: nodejs22
+      config:
+        python312:
+          depsFilename: requirements.txt
+          depsData: ""
+          handlerFilename: handler.py
+          handlerData: |
+            def main(event, context):
+              return 'Hello World!'
+        nodejs22:
+          depsFilename: package.json
+          depsData: "{}"
+          handlerFilename: handler.js
+          handlerData: |
+            module.exports = {
+              main: function(event, context) {
+                return 'Hello World!'
+              }
+            }
+        nodejs20:
+          depsFilename: package.json
+          depsData: "{}"
+          handlerFilename: handler.js
+          handlerData: |
+            module.exports = {
+              main: function(event, context) {
+                return 'Hello World!'
+              }
+            }
   templateCommands: |
     get:
       description: "get functions"
