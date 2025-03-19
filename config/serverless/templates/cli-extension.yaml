@@ -18,6 +18,8 @@ data:
     kind: Function
     version: v1alpha2
     group: serverless.kyma-project.io
+  coreCommands: |
+    - actionID: function_init
   templateCommands: |
     get:
       description: "get functions"
