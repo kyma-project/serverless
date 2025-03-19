@@ -15,13 +15,15 @@ This example shows how to create own custom runtime for a Serverless Function ba
    ```bash
    export IMAGE_NAME=<image_name>
    export IMAGE_TAG=<image_tag>
+   export REGISTRY_URL=<registry_url> # use your dockerhub username to use docker.io
    ```
 
 2. Build and push the image:
 
    ```bash
-   docker build -t "${IMAGE_NAME}/${IMAGE_TAG}" .
-   docker push "${IMAGE_NAME}/${IMAGE_TAG}"
+   docker build  --platform linux/amd64 -t "${IMAGE_NAME}:${IMAGE_TAG}" .
+   docker tag "${IMAGE_NAME}:${IMAGE_TAG}" "${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}"
+   docker push "${REGISTRY_URL}/${IMAGE_NAME}:${IMAGE_TAG}"
    ```
 
 > [!NOTE]
