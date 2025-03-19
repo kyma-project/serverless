@@ -124,7 +124,7 @@ kubectl create secret generic my-secret --from-literal secret-env="I come from s
                main: function (event, context) {
                    envs = ["env1", "env2", "env3"]
                    envs.forEach(function(key){
-                       console.log(\`${key}:${readEnv(key)}\`)
+                       console.log(key+":"+readEnv(key))
                    });
                    return 'Hello Serverless'
                }
