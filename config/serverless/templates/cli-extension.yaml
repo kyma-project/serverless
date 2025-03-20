@@ -6,13 +6,14 @@ metadata:
   labels:
     {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
     kyma-cli/extension: resource
+    kyma-cli/extension-version: v1
     app.kubernetes.io/instance: {{ template "fullname" . }}-cli-functions
     app.kubernetes.io/component: cli
 data:
   rootCommand: |
     name: function
     description: Set of commands for managing Functions
-    descriptionLong: Use this command manage Functions
+    descriptionLong: Use this command manage Functions.
   resource: |
     scope: namespace
     kind: Function
@@ -82,8 +83,8 @@ data:
             }
   templateCommands: |
     get:
-      description: "get functions"
-      descriptionLong: "use this command to get functions from a cluster"
+      description: "Get Functions"
+      descriptionLong: "Use this command to get Functions from a cluster."
       parameters:
       - path: '.status.conditions[] | select(.type=="ConfigurationReady") | .status'
         name: "configured"
@@ -96,8 +97,8 @@ data:
       - path: ".metadata.generation"
         name: "generation"
     explain:
-      description: "explain functions"
-      descriptionLong: "use this command to explain what function is"
+      description: "Explain Functions"
+      descriptionLong: "Use this command to explain what Function is."
       output: |
         Functions are resources allowing running code without taking care about
         writing servers and maintaining them. 
@@ -107,11 +108,11 @@ data:
         You can find more details here:
         https://kyma-project.io/#/serverless-manager/user/resources/06-10-function-cr
     delete:
-      description: "delete function"
-      descriptionLong: "use this command to remove function from a cluster"
+      description: "Delete Function"
+      descriptionLong: "Use this command to remove Function from a cluster."
     create:
-      description: "create function"
-      descriptionLong: "use this command to create function on a cluster"
+      description: "Create Function"
+      descriptionLong: "Use this command to create Function on a cluster."
       customFlags:
       - type: string
         name: "runtime"
