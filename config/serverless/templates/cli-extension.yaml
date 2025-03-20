@@ -12,8 +12,8 @@ metadata:
 data:
   rootCommand: |
     name: function
-    description: Set of commands for managing Functions
-    descriptionLong: Use this command manage Functions.
+    description: A set of commands for managing Functions
+    descriptionLong: Use this command to manage Functions.
   resource: |
     scope: namespace
     kind: Function
@@ -100,16 +100,16 @@ data:
       description: "Explain Functions"
       descriptionLong: "Use this command to explain what Function is."
       output: |
-        Functions are resources allowing running code without taking care about
+        With Functions you can run code without
         writing servers and maintaining them. 
         
-        There are two possible runtime variants: nodejs and python.
+        There are two possible runtime variants: Node.js and Python.
 
         You can find more details here:
         https://kyma-project.io/#/serverless-manager/user/resources/06-10-function-cr
     delete:
       description: "Delete Function"
-      descriptionLong: "Use this command to remove Function from a cluster."
+      descriptionLong: "Use this command to delete Function from a cluster."
     create:
       description: "Create Function"
       descriptionLong: "Use this command to create Function on a cluster."
