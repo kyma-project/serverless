@@ -22,65 +22,73 @@ data:
   coreCommands: |
     - actionID: function_init
       config:
-        python312:
-          depsFilename: requirements.txt
-          depsData: ""
-          handlerFilename: handler.py
-          handlerData: |
-            def main(event, context):
-              message = "Hello World from the Kyma Function "+context['function-name']+" running on "+context['runtime']+ "!";
-              print(message)
-              return message
-        nodejs22:
-          depsFilename: package.json
-          depsData: "{}"
-          handlerFilename: handler.js
-          handlerData: |
-            module.exports = {
-              main: async function (event, context) {
-                /*
-                If you prefer mjs import/export syntax over cjs you need to specify
-                'type': 'module'
-                in the Function dependencies (package.json) and along with that change the import/export syntax to:
-                import foo from 'foo'
-                export function main(event, context) {
-                  //your logic using foo library
-                  return
-                }
-                */
-
-                const message = `Hello World`
-                  + ` from the Kyma Function ${context["function-name"]}`
-                  + ` running on ${context.runtime}!`;
-                console.log(message);
-                return message;
+        defaultRuntime: nodejs22
+        runtimes:
+          python312:
+            depsFilename: requirements.txt
+            depsData: ""
+            handlerFilename: handler.py
+            handlerData: |
+              def main(event, context):
+                message = "Hello World from the Kyma Function "+context['function-name']+" running on "+context['runtime']+ "!";
+                print(message)
+                return message
+          nodejs22:
+            depsFilename: package.json
+            depsData: |
+              {
+                "dependencies": {}
               }
-            }
-        nodejs20:
-          depsFilename: package.json
-          depsData: "{}"
-          handlerFilename: handler.js
-          handlerData: |
-            module.exports = {
-              main: async function (event, context) {
-                /*
-                If you prefer mjs import/export syntax over cjs you need to specify
-                'type': 'module'
-                in the Function dependencies (package.json) and along with that change the import/export syntax to:
-                import foo from 'foo'
-                export function main(event, context) {
-                  //your logic using foo library
-                  return
-                }
-                */
+            handlerFilename: handler.js
+            handlerData: |
+              module.exports = {
+                main: async function (event, context) {
+                  /*
+                  If you prefer mjs import/export syntax over cjs you need to specify
+                  'type': 'module'
+                  in the Function dependencies (package.json) and along with that change the import/export syntax to:
+                  import foo from 'foo'
+                  export function main(event, context) {
+                    //your logic using foo library
+                    return
+                  }
+                  */
 
-                const message = `Hello World`
-                  + ` from the Kyma Function ${context["function-name"]}`
-                  + ` running on ${context.runtime}!`;
-                console.log(message);
-                return message;
+                  const message = `Hello World`
+                    + ` from the Kyma Function ${context["function-name"]}`
+                    + ` running on ${context.runtime}!`;
+                  console.log(message);
+                  return message;
+                }
               }
-            }
+          nodejs20:
+            depsFilename: package.json
+            depsData: |
+              {
+                "dependencies": {}
+              }
+            handlerFilename: handler.js
+            handlerData: |
+              module.exports = {
+                main: async function (event, context) {
+                  /*
+                  If you prefer mjs import/export syntax over cjs you need to specify
+                  'type': 'module'
+                  in the Function dependencies (package.json) and along with that change the import/export syntax to:
+                  import foo from 'foo'
+                  export function main(event, context) {
+                    //your logic using foo library
+                    return
+                  }
+                  */
+
+                  const message = `Hello World`
+                    + ` from the Kyma Function ${context["function-name"]}`
+                    + ` running on ${context.runtime}!`;
+                  console.log(message);
+                  return message;
+                }
+              }
   templateCommands: |
     get:
       description: "Get Functions"
