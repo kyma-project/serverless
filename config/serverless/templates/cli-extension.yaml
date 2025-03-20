@@ -13,7 +13,7 @@ data:
   rootCommand: |
     name: function
     description: Set of commands for managing Functions
-    descriptionLong: Use this command manage Functions
+    descriptionLong: Use this command manage Functions.
   resource: |
     scope: namespace
     kind: Function
