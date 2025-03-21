@@ -24,6 +24,11 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	if m.State.Function.HasGitAuth() {
 		gitAuth, err := git.NewGitAuth(ctx, m.Client, &m.State.Function)
 		if err != nil {
+			m.State.Function.UpdateCondition(
+				serverlessv1alpha2.ConditionConfigurationReady,
+				metav1.ConditionFalse,
+				serverlessv1alpha2.ConditionReasonGitSourceCheckFailed,
+				fmt.Sprintf("Getting git authorization data failed: %s", err.Error()))
 			return nil, nil, err
 		}
 		m.State.GitAuth = gitAuth
