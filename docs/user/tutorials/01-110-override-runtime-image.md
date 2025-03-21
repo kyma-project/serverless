@@ -23,7 +23,7 @@ Follow these steps:
     ```bash
     export NAME={FUNCTION_NAME}
     export NAMESPACE={FUNCTION_NAMESPACE}
-    export RUNTIME_IMAGE={RUNTIME_IMAGE_WITH_TAG}
+    export RUNTIME_IMAGE_URL={RUNTIME_IMAGE_URL} # image pull url; for example {dockeruser}/foo:0.1.0
     ```
 
 3. Create your local development workspace using the built image:
@@ -31,7 +31,7 @@ Follow these steps:
     ```bash
     mkdir {FOLDER_NAME}
     cd {FOLDER_NAME}
-    kyma init function --name $NAME --namespace $NAMESPACE --runtime-image-override $RUNTIME_IMAGE --runtime python312
+    kyma init function --name $NAME --namespace $NAMESPACE --runtime-image-override $RUNTIME_IMAGE_URL --runtime python312
     ```
 
 4. Deploy your Function:
@@ -53,7 +53,7 @@ Follow these steps:
     ```bash
     export NAME={FUNCTION_NAME}
     export NAMESPACE={FUNCTION_NAMESPACE}
-    export RUNTIME_IMAGE={RUNTIME_IMAGE_WITH_TAG}
+    export RUNTIME_IMAGE_URL={RUNTIME_IMAGE_URL} # image pull url; for example {dockeruser}/foo:0.1.0
     ```
 
 3. Create a Function CR that specifies the Function's logic:
@@ -67,7 +67,7 @@ Follow these steps:
      namespace: $NAMESPACE
    spec:
      runtime: python312
-     runtimeImageOverride: $RUNTIME_IMAGE
+     runtimeImageOverride: $RUNTIME_IMAGE_URL
      source:
        inline:
          source: |
