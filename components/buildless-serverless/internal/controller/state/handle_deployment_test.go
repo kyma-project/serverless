@@ -246,7 +246,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			corev1.EnvVar{Name: "FUNC_HANDLER_SOURCE", Value: "affectionate-mclean"})
 		require.Equal(t, "boring-bartik", m.State.BuiltDeployment.Deployment.Spec.Template.Spec.Containers[0].Image)
 	})
-	t.Run("when deployment exists on kubernetes and we need changes should update it and go to the next state", func(t *testing.T) {
+	t.Run("when deployment exists on kubernetes and we need changes should update it and requeue", func(t *testing.T) {
 		// Arrange
 		// deployment which will be returned from kubernetes - empty so there will be a difference
 		deployment := appsv1.Deployment{
