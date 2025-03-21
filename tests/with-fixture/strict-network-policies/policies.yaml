@@ -1,0 +1,67 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kyma-project.io--deny-all-ingress
+  namespace: kyma-system
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: kyma-system
+  name: kyma-project.io--allow-to-apiserver
+spec:
+  podSelector:
+    matchLabels:
+      networking.kyma-project.io/to-apiserver: allowed
+  policyTypes:
+  - Egress
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+---
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  namespace: kyma-system
+  name: kyma-project.io--allow-to-dns
+spec:
+  podSelector: {}
+  policyTypes:
+  - Egress
+  egress:
+    - to:
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: kube-system
+        podSelector:
+          matchLabels:
+            k8s-app: kube-dns
+      ports:
+        - protocol: TCP
+          port: 53
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: kyma-system
+  name: kyma-project.io--allow-from-seed
+spec:
+  podSelector:
+    matchLabels:
+      networking.kyma-project.io/from-seed: allowed
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          gardener.cloud/purpose: kube-system
+      podSelector:
+        matchLabels:
+          app: vpn-shoot
