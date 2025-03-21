@@ -21,6 +21,7 @@ spec:
         control-plane: operator
         sidecar.istio.io/inject: "false"
         app.kubernetes.io/component: serverless-operator.kyma-project.io
+        networking.kyma-project.io/to-apiserver: allowed
     spec:
       priorityClassName: "operator-priority"
       securityContext:

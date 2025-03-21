@@ -129,7 +129,8 @@ deployment:
     timeoutSeconds: 10
     periodSeconds: 30
 pod:
-  labels: {}
+  labels: 
+    networking.kyma-project.io/to-apiserver: allowed
   annotations:
     sidecar.istio.io/inject: "false"
     prometheus.io/scrape: "false"
