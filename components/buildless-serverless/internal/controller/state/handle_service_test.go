@@ -217,7 +217,7 @@ func Test_sFnHandleService(t *testing.T) {
 		// function conditions remain unchanged
 		require.Empty(t, m.State.Function.Status.Conditions)
 	})
-	t.Run("when service exists on kubernetes and we need changes should update it and go to the next state", func(t *testing.T) {
+	t.Run("when service exists on kubernetes and we need changes should update it and requeue", func(t *testing.T) {
 		// Arrange
 		// service which will be returned from kubernetes - empty so there will be a difference
 		svc := corev1.Service{
@@ -252,11 +252,11 @@ func Test_sFnHandleService(t *testing.T) {
 		// Assert
 		// no errors
 		require.Nil(t, err)
-		// without stopping processing
-		require.Nil(t, result)
-		// with expected next state
-		require.NotNil(t, next)
-		requireEqualFunc(t, sFnDeploymentStatus, next)
+		// we expect stop and requeue
+		require.NotNil(t, result)
+		require.Equal(t, ctrl.Result{Requeue: true}, *result)
+		// no next state (we will stop)
+		require.Nil(t, next)
 		// function has proper condition
 		requireContainsCondition(t, m.State.Function.Status,
 			serverlessv1alpha2.ConditionRunning,
