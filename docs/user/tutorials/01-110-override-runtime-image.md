@@ -23,7 +23,7 @@ Follow these steps:
     ```bash
     export NAME={FUNCTION_NAME}
     export NAMESPACE={FUNCTION_NAMESPACE}
-    export RUNTIME_IMAGE_URL={RUNTIME_IMAGE_URL} # image pull url; for example {dockeruser}/foo:0.1.0
+    export RUNTIME_IMAGE_URL={RUNTIME_IMAGE_URL} # image pull URL; for example {dockeruser}/foo:0.1.0
     ```
 
 3. Create your local development workspace using the built image:
@@ -53,7 +53,7 @@ Follow these steps:
     ```bash
     export NAME={FUNCTION_NAME}
     export NAMESPACE={FUNCTION_NAMESPACE}
-    export RUNTIME_IMAGE_URL={RUNTIME_IMAGE_URL} # image pull url; for example {dockeruser}/foo:0.1.0
+    export RUNTIME_IMAGE_URL={RUNTIME_IMAGE_URL} # image pull URL; for example {dockeruser}/foo:0.1.0
     ```
 
 3. Create a Function CR that specifies the Function's logic:
