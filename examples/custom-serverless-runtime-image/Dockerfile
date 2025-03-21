@@ -7,7 +7,7 @@ LABEL source = git@github.com:kyma-project/serverless.git
 RUN apt update && apt install -y build-essential linux-headers-generic && \
     rm -rf /var/lib/apt/lists/*
 
-COPY ./lib/requirements.txt /kubeless/requirements.txt
+COPY ./requirements.txt /kubeless/requirements.txt
 RUN chmod 644 /kubeless/requirements.txt
 
 RUN pip install --no-cache-dir -r /kubeless/requirements.txt
