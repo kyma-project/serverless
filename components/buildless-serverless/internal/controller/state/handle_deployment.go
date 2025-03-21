@@ -19,17 +19,18 @@ import (
 func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig, m.State.Commit, m.State.GitAuth)
 	builtDeployment := m.State.BuiltDeployment.Deployment
-	//TODO: refactor this method - split get from create
 
-	clusterDeployment, resultGet, errGet := getOrCreateDeployment(ctx, m, builtDeployment)
+	clusterDeployment, errGet := getDeployment(ctx, m)
+	if errGet != nil {
+		return nil, nil, errGet
+	}
 	if clusterDeployment == nil {
-		//TODO: think what we should return here (in context of state machine)
-		return nil, resultGet, errGet
+		result, errCreate := createDeployment(ctx, m, builtDeployment)
+		return nil, result, errCreate
 	}
 
 	requeueNeeded, errUpdate := updateDeploymentIfNeeded(ctx, m, clusterDeployment, builtDeployment)
 	if errUpdate != nil {
-		//TODO: think what we should return here (in context of state machine)
 		return nil, nil, errUpdate
 	}
 	if requeueNeeded {
@@ -38,24 +39,22 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	return nextState(sFnHandleService)
 }
 
-func getOrCreateDeployment(ctx context.Context, m *fsm.StateMachine, builtDeployment *appsv1.Deployment) (*appsv1.Deployment, *ctrl.Result, error) {
-	currentDeployment := &appsv1.Deployment{}
+func getDeployment(ctx context.Context, m *fsm.StateMachine) (*appsv1.Deployment, error) {
+	deployment := &appsv1.Deployment{}
 	f := m.State.Function
-	deploymentErr := m.Client.Get(ctx, client.ObjectKey{
+	err := m.Client.Get(ctx, client.ObjectKey{
 		Namespace: f.GetNamespace(),
 		Name:      f.GetName(),
-	}, currentDeployment)
+	}, deployment)
 
-	if deploymentErr == nil {
-		return currentDeployment, nil, nil
+	if err == nil {
+		return deployment, nil
 	}
-	if !errors.IsNotFound(deploymentErr) {
-		m.Log.Error(deploymentErr, "unable to fetch Deployment for Function")
-		return nil, nil, deploymentErr
+	if !errors.IsNotFound(err) {
+		m.Log.Error(err, "unable to fetch Deployment for Function")
+		return nil, err
 	}
-
-	createResult, createErr := createDeployment(ctx, m, builtDeployment)
-	return nil, createResult, createErr
+	return nil, nil
 }
 
 func createDeployment(ctx context.Context, m *fsm.StateMachine, deployment *appsv1.Deployment) (*ctrl.Result, error) {
@@ -178,6 +177,5 @@ func updateDeployment(ctx context.Context, m *fsm.StateMachine, clusterDeploymen
 		serverlessv1alpha2.ConditionReasonDeploymentUpdated,
 		fmt.Sprintf("Deployment %s updated", clusterDeployment.GetName()))
 	// Requeue the request to ensure the Deployment is updated
-	//TODO: rethink if it's better solution
 	return true, nil
 }
