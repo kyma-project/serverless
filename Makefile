@@ -11,6 +11,7 @@ install-serverless-main: ## Install serverless with operator using default serve
 .PHONY: install-serverless-custom-operator
 install-serverless-custom-operator: ## Install serverless with operator from IMG env using default serverless cr
 	$(call check-var,IMG)
+	kubectl apply -f tests/with-fixture/strict-network-policies
 	make -C ${OPERATOR_ROOT} deploy apply-default-serverless-cr check-serverless-installation
 
 .PHONY: install-buildless-serverless-custom-operator
