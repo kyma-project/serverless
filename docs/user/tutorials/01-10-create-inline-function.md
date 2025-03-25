@@ -60,7 +60,7 @@ If you decide to modify your Function, choose **Edit**, make the changes, and ch
 
 2. Create your local development workspace.
 
-    a. Create a new folder to keep the Function's code and configuration in one place:
+    a. Create a new folder to keep the Function's code and dependencies in one place:
 
     ```bash
     mkdir {FOLDER_NAME}
@@ -70,7 +70,7 @@ If you decide to modify your Function, choose **Edit**, make the changes, and ch
     b. Create initial scaffolding for the Function:
 
     ```bash
-    kyma init function --name $NAME --namespace $NAMESPACE
+    kyma alpha function init
     ```
 
 3. Code and configure.
@@ -81,27 +81,27 @@ If you decide to modify your Function, choose **Edit**, make the changes, and ch
     code .
     ```
 
-    It's time to inspect the code and the `config.yaml` file. Feel free to adjust the "Hello World" sample code.
+    It's time to inspect the code and the `handler.js` and the `package.json` files. Feel free to adjust the "Hello World" sample code.
 
 4. Deploy and verify.
 
-    a. Call the `apply` command from the workspace folder. It will build the container and run it on the Kyma runtime pointed by your current KUBECONFIG file:
+    a. Call the `create` command from the workspace folder. It will build the container and run it on the Kyma runtime pointed by your current KUBECONFIG file:
 
       ```bash
-      kyma apply function
+      kyma alpha function create ${NAME} --namespace ${NAMESPACE} --runtime nodejs22 --source handler.js --dependencies package.json
       ```
 
     b. Check if your Function was created successfully:
 
       ```bash
-      kubectl get functions $NAME -n $NAMESPACE
+      kyma alpha function get ${NAME} --namespace ${NAMESPACE}
       ```
 
     You should get a result similar to this example:
 
     ```bash
-    NAME            CONFIGURED   BUILT     RUNNING   RUNTIME    VERSION   AGE
-    test-function   True         True      True      nodejs20   1         96s
+    NAME       CONFIGURED   BUILT   RUNNING   RUNTIME    GENERATION
+    nodejs22   True         True    True      nodejs22   1
     ```
 
 #### **kubectl**

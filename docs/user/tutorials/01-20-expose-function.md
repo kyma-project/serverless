@@ -50,74 +50,8 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
 
 #### **Kyma CLI**
 
-1. Run the following command to get the domain name of your Kyma cluster:
-
-    ```bash
-    kubectl get gateway -n kyma-system kyma-gateway \
-        -o jsonpath='{.spec.servers[0].hosts[0]}'
-    ```
-
-2. Export the result without the leading `*.` as an environment variable:
-
-    ```bash
-    export DOMAIN={DOMAIN_NAME}
-
-3. Export these variables:
-
-    ```bash
-    export NAME={FUNCTION_NAME}
-    export NAMESPACE={NAMESPACE_NAME}
-    export KUBECONFIG={PATH_TO_YOUR_KUBECONFIG}
-    ```
-
-4. Download the latest configuration of the Function from the cluster. This way, you update the local `config.yaml` file with the Function's code.
-
-    ```bash
-    kyma sync function $NAME -n $NAMESPACE
-    ```
-
-5. Edit the local `config.yaml` file and add the **apiRules** schema for the Function at the end of the file:
-
-    ```yaml
-    apiRules:
-        - name: {FUNCTION_NAME}
-          service:
-            host: {FUNCTION_NAME}.{DOMAIN_NAME}
-          rules:
-            - methods:
-                - GET
-                - POST
-                - PUT
-                - DELETE
-              accessStrategies:
-                - handler: no_auth
-    ```
-
-6. Apply the new configuration to the cluster:
-
-    ```bash
-    kyma apply function
-    ```
-
-7. Check if the Function's code was pushed to the cluster and reflects the local configuration:
-
-    ```bash
-    kubectl get apirules $NAME -n $NAMESPACE
-    ```
-
-   If successful, the APIRule has the status `OK`.
-
-    ```bash
-    kubectl get apirules $NAME -n $NAMESPACE -o=jsonpath='{.status.APIRuleStatus.code}'
-    ```
-
-8. Call the Function's external address:
-
-    ```bash
-    curl https://$NAME.$DOMAIN
-    ```
-
-    If successful, the `Hello World!` message appears.
+> [!WARNING]
+> This sections is not compliant with the Kyma-Cli V3 yet
 
 #### **kubectl**
 

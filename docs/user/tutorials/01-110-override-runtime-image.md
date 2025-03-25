@@ -31,19 +31,22 @@ Follow these steps:
     ```bash
     mkdir {FOLDER_NAME}
     cd {FOLDER_NAME}
-    kyma init function --name $NAME --namespace $NAMESPACE --runtime-image-override $RUNTIME_IMAGE_URL --runtime python312
+    kyma alpha function init
     ```
 
 4. Deploy your Function:
 
     ```bash
-    kyma apply function
+    kyma alpha function create $NAME \
+      --namespace $NAMESPACE --runtime python312 \
+      --runtime-image-override $RUNTIME_IMAGE_URL \
+      --source handler.py --dependencies requirements.txt
     ```
 
 5. Verify whether your Function is running:
 
     ```bash
-    kubectl get functions $NAME -n $NAMESPACE
+    kyma alpha function get $NAME --namespace $NAMESPACE
     ```
 
 #### **kubectl**
