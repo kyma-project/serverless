@@ -3,6 +3,7 @@ package resources
 import (
 	"fmt"
 	"github.com/kyma-project/serverless/internal/controller/git"
+	"k8s.io/apimachinery/pkg/labels"
 	"path"
 	"strings"
 
@@ -15,21 +16,25 @@ import (
 )
 
 const DefaultDeploymentReplicas int32 = 1
+const istioConfigLabelKey = "proxy.istio.io/config"
+const istioEnableHoldUntilProxyStartLabelValue = "{ \"holdApplicationUntilProxyStarts\": true }"
 
 type Deployment struct {
 	*appsv1.Deployment
-	functionConfig *config.FunctionConfig
-	function       *serverlessv1alpha2.Function
-	commit         string
-	gitAuth        *git.GitAuth
+	functionConfig    *config.FunctionConfig
+	function          *serverlessv1alpha2.Function
+	clusterDeployment *appsv1.Deployment
+	commit            string
+	gitAuth           *git.GitAuth
 }
 
-func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, commit string, gitAuth *git.GitAuth) *Deployment {
+func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clusterDeployment *appsv1.Deployment, commit string, gitAuth *git.GitAuth) *Deployment {
 	d := &Deployment{
-		functionConfig: c,
-		function:       f,
-		commit:         commit,
-		gitAuth:        gitAuth,
+		functionConfig:    c,
+		function:          f,
+		clusterDeployment: clusterDeployment,
+		commit:            commit,
+		gitAuth:           gitAuth,
 	}
 	d.Deployment = d.construct()
 	return d
@@ -48,7 +53,8 @@ func (d *Deployment) construct() *appsv1.Deployment {
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels: d.function.PodLabels(),
+					Labels:      d.function.PodLabels(),
+					Annotations: d.podAnnotations(),
 				},
 				Spec: d.podSpec(),
 			},
@@ -68,6 +74,32 @@ func (d *Deployment) name() string {
 
 func (d *Deployment) podRunAsUserUID() *int64 {
 	return ptr.To[int64](1000) // runAsUser 1000 is the most popular and standard value for non-root user
+}
+
+func (d *Deployment) podAnnotations() map[string]string {
+	result := d.defaultAnnotations()
+	if d.function.Spec.Annotations != nil {
+		result = labels.Merge(d.function.Spec.Annotations, result)
+	}
+
+	// merge old and new annotations to allow other components to annotate functions deployment
+	// for example in case when someone use `kubectl rollout restart` on it
+	result = labels.Merge(d.currentAnnotations(), result)
+	return result
+}
+
+func (d *Deployment) defaultAnnotations() map[string]string {
+	return map[string]string{
+		istioConfigLabelKey: istioEnableHoldUntilProxyStartLabelValue,
+	}
+}
+
+func (d *Deployment) currentAnnotations() map[string]string {
+	if d.clusterDeployment == nil {
+		return map[string]string{}
+	}
+
+	return d.clusterDeployment.Spec.Template.GetAnnotations()
 }
 
 func (d *Deployment) podSpec() corev1.PodSpec {
