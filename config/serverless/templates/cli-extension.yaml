@@ -123,6 +123,10 @@ data:
       descriptionLong: "Use this command to create Function on a cluster."
       customFlags:
       - type: string
+        name: "runtime-image-override"
+        description: "custom runtime image to be used as Function's runtime base"
+        path: ".spec.runtimeImageOverride"
+      - type: string
         name: "runtime"
         description: "function runtime"
         shorthand: "r"
