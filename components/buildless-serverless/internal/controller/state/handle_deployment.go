@@ -17,13 +17,14 @@ import (
 )
 
 func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig, m.State.Commit, m.State.GitAuth)
-	builtDeployment := m.State.BuiltDeployment.Deployment
-
 	clusterDeployment, errGet := getDeployment(ctx, m)
 	if errGet != nil {
 		return nil, nil, errGet
 	}
+
+	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig, m.State.ClusterDeployment, m.State.Commit, m.State.GitAuth)
+	builtDeployment := m.State.BuiltDeployment.Deployment
+
 	if clusterDeployment == nil {
 		result, errCreate := createDeployment(ctx, m, builtDeployment)
 		return nil, result, errCreate

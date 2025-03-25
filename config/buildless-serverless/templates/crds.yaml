@@ -38,6 +38,16 @@ spec:
           spec:
             description: FunctionSpec defines the desired state of Function.
             properties:
+              annotations:
+                additionalProperties:
+                  type: string
+                description: Defines annotations used in Deployment's PodTemplate
+                  and applied on the Function's runtime Pod.
+                type: object
+                x-kubernetes-validations:
+                - message: Annotations has key starting with serverless.kyma-project.io/
+                    which is not allowed
+                  rule: '!(self.exists(e, e.startsWith(''serverless.kyma-project.io/'')))'
               env:
                 description: |-
                   Specifies an array of key-value pairs to be used as environment variables for the Function.
