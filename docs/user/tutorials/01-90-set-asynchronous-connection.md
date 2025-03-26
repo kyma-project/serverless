@@ -11,6 +11,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 
 - [Kyma CLI](https://github.com/kyma-project/cli)
 - [Eventing, Istio, and API-Gateway modules added](https://kyma-project.io/#/02-get-started/01-quick-install)
+- [The cluster domain set up](https://kyma-project.io/#/api-gateway/user/tutorials/01-10-setup-custom-domain-for-workload)
   
 ## Steps
 
@@ -78,13 +79,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 
    Your Function is now built and deployed in Kyma runtime. Kyma exposes it through the APIRule. The incoming payloads are processed by your emitter Function. It then sends the sanitized content to the workload that subscribes to the selected event type. In our case, it's the receiver Function.
 
-4. Export the cluster domain address.
-
-   ```bash
-   export KYMA_DOMAIN={KYMA_DOMAIN_VARIABLE}
-   ```
-
-5. Expose Function by creating the APIRule CR:
+4. Expose Function by creating the APIRule CR:
 
    ```bash
    cat <<EOF | kubectl apply -f -
@@ -94,7 +89,7 @@ This tutorial shows only one possible use case. There are many more use cases on
      name: incoming-http-trigger
    spec:
      hosts:
-     - incoming.${KYMA_DOMAIN}
+     - incoming
      service:
        name: emitter
        namespace: default
@@ -107,9 +102,10 @@ This tutorial shows only one possible use case. There are many more use cases on
    EOF
    ```
 
-6. Test the first Function. Send the payload and see if your HTTP traffic is accepted:
+5. Test the first Function. Send the payload and see if your HTTP traffic is accepted:
 
    ```bash
+   export KYMA_DOMAIN={KYMA_DOMAIN_VARIABLE}
    curl -X POST "https://incoming.${KYMA_DOMAIN}" -H 'Content-Type: application/json' -d '{"foo":"bar"}'
    ```
 
