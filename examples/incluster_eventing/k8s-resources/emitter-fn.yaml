@@ -13,20 +13,20 @@ spec:
         baseDir: /examples/incluster_eventing/src/emitter-fn/
         reference: main
 ---
-apiVersion: gateway.kyma-project.io/v1beta1
+apiVersion: gateway.kyma-project.io/v2
 kind: APIRule
 metadata:
   name: incoming-http-trigger
   namespace: default
 spec:
-  gateway: kyma-gateway.kyma-system.svc.cluster.local
-  host: incoming
-  rules:
-  - accessStrategies:
-    - handler: allow
-    methods:
-    - GET
-    path: /.*
+  hosts:
+  - incoming
   service:
     name: event-emitter
+    namespace: default
     port: 80
+  gateway: kyma-system/kyma-gateway
+  rules:
+  - path: /*
+    methods: ["GET", "POST"]
+    noAuth: true
