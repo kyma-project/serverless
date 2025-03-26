@@ -18,19 +18,9 @@ Get started with [Function UI](tutorials/01-10-create-inline-function.md)
 
 ## Use Kyma CLI for Better Development Experience
 
-Defining your Function from the Kyma dashboard is very quick and easy, but it might not be enough to satisfy your needs as a developer. To code and test more complex cases, you may want to write your Function in your favorite IDE or run and debug the Function on your local machine, before actually deploying in Kyma runtime. Also, you might want to avoid recreating the same Functions manually from the UI on a different environment. In the end, having deployable artifacts is more desirable. This is where Kyma CLI comes in handy, as it enables you to keep your Function's code and configuration in the form of a workspace.
+Defining your Function from the Kyma dashboard is quick and easy, but it might not satisfy your needs as a developer. To code and test more complex cases, you may want to write your Function in your favorite IDE or run it as a part of a bigger pipeline. In the end, having deployable artifacts is more desirable. This is where Kyma CLI comes in handy, enabling you to keep your Function's code and dependencies locally.
 
-Initialize a scaffold for a brand new Function using the `kyma init function` command or fetch the current state of an existing Function deployed in your Kyma runtime using `kyma sync function`.
-Focus on the Function code and develop it from your favorite IDE. Configure your Functions directly in the [`config.yaml` manifest file](technical-reference/07-60-function-configuration-file.md)
-
-> [!TIP]
-> Use `kyma init function --vscode` to generate a `.json` schema, which can be used in VSCode for autocompletion.
-
-Kyma CLI helps you run your code locally with a single `kyma run function` command. You can run your Function using your local Docker daemon with the same runtime Docker context, as if it was run in Kyma runtime.
-
-![kyma-cli-functions](../assets/svls-kyma-cli-functions.png)
-
-Having written and tested your Function locally, simply deploy it to the Kyma runtime with the `kyma apply function` command, used in the folder of your Function's workspace. The command reads the files, translates them to the Kubernetes manifests, and deploys the Function.
+Initialize a scaffold for a brand new Function using the `kyma alpha function init` command and then create a Function based on previously generated files using the `kyma alpha function create` command.
 
 ## Deploy Using CI/CD
 
@@ -39,13 +29,6 @@ But at the end of the day, you may want an automated deployment of your applicat
 It all comes down to the deployment the Kubernetes applications on different Kyma runtimes in a GitOps fashion. For the sake of simplicity, the deployment approach for Functions should not differ from the deployment of the other Kubernetes workloads, ConfigMaps, or Secrets.
 
 So, in the end, what you need is YAML manifests for everything - including Functions.
-
-Good news: Kyma CLI helps you generate the YAML manifests matching your `config.yaml` file crafted before.
-Use the `--dry-run` option of the `kyma apply function` command to generate Kubernetes manifests that will include the Function CR itself and all the related CRs (for example, APIRules, Subscriptions, etc.).
-
-   ```bash
-   kyma apply function --dry-run --ci -o yaml > my-function.yaml
-   ```  
 
 The generated manifest should be a part of all the manifests that define your application and are pushed to the Git repository.
 Deploy everything in a consistent way either using CI/CD or GitOps operators (for example, `fluxcd` or `argocd`) installed on your Kyma runtime.
