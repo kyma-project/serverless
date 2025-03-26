@@ -102,7 +102,7 @@ This tutorial shows only one possible use case. There are many more use cases on
      gateway: kyma-system/kyma-gateway
      rules:
      - path: /*
-       methods: ["POST"]
+       methods: ["GET", "POST"]
        noAuth: true
    EOF
    ```
