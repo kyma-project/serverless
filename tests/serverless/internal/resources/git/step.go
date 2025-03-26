@@ -8,6 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 	appsCli "k8s.io/client-go/kubernetes/typed/apps/v1"
 	coreclient "k8s.io/client-go/kubernetes/typed/core/v1"
+	networkingclient "k8s.io/client-go/kubernetes/typed/networking/v1"
 )
 
 type newGitServer struct {
@@ -19,14 +20,14 @@ type newGitServer struct {
 
 var _ executor.Step = newGitServer{}
 
-func NewGitServer(cfg GitopsConfig, stepName string, deployments appsCli.DeploymentInterface, services coreclient.ServiceInterface, useProxy, istioEnabled bool) executor.Step {
+func NewGitServer(cfg GitopsConfig, stepName string, deployments appsCli.DeploymentInterface, services coreclient.ServiceInterface, networkPolicies networkingclient.NetworkPolicyInterface, useProxy, istioEnabled bool) executor.Step {
 	repoURL, err := utils.GetGitURL(cfg.GitServerServiceName, cfg.Toolbox.Namespace, cfg.GitServerRepoName, useProxy)
 	if err != nil {
 		panic(err)
 	}
 	return newGitServer{
 		name:      stepName,
-		gs:        New(cfg.Toolbox, cfg.GitServerServiceName, cfg.GitServerImage, cfg.GitServerServicePort, deployments, services, istioEnabled),
+		gs:        New(cfg.Toolbox, cfg.GitServerServiceName, cfg.GitServerImage, cfg.GitServerServicePort, deployments, services, networkPolicies, istioEnabled),
 		gitClient: NewGitClient(repoURL.String()),
 		log:       cfg.Toolbox.Log.WithField(executor.LogStepKey, stepName),
 	}

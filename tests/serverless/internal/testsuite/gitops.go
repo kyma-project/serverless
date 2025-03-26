@@ -20,6 +20,7 @@ import (
 	"k8s.io/client-go/dynamic"
 	typedappsv1 "k8s.io/client-go/kubernetes/typed/apps/v1"
 	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
+	typednetworkingv1 "k8s.io/client-go/kubernetes/typed/networking/v1"
 	"k8s.io/client-go/rest"
 )
 
@@ -38,6 +39,10 @@ func GitopsSteps(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entr
 	appsCli, err := typedappsv1.NewForConfig(restConfig)
 	if err != nil {
 		return nil, errors.Wrapf(err, "while creating k8s apps client")
+	}
+	networkingCli, err := typednetworkingv1.NewForConfig(restConfig)
+	if err != nil {
+		return nil, errors.Wrapf(err, "while creating k8s networking client")
 	}
 
 	genericContainer := utils.Container{
@@ -65,7 +70,7 @@ func GitopsSteps(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entr
 	}
 	return executor.NewSerialTestRunner(logf, "Create git func",
 		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
-		git.NewGitServer(gitCfg, "Start in-cluster Git Server", appsCli.Deployments(genericContainer.Namespace), coreCli.Services(genericContainer.Namespace), cfg.KubectlProxyEnabled, cfg.IstioEnabled),
+		git.NewGitServer(gitCfg, "Start in-cluster Git Server", appsCli.Deployments(genericContainer.Namespace), coreCli.Services(genericContainer.Namespace), networkingCli.NetworkPolicies(genericContainer.Namespace), cfg.KubectlProxyEnabled, cfg.IstioEnabled),
 		function.CreateFunction(logf, gitFn, "Create Git Function", runtimes.GitopsFunction(gitCfg.GetGitServerInClusterURL(), "/", "master", serverlessv1alpha2.NodeJs22, nil)),
 		assertion.NewHTTPCheck(logf, "Git Function pre update simple check through service", gitFn.FunctionURL, poll, "GITOPS 1"),
 		git.NewCommitChanges(logf, "Commit changes to Git Function", gitCfg.GetGitServerURL(cfg.KubectlProxyEnabled)),

@@ -3,6 +3,7 @@ package git
 import (
 	"context"
 	"fmt"
+
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources"
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/app"
 	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
@@ -16,21 +17,23 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	appsclient "k8s.io/client-go/kubernetes/typed/apps/v1"
 	coreclient "k8s.io/client-go/kubernetes/typed/core/v1"
+	networkingclient "k8s.io/client-go/kubernetes/typed/networking/v1"
 )
 
 type GitServer struct {
-	deployment   app.Deployment
-	services     app.Service
-	resCli       *resources.Resource
-	istioEnabled bool
-	name         string
-	namespace    string
-	image        string
-	port         int32
-	log          *logrus.Entry
+	deployment    app.Deployment
+	services      app.Service
+	networkPolicy app.NetworkPolicy
+	resCli        *resources.Resource
+	istioEnabled  bool
+	name          string
+	namespace     string
+	image         string
+	port          int32
+	log           *logrus.Entry
 }
 
-func New(c utils.Container, name string, image string, port int32, deployments appsclient.DeploymentInterface, services coreclient.ServiceInterface, istioEnabled bool) *GitServer {
+func New(c utils.Container, name string, image string, port int32, deployments appsclient.DeploymentInterface, services coreclient.ServiceInterface, networkPolicies networkingclient.NetworkPolicyInterface, istioEnabled bool) *GitServer {
 	return &GitServer{
 		deployment: app.NewDeployment(name, c.Namespace, image, port, deployments, c.Log),
 		services:   app.NewService(name, c.Namespace, port, services, c.Log),
@@ -38,12 +41,13 @@ func New(c utils.Container, name string, image string, port int32, deployments a
 			Group:    "networking.istio.io",
 			Version:  "v1alpha3",
 			Resource: "destinationrules"}, c.Namespace, c.Log, c.Verbose),
-		name:         name,
-		image:        image,
-		port:         port,
-		namespace:    c.Namespace,
-		log:          c.Log,
-		istioEnabled: istioEnabled,
+		networkPolicy: app.NewNetworkPolicy(name, c.Namespace, networkPolicies, c.Log),
+		name:          name,
+		image:         image,
+		port:          port,
+		namespace:     c.Namespace,
+		log:           c.Log,
+		istioEnabled:  istioEnabled,
 	}
 }
 
