@@ -4,8 +4,8 @@ This tutorial shows how to use the available CLI commands to manage Functions in
 
 1. Generate local files that contain source code and dependencies for a sample "Hello World" Python Function (`kyma alpha function init`).
 2. Create a Function custom resource (CR) from these files and apply it on your cluster (`kyma alpha function create`).
-3. List all Function custom resources from the cluster (`kyma alpha function get`).
-4. Delete previously created Function custom resource from the cluster (`kyma alpha function delete`).
+3. List all Function CRs from the cluster (`kyma alpha function get`).
+4. Delete previously created Function CR from the cluster (`kyma alpha function delete`).
 
 This tutorial is based on a sample Python Function run in a lightweight [k3d](https://k3d.io/) cluster.
 
@@ -37,7 +37,7 @@ Follow these steps:
 - `handler.py` - the Function's code and the simple "Hello World" logic
 - `requirements.txt` - an empty file for your Function's custom dependencies
 
-  After the command is succeeded you will see the following output message with suggestions on how you can run the code:
+  After your files are successfully created, you will see the following output message with suggestions on how you can run the code:
 
   ```text
   Next steps:
@@ -55,7 +55,7 @@ Follow these steps:
   kyma alpha function create python312 --runtime python312 --source handler.py --dependencies requirements.txt
   ```
 
-3. Once applied, view the Function's state in the cluster:
+3. Once applied, check the Function's state in the cluster:
 
   ```bash
   kyma alpha function get

@@ -18,9 +18,9 @@ Get started with [Function UI](tutorials/01-10-create-inline-function.md)
 
 ## Use Kyma CLI for Better Development Experience
 
-Defining your Function from the Kyma dashboard is very quick and easy, but it might not be enough to satisfy your needs as a developer. To code and test more complex cases, you may want to write your Function in your favorite IDE or run it as a part of bigger pipeline. In the end, having deployable artifacts is more desirable. This is where Kyma CLI comes in handy, as it enables you to keep your Function's code and dependencies locally.
+Defining your Function from the Kyma dashboard is quick and easy, but it might not satisfy your needs as a developer. To code and test more complex cases, you may want to write your Function in your favorite IDE or run it as a part of a bigger pipeline. In the end, having deployable artifacts is more desirable. This is where Kyma CLI comes in handy, enabling you to keep your Function's code and dependencies locally.
 
-Initialize a scaffold for a brand new Function using the `kyma alpha function init` command ant then create a Function based on previously generated files using the `kyma alpha function create` command.
+Initialize a scaffold for a brand new Function using the `kyma alpha function init` command and then create a Function based on previously generated files using the `kyma alpha function create` command.
 
 ## Deploy Using CI/CD
 

@@ -85,7 +85,7 @@ If you decide to modify your Function, choose **Edit**, make the changes, and ch
 
 4. Deploy and verify.
 
-    a. Call the `create` command from the workspace folder. It will build the container and run it on the Kyma runtime pointed by your current KUBECONFIG file:
+    a. Call the `create` command from the workspace folder. It builds the container and runs it on the Kyma runtime pointed by your current KUBECONFIG file:
 
       ```bash
       kyma alpha function create ${NAME} --namespace ${NAMESPACE} --runtime nodejs22 --source handler.js --dependencies package.json

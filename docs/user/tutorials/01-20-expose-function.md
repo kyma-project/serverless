@@ -51,7 +51,7 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
 #### **Kyma CLI**
 
 > [!WARNING]
-> This sections is not compliant with the Kyma-Cli V3 yet
+> This section is not yet compliant with Kyma CLI v3.
 
 #### **kubectl**
 

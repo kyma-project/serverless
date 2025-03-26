@@ -10,7 +10,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 ## Prerequisites
 
 - [Kyma CLI](https://github.com/kyma-project/cli)
-- [Eventing, Istio and API-Gateway components installed](https://kyma-project.io/#/02-get-started/01-quick-install)
+- [Eventing, Istio, and API-Gateway modules added](https://kyma-project.io/#/02-get-started/01-quick-install)
   
 ## Steps
 
@@ -78,13 +78,13 @@ This tutorial shows only one possible use case. There are many more use cases on
 
    Your Function is now built and deployed in Kyma runtime. Kyma exposes it through the APIRule. The incoming payloads are processed by your emitter Function. It then sends the sanitized content to the workload that subscribes to the selected event type. In our case, it's the receiver Function.
 
-4. Export the cluster domain address (read how to [set up your cluster domain](https://kyma-project.io/#/api-gateway/user/tutorials/01-10-setup-custom-domain-for-workload)):
+4. Export the cluster domain address.
 
    ```bash
    export KYMA_DOMAIN={KYMA_DOMAIN_VARIABLE}
    ```
 
-5. Expose Function by creating the APIRule custom resource:
+5. Expose Function by creating the APIRule CR:
 
    ```bash
    cat <<EOF | kubectl apply -f -
