@@ -18,6 +18,7 @@ import (
 
 func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	clusterDeployment, errGet := getDeployment(ctx, m)
+	m.State.ClusterDeployment = clusterDeployment
 	if errGet != nil {
 		return nil, nil, errGet
 	}
@@ -114,6 +115,7 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 
 	imageChanged := aContainer.Image != bContainer.Image
 	labelsChanged := !reflect.DeepEqual(a.Spec.Template.ObjectMeta.Labels, b.Spec.Template.ObjectMeta.Labels)
+	annotationsChanged := !reflect.DeepEqual(a.Spec.Template.ObjectMeta.Annotations, b.Spec.Template.ObjectMeta.Annotations)
 	replicasChanged := (a.Spec.Replicas == nil && b.Spec.Replicas != nil) ||
 		(a.Spec.Replicas != nil && b.Spec.Replicas == nil) ||
 		(a.Spec.Replicas != nil && b.Spec.Replicas != nil && *a.Spec.Replicas != *b.Spec.Replicas)
@@ -126,6 +128,7 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 
 	return imageChanged ||
 		labelsChanged ||
+		annotationsChanged ||
 		replicasChanged ||
 		workingDirChanged ||
 		commandChanged ||
