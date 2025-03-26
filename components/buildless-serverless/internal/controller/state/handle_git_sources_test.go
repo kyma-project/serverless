@@ -55,7 +55,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		// Arrange
 		// machine with our function
 		gitMock := new(automock.LastCommitChecker)
-		gitMock.On("GetLatestCommit", mock.Anything, mock.Anything, mock.Anything).Return("latest-test-commit", nil)
+		gitMock.On("GetLatestCommit", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return("latest-test-commit", nil)
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Function: serverlessv1alpha2.Function{
@@ -96,7 +96,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		// Arrange
 		// machine with our function
 		gitMock := new(automock.LastCommitChecker)
-		gitMock.On("GetLatestCommit", mock.Anything, mock.Anything, mock.Anything).Return("", errors.New("test-error"))
+		gitMock.On("GetLatestCommit", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return("", errors.New("test-error"))
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Function: serverlessv1alpha2.Function{
@@ -144,7 +144,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		// Arrange
 		// machine with our function
 		gitMock := new(automock.LastCommitChecker)
-		gitMock.On("GetLatestCommit", mock.Anything, mock.Anything, mock.Anything).Return("latest-commit", nil)
+		gitMock.On("GetLatestCommit", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return("latest-commit", nil)
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Function: serverlessv1alpha2.Function{
@@ -201,7 +201,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 	t.Run("skip source check for function with continuousGitCheckoutAnnotation annotation set to true and return latest commit", func(t *testing.T) {
 		// Arrange
 		gitMock := new(automock.LastCommitChecker)
-		gitMock.On("GetLatestCommit", mock.Anything, mock.Anything, mock.Anything).Return("latest-commit", nil)
+		gitMock.On("GetLatestCommit", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return("latest-commit", nil)
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Function: serverlessv1alpha2.Function{
@@ -262,7 +262,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		k8sClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(&secret).Build()
 		// machine with our function
 		gitMock := new(automock.LastCommitChecker)
-		gitMock.On("GetLatestCommit", mock.Anything, mock.Anything, mock.Anything).Return("latest-test-commit", nil)
+		gitMock.On("GetLatestCommit", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return("latest-test-commit", nil)
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Function: serverlessv1alpha2.Function{
