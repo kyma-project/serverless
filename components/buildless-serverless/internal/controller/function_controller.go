@@ -20,6 +20,7 @@ import (
 	"context"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
+	"github.com/kyma-project/serverless/internal/controller/cache"
 	"github.com/kyma-project/serverless/internal/controller/fsm"
 	"github.com/kyma-project/serverless/internal/controller/state"
 	"go.uber.org/zap"
@@ -35,9 +36,10 @@ import (
 // FunctionReconciler reconciles a Function object
 type FunctionReconciler struct {
 	client.Client
-	Scheme *runtime.Scheme
-	Log    *zap.SugaredLogger
-	Config config.FunctionConfig
+	Scheme          *runtime.Scheme
+	Log             *zap.SugaredLogger
+	Config          config.FunctionConfig
+	LastCommitCache cache.InMemoryCache
 }
 
 //TODO: check if it's the minimum requirements for rbacs
@@ -61,7 +63,7 @@ func (fr *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, nil
 	}
 
-	sm := fsm.New(fr.Client, fr.Config, &instance, state.StartState(), fr.Scheme, log)
+	sm := fsm.New(fr.Client, fr.Config, &instance, state.StartState(), fr.Scheme, fr.LastCommitCache, log)
 	return sm.Reconcile(ctx)
 }
 
