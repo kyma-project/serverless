@@ -6,6 +6,7 @@ import (
 	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/kyma-project/serverless/internal/controller/cache"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 )
 
 //go:generate mockery --name=LastCommitChecker --output=automock --outpkg=automock --case=underscore
@@ -15,6 +16,7 @@ type LastCommitChecker interface {
 
 type GoGitCommitChecker struct {
 	Cache cache.InMemoryCache
+	Log   *zap.SugaredLogger
 }
 
 type LastCommitKey struct {
@@ -32,6 +34,7 @@ func (g GoGitCommitChecker) GetLatestCommit(url, reference string, gitAuth *GitA
 		lastCommit = g.Cache.Get(commitKey)
 	}
 	if lastCommit != "" {
+		g.Log.Debugf("Last commit from cache for %s %s is %s", url, reference, lastCommit)
 		return lastCommit, nil
 	}
 
@@ -60,6 +63,7 @@ func (g GoGitCommitChecker) GetLatestCommit(url, reference string, gitAuth *GitA
 	}
 
 	lastCommit = ref.Hash().String()
+	g.Log.Debugf("Last commit from repository for %s %s is %s ", url, reference, lastCommit)
 	g.Cache.Set(commitKey, lastCommit)
 
 	return lastCommit, nil

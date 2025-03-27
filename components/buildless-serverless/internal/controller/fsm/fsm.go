@@ -106,7 +106,8 @@ func New(client client.Client, functionConfig config.FunctionConfig, instance *s
 		FunctionConfig: functionConfig,
 		Client:         client,
 		Scheme:         scheme,
-		GitChecker:     git.GoGitCommitChecker{Cache: cache},
+		GitChecker: git.GoGitCommitChecker{Cache: cache,
+			Log: log},
 	}
 	sm.State.saveStatusSnapshot()
 	return &sm
