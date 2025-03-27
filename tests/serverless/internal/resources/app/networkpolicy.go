@@ -38,9 +38,9 @@ func (n NetworkPolicy) Create() error {
 		},
 		Spec: networkingv1.NetworkPolicySpec{
 			PodSelector: metav1.LabelSelector{
-				MatchLabels: map[string]string{
-					"component": "gitserver",
-				},
+				// MatchLabels: map[string]string{
+				// 	"component": "gitserver",
+				// },
 			},
 			PolicyTypes: []networkingv1.PolicyType{
 				networkingv1.PolicyTypeIngress,
