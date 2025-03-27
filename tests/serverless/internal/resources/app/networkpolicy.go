@@ -44,9 +44,13 @@ func (n NetworkPolicy) Create() error {
 			},
 			PolicyTypes: []networkingv1.PolicyType{
 				networkingv1.PolicyTypeIngress,
+				networkingv1.PolicyTypeEgress,
 			},
 			Ingress: []networkingv1.NetworkPolicyIngressRule{
 				networkingv1.NetworkPolicyIngressRule{},
+			},
+			Egress: []networkingv1.NetworkPolicyEgressRule{
+				networkingv1.NetworkPolicyEgressRule{},
 			},
 		},
 	}
