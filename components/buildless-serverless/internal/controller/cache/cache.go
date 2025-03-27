@@ -15,10 +15,10 @@ type InMemoryCache interface {
 	Delete(any)
 }
 
-// inMemoryManifestCache provides an in-memory processor to store serverless Spec and rendered chart manifest. By using sync.Map for caching,
+// inMemoryCache provides an in-memory processor to store buildless serverless key values pairs with timestamp. By using sync.Map for caching,
 // concurrent operations to the processor from diverse reconciliations are considered safe.
 //
-// Inside the processor is stored chart manifest with used custom flags by client.ObjectKey key.
+// Inside the processor is stored last commit with which was git function created by repository url and reference as the key.
 type inMemoryCache struct {
 	processor sync.Map
 	timeout   time.Duration
@@ -29,7 +29,7 @@ type storageObject struct {
 	value     string
 }
 
-// NewInMemoryManifestCache returns a new instance of inMemoryManifestCache.
+// NewInMemoryCache returns a new instance of inMemoryCache.
 func NewInMemoryCache(timeout time.Duration) *inMemoryCache {
 	return &inMemoryCache{
 		processor: sync.Map{},
@@ -37,7 +37,7 @@ func NewInMemoryCache(timeout time.Duration) *inMemoryCache {
 	}
 }
 
-// Get loads the ServerlessSpecManifest from inMemoryManifestCache for the passed client.ObjectKey.
+// Get loads from inMemoryCache for the passed key.
 func (r *inMemoryCache) Get(key any) string {
 	rawValue, ok := r.processor.Load(key)
 	if !ok {
@@ -51,13 +51,13 @@ func (r *inMemoryCache) Get(key any) string {
 	return value.value
 }
 
-// Set saves the passed flags and manifest into inMemoryManifestCache for the client.ObjectKey.
+// Set saves the passed last commit with which was git function created in inMemoryCache for the passed key.
 func (r *inMemoryCache) Set(key any, lastCommit string) {
 	now := time.Now()
 	r.processor.Store(key, &storageObject{now, lastCommit})
 }
 
-// Delete deletes flags and manifest from inMemoryManifestCache for the passed client.ObjectKey.
+// Delete deletes last commit with which was git function created from inMemoryCache for the passed key.
 func (r *inMemoryCache) Delete(key any) {
 	r.processor.Delete(key)
 }
