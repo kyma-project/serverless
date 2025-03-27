@@ -49,6 +49,9 @@ spec:
                 - message: Annotations has key starting with serverless.kyma-project.io/
                     which is not allowed
                   rule: '!(self.exists(e, e.startsWith(''serverless.kyma-project.io/'')))'
+                - message: Annotations has key proxy.istio.io/config which is not
+                    allowed
+                  rule: '!(self.exists(e, e==''proxy.istio.io/config''))'
               env:
                 description: |-
                   Specifies an array of key-value pairs to be used as environment variables for the Function.
