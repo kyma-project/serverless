@@ -346,3 +346,7 @@ func (f *Function) HasNodejsRuntime() bool {
 	runtime := f.Spec.Runtime
 	return runtime == NodeJs20 || runtime == NodeJs22
 }
+
+func (f *Function) CopyAnnotationsToStatus() {
+	f.Status.FunctionAnnotations = f.Spec.Annotations
+}

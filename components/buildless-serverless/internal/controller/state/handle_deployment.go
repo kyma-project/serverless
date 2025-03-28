@@ -29,7 +29,7 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	if clusterDeployment == nil {
 		result, errCreate := createDeployment(ctx, m, builtDeployment)
 		if errCreate == nil {
-			m.State.Function.Status.FunctionAnnotations = m.State.Function.Spec.Annotations
+			m.State.Function.CopyAnnotationsToStatus()
 		}
 		return nil, result, errCreate
 	}
@@ -38,7 +38,7 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	if errUpdate != nil {
 		return nil, nil, errUpdate
 	}
-	m.State.Function.Status.FunctionAnnotations = m.State.Function.Spec.Annotations
+	m.State.Function.CopyAnnotationsToStatus()
 	if requeueNeeded {
 		return requeue()
 	}
