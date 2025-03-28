@@ -8,6 +8,7 @@ import (
 	"github.com/kyma-project/serverless/internal/controller/git"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"strings"
 )
 
 const (
@@ -34,13 +35,7 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 		m.State.GitAuth = gitAuth
 	}
 
-	// TODO: it doesn't work properly - sometimes we create deployment with empty commit and repo fetcher fails
-	//if skipGitSourceCheck(m.State.Function, m.FunctionConfig) {
-	//	m.Log.Info(fmt.Sprintf("skipping function [%s] source check", m.State.Function.Name))
-	//	return nextState(sFnConfigurationReady)
-	//}
-
-	latestCommit, err := m.GitChecker.GetLatestCommit(gitRepository.URL, gitRepository.Reference, m.State.GitAuth)
+	latestCommit, err := m.GitChecker.GetLatestCommit(gitRepository.URL, gitRepository.Reference, m.State.GitAuth, forceGitSourceCheck(m.State.Function))
 	if err != nil {
 		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionConfigurationReady,
@@ -55,19 +50,9 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	return nextState(sFnConfigurationReady)
 }
 
-/*
-func skipGitSourceCheck(f serverlessv1alpha2.Function, cfg config.FunctionConfig) bool {
+func forceGitSourceCheck(f serverlessv1alpha2.Function) bool {
 	if v, ok := f.Annotations[continuousGitCheckoutAnnotation]; ok && strings.ToLower(v) == "true" {
-		return false
+		return true
 	}
-
-	// ConditionConfigurationReady is set to true for git functions when the source is updated.
-	// if not, this is a new function, we need to do git check.
-	configured := f.Status.Condition(serverlessv1alpha2.ConditionConfigurationReady)
-	if configured == nil || configured.Status != "True" {
-		return false
-	}
-
-	return time.Since(configured.LastTransitionTime.Time) < cfg.FunctionReadyRequeueDuration
+	return false
 }
-*/
