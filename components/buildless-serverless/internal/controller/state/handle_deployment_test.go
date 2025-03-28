@@ -53,7 +53,8 @@ func Test_sFnHandleDeployment(t *testing.T) {
 						Runtime: serverlessv1alpha2.NodeJs22,
 						Source: serverlessv1alpha2.Source{
 							Inline: &serverlessv1alpha2.InlineSource{
-								Source: "silly-kowalevski"}}}}},
+								Source: "silly-kowalevski"}},
+						Annotations: map[string]string{"mclaren": "inspiring"}}}},
 			Log:    zap.NewNop().Sugar(),
 			Client: k8sClient,
 			Scheme: scheme}
@@ -88,6 +89,8 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.NotEmpty(t, appliedDeployment.OwnerReferences)
 		require.Equal(t, "Function", appliedDeployment.OwnerReferences[0].Kind)
 		require.Equal(t, "peaceful-merkle-name", appliedDeployment.OwnerReferences[0].Name)
+		// function status should be updated with annotations
+		require.Equal(t, map[string]string{"mclaren": "inspiring"}, m.State.Function.Status.FunctionAnnotations)
 	})
 	t.Run("when cannot get deployment from kubernetes should stop processing", func(t *testing.T) {
 		// Arrange
@@ -276,7 +279,8 @@ func Test_sFnHandleDeployment(t *testing.T) {
 						Runtime: serverlessv1alpha2.Python312,
 						Source: serverlessv1alpha2.Source{
 							Inline: &serverlessv1alpha2.InlineSource{
-								Source: "brave-euclid"}}}}},
+								Source: "brave-euclid"}},
+						Annotations: map[string]string{"torvalds": "lucid"}}}},
 			FunctionConfig: config.FunctionConfig{
 				ImagePython312: "flamboyant-chatelet"},
 			Log:    zap.NewNop().Sugar(),
@@ -313,6 +317,8 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.Contains(t, updatedDeployment.Spec.Template.Spec.Containers[0].Env,
 			corev1.EnvVar{Name: "FUNC_HANDLER_SOURCE", Value: "brave-euclid"})
 		require.Equal(t, "flamboyant-chatelet", updatedDeployment.Spec.Template.Spec.Containers[0].Image)
+		// function status should be updated with annotations
+		require.Equal(t, map[string]string{"torvalds": "lucid"}, m.State.Function.Status.FunctionAnnotations)
 	})
 	t.Run("when deployment exists on kubernetes and update fails should stop processing", func(t *testing.T) {
 		// Arrange
@@ -388,6 +394,9 @@ func Test_deploymentChanged(t *testing.T) {
 							ObjectMeta: metav1.ObjectMeta{
 								Labels: map[string]string{
 									"mahavira": "stoic",
+									"franklin": "heuristic"},
+								Annotations: map[string]string{
+									"mahavira": "stoic",
 									"franklin": "heuristic"}},
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{{
@@ -431,6 +440,9 @@ func Test_deploymentChanged(t *testing.T) {
 						Template: corev1.PodTemplateSpec{
 							ObjectMeta: metav1.ObjectMeta{
 								Labels: map[string]string{
+									"franklin": "heuristic",
+									"mahavira": "stoic"},
+								Annotations: map[string]string{
 									"franklin": "heuristic",
 									"mahavira": "stoic"}},
 							Spec: corev1.PodSpec{
@@ -523,6 +535,28 @@ func Test_deploymentChanged(t *testing.T) {
 							ObjectMeta: metav1.ObjectMeta{
 								Labels: map[string]string{
 									"mcnulty": "compassionate"}},
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{{}}}}}},
+			},
+			want: true,
+		},
+		{
+			name: "when annotations are different should return true",
+			args: args{
+				a: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							ObjectMeta: metav1.ObjectMeta{
+								Annotations: map[string]string{
+									"sutherland": "epic"}},
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{{}}}}}},
+				b: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							ObjectMeta: metav1.ObjectMeta{
+								Annotations: map[string]string{
+									"volhard": "quizzical"}},
 							Spec: corev1.PodSpec{
 								Containers: []corev1.Container{{}}}}}},
 			},

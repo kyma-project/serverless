@@ -116,12 +116,17 @@ func TestDeployment_construct(t *testing.T) {
 			"leavitt": "hopeful",
 			"pike":    "tender",
 		}
+		d.function.Status.FunctionAnnotations = map[string]string{
+			"dewdney": "intelligent", // this should be removed from deployment
+			"leavitt": "hopeful",
+		}
 		d.clusterDeployment = &appsv1.Deployment{
 			Spec: appsv1.DeploymentSpec{
 				Template: corev1.PodTemplateSpec{
 					ObjectMeta: metav1.ObjectMeta{
 						Annotations: map[string]string{
 							"thompson": "exciting",
+							"dewdney":  "zealous", // this should be removed
 						},
 					},
 				},
