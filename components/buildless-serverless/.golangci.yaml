@@ -16,15 +16,7 @@ linters:
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
-#  exclude:
-#    #exclude our internal deprecated fields
-#    - "^SA1019: status.RuntimeImageOverride is deprecated:"
-#    - "^SA1019: s.instance.Spec.Template is deprecated:"
-#    - "^SA1019: s.instance.Spec.Template.Labels is deprecated:"
-#    - "^SA1019: function.Status.RuntimeImageOverride is deprecated:"
-#    - "^SA1019: status.BuildResourceProfile is deprecated:"
-#    - "^SA1019: status.BuildResourceProfile is deprecated:"
-#    - "^SA1019: instance.Spec.ResourceConfiguration.Build is deprecated:"
-#    - "^SA1019: rc.Build is deprecated:"
-#    - "^SA1019: function.Status.BuildResourceProfile is deprecated:"
-#    - "^SA1019: s.instance.Spec.ResourceConfiguration.Build is deprecated:"
+  exclude:
+    #exclude our internal deprecated fields
+    - "^SA1019: s.Commit is deprecated:"
+    - "^SA1019: m.State.Function.Status.Commit is deprecated:"

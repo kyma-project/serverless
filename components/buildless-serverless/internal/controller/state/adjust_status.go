@@ -12,25 +12,35 @@ import (
 
 func sFnAdjustStatus(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	s := &m.State.Function.Status
-	s.Runtime = m.State.Function.Spec.Runtime
+	f := m.State.Function
+	s.Runtime = f.Spec.Runtime
 	s.RuntimeImage = m.State.BuiltDeployment.RuntimeImage()
 	s.Replicas = m.State.ClusterDeployment.Status.Replicas
 
 	// set scale sub-resource
-	selector, err := metav1.LabelSelectorAsSelector(&metav1.LabelSelector{MatchLabels: m.State.Function.SelectorLabels()})
+	selector, err := metav1.LabelSelectorAsSelector(&metav1.LabelSelector{MatchLabels: f.SelectorLabels()})
 	if err != nil {
 		m.Log.Warnf("failed to get selector for labelSelector: %w", err)
 		return stopWithEventualError(errors.Wrap(err, "while getting selectors"))
 	}
 	s.PodSelector = selector.String()
 
-	s.FunctionResourceProfile = getUsedResourceFunctionPreset(m.State.Function.Spec.ResourceConfiguration, m.FunctionConfig)
+	s.FunctionResourceProfile = getUsedResourceFunctionPreset(f.Spec.ResourceConfiguration, m.FunctionConfig)
 
 	if m.State.Function.HasGitSources() {
-		s.Repository.BaseDir = m.State.Function.Spec.Source.GitRepository.BaseDir
-		s.Repository.Reference = m.State.Function.Spec.Source.GitRepository.Reference
+		s.GitRepository = &serverlessv1alpha2.GitRepositoryStatus{
+			URL: f.Spec.Source.GitRepository.URL,
+			Repository: serverlessv1alpha2.Repository{
+				BaseDir:   f.Spec.Source.GitRepository.BaseDir,
+				Reference: f.Spec.Source.GitRepository.Reference,
+			},
+			Commit: m.State.Commit,
+		}
+		s.Repository.BaseDir = f.Spec.Source.GitRepository.BaseDir
+		s.Repository.Reference = f.Spec.Source.GitRepository.Reference
 		s.Commit = m.State.Commit
 	} else {
+		s.GitRepository = nil
 		s.Repository = serverlessv1alpha2.Repository{}
 		s.Commit = ""
 	}

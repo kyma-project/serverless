@@ -62,9 +62,11 @@ func Test_sFnAdjustStatus(t *testing.T) {
 		require.Contains(t, m.State.Function.Status.PodSelector, "serverless.kyma-project.io/managed-by=function-controller")
 		require.Contains(t, m.State.Function.Status.PodSelector, "serverless.kyma-project.io/resource=deployment")
 		// should be empty beacuse it is inline function
-		require.Contains(t, m.State.Function.Status.Repository.BaseDir, "")
-		require.Contains(t, m.State.Function.Status.Repository.Reference, "")
-		require.Contains(t, m.State.Function.Status.Commit, "")
+		require.Nil(t, m.State.Function.Status.GitRepository)
+		// for backward compatibility
+		require.Equal(t, m.State.Function.Status.Repository.BaseDir, "")
+		require.Equal(t, m.State.Function.Status.Repository.Reference, "")
+		require.Equal(t, m.State.Function.Status.Commit, "")
 		// UUID is unset because it is fake object
 		require.Contains(t, m.State.Function.Status.PodSelector, "serverless.kyma-project.io/uuid=")
 		require.Equal(t, "charming-dubinsky", m.State.Function.Status.FunctionResourceProfile)
@@ -80,7 +82,7 @@ func Test_sFnAdjustStatus(t *testing.T) {
 				RuntimeImageOverride: "zen-wu",
 				Source: serverlessv1alpha2.Source{
 					GitRepository: &serverlessv1alpha2.GitRepositorySource{
-						URL: "test-url",
+						URL: "gracious-robinson",
 						Repository: serverlessv1alpha2.Repository{
 							BaseDir:   "test-base-dir",
 							Reference: "test-reference",
@@ -124,10 +126,16 @@ func Test_sFnAdjustStatus(t *testing.T) {
 		require.Contains(t, m.State.Function.Status.PodSelector, "serverless.kyma-project.io/resource=deployment")
 		// UUID is unset because it is fake object
 		require.Contains(t, m.State.Function.Status.PodSelector, "serverless.kyma-project.io/uuid=")
-		// function should have commit from git, url and reference in status
-		require.Contains(t, m.State.Function.Status.Repository.BaseDir, "test-base-dir")
-		require.Contains(t, m.State.Function.Status.Repository.Reference, "test-reference")
-		require.Contains(t, m.State.Function.Status.Commit, "test-commit")
 		require.Equal(t, "charming-dubinsky", m.State.Function.Status.FunctionResourceProfile)
+		// function should have commit from git, url and reference in status
+		require.NotNil(t, m.State.Function.Status.GitRepository)
+		require.Equal(t, m.State.Function.Status.GitRepository.Repository.BaseDir, "test-base-dir")
+		require.Equal(t, m.State.Function.Status.GitRepository.Repository.Reference, "test-reference")
+		require.Equal(t, m.State.Function.Status.GitRepository.Commit, "test-commit")
+		require.Equal(t, m.State.Function.Status.GitRepository.URL, "gracious-robinson")
+		// for backward compatibility
+		require.Equal(t, m.State.Function.Status.Repository.BaseDir, "test-base-dir")
+		require.Equal(t, m.State.Function.Status.Repository.Reference, "test-reference")
+		require.Equal(t, m.State.Function.Status.Commit, "test-commit")
 	})
 }
