@@ -727,8 +727,7 @@ func Test_deploymentChanged(t *testing.T) {
 								Name:         "dazzling-tharp",
 								GenerateName: "dazzling-tharp",
 								Namespace:    "dazzling-tharp",
-								UID:          "dazzling-tharp",
-								Annotations:  map[string]string{"tharp": "dazzling"}},
+								UID:          "dazzling-tharp"},
 							Spec: corev1.PodSpec{
 								Volumes: []corev1.Volume{{
 									Name: "dazzling-tharp",
@@ -776,8 +775,7 @@ func Test_deploymentChanged(t *testing.T) {
 								Name:         "thirsty-jemison",
 								GenerateName: "thirsty-jemison",
 								Namespace:    "thirsty-jemison",
-								UID:          "thirsty-jemison",
-								Annotations:  map[string]string{"jemison": "thirsty"}},
+								UID:          "thirsty-jemison"},
 							Spec: corev1.PodSpec{
 								Volumes: []corev1.Volume{{
 									Name: "thirsty-jemison",

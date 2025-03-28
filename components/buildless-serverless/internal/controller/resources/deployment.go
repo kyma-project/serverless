@@ -84,7 +84,8 @@ func (d *Deployment) podAnnotations() map[string]string {
 
 	// merge old and new annotations to allow other components to annotate functions deployment
 	// for example in case when someone use `kubectl rollout restart` on it
-	result = labels.Merge(d.currentAnnotations(), result)
+	// before merge we need to remove annotations that are not present in the current function to allow removing them
+	result = labels.Merge(d.currentAnnotationsWithoutPreviousFunctionAnnotations(), result)
 	return result
 }
 
@@ -92,6 +93,18 @@ func (d *Deployment) defaultAnnotations() map[string]string {
 	return map[string]string{
 		istioConfigLabelKey: istioEnableHoldUntilProxyStartLabelValue,
 	}
+}
+
+func (d *Deployment) currentAnnotationsWithoutPreviousFunctionAnnotations() map[string]string {
+	previousFunctionAnnotations := d.function.Status.FunctionAnnotations
+	currentAnnotations := d.currentAnnotations()
+	result := make(map[string]string)
+	for key := range currentAnnotations {
+		if _, ok := previousFunctionAnnotations[key]; !ok {
+			result[key] = currentAnnotations[key]
+		}
+	}
+	return result
 }
 
 func (d *Deployment) currentAnnotations() map[string]string {

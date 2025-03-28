@@ -460,6 +460,12 @@ spec:
                   - type
                   type: object
                 type: array
+              functionAnnotations:
+                additionalProperties:
+                  type: string
+                description: Specifies the last used annotations the Function's Pod
+                  template
+                type: object
               functionResourceProfile:
                 description: Specifies the preset used for the function
                 type: string

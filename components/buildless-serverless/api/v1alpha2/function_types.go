@@ -200,6 +200,8 @@ type FunctionStatus struct {
 	PodSelector string `json:"podSelector,omitempty"`
 	// Specifies the preset used for the function
 	FunctionResourceProfile string `json:"functionResourceProfile,omitempty"`
+	// Specifies the last used annotations the Function's Pod template
+	FunctionAnnotations map[string]string `json:"functionAnnotations,omitempty"`
 	// Specifies an array of conditions describing the status of the parser.
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
 	// Specifies the commit hash used to build the Function.
