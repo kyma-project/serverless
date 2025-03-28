@@ -25,22 +25,20 @@ spec:
             source: "import requests\nimport os\nfrom bottle import HTTPResponse\n\ndef main(event, context):\n    text = event['extensions']['request'].params.get('text')\n\n    if not text:\n        return HTTPResponse(body={'\"text\" parameter is mandatory'}, status=400)\n\n    url = os.getenv('URL')\n    apiKey = os.getenv('API-KEY')\n    print(f'Trying to query {url} with \"{text}\"')\n    # Send request to the external service\n    response = requests.post(url, files={'text': text}, headers={'api-key': apiKey})\n    return response.json()\n    \n"
 
 ---
-apiVersion: gateway.kyma-project.io/v1beta1
+apiVersion: gateway.kyma-project.io/v2
 kind: APIRule
 metadata:
-    creationTimestamp: null
-    name: function-text2img
+  name: function-text2img
+  namespace: default
 spec:
-    gateway: kyma-gateway.kyma-system.svc.cluster.local
-    host: function-text2img
-    rules:
-        - accessStrategies:
-            - handler: allow
-          methods:
-            - GET
-          path: /.*
-    service:
-        name: function-text2img
-        namespace: default
-        port: 80
-
+  hosts:
+  - function-text2img
+  service:
+    name: function-text2img
+    namespace: default
+    port: 80
+  gateway: kyma-system/kyma-gateway
+  rules:
+  - path: /*
+    methods: ["GET"]
+    noAuth: true
