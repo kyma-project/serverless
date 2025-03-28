@@ -19,7 +19,7 @@ func TestNewDeployment(t *testing.T) {
 		f := minimalFunction()
 		c := minimalFunctionConfig()
 
-		r := NewDeployment(f, c, "test-commit", nil)
+		r := NewDeployment(f, c, nil, "test-commit", nil)
 
 		require.NotNil(t, r)
 		d := r.Deployment
@@ -109,6 +109,39 @@ func TestDeployment_construct(t *testing.T) {
 			"shtern":                                   "stoic",
 			"boyd":                                     "vigilant",
 		}, r.Spec.Template.ObjectMeta.Labels)
+	})
+	t.Run("create annotations based on function and current deployment", func(t *testing.T) {
+		d := minimalDeployment()
+		d.function.Spec.Annotations = map[string]string{
+			"leavitt": "hopeful",
+			"pike":    "tender",
+		}
+		d.function.Status.FunctionAnnotations = map[string]string{
+			"dewdney": "intelligent", // this should be removed from deployment
+			"leavitt": "hopeful",
+		}
+		d.clusterDeployment = &appsv1.Deployment{
+			Spec: appsv1.DeploymentSpec{
+				Template: corev1.PodTemplateSpec{
+					ObjectMeta: metav1.ObjectMeta{
+						Annotations: map[string]string{
+							"thompson": "exciting",
+							"dewdney":  "zealous", // this should be removed
+						},
+					},
+				},
+			},
+		}
+
+		r := d.construct()
+
+		require.NotNil(t, r)
+		require.Equal(t, map[string]string{
+			"proxy.istio.io/config": "{ \"holdApplicationUntilProxyStarts\": true }",
+			"leavitt":               "hopeful",
+			"pike":                  "tender",
+			"thompson":              "exciting",
+		}, r.Spec.Template.ObjectMeta.Annotations)
 	})
 	t.Run("use container name from function", func(t *testing.T) {
 		d := minimalDeployment()

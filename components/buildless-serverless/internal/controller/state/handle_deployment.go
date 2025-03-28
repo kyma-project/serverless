@@ -17,15 +17,20 @@ import (
 )
 
 func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig, m.State.Commit, m.State.GitAuth)
-	builtDeployment := m.State.BuiltDeployment.Deployment
-
 	clusterDeployment, errGet := getDeployment(ctx, m)
+	m.State.ClusterDeployment = clusterDeployment
 	if errGet != nil {
 		return nil, nil, errGet
 	}
+
+	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig, m.State.ClusterDeployment, m.State.Commit, m.State.GitAuth)
+	builtDeployment := m.State.BuiltDeployment.Deployment
+
 	if clusterDeployment == nil {
 		result, errCreate := createDeployment(ctx, m, builtDeployment)
+		if errCreate == nil {
+			m.State.Function.CopyAnnotationsToStatus()
+		}
 		return nil, result, errCreate
 	}
 
@@ -33,6 +38,7 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	if errUpdate != nil {
 		return nil, nil, errUpdate
 	}
+	m.State.Function.CopyAnnotationsToStatus()
 	if requeueNeeded {
 		return requeue()
 	}
@@ -113,6 +119,7 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 
 	imageChanged := aContainer.Image != bContainer.Image
 	labelsChanged := !reflect.DeepEqual(a.Spec.Template.ObjectMeta.Labels, b.Spec.Template.ObjectMeta.Labels)
+	annotationsChanged := !reflect.DeepEqual(a.Spec.Template.ObjectMeta.Annotations, b.Spec.Template.ObjectMeta.Annotations)
 	replicasChanged := (a.Spec.Replicas == nil && b.Spec.Replicas != nil) ||
 		(a.Spec.Replicas != nil && b.Spec.Replicas == nil) ||
 		(a.Spec.Replicas != nil && b.Spec.Replicas != nil && *a.Spec.Replicas != *b.Spec.Replicas)
@@ -125,6 +132,7 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 
 	return imageChanged ||
 		labelsChanged ||
+		annotationsChanged ||
 		replicasChanged ||
 		workingDirChanged ||
 		commandChanged ||

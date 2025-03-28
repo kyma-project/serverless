@@ -74,7 +74,11 @@ type FunctionSpec struct {
 	// +kubebuilder:validation:XValidation:message="Label value cannot be longer than 63",rule="self.all(e, size(e)<64)"
 	Labels map[string]string `json:"labels,omitempty"`
 
-	//TODO: add Annotations
+	// Defines annotations used in Deployment's PodTemplate and applied on the Function's runtime Pod.
+	// +optional
+	// +kubebuilder:validation:XValidation:message="Annotations has key starting with serverless.kyma-project.io/ which is not allowed",rule="!(self.exists(e, e.startsWith('serverless.kyma-project.io/')))"
+	// +kubebuilder:validation:XValidation:message="Annotations has key proxy.istio.io/config which is not allowed",rule="!(self.exists(e, e=='proxy.istio.io/config'))"
+	Annotations map[string]string `json:"annotations,omitempty"`
 }
 
 type Source struct {
@@ -196,6 +200,8 @@ type FunctionStatus struct {
 	PodSelector string `json:"podSelector,omitempty"`
 	// Specifies the preset used for the function
 	FunctionResourceProfile string `json:"functionResourceProfile,omitempty"`
+	// Specifies the last used annotations the Function's Pod template
+	FunctionAnnotations map[string]string `json:"functionAnnotations,omitempty"`
 	// Specifies an array of conditions describing the status of the parser.
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
 	// Specifies the commit hash used to build the Function.
@@ -339,4 +345,8 @@ func (f *Function) HasPythonRuntime() bool {
 func (f *Function) HasNodejsRuntime() bool {
 	runtime := f.Spec.Runtime
 	return runtime == NodeJs20 || runtime == NodeJs22
+}
+
+func (f *Function) CopyAnnotationsToStatus() {
+	f.Status.FunctionAnnotations = f.Spec.Annotations
 }
