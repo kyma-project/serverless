@@ -39,7 +39,7 @@ type FunctionReconciler struct {
 	Scheme          *runtime.Scheme
 	Log             *zap.SugaredLogger
 	Config          config.FunctionConfig
-	LastCommitCache cache.InMemoryCache
+	LastCommitCache cache.Cache
 }
 
 //TODO: check if it's the minimum requirements for rbacs

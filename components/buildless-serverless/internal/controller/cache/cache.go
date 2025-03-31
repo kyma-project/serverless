@@ -6,10 +6,10 @@ import (
 )
 
 var (
-	_ InMemoryCache = (*repoLastCommitCache)(nil)
+	_ Cache = (*repoLastCommitCache)(nil)
 )
 
-type InMemoryCache interface {
+type Cache interface {
 	Set(any, string)
 	Get(any) *string
 	Delete(any)
@@ -29,8 +29,8 @@ type storageObject struct {
 	value     string
 }
 
-// NewInMemoryCache returns a new instance of repoLastCommitCache.
-func NewInMemoryCache(timeout time.Duration) *repoLastCommitCache {
+// NewRepoLastCommitCache returns a new instance of repoLastCommitCache.
+func NewRepoLastCommitCache(timeout time.Duration) Cache {
 	return &repoLastCommitCache{
 		processor: sync.Map{},
 		timeout:   timeout,

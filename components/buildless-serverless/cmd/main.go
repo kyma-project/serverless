@@ -178,7 +178,7 @@ func main() {
 		Scheme:          mgr.GetScheme(),
 		Log:             reconcilerLogger.Sugar(),
 		Config:          config.Function,
-		LastCommitCache: cache.NewInMemoryCache(config.Function.FunctionReadyRequeueDuration),
+		LastCommitCache: cache.NewRepoLastCommitCache(config.Function.FunctionReadyRequeueDuration),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Function")
 		os.Exit(1)

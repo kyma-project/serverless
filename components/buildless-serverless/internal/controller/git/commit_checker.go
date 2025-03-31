@@ -15,7 +15,7 @@ type LastCommitChecker interface {
 }
 
 type GoGitCommitChecker struct {
-	Cache cache.InMemoryCache
+	Cache cache.Cache
 	Log   *zap.SugaredLogger
 }
 

@@ -96,7 +96,7 @@ type StateMachineReconciler interface {
 }
 
 // TODO: Add emiting events
-func New(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function, startState StateFn /*recorder record.EventRecorder,*/, scheme *apimachineryruntime.Scheme, cache cache.InMemoryCache, log *zap.SugaredLogger) StateMachineReconciler {
+func New(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function, startState StateFn /*recorder record.EventRecorder,*/, scheme *apimachineryruntime.Scheme, cache cache.Cache, log *zap.SugaredLogger) StateMachineReconciler {
 	sm := StateMachine{
 		nextFn: startState,
 		State: SystemState{
