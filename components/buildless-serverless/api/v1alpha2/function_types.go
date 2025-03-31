@@ -204,12 +204,20 @@ type FunctionStatus struct {
 	FunctionAnnotations map[string]string `json:"functionAnnotations,omitempty"`
 	// Specifies an array of conditions describing the status of the parser.
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
-	// Specifies the commit hash used to build the Function.
+	// Deprecated: Specifies the commit hash used to build the Function.
+	// Field moved to GitRepositoryStatus.
 	Commit string `json:"commit,omitempty"`
-	// Specify the repository which was used to build the function.
+	// Deprecated: Specify the repository which was used to build the function.
+	// Field moved to GitRepositoryStatus.
 	Repository `json:",inline,omitempty"`
+	// Specifies the GitRepository status when the Function is sourced from a Git repository.
+	GitRepository *GitRepositoryStatus `json:"gitRepository,omitempty"`
+}
 
-	//TODO Should we add the GitRepository URL here?
+type GitRepositoryStatus struct {
+	URL        string `json:"url"`
+	Repository `json:",inline,omitempty"`
+	Commit     string `json:"commit,omitempty"`
 }
 
 type ConditionType string
