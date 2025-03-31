@@ -31,7 +31,10 @@ func (g GoGitCommitChecker) GetLatestCommit(url, reference string, gitAuth *GitA
 	}
 	lastCommit := ""
 	if !force {
-		lastCommit = g.Cache.Get(commitKey)
+		cachedCommit := g.Cache.Get(commitKey)
+		if cachedCommit != nil {
+			lastCommit = *cachedCommit
+		}
 	}
 	if lastCommit != "" {
 		g.Log.Debugf("Last commit from cache for %s %s is %s", url, reference, lastCommit)
