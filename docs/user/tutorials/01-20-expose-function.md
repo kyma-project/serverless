@@ -82,33 +82,30 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
 
     ```bash
     cat <<EOF | kubectl apply -f -
-    apiVersion: gateway.kyma-project.io/v1beta1
+    apiVersion: gateway.kyma-project.io/v2
     kind: APIRule
     metadata:
       name: $NAME
       namespace: $NAMESPACE
     spec:
-      gateway: kyma-system/kyma-gateway
-      host: $NAME.$DOMAIN
+      hosts:
+      - $NAME
       service:
         name: $NAME
+        namespace: $NAMESPACE
         port: 80
+      gateway: kyma-system/kyma-gateway
       rules:
-        - path: /.*
-          methods:
-            - GET
-            - POST
-            - PUT
-            - DELETE
-          accessStrategies:
-            - handler: no_auth
+      - path: /*
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        noAuth: true
     EOF
     ```
 
-5. Check that the APIRule was created successfully and has the status `OK`:
+5. Check that the APIRule was created successfully and has the status `Ready`:
 
     ```bash
-    kubectl get apirules $NAME -n $NAMESPACE -o=jsonpath='{.status.APIRuleStatus.code}'
+    kubectl get apirules $NAME -n $NAMESPACE -o=jsonpath='{.status.state}'
     ```
 
 6. Access the Function's external address:
