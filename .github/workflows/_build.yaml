@@ -105,7 +105,7 @@ jobs:
     needs: compute-tags
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
-      name: buildless-function-init
+      name: function-buildless-init
       dockerfile: Dockerfile.jobinit
       context: components/buildless-serverless
       tags: ${{ needs.compute-tags.outputs.tags }}
