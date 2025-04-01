@@ -68,27 +68,23 @@ Follow these steps:
 
     ```bash
     cat <<EOF | kubectl apply -f -
-    apiVersion: gateway.kyma-project.io/v1beta1
+    apiVersion: gateway.kyma-project.io/v2
     kind: APIRule
     metadata:
       name: $FUNCTION_NAME
       namespace: $NAMESPACE
     spec:
-      gateway: kyma-system/kyma-gateway
-      host: $FUNCTION_NAME.$DOMAIN
-      rules:
-        - path: /.*
-          accessStrategies:
-            - config: {}
-              handler: noop
-          methods:
-            - GET
-            - POST
-            - PUT
-            - DELETE
+      hosts:
+      - $FUNCTION_NAME
       service:
         name: $FUNCTION_NAME
+        namespace: $NAMESPACE
         port: 80
+      gateway: kyma-system/kyma-gateway
+      rules:
+      - path: /*
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        noAuth: true
     EOF
     ```
 
