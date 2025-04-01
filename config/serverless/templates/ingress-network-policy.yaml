@@ -12,9 +12,9 @@ spec:
   - Ingress
   ingress:
   - from:
-    - podSelector:
-        matchLabels:
-          serverless.kyma-project.io/managed-by: function-controller
-  - ports:
+    # - podSelector:
+    #     matchLabels:
+    #       serverless.kyma-project.io/managed-by: function-controller
+    ports:
     - protocol: TCP
       port: {{ .Values.global.registryServicePort }}

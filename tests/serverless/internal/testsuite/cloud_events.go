@@ -79,3 +79,33 @@ func FunctionCloudEventsTest(restConfig *rest.Config, cfg internal.Config, logf 
 		),
 	), nil
 }
+
+// Define those as part of this test:
+
+// kind: NetworkPolicy
+// apiVersion: networking.k8s.io/v1
+// metadata:
+//   namespace: kyma-system
+//   name: temp1
+// spec:
+//   podSelector:
+//     matchLabels:
+//       serverless.kyma-project.io/managed-by: function-controller
+//   policyTypes:
+//   - Egress
+//   egress:
+//   - {}
+// ---
+// apiVersion: networking.k8s.io/v1
+// kind: NetworkPolicy
+// metadata:
+//   namespace: kyma-system
+//   name: temp2
+// spec:
+//   podSelector:
+//     matchLabels:
+//       app.kubernetes.io/name: eventing-publisher-proxy
+//   policyTypes:
+//   - Ingress
+//   ingress:
+//   - {}

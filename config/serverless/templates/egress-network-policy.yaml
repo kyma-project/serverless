@@ -2,12 +2,12 @@ kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
   namespace: {{ .Release.Namespace }}
-  name: {{ template "fullname" . }}.kyma-project.io--allow-all-egress
+  name: {{ template "fullname" . }}.kyma-project.io--allow-all-egress-from-controllers
 spec:
   podSelector:
     matchLabels:
       kyma-project.io/module: serverless
-      app.kubernetes.io/name: serverless
+      networking.kyma-project.io/from-serverless: allowed
   policyTypes:
   - Egress
   egress:
