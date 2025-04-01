@@ -5,6 +5,7 @@ import (
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
+	"github.com/kyma-project/serverless/internal/controller/cache"
 	"github.com/kyma-project/serverless/internal/controller/git"
 	"github.com/kyma-project/serverless/internal/controller/resources"
 	appsv1 "k8s.io/api/apps/v1"
@@ -95,7 +96,7 @@ type StateMachineReconciler interface {
 }
 
 // TODO: Add emiting events
-func New(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function, startState StateFn /*recorder record.EventRecorder,*/, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger) StateMachineReconciler {
+func New(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function, startState StateFn /*recorder record.EventRecorder,*/, scheme *apimachineryruntime.Scheme, cache cache.Cache, log *zap.SugaredLogger) StateMachineReconciler {
 	sm := StateMachine{
 		nextFn: startState,
 		State: SystemState{
@@ -105,7 +106,8 @@ func New(client client.Client, functionConfig config.FunctionConfig, instance *s
 		FunctionConfig: functionConfig,
 		Client:         client,
 		Scheme:         scheme,
-		GitChecker:     git.GoGitCommitChecker{},
+		GitChecker: git.GoGitCommitChecker{Cache: cache,
+			Log: log},
 	}
 	sm.State.saveStatusSnapshot()
 	return &sm

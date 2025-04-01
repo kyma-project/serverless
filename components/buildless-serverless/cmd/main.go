@@ -20,11 +20,11 @@ import (
 	"crypto/tls"
 	"flag"
 	"github.com/kyma-project/serverless/internal/config"
+	"github.com/kyma-project/serverless/internal/controller/cache"
 	"github.com/vrischmann/envconfig"
 	uberzap "go.uber.org/zap"
 	uberzapcore "go.uber.org/zap/zapcore"
 	"os"
-
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
@@ -174,10 +174,11 @@ func main() {
 	}
 
 	if err = (&controller.FunctionReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
-		Log:    reconcilerLogger.Sugar(),
-		Config: config.Function,
+		Client:          mgr.GetClient(),
+		Scheme:          mgr.GetScheme(),
+		Log:             reconcilerLogger.Sugar(),
+		Config:          config.Function,
+		LastCommitCache: cache.NewRepoLastCommitCache(config.Function.FunctionReadyRequeueDuration),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Function")
 		os.Exit(1)
