@@ -102,10 +102,10 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
     EOF
     ```
 
-5. Check that the APIRule was created successfully and has the status `OK`:
+5. Check that the APIRule was created successfully and has the status `Ready`:
 
     ```bash
-    kubectl get apirules $NAME -n $NAMESPACE -o=jsonpath='{.status.APIRuleStatus.code}'
+    kubectl get apirules $NAME -n $NAMESPACE -o=jsonpath='{.status.state}'
     ```
 
 6. Access the Function's external address:
