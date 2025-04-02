@@ -5,6 +5,8 @@ bdba:
   - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:main
   - europe-docker.pkg.dev/kyma-project/prod/function-controller:main
   - europe-docker.pkg.dev/kyma-project/prod/function-build-init:main
+  - europe-docker.pkg.dev/kyma-project/prod/function-buildless-controller:main
+  - europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:main
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:main
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main
