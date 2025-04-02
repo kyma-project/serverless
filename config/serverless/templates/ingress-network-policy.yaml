@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   namespace: {{ .Release.Namespace }}
-  name: {{ template "fullname" . }}.kyma-project.io--allow-to-registry
+  name: {{ template "fullname" . }}.kyma-project.io--allow-to-registry-port
 spec:
   podSelector:
     matchLabels:
@@ -12,9 +12,6 @@ spec:
   - Ingress
   ingress:
   - from:
-    # - podSelector:
-    #     matchLabels:
-    #       serverless.kyma-project.io/managed-by: function-controller
     ports:
     - protocol: TCP
       port: {{ .Values.global.registryServicePort }}
