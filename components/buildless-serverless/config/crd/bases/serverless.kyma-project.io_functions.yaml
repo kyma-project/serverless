@@ -401,7 +401,9 @@ spec:
                   from which the Function is built.
                 type: string
               commit:
-                description: Specifies the commit hash used to build the Function.
+                description: |-
+                  Deprecated: Specifies the commit hash used to build the Function.
+                  Field moved to GitRepositoryStatus.
                 type: string
               conditions:
                 description: Specifies an array of conditions describing the status
@@ -470,6 +472,27 @@ spec:
               functionResourceProfile:
                 description: Specifies the preset used for the function
                 type: string
+              gitRepository:
+                description: Specifies the GitRepository status when the Function
+                  is sourced from a Git repository.
+                properties:
+                  baseDir:
+                    description: |-
+                      Specifies the relative path to the Git directory that contains the source code
+                      from which the Function is built.
+                    type: string
+                  commit:
+                    type: string
+                  reference:
+                    description: |-
+                      Specifies either the branch name, tag or commit revision from which the Function Controller
+                      automatically fetches the changes in the Function's code and dependencies.
+                    type: string
+                  url:
+                    type: string
+                required:
+                - url
+                type: object
               podSelector:
                 description: Specifies the Pod selector used to match Pods in the
                   Function's Deployment.
