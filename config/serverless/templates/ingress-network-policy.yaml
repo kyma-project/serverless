@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: {{ template "fullname" . }}.kyma-project.io--allow-to-registry-port
+spec:
+  podSelector:
+    matchLabels:
+      kyma-project.io/module: {{ template "fullname" . }}
+      app.kubernetes.io/name: docker-registry
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    ports:
+    - protocol: TCP
+      port: {{ .Values.global.registryServicePort }}

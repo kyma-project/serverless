@@ -1,0 +1,16 @@
+name: 'Apply extra test fixture'
+description: 'Apply extra test fixture'
+
+inputs:
+  fixture_path:
+    description: 'Path pointing to a folder containing manifests to apply (relative to project root)'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Apply fixture
+      run: |
+        kubectl apply -f ${{ inputs.fixture_path }}
+      shell: bash
+
