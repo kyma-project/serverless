@@ -1,7 +1,8 @@
+# DEPRECATED: this extension format is deprecated and will be removed in the future
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: serverless.function.cli
+  name: serverless.function.cli-compat
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
@@ -105,7 +106,6 @@ data:
                     return message;
                   }
                 }
-  # DEPRECATED: coreCommands used for backward compatibility only
   coreCommands: |
     - actionID: function_init
       config:
