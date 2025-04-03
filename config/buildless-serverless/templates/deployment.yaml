@@ -22,6 +22,7 @@ spec:
         control-plane: controller-manager
         networking.kyma-project.io/to-apiserver: allowed
         networking.kyma-project.io/from-serverless: allowed
+        kyma-project.io/module: serverless
     spec:
       containers:
         - args:
