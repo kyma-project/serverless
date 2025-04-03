@@ -1,4 +1,4 @@
-config:
+with:
   resource:
     apiVersion: serverless.kyma-project.io/v1alpha2
     kind: Function
@@ -9,7 +9,7 @@ metadata:
 
 subCommands:
 - metadata:
-    name: "get "
+    name: "get [<resource_name>] [flags]"
     description: "Get Functions"
     descriptionLong: "Use this command to get Functions from a cluster."
   uses: resource_get
@@ -29,7 +29,7 @@ subCommands:
     shorthand: "A"
     configPath: ".fromAllNamespaces"
     default: false
-  config:
+  with:
     outputParameters:
     - resourcePath: '.status.conditions[] | select(.type=="ConfigurationReady") | .status'
       name: "configured"
@@ -43,11 +43,11 @@ subCommands:
       name: "generation"
 
 - metadata:
-    name: explain
+    name: "explain [flags]"
     description: "Explain Functions"
     descriptionLong: "Use this command to explain what Function is."
   uses: resource_explain
-  config:
+  with:
     output: |
       With Functions you can run code without
       writing servers and maintaining them. 
@@ -58,7 +58,7 @@ subCommands:
       https://kyma-project.io/#/serverless-manager/user/resources/06-10-function-cr
 
 - metadata:
-    name: delete
+    name: "delete <resource_name> [flags]"
     description: "Delete Function"
     descriptionLong: "Use this command to delete Function from a cluster."
   uses: resource_delete
@@ -74,7 +74,7 @@ subCommands:
     default: "default"
 
 - metadata:
-    name: create
+    name: "create <resource_name> [flags]"
     description: "Create Function"
     descriptionLong: "Use this command to create Function on a cluster."
   uses: resource_create
@@ -121,7 +121,7 @@ subCommands:
     configPath: ".resource.spec.source.inline.dependencies"
 
 - metadata:
-    name: init
+    name: "init [flags]"
     description: Init source and dependencies files locally
     descriptionLong: Use this command to initialize source and dependencies files for a Function.
   uses: function_init
@@ -136,7 +136,7 @@ subCommands:
     type: string
     description: "Path to the directory where files must be created"
     default: "."
-  config:
+  with:
     useRuntime: "" # <- set from flag
     outputDir: "" # <- set from flag
     runtimes:
