@@ -3,6 +3,7 @@ package git
 import (
 	"context"
 	"fmt"
+
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources"
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/app"
 	"github.com/kyma-project/serverless/tests/serverless/internal/utils"

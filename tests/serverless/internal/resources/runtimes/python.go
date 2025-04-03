@@ -153,6 +153,9 @@ def main(event, context):
 			},
 		},
 		Env: []v1.EnvVar{},
+		Labels: map[string]string{
+			"app.kubernetes.io/name": "eventing-publisher-proxy",
+		},
 		ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
 			Function: &serverlessv1alpha2.ResourceRequirements{
 				Profile: "L",
