@@ -1,5 +1,5 @@
 name: 'Apply extra test fixture'
-description: 'Apply extra test fixture''
+description: 'Apply extra test fixture'
 
 inputs:
   fixture_path:
