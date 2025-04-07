@@ -137,8 +137,6 @@ subCommands:
     description: "Path to the directory where files must be created"
     default: "."
   with:
-    useRuntime: "" # <- set from flag
-    outputDir: "" # <- set from flag
     runtimes:
       python312:
         depsFilename: requirements.txt
