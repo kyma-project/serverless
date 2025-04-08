@@ -209,3 +209,58 @@ func Test_functionValidator_validateRuntime(t *testing.T) {
 		})
 	}
 }
+
+func Test_validator_validateSecretMounts(t *testing.T) {
+	type testData struct {
+		name         string
+		secretMounts []serverlessv1alpha2.SecretMount
+		want         []string
+	}
+	tests := []testData{
+		{
+			name:         "when no secret mounts then no errors",
+			secretMounts: []serverlessv1alpha2.SecretMount{},
+			want:         []string{},
+		},
+		{
+			name: "when secret name is invalid then return error",
+			secretMounts: []serverlessv1alpha2.SecretMount{
+				{SecretName: "invalid_secret_name@#!"},
+			},
+			want: []string{
+				"invalid spec.secretMounts: [a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')]",
+			},
+		},
+		{
+			name: "when secret names are not unique then return error",
+			secretMounts: []serverlessv1alpha2.SecretMount{
+				{SecretName: "valid-secret"},
+				{SecretName: "valid-secret"},
+			},
+			want: []string{
+				"invalid spec.secretMounts: [secretNames should be unique]",
+			},
+		},
+		{
+			name: "when secret names are valid and unique then no errors",
+			secretMounts: []serverlessv1alpha2.SecretMount{
+				{SecretName: "valid-secret-chlebek"},
+				{SecretName: "valid-secret-chleb"},
+			},
+			want: []string{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := &validator{
+				instance: &serverlessv1alpha2.Function{
+					Spec: serverlessv1alpha2.FunctionSpec{
+						SecretMounts: tt.secretMounts,
+					},
+				},
+			}
+			got := v.validateSecretMounts()
+			require.ElementsMatch(t, tt.want, got)
+		})
+	}
+}
