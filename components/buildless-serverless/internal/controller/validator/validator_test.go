@@ -319,3 +319,56 @@ func Test_validator_validateFunctionLabels(t *testing.T) {
 		})
 	}
 }
+
+func Test_validator_validateFunctionAnnotations(t *testing.T) {
+	type testData struct {
+		name        string
+		annotations map[string]string
+		want        []string
+	}
+	tests := []testData{
+		{
+			name:        "when no annotations then no errors",
+			annotations: map[string]string{},
+			want:        []string{},
+		},
+		{
+			name: "when valid annotations then no errors",
+			annotations: map[string]string{
+				"valid-annotation-1": "chlebek",
+				"valid-annotation-2": "chleb",
+			},
+			want: []string{},
+		},
+		{
+			name: "when invalid annotation key then return error",
+			annotations: map[string]string{
+				"Invalid_Annotation@Key!": "value",
+			},
+			want: []string{
+				"spec.annotations: Invalid value: \"Invalid_Annotation@Key!\": name part must consist of alphanumeric characters, '-', '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyName',  or 'my.name',  or '123-abc', regex used for validation is '([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]')",
+			},
+		},
+		{
+			name: "when invalid annotation value then no errors",
+			annotations: map[string]string{
+				"valid-annotation": "Invalid_Value!@",
+			},
+			want: []string{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := &validator{
+				instance: &serverlessv1alpha2.Function{
+					Spec: serverlessv1alpha2.FunctionSpec{
+						Annotations: tt.annotations,
+					},
+				},
+			}
+			got := v.validateFunctionAnnotations()
+			require.ElementsMatch(t, tt.want, got)
+		})
+	}
+}
