@@ -264,3 +264,58 @@ func Test_validator_validateSecretMounts(t *testing.T) {
 		})
 	}
 }
+
+func Test_validator_validateFunctionLabels(t *testing.T) {
+	type testData struct {
+		name   string
+		labels map[string]string
+		want   []string
+	}
+	tests := []testData{
+		{
+			name:   "when no labels then no errors",
+			labels: map[string]string{},
+			want:   []string{},
+		},
+		{
+			name: "when valid labels then no errors",
+			labels: map[string]string{
+				"valid-label-1": "chlebek",
+				"valid-label-2": "chlebek2",
+			},
+			want: []string{},
+		},
+		{
+			name: "when invalid label key then return error",
+			labels: map[string]string{
+				"Invalid_Label@Key!": "value",
+			},
+			want: []string{
+				"spec.labels: Invalid value: \"Invalid_Label@Key!\": name part must consist of alphanumeric characters, '-', '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyName',  or 'my.name',  or '123-abc', regex used for validation is '([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]')",
+			},
+		},
+		{
+			name: "when invalid label value then return error",
+			labels: map[string]string{
+				"valid-label": "Invalid_ChlEbek!",
+			},
+			want: []string{
+				"spec.labels: Invalid value: \"Invalid_ChlEbek!\": a valid label must be an empty string or consist of alphanumeric characters, '-', '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyValue',  or 'my_value',  or '12345', regex used for validation is '(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?')",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := &validator{
+				instance: &serverlessv1alpha2.Function{
+					Spec: serverlessv1alpha2.FunctionSpec{
+						Labels: tt.labels,
+					},
+				},
+			}
+			got := v.validateFunctionLabels()
+			require.ElementsMatch(t, tt.want, got)
+		})
+	}
+}
