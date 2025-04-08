@@ -372,3 +372,53 @@ func Test_validator_validateFunctionAnnotations(t *testing.T) {
 		})
 	}
 }
+
+func Test_validator_validateGitRepoURL(t *testing.T) {
+	type testData struct {
+		name string
+		URL  string
+		want []string
+	}
+	tests := []testData{
+		{
+			name: "when Git repo URL is valid SSH then no errors",
+			URL:  "git@github.com:user/repo.git",
+			want: []string{},
+		},
+		{
+			name: "when Git repo URL is valid HTTPS then no errors",
+			URL:  "https://github.com/user/repo.git",
+			want: []string{},
+		},
+		{
+			name: "when Git repo URL is invalid then return error",
+			URL:  "invalid-url",
+			want: []string{
+				"source.gitRepository.URL: parse \"invalid-url\": invalid URI for request",
+			},
+		},
+		{
+			name: "when Git repo URL is empty then return error",
+			URL:  "source.gitRepository.URL: parse \\\"\\\": empty url",
+			want: []string{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := &validator{
+				instance: &serverlessv1alpha2.Function{
+					Spec: serverlessv1alpha2.FunctionSpec{
+						Source: serverlessv1alpha2.Source{
+							GitRepository: &serverlessv1alpha2.GitRepositorySource{
+								URL: tt.URL,
+							},
+						},
+					},
+				},
+			}
+			got := v.validateGitRepoURL()
+			require.ElementsMatch(t, tt.want, got)
+		})
+	}
+}
