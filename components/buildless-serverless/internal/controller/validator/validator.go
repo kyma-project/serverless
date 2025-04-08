@@ -29,11 +29,11 @@ func (v *validator) Validate() []string {
 		v.validateEnvs,
 		v.validateInlineDeps,
 		v.validateRuntime,
-		//TODO: add more validation functions
 		v.validateSecretMounts,
 		v.validateFunctionLabels,
 		v.validateFunctionAnnotations,
 		v.validateGitRepoURL,
+		//TODO: add validateFunctionResourcesFn and validateBuildResourcesFn with corresponded min resources
 	}
 
 	r := []string{}
