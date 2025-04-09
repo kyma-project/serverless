@@ -40,13 +40,13 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
 
     - **Host** to determine the host on which you want to expose your Function.
 
-4. Edit the access strategy in the **Rules** > **Access Strategies** section
+4. Edit the access strategy in the **Rules** section.
   - Select the methods `GET`, `POST`, `PUT`, and `DELETE`. 
-  - Use the default `no_auth` handler.
+  - Use the default `No Auth` handler.
 
 5. Select **Create** to confirm your changes.
 
-6. Check if you can access the Function by selecting the HTTPS link under the **Host** column for the newly created APIRule. If successful, the `Hello World!` message appears.
+6. To check if you can access the Function, copy the host link in the **General** section of the newly created APIRule and paste it into your browser. If successful, the `Hello World!` message appears.
 
 #### **Kyma CLI**
 
