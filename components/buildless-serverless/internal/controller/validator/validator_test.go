@@ -209,3 +209,216 @@ func Test_functionValidator_validateRuntime(t *testing.T) {
 		})
 	}
 }
+
+func Test_validator_validateSecretMounts(t *testing.T) {
+	type testData struct {
+		name         string
+		secretMounts []serverlessv1alpha2.SecretMount
+		want         []string
+	}
+	tests := []testData{
+		{
+			name:         "when no secret mounts then no errors",
+			secretMounts: []serverlessv1alpha2.SecretMount{},
+			want:         []string{},
+		},
+		{
+			name: "when secret name is invalid then return error",
+			secretMounts: []serverlessv1alpha2.SecretMount{
+				{SecretName: "invalid_secret_name@#!"},
+			},
+			want: []string{
+				"invalid spec.secretMounts: [a lowercase RFC 1123 subdomain must consist of lower case alphanumeric characters, '-' or '.', and must start and end with an alphanumeric character (e.g. 'example.com', regex used for validation is '[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*')]",
+			},
+		},
+		{
+			name: "when secret names are not unique then return error",
+			secretMounts: []serverlessv1alpha2.SecretMount{
+				{SecretName: "valid-secret"},
+				{SecretName: "valid-secret"},
+			},
+			want: []string{
+				"invalid spec.secretMounts: [secretNames should be unique]",
+			},
+		},
+		{
+			name: "when secret names are valid and unique then no errors",
+			secretMounts: []serverlessv1alpha2.SecretMount{
+				{SecretName: "valid-secret-chlebek"},
+				{SecretName: "valid-secret-chleb"},
+			},
+			want: []string{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := &validator{
+				instance: &serverlessv1alpha2.Function{
+					Spec: serverlessv1alpha2.FunctionSpec{
+						SecretMounts: tt.secretMounts,
+					},
+				},
+			}
+			got := v.validateSecretMounts()
+			require.ElementsMatch(t, tt.want, got)
+		})
+	}
+}
+
+func Test_validator_validateFunctionLabels(t *testing.T) {
+	type testData struct {
+		name   string
+		labels map[string]string
+		want   []string
+	}
+	tests := []testData{
+		{
+			name:   "when no labels then no errors",
+			labels: map[string]string{},
+			want:   []string{},
+		},
+		{
+			name: "when valid labels then no errors",
+			labels: map[string]string{
+				"valid-label-1": "chlebek",
+				"valid-label-2": "chlebek2",
+			},
+			want: []string{},
+		},
+		{
+			name: "when invalid label key then return error",
+			labels: map[string]string{
+				"Invalid_Label@Key!": "value",
+			},
+			want: []string{
+				"spec.labels: Invalid value: \"Invalid_Label@Key!\": name part must consist of alphanumeric characters, '-', '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyName',  or 'my.name',  or '123-abc', regex used for validation is '([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]')",
+			},
+		},
+		{
+			name: "when invalid label value then return error",
+			labels: map[string]string{
+				"valid-label": "Invalid_ChlEbek!",
+			},
+			want: []string{
+				"spec.labels: Invalid value: \"Invalid_ChlEbek!\": a valid label must be an empty string or consist of alphanumeric characters, '-', '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyValue',  or 'my_value',  or '12345', regex used for validation is '(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?')",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := &validator{
+				instance: &serverlessv1alpha2.Function{
+					Spec: serverlessv1alpha2.FunctionSpec{
+						Labels: tt.labels,
+					},
+				},
+			}
+			got := v.validateFunctionLabels()
+			require.ElementsMatch(t, tt.want, got)
+		})
+	}
+}
+
+func Test_validator_validateFunctionAnnotations(t *testing.T) {
+	type testData struct {
+		name        string
+		annotations map[string]string
+		want        []string
+	}
+	tests := []testData{
+		{
+			name:        "when no annotations then no errors",
+			annotations: map[string]string{},
+			want:        []string{},
+		},
+		{
+			name: "when valid annotations then no errors",
+			annotations: map[string]string{
+				"valid-annotation-1": "chlebek",
+				"valid-annotation-2": "chleb",
+			},
+			want: []string{},
+		},
+		{
+			name: "when invalid annotation key then return error",
+			annotations: map[string]string{
+				"Invalid_Annotation@Key!": "value",
+			},
+			want: []string{
+				"spec.annotations: Invalid value: \"Invalid_Annotation@Key!\": name part must consist of alphanumeric characters, '-', '_' or '.', and must start and end with an alphanumeric character (e.g. 'MyName',  or 'my.name',  or '123-abc', regex used for validation is '([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]')",
+			},
+		},
+		{
+			name: "when invalid annotation value then no errors",
+			annotations: map[string]string{
+				"valid-annotation": "Invalid_Value!@",
+			},
+			want: []string{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := &validator{
+				instance: &serverlessv1alpha2.Function{
+					Spec: serverlessv1alpha2.FunctionSpec{
+						Annotations: tt.annotations,
+					},
+				},
+			}
+			got := v.validateFunctionAnnotations()
+			require.ElementsMatch(t, tt.want, got)
+		})
+	}
+}
+
+func Test_validator_validateGitRepoURL(t *testing.T) {
+	type testData struct {
+		name string
+		URL  string
+		want []string
+	}
+	tests := []testData{
+		{
+			name: "when Git repo URL is valid SSH then no errors",
+			URL:  "git@github.com:user/repo.git",
+			want: []string{},
+		},
+		{
+			name: "when Git repo URL is valid HTTPS then no errors",
+			URL:  "https://github.com/user/repo.git",
+			want: []string{},
+		},
+		{
+			name: "when Git repo URL is invalid then return error",
+			URL:  "invalid-url",
+			want: []string{
+				"source.gitRepository.URL: parse \"invalid-url\": invalid URI for request",
+			},
+		},
+		{
+			name: "when Git repo URL is empty then return error",
+			URL:  "source.gitRepository.URL: parse \\\"\\\": empty url",
+			want: []string{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := &validator{
+				instance: &serverlessv1alpha2.Function{
+					Spec: serverlessv1alpha2.FunctionSpec{
+						Source: serverlessv1alpha2.Source{
+							GitRepository: &serverlessv1alpha2.GitRepositorySource{
+								URL: tt.URL,
+							},
+						},
+					},
+				},
+			}
+			got := v.validateGitRepoURL()
+			require.ElementsMatch(t, tt.want, got)
+		})
+	}
+}
