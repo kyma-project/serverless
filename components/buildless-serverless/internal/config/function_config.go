@@ -1,7 +1,10 @@
 package config
 
 import (
+	"github.com/pkg/errors"
+	"github.com/vrischmann/envconfig"
 	"gopkg.in/yaml.v2"
+	"k8s.io/apimachinery/pkg/api/resource"
 	"os"
 	"path/filepath"
 	"time"
@@ -35,13 +38,49 @@ type ResourceConfig struct {
 	Function FunctionResourceConfig `yaml:"function"`
 }
 
+var _ envconfig.Unmarshaler = &ResourceConfig{}
+
+func (rc *ResourceConfig) Unmarshal(input string) error {
+	err := yaml.Unmarshal([]byte(input), rc)
+	return err
+}
+
 type FunctionResourceConfig struct {
 	Resources Resources `yaml:"resources"`
 }
 
 type Resources struct {
-	DefaultPreset string `yaml:"defaultPreset"`
-	//TODO: add other fields
+	DefaultPreset    string   `yaml:"defaultPreset"`
+	MinRequestCPU    Quantity `yaml:"minRequestCPU"`
+	MinRequestMemory Quantity `yaml:"minRequestMemory"`
+	Presets          Preset   `yaml:"presets"`
+}
+
+type Preset map[string]Resource
+
+type Resource struct {
+	RequestCPU    Quantity `yaml:"requestCpu"`
+	RequestMemory Quantity `yaml:"requestMemory"`
+	LimitCPU      Quantity `yaml:"limitCpu"`
+	LimitMemory   Quantity `yaml:"limitMemory"`
+}
+
+type Quantity struct {
+	Quantity resource.Quantity
+}
+
+func (q *Quantity) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	quantity := ""
+	err := unmarshal(&quantity)
+	if err != nil {
+		return errors.Wrap(err, "while unmarshalling quantity")
+	}
+	out, err := resource.ParseQuantity(quantity)
+	if err != nil {
+		return errors.Wrap(err, "while parsing quantity")
+	}
+	q.Quantity = out
+	return nil
 }
 
 func LoadFunctionConfig(path string) (FunctionConfig, error) {

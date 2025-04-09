@@ -62,6 +62,9 @@ func (fr *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, nil
 	}
 
+	//TODO: remove this log
+	log.Debug("=====================", fr.Config.ResourceConfig)
+
 	sm := fsm.New(fr.Client, fr.Config, &instance, state.StartState(), fr.Scheme, fr.LastCommitCache, log)
 	return sm.Reconcile(ctx)
 }
