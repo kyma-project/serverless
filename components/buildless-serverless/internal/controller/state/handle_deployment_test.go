@@ -200,7 +200,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 					Inline: &serverlessv1alpha2.InlineSource{
 						Source: "affectionate-mclean"}}}}
 		fc := config.FunctionConfig{
-			ImageNodeJs22: "boring-bartik",
+			Images: config.ImagesConfig{NodeJs22: "boring-bartik"},
 		}
 		cd := appsv1.Deployment{}
 		// identical deployment will be generated inside sFnHandleDeployment
@@ -282,7 +282,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 								Source: "brave-euclid"}},
 						Annotations: map[string]string{"torvalds": "lucid"}}}},
 			FunctionConfig: config.FunctionConfig{
-				ImagePython312: "flamboyant-chatelet"},
+				Images: config.ImagesConfig{Python312: "flamboyant-chatelet"}},
 			Log:    zap.NewNop().Sugar(),
 			Client: k8sClient,
 			Scheme: scheme}
@@ -349,7 +349,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 							Inline: &serverlessv1alpha2.InlineSource{
 								Source: "eager-ardinghelli"}}}}},
 			FunctionConfig: config.FunctionConfig{
-				ImagePython312: "naughty-herschel"},
+				Images: config.ImagesConfig{Python312: "naughty-herschel"}},
 			Log:    zap.NewNop().Sugar(),
 			Client: k8sClient,
 			Scheme: scheme}

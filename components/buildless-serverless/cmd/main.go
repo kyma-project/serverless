@@ -59,13 +59,19 @@ func init() {
 }
 
 type serverlessConfig struct {
-	Function config.FunctionConfig
+	FunctionConfigPath string `envconfig:"default=hack/function-config.yaml"` //`envconfig:"default=/appconfig/function-config.yaml"`
 }
 
 func main() {
-	config, err := loadConfig("APP")
+	cfg, err := loadConfig("APP")
 	if err != nil {
 		setupLog.Error(err, "unable to load config")
+		os.Exit(1)
+	}
+
+	functionCfg, err := config.LoadFunctionConfig(cfg.FunctionConfigPath)
+	if err != nil {
+		setupLog.Error(err, "unable to load configuration file")
 		os.Exit(1)
 	}
 
@@ -186,8 +192,8 @@ func main() {
 		Client:          mgr.GetClient(),
 		Scheme:          mgr.GetScheme(),
 		Log:             reconcilerLogger.Sugar(),
-		Config:          config.Function,
-		LastCommitCache: cache.NewRepoLastCommitCache(config.Function.FunctionReadyRequeueDuration),
+		Config:          functionCfg,
+		LastCommitCache: cache.NewRepoLastCommitCache(functionCfg.FunctionReadyRequeueDuration),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Function")
 		os.Exit(1)
