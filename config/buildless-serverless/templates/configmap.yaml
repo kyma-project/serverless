@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: buildless-serverless-main-config
+  namespace: {{ .Release.Namespace }}
+data:
+  main-config: |
+    images:
+      {{- $images:=.Values.global.images  }}
+      {{- $fetcher:=$images.function_init  }}
+      repoFetcher: "{{ .Values.global.containerRegistry.path }}/{{ $fetcher.directory }}/{{$fetcher.name}}:{{$fetcher.version}}"
+      {{- $js20:=$images.function_runtime_nodejs20  }}
+      nodejs20: "{{ .Values.global.containerRegistry.path }}/{{ $js20.directory }}/{{$js20.name}}:{{$js20.version}}"
+      {{- $js22:=$images.function_runtime_nodejs22  }}
+      nodejs22: "{{ .Values.global.containerRegistry.path }}/{{ $js22.directory }}/{{$js22.name}}:{{$js22.version}}"
+      {{- $p312:=$images.function_runtime_python312  }}
+      python312: "{{ .Values.global.containerRegistry.path }}/{{ $p312.directory }}/{{$p312.name}}:{{$p312.version}}"
+    packageRegistryConfigSecretName: {{- tpl ( .Values.containers.manager.configuration.data.packageRegistryConfigSecretName) . }}
+    functionTraceCollectorEndpoint: {{.Values.containers.manager.configuration.data.functionTraceCollectorEndpoint }}
+    functionPublisherProxyAddress: {{.Values.containers.manager.configuration.data.functionPublisherProxyAddress }}
