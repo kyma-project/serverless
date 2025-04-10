@@ -64,7 +64,7 @@ spec:
                 - ALL
           env:
             - name: APP_FUNCTION_CONFIG_PATH
-              value: "{{ .Values.global.configuration.targetDir }}/{{ .Values.global.configuration.functionFilename }}
+              value: "{{ .Values.global.configuration.targetDir }}/{{ .Values.global.configuration.functionFilename }}"
           volumeMounts:
             - name: configuration
               mountPath: {{ .Values.global.configuration.targetDir }}
