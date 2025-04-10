@@ -4,17 +4,17 @@ This tutorial shows how you can expose your Function to access it outside the cl
 
 When you complete this tutorial, you get a Function that:
 
-- Uses the `no_auth` handler, allowing access on an unsecured endpoint.
+- Uses the `noAuth` access strategy, allowing access on an unsecured endpoint.
 - Accepts the `GET`, `POST`, `PUT`, and `DELETE` methods.
 
-To learn more about securing your Function, see the [Expose and secure a workload with OAuth2](https://kyma-project.io/docs/kyma/latest/03-tutorials/00-api-exposure/apix-05-expose-and-secure-a-workload/apix-05-01-expose-and-secure-workload-oauth2/) or [Expose and secure a workload with JWT](https://kyma-project.io/docs/kyma/latest/03-tutorials/00-api-exposure/apix-05-expose-and-secure-a-workload/apix-05-03-expose-and-secure-workload-jwt/) tutorials.
+To learn more about securing your Function, see the tutorial [Expose and secure a workload with JWT](https://kyma-project.io/#/api-gateway/user/tutorials/01-50-expose-and-secure-a-workload/01-52-expose-and-secure-workload-jwt).
 
 Read also about [Function’s specification](../technical-reference/07-70-function-specification.md) if you are interested in its signature, `event` and `context` objects, and custom HTTP responses the Function returns.
 
 ## Prerequisites
 
 - You have an [existing Function](01-10-create-inline-function.md).
-- You have the [Istio, API Gateway and Serverless modules added](https://kyma-project.io/#/02-get-started/01-quick-install).
+- You have the [Istio, API Gateway, and Serverless modules added](https://kyma-project.io/#/02-get-started/01-quick-install).
 - For the Kyma CLI scenario, you have Kyma CLI installed.
 
 ## Procedure
@@ -40,13 +40,13 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
 
     - **Host** to determine the host on which you want to expose your Function.
 
-4. Edit the access strategy in the **Rules** section.
+4. Edit the **Rules** section.
   - Select the methods `GET`, `POST`, `PUT`, and `DELETE`. 
-  - Use the default `No Auth` handler.
+  - Use the `No Auth` access strategy.
 
 5. Select **Create** to confirm your changes.
 
-6. To check if you can access the Function, copy the host link in the **General** section of the newly created APIRule and paste it into your browser. If successful, the `Hello World!` message appears.
+6. To check if you can access the Function, copy the host link from the **General** section and paste it into your browser. If successful, the following message appears: `Hello World from the Kyma Function serv running on nodejs20!`.
 
 #### **Kyma CLI**
 
