@@ -114,6 +114,6 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
     curl https://$NAME.$DOMAIN
     ```
 
-    If successful, the `Hello World!` message appears.
+    If successful, the following mesage appears: `Hello World from the Kyma Function serv running on nodejs20!`.
 
 <!-- tabs:end -->
