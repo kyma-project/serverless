@@ -17,6 +17,6 @@ data:
       {{- $p312:=$images.function_runtime_python312 }}
       python312: "{{$containerRegistryPath}}/{{$p312.directory}}/{{$p312.name}}:{{$p312.version}}"
     {{- $config:= .Values.containers.manager.configuration.data }}
-    packageRegistryConfigSecretName: {{ $config.packageRegistryConfigSecretName }}
-    functionTraceCollectorEndpoint: {{ $config.functionTraceCollectorEndpoint }}
-    functionPublisherProxyAddress: {{ $config.functionPublisherProxyAddress }}
+    packageRegistryConfigSecretName: "{{ $config.packageRegistryConfigSecretName }}"
+    functionTraceCollectorEndpoint: "{{ $config.functionTraceCollectorEndpoint }}"
+    functionPublisherProxyAddress: "{{ $config.functionPublisherProxyAddress }}"
