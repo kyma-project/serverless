@@ -46,7 +46,7 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
 
 5. Select **Create** to confirm your changes.
 
-6. To check if you can access the Function, copy the host link from the **General** section and paste it into your browser. If successful, the following message appears: `Hello World from the Kyma Function my-functio running on nodejs20!`.
+6. To check if you can access the Function, copy the host link from the **General** section and paste it into your browser. If successful, the following message appears: `Hello World from the Kyma Function my-function running on nodejs20!`.
 
 #### **Kyma CLI**
 
