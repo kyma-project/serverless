@@ -4,6 +4,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/vrischmann/envconfig"
 	"gopkg.in/yaml.v2"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"os"
 	"path/filepath"
@@ -20,11 +21,13 @@ type FunctionConfig struct {
 	ResourceConfig                  ResourceConfig `yaml:"resourceConfig"`
 }
 
-var defaultFunctionConfig = FunctionConfig{
-	RequeueDuration:                 time.Minute,
-	FunctionReadyRequeueDuration:    time.Minute * 5,
-	PackageRegistryConfigSecretName: "buildless-serverless-package-registry-config",
-	FunctionPublisherProxyAddress:   "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish",
+func defaultFunctionConfig() FunctionConfig {
+	return FunctionConfig{
+		RequeueDuration:                 time.Minute,
+		FunctionReadyRequeueDuration:    time.Minute * 5,
+		PackageRegistryConfigSecretName: "buildless-serverless-package-registry-config",
+		FunctionPublisherProxyAddress:   "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish",
+	}
 }
 
 type ImagesConfig struct {
@@ -84,7 +87,7 @@ func (q *Quantity) UnmarshalYAML(unmarshal func(interface{}) error) error {
 }
 
 func LoadFunctionConfig(path string) (FunctionConfig, error) {
-	cfg := defaultFunctionConfig
+	cfg := defaultFunctionConfig()
 
 	cleanPath := filepath.Clean(path)
 	yamlFile, err := os.ReadFile(cleanPath)
@@ -94,4 +97,18 @@ func LoadFunctionConfig(path string) (FunctionConfig, error) {
 
 	err = yaml.Unmarshal(yamlFile, &cfg)
 	return cfg, err
+}
+
+func (r Resource) ToResourceRequirements() corev1.ResourceRequirements {
+	result := corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    r.LimitCPU.Quantity,
+			corev1.ResourceMemory: r.LimitMemory.Quantity,
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    r.RequestCPU.Quantity,
+			corev1.ResourceMemory: r.RequestMemory.Quantity,
+		},
+	}
+	return result
 }

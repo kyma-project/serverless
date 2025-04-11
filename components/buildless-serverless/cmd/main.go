@@ -59,7 +59,7 @@ func init() {
 }
 
 type serverlessConfig struct {
-	FunctionConfigPath string `envconfig:"default=hack/function-config.yaml"` //`envconfig:"default=/appconfig/function-config.yaml"`
+	FunctionConfigPath string `envconfig:"default=hack/function-config.yaml"` // path to development version of function config file
 }
 
 func main() {

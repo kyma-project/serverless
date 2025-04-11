@@ -496,13 +496,43 @@ func TestDeployment_resourceConfiguration(t *testing.T) {
 			},
 		},
 	}
+	fc := config.FunctionConfig{
+		ResourceConfig: config.ResourceConfig{
+			Function: config.FunctionResourceConfig{
+				Resources: config.Resources{
+					Presets: config.Preset{
+						"competent": config.Resource{
+							RequestCPU:    config.Quantity{Quantity: k8sresource.MustParse("11m")},
+							RequestMemory: config.Quantity{Quantity: k8sresource.MustParse("12Mi")},
+							LimitCPU:      config.Quantity{Quantity: k8sresource.MustParse("13m")},
+							LimitMemory:   config.Quantity{Quantity: k8sresource.MustParse("14Mi")},
+						},
+						"quirky": config.Resource{
+							RequestCPU:    config.Quantity{Quantity: k8sresource.MustParse("21m")},
+							RequestMemory: config.Quantity{Quantity: k8sresource.MustParse("22Mi")},
+							LimitCPU:      config.Quantity{Quantity: k8sresource.MustParse("23m")},
+							LimitMemory:   config.Quantity{Quantity: k8sresource.MustParse("24Mi")},
+						},
+						"sad": config.Resource{
+							RequestCPU:    config.Quantity{Quantity: k8sresource.MustParse("31m")},
+							RequestMemory: config.Quantity{Quantity: k8sresource.MustParse("32Mi")},
+							LimitCPU:      config.Quantity{Quantity: k8sresource.MustParse("33m")},
+							LimitMemory:   config.Quantity{Quantity: k8sresource.MustParse("34Mi")},
+						},
+					},
+					DefaultPreset: "quirky",
+				},
+			},
+		},
+	}
 	tests := []struct {
-		name     string
-		function *serverlessv1alpha2.Function
-		want     corev1.ResourceRequirements
+		name           string
+		function       *serverlessv1alpha2.Function
+		functionConfig config.FunctionConfig
+		want           corev1.ResourceRequirements
 	}{
 		{
-			name: "get resource configuration from function",
+			name: "get custom resource configuration from function",
 			function: &serverlessv1alpha2.Function{
 				Spec: serverlessv1alpha2.FunctionSpec{
 					ResourceConfiguration: rc,
@@ -517,11 +547,34 @@ func TestDeployment_resourceConfiguration(t *testing.T) {
 			},
 			want: corev1.ResourceRequirements{},
 		},
+		{
+			name: "get profile resource configuration from function",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+						Function: &serverlessv1alpha2.ResourceRequirements{
+							Profile: "competent",
+						},
+					},
+				},
+			},
+			functionConfig: fc,
+			want:           fc.ResourceConfig.Function.Resources.Presets["competent"].ToResourceRequirements(),
+		},
+		{
+			name: "get default resource configuration from function config",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{},
+			},
+			functionConfig: fc,
+			want:           fc.ResourceConfig.Function.Resources.Presets["quirky"].ToResourceRequirements(),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			d := &Deployment{
-				function: tt.function,
+				function:       tt.function,
+				functionConfig: &tt.functionConfig,
 			}
 
 			r := d.resourceConfiguration()
