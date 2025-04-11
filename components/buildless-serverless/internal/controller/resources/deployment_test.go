@@ -155,7 +155,7 @@ func TestDeployment_construct(t *testing.T) {
 		d := &Deployment{
 			Deployment: nil,
 			functionConfig: &config.FunctionConfig{
-				ImagePython312: "special-test-image",
+				Images: config.ImagesConfig{Python312: "special-test-image"},
 			},
 			function: minimalFunction(),
 		}
@@ -406,9 +406,11 @@ func TestDeployment_workingSourcesDir(t *testing.T) {
 
 func TestDeployment_runtimeImage(t *testing.T) {
 	c := &config.FunctionConfig{
-		ImageNodeJs20:  "image-for-nodejs20",
-		ImageNodeJs22:  "image-for-nodejs22",
-		ImagePython312: "image-for-python312",
+		Images: config.ImagesConfig{
+			NodeJs20:  "image-for-nodejs20",
+			NodeJs22:  "image-for-nodejs22",
+			Python312: "image-for-python312",
+		},
 	}
 	type fields struct {
 		runtime              serverlessv1alpha2.Runtime
@@ -1353,7 +1355,9 @@ func minimalFunction() *serverlessv1alpha2.Function {
 
 func minimalFunctionConfig() *config.FunctionConfig {
 	return &config.FunctionConfig{
-		ImagePython312: "test-image-python312",
+		Images: config.ImagesConfig{
+			Python312: "test-image-python312",
+		},
 	}
 }
 

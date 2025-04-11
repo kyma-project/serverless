@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.global.configuration.configmapName }}
+  namespace: {{ .Release.Namespace }}
+data:
+  {{ .Values.global.configuration.functionFilename }}: |
+    images:
+      {{- $images:=.Values.global.images }}
+      {{- $containerRegistryPath:=.Values.global.containerRegistry.path }}
+      {{- $fetcher:=$images.function_init }}
+      repoFetcher: "{{$containerRegistryPath}}/{{$fetcher.directory}}/{{$fetcher.name}}:{{$fetcher.version}}"
+      {{- $js20:=$images.function_runtime_nodejs20 }}
+      nodejs20: "{{$containerRegistryPath}}/{{$js20.directory}}/{{$js20.name}}:{{$js20.version}}"
+      {{- $js22:=$images.function_runtime_nodejs22 }}
+      nodejs22: "{{$containerRegistryPath}}/{{$js22.directory}}/{{$js22.name}}:{{$js22.version}}"
+      {{- $p312:=$images.function_runtime_python312 }}
+      python312: "{{$containerRegistryPath}}/{{$p312.directory}}/{{$p312.name}}:{{$p312.version}}"
+    {{- $config:= .Values.containers.manager.configuration.data }}
+    packageRegistryConfigSecretName: "{{ $config.packageRegistryConfigSecretName }}"
+    functionTraceCollectorEndpoint: "{{ $config.functionTraceCollectorEndpoint }}"
+    functionPublisherProxyAddress: "{{ $config.functionPublisherProxyAddress }}"

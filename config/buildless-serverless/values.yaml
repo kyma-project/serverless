@@ -1,4 +1,9 @@
 global:
+  configuration:
+    configmapName: "buildless-serverless-config"
+    targetDir: "/appconfig"
+    #logFilename: "log-config.yaml"
+    functionFilename: "function-config.yaml"
   containerRegistry:
     path: europe-docker.pkg.dev/kyma-project
   images:

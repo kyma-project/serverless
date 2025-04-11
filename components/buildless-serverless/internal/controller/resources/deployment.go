@@ -205,7 +205,7 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 	return []corev1.Container{
 		{
 			Name:       fmt.Sprintf("%s-init", d.name()),
-			Image:      d.functionConfig.ImageRepoFetcher,
+			Image:      d.functionConfig.Images.RepoFetcher,
 			WorkingDir: d.workingSourcesDir(),
 			Command: []string{
 				"sh",
@@ -372,11 +372,11 @@ func (d *Deployment) runtimeImage() string {
 
 	switch d.function.Spec.Runtime {
 	case serverlessv1alpha2.NodeJs20:
-		return d.functionConfig.ImageNodeJs20
+		return d.functionConfig.Images.NodeJs20
 	case serverlessv1alpha2.NodeJs22:
-		return d.functionConfig.ImageNodeJs22
+		return d.functionConfig.Images.NodeJs22
 	case serverlessv1alpha2.Python312:
-		return d.functionConfig.ImagePython312
+		return d.functionConfig.Images.Python312
 	default:
 		return ""
 	}

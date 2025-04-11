@@ -1,4 +1,3 @@
-{{- $images:=.Values.global.images  }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,6 +23,10 @@ spec:
         networking.kyma-project.io/from-serverless: allowed
         kyma-project.io/module: serverless
     spec:
+      volumes:
+        - name: configuration
+          configMap:
+            name: "{{ .Values.global.configuration.configmapName }}"
       containers:
         - args:
             - --metrics-bind-address=:8443
@@ -31,7 +34,7 @@ spec:
             - --health-probe-bind-address=:8081
           command:
             - /manager
-          {{- $fc:=$images.function_controller  }}
+          {{- $fc:=.Values.global.images.function_controller  }}
           image: "{{ .Values.global.containerRegistry.path }}/{{ $fc.directory }}/{{$fc.name}}:{{$fc.version}}"
           imagePullPolicy: IfNotPresent
           livenessProbe:
@@ -60,24 +63,11 @@ spec:
               drop:
                 - ALL
           env:
-            - name: APP_FUNCTION_IMAGE_REPO_FETCHER
-              {{- $fetcher:=$images.function_init  }}
-              value: "{{ .Values.global.containerRegistry.path }}/{{ $fetcher.directory }}/{{$fetcher.name}}:{{$fetcher.version}}"
-            - name: APP_FUNCTION_IMAGENODEJS20
-              {{- $js20:=$images.function_runtime_nodejs20  }}
-              value: "{{ .Values.global.containerRegistry.path }}/{{ $js20.directory }}/{{$js20.name}}:{{$js20.version}}"
-            - name: APP_FUNCTION_IMAGENODEJS22
-              {{- $js22:=$images.function_runtime_nodejs22  }}
-              value: "{{ .Values.global.containerRegistry.path }}/{{ $js22.directory }}/{{$js22.name}}:{{$js22.version}}"
-            - name: APP_FUNCTION_IMAGE_PYTHON312
-              {{- $p312:=$images.function_runtime_python312  }}
-              value: "{{ .Values.global.containerRegistry.path }}/{{ $p312.directory }}/{{$p312.name}}:{{$p312.version}}"
-            - name: APP_FUNCTION_PACKAGE_REGISTRY_CONFIG_SECRET_NAME
-              value: "{{- tpl ( .Values.containers.manager.configuration.data.packageRegistryConfigSecretName) . }}"
-            - name: APP_FUNCTION_TRACE_COLLECTOR_ENDPOINT
-              value: "{{.Values.containers.manager.configuration.data.functionTraceCollectorEndpoint }}"
-            - name: APP_FUNCTION_PUBLISHER_PROXY_ADDRESS
-              value: "{{.Values.containers.manager.configuration.data.functionPublisherProxyAddress }}"
+            - name: APP_FUNCTION_CONFIG_PATH
+              value: "{{ .Values.global.configuration.targetDir }}/{{ .Values.global.configuration.functionFilename }}"
+          volumeMounts:
+            - name: configuration
+              mountPath: {{ .Values.global.configuration.targetDir }}
       securityContext:
         runAsNonRoot: true
         runAsGroup: 1000
