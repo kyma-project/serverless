@@ -496,11 +496,33 @@ func (d *Deployment) envs() []corev1.EnvVar {
 }
 
 func (d *Deployment) resourceConfiguration() corev1.ResourceRequirements {
-	resCfg := d.function.Spec.ResourceConfiguration
-	if resCfg != nil && resCfg.Function != nil && resCfg.Function.Resources != nil {
-		return *resCfg.Function.Resources
+	resource, _ := d.resourceConfigurationAndProfile()
+	return resource
+}
+
+func (d *Deployment) ResourceProfile() string {
+	_, profile := d.resourceConfigurationAndProfile()
+	return profile
+}
+
+func (d *Deployment) resourceConfigurationAndProfile() (corev1.ResourceRequirements, string) {
+	cfgResources := d.functionConfig.ResourceConfig.Function.Resources
+	funResource := d.function.Spec.ResourceConfiguration
+	if funResource != nil && funResource.Function != nil {
+		profile := funResource.Function.Profile
+		if profile != "" {
+			if preset, ok := cfgResources.Presets[profile]; ok {
+				return preset.ToResourceRequirements(), profile
+			}
+		}
+		if funResource.Function.Resources != nil {
+			return *funResource.Function.Resources, "custom"
+		}
 	}
-	return corev1.ResourceRequirements{}
+	if preset, ok := cfgResources.Presets[cfgResources.DefaultPreset]; ok {
+		return preset.ToResourceRequirements(), cfgResources.DefaultPreset
+	}
+	return corev1.ResourceRequirements{}, "custom"
 }
 
 func (d *Deployment) deploymentSecretVolumes() (volumes []corev1.Volume, volumeMounts []corev1.VolumeMount) {
