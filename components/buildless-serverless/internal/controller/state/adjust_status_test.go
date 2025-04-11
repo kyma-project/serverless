@@ -34,7 +34,9 @@ func Test_sFnAdjustStatus(t *testing.T) {
 			ResourceConfig: config.ResourceConfig{
 				Function: config.FunctionResourceConfig{
 					Resources: config.Resources{
-						DefaultPreset: "charming-dubinsky"}}}}
+						DefaultPreset: "charming-dubinsky",
+						Presets: config.Preset{
+							"charming-dubinsky": config.Resource{}}}}}}
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Function:        f,
@@ -96,7 +98,9 @@ func Test_sFnAdjustStatus(t *testing.T) {
 			ResourceConfig: config.ResourceConfig{
 				Function: config.FunctionResourceConfig{
 					Resources: config.Resources{
-						DefaultPreset: "charming-dubinsky"}}}}
+						DefaultPreset: "charming-dubinsky",
+						Presets: config.Preset{
+							"charming-dubinsky": config.Resource{}}}}}}
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Function:        f,
@@ -219,7 +223,9 @@ func Test_sFnAdjustStatus(t *testing.T) {
 			ResourceConfig: config.ResourceConfig{
 				Function: config.FunctionResourceConfig{
 					Resources: config.Resources{
-						DefaultPreset: "zealous-grothendieck"}}}}
+						DefaultPreset: "zealous-grothendieck",
+						Presets: config.Preset{
+							"frosty-aryabhata": config.Resource{}}}}}}
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Function:        f,
