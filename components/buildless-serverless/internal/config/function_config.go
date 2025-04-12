@@ -18,7 +18,7 @@ type FunctionConfig struct {
 	PackageRegistryConfigSecretName string         `yaml:"packageRegistryConfigSecretName"`
 	FunctionTraceCollectorEndpoint  string         `yaml:"functionTraceCollectorEndpoint"`
 	FunctionPublisherProxyAddress   string         `yaml:"functionPublisherProxyAddress"`
-	ResourceConfig                  ResourceConfig `yaml:"resourceConfig"`
+	ResourceConfig                  ResourceConfig `yaml:"resourcesConfiguration"`
 }
 
 func defaultFunctionConfig() FunctionConfig {

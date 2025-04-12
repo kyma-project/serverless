@@ -36,3 +36,5 @@ resourcesConfiguration:
         XL:
           requestCpu: "800m"
           requestMemory: "1024Mi"
+          limitCpu: "1600m"
+          limitMemory: "2048Mi"

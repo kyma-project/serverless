@@ -7,6 +7,7 @@ import (
 	"github.com/kyma-project/serverless/internal/controller/fsm"
 	"github.com/kyma-project/serverless/internal/controller/resources"
 	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"reflect"
@@ -125,7 +126,7 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 		(a.Spec.Replicas != nil && b.Spec.Replicas != nil && *a.Spec.Replicas != *b.Spec.Replicas)
 	workingDirChanged := !reflect.DeepEqual(aContainer.WorkingDir, bContainer.WorkingDir)
 	commandChanged := !reflect.DeepEqual(aContainer.Command, bContainer.Command)
-	resourcesChanged := !reflect.DeepEqual(aContainer.Resources, bContainer.Resources)
+	resourcesChanged := !equalResources(aContainer.Resources, bContainer.Resources)
 	envChanged := !reflect.DeepEqual(aContainer.Env, bContainer.Env)
 	volumeMountsChanged := !reflect.DeepEqual(aContainer.VolumeMounts, bContainer.VolumeMounts)
 	portsChanged := !reflect.DeepEqual(aContainer.Ports, bContainer.Ports)
@@ -186,4 +187,11 @@ func updateDeployment(ctx context.Context, m *fsm.StateMachine, clusterDeploymen
 		fmt.Sprintf("Deployment %s updated", clusterDeployment.GetName()))
 	// Requeue the request to ensure the Deployment is updated
 	return true, nil
+}
+
+func equalResources(a, b corev1.ResourceRequirements) bool {
+	return a.Requests.Memory().Equal(*b.Requests.Memory()) &&
+		a.Requests.Cpu().Equal(*b.Requests.Cpu()) &&
+		a.Limits.Memory().Equal(*b.Limits.Memory()) &&
+		a.Limits.Cpu().Equal(*b.Limits.Cpu())
 }
