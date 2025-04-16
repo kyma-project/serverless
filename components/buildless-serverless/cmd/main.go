@@ -17,7 +17,6 @@ limitations under the License.
 package main
 
 import (
-	"crypto/tls"
 	"flag"
 	"github.com/kyma-project/serverless/internal/config"
 	"github.com/kyma-project/serverless/internal/controller/cache"
@@ -26,6 +25,7 @@ import (
 	uberzapcore "go.uber.org/zap/zapcore"
 	"os"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"time"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -62,7 +62,13 @@ type serverlessConfig struct {
 	LeaderElectionEnabled     bool   `envconfig:"default=false"`
 	LeaderElectionID          string `envconfig:"default=serverless-controller-leader-election-helper"`
 	SecretMutatingWebhookPort int    `envconfig:"default=8443"`
+	Healthz                   healthzConfig
 	FunctionConfigPath        string `envconfig:"default=hack/function-config.yaml"` // path to development version of function config file
+}
+
+type healthzConfig struct {
+	Address         string        `envconfig:"default=:8090"`
+	LivenessTimeout time.Duration `envconfig:"default=10s"`
 }
 
 func main() {
@@ -78,22 +84,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	//TODO: Do we need all these flags?
-	var metricsAddr string
-	var enableLeaderElection bool
-	var probeAddr string
-	var secureMetrics bool
-	var enableHTTP2 bool
-	flag.StringVar(&metricsAddr, "metrics-bind-address", "0", "The address the metrics endpoint binds to. "+
-		"Use :8443 for HTTPS or :8080 for HTTP, or leave as 0 to disable the metrics service.")
-	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
-	flag.BoolVar(&enableLeaderElection, "leader-elect", false,
-		"Enable leader election for controller manager. "+
-			"Enabling this will ensure there is only one active controller manager.")
-	flag.BoolVar(&secureMetrics, "metrics-secure", true,
-		"If set, the metrics endpoint is served securely via HTTPS. Use --metrics-secure=false to use HTTP instead.")
-	flag.BoolVar(&enableHTTP2, "enable-http2", false,
-		"If set, HTTP/2 will be enabled for the metrics and webhook servers")
 	opts := zap.Options{
 		// TODO: change this flag for production
 		Development: true,
@@ -103,18 +93,6 @@ func main() {
 	flag.Parse()
 
 	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
-
-	//TODO: Do we need this part of code (about http2)?
-	// if the enable-http2 flag is false (the default), http/2 should be disabled
-	// due to its vulnerabilities. More specifically, disabling http/2 will
-	// prevent from being vulnerable to the HTTP/2 Stream Cancellation and
-	// Rapid Reset CVEs. For more information see:
-	// - https://github.com/advisories/GHSA-qppj-fm5r-hxr3
-	// - https://github.com/advisories/GHSA-4374-p667-p6c8
-	disableHTTP2 := func(c *tls.Config) {
-		setupLog.Info("disabling http/2")
-		c.NextProtos = []string{"http/1.1"}
-	}
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme: scheme,
@@ -126,18 +104,7 @@ func main() {
 		WebhookServer: webhook.NewServer(webhook.Options{
 			Port: cfg.SecretMutatingWebhookPort,
 		}),
-		HealthProbeBindAddress: probeAddr,
-		// LeaderElectionReleaseOnCancel defines if the leader should step down voluntarily
-		// when the Manager ends. This requires the binary to immediately end when the
-		// Manager is stopped, otherwise, this setting is unsafe. Setting this significantly
-		// speeds up voluntary leader transitions as the new leader don't have to wait
-		// LeaseDuration time first.
-		//
-		// In the default scaffold provided, the program ends immediately after
-		// the manager stops, so would be fine to enable this option. However,
-		// if you are doing or is intended to do any operation such as perform cleanups
-		// after the manager stops then its usage might be unsafe.
-		// LeaderElectionReleaseOnCancel: true,
+		HealthProbeBindAddress: cfg.Healthz.Address,
 		Client: client.Options{
 			Cache: &client.CacheOptions{
 				DisableFor: []client.Object{
