@@ -360,7 +360,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			},
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			fieldPath:      "spec.labels",
-			expectedErrMsg: "Labels has key starting with ",
+			expectedErrMsg: "Invalid value: \"object\": Labels has key starting with serverless.kyma-project.io/ which is not allowed",
 		},
 		"labels use restricted domain": {
 			fn: &serverlessv1alpha2.Function{
@@ -376,7 +376,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			},
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			fieldPath:      "spec.labels",
-			expectedErrMsg: "Labels has key starting with ",
+			expectedErrMsg: "Invalid value: \"object\": Labels has key starting with serverless.kyma-project.io/ which is not allowed",
 		},
 		"labels has many values with incorrect one": {
 			fn: &serverlessv1alpha2.Function{
@@ -394,7 +394,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			},
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			fieldPath:      "spec.labels",
-			expectedErrMsg: "Labels has key starting with ",
+			expectedErrMsg: "Invalid value: \"object\": Labels has key starting with serverless.kyma-project.io/ which is not allowed",
 		},
 		"annotations use exact restricted domain": {
 			fn: &serverlessv1alpha2.Function{
@@ -410,7 +410,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			},
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			fieldPath:      "spec.annotations",
-			expectedErrMsg: "Annotations has key starting with ",
+			expectedErrMsg: "Invalid value: \"object\": Annotations has key starting with serverless.kyma-project.io/ which is not allowed",
 		},
 		"annotations has many values with incorrect one": {
 			fn: &serverlessv1alpha2.Function{
@@ -428,7 +428,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			},
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			fieldPath:      "spec.annotations",
-			expectedErrMsg: "Annotations has key starting with ",
+			expectedErrMsg: "Invalid value: \"object\": Annotations has key starting with serverless.kyma-project.io/ which is not allowed",
 		},
 		"annotations use restricted domain": {
 			fn: &serverlessv1alpha2.Function{
@@ -444,7 +444,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			},
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 			fieldPath:      "spec.annotations",
-			expectedErrMsg: "Annotations has key starting with ",
+			expectedErrMsg: "Invalid value: \"object\": Annotations has key starting with serverless.kyma-project.io/ which is not allowed",
 		},
 		"reserved env: FUNC_RUNTIME": {
 			fn: &serverlessv1alpha2.Function{
@@ -460,7 +460,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "Following envs are reserved",
+			expectedErrMsg: "Invalid value: \"array\": Following envs are reserved and cannot be used: ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH']",
 			fieldPath:      "spec.env",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -478,7 +478,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "Following envs are reserved",
+			expectedErrMsg: "Invalid value: \"array\": Following envs are reserved and cannot be used: ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH']",
 			fieldPath:      "spec.env",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -496,7 +496,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "Following envs are reserved",
+			expectedErrMsg: "Invalid value: \"array\": Following envs are reserved and cannot be used: ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH']",
 			fieldPath:      "spec.env",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -514,7 +514,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "Following envs are reserved",
+			expectedErrMsg: "Invalid value: \"array\": Following envs are reserved and cannot be used: ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH']",
 			fieldPath:      "spec.env",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -532,7 +532,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "Following envs are reserved",
+			expectedErrMsg: "Invalid value: \"array\": Following envs are reserved and cannot be used: ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH']",
 			fieldPath:      "spec.env",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -550,7 +550,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "Following envs are reserved",
+			expectedErrMsg: "Invalid value: \"array\": Following envs are reserved and cannot be used: ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH']",
 			fieldPath:      "spec.env",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -565,7 +565,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "Use GitRepository or Inline source",
+			expectedErrMsg: "Invalid value: \"object\": Use GitRepository or Inline source",
 			fieldPath:      "spec.source",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -577,7 +577,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					Source:  serverlessv1alpha2.Source{},
 				},
 			},
-			expectedErrMsg: "Use GitRepository or Inline source",
+			expectedErrMsg: "Invalid value: \"object\": Use GitRepository or Inline source",
 			fieldPath:      "spec.source",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -592,7 +592,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "should be at least 1 chars long",
+			expectedErrMsg: "Invalid value: \"\": spec.secretMounts[0].secretName in body should be at least 1 chars long",
 			fieldPath:      "spec.secretMounts[0].secretName",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -607,7 +607,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "should be at least 1 chars long",
+			expectedErrMsg: "Invalid value: \"\": spec.secretMounts[0].mountPath in body should be at least 1 chars long",
 			fieldPath:      "spec.secretMounts[0].mountPath",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -622,7 +622,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "Label value cannot be longer than 63",
+			expectedErrMsg: "Invalid value: \"object\": Label value cannot be longer than 63",
 			fieldPath:      "spec.labels",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -636,7 +636,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "should be at least 1 chars long",
+			expectedErrMsg: "Invalid value: \"\": spec.source.inline.source in body should be at least 1 chars long",
 			fieldPath:      "spec.source.inline.source",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -655,7 +655,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "BaseDir is required and cannot be empty",
+			expectedErrMsg: "Invalid value: \"object\": BaseDir is required and cannot be empty",
 			fieldPath:      "spec.source.gitRepository",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -674,7 +674,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "Reference is required and cannot be empty",
+			expectedErrMsg: "Invalid value: \"object\": Reference is required and cannot be empty",
 			fieldPath:      "spec.source.gitRepository",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -697,7 +697,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 					},
 				},
 			},
-			expectedErrMsg: "SecretName is required and cannot be empty",
+			expectedErrMsg: "Invalid value: \"string\": SecretName is required and cannot be empty",
 			fieldPath:      "spec.source.gitRepository.auth.secretName",
 			expectedCause:  metav1.CauseTypeFieldValueInvalid,
 		},
@@ -717,7 +717,7 @@ func Test_XKubernetesValidations_Invalid(t *testing.T) {
 			assert.Equal(t, tc.expectedCause, cause.Type)
 			assert.Equal(t, tc.fieldPath, cause.Field)
 			assert.NotEmpty(t, tc.expectedErrMsg, "cause message: %s", cause.Message)
-			assert.Equal(t, cause.Message, tc.expectedErrMsg)
+			assert.Equal(t, tc.expectedErrMsg, cause.Message)
 		})
 	}
 }
