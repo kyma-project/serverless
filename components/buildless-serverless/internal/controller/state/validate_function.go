@@ -13,7 +13,7 @@ import (
 )
 
 func sFnValidateFunction(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	v := validator.New(&m.State.Function)
+	v := validator.New(m)
 	validationResults := v.Validate()
 	if len(validationResults) != 0 {
 		m.State.Function.UpdateCondition(
