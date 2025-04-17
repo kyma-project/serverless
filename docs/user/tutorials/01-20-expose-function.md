@@ -27,7 +27,7 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
 
 1. Select a namespace from the drop-down list in the navigation panel. Make sure the namespace includes the Function that you want to expose using the APIRule CR.
 
-2. Go to **Discovery and Network** > **API Rules**, and choose **Create**.
+2. Go to **Discovery and Network** > **API Rules v2alpha1**, and choose **Create**.
 
 3. Enter the following information:
 
@@ -82,7 +82,7 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
 
     ```bash
     cat <<EOF | kubectl apply -f -
-    apiVersion: gateway.kyma-project.io/v2
+    apiVersion: gateway.kyma-project.io/v2alpha1
     kind: APIRule
     metadata:
       name: $NAME
