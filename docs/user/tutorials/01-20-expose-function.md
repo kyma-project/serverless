@@ -82,7 +82,7 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
 
     ```bash
     cat <<EOF | kubectl apply -f -
-    apiVersion: gateway.kyma-project.io/v2
+    apiVersion: gateway.kyma-project.io/v2alpha1
     kind: APIRule
     metadata:
       name: $NAME
