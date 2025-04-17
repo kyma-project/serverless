@@ -3,7 +3,6 @@ package state
 import (
 	"context"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	"github.com/kyma-project/serverless/internal/config"
 	"github.com/kyma-project/serverless/internal/controller/fsm"
 	"github.com/pkg/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -25,7 +24,7 @@ func sFnAdjustStatus(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl
 	}
 	s.PodSelector = selector.String()
 
-	s.FunctionResourceProfile = getUsedResourceFunctionPreset(f.Spec.ResourceConfiguration, m.FunctionConfig)
+	s.FunctionResourceProfile = m.State.BuiltDeployment.ResourceProfile()
 
 	if m.State.Function.HasGitSources() {
 		s.GitRepository = &serverlessv1alpha2.GitRepositoryStatus{
@@ -46,16 +45,4 @@ func sFnAdjustStatus(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl
 	}
 
 	return requeueAfter(m.FunctionConfig.FunctionReadyRequeueDuration)
-}
-
-func getUsedResourceFunctionPreset(resourceConfiguration *serverlessv1alpha2.ResourceConfiguration, functionConfig config.FunctionConfig) string {
-	defaultPreset := functionConfig.ResourceConfig.Function.Resources.DefaultPreset
-	if resourceConfiguration == nil || resourceConfiguration.Function == nil {
-		return defaultPreset
-	}
-	resourceRequirements := resourceConfiguration.Function
-	if resourceRequirements.Resources != nil {
-		return "custom"
-	}
-	return resourceRequirements.Profile
 }
