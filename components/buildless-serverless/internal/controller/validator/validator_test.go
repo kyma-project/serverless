@@ -552,8 +552,8 @@ func Test_validator_validateFunctionResources(t *testing.T) {
 				},
 				fnConfig: config.FunctionConfig{
 					ResourceConfig: config.ResourceConfig{
-						Function: config.ResourceRequirementsConfig{
-							Resources: config.ResourcesConfig{
+						Function: config.FunctionResourceConfig{
+							Resources: config.Resources{
 								MinRequestCPU:    config.Quantity{Quantity: tt.minCPU},
 								MinRequestMemory: config.Quantity{Quantity: tt.minMemory},
 							},
