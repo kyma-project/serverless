@@ -2,7 +2,7 @@
 
 This tutorial demonstrates how to connect two Functions asynchronously with [cloud events](https://github.com/cloudevents/spec). It is based on the [in-cluster Eventing example](https://github.com/kyma-project/serverless/tree/main/examples/incluster_eventing).
 
-The example provides a very simple scenario of asynchronous communication between two Functions. The first Function accepts the incoming traffic via HTTP, sanitizes the payload, and publishes the content as an in-cluster cloud event using [Kyma Eventing](https://kyma-project.io/docs/kyma/latest/01-overview/eventing/).
+The example provides a very simple scenario of asynchronous communication between two Functions. The first Function accepts the incoming traffic using HTTP, sanitizes the payload, and publishes the content as an in-cluster cloud event using [Kyma Eventing](https://kyma-project.io/docs/kyma/latest/01-overview/eventing/).
 The second Function is a message receiver. It subscribes to the given event type and stores the payload.
 
 This tutorial shows only one possible use case. There are many more use cases on how to orchestrate your application logic into specialized Functions and benefit from decoupled, re-usable components and event-driven architecture.
