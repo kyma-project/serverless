@@ -17,12 +17,15 @@ limitations under the License.
 package main
 
 import (
-	"flag"
+	"context"
+	"github.com/go-logr/zapr"
 	"github.com/kyma-project/serverless/internal/config"
 	"github.com/kyma-project/serverless/internal/controller/cache"
+	"github.com/kyma-project/serverless/internal/logging"
 	"github.com/vrischmann/envconfig"
 	uberzap "go.uber.org/zap"
 	uberzapcore "go.uber.org/zap/zapcore"
+	corev1 "k8s.io/api/core/v1"
 	"os"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"time"
@@ -36,7 +39,7 @@ import (
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
-	"sigs.k8s.io/controller-runtime/pkg/log/zap"
+	ctrlzap "sigs.k8s.io/controller-runtime/pkg/log/zap"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
@@ -47,7 +50,7 @@ import (
 
 var (
 	scheme   = runtime.NewScheme()
-	setupLog = zap.New().WithName("setup")
+	setupLog = ctrlzap.New().WithName("setup")
 )
 
 func init() {
@@ -64,6 +67,8 @@ type serverlessConfig struct {
 	SecretMutatingWebhookPort int    `envconfig:"default=8443"`
 	Healthz                   healthzConfig
 	FunctionConfigPath        string `envconfig:"default=hack/function-config.yaml"` // path to development version of function config file
+	LogConfigPath             string `envconfig:"default=hack/log-config.yaml"`      // path to development version of log config file
+
 }
 
 type healthzConfig struct {
@@ -80,21 +85,45 @@ func main() {
 
 	functionCfg, err := config.LoadFunctionConfig(cfg.FunctionConfigPath)
 	if err != nil {
-		setupLog.Error(err, "unable to load configuration file")
+		setupLog.Error(err, "unable to load function configuration file")
 		os.Exit(1)
 	}
 
-	opts := zap.Options{
-		// TODO: change this flag for production
-		Development: true,
-		TimeEncoder: uberzapcore.TimeEncoderOfLayout("Jan 02 15:04:05.000000000"),
+	logCfg, err := config.LoadLogConfig(cfg.LogConfigPath)
+	if err != nil {
+		setupLog.Error(err, "unable to load log configuration file")
+		os.Exit(1)
 	}
-	opts.BindFlags(flag.CommandLine)
-	flag.Parse()
 
-	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
+	atomic := uberzap.NewAtomicLevel()
+	parsedLevel, err := uberzapcore.ParseLevel(logCfg.LogLevel)
+	if err != nil {
+		setupLog.Error(err, "unable to parse logger level")
+		os.Exit(1)
+	}
+	atomic.SetLevel(parsedLevel)
 
-	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+	log, err := logging.ConfigureLogger(logCfg.LogLevel, logCfg.LogFormat, atomic)
+	if err != nil {
+		setupLog.Error(err, "unable to configure log")
+		os.Exit(1)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	logWithCtx := log.WithContext()
+	go logging.ReconfigureOnConfigChange(ctx, logWithCtx.Named("notifier"), atomic, cfg.LogConfigPath)
+
+	ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
+
+	logWithCtx.Info("Generating Kubernetes client config")
+	restConfig := ctrl.GetConfigOrDie()
+
+	//TODO: add support for prometheus metrics
+
+	logWithCtx.Info("Initializing controller manager")
+	mgr, err := ctrl.NewManager(restConfig, ctrl.Options{
 		Scheme: scheme,
 		Metrics: metricsserver.Options{
 			BindAddress: cfg.MetricsAddress,
@@ -109,30 +138,22 @@ func main() {
 			Cache: &client.CacheOptions{
 				DisableFor: []client.Object{
 					&serverlessv1alpha2.Function{},
+					&corev1.Secret{},
+					&corev1.ConfigMap{},
 				},
 			},
 		},
+		// TODO: add cache config if needed
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
 		os.Exit(1)
 	}
 
-	logConfig := uberzap.NewDevelopmentConfig()
-	logConfig.EncoderConfig.TimeKey = "timestamp"
-	logConfig.EncoderConfig.EncodeTime = opts.TimeEncoder
-	logConfig.DisableCaller = true
-
-	reconcilerLogger, err := logConfig.Build()
-	if err != nil {
-		setupLog.Error(err, "unable to setup logger")
-		os.Exit(1)
-	}
-
 	if err = (&controller.FunctionReconciler{
 		Client:          mgr.GetClient(),
 		Scheme:          mgr.GetScheme(),
-		Log:             reconcilerLogger.Sugar(),
+		Log:             logWithCtx,
 		Config:          functionCfg,
 		LastCommitCache: cache.NewRepoLastCommitCache(functionCfg.FunctionReadyRequeueDuration),
 	}).SetupWithManager(mgr); err != nil {

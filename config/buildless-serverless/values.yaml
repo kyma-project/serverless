@@ -1,9 +1,13 @@
 global:
   configuration:
-    configmapName: "serverless-config"
-    targetDir: "/appconfig"
-    #logFilename: "log-config.yaml"
-    functionFilename: "function-config.yaml"
+    function:
+      configmapName: "serverless-config"
+      targetDir: "/appconfig"
+      filename: "function-config.yaml"
+    log:
+      configmapName: "serverless-log-config"
+      targetDir: "/logconfig"
+      filename: "log-config.yaml"
   containerRegistry:
     path: europe-docker.pkg.dev/kyma-project
   images:
@@ -29,6 +33,10 @@ global:
       directory: "prod"
 containers:
   manager:
+    logConfiguration:
+      data:
+        logLevel: "info"
+        logFormat: "json"
     configuration:
       data:
         packageRegistryConfigSecretName: 'serverless-package-registry-config'

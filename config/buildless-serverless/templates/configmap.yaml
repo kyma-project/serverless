@@ -4,14 +4,14 @@ metadata:
   labels:
     kyma-project.io/module: serverless
     app.kubernetes.io/name: buildless-serverless
-    app.kubernetes.io/instance: {{ .Values.global.configuration.configmapName }}
+    app.kubernetes.io/instance: {{ .Values.global.configuration.function.configmapName }}
     app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
     app.kubernetes.io/component: controller
     app.kubernetes.io/part-of: serverless
-  name: {{ .Values.global.configuration.configmapName }}
+  name: {{ .Values.global.configuration.function.configmapName }}
   namespace: {{ .Release.Namespace }}
 data:
-  {{ .Values.global.configuration.functionFilename }}: |
+  {{ .Values.global.configuration.function.filename }}: |
     images:
       {{- $images:=.Values.global.images }}
       {{- $containerRegistryPath:=.Values.global.containerRegistry.path }}
@@ -29,3 +29,19 @@ data:
     functionPublisherProxyAddress: "{{ $config.functionPublisherProxyAddress }}"
     resourcesConfiguration:
 {{ .Values.containers.manager.configuration.data.resourcesConfiguration | toYaml | indent 6 }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    kyma-project.io/module: serverless
+    app.kubernetes.io/name: buildless-serverless
+    app.kubernetes.io/instance: {{ .Values.global.configuration.log.configmapName }}
+    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/part-of: serverless
+  name: "{{ .Values.global.configuration.log.configmapName }}"
+  namespace: {{ .Release.Namespace }}
+data:
+  {{ .Values.global.configuration.log.filename }}:
+{{ .Values.containers.manager.logConfiguration.data | toYaml | indent 4 }}
