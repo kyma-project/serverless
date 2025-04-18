@@ -6,7 +6,7 @@ metadata:
     name: event-receiver
     namespace: default
 spec:
-    runtime: nodejs20
+    runtime: nodejs22
     source:
       gitRepository: 
         url: https://github.com/kyma-project/serverless.git
@@ -19,7 +19,7 @@ metadata:
   name: event-receiver
   namespace: default
 spec:
-  sink: 'http://event-receiver.default.svc.cluster.local'
-  source: ""
-  types:
-  - sap.kyma.custom.acme.payload.sanitised.v1
+    source: my-app
+    types:
+    - payload.sanitised
+    sink: http://event-receiver.default.svc.cluster.local

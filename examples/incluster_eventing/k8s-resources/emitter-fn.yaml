@@ -6,12 +6,17 @@ metadata:
     name: event-emitter
     namespace: default
 spec:
-    runtime: nodejs20
+    runtime: nodejs22
     source:
       gitRepository: 
         url: https://github.com/kyma-project/serverless.git
         baseDir: /examples/incluster_eventing/src/emitter-fn/
         reference: main
+    env:
+        - name: EVENT_TYPE
+          value: payload.sanitised
+        - name: EVENT_SOURCE
+          value: my-app
 ---
 apiVersion: gateway.kyma-project.io/v2
 kind: APIRule
