@@ -122,6 +122,12 @@ subCommands:
       {
         "dependencies": {}
       }
+  - type: map
+    name: "env"
+    description: "function environment variables in format key=value"
+  - type: map
+    name: secret-mount
+    description: "function secret mounts in format secret-name=mount-path"
   with:
     resource:
       apiVersion: serverless.kyma-project.io/v1alpha2
@@ -133,6 +139,8 @@ subCommands:
         runtimeImageOverride: ${{ .flags.runtimeimageoverride.value }}
         runtime: ${{ .flags.runtime.value }}
         replicas: ${{ .flags.replicas.value }}
+        env: ${{ .flags.env.value | toEnvs }}
+        secretMounts: ${{ .flags.secretmount.value | toArray "{'secretName':'{{.key}}','mountPath':'{{.value}}'}" }}
         source:
           inline:
             source: |
