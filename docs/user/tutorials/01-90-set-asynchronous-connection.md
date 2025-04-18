@@ -186,7 +186,7 @@ This tutorial shows only one possible use case. There are many more use cases on
          namespace: default
       spec:
          sink: 'http://receiver.default.svc.cluster.local'
-         source: ""
+         source: "my-app"
          types:
          - payload.sanitised
    EOF
