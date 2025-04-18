@@ -4,7 +4,7 @@ This example provides a Serverless Function that exposes REST API to manage reco
 
 ## Prerequisites
 
-- [Serverless module installed](https://kyma-project.io/#/02-get-started/01-quick-install) locally or on a cluster
+- [Serverless and API-Gateway modules installed](https://kyma-project.io/#/02-get-started/01-quick-install) locally or on a cluster
 
 ## Deploy 
 
