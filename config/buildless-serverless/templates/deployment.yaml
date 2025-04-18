@@ -31,7 +31,10 @@ spec:
       volumes:
         - name: configuration
           configMap:
-            name: "{{ .Values.global.configuration.configmapName }}"
+            name: "{{ .Values.global.configuration.function.configmapName }}"
+        - name: log-configuration
+          configMap:
+            name: "{{ .Values.global.configuration.log.configmapName }}"
       containers:
         - args:
             - --metrics-bind-address=:8443
@@ -69,10 +72,14 @@ spec:
                 - ALL
           env:
             - name: APP_FUNCTION_CONFIG_PATH
-              value: "{{ .Values.global.configuration.targetDir }}/{{ .Values.global.configuration.functionFilename }}"
+              value: "{{ .Values.global.configuration.function.targetDir }}/{{ .Values.global.configuration.function.filename }}"
+            - name: APP_LOG_CONFIG_PATH
+              value: "{{ .Values.global.configuration.log.targetDir }}/{{ .Values.global.configuration.log.Filename }}"
           volumeMounts:
             - name: configuration
-              mountPath: {{ .Values.global.configuration.targetDir }}
+              mountPath: {{ .Values.global.configuration.function.targetDir }}
+            - name: configuration
+              mountPath: {{ .Values.global.configuration.log.targetDir }}
       securityContext:
         runAsNonRoot: true
         runAsGroup: 1000
