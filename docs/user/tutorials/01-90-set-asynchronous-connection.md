@@ -19,8 +19,13 @@ This tutorial shows only one possible use case. There are many more use cases on
    ```bash
    export KUBECONFIG={KUBECONFIG_PATH}
    ```
+2. Enable Istio service mesh for `default` namespace:
 
-2. Create the `emitter` and `receiver` folders in your project.
+   ```bash
+   kubectl label namespaces default istio-injection=enabled
+   ```
+
+3. Create the `emitter` and `receiver` folders in your project.
 
 ### Create the Emitter Function
 
@@ -39,7 +44,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 2. Provide your Function logic in the `handler.js` file:
 
    > [!NOTE]
-   > In this example, there's no sanitization logic. The `sanitize` Function is just a placeholder.
+   > In this example, there's no real sanitization logic but the Function simply logs the payload.
 
    ```js
    const { SpanStatusCode } = require("@opentelemetry/api");
@@ -48,8 +53,8 @@ This tutorial shows only one possible use case. There are many more use cases on
       main: async function (event, context) {
          let sanitisedData = sanitise(event.data)
 
-         const eventType = process.env['EVENT_TYPE'];
-         const eventSource = process.env['EVENT_SOURCE'];
+         const eventType = "payload.sanitised";
+         const eventSource = "my-app";
 
          const span = event.tracer.startSpan('call-to-kyma-eventing');
          
@@ -84,6 +89,16 @@ This tutorial shows only one possible use case. There are many more use cases on
       return data
    }
    ```
+
+   Include opentelemetry SDK in the Function dependencies. Add the following to the `package.json`:
+   ```js
+   {
+      "dependencies": {
+         "@opentelemetry/api": "^1.0.4"
+      }
+   }
+   ```
+
 
    The `payload.sanitised` is a sample event type that the emitter Function uses when publishing events. You can choose a different one that better suits your use case. Keep in mind the constraints described on the [Event names](https://kyma-project.io/docs/kyma/latest/05-technical-reference/evnt-01-event-names/) page. The receiver subscribes to the event type to consume the events.
 
