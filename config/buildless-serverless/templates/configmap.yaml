@@ -43,5 +43,5 @@ metadata:
   name: "{{ .Values.global.configuration.log.configmapName }}"
   namespace: {{ .Release.Namespace }}
 data:
-  {{ .Values.global.configuration.log.filename }}:
+  {{ .Values.global.configuration.log.filename }}: |
 {{ .Values.containers.manager.logConfiguration.data | toYaml | indent 4 }}
