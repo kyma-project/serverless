@@ -16,7 +16,7 @@ This example also provides a template for a git project with Kyma Functions. Ple
 
 ## Deploy
 
-Deploy to Kyma runtime using `make deploy` target.
+Deploy to Kyma runtime using the `make deploy` target.
 
 ### Auto-Deploy Code Changes
 

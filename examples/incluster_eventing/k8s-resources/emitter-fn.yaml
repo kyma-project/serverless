@@ -18,7 +18,7 @@ spec:
         - name: EVENT_SOURCE
           value: my-app
 ---
-apiVersion: gateway.kyma-project.io/v2
+apiVersion: gateway.kyma-project.io/v2alpha1
 kind: APIRule
 metadata:
   name: incoming-http-trigger

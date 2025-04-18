@@ -87,7 +87,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 
    The `payload.sanitised` is a sample event type that the emitter Function uses when publishing events. You can choose a different one that better suits your use case. Keep in mind the constraints described on the [Event names](https://kyma-project.io/docs/kyma/latest/05-technical-reference/evnt-01-event-names/) page. The receiver subscribes to the event type to consume the events.
 
-   The `event` object provides convenience API to emit events. To learn more, read [Function's specification](../technical-reference/07-70-function-specification.md#event-object-sdk).
+   The `event` object provides a convenient API for emitting events. To learn more, read [Function's specification](../technical-reference/07-70-function-specification.md#event-object-sdk).
    
 3. Apply your emitter Function:
 
@@ -136,7 +136,7 @@ This tutorial shows only one possible use case. There are many more use cases on
    ```
 
    The `init` command creates the same files as in the `emitter` folder.
-   Write you own logic for the receiver. In the following example the receiver function will just log the reveived payload.
+   In the following example, the receiver function logs the received payload.
 
    ```js
    module.exports = {
