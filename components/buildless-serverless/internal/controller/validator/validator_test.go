@@ -4,7 +4,6 @@ import (
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
-	"github.com/kyma-project/serverless/internal/controller/fsm"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -19,13 +18,7 @@ func TestNewFunctionValidator(t *testing.T) {
 				Name:      "compassionate-villani-name",
 				Namespace: "vigorous-jang-ns"}}
 
-		m := &fsm.StateMachine{
-			State: fsm.SystemState{
-				Function: *f,
-			},
-		}
-
-		r := New(m)
+		r := New(f, config.FunctionConfig{})
 
 		require.NotNil(t, r)
 		require.NotNil(t, r.instance)
@@ -36,7 +29,7 @@ func TestNewFunctionValidator(t *testing.T) {
 
 func Test_functionValidator_Validate(t *testing.T) {
 	t.Run("when function is valid should return empty list", func(t *testing.T) {
-		v := New(&fsm.StateMachine{})
+		v := New(&serverlessv1alpha2.Function{}, config.FunctionConfig{})
 
 		r := v.Validate()
 
@@ -50,11 +43,7 @@ func Test_functionValidator_Validate(t *testing.T) {
 				Runtime: "upbeat-boyd",
 			}}
 
-		v := New(&fsm.StateMachine{
-			State: fsm.SystemState{
-				Function: *f,
-			},
-		})
+		v := New(f, config.FunctionConfig{})
 
 		r := v.Validate()
 
@@ -104,11 +93,7 @@ func Test_functionValidator_validateEnvs(t *testing.T) {
 					Env: tt.envs,
 				}}
 
-			v := New(&fsm.StateMachine{
-				State: fsm.SystemState{
-					Function: *f,
-				},
-			})
+			v := New(f, config.FunctionConfig{})
 			r := v.validateEnvs()
 			require.ElementsMatch(t, tt.want, r)
 		})
@@ -186,11 +171,7 @@ func Test_functionValidator_validateInlineDeps(t *testing.T) {
 				Spec: tt.spec,
 			}
 
-			v := New(&fsm.StateMachine{
-				State: fsm.SystemState{
-					Function: *f,
-				},
-			})
+			v := New(f, config.FunctionConfig{})
 			r := v.validateInlineDeps()
 			require.ElementsMatch(t, tt.want, r)
 		})
@@ -232,12 +213,7 @@ func Test_functionValidator_validateRuntime(t *testing.T) {
 				},
 			}
 
-			v := New(
-				&fsm.StateMachine{
-					State: fsm.SystemState{
-						Function: *f,
-					},
-				})
+			v := New(f, config.FunctionConfig{})
 			r := v.validateRuntime()
 			require.ElementsMatch(t, tt.want, r)
 		})
