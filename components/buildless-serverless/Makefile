@@ -154,7 +154,7 @@ install-buildless: build-image disable-operator## Build buildless serverless ima
 	docker tag $(APP_NAME) $(APP_NAME):$(HASH_TAG)
 
 	k3d image import $(APP_NAME):$(HASH_TAG) -c kyma
-	kubectl set image deployment -n kyma-system buildless-serverless-controller-manager manager=$(APP_NAME):$(HASH_TAG)
+	kubectl set image deployment -n kyma-system serverless-controller-manager manager=$(APP_NAME):$(HASH_TAG)
 ##@ Deployment
 
 ifndef ignore-not-found

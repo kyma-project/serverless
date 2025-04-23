@@ -9,13 +9,13 @@ metadata:
     app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
     app.kubernetes.io/component: controller
     app.kubernetes.io/part-of: serverless
-  name: buildless-serverless-leader-election-rolebinding
+  name: serverless-leader-election-rolebinding
   namespace: {{ .Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: buildless-serverless-leader-election-role
+  name: serverless-leader-election-role
 subjects:
   - kind: ServiceAccount
-    name: buildless-serverless-controller-manager
+    name: serverless-controller-manager
     namespace: {{ .Release.Namespace }}

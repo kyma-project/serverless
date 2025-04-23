@@ -1,6 +1,6 @@
 global:
   configuration:
-    configmapName: "buildless-serverless-config"
+    configmapName: "serverless-config"
     targetDir: "/appconfig"
     #logFilename: "log-config.yaml"
     functionFilename: "function-config.yaml"

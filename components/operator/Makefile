@@ -164,7 +164,7 @@ check-buildless-serverless-installation: ## Wait for Serverless CR to be in Read
 	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s || \
 		(make print-serverless-details && false)
 
-	kubectl wait --for condition=Available -n kyma-system deployment buildless-serverless-controller-manager --timeout=60s || \
+	kubectl wait --for condition=Available -n kyma-system deployment serverless-controller-manager --timeout=60s || \
 		(make print-serverless-details && false)
 
 .PHONY: print-serverless-details
