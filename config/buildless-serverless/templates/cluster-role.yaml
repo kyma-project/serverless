@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
     app.kubernetes.io/component: controller
     app.kubernetes.io/part-of: serverless
-  name: buildless-serverless-manager-role
+  name: serverless-manager-role
 rules:
   - apiGroups:
       - ""

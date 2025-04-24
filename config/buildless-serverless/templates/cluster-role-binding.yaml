@@ -9,12 +9,12 @@ metadata:
     app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
     app.kubernetes.io/component: controller
     app.kubernetes.io/part-of: serverless
-  name: buildless-serverless-manager-rolebinding
+  name: serverless-manager-rolebinding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: buildless-serverless-manager-role
+  name: serverless-manager-role
 subjects:
   - kind: ServiceAccount
-    name: buildless-serverless-controller-manager
+    name: serverless-controller-manager
     namespace: {{ .Release.Namespace }}
