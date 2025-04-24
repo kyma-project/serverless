@@ -2,10 +2,11 @@ package resources
 
 import (
 	"fmt"
-	"github.com/kyma-project/serverless/internal/controller/git"
-	"k8s.io/apimachinery/pkg/labels"
 	"path"
 	"strings"
+
+	"github.com/kyma-project/serverless/internal/controller/git"
+	"k8s.io/apimachinery/pkg/labels"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"

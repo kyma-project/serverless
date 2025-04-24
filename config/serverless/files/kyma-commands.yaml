@@ -1,7 +1,3 @@
-with:
-  resource:
-    apiVersion: serverless.kyma-project.io/v1alpha2
-    kind: Function
 metadata:
   name: function
   description: A set of commands for managing Functions
@@ -16,20 +12,24 @@ subCommands:
   args:
     type: string
     optional: true
-    configPath: ".resource.metadata.name"
   flags:
   - type: string
     name: "namespace"
     shorthand: "n"
     description: "Function's namespace"
-    configPath: ".resource.metadata.namespace"
     default: "default"
   - type: bool
     name: "all-namespaces"
     shorthand: "A"
-    configPath: ".fromAllNamespaces"
     default: false
   with:
+    fromAllNamespaces: ${{.flags.allnamespaces.value}}
+    resource:
+      apiVersion: serverless.kyma-project.io/v1alpha2
+      kind: Function
+      metadata:
+        name: ${{.args.value}}
+        namespace: ${{.flags.namespace.value}}
     outputParameters:
     - resourcePath: '.status.conditions[] | select(.type=="ConfigurationReady") | .status'
       name: "configured"
@@ -64,14 +64,19 @@ subCommands:
   uses: resource_delete
   args:
     type: string
-    configPath: ".resource.metadata.name"
   flags:
   - type: string
     name: "namespace"
     shorthand: "n"
     description: "Function's namespace"
-    configPath: ".resource.metadata.namespace"
     default: "default"
+  with:
+    resource:
+      apiVersion: serverless.kyma-project.io/v1alpha2
+      kind: Function
+      metadata:
+        name: ${{ .args.value }}
+        namespace: ${{ .flags.namespace.value }}
 
 - metadata:
     name: "create <resource_name> [flags]"
@@ -80,34 +85,29 @@ subCommands:
   uses: resource_create
   args:
     type: string
-    configPath: ".resource.metadata.name"
   flags:
   - type: string
     name: "runtime-image-override"
     description: "custom runtime image to be used as Function's runtime base"
-    configPath: ".resource.spec.runtimeImageOverride"
+    default: "\"\""
   - type: string
     name: "namespace"
     shorthand: "n"
     description: "Function's namespace"
-    configPath: ".resource.metadata.namespace"
     default: "default"
   - type: string
     name: "runtime"
     description: "function runtime"
     shorthand: "r"
-    configPath: ".resource.spec.runtime"
     default: "nodejs22"
   - type: int
     name: "replicas"
     description: "function replicas"
-    configPath: ".resource.spec.replicas"
     default: "1"
   - type: path
     name: "source"
     description: "function source file path"
     shorthand: "s"
-    configPath: ".resource.spec.source.inline.source"
     default: |
       module.exports = {
         main: function(event, context) {
@@ -118,7 +118,35 @@ subCommands:
     name: "dependencies"
     description: "function dependencies file path"
     shorthand: "d"
-    configPath: ".resource.spec.source.inline.dependencies"
+    default: |
+      {
+        "dependencies": {}
+      }
+  - type: map
+    name: "env"
+    description: "function environment variables in format key=value"
+  - type: map
+    name: secret-mount
+    description: "function secret mounts in format secret-name=mount-path"
+  with:
+    resource:
+      apiVersion: serverless.kyma-project.io/v1alpha2
+      kind: Function
+      metadata:
+        name: ${{ .args.value }}
+        namespace: ${{ .flags.namespace.value }}
+      spec:
+        runtimeImageOverride: ${{ .flags.runtimeimageoverride.value }}
+        runtime: ${{ .flags.runtime.value }}
+        replicas: ${{ .flags.replicas.value }}
+        env: ${{ .flags.env.value | toEnvs }}
+        secretMounts: ${{ .flags.secretmount.value | toArray "{'secretName':'{{.key}}','mountPath':'{{.value}}'}" }}
+        source:
+          inline:
+            source: |
+              ${{ .flags.source.value | newLineIndent 20 }}
+            dependencies: |
+              ${{ .flags.dependencies.value | newLineIndent 20 }}
 
 - metadata:
     name: "init [flags]"
@@ -127,16 +155,16 @@ subCommands:
   uses: function_init
   flags:
   - name: runtime
-    configPath: ".useRuntime"
     type: string
     description: "Runtime for which the files are generated [ nodejs22, nodejs20, python312 ]"
     default: "nodejs22"
   - name: dir
-    configPath: ".outputDir"
     type: string
     description: "Path to the directory where files must be created"
     default: "."
   with:
+    useRuntime: ${{ .flags.runtime.value }}
+    outputDir: ${{ .flags.dir.value }}
     runtimes:
       python312:
         depsFilename: requirements.txt

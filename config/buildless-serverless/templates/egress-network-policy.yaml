@@ -1,6 +1,13 @@
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
+  labels:
+    kyma-project.io/module: serverless
+    app.kubernetes.io/name: buildless-serverless
+    app.kubernetes.io/instance: serverless.kyma-project.io--allow-all-egress-from-controllers
+    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/part-of: serverless
   namespace: {{ .Release.Namespace }}
   name: serverless.kyma-project.io--allow-all-egress-from-controllers
 spec:

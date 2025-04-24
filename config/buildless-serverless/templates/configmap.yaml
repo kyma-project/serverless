@@ -1,6 +1,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  labels:
+    kyma-project.io/module: serverless
+    app.kubernetes.io/name: buildless-serverless
+    app.kubernetes.io/instance: {{ .Values.global.configuration.configmapName }}
+    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/part-of: serverless
   name: {{ .Values.global.configuration.configmapName }}
   namespace: {{ .Release.Namespace }}
 data:
