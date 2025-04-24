@@ -28,8 +28,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"os"
 	"sigs.k8s.io/controller-runtime/pkg/client"
-	"time"
-
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
@@ -61,35 +59,24 @@ func init() {
 }
 
 type serverlessConfig struct {
-	MetricsAddress            string `envconfig:"default=:8080"`
-	LeaderElectionEnabled     bool   `envconfig:"default=false"`
-	LeaderElectionID          string `envconfig:"default=serverless-controller-leader-election-helper"`
-	SecretMutatingWebhookPort int    `envconfig:"default=8443"`
-	Healthz                   healthzConfig
-	FunctionConfigPath        string `envconfig:"default=hack/function-config.yaml"` // path to development version of function config file
-	LogConfigPath             string `envconfig:"default=hack/log-config.yaml"`      // path to development version of log config file
-
-}
-
-type healthzConfig struct {
-	Address         string        `envconfig:"default=:8090"`
-	LivenessTimeout time.Duration `envconfig:"default=10s"`
+	FunctionConfigPath string `envconfig:"default=hack/function-config.yaml"` // path to development version of function config file
+	LogConfigPath      string `envconfig:"default=hack/log-config.yaml"`      // path to development version of log config file
 }
 
 func main() {
-	cfg, err := loadConfig("APP")
+	envCfg, err := loadConfig("APP")
 	if err != nil {
 		setupLog.Error(err, "unable to load config")
 		os.Exit(1)
 	}
 
-	functionCfg, err := config.LoadFunctionConfig(cfg.FunctionConfigPath)
+	cfg, err := config.LoadFunctionConfig(envCfg.FunctionConfigPath)
 	if err != nil {
 		setupLog.Error(err, "unable to load function configuration file")
 		os.Exit(1)
 	}
 
-	logCfg, err := config.LoadLogConfig(cfg.LogConfigPath)
+	logCfg, err := config.LoadLogConfig(envCfg.LogConfigPath)
 	if err != nil {
 		setupLog.Error(err, "unable to load log configuration file")
 		os.Exit(1)
@@ -113,7 +100,7 @@ func main() {
 	defer cancel()
 
 	logWithCtx := log.WithContext()
-	go logging.ReconfigureOnConfigChange(ctx, logWithCtx.Named("notifier"), atomic, cfg.LogConfigPath)
+	go logging.ReconfigureOnConfigChange(ctx, logWithCtx.Named("notifier"), atomic, envCfg.LogConfigPath)
 
 	ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
 
@@ -133,7 +120,7 @@ func main() {
 		WebhookServer: webhook.NewServer(webhook.Options{
 			Port: cfg.SecretMutatingWebhookPort,
 		}),
-		HealthProbeBindAddress: cfg.Healthz.Address,
+		HealthProbeBindAddress: cfg.HealthzAddress,
 		Client: client.Options{
 			Cache: &client.CacheOptions{
 				DisableFor: []client.Object{
@@ -154,8 +141,8 @@ func main() {
 		Client:          mgr.GetClient(),
 		Scheme:          mgr.GetScheme(),
 		Log:             logWithCtx,
-		Config:          functionCfg,
-		LastCommitCache: cache.NewRepoLastCommitCache(functionCfg.FunctionReadyRequeueDuration),
+		Config:          cfg,
+		LastCommitCache: cache.NewRepoLastCommitCache(cfg.FunctionReadyRequeueDuration),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Function")
 		os.Exit(1)

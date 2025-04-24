@@ -6,7 +6,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/vrischmann/envconfig"
 	"gopkg.in/yaml.v2"
-	v1 "k8s.io/api/core/v1"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 )
 
@@ -76,17 +76,17 @@ type Resource struct {
 	LimitMemory   Quantity `yaml:"limitMemory"`
 }
 
-func (p Preset) ToResourceRequirements() map[string]v1.ResourceRequirements {
-	resources := map[string]v1.ResourceRequirements{}
+func (p Preset) ToResourceRequirements() map[string]corev1.ResourceRequirements {
+	resources := map[string]corev1.ResourceRequirements{}
 	for k, v := range p {
-		resources[k] = v1.ResourceRequirements{
-			Limits: v1.ResourceList{
-				v1.ResourceCPU:    v.LimitCPU.Quantity,
-				v1.ResourceMemory: v.LimitMemory.Quantity,
+		resources[k] = corev1.ResourceRequirements{
+			Limits: corev1.ResourceList{
+				corev1.ResourceCPU:    v.LimitCPU.Quantity,
+				corev1.ResourceMemory: v.LimitMemory.Quantity,
 			},
-			Requests: v1.ResourceList{
-				v1.ResourceCPU:    v.RequestCPU.Quantity,
-				v1.ResourceMemory: v.RequestMemory.Quantity,
+			Requests: corev1.ResourceList{
+				corev1.ResourceCPU:    v.RequestCPU.Quantity,
+				corev1.ResourceMemory: v.RequestMemory.Quantity,
 			},
 		}
 	}

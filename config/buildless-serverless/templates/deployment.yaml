@@ -36,26 +36,22 @@ spec:
           configMap:
             name: "{{ .Values.global.configuration.log.configmapName }}"
       containers:
-        - args:
-            - --metrics-bind-address=:8443
-            - --leader-elect
-            - --health-probe-bind-address=:8081
-          command:
+        - command:
             - /manager
-          {{- $fc:=.Values.global.images.function_controller  }}
+          {{- $fc:=.Values.global.images.function_controller }}
           image: "{{ .Values.global.containerRegistry.path }}/{{ $fc.directory }}/{{$fc.name}}:{{$fc.version}}"
           imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:
               path: /healthz
-              port: 8081
+              port: {{ .Values.containers.manager.healthzAddress }}
             initialDelaySeconds: 15
             periodSeconds: 20
           name: manager
           readinessProbe:
             httpGet:
               path: /readyz
-              port: 8081
+              port: {{ .Values.containers.manager.healthzAddress }}
             initialDelaySeconds: 5
             periodSeconds: 10
           resources:
