@@ -15,7 +15,7 @@ data:
     metricsAddress: ":8080"
     leaderElectionEnabled: true
     secretMutatingWebhookPort:
-    healthzAddress: {{ .Values.containers.manager.healthzAddress }}
+    healthzAddress: ":{{ .Values.containers.manager.healthzAddress }}"
     images:
       {{- $images:=.Values.global.images }}
       {{- $containerRegistryPath:=.Values.global.containerRegistry.path }}

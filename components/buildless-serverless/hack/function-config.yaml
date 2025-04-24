@@ -1,6 +1,6 @@
 metricsAddress: ":8080"
 leaderElectionEnabled: true
-healthzAddress: "8090"
+healthzAddress: ":8090"
 images:
   repoFetcher: "europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:main"
   nodejs20: "europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main"
