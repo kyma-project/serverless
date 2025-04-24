@@ -18,6 +18,7 @@ package controller
 
 import (
 	"context"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
 	"github.com/kyma-project/serverless/internal/controller/cache"
@@ -81,7 +82,7 @@ func (fr *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
 func buildPredicates() predicate.Funcs {
 	// Predicate to skip reconciliation when the object is being deleted
 	return predicate.Funcs{
-		// Allow create events
+		// Allow update events
 		UpdateFunc: func(e event.UpdateEvent) bool {
 			return true
 		},

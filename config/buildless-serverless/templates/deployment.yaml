@@ -2,10 +2,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
+    kyma-project.io/module: serverless
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: buildless-serverless
+    app.kubernetes.io/instance: buildless-serverless-controller-manager
+    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/part-of: serverless
     control-plane: controller-manager
-  name: buildless-serverless-controller-manager
+  name: serverless-controller-manager
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
@@ -72,5 +77,5 @@ spec:
         runAsNonRoot: true
         runAsGroup: 1000
         runAsUser: 1000
-      serviceAccountName: buildless-serverless-controller-manager
+      serviceAccountName: serverless-controller-manager
       terminationGracePeriodSeconds: 10

@@ -2,9 +2,14 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   labels:
+    kyma-project.io/module: serverless
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: buildless-serverless
-  name: buildless-serverless-leader-election-role
+    app.kubernetes.io/instance: buildless-serverless-leader-election-role
+    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/part-of: serverless
+  name: serverless-leader-election-role
   namespace: {{ .Release.Namespace }}
 rules:
   - apiGroups:

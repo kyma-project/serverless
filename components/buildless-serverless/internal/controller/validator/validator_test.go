@@ -3,8 +3,10 @@ package validator
 import (
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
+	"github.com/kyma-project/serverless/internal/config"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"testing"
 )
@@ -16,7 +18,7 @@ func TestNewFunctionValidator(t *testing.T) {
 				Name:      "compassionate-villani-name",
 				Namespace: "vigorous-jang-ns"}}
 
-		r := New(f)
+		r := New(f, config.FunctionConfig{})
 
 		require.NotNil(t, r)
 		require.NotNil(t, r.instance)
@@ -27,19 +29,21 @@ func TestNewFunctionValidator(t *testing.T) {
 
 func Test_functionValidator_Validate(t *testing.T) {
 	t.Run("when function is valid should return empty list", func(t *testing.T) {
-		v := New(&serverlessv1alpha2.Function{})
+		v := New(&serverlessv1alpha2.Function{}, config.FunctionConfig{})
 
 		r := v.Validate()
 
 		require.Len(t, r, 0)
 	})
 	t.Run("when function is invalid should return list with all errors", func(t *testing.T) {
-		v := New(&serverlessv1alpha2.Function{
+		f := &serverlessv1alpha2.Function{
 			Spec: serverlessv1alpha2.FunctionSpec{
 				Env:     []corev1.EnvVar{{Name: "goofy-kare;;;;;"}},
 				Source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{}},
 				Runtime: "upbeat-boyd",
-			}})
+			}}
+
+		v := New(f, config.FunctionConfig{})
 
 		r := v.Validate()
 
@@ -84,10 +88,12 @@ func Test_functionValidator_validateEnvs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := New(&serverlessv1alpha2.Function{
+			f := &serverlessv1alpha2.Function{
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Env: tt.envs,
-				}})
+				}}
+
+			v := New(f, config.FunctionConfig{})
 			r := v.validateEnvs()
 			require.ElementsMatch(t, tt.want, r)
 		})
@@ -161,9 +167,11 @@ func Test_functionValidator_validateInlineDeps(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := New(&serverlessv1alpha2.Function{
+			f := &serverlessv1alpha2.Function{
 				Spec: tt.spec,
-			})
+			}
+
+			v := New(f, config.FunctionConfig{})
 			r := v.validateInlineDeps()
 			require.ElementsMatch(t, tt.want, r)
 		})
@@ -199,11 +207,13 @@ func Test_functionValidator_validateRuntime(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := New(&serverlessv1alpha2.Function{
+			f := &serverlessv1alpha2.Function{
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: tt.runtime,
 				},
-			})
+			}
+
+			v := New(f, config.FunctionConfig{})
 			r := v.validateRuntime()
 			require.ElementsMatch(t, tt.want, r)
 		})
@@ -419,6 +429,116 @@ func Test_validator_validateGitRepoURL(t *testing.T) {
 			}
 			got := v.validateGitRepoURL()
 			require.ElementsMatch(t, tt.want, got)
+		})
+	}
+}
+
+func Test_validator_validateFunctionResources(t *testing.T) {
+	type testData struct {
+		name       string
+		resources  *corev1.ResourceRequirements
+		minCPU     resource.Quantity
+		minMemory  resource.Quantity
+		wantErrors []string
+	}
+	tests := []testData{
+		{
+			name:       "when resources are nil then no errors",
+			resources:  nil,
+			minCPU:     resource.MustParse("10m"),
+			minMemory:  resource.MustParse("16Mi"),
+			wantErrors: []string{},
+		},
+		{
+			name: "when resources meet minimum requirements then no errors",
+			resources: &corev1.ResourceRequirements{
+				Limits: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("100m"),
+					corev1.ResourceMemory: resource.MustParse("64Mi"),
+				},
+				Requests: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("50m"),
+					corev1.ResourceMemory: resource.MustParse("32Mi"),
+				},
+			},
+			minCPU:     resource.MustParse("10m"),
+			minMemory:  resource.MustParse("16Mi"),
+			wantErrors: []string{},
+		},
+		{
+			name: "when CPU limit is below minimum then return error",
+			resources: &corev1.ResourceRequirements{
+				Limits: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("5m"),
+					corev1.ResourceMemory: resource.MustParse("64Mi"),
+				},
+			},
+			minCPU:    resource.MustParse("10m"),
+			minMemory: resource.MustParse("16Mi"),
+			wantErrors: []string{
+				"Function limits cpu(5m) should be higher than minimal value (10m)",
+			},
+		},
+		{
+			name: "when memory request is below minimum then return error",
+			resources: &corev1.ResourceRequirements{
+				Requests: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("50m"),
+					corev1.ResourceMemory: resource.MustParse("8Mi"),
+				},
+			},
+			minCPU:    resource.MustParse("10m"),
+			minMemory: resource.MustParse("16Mi"),
+			wantErrors: []string{
+				"Function request memory(8Mi) should be higher than minimal value (16Mi)",
+			},
+		},
+		{
+			name: "when requests exceed limits then return errors",
+			resources: &corev1.ResourceRequirements{
+				Limits: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("100m"),
+					corev1.ResourceMemory: resource.MustParse("64Mi"),
+				},
+				Requests: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("200m"),
+					corev1.ResourceMemory: resource.MustParse("128Mi"),
+				},
+			},
+			minCPU:    resource.MustParse("10m"),
+			minMemory: resource.MustParse("16Mi"),
+			wantErrors: []string{
+				"Function limits cpu(100m) should be higher than requests cpu(200m)",
+				"Function limits memory(64Mi) should be higher than requests memory(128Mi)",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := &validator{
+				instance: &serverlessv1alpha2.Function{
+					Spec: serverlessv1alpha2.FunctionSpec{
+						ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+							Function: &serverlessv1alpha2.ResourceRequirements{
+								Resources: tt.resources,
+							},
+						},
+					},
+				},
+				fnConfig: config.FunctionConfig{
+					ResourceConfig: config.ResourceConfig{
+						Function: config.FunctionResourceConfig{
+							Resources: config.Resources{
+								MinRequestCPU:    config.Quantity{Quantity: tt.minCPU},
+								MinRequestMemory: config.Quantity{Quantity: tt.minMemory},
+							},
+						},
+					},
+				},
+			}
+			got := v.validateFunctionResources()
+			require.ElementsMatch(t, tt.wantErrors, got)
 		})
 	}
 }

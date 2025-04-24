@@ -3,6 +3,7 @@ package serverless
 import (
 	"context"
 	"fmt"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
