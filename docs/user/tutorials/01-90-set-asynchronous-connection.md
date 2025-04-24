@@ -116,7 +116,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 
    ```bash
    cat <<EOF | kubectl apply -f -
-   apiVersion: gateway.kyma-project.io/v2
+   apiVersion: gateway.kyma-project.io/v2alpha1
    kind: APIRule
    metadata:
      name: incoming-http-trigger
@@ -134,13 +134,25 @@ This tutorial shows only one possible use case. There are many more use cases on
        noAuth: true
    EOF
    ```
+5. Run the following command to get the domain name of your Kyma cluster:
 
-5. Test the first Function. Send the payload and see if your HTTP traffic is accepted:
+    ```bash
+    kubectl get gateway -n kyma-system kyma-gateway \
+        -o jsonpath='{.spec.servers[0].hosts[0]}'
+    ```
+
+6. Export the result without the leading `*.` as an environment variable:
+
+    ```bash
+    export DOMAIN={DOMAIN_NAME}
+
+7. Test the first Function. Send the payload and see if your HTTP traffic is accepted:
 
    ```bash
-   export KYMA_DOMAIN={KYMA_DOMAIN_VARIABLE}
-   curl -X POST "https://incoming.${KYMA_DOMAIN}" -H 'Content-Type: application/json' -d '{"foo":"bar"}'
+   curl -X POST "https://incoming.${DOMAIN}" -H 'Content-Type: application/json' -d '{"foo":"bar"}'
    ```
+   
+   You should see the `Event sent` message as a response.
 
 ### Create the Receiver Function
 
