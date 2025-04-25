@@ -1,19 +1,17 @@
-const { SpanStatusCode } = require("@opentelemetry/api/build/src/trace/status");
+const { SpanStatusCode } = require("@opentelemetry/api");
 
 module.exports = {
     main: async function (event, context) {
         let sanitisedData = sanitise(event.data)
 
-        const eventType = "sap.kyma.custom.acme.payload.sanitised.v1";
-        const eventSource = "kyma";
-
-        //optional cloud event params
-        const eventtypeversion = "v1";
-        const datacontenttype = "application/json";
+        const eventType = process.env['EVENT_TYPE'];
+        const eventSource = process.env['EVENT_SOURCE'];
 
         const span = event.tracer.startSpan('call-to-kyma-eventing');
         
         // you can pass additional cloudevents attributes  
+        // const eventtypeversion = "v1";
+        // const datacontenttype = "application/json";
         // return await event.emitCloudEvent(eventType, eventSource, sanitisedData, {eventtypeversion, datacontenttype})
         
         return await event.emitCloudEvent(eventType, eventSource, sanitisedData)

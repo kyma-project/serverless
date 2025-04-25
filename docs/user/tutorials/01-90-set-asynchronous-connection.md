@@ -1,8 +1,8 @@
-# Set Asynchronous Communication Between Functions
+# Send and Receive Cloud Events
 
-This tutorial demonstrates how to connect two Functions asynchronously. It is based on the [in-cluster Eventing example](https://github.com/kyma-project/serverless/tree/main/examples/incluster_eventing).
+This tutorial demonstrates how to connect two Functions asynchronously with [cloud events](https://github.com/cloudevents/spec). It is based on the [in-cluster Eventing example](https://github.com/kyma-project/serverless/tree/main/examples/incluster_eventing).
 
-The example provides a very simple scenario of asynchronous communication between two Functions. The first Function accepts the incoming traffic via HTTP, sanitizes the payload, and publishes the content as an in-cluster event using [Kyma Eventing](https://kyma-project.io/docs/kyma/latest/01-overview/eventing/).
+The example provides a very simple scenario of asynchronous communication between two Functions. The first Function accepts the incoming traffic using HTTP, sanitizes the payload, and publishes the content as an in-cluster cloud event using [Kyma Eventing](https://kyma-project.io/docs/kyma/latest/01-overview/eventing/).
 The second Function is a message receiver. It subscribes to the given event type and stores the payload.
 
 This tutorial shows only one possible use case. There are many more use cases on how to orchestrate your application logic into specialized Functions and benefit from decoupled, re-usable components and event-driven architecture.
@@ -10,9 +10,8 @@ This tutorial shows only one possible use case. There are many more use cases on
 ## Prerequisites
 
 - [Kyma CLI](https://github.com/kyma-project/cli)
-- [Eventing, Istio, and API-Gateway modules added](https://kyma-project.io/#/02-get-started/01-quick-install)
-- [The cluster domain set up](https://kyma-project.io/#/api-gateway/user/tutorials/01-10-setup-custom-domain-for-workload)
-  
+- [Nats, Eventing, Istio, and API-Gateway modules added](https://kyma-project.io/#/02-get-started/01-quick-install)
+
 ## Steps
 
 1. Export the `KUBECONFIG` variable:
@@ -20,8 +19,13 @@ This tutorial shows only one possible use case. There are many more use cases on
    ```bash
    export KUBECONFIG={KUBECONFIG_PATH}
    ```
+2. Enable Istio service mesh for `default` namespace:
 
-2. Create the `emitter` and `receiver` folders in your project.
+   ```bash
+   kubectl label namespaces default istio-injection=enabled
+   ```
+
+3. Create the `emitter` and `receiver` folders in your project.
 
 ### Create the Emitter Function
 
@@ -40,22 +44,42 @@ This tutorial shows only one possible use case. There are many more use cases on
 2. Provide your Function logic in the `handler.js` file:
 
    > [!NOTE]
-   > In this example, there's no sanitization logic. The `sanitize` Function is just a placeholder.
+   > In this example, there's no real sanitization logic but the Function simply logs the payload.
 
    ```js
+   const { SpanStatusCode } = require("@opentelemetry/api");
+
    module.exports = {
       main: async function (event, context) {
          let sanitisedData = sanitise(event.data)
 
-         const eventType = "sap.kyma.custom.acme.payload.sanitised.v1";
-         const eventSource = "kyma";
+         const eventType = "payload.sanitised";
+         const eventSource = "my-app";
+
+         const span = event.tracer.startSpan('call-to-kyma-eventing');
+         
+         // you can pass additional cloudevents attributes  
+         // const eventtypeversion = "v1";
+         // const datacontenttype = "application/json";
+         // return await event.emitCloudEvent(eventType, eventSource, sanitisedData, {eventtypeversion, datacontenttype})
          
          return await event.emitCloudEvent(eventType, eventSource, sanitisedData)
                .then(resp => {
+                  console.log(resp.status);
+                  span.addEvent("Event sent");
+                  span.setAttribute("event-type", eventType);
+                  span.setAttribute("event-source", eventSource);
+                  span.setStatus({code: SpanStatusCode.OK});
                   return "Event sent";
                }).catch(err=> {
                   console.error(err)
-                  return err;
+                  span.setStatus({
+                     code: SpanStatusCode.ERROR,
+                     message: err.message,
+                  });
+                  return err.message;
+               }).finally(()=>{
+                  span.end();
                });
       }
    }
@@ -66,11 +90,20 @@ This tutorial shows only one possible use case. There are many more use cases on
    }
    ```
 
-   The `sap.kyma.custom.acme.payload.sanitised.v1` is a sample event type that the emitter Function declares when publishing events. You can choose a different one that better suits your use case. Keep in mind the constraints described on the [Event names](https://kyma-project.io/docs/kyma/latest/05-technical-reference/evnt-01-event-names/) page. The receiver subscribes to the event type to consume the events.
+   Include opentelemetry SDK in the Function dependencies. Add the following to the `package.json`:
+   ```js
+   {
+      "dependencies": {
+         "@opentelemetry/api": "^1.0.4"
+      }
+   }
+   ```
 
-   The event object provides convenience functions to build and publish events. To send the event, build the Cloud Event. To learn more, read [Function's specification](../technical-reference/07-70-function-specification.md#event-object-sdk). In addition, your **eventOut.source** key must point to `“kyma”` to use Kyma in-cluster Eventing.
-   There is a `require('axios')` line even though the Function code is not using it directly. This is needed for the auto-instrumentation to properly handle the outgoing requests sent using the `publishCloudEvent` method (which uses `axios` library under the hood). Without the `axios` import the Function still works, but the published events are not reflected in the trace backend.
 
+   The `payload.sanitised` is a sample event type that the emitter Function uses when publishing events. You can choose a different one that better suits your use case. Keep in mind the constraints described on the [Event names](https://kyma-project.io/docs/kyma/latest/05-technical-reference/evnt-01-event-names/) page. The receiver subscribes to the event type to consume the events.
+
+   The `event` object provides a convenient API for emitting events. To learn more, read [Function's specification](../technical-reference/07-70-function-specification.md#event-object-sdk).
+   
 3. Apply your emitter Function:
 
    ```bash
@@ -83,7 +116,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 
    ```bash
    cat <<EOF | kubectl apply -f -
-   apiVersion: gateway.kyma-project.io/v2
+   apiVersion: gateway.kyma-project.io/v2alpha1
    kind: APIRule
    metadata:
      name: incoming-http-trigger
@@ -101,13 +134,25 @@ This tutorial shows only one possible use case. There are many more use cases on
        noAuth: true
    EOF
    ```
+5. Run the following command to get the domain name of your Kyma cluster:
 
-5. Test the first Function. Send the payload and see if your HTTP traffic is accepted:
+    ```bash
+    kubectl get gateway -n kyma-system kyma-gateway \
+        -o jsonpath='{.spec.servers[0].hosts[0]}'
+    ```
+
+6. Export the result without the leading `*.` as an environment variable:
+
+    ```bash
+    export DOMAIN={DOMAIN_NAME}
+
+7. Test the first Function. Send the payload and see if your HTTP traffic is accepted:
 
    ```bash
-   export KYMA_DOMAIN={KYMA_DOMAIN_VARIABLE}
-   curl -X POST "https://incoming.${KYMA_DOMAIN}" -H 'Content-Type: application/json' -d '{"foo":"bar"}'
+   curl -X POST "https://incoming.${DOMAIN}" -H 'Content-Type: application/json' -d '{"foo":"bar"}'
    ```
+   
+   You should see the `Event sent` message as a response.
 
 ### Create the Receiver Function
 
@@ -118,6 +163,21 @@ This tutorial shows only one possible use case. There are many more use cases on
    ```
 
    The `init` command creates the same files as in the `emitter` folder.
+   In the following example, the receiver function logs the received payload.
+
+   ```js
+   module.exports = {
+      main: function (event, context) {
+         store(event.data)
+         return 'OK'
+      }
+   }
+   let store = (data)=>{
+      console.log(`storing data...`)
+      console.log(data)
+      return data
+   }
+   ```
 
 3. Apply your receiver Function:
 
@@ -138,9 +198,9 @@ This tutorial shows only one possible use case. There are many more use cases on
          namespace: default
       spec:
          sink: 'http://receiver.default.svc.cluster.local'
-         source: ""
+         source: "my-app"
          types:
-         - sap.kyma.custom.acme.payload.sanitised.v1
+         - payload.sanitised
    EOF
    ```
 
