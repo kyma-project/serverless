@@ -63,12 +63,17 @@ type FunctionSpec struct {
 	ScaleConfig *ScaleConfig `json:"scaleConfig,omitempty"`
 
 	// Defines the exact number of Function's Pods to run at a time.
-	// If  the Function is targeted by an external scaler,
+	// If the Function is targeted by an external scaler,
 	// then the **Replicas** field is used by the relevant HorizontalPodAutoscaler to control the number of active replicas.
 	// +kubebuilder:validation:Minimum=0
 	// +kubebuilder:default:=1
 	// +optional
 	Replicas *int32 `json:"replicas,omitempty"`
+
+	// Deprecated: Use **Labels** and **Annotations** to label and/or annotate Function's Pods.
+	// +optional
+	// +kubebuilder:validation:XValidation:message="Not supported: Use spec.labels and spec.annotations to label and/or annotate Function's Pods.",rule="!has(self.labels) && !has(self.annotations)"
+	Template *Template `json:"template,omitempty"`
 
 	// Specifies Secrets to mount into the Function's container filesystem.
 	SecretMounts []SecretMount `json:"secretMounts,omitempty"`
@@ -160,6 +165,13 @@ type Repository struct {
 }
 
 type ResourceConfiguration struct {
+	// Deprecated: Specifies resources requested by the build Job's Pod.
+	// This setting will be removed. Functions don't require building images.
+	// +optional
+	// +kubebuilder:validation:XValidation:message="Use profile or resources",rule="has(self.profile) && !has(self.resources) || !has(self.profile) && has(self.resources)"
+	// +kubebuilder:validation:XValidation:message="Invalid profile, please use one of: ['local-dev','slow','normal','fast']",rule="(!has(self.profile) || self.profile in ['local-dev','slow','normal','fast'])"
+	Build *ResourceRequirements `json:"build,omitempty"`
+
 	// Specifies resources requested by the Function's Pod.
 	// +optional
 	// +kubebuilder:validation:XValidation:message="Use profile or resources",rule="has(self.profile) && !has(self.resources) || !has(self.profile) && has(self.resources)"
@@ -203,7 +215,16 @@ type SecretMount struct {
 	MountPath string `json:"mountPath"`
 }
 
-// FunctionStatus defines the observed state of Function.
+type Template struct {
+	// Deprecated: Use **FunctionSpec.Labels**  to label Function's Pods.
+	// +optional
+	Labels map[string]string `json:"labels,omitempty"`
+	// Deprecated: Use **FunctionSpec.Annotations** to annotate Function's Pods.
+	// +optional
+	Annotations map[string]string `json:"annotations,omitempty"`
+}
+
+// FunctionStatus defines the observed state of the Function.
 type FunctionStatus struct {
 	// Specifies the **Runtime** type of the Function.
 	Runtime Runtime `json:"runtime,omitempty"`
@@ -262,6 +283,12 @@ const (
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
 
+//+kubebuilder:printcolumn:name="Configured",type="string",JSONPath=".status.conditions[?(@.type=='ConfigurationReady')].status"
+//+kubebuilder:printcolumn:name="Running",type="string",JSONPath=".status.conditions[?(@.type=='Running')].status"
+//+kubebuilder:printcolumn:name="Runtime",type="string",JSONPath=".spec.runtime"
+//+kubebuilder:printcolumn:name="Version",type="integer",JSONPath=".metadata.generation"
+//+kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
+
 // Function is the Schema for the functions API.
 type Function struct {
 	metav1.TypeMeta   `json:",inline"`
@@ -278,10 +305,6 @@ type FunctionList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`
 	Items           []Function `json:"items"`
-}
-
-func init() {
-	SchemeBuilder.Register(&Function{}, &FunctionList{})
 }
 
 func (f *Function) UpdateCondition(c ConditionType, s metav1.ConditionStatus, r ConditionReason, msg string) {
