@@ -50,12 +50,17 @@ type FunctionSpec struct {
 	// Specifies an array of key-value pairs to be used as environment variables for the Function.
 	// You can define values as static strings or reference values from ConfigMaps or Secrets.
 	// For configuration details, see the [official Kubernetes documentation](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/).
-	// +kubebuilder:validation:XValidation:message="Following envs are reserved and cannot be used: ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH']",rule="(self.all(e, !(e.name in ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','MOD_NAME','NODE_PATH','PYTHONPATH'])))"
+	// +kubebuilder:validation:XValidation:message="Following envs are reserved and cannot be used: ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH']",rule="(self.all(e, !(e.name in ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH'])))"
 	Env []corev1.EnvVar `json:"env,omitempty"`
 
 	// Specifies resources requested by the Function and the build Job.
 	// +optional
 	ResourceConfiguration *ResourceConfiguration `json:"resourceConfiguration,omitempty"`
+
+	// Deprecated:
+	// This setting will be removed. Serverless no longer automatically creates HPA.
+	// +optional
+	ScaleConfig *ScaleConfig `json:"scaleConfig,omitempty"`
 
 	// Defines the exact number of Function's Pods to run at a time.
 	// If  the Function is targeted by an external scaler,
@@ -173,6 +178,16 @@ type ResourceRequirements struct {
 	// For configuration details, see the [official Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
 	// +optional
 	Resources *corev1.ResourceRequirements `json:"resources,omitempty"`
+}
+
+type ScaleConfig struct {
+	// Defines the minimum number of Function's Pods to run at a time.
+	// +kubebuilder:validation:Minimum:=1
+	MinReplicas *int32 `json:"minReplicas"`
+
+	// Defines the maximum number of Function's Pods to run at a time.
+	// +kubebuilder:validation:Minimum:=1
+	MaxReplicas *int32 `json:"maxReplicas"`
 }
 
 type SecretMount struct {
