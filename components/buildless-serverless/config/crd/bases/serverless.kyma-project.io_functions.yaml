@@ -14,7 +14,23 @@ spec:
     singular: function
   scope: Namespaced
   versions:
-  - name: v1alpha2
+  - additionalPrinterColumns:
+    - jsonPath: .status.conditions[?(@.type=='ConfigurationReady')].status
+      name: Configured
+      type: string
+    - jsonPath: .status.conditions[?(@.type=='Running')].status
+      name: Running
+      type: string
+    - jsonPath: .spec.runtime
+      name: Runtime
+      type: string
+    - jsonPath: .metadata.generation
+      name: Version
+      type: integer
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha2
     schema:
       openAPIV3Schema:
         description: Function is the Schema for the functions API.
@@ -175,7 +191,7 @@ spec:
                 type: array
                 x-kubernetes-validations:
                 - message: 'Following envs are reserved and cannot be used: [''FUNC_RUNTIME'',''FUNC_HANDLER'',''FUNC_PORT'',''FUNC_HANDLER_SOURCE'',''FUNC_HANDLER_DEPENDENCIES'',''MOD_NAME'',''NODE_PATH'',''PYTHONPATH'']'
-                  rule: (self.all(e, !(e.name in ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','MOD_NAME','NODE_PATH','PYTHONPATH'])))
+                  rule: (self.all(e, !(e.name in ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH'])))
               labels:
                 additionalProperties:
                   type: string
@@ -192,7 +208,7 @@ spec:
                 default: 1
                 description: |-
                   Defines the exact number of Function's Pods to run at a time.
-                  If  the Function is targeted by an external scaler,
+                  If the Function is targeted by an external scaler,
                   then the **Replicas** field is used by the relevant HorizontalPodAutoscaler to control the number of active replicas.
                 format: int32
                 minimum: 0
@@ -201,6 +217,85 @@ spec:
                 description: Specifies resources requested by the Function and the
                   build Job.
                 properties:
+                  build:
+                    description: |-
+                      Deprecated: Specifies resources requested by the build Job's Pod.
+                      This setting will be removed. Functions don't require building images.
+                    properties:
+                      profile:
+                        description: |-
+                          Defines the name of the predefined set of values of the resource.
+                          Can't be used together with **Resources**.
+                        type: string
+                      resources:
+                        description: |-
+                          Defines the amount of resources available for the Pod.
+                          Can't be used together with **Profile**.
+                          For configuration details, see the [official Kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+                        properties:
+                          claims:
+                            description: |-
+                              Claims lists the names of resources, defined in spec.resourceClaims,
+                              that are used by this container.
+
+                              This is an alpha field and requires enabling the
+                              DynamicResourceAllocation feature gate.
+
+                              This field is immutable. It can only be set for containers.
+                            items:
+                              description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+                              properties:
+                                name:
+                                  description: |-
+                                    Name must match the name of one entry in pod.spec.resourceClaims of
+                                    the Pod where this field is used. It makes that resource available
+                                    inside a container.
+                                  type: string
+                                request:
+                                  description: |-
+                                    Request is the name chosen for a request in the referenced claim.
+                                    If empty, everything from the claim is made available, otherwise
+                                    only the result of this request.
+                                  type: string
+                              required:
+                              - name
+                              type: object
+                            type: array
+                            x-kubernetes-list-map-keys:
+                            - name
+                            x-kubernetes-list-type: map
+                          limits:
+                            additionalProperties:
+                              anyOf:
+                              - type: integer
+                              - type: string
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
+                            description: |-
+                              Limits describes the maximum amount of compute resources allowed.
+                              More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+                            type: object
+                          requests:
+                            additionalProperties:
+                              anyOf:
+                              - type: integer
+                              - type: string
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
+                            description: |-
+                              Requests describes the minimum amount of compute resources required.
+                              If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
+                              otherwise to an implementation-defined value. Requests cannot exceed Limits.
+                              More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+                            type: object
+                        type: object
+                    type: object
+                    x-kubernetes-validations:
+                    - message: Use profile or resources
+                      rule: has(self.profile) && !has(self.resources) || !has(self.profile)
+                        && has(self.resources)
+                    - message: 'Invalid profile, please use one of: [''local-dev'',''slow'',''normal'',''fast'']'
+                      rule: (!has(self.profile) || self.profile in ['local-dev','slow','normal','fast'])
                   function:
                     description: Specifies resources requested by the Function's Pod.
                     properties:
@@ -291,6 +386,27 @@ spec:
                 description: Specifies the runtime image used instead of the default
                   one.
                 type: string
+              scaleConfig:
+                description: |-
+                  Deprecated:
+                  This setting will be removed. Serverless no longer automatically creates HPA.
+                properties:
+                  maxReplicas:
+                    description: Defines the maximum number of Function's Pods to
+                      run at a time.
+                    format: int32
+                    minimum: 1
+                    type: integer
+                  minReplicas:
+                    description: Defines the minimum number of Function's Pods to
+                      run at a time.
+                    format: int32
+                    minimum: 1
+                    type: integer
+                required:
+                - maxReplicas
+                - minReplicas
+                type: object
               secretMounts:
                 description: Specifies Secrets to mount into the Function's container
                   filesystem.
@@ -388,12 +504,33 @@ spec:
                 - message: Use GitRepository or Inline source
                   rule: has(self.gitRepository) && !has(self.inline) || !has(self.gitRepository)
                     && has(self.inline)
+              template:
+                description: 'Deprecated: Use **Labels** and **Annotations** to label
+                  and/or annotate Function''s Pods.'
+                properties:
+                  annotations:
+                    additionalProperties:
+                      type: string
+                    description: 'Deprecated: Use **FunctionSpec.Annotations** to
+                      annotate Function''s Pods.'
+                    type: object
+                  labels:
+                    additionalProperties:
+                      type: string
+                    description: 'Deprecated: Use **FunctionSpec.Labels**  to label
+                      Function''s Pods.'
+                    type: object
+                type: object
+                x-kubernetes-validations:
+                - message: 'Not supported: Use spec.labels and spec.annotations to
+                    label and/or annotate Function''s Pods.'
+                  rule: '!has(self.labels) && !has(self.annotations)'
             required:
             - runtime
             - source
             type: object
           status:
-            description: FunctionStatus defines the observed state of Function.
+            description: FunctionStatus defines the observed state of the Function.
             properties:
               baseDir:
                 description: |-
@@ -518,5 +655,4 @@ spec:
         type: object
     served: true
     storage: true
-    subresources:
-      status: {}
+    subresources: {}
