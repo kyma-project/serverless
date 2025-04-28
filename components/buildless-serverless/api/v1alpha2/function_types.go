@@ -281,13 +281,19 @@ const (
 )
 
 // +kubebuilder:object:root=true
-// +kubebuilder:subresource:status
 
-//+kubebuilder:printcolumn:name="Configured",type="string",JSONPath=".status.conditions[?(@.type=='ConfigurationReady')].status"
-//+kubebuilder:printcolumn:name="Running",type="string",JSONPath=".status.conditions[?(@.type=='Running')].status"
-//+kubebuilder:printcolumn:name="Runtime",type="string",JSONPath=".spec.runtime"
-//+kubebuilder:printcolumn:name="Version",type="integer",JSONPath=".metadata.generation"
-//+kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
+// +kubebuilder:subresource:status
+// +kubebuilder:subresource:scale:specpath=.spec.replicas,statuspath=.status.replicas,selectorpath=.status.podSelector
+
+// +kubebuilder:resource:categories={all},shortName={fn,fns}
+
+// +kubebuilder:storageversion
+
+// +kubebuilder:printcolumn:name="Configured",type="string",JSONPath=".status.conditions[?(@.type=='ConfigurationReady')].status"
+// +kubebuilder:printcolumn:name="Running",type="string",JSONPath=".status.conditions[?(@.type=='Running')].status"
+// +kubebuilder:printcolumn:name="Runtime",type="string",JSONPath=".spec.runtime"
+// +kubebuilder:printcolumn:name="Version",type="integer",JSONPath=".metadata.generation"
+// +kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
 
 // Function is the Schema for the functions API.
 type Function struct {
