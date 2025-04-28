@@ -86,3 +86,7 @@ kubectl create secret generic my-secret --from-literal secret-env="I come from s
     ```
 
 <!-- tabs:end -->
+
+## Redis based example
+
+For more use cases, see [this example](https://github.com/kyma-project/serverless/tree/main/examples/redis-rest)

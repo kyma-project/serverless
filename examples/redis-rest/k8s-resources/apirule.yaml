@@ -1,0 +1,16 @@
+apiVersion: gateway.kyma-project.io/v2alpha1
+kind: APIRule
+metadata:
+  name: rest-fn
+spec:
+  hosts:
+  - rest-fn
+  service:
+    name: rest-fn
+    namespace: default
+    port: 80
+  gateway: kyma-system/kyma-gateway
+  rules:
+  - path: /*
+    methods: ["GET", "POST", "DELETE"]
+    noAuth: true
