@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-git/go-git/v5/plumbing/protocol/packp/capability"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
@@ -39,6 +40,12 @@ func main() {
 
 	auth, err := chooseAuth(cfg)
 	failOnErr(err, "unable to choose auth")
+
+	// required by Azure Devops (works with Github, Gitlab, Bitbucket)
+	// https://github.com/go-git/go-git/blob/master/_examples/azure_devops/main.go#L21-L36
+	transport.UnsupportedCapabilities = []capability.Capability{
+		capability.ThinPack,
+	}
 
 	log.Printf("Clone repo from url: %s and commit: %s...\n", cfg.RepositoryURL, cfg.RepositoryCommit)
 	err = clone(cfg, auth)

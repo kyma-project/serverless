@@ -3,6 +3,8 @@ package git
 import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/protocol/packp/capability"
+	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/kyma-project/serverless/internal/controller/cache"
 	"github.com/pkg/errors"
@@ -50,6 +52,12 @@ func (g GoGitCommitChecker) GetLatestCommit(url, reference string, gitAuth *GitA
 			return "", errors.Wrap(err, "while choosing authorization method")
 		}
 		cloneOptions.Auth = auth
+	}
+
+	// required by Azure Devops (works with Github, Gitlab, Bitbucket)
+	// https://github.com/go-git/go-git/blob/master/_examples/azure_devops/main.go#L21-L36
+	transport.UnsupportedCapabilities = []capability.Capability{
+		capability.ThinPack,
 	}
 
 	r, err := git.Clone(memory.NewStorage(), nil, &cloneOptions)
