@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
     app.kubernetes.io/component: controller
     app.kubernetes.io/part-of: serverless
-  name: buildless-serverless-leader-election-role
+  name: serverless-leader-election-role
   namespace: {{ .Release.Namespace }}
 rules:
   - apiGroups:

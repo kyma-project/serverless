@@ -16,15 +16,7 @@ This example also provides a template for a git project with Kyma Functions. Ple
 
 ## Deploy
 
-### Deploy Using Kyma CLI
-
-You can deploy each Function separately using Kyma CLI by running `kyma apply function` in each of the Function's source folders.
-
-You can find all installation steps in the [Set Asynchronous Communication Between Functions](https://kyma-project.io/#/serverless-manager/user/tutorials/01-90-set-asynchronous-connection) tutorial.
-
-### Deploy Using kubectl
-
-Deploy to Kyma runtime manually using `kubectl apply` or `make deploy` target.
+Deploy to Kyma runtime using the `make deploy` target.
 
 ### Auto-Deploy Code Changes
 
@@ -35,15 +27,15 @@ Changes pushed to the `handler.js` files should be automatically pulled by Kyma 
 Send an HTTP request to the emitter Function.
 
    ```bash
-   curl -H "Content-Type: application/cloudevents+json" -X POST  https://incoming.{your cluster domain} -d '{"foo":"bar"}'
+   curl -H "Content-Type: application/json" -X POST  https://incoming.{your cluster domain} -d '{"foo":"bar"}'
    Event sent%
    ```
 
 Fetch the logs of the receiver Function to observe the incoming message.
 
    ```bash
-   > nodejs16-runtime@0.1.0 start
-   > node server.js
+   > nodejs22-runtime@0.1.0 start
+   > node server.mjs
 
    user code loaded in 0sec 0.649274ms
    storing data...
