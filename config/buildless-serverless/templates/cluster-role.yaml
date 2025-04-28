@@ -5,7 +5,7 @@ metadata:
     kyma-project.io/module: serverless
     app.kubernetes.io/name: buildless-serverless
     app.kubernetes.io/instance: buildless-serverless-manager-role
-    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/version: "{{ .Values.global.images.function_controller.version }}"
     app.kubernetes.io/component: controller
     app.kubernetes.io/part-of: serverless
   name: serverless-manager-role
@@ -28,7 +28,6 @@ rules:
     verbs:
       - create
       - delete
-      - deletecollection
       - get
       - list
       - patch
@@ -60,11 +59,3 @@ rules:
       - get
       - patch
       - update
-  - apiGroups:
-    - ""
-    resources:
-    - secrets
-    verbs:
-    - get
-    - list
-    - watch

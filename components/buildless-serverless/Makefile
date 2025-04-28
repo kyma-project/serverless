@@ -54,7 +54,8 @@ help: ## Display this help.
 manifests: controller-gen kustomize ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
 	$(CONTROLLER_GEN) rbac:roleName=manager-role crd webhook paths="./..." output:crd:artifacts:config=config/crd/bases
 	$(KUSTOMIZE) build config/crd > config/crd/crd-serverless.yaml
-	cp config/crd/crd-serverless.yaml $(PROJECT_ROOT)/config/buildless-serverless/templates/crds.yaml
+	yq eval '.spec = load("config/crd/crd-serverless.yaml").spec' $(PROJECT_ROOT)/config/buildless-serverless/templates/crds.yaml -i
+	yq eval '.rules = load("config/rbac/role.yaml").rules' $(PROJECT_ROOT)/config/buildless-serverless/templates/cluster-role.yaml -i
 
 .PHONY: generate
 generate: controller-gen ## Generate code containing DeepCopy, DeepCopyInto, and DeepCopyObject method implementations.
