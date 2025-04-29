@@ -8,9 +8,14 @@ metadata:
 spec:
   group: serverless.kyma-project.io
   names:
+    categories:
+    - all
     kind: Function
     listKind: FunctionList
     plural: functions
+    shortNames:
+    - fn
+    - fns
     singular: function
   scope: Namespaced
   versions:
@@ -655,4 +660,9 @@ spec:
         type: object
     served: true
     storage: true
-    subresources: {}
+    subresources:
+      scale:
+        labelSelectorPath: .status.podSelector
+        specReplicasPath: .spec.replicas
+        statusReplicasPath: .status.replicas
+      status: {}
