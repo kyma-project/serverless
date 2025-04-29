@@ -309,6 +309,10 @@ type FunctionList struct {
 	Items           []Function `json:"items"`
 }
 
+func init() {
+	SchemeBuilder.Register(&Function{}, &FunctionList{})
+}
+
 func (f *Function) UpdateCondition(c ConditionType, s metav1.ConditionStatus, r ConditionReason, msg string) {
 	condition := metav1.Condition{
 		Type:               string(c),
