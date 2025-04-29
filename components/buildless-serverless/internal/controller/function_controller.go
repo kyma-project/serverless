@@ -28,6 +28,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
@@ -41,6 +42,7 @@ type FunctionReconciler struct {
 	Log             *zap.SugaredLogger
 	Config          config.FunctionConfig
 	LastCommitCache cache.Cache
+	EventRecorder   record.EventRecorder
 }
 
 // +kubebuilder:rbac:groups=serverless.kyma-project.io,resources=functions,verbs=get;list;watch;create;update;patch;delete
@@ -49,6 +51,7 @@ type FunctionReconciler struct {
 // +kubebuilder:rbac:groups=apps,resources=deployments/status,verbs=get
 // +kubebuilder:rbac:groups="",resources=services,verbs=get;list;watch;create;update;delete
 // +kubebuilder:rbac:groups="",resources=secrets,verbs=get;list;watch
+// +kubebuilder:rbac:groups="",resources=events,verbs=create;patch
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
@@ -64,7 +67,7 @@ func (fr *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, nil
 	}
 
-	sm := fsm.New(fr.Client, fr.Config, &instance, state.StartState(), fr.Scheme, fr.LastCommitCache, log)
+	sm := fsm.New(fr.Client, fr.Config, &instance, state.StartState(), fr.EventRecorder, fr.Scheme, fr.LastCommitCache, log)
 	return sm.Reconcile(ctx)
 }
 
