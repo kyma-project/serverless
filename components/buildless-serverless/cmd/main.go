@@ -18,7 +18,10 @@ package main
 
 import (
 	"context"
+	"os"
+
 	"github.com/go-logr/zapr"
+
 	"github.com/kyma-project/serverless/internal/config"
 	"github.com/kyma-project/serverless/internal/controller/cache"
 	"github.com/kyma-project/serverless/internal/logging"
@@ -26,8 +29,8 @@ import (
 	uberzap "go.uber.org/zap"
 	uberzapcore "go.uber.org/zap/zapcore"
 	corev1 "k8s.io/api/core/v1"
-	"os"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
@@ -143,6 +146,7 @@ func main() {
 		Log:             logWithCtx,
 		Config:          cfg,
 		LastCommitCache: cache.NewRepoLastCommitCache(cfg.FunctionReadyRequeueDuration),
+		EventRecorder:   mgr.GetEventRecorderFor(serverlessv1alpha2.FunctionControllerValue),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Function")
 		os.Exit(1)

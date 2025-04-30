@@ -3,15 +3,17 @@ package fsm
 import (
 	"context"
 	"fmt"
+	"reflect"
+	"runtime"
+	"strings"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/config"
 	"github.com/kyma-project/serverless/internal/controller/cache"
 	"github.com/kyma-project/serverless/internal/controller/git"
 	"github.com/kyma-project/serverless/internal/controller/resources"
 	appsv1 "k8s.io/api/apps/v1"
-	"reflect"
-	"runtime"
-	"strings"
+	"k8s.io/client-go/tools/record"
 
 	"go.uber.org/zap"
 	apimachineryruntime "k8s.io/apimachinery/pkg/runtime"
@@ -46,6 +48,7 @@ type StateMachine struct {
 	FunctionConfig config.FunctionConfig
 	Scheme         *apimachineryruntime.Scheme
 	GitChecker     git.LastCommitChecker
+	EventRecorder  record.EventRecorder
 }
 
 func (m *StateMachine) stateFnName() string {
@@ -95,8 +98,7 @@ type StateMachineReconciler interface {
 	Reconcile(ctx context.Context) (ctrl.Result, error)
 }
 
-// TODO: Add emiting events
-func New(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function, startState StateFn /*recorder record.EventRecorder,*/, scheme *apimachineryruntime.Scheme, cache cache.Cache, log *zap.SugaredLogger) StateMachineReconciler {
+func New(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function, startState StateFn, recorder record.EventRecorder, scheme *apimachineryruntime.Scheme, cache cache.Cache, log *zap.SugaredLogger) StateMachineReconciler {
 	sm := StateMachine{
 		nextFn: startState,
 		State: SystemState{
@@ -106,8 +108,11 @@ func New(client client.Client, functionConfig config.FunctionConfig, instance *s
 		FunctionConfig: functionConfig,
 		Client:         client,
 		Scheme:         scheme,
-		GitChecker: git.GoGitCommitChecker{Cache: cache,
-			Log: log},
+		GitChecker: git.GoGitCommitChecker{
+			Cache: cache,
+			Log:   log,
+		},
+		EventRecorder: recorder,
 	}
 	sm.State.saveStatusSnapshot()
 	return &sm
@@ -118,7 +123,7 @@ func updateFunctionStatus(ctx context.Context, m *StateMachine) error {
 	if !reflect.DeepEqual(s.Function.Status, s.statusSnapshot) {
 		m.Log.Debug(fmt.Sprintf("updating serverless status to '%+v'", s.Function.Status))
 		err := m.Client.Status().Update(ctx, &s.Function)
-		//emitEvent(r, s)
+		emitEvent(m)
 		s.saveStatusSnapshot()
 		return err
 	}
