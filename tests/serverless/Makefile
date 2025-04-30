@@ -1,3 +1,8 @@
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
 PROJECT_ROOT = ../..
 include ${PROJECT_ROOT}/hack/help.mk
 
