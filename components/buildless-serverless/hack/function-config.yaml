@@ -1,5 +1,5 @@
 metricsAddress: ":8080"
-leaderElectionEnabled: true
+leaderElectionEnabled: false
 healthzAddress: ":8090"
 images:
   repoFetcher: "europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:main"
