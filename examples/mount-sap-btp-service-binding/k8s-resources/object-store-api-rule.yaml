@@ -1,0 +1,19 @@
+apiVersion: gateway.kyma-project.io/v2
+kind: APIRule
+metadata:
+  name: object-store
+  namespace: default
+spec:
+  gateway: kyma-system/kyma-gateway
+  hosts:
+  - object-store
+  rules:
+  - methods:
+    - GET
+    noAuth: true
+    path: /*
+  service:
+    name: object-store-fn
+    namespace: default
+    port: 80
+

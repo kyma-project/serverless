@@ -1,0 +1,12 @@
+generatorOptions:
+  disableNameSuffixHash: true
+secretGenerator:
+- name: default-sap-btp-service-operator
+  namespace: kyma-system
+  envs:
+  - service-manager-credentials.env
+resources:
+- object-store-service-instance.yaml
+- object-store-service-binding.yaml
+- object-store-fn.yaml
+- object-store-api-rule.yaml

@@ -1,0 +1,13 @@
+apiVersion: services.cloud.sap.com/v1
+kind: ServiceInstance
+metadata:
+  labels:
+    app.kubernetes.io/name: object-store-reference
+  name: object-store-reference
+spec:
+  externalName: object-store-reference
+  parameters:
+    selectors:
+      plan_name_selector: standard
+  serviceOfferingName: objectstore
+  servicePlanName: reference-instance
