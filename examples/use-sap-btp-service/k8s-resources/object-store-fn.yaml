@@ -4,10 +4,12 @@ metadata:
   name: object-store-fn
   namespace: default
 spec:
+  labels:
+    sidecar.istio.io/inject: 'true'
   runtime: nodejs22
   secretMounts:
-  - secretName: object-store-reference-binding
-    mountPath: /bindings/object-store-reference-binding
+  - secretName: object-store-binding
+    mountPath: /bindings/object-store-binding
   env:
     - name: SERVICE_BINDING_ROOT
       value: /bindings
@@ -30,7 +32,9 @@ spec:
 
         module.exports = {
           main: async function (event, context) {
-            console.log(services.objectstore)
+
+            console.log("objectstore", services.objectstore)
+
             const client = new S3Client({
               region: services.objectstore.region,
               endPoint: services.objectstore.host,
@@ -44,13 +48,15 @@ spec:
                 Bucket: services.objectstore.bucket
             };
 
-            const putCommand = new ListObjectsCommand(params);
-            client.send(putCommand).then(data => {
-                return data;
-            }).catch(err => {
+            try {
+              const listCommand = new ListObjectsCommand(params);
+              const response = await client.send(listCommand);
+              return response.Contents;
+            } catch(err) {
                 console.error("error ", err);
                 event.extensions.response.status(500);  
                 return err;
-            });
+            };
           }
         }
+

@@ -50,4 +50,6 @@ examples/python-text2img/resources/secrets/deepai.env
 # draw.io
 *.bkp
 tests/serverless/.env
-examples/mount-sap-btp-service-binding/k8s-resources/service-manager-credentials.env
+
+examples/use-sap-btp-service/k8s-resources/service-manager-credentials.env
+.gitignore
