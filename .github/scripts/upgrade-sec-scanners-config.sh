@@ -3,7 +3,7 @@
 IMG_VERSION=${IMG_VERSION?"Define IMG_VERSION env"}
 
 yq eval-all --inplace '
-    select(fileIndex == 0).protecode=[
+    select(fileIndex == 0).bdba=[
         select(fileIndex == 1)
         | .global.containerRegistry.path as $registryPath
         | (

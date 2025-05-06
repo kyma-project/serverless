@@ -17,7 +17,7 @@ jobs:
       - name: Export main images from the main ref
         run: |
           # export sec-scanners-config.yaml images with the main tag as github env
-          echo SSC_MAIN_IMAGES=$(yq '.protecode[] | select(contains(":main")) | sub(":.*", "")' sec-scanners-config.yaml) >> $GITHUB_ENV
+          echo SSC_MAIN_IMAGES=$(yq '.bdba[] | select(contains(":main")) | sub(":.*", "")' sec-scanners-config.yaml) >> $GITHUB_ENV
           
           # export values. images with the main tag as github env
           echo VALUES_MAIN_IMAGES=$(yq '.global.images[] | select(.version == "main") | .name' config/serverless/values.yaml) >> $GITHUB_ENV
@@ -30,7 +30,7 @@ jobs:
       
       - name: Verify sec-scanners-config.yaml images
         run: |
-          PR_NOT_MAIN_IMAGES=$(yq '.protecode[] | select(contains(":main") | not ) | sub(":.*", "")' sec-scanners-config.yaml) \
+          PR_NOT_MAIN_IMAGES=$(yq '.bdba[] | select(contains(":main") | not ) | sub(":.*", "")' sec-scanners-config.yaml) \
             .github/scripts/verify-image-changes.sh
         env:
           MAIN_IMAGES: ${{ env.SSC_MAIN_IMAGES }}
