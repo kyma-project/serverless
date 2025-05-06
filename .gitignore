@@ -49,3 +49,4 @@ examples/python-text2img/resources/secrets/deepai.env
 
 # draw.io
 *.bkp
+tests/serverless/.env
