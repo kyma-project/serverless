@@ -2,13 +2,16 @@ package state
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"strings"
+
+	"github.com/go-git/go-git/v5/plumbing/transport"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/internal/controller/fsm"
 	"github.com/kyma-project/serverless/internal/controller/git"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"strings"
 )
 
 const (
@@ -41,13 +44,21 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 			serverlessv1alpha2.ConditionConfigurationReady,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonGitSourceCheckFailed,
-			fmt.Sprintf("Git repository: %s source check failed: %s", gitRepository.URL, err.Error()))
+			prepareErrorMessage(gitRepository.URL, err))
 		return nil, nil, err
 	}
 
 	m.State.Commit = latestCommit
 
 	return nextState(sFnConfigurationReady)
+}
+
+func prepareErrorMessage(repoUrl string, err error) string {
+	if errors.Is(err, transport.ErrAuthenticationRequired) {
+		return fmt.Sprintf("Authentication required for Git repository: %s ", repoUrl)
+	}
+
+	return fmt.Sprintf("Git repository: %s source check failed: %s", repoUrl, err.Error())
 }
 
 func forceGitSourceCheck(f serverlessv1alpha2.Function) bool {
