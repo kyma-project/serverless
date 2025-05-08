@@ -164,11 +164,8 @@ check-buildless-serverless-installation: ## Wait for Serverless CR to be in Read
 	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s || \
 		(make print-serverless-details && false)
 
-	kubectl get deployment -n kyma-system -l app.kubernetes.io/name=buildless-serverless || \
-		(echo "Label app.kubernetes.io/name=buildless-serverless not found on serverless-controller-manager" && false)
-
-	kubectl wait --for condition=Available -n kyma-system deployment serverless-controller-manager --timeout=60s || \
-		(make print-serverless-details && false)
+	kubectl wait --for=condition=Available -n kyma-system deployment -l app.kubernetes.io/name=buildless-serverless --timeout=60s || \
+	  (make print-serverless-details && false)
 
 .PHONY: print-serverless-details
 print-serverless-details: ## Print all pods, deploys and serverless CRs in the kyma-system namespace.
