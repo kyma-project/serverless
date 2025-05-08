@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+
 	"github.com/kyma-project/serverless/internal/controller/fsm"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
@@ -14,6 +15,6 @@ func sFnConfigurationReady(_ context.Context, m *fsm.StateMachine) (fsm.StateFn,
 		serverlessv1alpha2.ConditionConfigurationReady,
 		metav1.ConditionTrue,
 		serverlessv1alpha2.ConditionReasonFunctionSpecValidated,
-		"function configured")
+		"Function configured")
 	return nextState(sFnHandleDeployment)
 }
