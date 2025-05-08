@@ -1,0 +1,62 @@
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  name: object-store-fn
+  namespace: default
+spec:
+  labels:
+    sidecar.istio.io/inject: 'true'
+  runtime: nodejs22
+  secretMounts:
+  - secretName: object-store-binding
+    mountPath: /bindings/object-store-binding
+  env:
+    - name: SERVICE_BINDING_ROOT
+      value: /bindings
+  source:
+    inline:
+      dependencies: |
+        {
+          "dependencies": {
+            "@sap/xsenv": "^4.2.0",
+            "@aws-sdk/client-s3": "^3.799.0"
+          }
+        }
+      source: |
+        const xsenv = require('@sap/xsenv');
+        const { S3Client, ListObjectsCommand } = require("@aws-sdk/client-s3");
+
+        var services = xsenv.getServices({
+          objectstore: { label: 'objectstore' },
+        });
+
+        module.exports = {
+          main: async function (event, context) {
+
+            console.log("objectstore", services.objectstore)
+
+            const client = new S3Client({
+              region: services.objectstore.region,
+              endPoint: services.objectstore.host,
+              credentials: {
+                accessKeyId: services.objectstore.access_key_id,
+                secretAccessKey: services.objectstore.secret_access_key
+              }
+            });
+
+            const params = {
+                Bucket: services.objectstore.bucket
+            };
+
+            try {
+              const listCommand = new ListObjectsCommand(params);
+              const response = await client.send(listCommand);
+              return response.Contents;
+            } catch(err) {
+                console.error("error ", err);
+                event.extensions.response.status(500);  
+                return err;
+            };
+          }
+        }
+

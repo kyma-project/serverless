@@ -1,0 +1,16 @@
+resources:
+- object-store-service-instance.yaml
+# variant for SAP BTP instance sharing case:
+# - object-store-service-reference-instance.yaml
+- object-store-service-binding.yaml
+- object-store-fn.yaml
+- object-store-api-rule.yaml
+
+# Provide secret for SAP BTP instance sharing case:
+# generatorOptions:
+#   disableNameSuffixHash: true
+# secretGenerator:
+# - name: default-sap-btp-service-operator
+#   namespace: kyma-system
+#   envs:
+#   - service-manager-credentials.env
