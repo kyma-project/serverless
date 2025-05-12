@@ -56,6 +56,9 @@ jobs:
           make remove-serverless
         env:
           IMG: ${{ inputs.image }}
+      - name: collect cluster info
+        if: ${{ always() }}
+        run: make -C tests/serverless cluster-info
 
   serverless-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
@@ -77,6 +80,9 @@ jobs:
           make remove-serverless
         env:
           IMG: ${{ inputs.image }}
+      - name: collect cluster info
+        if: ${{ always() }}
+        run: make -C tests/serverless cluster-info
 
   git-auth-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
@@ -101,6 +107,9 @@ jobs:
           APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
           APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
           IMG: ${{ inputs.image }}
+      - name: collect cluster info
+        if: ${{ always() }}
+        run: make -C tests/serverless cluster-info
 
   buildless-git-auth-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
@@ -125,6 +134,9 @@ jobs:
           APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
           APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
           IMG: ${{ inputs.image }}
+      - name: collect cluster info
+        if: ${{ always() }}
+        run: make -C tests/serverless cluster-info
 
   btp-integration-test:
     if: ${{ inputs.trigger_btp }}
@@ -167,6 +179,9 @@ jobs:
           APP_TEST_GITHUB_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_GITHUB_SSH_KEY }}
           APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
           APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
+      - name: collect cluster info
+        if: ${{ always() }}
+        run: make -C tests/serverless cluster-info
 
       - uses: kyma-project/terraform-module/.github/actions/force-delete-sap-btp-subaccount@2edb264e0f701fc93af4fb35eaeb7b8b3c05e493
         if: always()
