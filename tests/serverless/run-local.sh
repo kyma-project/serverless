@@ -9,8 +9,4 @@ APP_TEST_KUBECTL_PROXY_ENABLED=true APP_TEST_CLEANUP=onSuccessOnly go run ./cmd/
 EXIT_CODE=$?
 kill $KUBECTL_PID
 
-if [[ $EXIT_CODE -ne 0 ]]; then
-  echo "test failed"
-  collect_logs
-fi
 exit ${EXIT_CODE}
