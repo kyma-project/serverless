@@ -72,7 +72,7 @@ subCommands:
     default: "default"
   - type: bool
     name: "dry-run"
-    description: "Simulate resource deletion if set to 'true'"
+    description: "Simulates resource deletion if set to 'true'"
   with:
     dryRun: ${{ .flags.dryrun.value }}
     resource:
@@ -134,7 +134,7 @@ subCommands:
     description: "function secret mounts in format secret-name=mount-path"
   - type: bool
     name: "dry-run"
-    description: "Simulate resource creation if set to 'true'"
+    description: "Simulates resource creation if set to 'true'"
   with:
     dryRun: ${{ .flags.dryrun.value }}
     resource:
