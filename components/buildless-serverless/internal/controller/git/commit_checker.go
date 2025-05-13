@@ -6,7 +6,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/protocol/packp/capability"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/storage/memory"
-	"github.com/kyma-project/serverless/internal/controller/cache"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/cache"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )

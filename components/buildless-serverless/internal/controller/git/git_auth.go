@@ -6,7 +6,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/go-git/go-git/v5/plumbing/transport/ssh"
-	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/pkg/errors"
 	crypto_ssh "golang.org/x/crypto/ssh"
 	corev1 "k8s.io/api/core/v1"

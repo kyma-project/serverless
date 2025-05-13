@@ -5,7 +5,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/protocol/packp/capability"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
-	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/vrischmann/envconfig"
 	"log"
 	"os"

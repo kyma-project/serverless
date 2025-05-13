@@ -2,9 +2,9 @@ package state
 
 import (
 	"context"
-	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	"github.com/kyma-project/serverless/internal/controller/fsm"
-	"github.com/kyma-project/serverless/internal/controller/resources"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/resources"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"

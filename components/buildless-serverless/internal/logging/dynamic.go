@@ -2,7 +2,7 @@ package logging
 
 import (
 	"context"
-	"github.com/kyma-project/serverless/internal/config"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

@@ -7,11 +7,11 @@ import (
 	"runtime"
 	"strings"
 
-	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	"github.com/kyma-project/serverless/internal/config"
-	"github.com/kyma-project/serverless/internal/controller/cache"
-	"github.com/kyma-project/serverless/internal/controller/git"
-	"github.com/kyma-project/serverless/internal/controller/resources"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/cache"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/resources"
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/client-go/tools/record"
 

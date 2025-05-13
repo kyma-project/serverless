@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyma-project/serverless/internal/logging/logger"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/logging/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"

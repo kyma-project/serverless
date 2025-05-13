@@ -22,9 +22,9 @@ import (
 
 	"github.com/go-logr/zapr"
 
-	"github.com/kyma-project/serverless/internal/config"
-	"github.com/kyma-project/serverless/internal/controller/cache"
-	"github.com/kyma-project/serverless/internal/logging"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/cache"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/logging"
 	"github.com/vrischmann/envconfig"
 	uberzap "go.uber.org/zap"
 	uberzapcore "go.uber.org/zap/zapcore"
@@ -44,8 +44,8 @@ import (
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	"github.com/kyma-project/serverless/internal/controller"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller"
 	// +kubebuilder:scaffold:imports
 )
 

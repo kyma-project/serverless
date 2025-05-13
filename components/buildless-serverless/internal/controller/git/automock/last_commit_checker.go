@@ -3,7 +3,7 @@
 package automock
 
 import (
-	git "github.com/kyma-project/serverless/internal/controller/git"
+	git "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
 	mock "github.com/stretchr/testify/mock"
 )
 

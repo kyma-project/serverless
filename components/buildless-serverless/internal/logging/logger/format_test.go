@@ -3,7 +3,7 @@ package logger_test
 import (
 	"testing"
 
-	"github.com/kyma-project/serverless/internal/logging/logger"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/logging/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

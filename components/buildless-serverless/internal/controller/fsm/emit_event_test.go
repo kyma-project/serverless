@@ -3,7 +3,7 @@ package fsm
 import (
 	"testing"
 
-	"github.com/kyma-project/serverless/api/v1alpha2"
+	"github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/record"
