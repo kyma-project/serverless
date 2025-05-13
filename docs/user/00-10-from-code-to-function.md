@@ -1,6 +1,6 @@
 # From Code to Function
 
-Pick the programming language for the Function and decide where you want to keep the source code. The Serverless module uses it to create the workload.
+Pick the programming language for your Function and decide where you want to keep the source code. The Serverless module uses it to create the workload.
 
 ## Serverless Runtimes
 
