@@ -1,0 +1,42 @@
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  name: custom-tracer-python-fn
+spec:
+  runtime: python312
+  labels:
+    sidecar.istio.io/inject: "true"
+  resourceConfiguration:
+    function:
+      profile: M
+  source:
+    inline:
+      dependencies: |-
+        opentelemetry-api==1.27.0
+        opentelemetry-sdk==1.27.0
+        opentelemetry-instrumentation==0.48b0
+        opentelemetry-instrumentation-requests==0.48b0
+        requests>=2.31.0
+      source: |
+        from opentelemetry.trace import SpanKind, get_tracer
+        import time
+        import requests
+
+        def main(event, context):
+
+          customtracer = get_tracer("custom.tracer")
+
+          with customtracer.start_as_current_span("parent"):
+            time.sleep(1)
+
+            # Create a nested span to track nested work
+            with customtracer.start_as_current_span("child"):
+              time.sleep(1)
+
+          # the nested span is closed when it's out of scope
+          # Now the parent span is the current span again
+          time.sleep(1)
+
+          # This request will be auto-intrumented
+          r = requests.get('https://sv443.net/jokeapi/v2/joke/Programming')
+          return r.json()
