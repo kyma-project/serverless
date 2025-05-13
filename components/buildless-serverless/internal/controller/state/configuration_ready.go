@@ -14,6 +14,6 @@ func sFnConfigurationReady(_ context.Context, m *fsm.StateMachine) (fsm.StateFn,
 		serverlessv1alpha2.ConditionConfigurationReady,
 		metav1.ConditionTrue,
 		serverlessv1alpha2.ConditionReasonFunctionSpecValidated,
-		"function configured")
+		"Function configured")
 	return nextState(sFnHandleDeployment)
 }

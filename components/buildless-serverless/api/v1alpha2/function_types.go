@@ -313,13 +313,22 @@ func init() {
 	SchemeBuilder.Register(&Function{}, &FunctionList{})
 }
 
+const MaxConditionMessageLength = 32768
+
+func trimConditionMessage(msg string) string {
+	if len(msg) > MaxConditionMessageLength {
+		return msg[:MaxConditionMessageLength]
+	}
+	return msg
+}
+
 func (f *Function) UpdateCondition(c ConditionType, s metav1.ConditionStatus, r ConditionReason, msg string) {
 	condition := metav1.Condition{
 		Type:               string(c),
 		Status:             s,
 		LastTransitionTime: metav1.Now(),
 		Reason:             string(r),
-		Message:            msg,
+		Message:            trimConditionMessage(msg),
 	}
 	meta.SetStatusCondition(&f.Status.Conditions, condition)
 }

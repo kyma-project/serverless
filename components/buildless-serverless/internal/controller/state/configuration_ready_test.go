@@ -4,9 +4,9 @@ import (
 	"context"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
+	"testing"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"testing"
 )
 
 func Test_sFnConfigurationReady(t *testing.T) {
@@ -31,6 +31,6 @@ func Test_sFnConfigurationReady(t *testing.T) {
 			serverlessv1alpha2.ConditionConfigurationReady,
 			metav1.ConditionTrue,
 			serverlessv1alpha2.ConditionReasonFunctionSpecValidated,
-			"function configured")
+			"Function configured")
 	})
 }
