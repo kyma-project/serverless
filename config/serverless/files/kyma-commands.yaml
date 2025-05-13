@@ -70,7 +70,11 @@ subCommands:
     shorthand: "n"
     description: "Function's namespace"
     default: "default"
+  - type: bool
+    name: "dry-run"
+    description: "Simulate resource deletion if set to 'true'"
   with:
+    dryRun: ${{ .flags.dryrun.value }}
     resource:
       apiVersion: serverless.kyma-project.io/v1alpha2
       kind: Function
@@ -128,7 +132,11 @@ subCommands:
   - type: map
     name: secret-mount
     description: "function secret mounts in format secret-name=mount-path"
+  - type: bool
+    name: "dry-run"
+    description: "Simulate resource creation if set to 'true'"
   with:
+    dryRun: ${{ .flags.dryrun.value }}
     resource:
       apiVersion: serverless.kyma-project.io/v1alpha2
       kind: Function
