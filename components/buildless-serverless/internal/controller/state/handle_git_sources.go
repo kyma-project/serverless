@@ -32,7 +32,7 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 				metav1.ConditionFalse,
 				serverlessv1alpha2.ConditionReasonGitSourceCheckFailed,
 				fmt.Sprintf("Getting git authorization data failed: %s", err.Error()))
-			return nil, nil, err
+			return stopWithError(err)
 		}
 		m.State.GitAuth = gitAuth
 	}
@@ -44,7 +44,7 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonGitSourceCheckFailed,
 			prepareErrorMessage(gitRepository.URL, err))
-		return nil, nil, err
+		return stopWithError(err)
 	}
 
 	m.State.Commit = latestCommit

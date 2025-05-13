@@ -266,18 +266,20 @@ const (
 type ConditionReason string
 
 const (
-	ConditionReasonInvalidFunctionSpec     ConditionReason = "InvalidFunctionSpec"
-	ConditionReasonFunctionSpecValidated   ConditionReason = "FunctionSpecValidated"
-	ConditionReasonGitSourceCheckFailed    ConditionReason = "GitSourceCheckFailed"
-	ConditionReasonDeploymentCreated       ConditionReason = "DeploymentCreated"
-	ConditionReasonDeploymentUpdated       ConditionReason = "DeploymentUpdated"
-	ConditionReasonDeploymentFailed        ConditionReason = "DeploymentFailed"
-	ConditionReasonDeploymentWaiting       ConditionReason = "DeploymentWaiting"
-	ConditionReasonDeploymentReady         ConditionReason = "DeploymentReady"
-	ConditionReasonServiceCreated          ConditionReason = "ServiceCreated"
-	ConditionReasonServiceUpdated          ConditionReason = "ServiceUpdated"
-	ConditionReasonServiceFailed           ConditionReason = "ServiceFailed"
-	ConditionReasonMinReplicasNotAvailable ConditionReason = "MinReplicasNotAvailable"
+	ConditionReasonInvalidFunctionSpec      ConditionReason = "InvalidFunctionSpec"
+	ConditionReasonFunctionSpecValidated    ConditionReason = "FunctionSpecValidated"
+	ConditionReasonGitSourceCheckFailed     ConditionReason = "GitSourceCheckFailed"
+	ConditionReasonDeploymentCreated        ConditionReason = "DeploymentCreated"
+	ConditionReasonDeploymentUpdated        ConditionReason = "DeploymentUpdated"
+	ConditionReasonDeploymentFailed         ConditionReason = "DeploymentFailed"
+	ConditionReasonDeploymentDeleted        ConditionReason = "DeploymentDeleted"
+	ConditionReasonDeploymentDeletionFailed ConditionReason = "DeploymentDeletionFailed"
+	ConditionReasonDeploymentWaiting        ConditionReason = "DeploymentWaiting"
+	ConditionReasonDeploymentReady          ConditionReason = "DeploymentReady"
+	ConditionReasonServiceCreated           ConditionReason = "ServiceCreated"
+	ConditionReasonServiceUpdated           ConditionReason = "ServiceUpdated"
+	ConditionReasonServiceFailed            ConditionReason = "ServiceFailed"
+	ConditionReasonMinReplicasNotAvailable  ConditionReason = "MinReplicasNotAvailable"
 )
 
 // +kubebuilder:object:root=true
@@ -352,7 +354,7 @@ const (
 	PodAppNameLabel                      = "app.kubernetes.io/name"
 )
 
-func (f *Function) internalFunctionLabels() map[string]string {
+func (f *Function) InternalFunctionLabels() map[string]string {
 	intLabels := make(map[string]string, 3)
 
 	intLabels[FunctionNameLabel] = f.GetName()
@@ -363,7 +365,7 @@ func (f *Function) internalFunctionLabels() map[string]string {
 }
 
 func (f *Function) FunctionLabels() map[string]string {
-	internalLabels := f.internalFunctionLabels()
+	internalLabels := f.InternalFunctionLabels()
 	functionLabels := f.GetLabels()
 
 	return labels.Merge(functionLabels, internalLabels)
@@ -374,7 +376,7 @@ func (f *Function) SelectorLabels() map[string]string {
 		map[string]string{
 			FunctionResourceLabel: FunctionResourceLabelDeploymentValue,
 		},
-		f.internalFunctionLabels(),
+		f.InternalFunctionLabels(),
 	)
 }
 

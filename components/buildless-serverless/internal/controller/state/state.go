@@ -28,7 +28,7 @@ func stop() (fsm.StateFn, *ctrl.Result, error) {
 	return nil, nil, nil
 }
 
-func stopWithEventualError(err error) (fsm.StateFn, *ctrl.Result, error) {
+func stopWithError(err error) (fsm.StateFn, *ctrl.Result, error) {
 	return nil, nil, err
 }
 

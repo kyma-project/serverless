@@ -8,7 +8,6 @@ import (
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/resources"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -18,16 +17,26 @@ import (
 )
 
 func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	clusterDeployment, errGet := getDeployment(ctx, m)
-	m.State.ClusterDeployment = clusterDeployment
+	clusterDeployments, errGet := getDeployments(ctx, m)
 	if errGet != nil {
-		return nil, nil, errGet
+		return stopWithError(errGet)
 	}
 
-	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig, m.State.ClusterDeployment, m.State.Commit, m.State.GitAuth)
+	// If there are multiple deployments, delete them because we only want one
+	if len(clusterDeployments.Items) > 1 {
+		return nextState(sFnDeleteDeployments)
+	}
+
+	var clusterDeployment *appsv1.Deployment
+	if len(clusterDeployments.Items) == 1 {
+		clusterDeployment = &clusterDeployments.Items[0]
+	}
+	m.State.ClusterDeployment = clusterDeployment
+
+	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig, clusterDeployment, m.State.Commit, m.State.GitAuth)
 	builtDeployment := m.State.BuiltDeployment.Deployment
 
-	if clusterDeployment == nil {
+	if m.State.ClusterDeployment == nil {
 		result, errCreate := createDeployment(ctx, m, builtDeployment)
 		if errCreate == nil {
 			m.State.Function.CopyAnnotationsToStatus()
@@ -37,7 +46,7 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 
 	requeueNeeded, errUpdate := updateDeploymentIfNeeded(ctx, m, clusterDeployment, builtDeployment)
 	if errUpdate != nil {
-		return nil, nil, errUpdate
+		return stopWithError(errUpdate)
 	}
 	m.State.Function.CopyAnnotationsToStatus()
 	if requeueNeeded {
@@ -46,22 +55,16 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	return nextState(sFnHandleService)
 }
 
-func getDeployment(ctx context.Context, m *fsm.StateMachine) (*appsv1.Deployment, error) {
-	deployment := &appsv1.Deployment{}
+func getDeployments(ctx context.Context, m *fsm.StateMachine) (*appsv1.DeploymentList, error) {
+	deployments := &appsv1.DeploymentList{}
 	f := m.State.Function
-	err := m.Client.Get(ctx, client.ObjectKey{
-		Namespace: f.GetNamespace(),
-		Name:      f.GetName(),
-	}, deployment)
-
-	if err == nil {
-		return deployment, nil
-	}
-	if !errors.IsNotFound(err) {
+	labels := f.InternalFunctionLabels()
+	err := m.Client.List(ctx, deployments, client.MatchingLabels(labels))
+	if err != nil {
 		m.Log.Error(err, "unable to fetch Deployment for Function")
 		return nil, err
 	}
-	return nil, nil
+	return deployments, nil
 }
 
 func createDeployment(ctx context.Context, m *fsm.StateMachine, deployment *appsv1.Deployment) (*ctrl.Result, error) {

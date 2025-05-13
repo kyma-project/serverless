@@ -11,7 +11,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	"time"
 )
 
@@ -20,15 +19,16 @@ const (
 )
 
 func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
-	deploymentName := m.State.BuiltDeployment.GetName()
-	deployment := appsv1.Deployment{}
-	err := m.Client.Get(ctx, client.ObjectKey{
-		Namespace: m.State.BuiltDeployment.GetNamespace(),
-		Name:      deploymentName,
-	}, &deployment)
+	clusterDeployments, err := getDeployments(ctx, m)
 	if err != nil {
 		return nil, &ctrl.Result{RequeueAfter: defaultRequeueTime}, errors.Wrap(err, "while getting deployments")
 	}
+	// reconcile again if there are multiple or no deployments
+	if len(clusterDeployments.Items) != 1 {
+		return requeueAfter(defaultRequeueTime)
+	}
+	deployment := clusterDeployments.Items[0]
+	deploymentName := deployment.GetName()
 	m.State.ClusterDeployment = &deployment
 
 	// ready deployment
@@ -75,7 +75,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 
 	yamlConditions, err := yaml.Marshal(deployment.Status.Conditions)
 	if err != nil {
-		return nil, nil, errors.Wrap(err, "while parsing deployment status")
+		return stopWithError(errors.Wrap(err, "while parsing deployment status"))
 	}
 	msg := fmt.Sprintf("Deployment %s failed with condition: \n%s", deploymentName, yamlConditions)
 	m.State.Function.UpdateCondition(

@@ -20,7 +20,7 @@ func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 
 	clusterService, errGet := getService(ctx, m)
 	if errGet != nil {
-		return nil, nil, errGet
+		return stopWithError(errGet)
 	}
 	if clusterService == nil {
 		result, errCreate := createService(ctx, m, builtService)
@@ -29,7 +29,7 @@ func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 
 	requeueNeeded, errUpdate := updateServiceIfNeeded(ctx, m, clusterService, builtService)
 	if errUpdate != nil {
-		return nil, nil, errUpdate
+		return stopWithError(errUpdate)
 	}
 	if requeueNeeded {
 		return requeue()
