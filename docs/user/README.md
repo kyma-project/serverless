@@ -1,6 +1,8 @@
 # Serverless Module
 
-## What is Serverless?
+Learn more about the Serverless module. Use it to run lightweight Functions in a cost-efficient and scalable way using JavaScript and Node.js.
+
+## What Is Serverless?
 
 The Kyma Serverless module is a "code-as-a-service" tool designed to accelerate the process of prototyping applications by removing the technical overhead necessary to obtain the first testable versions. It allows developers to focus on the coding and easily run it in the context of the SAP BTP without dealing with Kubernetes orchestration or containerization complexities. The fact that no Kubernetes knowledge is required to use it makes Serverless a useful tool for beginners who want to experiment with loosely coupled microservice architecture on Kubernetes or for business consultants who need to provide extension logic for an existing Kubernetes-based system with minimal overhead.
 
@@ -29,7 +31,7 @@ The Serverless module provides the following features:
 
 ### Serverless Operator
 
-When you add the Serverless module, Serverless Operator takes care of installation and configuration of Serverless on your cluster. It manages the Serverless lifecycle based on the dedicated Serverless CR.
+When you add the Serverless module, Serverless Operator takes care of installation and configuration of Serverless in your cluster. It manages the Serverless lifecycle based on the dedicated Serverless CR.
 
 ## API/Custom Resource Definitions
 
