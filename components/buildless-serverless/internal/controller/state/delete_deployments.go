@@ -43,6 +43,6 @@ func sFnDeleteDeployments(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn
 		serverlessv1alpha2.ConditionRunning,
 		metav1.ConditionFalse,
 		serverlessv1alpha2.ConditionReasonDeploymentDeleted,
-		fmt.Sprintf("Duplicated Deployments deleted"))
+		"Duplicated Deployments deleted")
 	return requeueAfter(defaultRequeueTime)
 }
