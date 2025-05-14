@@ -159,20 +159,20 @@ ifndef ignore-not-found
 endif
 
 .PHONY: install
-install: ## Install CRDs into the K8s cluster specified in ~/.kube/config.
+install: manifests ## Install CRDs into the K8s cluster specified in ~/.kube/config.
 	$(HELM) template --show-only templates/crds.yaml $(PROJECT_ROOT)/config/buildless-serverless/ | $(KUBECTL) apply -f -
 
 .PHONY: uninstall
-uninstall: ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
+uninstall: manifests ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
 	$(HELM) template --show-only templates/crds.yaml $(PROJECT_ROOT)/config/buildless-serverless/ | $(KUBECTL) delete --ignore-not-found=$(ignore-not-found) -f -
 
 .PHONY: deploy
-deploy: ## Deploy controller to the K8s cluster specified in ~/.kube/config.
+deploy: manifests ## Deploy controller to the K8s cluster specified in ~/.kube/config.
 	$(KUBECTL) create namespace kyma-system || true
 	$(HELM) template --namespace kyma-system $(PROJECT_ROOT)/config/buildless-serverless/ | $(KUBECTL) apply -f -
 
 .PHONY: undeploy
-undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
+undeploy: manifests ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
 	$(HELM) template --namespace kyma-system $(PROJECT_ROOT)/config/buildless-serverless/ | $(KUBECTL) delete --ignore-not-found=$(ignore-not-found) -f -
 
 ##@ Dependencies
