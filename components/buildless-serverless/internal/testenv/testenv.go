@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/stretchr/testify/require"
 	"k8s.io/client-go/kubernetes/scheme"
 	"sigs.k8s.io/controller-runtime/pkg/client"

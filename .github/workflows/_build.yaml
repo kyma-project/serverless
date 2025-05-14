@@ -81,8 +81,7 @@ jobs:
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: function-buildless-controller
-      dockerfile: Dockerfile
-      context: components/buildless-serverless
+      dockerfile: components/buildless-serverless/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
 
   build-serverless-webhook:
@@ -106,8 +105,7 @@ jobs:
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: function-buildless-init
-      dockerfile: Dockerfile.jobinit
-      context: components/buildless-serverless
+      dockerfile: components/buildless-serverless/Dockerfile.jobinit
       tags: ${{ needs.compute-tags.outputs.tags }}
 
   build-nodejs20:

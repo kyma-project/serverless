@@ -2,12 +2,12 @@ package state
 
 import (
 	"context"
-	"github.com/kyma-project/serverless/internal/controller/validator"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/validator"
 	"strings"
 
-	"github.com/kyma-project/serverless/internal/controller/fsm"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
 
-	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 )

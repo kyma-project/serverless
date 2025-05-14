@@ -5,11 +5,11 @@ import (
 	"path"
 	"strings"
 
-	"github.com/kyma-project/serverless/internal/controller/git"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
 	"k8s.io/apimachinery/pkg/labels"
 
-	serverlessv1alpha2 "github.com/kyma-project/serverless/api/v1alpha2"
-	"github.com/kyma-project/serverless/internal/config"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
