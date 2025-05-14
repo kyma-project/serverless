@@ -37,7 +37,7 @@ spec:
             name: "{{ .Values.global.configuration.log.configmapName }}"
       containers:
         - command:
-            - /manager
+            - /app/manager
           {{- $fc:=.Values.global.images.function_controller }}
           image: "{{ .Values.global.containerRegistry.path }}/{{ $fc.directory }}/{{$fc.name}}:{{$fc.version}}"
           imagePullPolicy: IfNotPresent
