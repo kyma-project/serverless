@@ -264,7 +264,7 @@ func (d *Deployment) initContainerEnvs() []corev1.EnvVar {
 func (d *Deployment) initContainerCommand() string {
 	gitRepo := d.function.Spec.Source.GitRepository
 	var arr []string
-	arr = append(arr, "/gitcloner")
+	arr = append(arr, "/app/gitcloner")
 	arr = append(arr,
 		fmt.Sprintf("mkdir /git-repository/src;cp /git-repository/repo/%s/* /git-repository/src;",
 			strings.Trim(gitRepo.BaseDir, "/ ")))
