@@ -59,7 +59,7 @@ func getDeployments(ctx context.Context, m *fsm.StateMachine) (*appsv1.Deploymen
 	deployments := &appsv1.DeploymentList{}
 	f := m.State.Function
 	labels := f.InternalFunctionLabels()
-	err := m.Client.List(ctx, deployments, client.MatchingLabels(labels))
+	err := m.Client.List(ctx, deployments, client.InNamespace(f.GetNamespace()), client.MatchingLabels(labels))
 	if err != nil {
 		m.Log.Error(err, "unable to fetch Deployment for Function")
 		return nil, err
@@ -69,26 +69,30 @@ func getDeployments(ctx context.Context, m *fsm.StateMachine) (*appsv1.Deploymen
 
 func createDeployment(ctx context.Context, m *fsm.StateMachine, deployment *appsv1.Deployment) (*ctrl.Result, error) {
 	m.Log.Info("creating a new Deployment", "Deployment.Namespace", deployment.GetNamespace(), "Deployment.Name", deployment.GetName())
+	name := deployment.GetName()
+	if name == "" {
+		name = fmt.Sprintf("%s*", deployment.GetGenerateName())
+	}
 
 	// Set the ownerRef for the Deployment, ensuring that the Deployment
 	// will be deleted when the Function CR is deleted.
 	if err := controllerutil.SetControllerReference(&m.State.Function, deployment, m.Scheme); err != nil {
-		m.Log.Error(err, "failed to set controller reference for new Deployment", "Deployment.Namespace", deployment.GetNamespace(), "Deployment.Name", deployment.GetName())
+		m.Log.Error(err, "failed to set controller reference for new Deployment", "Deployment.Namespace", deployment.GetNamespace(), "Deployment.Name", name)
 		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonDeploymentFailed,
-			fmt.Sprintf("Deployment %s create failed: %s", deployment.GetName(), err.Error()))
+			fmt.Sprintf("Deployment %s create failed: %s", name, err.Error()))
 		return nil, err
 	}
 
 	if err := m.Client.Create(ctx, deployment); err != nil {
-		m.Log.Error(err, "failed to create new Deployment", "Deployment.Namespace", deployment.GetNamespace(), "Deployment.Name", deployment.GetName())
+		m.Log.Error(err, "failed to create new Deployment", "Deployment.Namespace", deployment.GetNamespace(), "Deployment.Name", name)
 		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonDeploymentFailed,
-			fmt.Sprintf("Deployment %s create failed: %s", deployment.GetName(), err.Error()))
+			fmt.Sprintf("Deployment %s create failed: %s", name, err.Error()))
 		return nil, err
 	}
 	m.State.Function.UpdateCondition(

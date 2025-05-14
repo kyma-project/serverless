@@ -18,22 +18,32 @@ import (
 func Test_sFnDeleteDeployments(t *testing.T) {
 	t.Run("should delete labeled deployments", func(t *testing.T) {
 		// Arrange
-		f := serverlessv1alpha2.Function{}
+		// our function
+		f := serverlessv1alpha2.Function{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "bold-galois",
+				Namespace: "youthful-brahmagupta"},
+			Spec: serverlessv1alpha2.FunctionSpec{
+				Runtime: serverlessv1alpha2.NodeJs22,
+				Source: serverlessv1alpha2.Source{
+					Inline: &serverlessv1alpha2.InlineSource{
+						Source: "confident-ardinghelli"}},
+				Annotations: map[string]string{"joliot": "condescending"}}}
 		// some deployment on k8s, but it is not the deployment we expect
 		someDeployment := appsv1.Deployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "peaceful-leavitt",
-				Namespace: "elegant-cohen"}}
+				Namespace: f.GetNamespace()}}
 		// two deployments on k8s with labels we expect
 		firstDeployment := appsv1.Deployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "loving-aryabhata",
-				Namespace: "agitated-rubin",
+				Namespace: f.GetNamespace(),
 				Labels:    f.InternalFunctionLabels()}}
 		secondDeployment := appsv1.Deployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "kind-germain",
-				Namespace: "blissful-yalow",
+				Namespace: f.GetNamespace(),
 				Labels:    f.InternalFunctionLabels()}}
 		// scheme and fake client
 		scheme := runtime.NewScheme()
@@ -43,17 +53,7 @@ func Test_sFnDeleteDeployments(t *testing.T) {
 			WithObjects(&someDeployment, &firstDeployment, &secondDeployment).Build()
 		// machine with our function
 		m := fsm.StateMachine{
-			State: fsm.SystemState{
-				Function: serverlessv1alpha2.Function{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "bold-galois",
-						Namespace: "youthful-brahmagupta"},
-					Spec: serverlessv1alpha2.FunctionSpec{
-						Runtime: serverlessv1alpha2.NodeJs22,
-						Source: serverlessv1alpha2.Source{
-							Inline: &serverlessv1alpha2.InlineSource{
-								Source: "confident-ardinghelli"}},
-						Annotations: map[string]string{"joliot": "condescending"}}}},
+			State:  fsm.SystemState{Function: f},
 			Log:    zap.NewNop().Sugar(),
 			Client: k8sClient,
 			Scheme: scheme}

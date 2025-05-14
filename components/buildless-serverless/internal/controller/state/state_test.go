@@ -71,3 +71,18 @@ func requireContainsCondition(t *testing.T, status serverlessv1alpha2.FunctionSt
 	}
 	require.True(t, hasExpectedCondition)
 }
+
+func requireContainsConditionWithMessagePattern(t *testing.T, status serverlessv1alpha2.FunctionStatus,
+	conditionType serverlessv1alpha2.ConditionType, conditionStatus metav1.ConditionStatus,
+	conditionReason serverlessv1alpha2.ConditionReason, conditionMessagePattern string) {
+	hasExpectedCondition := false
+	for _, condition := range status.Conditions {
+		if condition.Type == string(conditionType) {
+			require.Equal(t, string(conditionReason), condition.Reason)
+			require.Equal(t, conditionStatus, condition.Status)
+			require.Regexp(t, conditionMessagePattern, condition.Message)
+			hasExpectedCondition = true
+		}
+	}
+	require.True(t, hasExpectedCondition)
+}

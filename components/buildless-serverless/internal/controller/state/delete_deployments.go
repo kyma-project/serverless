@@ -8,6 +8,8 @@ import (
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	apilabels "k8s.io/apimachinery/pkg/labels"
+	"k8s.io/utils/ptr"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -15,9 +17,17 @@ import (
 func sFnDeleteDeployments(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	m.Log.Info("Deleting duplicated deployments")
 
-	labels := m.State.Function.InternalFunctionLabels()
-	//	selector := apilabels.SelectorFromSet(labels)
-	err := m.Client.DeleteAllOf(ctx, &appsv1.Deployment{}, client.MatchingLabels(labels))
+	f := m.State.Function
+	labels := f.InternalFunctionLabels()
+	err := m.Client.DeleteAllOf(ctx, &appsv1.Deployment{}, &client.DeleteAllOfOptions{
+		ListOptions: client.ListOptions{
+			LabelSelector: apilabels.SelectorFromSet(labels),
+			Namespace:     f.GetNamespace(),
+		},
+		DeleteOptions: client.DeleteOptions{
+			PropagationPolicy: ptr.To(metav1.DeletePropagationBackground),
+		},
+	})
 
 	if err != nil {
 		m.Log.Error(err, "Failed to delete duplicated Deployments")
