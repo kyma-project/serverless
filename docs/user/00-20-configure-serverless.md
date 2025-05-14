@@ -168,7 +168,7 @@ Use this label to choose the [arguments](https://github.com/GoogleContainerTools
 - `--skip-unused-stages` - executor skips any stages that aren't used for the current execution
 - `--log-format=text` - executor uses logs in a given format
 - `--cache=true` - enables caching for the executor
-- `--compressed-caching=false` - prevents tar compression for cached layers. This will increase the runtime of the build, but decrease the memory usage especially for large builds.
+- `--compressed-caching=false` - prevents tar compression for cached layers. This increases the runtime of the build, but decrease the memory usage especially for large builds.
 - `--use-new-run` - improves performance by avoiding the full filesystem snapshots.
 
 ```yaml
@@ -193,7 +193,7 @@ You can set a custom maximum number of simultaneous jobs which can run at the sa
 
 ## Configure the healthz Liveness Timeout
 
-By default, the Function is considered unhealthy if the liveness health check endpoint does not respond within 10 seconds.
+By default, Function is considered unhealthy if the liveness health check endpoint does not respond within 10 seconds.
 
 ```yaml
    spec:
