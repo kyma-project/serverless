@@ -21,11 +21,17 @@ import (
 func Test_sFnDeploymentStatus(t *testing.T) {
 	t.Run("when deployment is ready should go to the next state", func(t *testing.T) {
 		// Arrange
+		// our function
+		f := serverlessv1alpha2.Function{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "strange-chebyshev-name",
+				Namespace: "busy-ramanujan-ns"}}
 		// deployment which will be returned from kubernetes
 		deployment := appsv1.Deployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "strange-chebyshev-name",
-				Namespace: "busy-ramanujan-ns"},
+				Namespace: "busy-ramanujan-ns",
+				Labels:    f.InternalFunctionLabels()},
 			Status: appsv1.DeploymentStatus{
 				Conditions: []appsv1.DeploymentCondition{
 					{Type: appsv1.DeploymentAvailable, Status: corev1.ConditionTrue, Reason: MinimumReplicasAvailable},
@@ -43,10 +49,7 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      "strange-chebyshev-name",
 							Namespace: "busy-ramanujan-ns"}}},
-				Function: serverlessv1alpha2.Function{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "strange-chebyshev-name",
-						Namespace: "busy-ramanujan-ns"}}},
+				Function: f},
 			Log:    zap.NewNop().Sugar(),
 			Client: k8sClient,
 			Scheme: scheme}
@@ -71,11 +74,17 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 	})
 	t.Run("when deployment is unhealthy should requeue", func(t *testing.T) {
 		// Arrange
+		// our function
+		f := serverlessv1alpha2.Function{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "peaceful-rhodes-name",
+				Namespace: "eloquent-shockley-ns"}}
 		// deployment which will be returned from kubernetes
 		deployment := appsv1.Deployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "peaceful-rhodes-name",
-				Namespace: "eloquent-shockley-ns"},
+				Namespace: "eloquent-shockley-ns",
+				Labels:    f.InternalFunctionLabels()},
 			Status: appsv1.DeploymentStatus{
 				Conditions: []appsv1.DeploymentCondition{
 					{Type: appsv1.DeploymentAvailable, Status: corev1.ConditionFalse, Reason: MinimumReplicasUnavailable}}}}
@@ -92,10 +101,7 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      "peaceful-rhodes-name",
 							Namespace: "eloquent-shockley-ns"}}},
-				Function: serverlessv1alpha2.Function{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "peaceful-rhodes-name",
-						Namespace: "eloquent-shockley-ns"}}},
+				Function: f},
 			Log:    zap.NewNop().Sugar(),
 			Client: k8sClient,
 			Scheme: scheme}
@@ -120,11 +126,17 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 	})
 	t.Run("when deployment is not ready should requeue", func(t *testing.T) {
 		// Arrange
+		// our function
+		f := serverlessv1alpha2.Function{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "eloquent-stonebraker-name",
+				Namespace: "clever-diffie-ns"}}
 		// deployment which will be returned from kubernetes
 		deployment := appsv1.Deployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "eloquent-stonebraker-name",
-				Namespace: "clever-diffie-ns"},
+				Namespace: "clever-diffie-ns",
+				Labels:    f.InternalFunctionLabels()},
 			Status: appsv1.DeploymentStatus{
 				Conditions: []appsv1.DeploymentCondition{
 					{Type: appsv1.DeploymentProgressing, Status: corev1.ConditionTrue}}}}
@@ -141,10 +153,7 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      "eloquent-stonebraker-name",
 							Namespace: "clever-diffie-ns"}}},
-				Function: serverlessv1alpha2.Function{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "eloquent-stonebraker-name",
-						Namespace: "clever-diffie-ns"}}},
+				Function: f},
 			Log:    zap.NewNop().Sugar(),
 			Client: k8sClient,
 			Scheme: scheme}
@@ -169,11 +178,17 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 	})
 	t.Run("when deployment failed should stop processing", func(t *testing.T) {
 		// Arrange
+		// our function
+		f := serverlessv1alpha2.Function{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "infallible-carver-name",
+				Namespace: "jolly-galileo-ns"}}
 		// deployment which will be returned from kubernetes
 		deployment := appsv1.Deployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "infallible-carver-name",
-				Namespace: "jolly-galileo-ns"},
+				Namespace: "jolly-galileo-ns",
+				Labels:    f.InternalFunctionLabels()},
 			Status: appsv1.DeploymentStatus{
 				Conditions: []appsv1.DeploymentCondition{
 					{Type: "fervent-engelbart", Status: corev1.ConditionTrue},
@@ -191,10 +206,7 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 						ObjectMeta: metav1.ObjectMeta{
 							Name:      "infallible-carver-name",
 							Namespace: "jolly-galileo-ns"}}},
-				Function: serverlessv1alpha2.Function{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "infallible-carver-name",
-						Namespace: "jolly-galileo-ns"}}},
+				Function: f},
 			Log:    zap.NewNop().Sugar(),
 			Client: k8sClient,
 			Scheme: scheme}
@@ -247,7 +259,60 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 		// Assert
 		// we expect error
 		require.NotNil(t, err)
-		require.EqualError(t, err, "while getting deployments: deployments.apps \"adoring-driscoll-name\" not found")
+		require.EqualError(t, err, "multiple or no deployments found")
+		// we expect stop and requeue
+		require.NotNil(t, result)
+		require.Equal(t, ctrl.Result{RequeueAfter: defaultRequeueTime}, *result)
+		// no next state (we will stop)
+		require.Nil(t, next)
+	})
+	t.Run("when many deployments exist should requeue", func(t *testing.T) {
+		// Arrange
+		// our function
+		f := serverlessv1alpha2.Function{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "recursing-morse",
+				Namespace: "peaceful-pike"}}
+		// deployments which will be returned from kubernetes
+		deployment1 := appsv1.Deployment{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "suspicious-jennings",
+				Namespace: "peaceful-pike",
+				Labels:    f.InternalFunctionLabels()},
+			Status: appsv1.DeploymentStatus{
+				Conditions: []appsv1.DeploymentCondition{}}}
+		deployment2 := appsv1.Deployment{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "busy-lichterman",
+				Namespace: "peaceful-pike",
+				Labels:    f.InternalFunctionLabels()},
+			Status: appsv1.DeploymentStatus{
+				Conditions: []appsv1.DeploymentCondition{}}}
+		// scheme and fake client without deployment
+		scheme := runtime.NewScheme()
+		require.NoError(t, serverlessv1alpha2.AddToScheme(scheme))
+		require.NoError(t, appsv1.AddToScheme(scheme))
+		k8sClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(&deployment1, &deployment2).Build()
+		// machine with our function
+		m := fsm.StateMachine{
+			State: fsm.SystemState{
+				BuiltDeployment: &resources.Deployment{
+					Deployment: &appsv1.Deployment{
+						ObjectMeta: metav1.ObjectMeta{
+							Name:      "epic-khayyam",
+							Namespace: "peaceful-pike"}}},
+				Function: f},
+			Log:    zap.NewNop().Sugar(),
+			Client: k8sClient,
+			Scheme: scheme}
+
+		// Act
+		next, result, err := sFnDeploymentStatus(context.Background(), &m)
+
+		// Assert
+		// we expect error
+		require.NotNil(t, err)
+		require.EqualError(t, err, "multiple or no deployments found")
 		// we expect stop and requeue
 		require.NotNil(t, result)
 		require.Equal(t, ctrl.Result{RequeueAfter: defaultRequeueTime}, *result)

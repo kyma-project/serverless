@@ -25,7 +25,7 @@ func TestNewDeployment(t *testing.T) {
 		d := r.Deployment
 		require.NotNil(t, d)
 		require.IsType(t, &appsv1.Deployment{}, d)
-		require.Equal(t, "test-function-name", d.GetName())
+		require.Equal(t, "test-function-name-", d.GetGenerateName())
 		require.Equal(t, "test-function-namespace", d.GetNamespace())
 	})
 }
@@ -143,13 +143,13 @@ func TestDeployment_construct(t *testing.T) {
 			"thompson":              "exciting",
 		}, r.Spec.Template.ObjectMeta.Annotations)
 	})
-	t.Run("use container name from function", func(t *testing.T) {
+	t.Run("use fixed container name", func(t *testing.T) {
 		d := minimalDeployment()
 
 		r := d.construct()
 
 		require.NotNil(t, r)
-		require.Equal(t, "test-function-name", r.Spec.Template.Spec.Containers[0].Name)
+		require.Equal(t, "function", r.Spec.Template.Spec.Containers[0].Name)
 	})
 	t.Run("use container image based on function and function configuration", func(t *testing.T) {
 		d := &Deployment{
@@ -319,22 +319,6 @@ python /kubeless.py;`,
 			`/app/gitcloner
 mkdir /git-repository/src;cp /git-repository/repo/recursing-mcnulty/* /git-repository/src;`}
 		require.Equal(t, expectedCommand, c.Command)
-	})
-}
-
-func TestDeployment_name(t *testing.T) {
-	t.Run("get name from function", func(t *testing.T) {
-		d := &Deployment{
-			function: &serverlessv1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: "function-name",
-				},
-			},
-		}
-
-		r := d.name()
-
-		assert.Equal(t, "function-name", r)
 	})
 }
 

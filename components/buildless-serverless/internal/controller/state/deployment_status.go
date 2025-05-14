@@ -21,11 +21,11 @@ const (
 func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	clusterDeployments, err := getDeployments(ctx, m)
 	if err != nil {
-		return nil, &ctrl.Result{RequeueAfter: defaultRequeueTime}, errors.Wrap(err, "while getting deployments")
+		return requeueAfterWithError(defaultRequeueTime, errors.Wrap(err, "while getting deployments"))
 	}
 	// reconcile again if there are multiple or no deployments
 	if len(clusterDeployments.Items) != 1 {
-		return requeueAfter(defaultRequeueTime)
+		return requeueAfterWithError(defaultRequeueTime, errors.New("multiple or no deployments found"))
 	}
 	deployment := clusterDeployments.Items[0]
 	deploymentName := deployment.GetName()
