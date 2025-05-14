@@ -316,7 +316,7 @@ python /kubeless.py;`,
 		require.Len(t, r.Spec.Template.Spec.InitContainers, 1)
 		c := r.Spec.Template.Spec.InitContainers[0]
 		expectedCommand := []string{"sh", "-c",
-			`/gitcloner
+			`/app/gitcloner
 mkdir /git-repository/src;cp /git-repository/repo/recursing-mcnulty/* /git-repository/src;`}
 		require.Equal(t, expectedCommand, c.Command)
 	})
