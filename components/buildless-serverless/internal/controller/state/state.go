@@ -24,11 +24,17 @@ func requeueAfter(duration time.Duration) (fsm.StateFn, *ctrl.Result, error) {
 	}, nil
 }
 
+func requeueAfterWithError(duration time.Duration, err error) (fsm.StateFn, *ctrl.Result, error) {
+	return nil, &ctrl.Result{
+		RequeueAfter: duration,
+	}, err
+}
+
 func stop() (fsm.StateFn, *ctrl.Result, error) {
 	return nil, nil, nil
 }
 
-func stopWithEventualError(err error) (fsm.StateFn, *ctrl.Result, error) {
+func stopWithError(err error) (fsm.StateFn, *ctrl.Result, error) {
 	return nil, nil, err
 }
 

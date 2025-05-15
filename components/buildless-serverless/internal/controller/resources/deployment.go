@@ -44,9 +44,9 @@ func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clu
 func (d *Deployment) construct() *appsv1.Deployment {
 	deployment := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      d.name(),
-			Namespace: d.function.Namespace,
-			Labels:    d.function.FunctionLabels(),
+			GenerateName: fmt.Sprintf("%s-", d.function.Name),
+			Namespace:    d.function.Namespace,
+			Labels:       d.function.FunctionLabels(),
 		},
 		Spec: appsv1.DeploymentSpec{
 			Selector: &metav1.LabelSelector{
@@ -67,10 +67,6 @@ func (d *Deployment) construct() *appsv1.Deployment {
 
 func (d *Deployment) RuntimeImage() string {
 	return d.Spec.Template.Spec.Containers[0].Image
-}
-
-func (d *Deployment) name() string {
-	return d.function.Name
 }
 
 func (d *Deployment) podRunAsUserUID() *int64 {
@@ -124,7 +120,7 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 		InitContainers: d.initContainerForGitRepository(),
 		Containers: []corev1.Container{
 			{
-				Name:       d.name(),
+				Name:       "function",
 				Image:      d.runtimeImage(),
 				WorkingDir: d.workingSourcesDir(),
 				Command: []string{
@@ -205,7 +201,7 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 
 	return []corev1.Container{
 		{
-			Name:       fmt.Sprintf("%s-init", d.name()),
+			Name:       "init",
 			Image:      d.functionConfig.Images.RepoFetcher,
 			WorkingDir: d.workingSourcesDir(),
 			Command: []string{

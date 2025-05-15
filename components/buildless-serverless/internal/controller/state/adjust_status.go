@@ -20,7 +20,7 @@ func sFnAdjustStatus(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl
 	selector, err := metav1.LabelSelectorAsSelector(&metav1.LabelSelector{MatchLabels: f.SelectorLabels()})
 	if err != nil {
 		m.Log.Warnf("failed to get selector for labelSelector: %w", err)
-		return stopWithEventualError(errors.Wrap(err, "while getting selectors"))
+		return stopWithError(errors.Wrap(err, "while getting selectors"))
 	}
 	s.PodSelector = selector.String()
 

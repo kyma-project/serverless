@@ -73,18 +73,18 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		// deployment has not been updated
 		require.False(t, updateWasCalled)
 		// function has proper condition
-		requireContainsCondition(t, m.State.Function.Status,
+		requireContainsConditionWithMessagePattern(t, m.State.Function.Status,
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionUnknown,
 			serverlessv1alpha2.ConditionReasonDeploymentCreated,
-			"Deployment peaceful-merkle-name created")
+			"^Deployment peaceful-merkle-name-\\w+ created$")
 		// deployment has been applied to k8s
-		appliedDeployment := &appsv1.Deployment{}
-		getErr := k8sClient.Get(context.Background(), client.ObjectKey{
-			Name:      "peaceful-merkle-name",
-			Namespace: "gifted-khorana-ns",
-		}, appliedDeployment)
+		clusterDeployments := &appsv1.DeploymentList{}
+		getErr := k8sClient.List(context.Background(), clusterDeployments, client.InNamespace("gifted-khorana-ns"))
 		require.NoError(t, getErr)
+		require.Len(t, clusterDeployments.Items, 1)
+		appliedDeployment := clusterDeployments.Items[0]
+		require.Regexp(t, "^peaceful-merkle-name-\\w+$", appliedDeployment.Name)
 		// deployment should have owner ref to our function
 		require.NotEmpty(t, appliedDeployment.OwnerReferences)
 		require.Equal(t, "Function", appliedDeployment.OwnerReferences[0].Kind)
@@ -100,6 +100,9 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.NoError(t, appsv1.AddToScheme(scheme))
 		createOrUpdateWasCalled := false
 		k8sClient := fake.NewClientBuilder().WithScheme(scheme).WithInterceptorFuncs(interceptor.Funcs{
+			List: func(ctx context.Context, client client.WithWatch, list client.ObjectList, opts ...client.ListOption) error {
+				return errors.New("magical-hellman error message")
+			},
 			Get: func(ctx context.Context, client client.WithWatch, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return errors.New("magical-hellman error message")
 			},
@@ -186,7 +189,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonDeploymentFailed,
-			"Deployment nostalgic-hugle-name create failed: competent-goldwasser error message")
+			"Deployment nostalgic-hugle-name-* create failed: competent-goldwasser error message")
 	})
 	t.Run("when deployment exists on kubernetes but we do not need changes should keep it without changes and go to the next state", func(t *testing.T) {
 		// Arrange
@@ -252,11 +255,23 @@ func Test_sFnHandleDeployment(t *testing.T) {
 	})
 	t.Run("when deployment exists on kubernetes and we need changes should update it and requeue", func(t *testing.T) {
 		// Arrange
+		// our function
+		f := serverlessv1alpha2.Function{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "inspiring-haibt-name",
+				Namespace: "heuristic-dubinsky-ns"},
+			Spec: serverlessv1alpha2.FunctionSpec{
+				Runtime: serverlessv1alpha2.Python312,
+				Source: serverlessv1alpha2.Source{
+					Inline: &serverlessv1alpha2.InlineSource{
+						Source: "brave-euclid"}},
+				Annotations: map[string]string{"torvalds": "lucid"}}}
 		// deployment which will be returned from kubernetes - empty so there will be a difference
 		deployment := appsv1.Deployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "inspiring-haibt-name",
-				Namespace: "heuristic-dubinsky-ns"}}
+				Namespace: "heuristic-dubinsky-ns",
+				Labels:    f.InternalFunctionLabels()}}
 		// scheme and fake client
 		scheme := runtime.NewScheme()
 		require.NoError(t, serverlessv1alpha2.AddToScheme(scheme))
@@ -270,17 +285,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		}).Build()
 		// machine with our function
 		m := fsm.StateMachine{
-			State: fsm.SystemState{
-				Function: serverlessv1alpha2.Function{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "inspiring-haibt-name",
-						Namespace: "heuristic-dubinsky-ns"},
-					Spec: serverlessv1alpha2.FunctionSpec{
-						Runtime: serverlessv1alpha2.Python312,
-						Source: serverlessv1alpha2.Source{
-							Inline: &serverlessv1alpha2.InlineSource{
-								Source: "brave-euclid"}},
-						Annotations: map[string]string{"torvalds": "lucid"}}}},
+			State: fsm.SystemState{Function: f},
 			FunctionConfig: config.FunctionConfig{
 				Images: config.ImagesConfig{Python312: "flamboyant-chatelet"}},
 			Log:    zap.NewNop().Sugar(),
@@ -322,11 +327,22 @@ func Test_sFnHandleDeployment(t *testing.T) {
 	})
 	t.Run("when deployment exists on kubernetes and update fails should stop processing", func(t *testing.T) {
 		// Arrange
+		// our function
+		f := serverlessv1alpha2.Function{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "affectionate-shockley-name",
+				Namespace: "boring-swirles-ns"},
+			Spec: serverlessv1alpha2.FunctionSpec{
+				Runtime: serverlessv1alpha2.Python312,
+				Source: serverlessv1alpha2.Source{
+					Inline: &serverlessv1alpha2.InlineSource{
+						Source: "eager-ardinghelli"}}}}
 		// deployment which will be returned from kubernetes - empty so there will be a difference
 		deployment := appsv1.Deployment{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "affectionate-shockley-name",
-				Namespace: "boring-swirles-ns"}}
+				Namespace: "boring-swirles-ns",
+				Labels:    f.InternalFunctionLabels()}}
 		// scheme and fake client
 		scheme := runtime.NewScheme()
 		require.NoError(t, serverlessv1alpha2.AddToScheme(scheme))
@@ -338,16 +354,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		}).Build()
 		// machine with our function
 		m := fsm.StateMachine{
-			State: fsm.SystemState{
-				Function: serverlessv1alpha2.Function{
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      "affectionate-shockley-name",
-						Namespace: "boring-swirles-ns"},
-					Spec: serverlessv1alpha2.FunctionSpec{
-						Runtime: serverlessv1alpha2.Python312,
-						Source: serverlessv1alpha2.Source{
-							Inline: &serverlessv1alpha2.InlineSource{
-								Source: "eager-ardinghelli"}}}}},
+			State: fsm.SystemState{Function: f},
 			FunctionConfig: config.FunctionConfig{
 				Images: config.ImagesConfig{Python312: "naughty-herschel"}},
 			Log:    zap.NewNop().Sugar(),
