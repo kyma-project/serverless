@@ -1,0 +1,52 @@
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  name: custom-tracer-nodejs-fn
+spec:
+  runtime: nodejs22
+  resourceConfiguration:
+    function:
+      profile: XS
+  source:
+    inline:
+      dependencies: |-
+        {
+          "dependencies": {
+            "axios": "^1.9.0",
+            "@opentelemetry/api": "^1.4.0",
+            "@opentelemetry/exporter-trace-otlp-http": "^0.57.0",
+            "@opentelemetry/instrumentation": "^0.57.0",
+            "@opentelemetry/instrumentation-express": "^0.47.0",
+            "@opentelemetry/instrumentation-http": "^0.57.0",
+            "@opentelemetry/propagator-b3": "^1.9.1",
+            "@opentelemetry/sdk-trace-node": "^1.9.1",
+            "@opentelemetry/exporter-prometheus": "^0.57.0",
+          }
+        }
+      source: |
+        const axios = require('axios');
+        const opentelemetry = require('@opentelemetry/api');
+
+        module.exports = {
+          main: async function (event, context) {
+
+            const myCustomTracer = opentelemetry.trace.getTracer("custom.tracer");
+            const span = myCustomTracer.startSpan('my-span');
+
+            let result;
+            try {
+              result = await axios('https://sv443.net/jokeapi/v2/joke/Programming')
+                .then((response) => {
+                  return response.data;
+                })
+                .catch((error) => {
+                  console.error(error);
+                  return error;
+                });
+            } finally {
+              span.end();
+            }
+            return result;
+          }
+        }
+        
