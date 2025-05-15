@@ -4,18 +4,17 @@ metadata:
   name: custom-tracer-python-fn
 spec:
   runtime: python312
-  labels:
-    sidecar.istio.io/inject: "true"
   resourceConfiguration:
     function:
-      profile: M
+      profile: XS
   source:
     inline:
       dependencies: |-
-        opentelemetry-api==1.27.0
-        opentelemetry-sdk==1.27.0
-        opentelemetry-instrumentation==0.48b0
-        opentelemetry-instrumentation-requests==0.48b0
+        opentelemetry-api==1.30.0
+        opentelemetry-sdk==1.30.0
+        opentelemetry-exporter-otlp-proto-http==1.30.0
+        opentelemetry-propagator-b3==1.30.0
+        opentelemetry-instrumentation-requests==0.51b0
         requests>=2.31.0
       source: |
         from opentelemetry.trace import SpanKind, get_tracer
