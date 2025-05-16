@@ -130,8 +130,8 @@ deployment:
     periodSeconds: 30
 pod:
   labels: 
-    networking.kyma-project.io/to-apiserver: allowed
-    networking.kyma-project.io/from-serverless: allowed
+    networking.serverless.kyma-project.io/to-apiserver: allowed
+    networking.serverless.kyma-project.io/from-serverless: allowed
   annotations:
     sidecar.istio.io/inject: "false"
     prometheus.io/scrape: "false"
