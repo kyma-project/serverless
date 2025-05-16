@@ -18,12 +18,12 @@ package main
 
 import (
 	"context"
-	"os"
-
 	"github.com/go-logr/zapr"
+	"os"
 
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/cache"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/job"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/logging"
 	"github.com/vrischmann/envconfig"
 	uberzap "go.uber.org/zap"
@@ -111,7 +111,6 @@ func main() {
 	restConfig := ctrl.GetConfigOrDie()
 
 	//TODO: add support for prometheus metrics
-
 	logWithCtx.Info("Initializing controller manager")
 	mgr, err := ctrl.NewManager(restConfig, ctrl.Options{
 		Scheme: scheme,
@@ -152,6 +151,13 @@ func main() {
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder
+
+	go func() {
+		err := job.DeleteOrphanedJobs(ctx, mgr)
+		if err != nil {
+			setupLog.Error(err, "unable to delete jobs")
+		}
+	}()
 
 	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
 		setupLog.Error(err, "unable to set up health check")
