@@ -2,7 +2,10 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   namespace: {{ .Release.Namespace }}
-  name: {{ template "fullname" . }}.kyma-project.io--allow-to-registry-port
+  name: kyma-project.io--{{ template "fullname" . }}-allow-registry
+  labels:
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
+    purpose: registry
 spec:
   podSelector:
     matchLabels:

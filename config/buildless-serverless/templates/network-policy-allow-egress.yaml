@@ -4,17 +4,18 @@ metadata:
   labels:
     kyma-project.io/module: serverless
     app.kubernetes.io/name: buildless-serverless
-    app.kubernetes.io/instance: serverless.kyma-project.io--allow-all-egress-from-controllers
+    app.kubernetes.io/instance: buildless-serverless-allow-egress-policy
     app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: network-policy
     app.kubernetes.io/part-of: serverless
+    purpose: fn-code-fetching
   namespace: {{ .Release.Namespace }}
-  name: serverless.kyma-project.io--allow-all-egress-from-controllers
+  name: kyma-project.io--serverless-allow-egress
 spec:
   podSelector:
     matchLabels:
       kyma-project.io/module: serverless
-      networking.kyma-project.io/from-serverless: allowed
+      networking.serverless.kyma-project.io/from-serverless: allowed
   policyTypes:
   - Egress
   egress:

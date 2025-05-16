@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: kyma-project.io--serverless-allow-metrics
+  labels:
+    kyma-project.io/module: serverless
+    app.kubernetes.io/name: buildless-serverless
+    app.kubernetes.io/instance: buildless-serverless-allow-metrics-policy
+    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/component: network-policy
+    app.kubernetes.io/part-of: serverless
+    purpose: metrics
+spec:
+  podSelector:
+    matchLabels:
+      kyma-project.io/module: serverless
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          networking.kyma-project.io/metrics-scraping: allowed
+    ports:
+    - protocol: TCP
+      port: 8080
