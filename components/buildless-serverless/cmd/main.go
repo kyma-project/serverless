@@ -152,6 +152,7 @@ func main() {
 	}
 	// +kubebuilder:scaffold:builder
 
+	//TODO: It is a temporary solution to delete orphaned jobs. It should be removed after migration from old serverless
 	go func() {
 		err := job.DeleteOrphanedJobs(ctx, mgr)
 		if err != nil {
