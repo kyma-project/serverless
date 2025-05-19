@@ -25,7 +25,7 @@ func DeleteOrphanedJobs(ctx context.Context, m manager.Manager) error {
 
 	// delete orphaned jobs
 	for _, job := range jobs.Items {
-		err := deleteJobs(ctx, m.GetClient(), &job)
+		err := deleteJob(ctx, m.GetClient(), &job)
 		if err != nil {
 			return fmt.Errorf("failed to delete job %s/%s: %s", job.Namespace, job.Name, err)
 		}
