@@ -15,7 +15,7 @@ func DeleteOrphanedJobs(ctx context.Context, m manager.Manager) error {
 	labels := map[string]string{
 		"serverless.kyma-project.io/managed-by": "function-controller",
 	}
-	
+
 	// list orphaned jobs
 	jobs := &batchv1.JobList{}
 	err := listJobs(ctx, m.GetAPIReader(), jobs, labels)
