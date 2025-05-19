@@ -40,7 +40,7 @@ func listJobs(ctx context.Context, m client.Reader, jobs *batchv1.JobList, label
 	})
 }
 
-func deleteJobs(ctx context.Context, m client.Client, job *batchv1.Job) error {
+func deleteJob(ctx context.Context, m client.Client, job *batchv1.Job) error {
 	return m.Delete(ctx, job, &client.DeleteOptions{
 		PropagationPolicy: ptr.To(metav1.DeletePropagationBackground),
 	})
