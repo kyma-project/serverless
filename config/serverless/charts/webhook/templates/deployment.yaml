@@ -31,7 +31,6 @@ spec:
       {{- end }}
       labels:
         {{- include "tplValue" ( dict "value" .Values.commonLabels "context" . ) | nindent 8 }}
-        networking.kyma-project.io/from-seed: allowed
     spec:
       serviceAccountName: {{ template "webhook.fullname" . }}
       volumes:
