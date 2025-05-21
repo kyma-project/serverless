@@ -27,6 +27,9 @@ spec:
         networking.serverless.kyma-project.io/to-apiserver: allowed
         networking.serverless.kyma-project.io/from-serverless: allowed
         kyma-project.io/module: serverless
+        app: serverless
+        app.kubernetes.io/name: buildless-serverless
+        app.kubernetes.io/instance: buildless-serverless-controller-manager
     spec:
       volumes:
         - name: configuration
