@@ -23,7 +23,7 @@ import (
 
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/cache"
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/job"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/orphaned-resources"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/logging"
 	"github.com/vrischmann/envconfig"
 	uberzap "go.uber.org/zap"
@@ -154,7 +154,7 @@ func main() {
 
 	//TODO: It is a temporary solution to delete orphaned jobs. It should be removed after migration from old serverless
 	go func() {
-		err := job.DeleteOrphanedJobs(ctx, mgr)
+		err := orphaned_resources.DeleteOrphanedResources(ctx, mgr)
 		if err != nil {
 			setupLog.Error(err, "unable to delete jobs")
 		}
