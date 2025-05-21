@@ -110,7 +110,6 @@ func main() {
 	logWithCtx.Info("Generating Kubernetes client config")
 	restConfig := ctrl.GetConfigOrDie()
 
-	//TODO: add support for prometheus metrics
 	logWithCtx.Info("Initializing controller manager")
 	mgr, err := ctrl.NewManager(restConfig, ctrl.Options{
 		Scheme: scheme,
