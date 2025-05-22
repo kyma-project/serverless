@@ -38,6 +38,7 @@ containers:
         logLevel: "info"
         logFormat: "json"
     healthzAddress: "8090"
+    metricsAddress: "8080"
     configuration:
       data:
         packageRegistryConfigSecretName: 'serverless-package-registry-config'

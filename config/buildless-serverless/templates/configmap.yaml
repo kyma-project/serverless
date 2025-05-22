@@ -12,7 +12,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   {{ .Values.global.configuration.function.filename }}: |
-    metricsAddress: ":8080"
+    metricsAddress: ":{{ .Values.containers.manager.metricsAddress }}"
     leaderElectionEnabled: true
     secretMutatingWebhookPort:
     healthzAddress: ":{{ .Values.containers.manager.healthzAddress }}"
