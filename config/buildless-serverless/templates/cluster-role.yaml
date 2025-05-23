@@ -14,7 +14,6 @@ rules:
       - ""
     resources:
       - configmaps
-      - jobs
     verbs:
       - delete
       - list
@@ -63,6 +62,13 @@ rules:
       - deployments/status
     verbs:
       - get
+  - apiGroups:
+      - batch
+    resources:
+      - jobs
+    verbs:
+      - delete
+      - list
   - apiGroups:
       - serverless.kyma-project.io
     resources:
