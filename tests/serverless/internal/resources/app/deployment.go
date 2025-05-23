@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+
 	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
