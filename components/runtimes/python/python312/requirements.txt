@@ -3,7 +3,7 @@ requests>=2.31.0
 bottle==0.13.3
 cheroot==10.0.1
 wsgi-request-logger==0.4.6
-prometheus_client==0.21.1
+prometheus_client==0.22.0
 opentelemetry-api==1.33.0
 opentelemetry-sdk==1.33.0
 opentelemetry-exporter-otlp-proto-http==1.33.0
