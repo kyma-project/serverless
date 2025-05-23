@@ -388,9 +388,12 @@ func (f *Function) PodLabels() map[string]string {
 	return labels.Merge(result, map[string]string{PodAppNameLabel: f.GetName()})
 }
 
-func (f *Function) HasLabelWithName(labelName string) bool {
-	_, exists := f.Spec.Labels[labelName]
-	return exists
+func (f *Function) HasLabel(labelName, value string) bool {
+	if _, exists := f.Spec.Labels[labelName]; !exists {
+		return false
+	}
+
+	return f.Spec.Labels[labelName] == value
 }
 
 func (f *Function) HasGitSources() bool {

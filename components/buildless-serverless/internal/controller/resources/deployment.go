@@ -87,7 +87,7 @@ func (d *Deployment) podAnnotations() map[string]string {
 	// for example in case when someone use `kubectl rollout restart` on it
 	// before merge we need to remove annotations that are not present in the current function to allow removing them
 	result = labels.Merge(d.currentAnnotationsWithoutPreviousFunctionAnnotations(), result)
-	result = labels.Merge(d.labelsRequiredByIstio(), result)
+	result = labels.Merge(d.annotationsRequiredByIstio(), result)
 
 	return result
 }
@@ -110,10 +110,10 @@ func (d *Deployment) currentAnnotationsWithoutPreviousFunctionAnnotations() map[
 	return result
 }
 
-func (d *Deployment) labelsRequiredByIstio() map[string]string {
+func (d *Deployment) annotationsRequiredByIstio() map[string]string {
 	result := make(map[string]string)
 
-	if d.function.HasGitSources() && d.function.HasLabelWithName(istioInjectSidecarLabelKey) {
+	if d.function.HasGitSources() && d.function.HasLabel(istioInjectSidecarLabelKey, "true") {
 		result[istioNativeSidecarLabelKey] = "true"
 	}
 
