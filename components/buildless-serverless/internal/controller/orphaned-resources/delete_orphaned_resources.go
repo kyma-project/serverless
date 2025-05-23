@@ -13,6 +13,7 @@ import (
 )
 
 func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
+	m.GetLogger().Info("cleaning orphan deprecated resources")
 	labels := map[string]string{
 		"serverless.kyma-project.io/managed-by": "function-controller",
 	}
