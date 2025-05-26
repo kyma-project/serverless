@@ -48,10 +48,9 @@ import (
 )
 
 var (
-	scheme         = runtime.NewScheme()
-	setupLog       = ctrl.Log.WithName("setup")
-	syncPeriod     = time.Minute * 30
-	cleanupTimeout = time.Second * 10
+	scheme     = runtime.NewScheme()
+	setupLog   = ctrl.Log.WithName("setup")
+	syncPeriod = time.Minute * 30
 )
 
 func init() {
