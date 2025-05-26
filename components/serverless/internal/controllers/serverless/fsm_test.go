@@ -9,7 +9,6 @@ import (
 
 	"github.com/kyma-project/serverless/components/serverless/internal/controllers/serverless/automock"
 	"github.com/kyma-project/serverless/components/serverless/internal/resource"
-	"github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -97,7 +96,7 @@ func Test_reconciler_reconcile(t *testing.T) {
 
 			m.log.Info("starting...")
 
-			got, err := m.reconcile(ctx, v1alpha2.Function{})
+			got, err := m.reconcile(ctx, serverlessv1alpha2.Function{})
 
 			m.log.Info("done")
 

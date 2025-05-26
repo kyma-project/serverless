@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/kyma-project/serverless/components/serverless/internal/controllers/serverless/runtime"
 	fnRuntime "github.com/kyma-project/serverless/components/serverless/internal/controllers/serverless/runtime"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/onsi/gomega"
@@ -78,7 +77,7 @@ func TestFunctionReconciler_buildDeployment(t *testing.T) {
 	type args struct {
 		instance *serverlessv1alpha2.Function
 	}
-	rtmCfg := runtime.GetRuntimeConfig(serverlessv1alpha2.NodeJs22)
+	rtmCfg := fnRuntime.GetRuntimeConfig(serverlessv1alpha2.NodeJs22)
 	resourceCfg := fixResources()
 
 	tests := []struct {

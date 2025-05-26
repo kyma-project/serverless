@@ -224,7 +224,7 @@ func equalMetadata(existing appsv1.Deployment, expected appsv1.Deployment) bool 
 }
 
 func equalFnContainer(existing appsv1.Deployment, expected appsv1.Deployment) bool {
-	if !(len(existing.Spec.Template.Spec.Containers) == 1 && len(expected.Spec.Template.Spec.Containers) == 1) {
+	if len(existing.Spec.Template.Spec.Containers) != 1 || len(expected.Spec.Template.Spec.Containers) != 1 {
 		return false
 	}
 	result := existing.Spec.Template.Spec.Containers[0].Image == expected.Spec.Template.Spec.Containers[0].Image

@@ -12,10 +12,6 @@ var requeueResult = &ctrl.Result{
 	Requeue: true,
 }
 
-func stopWithErrorOrRequeue(err error) (stateFn, *ctrl.Result, error) {
-	return nil, requeueResult, err
-}
-
 func nextState(next stateFn) (stateFn, *ctrl.Result, error) {
 	return next, nil, nil
 }
