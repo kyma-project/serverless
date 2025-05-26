@@ -102,11 +102,11 @@ func GitAuthTestSteps(restConfig *rest.Config, cfg internal.Config, logf *logrus
 		executor.NewParallelRunner(logf, "Providers tests",
 			executor.NewSerialTestRunner(genericContainer.Log, fmt.Sprintf("%s Function auth test", azureTC.provider),
 				secret.CreateSecret(genericContainer.Log, azureSecret, "Create Azure Auth Secret", azureTC.secretData),
-				function.CreateFunction(genericContainer.Log, azureFn, "Create Azure Function", runtimes.GitopsFunction(azureTC.url, azureTC.baseDir, azureTC.reference, azureTC.runtime, azureTC.auth)),
+				createAzureFunctionStep(genericContainer.Log, azureFn, azureTC),
 				assertion.NewHTTPCheck(genericContainer.Log, "Git Function simple check through gateway", azureFn.FunctionURL, poll, azureTC.expectedResponse)),
 			executor.NewSerialTestRunner(genericContainer.Log, fmt.Sprintf("%s Function auth test", githubTC.provider),
 				secret.CreateSecret(genericContainer.Log, githubSecret, "Create Github Auth Secret", githubTC.secretData),
-				function.CreateFunction(genericContainer.Log, githubFn, "Create Github Function", runtimes.GitopsFunction(githubTC.url, githubTC.baseDir, githubTC.reference, githubTC.runtime, githubTC.auth)),
+				createGithubFunctionStep(genericContainer.Log, githubFn, githubTC),
 				assertion.NewHTTPCheck(genericContainer.Log, "Git Function simple check through gateway", githubFn.FunctionURL, poll, githubTC.expectedResponse)))), nil
 }
 
@@ -177,4 +177,23 @@ func getGithubTestcase(cfg *config) (testRepo, error) {
 		},
 		secretData: secretData,
 	}, nil
+}
+
+func createAzureFunctionStep(logf *logrus.Entry, gitFn *function.Function, testCaseConfig testRepo) executor.Step {
+	return function.CreateFunction(logf, gitFn, "Create Azure Function",
+		buildFunctionConfigFromTestCaseConfig(testCaseConfig))
+}
+
+func createGithubFunctionStep(logf *logrus.Entry, gitFn *function.Function, testCaseConfig testRepo) executor.Step {
+	return function.CreateFunction(logf, gitFn, "Create Github Function",
+		buildFunctionConfigFromTestCaseConfig(testCaseConfig))
+}
+
+func buildFunctionConfigFromTestCaseConfig(testCaseConfig testRepo) serverlessv1alpha2.FunctionSpec {
+	return runtimes.
+		NewGitopsFunctionBuilder(testCaseConfig.url, testCaseConfig.runtime).
+		Reference(testCaseConfig.reference).
+		BaseDir(testCaseConfig.baseDir).
+		Auth(testCaseConfig.auth).
+		Build()
 }

@@ -113,12 +113,3 @@ func (b *GitopsFunctionBuilder) Build() serverlessv1alpha2.FunctionSpec {
 		Labels: b.labels,
 	}
 }
-
-// Deprecated: Use the builder pattern instead.
-func GitopsFunction(repoURL, baseDir, reference string, rtm serverlessv1alpha2.Runtime, auth *serverlessv1alpha2.RepositoryAuth) serverlessv1alpha2.FunctionSpec {
-	return NewGitopsFunctionBuilder(repoURL, rtm).
-		BaseDir(baseDir).
-		Reference(reference).
-		Auth(auth).
-		Build()
-}
