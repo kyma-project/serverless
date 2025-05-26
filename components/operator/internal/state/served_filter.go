@@ -39,7 +39,7 @@ func setServed(servedServerless *v1alpha1.Serverless, s *systemState) error {
 	s.setServed(v1alpha1.ServedFalse)
 	s.setState(v1alpha1.StateWarning)
 	err := fmt.Errorf(
-		"Only one instance of Serverless is allowed (current served instance: %s/%s). This Serverless CR is redundant. Remove it to fix the problem.",
+		"only one instance of Serverless is allowed (current served instance: %s/%s) - this Serverless CR is redundant - remove it to fix the problem",
 		servedServerless.GetNamespace(), servedServerless.GetName())
 	s.instance.UpdateConditionFalse(
 		v1alpha1.ConditionTypeConfigured,

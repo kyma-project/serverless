@@ -95,11 +95,12 @@ func (s *systemState) inlineFnSrcChanged(dockerPullAddress string, runtimeBase s
 		return false
 	}
 
-	return !(len(s.configMaps.Items) == 1 &&
+	equal := len(s.configMaps.Items) == 1 &&
 		s.instance.Spec.Source.Inline.Source == s.configMaps.Items[0].Data[FunctionSourceKey] &&
 		rtm.SanitizeDependencies(s.instance.Spec.Source.Inline.Dependencies) == s.configMaps.Items[0].Data[FunctionDepsKey] &&
 		configurationStatus == corev1.ConditionTrue &&
-		mapsEqual(s.configMaps.Items[0].Labels, fnLabels))
+		mapsEqual(s.configMaps.Items[0].Labels, fnLabels)
+	return !equal
 }
 
 func (s *systemState) buildConfigMap() corev1.ConfigMap {
