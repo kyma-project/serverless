@@ -64,10 +64,6 @@ subCommands:
     type: string
   flags:
   - type: string
-    name: "runtime-image-override"
-    description: "custom runtime image to be used as Function's runtime base"
-    default: "\"\""
-  - type: string
     name: "namespace"
     shorthand: "n"
     description: "Function's namespace"
@@ -92,6 +88,10 @@ subCommands:
   args:
     type: string
   flags:
+  - type: string
+    name: "runtime-image-override"
+    description: "custom runtime image to be used as Function's runtime base"
+    default: "\"\""
   - type: string
     name: "namespace"
     shorthand: "n"

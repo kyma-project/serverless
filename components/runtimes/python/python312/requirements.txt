@@ -1,6 +1,6 @@
-setuptools==80.4.0
+setuptools==80.8.0
 requests>=2.31.0
-bottle==0.13.2
+bottle==0.13.3
 cheroot==10.0.1
 wsgi-request-logger==0.4.6
 prometheus_client==0.21.1
