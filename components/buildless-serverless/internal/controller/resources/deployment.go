@@ -17,8 +17,12 @@ import (
 )
 
 const DefaultDeploymentReplicas int32 = 1
-const istioConfigLabelKey = "proxy.istio.io/config"
-const istioEnableHoldUntilProxyStartLabelValue = "{ \"holdApplicationUntilProxyStarts\": true }"
+const (
+	istioConfigLabelKey                      = "proxy.istio.io/config"
+	istioEnableHoldUntilProxyStartLabelValue = "{ \"holdApplicationUntilProxyStarts\": true }"
+	istioNativeSidecarLabelKey               = "sidecar.istio.io/nativeSidecar"
+	istioInjectSidecarLabelKey               = "sidecar.istio.io/inject"
+)
 
 type Deployment struct {
 	*appsv1.Deployment
@@ -83,6 +87,8 @@ func (d *Deployment) podAnnotations() map[string]string {
 	// for example in case when someone use `kubectl rollout restart` on it
 	// before merge we need to remove annotations that are not present in the current function to allow removing them
 	result = labels.Merge(d.currentAnnotationsWithoutPreviousFunctionAnnotations(), result)
+	result = labels.Merge(d.annotationsRequiredByIstio(), result)
+
 	return result
 }
 
@@ -101,6 +107,16 @@ func (d *Deployment) currentAnnotationsWithoutPreviousFunctionAnnotations() map[
 			result[key] = currentAnnotations[key]
 		}
 	}
+	return result
+}
+
+func (d *Deployment) annotationsRequiredByIstio() map[string]string {
+	result := make(map[string]string)
+
+	if d.function.HasGitSources() && d.function.HasLabel(istioInjectSidecarLabelKey, "true") {
+		result[istioNativeSidecarLabelKey] = "true"
+	}
+
 	return result
 }
 
