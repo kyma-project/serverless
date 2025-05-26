@@ -23,8 +23,8 @@ linters:
         text: '^SA1019: s.Commit is deprecated:'
       - path: (.+)\.go$
         text: '^SA1019: m.State.Function.Status.Commit is deprecated:'
-      - path: (.+)\.go$
-        text: '^QF1008:'
+#      - path: (.+)\.go$
+#        text: '^QF1008:'
     paths:
       - third_party$
       - builtin$
