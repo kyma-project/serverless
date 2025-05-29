@@ -31,13 +31,13 @@ Follow these steps:
     ```bash
     mkdir {FOLDER_NAME}
     cd {FOLDER_NAME}
-    kyma alpha function init
+    kyma function init
     ```
 
 4. Deploy your Function:
 
     ```bash
-    kyma alpha function create $NAME \
+    kyma function create $NAME \
       --namespace $NAMESPACE --runtime python312 \
       --runtime-image-override $RUNTIME_IMAGE_URL \
       --source handler.py --dependencies requirements.txt
@@ -46,7 +46,7 @@ Follow these steps:
 5. Verify whether your Function is running:
 
     ```bash
-    kyma alpha function get $NAME --namespace $NAMESPACE
+    kyma function get $NAME --namespace $NAMESPACE
     ```
 
 #### **kubectl**
