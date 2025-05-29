@@ -18,6 +18,16 @@ func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
 		"serverless.kyma-project.io/managed-by": "function-controller",
 	}
 
+	runtimeLabels := map[string]string{
+		"serverless.kyma-project.io/config": "runtime",
+		"app.kubernetes.io/part-of":         "serverless",
+	}
+
+	credentialsLabels := map[string]string{
+		"serverless.kyma-project.io/config": "credentials",
+		"app.kubernetes.io/part-of":         "serverless",
+	}
+
 	// list orphaned jobs
 	jobs := &batchv1.JobList{}
 	err := listOrphanedResources(ctx, m.GetAPIReader(), jobs, labels)
@@ -45,6 +55,36 @@ func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
 		err := deleteOrphanedResource(ctx, m.GetClient(), &configMap)
 		if err != nil {
 			return fmt.Errorf("failed to delete orphaned configmap %s/%s: %s", configMap.Namespace, configMap.Name, err)
+		}
+	}
+
+	// list orphaned runtime configmaps
+	runtimeConfigMaps := &corev1.ConfigMapList{}
+	err = listOrphanedResources(ctx, m.GetAPIReader(), runtimeConfigMaps, runtimeLabels)
+	if err != nil {
+		return fmt.Errorf("failed to list orphaned runtime configmaps: %s", err)
+	}
+
+	// delete orphaned runtime configmaps
+	for _, runtimeConfigMap := range runtimeConfigMaps.Items {
+		err := deleteOrphanedResource(ctx, m.GetClient(), &runtimeConfigMap)
+		if err != nil {
+			return fmt.Errorf("failed to delete orphaned runtime configmap %s/%s: %s", runtimeConfigMap.Namespace, runtimeConfigMap.Name, err)
+		}
+	}
+
+	// list orphaned secrets
+	secrets := &corev1.SecretList{}
+	err = listOrphanedResources(ctx, m.GetAPIReader(), secrets, credentialsLabels)
+	if err != nil {
+		return fmt.Errorf("failed to list orphaned secrets: %s", err)
+	}
+
+	// delete orphaned secrets
+	for _, secret := range secrets.Items {
+		err := deleteOrphanedResource(ctx, m.GetClient(), &secret)
+		if err != nil {
+			return fmt.Errorf("failed to delete orphaned secret %s/%s: %s", secret.Namespace, secret.Name, err)
 		}
 	}
 
