@@ -1,22 +1,26 @@
 const opentelemetry = require('@opentelemetry/api');
 const { MeterProvider } = require('@opentelemetry/sdk-metrics');
 const { PrometheusExporter } = require('@opentelemetry/exporter-prometheus');
-const { Resource } = require( '@opentelemetry/resources');
-const { SemanticResourceAttributes } = require( '@opentelemetry/semantic-conventions');
+const { defaultResource, resourceFromAttributes } = require( '@opentelemetry/resources');
+const { ATTR_SERVICE_NAME } = require('@opentelemetry/semantic-conventions');
+
 
 let exporter;
 
-function setupMetrics(){
+function setupMetrics(functionName){
 
-    const resource = new Resource();
+    exporter = new PrometheusExporter(
+        { preventServerStart: true},
+    );
 
-    const myServiceMeterProvider = new MeterProvider({
-    resource,
+    const functionResource = resourceFromAttributes({
+      [ATTR_SERVICE_NAME]: functionName,
     });
 
-    exporter = new PrometheusExporter({ preventServerStart: true})
-
-    myServiceMeterProvider.addMetricReader(exporter);
+    const myServiceMeterProvider = new MeterProvider({
+      resource: functionResource.merge(defaultResource()),
+      readers: [exporter],
+    });
 
     opentelemetry.metrics.setGlobalMeterProvider(myServiceMeterProvider);
 
