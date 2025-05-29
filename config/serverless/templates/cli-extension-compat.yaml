@@ -1,0 +1,242 @@
+# DEPRECATED: this extension format is deprecated and will be removed in the future
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: serverless.function.cli-compat
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
+    kyma-cli/extension: resource
+    kyma-cli/extension-version: v1
+    app.kubernetes.io/instance: {{ template "fullname" . }}-cli-functions
+    app.kubernetes.io/component: cli
+data:
+  rootCommand: |
+    name: function
+    description: A set of commands for managing Functions
+    descriptionLong: Use this command to manage Functions.
+  resource: |
+    scope: namespace
+    kind: Function
+    version: v1alpha2
+    group: serverless.kyma-project.io
+  actionCommands: |
+    - name: init
+      description: "Init source and dependencies files locally"
+      descriptionLong: "Use this command to initialize source and dependencies files for a Function."
+      action:
+        functionID: function_init
+        customFlags:
+        - type: string
+          name: "runtime"
+          description: "Runtime for which the files are generated [ nodejs20, nodejs22, python312 ]"
+          path: ".useRuntime"
+          default: "nodejs22"
+        - type: string
+          name: "dir"
+          description: "Path to the directory where files must be created"
+          path: ".outputDir"
+          default: "."
+        config:
+          useRuntime: ""
+          outputDir: ""
+          runtimes:
+            python312:
+              depsFilename: requirements.txt
+              depsData: ""
+              handlerFilename: handler.py
+              handlerData: |
+                def main(event, context):
+                  message = "Hello World from the Kyma Function "+context['function-name']+" running on "+context['runtime']+ "!";
+                  print(message)
+                  return message
+            nodejs22:
+              depsFilename: package.json
+              depsData: |
+                {
+                  "dependencies": {}
+                }
+              handlerFilename: handler.js
+              handlerData: |
+                module.exports = {
+                  main: async function (event, context) {
+                    /*
+                    If you prefer mjs import/export syntax over cjs you need to specify
+                    'type': 'module'
+                    in the Function dependencies (package.json) and along with that change the import/export syntax to:
+                    import foo from 'foo'
+                    export function main(event, context) {
+                      //your logic using foo library
+                      return
+                    }
+                    */
+
+                    const message = `Hello World`
+                      + ` from the Kyma Function ${context["function-name"]}`
+                      + ` running on ${context.runtime}!`;
+                    console.log(message);
+                    return message;
+                  }
+                }
+            nodejs20:
+              depsFilename: package.json
+              depsData: |
+                {
+                  "dependencies": {}
+                }
+              handlerFilename: handler.js
+              handlerData: |
+                module.exports = {
+                  main: async function (event, context) {
+                    /*
+                    If you prefer mjs import/export syntax over cjs you need to specify
+                    'type': 'module'
+                    in the Function dependencies (package.json) and along with that change the import/export syntax to:
+                    import foo from 'foo'
+                    export function main(event, context) {
+                      //your logic using foo library
+                      return
+                    }
+                    */
+
+                    const message = `Hello World`
+                      + ` from the Kyma Function ${context["function-name"]}`
+                      + ` running on ${context.runtime}!`;
+                    console.log(message);
+                    return message;
+                  }
+                }
+  coreCommands: |
+    - actionID: function_init
+      config:
+        defaultRuntime: nodejs22
+        runtimes:
+          python312:
+            depsFilename: requirements.txt
+            depsData: ""
+            handlerFilename: handler.py
+            handlerData: |
+              def main(event, context):
+                message = "Hello World from the Kyma Function "+context['function-name']+" running on "+context['runtime']+ "!";
+                print(message)
+                return message
+          nodejs22:
+            depsFilename: package.json
+            depsData: |
+              {
+                "dependencies": {}
+              }
+            handlerFilename: handler.js
+            handlerData: |
+              module.exports = {
+                main: async function (event, context) {
+                  /*
+                  If you prefer mjs import/export syntax over cjs you need to specify
+                  'type': 'module'
+                  in the Function dependencies (package.json) and along with that change the import/export syntax to:
+                  import foo from 'foo'
+                  export function main(event, context) {
+                    //your logic using foo library
+                    return
+                  }
+                  */
+
+                  const message = `Hello World`
+                    + ` from the Kyma Function ${context["function-name"]}`
+                    + ` running on ${context.runtime}!`;
+                  console.log(message);
+                  return message;
+                }
+              }
+          nodejs20:
+            depsFilename: package.json
+            depsData: |
+              {
+                "dependencies": {}
+              }
+            handlerFilename: handler.js
+            handlerData: |
+              module.exports = {
+                main: async function (event, context) {
+                  /*
+                  If you prefer mjs import/export syntax over cjs you need to specify
+                  'type': 'module'
+                  in the Function dependencies (package.json) and along with that change the import/export syntax to:
+                  import foo from 'foo'
+                  export function main(event, context) {
+                    //your logic using foo library
+                    return
+                  }
+                  */
+
+                  const message = `Hello World`
+                    + ` from the Kyma Function ${context["function-name"]}`
+                    + ` running on ${context.runtime}!`;
+                  console.log(message);
+                  return message;
+                }
+              }
+  templateCommands: |
+    get:
+      description: "Get Functions"
+      descriptionLong: "Use this command to get Functions from a cluster."
+      parameters:
+      - path: '.status.conditions[] | select(.type=="ConfigurationReady") | .status'
+        name: "configured"
+      - path: '.status.conditions[] | select(.type=="BuildReady") | .status'
+        name: "built"
+      - path: '.status.conditions[] | select(.type=="Running") | .status'
+        name: "running"
+      - path: ".spec.runtime"
+        name: "runtime"
+      - path: ".metadata.generation"
+        name: "generation"
+    explain:
+      description: "Explain Functions"
+      descriptionLong: "Use this command to explain what Function is."
+      output: |
+        With Functions you can run code without
+        writing servers and maintaining them. 
+        
+        There are two possible runtime variants: Node.js and Python.
+
+        You can find more details here:
+        https://kyma-project.io/#/serverless-manager/user/resources/06-10-function-cr
+    delete:
+      description: "Delete Function"
+      descriptionLong: "Use this command to delete Function from a cluster."
+    create:
+      description: "Create Function"
+      descriptionLong: "Use this command to create Function on a cluster."
+      customFlags:
+      - type: string
+        name: "runtime-image-override"
+        description: "custom runtime image to be used as Function's runtime base"
+        path: ".spec.runtimeImageOverride"
+      - type: string
+        name: "runtime"
+        description: "function runtime"
+        shorthand: "r"
+        path: ".spec.runtime"
+        default: "nodejs22"
+      - type: int64
+        name: "replicas"
+        description: "function replicas"
+        path: ".spec.replicas"
+        default: 1
+      - type: path
+        name: "source"
+        description: "function source file path"
+        shorthand: "s"
+        path: ".spec.source.inline.source"
+        default: |
+          module.exports = {
+            main: function(event, context) {
+              return 'Hello World!'
+            }
+          }
+      - type: path
+        name: "dependencies"
+        description: "function dependencies file path"
+        shorthand: "d"
+        path: ".spec.source.inline.dependencies"
