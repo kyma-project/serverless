@@ -1,12 +1,12 @@
 'use strict';
 
 const opentelemetry = require('@opentelemetry/api');
-const { ParentBasedSampler,  AlwaysOnSampler, CompositePropagator, W3CTraceContextPropagator } = require( '@opentelemetry/core');
+const { CompositePropagator, W3CTraceContextPropagator } = require( '@opentelemetry/core');
 const { registerInstrumentations } = require( '@opentelemetry/instrumentation');
-const { NodeTracerProvider } = require( '@opentelemetry/sdk-trace-node');
+const { NodeTracerProvider, AlwaysOnSampler, ParentBasedSampler } = require( '@opentelemetry/sdk-trace-node');
 const { SimpleSpanProcessor } = require( '@opentelemetry/sdk-trace-base');
 const { OTLPTraceExporter } =  require('@opentelemetry/exporter-trace-otlp-http');
-const { Resource } = require( '@opentelemetry/resources');
+const { emptyResource } = require( '@opentelemetry/resources');
 const { B3Propagator, B3InjectEncoding } = require("@opentelemetry/propagator-b3");
 const { ExpressInstrumentation, ExpressLayerType } = require( '@opentelemetry/instrumentation-express');
 const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
@@ -20,9 +20,9 @@ const ignoredTargets = [
 function setupTracer(){
 
   const provider = new NodeTracerProvider({
-    resource: Resource.default(),
+    resource: emptyResource(),
     sampler: new ParentBasedSampler({
-      root: new AlwaysOnSampler()
+      root: new AlwaysOnSampler(),
     }),
   });
 
