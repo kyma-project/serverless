@@ -73,7 +73,7 @@ func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
 		}
 	}
 
-	// list orpganed secrets
+	// list orphaned secrets
 	secrets := &corev1.SecretList{}
 	err = listOrphanedResources(ctx, m.GetAPIReader(), secrets, credentialsLabels)
 	if err != nil {
