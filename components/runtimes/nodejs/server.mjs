@@ -59,7 +59,9 @@ app.get("/metrics", (req, res) => {
 app.get('/favicon.ico', (req, res) => res.status(204));
 
 // Generic route -- all http requests go to the user function.
-app.all("*", (req, res, next) => {
+// Since express 5.0.0 '*' wildcard requires a named variable (here: `path`)
+// see https://github.com/pillarjs/path-to-regexp?tab=readme-ov-file#errors
+app.all("*path", (req, res, next) => {
 
 
     res.header('Access-Control-Allow-Origin', '*');
