@@ -8,10 +8,8 @@ let exporter;
 
 function setupMetrics(){
 
-    const resource = new Resource();
-
     const myServiceMeterProvider = new MeterProvider({
-    resource,
+      resource: Resource.default(),
     });
 
     exporter = new PrometheusExporter({ preventServerStart: true})

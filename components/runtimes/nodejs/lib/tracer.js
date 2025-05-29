@@ -20,7 +20,7 @@ const ignoredTargets = [
 function setupTracer(){
 
   const provider = new NodeTracerProvider({
-    resource: new Resource(),
+    resource: Resource.default(),
     sampler: new ParentBasedSampler({
       root: new AlwaysOnSampler()
     }),
