@@ -19,8 +19,8 @@ const functionName = process.env.FUNC_NAME;
 const bodySizeLimit = Number(process.env.REQ_MB_LIMIT || '1');
 const funcPort = Number(process.env.FUNC_PORT || '8080');
 
-const tracer = setupTracer();
-setupMetrics();
+const tracer = setupTracer(functionName);
+setupMetrics(functionName);
 
 const callsTotalCounter = createFunctionCallsTotalCounter(functionName);
 const failuresTotalCounter = createFunctionFailuresTotalCounter(functionName);

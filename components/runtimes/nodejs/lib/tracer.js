@@ -6,10 +6,11 @@ const { registerInstrumentations } = require( '@opentelemetry/instrumentation');
 const { NodeTracerProvider, AlwaysOnSampler, ParentBasedSampler } = require( '@opentelemetry/sdk-trace-node');
 const { SimpleSpanProcessor } = require( '@opentelemetry/sdk-trace-base');
 const { OTLPTraceExporter } =  require('@opentelemetry/exporter-trace-otlp-http');
-const { emptyResource } = require( '@opentelemetry/resources');
+const { defaultResource, resourceFromAttributes } = require( '@opentelemetry/resources');
 const { B3Propagator, B3InjectEncoding } = require("@opentelemetry/propagator-b3");
 const { ExpressInstrumentation, ExpressLayerType } = require( '@opentelemetry/instrumentation-express');
 const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
+const { ATTR_SERVICE_NAME } = require('@opentelemetry/semantic-conventions');
 const axios = require("axios")
 
 
@@ -17,13 +18,29 @@ const ignoredTargets = [
   "/healthz", "/favicon.ico", "/metrics"
 ]
 
-function setupTracer(){
+function setupTracer(functionName){
+  
+  const functionResource = resourceFromAttributes({
+    [ATTR_SERVICE_NAME]: functionName,
+  })
+
+  const traceCollectorEndpoint = process.env.TRACE_COLLECTOR_ENDPOINT;
+
+  let spanProcessors = [];
+
+  if(traceCollectorEndpoint){
+    const exporter = new OTLPTraceExporter({
+      url: traceCollectorEndpoint
+    });
+    spanProcessors.push(new SimpleSpanProcessor(exporter));
+  }
 
   const provider = new NodeTracerProvider({
-    resource: emptyResource(),
+    resource: functionResource.merge(defaultResource()),
     sampler: new ParentBasedSampler({
       root: new AlwaysOnSampler(),
     }),
+    spanProcessors,
   });
 
   const propagator = new CompositePropagator({
@@ -37,24 +54,17 @@ function setupTracer(){
     tracerProvider: provider,
     instrumentations: [
       new HttpInstrumentation({
-        ignoreIncomingPaths: ignoredTargets,
+        ignoreIncomingRequestHook: (req) => {
+          // Ignore requests to healthz, favicon.ico and metrics endpoints
+          return ignoredTargets.includes(req.url);
+        }
       }),
       new ExpressInstrumentation({
-        ignoreLayersType: [ExpressLayerType.MIDDLEWARE]
+        ignoreLayersType: [ExpressLayerType.MIDDLEWARE],
       }),
     ],
   });
 
-
-  const traceCollectorEndpoint = process.env.TRACE_COLLECTOR_ENDPOINT;
-
-  if(traceCollectorEndpoint){
-    const exporter = new OTLPTraceExporter({
-      url: traceCollectorEndpoint
-    });
-
-    provider.addSpanProcessor(new SimpleSpanProcessor(exporter));
-  }
 
   // Initialize the OpenTelemetry APIs to use the NodeTracerProvider bindings
   provider.register({
