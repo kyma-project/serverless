@@ -7,14 +7,13 @@ yq eval-all --inplace '
         select(fileIndex == 1)
         | .global.containerRegistry.path as $registryPath
         | (
-            {
+            .global.images + {
                 "serverless_operator" : {
                     "name" : "serverless-operator",
                     "directory" : "prod",
                     "version" : env(IMG_VERSION)
                 }
             }
-            + .global.images
           )[]
         | $registryPath + "/" + .directory + "/" + .name + ":" + .version
     ]
