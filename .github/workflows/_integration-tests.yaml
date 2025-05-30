@@ -24,9 +24,6 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-k3d-cluster
-      - uses: ./.github/actions/with-fixture
-        with:
-          fixture_path: tests/with-fixture/strict-network-policies
       - name: run test
         run: |
           make -C components/operator deploy
@@ -46,9 +43,6 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-k3d-cluster
-      - uses: ./.github/actions/with-fixture
-        with:
-          fixture_path: tests/with-fixture/strict-network-policies
       - name: run test
         run: |
           make install-buildless-serverless-custom-operator
@@ -70,9 +64,6 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-k3d-cluster
-      - uses: ./.github/actions/with-fixture
-        with:
-          fixture_path: tests/with-fixture/strict-network-policies
       - name: run test
         run: |
           make install-serverless-custom-operator
@@ -94,9 +85,6 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-k3d-cluster
-      - uses: ./.github/actions/with-fixture
-        with:
-          fixture_path: tests/with-fixture/strict-network-policies
       - name: run tests
         run: |
           make install-serverless-custom-operator
@@ -121,9 +109,6 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: ./.github/actions/setup-go
       - uses: ./.github/actions/create-k3d-cluster
-      - uses: ./.github/actions/with-fixture
-        with:
-          fixture_path: tests/with-fixture/strict-network-policies
       - name: run tests
         run: |
           make install-buildless-serverless-custom-operator
@@ -164,9 +149,6 @@ jobs:
           btp_kyma_plan: '${{ secrets.BTP_KYMA_PLAN }}'
           btp_kyma_modules: "[]"
           btp_kyma_autoscaler_min: 4
-      - uses: ./.github/actions/with-fixture
-        with:
-          fixture_path: tests/with-fixture/strict-network-policies
       - name: run tests
         run: |
           make install-serverless-custom-operator
