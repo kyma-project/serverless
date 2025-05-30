@@ -82,7 +82,6 @@ func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
 
 	// delete orphaned secrets
 	for _, secret := range secrets.Items {
-		m.GetLogger().Info("Found secret", "name", secret.Name, "namespace", secret.Namespace, "labels", secret.Labels)
 		err := deleteOrphanedResource(ctx, m.GetClient(), &secret)
 		if err != nil {
 			return fmt.Errorf("failed to delete orphaned secret %s/%s: %s", secret.Namespace, secret.Name, err)
