@@ -1,3 +1,5 @@
+
+{{- if .Values.networkPolicies.enabled }}
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
 metadata:
@@ -45,3 +47,4 @@ spec:
           podSelector:
             matchLabels:
               k8s-app: node-local-dns
+{{- end }}
