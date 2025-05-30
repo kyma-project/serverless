@@ -10,6 +10,7 @@ import (
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+	"strings"
 )
 
 func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
@@ -98,15 +99,37 @@ func listOrphanedResources(ctx context.Context, m client.Reader, resourceList cl
 }
 
 func deleteOrphanedResource(ctx context.Context, m client.Client, resource client.Object) error {
-	//Check if the resource has finalizers, if so, remove them
 	if len(resource.GetFinalizers()) > 0 {
-		resource.SetFinalizers(nil)
-		if err := m.Update(ctx, resource); err != nil {
-			return fmt.Errorf("failed to remove finalizers from %s/%s: %s", resource.GetNamespace(), resource.GetName(), err)
+		err, hasOtherFinalizers := removeFinalizers(ctx, m, resource)
+		if err != nil {
+			return err
+		}
+		if hasOtherFinalizers {
+			return nil
 		}
 	}
 
 	return m.Delete(ctx, resource, &client.DeleteOptions{
 		PropagationPolicy: ptr.To(metav1.DeletePropagationBackground),
 	})
+}
+
+func removeFinalizers(ctx context.Context, m client.Client, resource client.Object) (error, bool) {
+	//Check if the resource has serverless finalizers, if so, remove them
+	allFinalizers := resource.GetFinalizers()
+	notServerlessFinalizers := []string{}
+	for _, finalizer := range allFinalizers {
+		if !strings.HasPrefix(finalizer, "serverless.kyma-project.io/") {
+			notServerlessFinalizers = append(notServerlessFinalizers, finalizer)
+		}
+	}
+
+	resource.SetFinalizers(notServerlessFinalizers)
+	if err := m.Update(ctx, resource); err != nil {
+		return fmt.Errorf("failed to remove finalizers from %s/%s: %s", resource.GetNamespace(), resource.GetName(), err), false
+	}
+	if len(notServerlessFinalizers) != 0 {
+		return nil, true
+	}
+	return nil, false
 }
