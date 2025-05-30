@@ -11,6 +11,8 @@ bdba:
   - europe-docker.pkg.dev/kyma-project/prod/external/gcr.io/kaniko-project/executor:v1.23.2
   - europe-docker.pkg.dev/kyma-project/prod/external/library/registry:2.8.3-v1
   - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:1.7.2
+  - europe-docker.pkg.dev/kyma-project/prod/function-buildless-controller:1.7.2
+  - europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:1.7.2
 mend:
   language: golang-mod
   exclude:
