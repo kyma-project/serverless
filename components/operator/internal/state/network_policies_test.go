@@ -17,19 +17,44 @@ import (
 func TestUpdateNetworkPoliciesStatus(t *testing.T) {
 	scheme := runtime.NewScheme()
 	tests := []struct {
-		name                  string
-		enableNetworkPolicies bool
-		expectedStatus        string
+		name           string
+		functionSpec   v1alpha1.ServerlessSpec
+		expectedStatus string
+		expectedFlags  map[string]interface{}
 	}{
 		{
-			name:                  "NetworkPolicies enabled",
-			enableNetworkPolicies: true,
-			expectedStatus:        "True",
+			name: "NetworkPolicies enabled",
+			functionSpec: v1alpha1.ServerlessSpec{
+				EnableNetworkPolicies: true,
+			},
+			expectedStatus: "True",
+			expectedFlags: map[string]interface{}{
+				"networkPolicies": map[string]interface{}{
+					"enabled": true,
+				},
+			},
 		},
 		{
-			name:                  "NetworkPolicies disabled",
-			enableNetworkPolicies: false,
-			expectedStatus:        "False",
+			name: "NetworkPolicies disabled",
+			functionSpec: v1alpha1.ServerlessSpec{
+				EnableNetworkPolicies: false,
+			},
+			expectedStatus: "False",
+			expectedFlags: map[string]interface{}{
+				"networkPolicies": map[string]interface{}{
+					"enabled": false,
+				},
+			},
+		},
+		{
+			name:           "NetworkPolicies not set",
+			functionSpec:   v1alpha1.ServerlessSpec{},
+			expectedStatus: "False",
+			expectedFlags: map[string]interface{}{
+				"networkPolicies": map[string]interface{}{
+					"enabled": false,
+				},
+			},
 		},
 	}
 
@@ -39,15 +64,13 @@ func TestUpdateNetworkPoliciesStatus(t *testing.T) {
 			ctx := context.TODO()
 			s := &systemState{
 				instance: v1alpha1.Serverless{
-					Spec: v1alpha1.ServerlessSpec{
-						EnableNetworkPolicies: tt.enableNetworkPolicies,
-					},
+					Spec: tt.functionSpec,
 				},
 				flagsBuilder: chart.NewFlagsBuilder(),
 			}
 			c := fake.NewClientBuilder().WithScheme(scheme).Build()
 			r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: record.NewFakeRecorder(5)}}
-			next, result, err := sFnOptionalDependencies(ctx, r, s)
+			next, result, err := sFnConfigureNetworkPolicies(ctx, r, s)
 
 			require.Nil(t, err)
 			require.Nil(t, result)
