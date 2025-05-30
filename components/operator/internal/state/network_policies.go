@@ -9,7 +9,7 @@ import (
 )
 
 func sFnConfigureNetworkPolicies(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
-
+	configureNetworkPolicyFlag(s)
 	updateNetworkPoliciesStatus(r.k8s, &s.instance)
 	return nextState(sFnApplyResources)
 }
