@@ -44,6 +44,10 @@ spec:
           {{- $fc:=.Values.global.images.function_controller }}
           image: "{{ .Values.global.containerRegistry.path }}/{{ $fc.directory }}/{{$fc.name}}:{{$fc.version}}"
           imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.containers.manager.metricsAddress }}
+              name: http-metrics
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: /healthz
