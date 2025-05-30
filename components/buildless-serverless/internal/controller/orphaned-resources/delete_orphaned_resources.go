@@ -82,6 +82,7 @@ func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
 
 	// delete orphaned secrets
 	for _, secret := range secrets.Items {
+		m.GetLogger().Info("Found secret", "name", secret.Name, "namespace", secret.Namespace, "labels", secret.Labels)
 		err := deleteOrphanedResource(ctx, m.GetClient(), &secret)
 		if err != nil {
 			return fmt.Errorf("failed to delete orphaned secret %s/%s: %s", secret.Namespace, secret.Name, err)
@@ -98,6 +99,14 @@ func listOrphanedResources(ctx context.Context, m client.Reader, resourceList cl
 }
 
 func deleteOrphanedResource(ctx context.Context, m client.Client, resource client.Object) error {
+	//Check if the resource has finalizers, if so, remove them
+	if len(resource.GetFinalizers()) > 0 {
+		resource.SetFinalizers(nil)
+		if err := m.Update(ctx, resource); err != nil {
+			return fmt.Errorf("failed to remove finalizers from %s/%s: %s", resource.GetNamespace(), resource.GetName(), err)
+		}
+	}
+
 	return m.Delete(ctx, resource, &client.DeleteOptions{
 		PropagationPolicy: ptr.To(metav1.DeletePropagationBackground),
 	})
