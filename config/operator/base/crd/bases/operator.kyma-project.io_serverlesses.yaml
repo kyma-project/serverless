@@ -79,6 +79,9 @@ spec:
                     description: Secret used for configuration of the Docker registry
                     type: string
                 type: object
+              enableNetworkPolicies:
+                description: Enable network policies for this Function.
+                type: boolean
               eventing:
                 description: Used Eventing endpoint
                 properties:
@@ -210,6 +213,14 @@ spec:
               logFormat:
                 type: string
               logLevel:
+                type: string
+              networkPoliciesEnabled:
+                description: |-
+                  NetworkPoliciesEnabled signifies if NetworkPolicies dedicated for serverless are enabled.
+                  Value can be one of ("True", "False").
+                enum:
+                - "True"
+                - "False"
                 type: string
               served:
                 description: |-

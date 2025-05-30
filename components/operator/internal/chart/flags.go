@@ -20,6 +20,7 @@ type FlagsBuilder interface {
 	WithNodePort(nodePort int64) *flagsBuilder
 	WithLogLevel(logLevel string) *flagsBuilder
 	WithLogFormat(logFormat string) *flagsBuilder
+	WithEnableNetworkPolicies(enableNetworkPolicies bool) *flagsBuilder
 }
 
 type flagsBuilder struct {
@@ -74,6 +75,11 @@ func (fb *flagsBuilder) WithOptionalDependencies(publisherURL, traceCollectorURL
 
 func (fb *flagsBuilder) WithRegistryEnableInternal(enableInternal bool) *flagsBuilder {
 	fb.flags["dockerRegistry.enableInternal"] = enableInternal
+	return fb
+}
+
+func (fb *flagsBuilder) WithEnableNetworkPolicies(enableNetworkPolicies bool) *flagsBuilder {
+	fb.flags["networkPolicies.enabled"] = enableNetworkPolicies
 	return fb
 }
 
