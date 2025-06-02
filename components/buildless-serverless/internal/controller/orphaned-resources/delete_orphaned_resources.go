@@ -124,7 +124,7 @@ func deleteOrphanedResource(ctx context.Context, m client.Client, resource clien
 	if len(finalizers) > 0 {
 		for _, finalizer := range finalizers {
 			if strings.HasPrefix(finalizer, "serverless.kyma-project.io/") {
-				removeFinalizers(resource, finalizer)
+				controllerutil.RemoveFinalizer(resource, finalizer)
 			}
 		}
 	}
@@ -132,11 +132,4 @@ func deleteOrphanedResource(ctx context.Context, m client.Client, resource clien
 	return m.Delete(ctx, resource, &client.DeleteOptions{
 		PropagationPolicy: ptr.To(metav1.DeletePropagationBackground),
 	})
-}
-
-func removeFinalizers(resource client.Object, finalizer string) {
-	instanceIsBeingDeleted := !resource.GetDeletionTimestamp().IsZero()
-	if instanceIsBeingDeleted {
-		controllerutil.RemoveFinalizer(resource, finalizer)
-	}
 }
