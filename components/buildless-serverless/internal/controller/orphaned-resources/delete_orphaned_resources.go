@@ -123,7 +123,7 @@ func deleteOrphanedResource(ctx context.Context, m client.Client, resource clien
 	finalizers := resource.GetFinalizers()
 	if len(finalizers) > 0 {
 		for _, finalizer := range finalizers {
-			if strings.HasPrefix(finalizer, "serverless.kyma-project.io/") && controllerutil.ContainsFinalizer(resource, finalizer) {
+			if strings.HasPrefix(finalizer, "serverless.kyma-project.io/") {
 				removeFinalizers(resource, finalizer)
 			}
 		}
