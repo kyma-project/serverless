@@ -9,6 +9,7 @@ import (
 	apilabels "k8s.io/apimachinery/pkg/labels"
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"strings"
 )
@@ -99,13 +100,12 @@ func listOrphanedResources(ctx context.Context, m client.Reader, resourceList cl
 }
 
 func deleteOrphanedResource(ctx context.Context, m client.Client, resource client.Object) error {
-	if len(resource.GetFinalizers()) > 0 {
-		err, hasOtherFinalizers := removeFinalizers(ctx, m, resource)
-		if err != nil {
-			return err
-		}
-		if hasOtherFinalizers {
-			return nil
+	finalizers := resource.GetFinalizers()
+	if len(finalizers) > 0 {
+		for _, finalizer := range finalizers {
+			if strings.HasPrefix(finalizer, "serverless.kyma-project.io/") && controllerutil.ContainsFinalizer(resource, finalizer) {
+				removeFinalizers(resource, finalizer)
+			}
 		}
 	}
 
@@ -114,22 +114,9 @@ func deleteOrphanedResource(ctx context.Context, m client.Client, resource clien
 	})
 }
 
-func removeFinalizers(ctx context.Context, m client.Client, resource client.Object) (error, bool) {
-	//Check if the resource has serverless finalizers, if so, remove them
-	allFinalizers := resource.GetFinalizers()
-	notServerlessFinalizers := []string{}
-	for _, finalizer := range allFinalizers {
-		if !strings.HasPrefix(finalizer, "serverless.kyma-project.io/") {
-			notServerlessFinalizers = append(notServerlessFinalizers, finalizer)
-		}
+func removeFinalizers(resource client.Object, finalizer string) {
+	instanceIsBeingDeleted := !resource.GetDeletionTimestamp().IsZero()
+	if instanceIsBeingDeleted {
+		controllerutil.RemoveFinalizer(resource, finalizer)
 	}
-
-	resource.SetFinalizers(notServerlessFinalizers)
-	if err := m.Update(ctx, resource); err != nil {
-		return fmt.Errorf("failed to remove finalizers from %s/%s: %s", resource.GetNamespace(), resource.GetName(), err), false
-	}
-	if len(notServerlessFinalizers) != 0 {
-		return nil, true
-	}
-	return nil, false
 }
