@@ -25,6 +25,11 @@ func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
 		"app.kubernetes.io/part-of":         "serverless",
 	}
 
+	dockerRegistryLabels := map[string]string{
+		"kyma-project.io/module": "serverless",
+		"app.kubernetes.io/name": "docker-registry",
+	}
+
 	credentialsLabels := map[string]string{
 		"serverless.kyma-project.io/config": "credentials",
 		"app.kubernetes.io/part-of":         "serverless",
@@ -72,6 +77,21 @@ func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
 		err := deleteOrphanedResource(ctx, m.GetClient(), &runtimeConfigMap)
 		if err != nil {
 			return fmt.Errorf("failed to delete orphaned runtime configmap %s/%s: %s", runtimeConfigMap.Namespace, runtimeConfigMap.Name, err)
+		}
+	}
+
+	// list orphaned docker registry configmaps
+	dockerRegistryConfigMaps := &corev1.ConfigMapList{}
+	err = listOrphanedResources(ctx, m.GetAPIReader(), dockerRegistryConfigMaps, dockerRegistryLabels)
+	if err != nil {
+		return fmt.Errorf("failed to list orphaned docker registry configmaps: %s", err)
+	}
+
+	// delete orphaned docker registry configmaps
+	for _, dockerRegistryConfigMap := range dockerRegistryConfigMaps.Items {
+		err := deleteOrphanedResource(ctx, m.GetClient(), &dockerRegistryConfigMap)
+		if err != nil {
+			return fmt.Errorf("failed to delete orphaned docker registry configmap %s/%s: %s", dockerRegistryConfigMap.Namespace, dockerRegistryConfigMap.Name, err)
 		}
 	}
 
