@@ -80,7 +80,8 @@ spec:
                     type: string
                 type: object
               enableNetworkPolicies:
-                description: Enable network policies for this Function.
+                description: Enable deployment of network policies that allow serverless'
+                  essential in-cluster communication.
                 type: boolean
               eventing:
                 description: Used Eventing endpoint
