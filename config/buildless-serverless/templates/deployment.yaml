@@ -45,20 +45,20 @@ spec:
           image: "{{ .Values.global.containerRegistry.path }}/{{ $fc.directory }}/{{$fc.name}}:{{$fc.version}}"
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: {{ .Values.containers.manager.metricsAddress }}
+            - containerPort: {{ .Values.containers.manager.metricsPort }}
               name: http-metrics
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /healthz
-              port: {{ .Values.containers.manager.healthzAddress }}
+              port: {{ .Values.containers.manager.healthzPort }}
             initialDelaySeconds: 15
             periodSeconds: 20
           name: manager
           readinessProbe:
             httpGet:
               path: /readyz
-              port: {{ .Values.containers.manager.healthzAddress }}
+              port: {{ .Values.containers.manager.healthzPort }}
             initialDelaySeconds: 5
             periodSeconds: 10
           resources:

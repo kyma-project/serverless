@@ -12,10 +12,10 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   {{ .Values.global.configuration.function.filename }}: |
-    metricsAddress: ":{{ .Values.containers.manager.metricsAddress }}"
+    metricsPort: ":{{ .Values.containers.manager.metricsPort }}"
     leaderElectionEnabled: true
     secretMutatingWebhookPort:
-    healthzAddress: ":{{ .Values.containers.manager.healthzAddress }}"
+    healthzPort: ":{{ .Values.containers.manager.healthzPort }}"
     images:
       {{- $images:=.Values.global.images }}
       {{- $containerRegistryPath:=.Values.global.containerRegistry.path }}

@@ -12,11 +12,11 @@ import (
 )
 
 type FunctionConfig struct {
-	MetricsAddress                  string         `yaml:"metricsAddress"`
+	MetricsPort                     string         `yaml:"metricsPort"`
 	LeaderElectionEnabled           bool           `yaml:"leaderElectionEnabled"`
 	LeaderElectionID                string         `yaml:"leaderElectionID"`
 	SecretMutatingWebhookPort       int            `yaml:"secretMutatingWebhookPort"`
-	HealthzAddress                  string         `yaml:"healthzAddress"`
+	HealthzPort                     string         `yaml:"healthzPort"`
 	Images                          ImagesConfig   `yaml:"images"`
 	RequeueDuration                 time.Duration  `yaml:"requeueDuration"`
 	FunctionReadyRequeueDuration    time.Duration  `yaml:"functionReadyRequeueDuration"`
@@ -28,11 +28,11 @@ type FunctionConfig struct {
 
 func defaultFunctionConfig() FunctionConfig {
 	return FunctionConfig{
-		MetricsAddress:                  ":8080",
+		MetricsPort:                     ":8080",
 		LeaderElectionEnabled:           false,
 		LeaderElectionID:                "serverless-controller-leader-election-helper",
 		SecretMutatingWebhookPort:       8443,
-		HealthzAddress:                  ":8090",
+		HealthzPort:                     ":8090",
 		RequeueDuration:                 time.Minute,
 		FunctionReadyRequeueDuration:    time.Minute * 5,
 		PackageRegistryConfigSecretName: "buildless-serverless-package-registry-config",
