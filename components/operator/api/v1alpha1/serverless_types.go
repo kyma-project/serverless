@@ -63,7 +63,7 @@ type ServerlessSpec struct {
 	LogLevel string `json:"logLevel,omitempty"`
 	// Sets desired log format to be used. The default value is "json"
 	LogFormat string `json:"logFormat,omitempty"`
-	// Enable network policies for this Function.
+	// Enable deployment of network policies that allow serverless' essential in-cluster communication.
 	EnableNetworkPolicies bool `json:"enableNetworkPolicies,omitempty"`
 }
 
