@@ -54,3 +54,7 @@
   name: Log Format
   simple: true
   required: false
+- path: spec.enableNetworkPolicies
+  name: spec.enableNetworkPolicies  
+  simple: true
+  required: false
