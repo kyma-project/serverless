@@ -9,7 +9,9 @@ import (
 	apilabels "k8s.io/apimachinery/pkg/labels"
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
+	"strings"
 )
 
 func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
@@ -21,6 +23,11 @@ func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
 	runtimeLabels := map[string]string{
 		"serverless.kyma-project.io/config": "runtime",
 		"app.kubernetes.io/part-of":         "serverless",
+	}
+
+	dockerRegistryLabels := map[string]string{
+		"kyma-project.io/module": "serverless",
+		"app.kubernetes.io/name": "docker-registry",
 	}
 
 	credentialsLabels := map[string]string{
@@ -73,6 +80,21 @@ func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
 		}
 	}
 
+	// list orphaned docker registry configmaps
+	dockerRegistryConfigMaps := &corev1.ConfigMapList{}
+	err = listOrphanedResources(ctx, m.GetAPIReader(), dockerRegistryConfigMaps, dockerRegistryLabels)
+	if err != nil {
+		return fmt.Errorf("failed to list orphaned docker registry configmaps: %s", err)
+	}
+
+	// delete orphaned docker registry configmaps
+	for _, dockerRegistryConfigMap := range dockerRegistryConfigMaps.Items {
+		err := deleteOrphanedResource(ctx, m.GetClient(), &dockerRegistryConfigMap)
+		if err != nil {
+			return fmt.Errorf("failed to delete orphaned docker registry configmap %s/%s: %s", dockerRegistryConfigMap.Namespace, dockerRegistryConfigMap.Name, err)
+		}
+	}
+
 	// list orphaned secrets
 	secrets := &corev1.SecretList{}
 	err = listOrphanedResources(ctx, m.GetAPIReader(), secrets, credentialsLabels)
@@ -98,6 +120,15 @@ func listOrphanedResources(ctx context.Context, m client.Reader, resourceList cl
 }
 
 func deleteOrphanedResource(ctx context.Context, m client.Client, resource client.Object) error {
+	finalizers := resource.GetFinalizers()
+	if len(finalizers) > 0 {
+		for _, finalizer := range finalizers {
+			if strings.HasPrefix(finalizer, "serverless.kyma-project.io/") {
+				controllerutil.RemoveFinalizer(resource, finalizer)
+			}
+		}
+	}
+
 	return m.Delete(ctx, resource, &client.DeleteOptions{
 		PropagationPolicy: ptr.To(metav1.DeletePropagationBackground),
 	})
