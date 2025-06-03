@@ -5,3 +5,5 @@ images:
     tag: "3.12.10-alpine3.21"
   - source: "golang@sha256:ef18ee7117463ac1055f5a370ed18b8750f01589f13ea0b48642f5792b234044"
     tag: "1.24.3-alpine3.21"
+  - source: "gcr.io/kaniko-project/executor@sha256:4e7a52dd1f14872430652bb3b027405b8dfd17c4538751c620ac005741ef9698"
+    tag: "v1.24.0"
