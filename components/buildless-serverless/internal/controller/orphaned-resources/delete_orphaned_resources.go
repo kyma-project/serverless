@@ -140,7 +140,7 @@ func removeMatchingFinalizers(ctx context.Context, m client.Client, resource cli
 
 	for _, finalizer := range finalizers {
 		if strings.HasPrefix(finalizer, prefix) {
-			isFinalizerRemoved = controllerutil.RemoveFinalizer(resource, finalizer)
+			isFinalizerRemoved = isFinalizerRemoved || controllerutil.RemoveFinalizer(resource, finalizer)
 		}
 	}
 
