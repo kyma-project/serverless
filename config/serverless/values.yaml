@@ -76,11 +76,11 @@ global:
   images:
     function_controller:
       name: "function-controller"
-      version: "1.7.2"
+      version: "1.7.3"
       directory: "prod"
     function_build_init:
       name: "function-build-init"
-      version: "1.7.2"
+      version: "1.7.3"
       directory: "prod"
     registry_init: # https://github.com/kyma-project/docker-registry/tree/main/components/registry-init
       name: "registry-init"
@@ -88,15 +88,15 @@ global:
       directory: "prod"
     function_runtime_nodejs20:
       name: "function-runtime-nodejs20"
-      version: "1.7.2"
+      version: "1.7.3"
       directory: "prod"
     function_runtime_nodejs22:
       name: "function-runtime-nodejs22"
-      version: "1.7.2"
+      version: "1.7.3"
       directory: "prod"
     function_runtime_python312:
       name: "function-runtime-python312"
-      version: "1.7.2"
+      version: "1.7.3"
       directory: "prod"
     kaniko_executor:
       name: "gcr.io/kaniko-project/executor"
