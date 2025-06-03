@@ -1278,7 +1278,8 @@ python /kubeless.py;`,
 					},
 				},
 			},
-			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
+			want: `echo "{}" > package.json;
+echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
@@ -1296,7 +1297,8 @@ npm start;`,
 					},
 				},
 			},
-			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
+			want: `echo "{}" > package.json;
+echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
@@ -1318,7 +1320,8 @@ npm start;`,
 					},
 				},
 			},
-			want: `cp /git-repository/src/* .;
+			want: `echo "{}" > package.json;
+cp /git-repository/src/* .;
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
@@ -1335,7 +1338,8 @@ npm start;`,
 					},
 				},
 			},
-			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
+			want: `echo "{}" > package.json;
+echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
@@ -1353,7 +1357,8 @@ npm start;`,
 					},
 				},
 			},
-			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.js;
+			want: `echo "{}" > package.json;
+echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
@@ -1375,7 +1380,8 @@ npm start;`,
 					},
 				},
 			},
-			want: `cp /git-repository/src/* .;
+			want: `echo "{}" > package.json;
+cp /git-repository/src/* .;
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
