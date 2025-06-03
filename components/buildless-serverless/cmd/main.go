@@ -114,14 +114,14 @@ func main() {
 	mgr, err := ctrl.NewManager(restConfig, ctrl.Options{
 		Scheme: scheme,
 		Metrics: metricsserver.Options{
-			BindAddress: cfg.MetricsAddress,
+			BindAddress: cfg.MetricsPort,
 		},
 		LeaderElection:   cfg.LeaderElectionEnabled,
 		LeaderElectionID: cfg.LeaderElectionID,
 		WebhookServer: webhook.NewServer(webhook.Options{
 			Port: cfg.SecretMutatingWebhookPort,
 		}),
-		HealthProbeBindAddress: cfg.HealthzAddress,
+		HealthProbeBindAddress: cfg.HealthzPort,
 		Client: client.Options{
 			Cache: &client.CacheOptions{
 				DisableFor: []client.Object{
