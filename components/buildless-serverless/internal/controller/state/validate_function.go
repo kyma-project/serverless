@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+	serverlessmetrics "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/metrics"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/validator"
 	"strings"
 
@@ -13,6 +14,7 @@ import (
 )
 
 func sFnValidateFunction(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
+	serverlessmetrics.ResourceProcessedTotal.WithLabelValues(string(m.State.Function.Spec.Runtime)).Inc()
 	v := validator.New(&m.State.Function, m.FunctionConfig)
 	validationResults := v.Validate()
 	if len(validationResults) != 0 {
