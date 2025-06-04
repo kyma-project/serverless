@@ -94,6 +94,10 @@ func verifyStatus(serverless *v1alpha1.Serverless) error {
 		}
 	}
 
+	if err := isSpecBooleanValueReflectedInStatus(spec.EnableNetworkPolicies, status.NetworkPoliciesEnabled); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -105,6 +109,19 @@ func isSpecValueReflectedInStatus(specValue string, statusValue string) error {
 
 	if specValue != statusValue {
 		return fmt.Errorf("value '%s' not found in status", specValue)
+	}
+
+	return nil
+}
+
+func isSpecBooleanValueReflectedInStatus(specFlag bool, statusValue string) error {
+	expectedStatusValue := "False"
+	if specFlag {
+		expectedStatusValue = "True"
+	}
+
+	if expectedStatusValue != statusValue {
+		return fmt.Errorf("expected value '%s' not found in status", expectedStatusValue)
 	}
 
 	return nil
