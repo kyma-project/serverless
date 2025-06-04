@@ -422,7 +422,12 @@ func (d *Deployment) runtimeCommandSources() string {
 }
 
 func (d *Deployment) runtimeCommandGitSources() string {
-	return "cp /git-repository/src/* .;"
+	var result []string
+	if d.function.HasNodejsRuntime() {
+		result = append(result, `echo "{}" > package.json;`)
+	}
+	result = append(result, `cp /git-repository/src/* .;`)
+	return strings.Join(result, "\n")
 }
 
 func (d *Deployment) runtimeCommandInlineSources() string {
@@ -433,6 +438,7 @@ func (d *Deployment) runtimeCommandInlineSources() string {
 	handlerName, dependenciesName := "", ""
 	if d.function.HasNodejsRuntime() {
 		handlerName, dependenciesName = "handler.js", "package.json"
+		result = append(result, `echo "{}" > package.json;`)
 	} else if d.function.HasPythonRuntime() {
 		handlerName, dependenciesName = "handler.py", "requirements.txt"
 	}
