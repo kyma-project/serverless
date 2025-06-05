@@ -120,16 +120,35 @@ func listOrphanedResources(ctx context.Context, m client.Reader, resourceList cl
 }
 
 func deleteOrphanedResource(ctx context.Context, m client.Client, resource client.Object) error {
-	finalizers := resource.GetFinalizers()
-	if len(finalizers) > 0 {
-		for _, finalizer := range finalizers {
-			if strings.HasPrefix(finalizer, "serverless.kyma-project.io/") {
-				controllerutil.RemoveFinalizer(resource, finalizer)
-			}
-		}
+	err := removeMatchingFinalizers(ctx, m, resource, "serverless.kyma-project.io/")
+	if err != nil {
+		return err
 	}
 
 	return m.Delete(ctx, resource, &client.DeleteOptions{
 		PropagationPolicy: ptr.To(metav1.DeletePropagationBackground),
 	})
+}
+
+func removeMatchingFinalizers(ctx context.Context, m client.Client, resource client.Object, prefix string) error {
+	finalizers := resource.GetFinalizers()
+	isFinalizerRemoved := false
+
+	if len(finalizers) == 0 {
+		return nil
+	}
+
+	for _, finalizer := range finalizers {
+		if strings.HasPrefix(finalizer, prefix) {
+			isFinalizerRemoved = isFinalizerRemoved || controllerutil.RemoveFinalizer(resource, finalizer)
+		}
+	}
+
+	if isFinalizerRemoved {
+		if err := m.Update(ctx, resource); err != nil {
+			return fmt.Errorf("failed to remove finalizers from %s/%s: %s", resource.GetNamespace(), resource.GetName(), err)
+		}
+	}
+
+	return nil
 }
