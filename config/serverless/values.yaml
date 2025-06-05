@@ -100,7 +100,7 @@ global:
       directory: "prod"
     kaniko_executor:
       name: "gcr.io/kaniko-project/executor"
-      version: "v1.23.2"
+      version: "v1.24.0"
       directory: "prod/external"
     registry:
       name: "registry"
