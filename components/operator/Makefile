@@ -96,6 +96,11 @@ deploy-main: manifests kustomize ## Deploy operator to the K8s cluster specified
 generate-kustomization-dev:
 	cp $(CONFIG_OPERATOR_DEV)/kustomization.yaml.tpl $(CONFIG_OPERATOR_DEV)/kustomization.yaml
 
+.PHONY: generate-kustomization-dev-buildless
+generate-kustomization-dev-buildless:
+	cp $(CONFIG_OPERATOR_DEV)/kustomization.yaml.tpl $(CONFIG_OPERATOR_DEV)/kustomization.yaml
+	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit add patch --path buildless-env-patch.yaml
+
 .PHONY: deploy-release
 deploy-release: ## Deploy operator to the k8s cluster specified in ~/.kube/config with image from latest release.
 	kubectl create namespace kyma-system || true
@@ -108,10 +113,10 @@ deploy: manifests kustomize generate-kustomization-dev ## Deploy operator to the
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR_DEV) | kubectl apply -f -
 
 .PHONY: deploy-buildless
-deploy-buildless: deploy
-	kubectl get deployment serverless-operator -n kyma-system -o json | \
-	jq '.spec.template.spec.containers[].env |= map(if .name == "CHART_PATH" then .value = "/buildless-module-chart" else . end)' | \
-	kubectl apply -f -
+deploy-buildless: manifests kustomize generate-kustomization-dev-buildless
+	kubectl create namespace kyma-system || true
+	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit set image europe-docker.pkg.dev/kyma-project/prod/serverless-operator=${IMG}
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR_DEV) | kubectl apply -f -
 
 .PHONY: deploy-local
 deploy-local: build-image-operator ## Deploy operator to the K8s cluster specified in ~/.kube/config with locally build image.
