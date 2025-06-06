@@ -1,7 +1,7 @@
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.3
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.0
 
 # https://pkgs.alpinelinux.org/packages?name=nodejs&branch=v3.21&repo=main&arch=&maintainer=
-ENV NODE_VERSION=22.15.1-r0
+ENV NODE_VERSION=22.16.0-r2
 
 RUN apk add --no-cache openssl3 nodejs=${NODE_VERSION} npm
 
