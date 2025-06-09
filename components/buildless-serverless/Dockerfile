@@ -20,7 +20,7 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o ma
     && mkdir /app \
     && mv ./manager /app/manager
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.21.3 as certs
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.0 as certs
 
 RUN apk add --no-cache ca-certificates
 
