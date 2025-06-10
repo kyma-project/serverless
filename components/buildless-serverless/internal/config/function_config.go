@@ -24,6 +24,7 @@ type FunctionConfig struct {
 	FunctionTraceCollectorEndpoint  string         `yaml:"functionTraceCollectorEndpoint"`
 	FunctionPublisherProxyAddress   string         `yaml:"functionPublisherProxyAddress"`
 	ResourceConfig                  ResourceConfig `yaml:"resourcesConfiguration"`
+	CLIRenderManifestPort           string         `yaml:"cliRenderManifestPort"`
 }
 
 func defaultFunctionConfig() FunctionConfig {
@@ -37,6 +38,7 @@ func defaultFunctionConfig() FunctionConfig {
 		FunctionReadyRequeueDuration:    time.Minute * 5,
 		PackageRegistryConfigSecretName: "buildless-serverless-package-registry-config",
 		FunctionPublisherProxyAddress:   "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish",
+		CLIRenderManifestPort:           ":12137",
 	}
 }
 

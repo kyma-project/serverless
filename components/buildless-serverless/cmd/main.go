@@ -19,7 +19,11 @@ package main
 import (
 	"context"
 	"github.com/go-logr/zapr"
+	"github.com/gorilla/mux"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/endpoint"
+	"net/http"
 	"os"
+	"strings"
 
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/cache"
@@ -173,6 +177,8 @@ func main() {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
+
+	startInternalHTTPServer(cfg.CLIRenderManifestPort)
 }
 
 func loadConfig(prefix string) (serverlessConfig, error) {
@@ -182,4 +188,20 @@ func loadConfig(prefix string) (serverlessConfig, error) {
 		return cfg, err
 	}
 	return cfg, nil
+}
+
+func startInternalHTTPServer(port string) {
+	addr := strings.Join([]string{"127.0.0.1", port}, "")
+
+	go func() {
+		router := mux.NewRouter()
+		router.HandleFunc("/internal/{namespace}/{name}", endpoint.InternalDummyHandler)
+
+		setupLog.Info("Starting internal endpoint server", "address", addr)
+
+		if err := http.ListenAndServe(addr, router); err != nil {
+			setupLog.Error(err, "Internal HTTP server failed")
+			os.Exit(1)
+		}
+	}()
 }
