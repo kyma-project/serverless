@@ -4,9 +4,9 @@ bottle==0.13.3
 cheroot==10.0.1
 wsgi-request-logger==0.4.6
 prometheus_client==0.22.1
-opentelemetry-api==1.33.1
-opentelemetry-sdk==1.33.1
-opentelemetry-exporter-otlp-proto-http==1.33.1
-opentelemetry-propagator-b3==1.33.1
-opentelemetry-instrumentation-requests==0.54b1
+opentelemetry-api==1.34.0
+opentelemetry-sdk==1.34.0
+opentelemetry-exporter-otlp-proto-http==1.34.0
+opentelemetry-propagator-b3==1.34.0
+opentelemetry-instrumentation-requests==0.55b0
 cloudevents
