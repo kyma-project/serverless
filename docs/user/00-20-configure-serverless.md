@@ -240,3 +240,14 @@ You can configure the desired log format to be used.
    spec:
       logFormat: "yaml"
 ```
+
+## Enable Network Policies
+
+You can enable built-in network policies to ensure that the necessary communication channels required by serverless workloads remain functional,
+even on Kubernetes clusters where strict "deny-all" network policies are enforced. This allows serverless components to operate correctly
+by permitting essential traffic while maintaining a secure cluster environment.
+
+```yaml
+   spec:
+      enableNetworkPolicies: true
+```
