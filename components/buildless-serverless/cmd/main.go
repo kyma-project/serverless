@@ -20,19 +20,17 @@ import (
 	"context"
 	"github.com/go-logr/zapr"
 	"github.com/gorilla/mux"
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/endpoint"
-	"net/http"
-	"os"
-	"strings"
-
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/cache"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/orphaned-resources"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/endpoint"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/logging"
 	"github.com/vrischmann/envconfig"
 	uberzap "go.uber.org/zap"
 	uberzapcore "go.uber.org/zap/zapcore"
 	corev1 "k8s.io/api/core/v1"
+	"net/http"
+	"os"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
@@ -172,13 +170,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	startInternalHTTPServer(cfg.CLIRenderManifestPort)
+
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
-
-	startInternalHTTPServer(cfg.CLIRenderManifestPort)
 }
 
 func loadConfig(prefix string) (serverlessConfig, error) {
@@ -191,15 +189,13 @@ func loadConfig(prefix string) (serverlessConfig, error) {
 }
 
 func startInternalHTTPServer(port string) {
-	addr := strings.Join([]string{"127.0.0.1", port}, "")
-
 	go func() {
 		router := mux.NewRouter()
 		router.HandleFunc("/internal/{namespace}/{name}", endpoint.InternalDummyHandler)
 
-		setupLog.Info("Starting internal endpoint server", "address", addr)
+		setupLog.Info("Starting internal endpoint server", "address", port)
 
-		if err := http.ListenAndServe(addr, router); err != nil {
+		if err := http.ListenAndServe(port, router); err != nil {
 			setupLog.Error(err, "Internal HTTP server failed")
 			os.Exit(1)
 		}
