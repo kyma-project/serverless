@@ -139,7 +139,12 @@ render-manifest: kustomize ## Render serverless-operator.yaml manifest.
 apply-default-serverless-cr: ## Apply the k3d serverless CR.
 	kubectl apply \
 		-f ${PROJECT_ROOT}/config/samples/default-serverless-cr.yaml
-
+		
+.PHONY: apply-custom-serverless-cr
+apply-custom-serverless-cr: ## Apply the serverless CR by path.
+	kubectl apply \
+		-f ${PROJECT_ROOT}/${SERVERLESS_CR_PATH}
+		
 .PHONY: remove-default-serverless-cr
 remove-serverless: ## Remove Serverless CR
 	kubectl delete serverless -n kyma-system default --timeout 2m || (kubectl get serverless -n kyma-system -oyaml && false)
