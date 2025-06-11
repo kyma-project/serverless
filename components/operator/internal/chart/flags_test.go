@@ -65,6 +65,9 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				},
 				"registryNodePort": int64(1234),
 			},
+			"networkPolicies": map[string]interface{}{
+				"enabled": true,
+			},
 		}
 
 		flags, err := NewFlagsBuilder().
@@ -84,7 +87,8 @@ func Test_flagsBuilder_Build(t *testing.T) {
 			).
 			WithLogFormat("testLogFormat").
 			WithLogLevel("testLogLevel").
-			WithManagedByLabel("test-runner").Build()
+			WithManagedByLabel("test-runner").
+			WithEnableNetworkPolicies(true).Build()
 
 		require.NoError(t, err)
 		require.Equal(t, expectedFlags, flags)
@@ -122,6 +126,9 @@ func Test_flagsBuilder_Build(t *testing.T) {
 					},
 				},
 			},
+			"networkPolicies": map[string]interface{}{
+				"enabled": false,
+			},
 		}
 
 		flags, err := NewFlagsBuilder().
@@ -131,7 +138,7 @@ func Test_flagsBuilder_Build(t *testing.T) {
 				"",
 				"testMaxSimultaneousJobs",
 				"testHealthzLivenessTimeout",
-			).Build()
+			).WithEnableNetworkPolicies(false).Build()
 
 		require.NoError(t, err)
 		require.Equal(t, expectedFlags, flags)
