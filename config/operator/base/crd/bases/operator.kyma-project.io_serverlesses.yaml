@@ -80,7 +80,7 @@ spec:
                     type: string
                 type: object
               enableNetworkPolicies:
-                description: Enable deployment of network policies that allow serverless'
+                description: Enable deployment of network policies that allow Serverless'
                   essential in-cluster communication.
                 type: boolean
               eventing:
@@ -217,7 +217,7 @@ spec:
                 type: string
               networkPoliciesEnabled:
                 description: |-
-                  NetworkPoliciesEnabled signifies if NetworkPolicies dedicated for serverless are enabled.
+                  NetworkPoliciesEnabled signifies if NetworkPolicies dedicated to Serverless are enabled.
                   Value can be one of ("True", "False").
                 enum:
                 - "True"
