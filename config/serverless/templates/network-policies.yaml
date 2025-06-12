@@ -1,0 +1,135 @@
+{{- if .Values.networkPolicies.enabled }}
+# This allows serverless controller to fetch function code from git repositories
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: kyma-project.io--{{ template "fullname" . }}-allow-egress
+  labels:
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
+    purpose: fn-code-fetching
+spec:
+  podSelector:
+    matchLabels:
+      kyma-project.io/module: {{ template "fullname" . }}
+      networking.serverless.kyma-project.io/from-serverless: allowed
+  policyTypes:
+  - Egress
+  egress:
+    - {}
+---
+# This allows victoria metric agent to scrape metrics from serverless pods (controller and operator)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: kyma-project.io--{{ template "fullname" . }}-allow-metrics
+  labels:
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
+    purpose: metrics
+spec:
+  podSelector:
+    matchLabels:
+      kyma-project.io/module: {{ template "fullname" . }}
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          networking.kyma-project.io/metrics-scraping: allowed
+    ports:
+    - protocol: TCP
+      port: {{ .Values.metrics.manager.port.port }}
+---
+# This allows serverless controller to access internal docker registry
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: kyma-project.io--{{ template "fullname" . }}-allow-registry
+  labels:
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
+    purpose: registry
+spec:
+  podSelector:
+    matchLabels:
+      kyma-project.io/module: {{ template "fullname" . }}
+      app.kubernetes.io/name: docker-registry
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    ports:
+    - protocol: TCP
+      port: {{ .Values.global.registryServicePort }}
+---
+# This allows serverless controllers (Function and Serverless controllers) to access the Kubernetes API server
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: kyma-project.io--{{ template "fullname" . }}-allow-to-apiserver
+  labels:
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
+    purpose: apiserver
+spec:
+  podSelector:
+    matchLabels:
+      networking.serverless.kyma-project.io/to-apiserver: allowed
+  policyTypes:
+  - Egress
+  egress:
+  - ports:
+    - port: 443
+      protocol: TCP
+---
+# This allows serverless controller to resolve k8s internal DNS queries
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: kyma-project.io--{{ template "fullname" . }}-to-dns
+  labels:
+    {{- include "tplValue" ( dict "value" .Values.global.commonLabels "context" . ) | nindent 4 }}
+    purpose: dns
+spec:
+  podSelector:
+    matchLabels:
+      kyma-project.io/module: {{ template "fullname" . }}
+  policyTypes:
+    - Egress
+  egress:
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+      to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+    - ports:
+        - port: 8053
+          protocol: UDP
+        - port: 8053
+          protocol: TCP
+      to:
+        - namespaceSelector:
+            matchLabels:
+              gardener.cloud/purpose: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+      to:
+        - namespaceSelector:
+            matchLabels:
+              gardener.cloud/purpose: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: node-local-dns
+{{- end }}

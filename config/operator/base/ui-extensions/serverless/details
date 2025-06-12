@@ -7,6 +7,8 @@ status:
     - name: Condition details
       widget: ConditionList
       source: status.conditions
+    - name: status.networkPoliciesEnabled
+      source: status.networkPoliciesEnabled
 body:
   - widget: Alert
     severity: warning
