@@ -170,7 +170,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	startInternalHTTPServer(cfg.CLIRenderManifestPort)
+	startInternalHTTPServer(cfg.DummyPort)
 
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
