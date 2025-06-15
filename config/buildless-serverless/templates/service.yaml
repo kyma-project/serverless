@@ -25,6 +25,10 @@ spec:
       port: 443
       protocol: TCP
       targetPort: 8443
+    - name: http-internal
+      port: 12137
+      protocol: TCP
+      targetPort: 12137
   selector:
     app: serverless
     app.kubernetes.io/name: buildless-serverless

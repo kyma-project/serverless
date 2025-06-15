@@ -48,6 +48,9 @@ spec:
             - containerPort: {{ .Values.containers.manager.metricsPort }}
               name: http-metrics
               protocol: TCP
+            - containerPort: 12137
+              name: http-internal
+              protocol: TCP
           livenessProbe:
             httpGet:
               path: /healthz

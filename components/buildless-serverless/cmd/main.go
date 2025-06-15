@@ -19,6 +19,7 @@ package main
 import (
 	"context"
 	"github.com/go-logr/zapr"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/endpoint"
 	"os"
 
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
@@ -167,6 +168,8 @@ func main() {
 		setupLog.Error(err, "unable to set up ready check")
 		os.Exit(1)
 	}
+
+	go endpoint.StartInternalEndpointServer(":12137")
 
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
