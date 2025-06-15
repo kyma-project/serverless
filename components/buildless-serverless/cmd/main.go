@@ -169,7 +169,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	go endpoint.StartInternalEndpointServer(":12137")
+	go endpoint.StartInternalHTTPServer(":12137", mgr.GetLogger())
 
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
