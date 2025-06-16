@@ -13,7 +13,6 @@ jobs:
       - name: upgrade test
         run: |
           make -C components/operator deploy-release
-          make -C tests/operator test
           make -C components/operator deploy
           make -C tests/operator test
         env:
