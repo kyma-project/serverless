@@ -9,17 +9,10 @@ import (
 	"time"
 )
 
-//type functionState string
-//const (
-//	functionStateStarted functionState = "Started"
-//	functionStateConfigured functionState = "Configured"
-//)
-
 type functionStateReachTimeInfo struct {
 	startTime           *time.Time
 	generation          int64
 	registeredCondition *serverlessv1alpha2.ConditionType
-	firstRun            bool
 }
 
 var (
