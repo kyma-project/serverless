@@ -69,6 +69,7 @@ func getDeployments(ctx context.Context, m *fsm.StateMachine) (*appsv1.Deploymen
 
 func createDeployment(ctx context.Context, m *fsm.StateMachine, deployment *appsv1.Deployment) (*ctrl.Result, error) {
 	m.Log.Info("creating a new Deployment", "Deployment.Namespace", deployment.GetNamespace(), "Deployment.Name", deployment.GetName())
+
 	name := deployment.GetName()
 	if name == "" {
 		name = fmt.Sprintf("%s*", deployment.GetGenerateName())

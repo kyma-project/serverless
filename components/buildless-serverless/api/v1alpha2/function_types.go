@@ -226,6 +226,8 @@ type Template struct {
 
 // FunctionStatus defines the observed state of the Function.
 type FunctionStatus struct {
+	// The generation observed by the function controller.
+	ObservedGeneration int64 `json:"observedGeneration,omitempty"`
 	// Specifies the **Runtime** type of the Function.
 	Runtime Runtime `json:"runtime,omitempty"`
 	// Specifies the image version used to build and run the Function's Pods.

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/metrics"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v2"
 	appsv1 "k8s.io/api/apps/v1"
@@ -19,6 +20,8 @@ const (
 )
 
 func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
+	m.State.Function.Status.ObservedGeneration = m.State.Function.GetGeneration()
+
 	clusterDeployments, err := getDeployments(ctx, m)
 	if err != nil {
 		return requeueAfterWithError(defaultRequeueTime, errors.Wrap(err, "while getting deployments"))
@@ -40,6 +43,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 			metav1.ConditionTrue,
 			serverlessv1alpha2.ConditionReasonDeploymentReady,
 			fmt.Sprintf("Deployment %s is ready", deploymentName))
+		metrics.PublishStateReachTime(m.State.Function, serverlessv1alpha2.ConditionRunning)
 
 		return nextState(sFnAdjustStatus)
 	}

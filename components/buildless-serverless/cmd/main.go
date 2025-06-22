@@ -141,8 +141,6 @@ func main() {
 	}
 
 	serverlessmetrics.Register()
-	serverlessmetrics.ComponentVersion.WithLabelValues("7.8.7").Set(1)
-	serverlessmetrics.ResourceProcessedTotal.WithLabelValues("makapaka").Inc()
 
 	if err = (&controller.FunctionReconciler{
 		Client:          mgr.GetClient(),
