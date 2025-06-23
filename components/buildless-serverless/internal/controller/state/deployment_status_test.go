@@ -24,8 +24,9 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 		// our function
 		f := serverlessv1alpha2.Function{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      "strange-chebyshev-name",
-				Namespace: "busy-ramanujan-ns"}}
+				Name:       "strange-chebyshev-name",
+				Namespace:  "busy-ramanujan-ns",
+				Generation: 22}}
 		// deployment which will be returned from kubernetes
 		deployment := appsv1.Deployment{
 			ObjectMeta: metav1.ObjectMeta{
@@ -35,7 +36,8 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 			Status: appsv1.DeploymentStatus{
 				Conditions: []appsv1.DeploymentCondition{
 					{Type: appsv1.DeploymentAvailable, Status: corev1.ConditionTrue, Reason: MinimumReplicasAvailable},
-					{Type: appsv1.DeploymentProgressing, Status: corev1.ConditionTrue, Reason: NewRSAvailableReason}}}}
+					{Type: appsv1.DeploymentProgressing, Status: corev1.ConditionTrue, Reason: NewRSAvailableReason}},
+				ObservedGeneration: 15}}
 		// scheme and fake client
 		scheme := runtime.NewScheme()
 		require.NoError(t, serverlessv1alpha2.AddToScheme(scheme))
@@ -71,6 +73,8 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 			metav1.ConditionTrue,
 			serverlessv1alpha2.ConditionReasonDeploymentReady,
 			"Deployment strange-chebyshev-name is ready")
+		// observed generation is set to the function generation
+		require.Equal(t, int64(22), m.State.Function.Status.ObservedGeneration)
 	})
 	t.Run("when deployment is unhealthy should requeue", func(t *testing.T) {
 		// Arrange
