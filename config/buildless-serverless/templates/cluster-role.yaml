@@ -14,9 +14,14 @@ rules:
       - ""
     resources:
       - configmaps
+      - secrets
+      - serviceaccounts
     verbs:
       - delete
+      - get
       - list
+      - update
+      - watch
   - apiGroups:
       - ""
     resources:
@@ -24,15 +29,6 @@ rules:
     verbs:
       - create
       - patch
-  - apiGroups:
-      - ""
-    resources:
-      - secrets
-    verbs:
-      - delete
-      - get
-      - list
-      - watch
   - apiGroups:
       - ""
     resources:
