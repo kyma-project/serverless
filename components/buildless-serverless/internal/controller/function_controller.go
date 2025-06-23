@@ -55,7 +55,6 @@ type FunctionReconciler struct {
 // TODO: This is temporary, it is necessary to delete orphaned resources
 // +kubebuilder:rbac:groups=batch,resources=jobs,verbs=list;delete
 // +kubebuilder:rbac:groups="",resources=configmaps,verbs=list;delete
-// +kubebuilder:rbac:groups="",resources=serviceaccounts,verbs=list;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
