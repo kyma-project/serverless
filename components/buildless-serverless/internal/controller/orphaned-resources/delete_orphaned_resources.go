@@ -7,6 +7,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/fields"
 	apilabels "k8s.io/apimachinery/pkg/labels"
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -36,15 +37,17 @@ func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
 		"app.kubernetes.io/part-of":         "serverless",
 	}
 
-	serviceAccountsLabels := map[string]string{
-		"app.kubernetes.io/component": "serverless",
-		"app.kubernetes.io/part-of":   "serverless",
-	}
+	//serviceAccountsLabels := map[string]string{
+	//	"app.kubernetes.io/component": "serverless",
+	//	"app.kubernetes.io/part-of":   "serverless",
+	//}
 
 	operatorServiceAccountsLabels := map[string]string{
 		"app.kubernetes.io/component": "serverless-rbac",
 		"app.kubernetes.io/name":      "serverless-operator",
 	}
+
+	serviceAccountsName := "serverless-function"
 
 	var collectedErrors []string
 
@@ -125,7 +128,7 @@ func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
 
 	// list orphaned service accounts
 	serviceAccounts := &corev1.ServiceAccountList{}
-	err = listOrphanedResources(ctx, m.GetAPIReader(), serviceAccounts, serviceAccountsLabels)
+	err = listServiceAccountsByName(ctx, m.GetAPIReader(), serviceAccounts, serviceAccountsName)
 	if err != nil {
 		collectedErrors = append(collectedErrors, fmt.Sprintf("failed to list orphaned service accounts: %s", err))
 	}
@@ -158,6 +161,12 @@ func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
 	}
 
 	return nil
+}
+
+func listServiceAccountsByName(ctx context.Context, m client.Reader, resourceList *corev1.ServiceAccountList, name string) error {
+	return m.List(ctx, resourceList, &client.ListOptions{
+		FieldSelector: fields.OneTermEqualSelector("metadata.name", name),
+	})
 }
 
 func listOrphanedResources(ctx context.Context, m client.Reader, resourceList client.ObjectList, labels map[string]string) error {
