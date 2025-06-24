@@ -37,16 +37,6 @@ func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
 		"app.kubernetes.io/part-of":         "serverless",
 	}
 
-	//serviceAccountsLabels := map[string]string{
-	//	"app.kubernetes.io/component": "serverless",
-	//	"app.kubernetes.io/part-of":   "serverless",
-	//}
-
-	operatorServiceAccountsLabels := map[string]string{
-		"app.kubernetes.io/component": "serverless-rbac",
-		"app.kubernetes.io/name":      "serverless-operator",
-	}
-
 	serviceAccountsName := "serverless-function"
 
 	var collectedErrors []string
@@ -138,21 +128,6 @@ func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
 		err := deleteOrphanedResource(ctx, m.GetClient(), &serviceAccount)
 		if err != nil && !errors.IsNotFound(err) {
 			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to delete orphaned service account %s/%s: %s", serviceAccount.Namespace, serviceAccount.Name, err))
-		}
-	}
-
-	// list orphaned operator service accounts
-	operatorServiceAccounts := &corev1.ServiceAccountList{}
-	err = listOrphanedResources(ctx, m.GetAPIReader(), operatorServiceAccounts, operatorServiceAccountsLabels)
-	if err != nil {
-		collectedErrors = append(collectedErrors, fmt.Sprintf("failed to list orphaned service accounts: %s", err))
-	}
-
-	// delete orphaned operator service accounts
-	for _, operatorServiceAccount := range operatorServiceAccounts.Items {
-		err := deleteOrphanedResource(ctx, m.GetClient(), &operatorServiceAccount)
-		if err != nil && !errors.IsNotFound(err) {
-			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to delete orphaned service account %s/%s: %s", operatorServiceAccount.Namespace, operatorServiceAccount.Name, err))
 		}
 	}
 
