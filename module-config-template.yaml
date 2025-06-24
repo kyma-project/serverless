@@ -1,8 +1,19 @@
 name: kyma-project.io/module/serverless
-channel: {{.Channel}}
-version: {{.Version}}
-defaultCR: config/samples/default-serverless-cr.yaml
-manifest: serverless-operator.yaml
-annotations:
-  "operator.kyma-project.io/doc-url": "https://kyma-project.io/#/serverless-manager/user/README"
-moduleRepo: https://github.com/kyma-project/serverless-manager.git
+version:
+defaultCR:
+manifest:
+documentation: "https://kyma-project.io/#/serverless-manager/user/README"
+repository: https://github.com/kyma-project/serverless-manager.git
+security: sec-scanners-config.yaml
+manager:
+  name: serverless-operator
+  group: apps
+  version: v1
+  kind: Deployment
+associatedResources:
+    - group: operator.kyma-project.io
+      kind: Serverless
+      version: v1alpha1
+    - group: serverless.kyma-project.io
+      kind: Function
+      version: v1alpha1
