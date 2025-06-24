@@ -109,8 +109,8 @@ func StartForStateReachTime(f serverlessv1alpha2.Function) {
 // conditionIsGreaterThanRegistered returns true if cond is greater than registeredCond according to the order: nil < ConfigurationReady < Running < Ready
 func conditionIsGreaterThanRegistered(cond serverlessv1alpha2.ConditionType, registeredCond *serverlessv1alpha2.ConditionType) bool {
 	order := map[serverlessv1alpha2.ConditionType]int{
-		"ConfigurationReady": 1,
-		"Running":            2,
+		serverlessv1alpha2.ConditionConfigurationReady: 1,
+		serverlessv1alpha2.ConditionRunning:            2,
 	}
 	var regVal int
 	if registeredCond == nil {
