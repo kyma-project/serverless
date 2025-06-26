@@ -4,8 +4,8 @@ ARG TARGETOS TARGETARCH
 
 ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/serverless \
     CGO_ENABLED=1 \
-    GOOS=linux \
-    GOARCH=amd64 \
+    GOOS=$TARGETOS \
+    GOARCH=$TARGETARCH \
     LIBGIT2_VERSION=1.5.2-r0
 
 RUN apk add --no-cache gcc libc-dev
@@ -18,7 +18,7 @@ WORKDIR ${BASE_APP_DIR}
 #
 COPY . ${BASE_APP_DIR}/
 
-RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags "-s -w" -a -o manager ./components/serverless/cmd/manager/main.go \
+RUN go build -ldflags "-s -w" -a -o manager ./components/serverless/cmd/manager/main.go \
     && mkdir /app \
     && mv ./manager /app/manager
 
@@ -34,7 +34,7 @@ RUN apk update --no-cache && apk upgrade --no-cache
 RUN apk add --no-cache --update --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main openssl
 RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.18/community libgit2=${LIBGIT2_VERSION}
 
-LABEL source = git@github.com:kyma-project/serverless.git
+LABEL source=git@github.com:kyma-project/serverless.git
 
 COPY --from=builder /app /app
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
