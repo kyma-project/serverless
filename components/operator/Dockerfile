@@ -4,7 +4,7 @@
 
 
 # Build the operator binary
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.24.4-alpine3.22 AS builder
+FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.24.4-alpine3.22 AS builder
 
 WORKDIR /workdir
 
@@ -19,12 +19,12 @@ RUN go mod download
 COPY components/operator components/operator
 
 # Build
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o operator ./components/operator/main.go
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o operator ./components/operator/main.go
 
 
 # Replace main images in values.yaml
 # Bumping serverless images in the values.yaml - used for building "local" and "dev" images
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.0 as replacer
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.0 AS replacer
 
 WORKDIR /workdir
 
