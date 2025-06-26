@@ -69,7 +69,7 @@ jobs:
           git checkout -B "${MODULE_VERSION}-${CHANNEL}" upstream/main
 
           mkdir -p modules/serverless/${CHANNEL}
-          cp ../module-config.yaml modules/serverless/${CHANNEL}/${MODULE_VERSION}/module-config.yaml
+          cp ../module-config.yaml modules/serverless/${MODULE_VERSION}/module-config.yaml
           
           
           
