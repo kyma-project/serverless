@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.24.4-alpine3.22 AS builder
+FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.24.4-alpine3.22 AS builder
 ARG TARGETOS
 ARG TARGETARCH
 ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/serverless
@@ -20,7 +20,7 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o ma
     && mkdir /app \
     && mv ./manager /app/manager
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.0 as certs
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.0 AS certs
 
 RUN apk add --no-cache ca-certificates
 
