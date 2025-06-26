@@ -604,6 +604,10 @@ spec:
                   required:
                     - url
                   type: object
+                observedGeneration:
+                  description: The generation observed by the function controller.
+                  format: int64
+                  type: integer
                 podSelector:
                   description: Specifies the Pod selector used to match Pods in the Function's Deployment.
                   type: string

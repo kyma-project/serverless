@@ -24,6 +24,7 @@ import (
 
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/cache"
+	serverlessmetrics "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/metrics"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/orphaned-resources"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/logging"
 	"github.com/vrischmann/envconfig"
@@ -138,6 +139,8 @@ func main() {
 		setupLog.Error(err, "unable to start manager")
 		os.Exit(1)
 	}
+
+	serverlessmetrics.Register()
 
 	if err = (&controller.FunctionReconciler{
 		Client:          mgr.GetClient(),

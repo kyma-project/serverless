@@ -3,9 +3,11 @@ package fsm
 import (
 	"context"
 	"fmt"
+	serverlessmetrics "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/metrics"
 	"reflect"
 	"runtime"
 	"strings"
+	"time"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
@@ -64,6 +66,7 @@ func (m *StateMachine) stateFnName() string {
 }
 
 func (m *StateMachine) Reconcile(ctx context.Context) (ctrl.Result, error) {
+	var startReconciliationTime = time.Now()
 	var err error
 	var result *ctrl.Result
 loop:
@@ -90,6 +93,7 @@ loop:
 		With("error", err).
 		With("result", result).
 		Info("reconciliation done")
+	serverlessmetrics.PublishReconciliationTime(m.State.Function, startReconciliationTime)
 
 	return *result, err
 }

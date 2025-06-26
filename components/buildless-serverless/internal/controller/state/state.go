@@ -39,5 +39,5 @@ func stopWithError(err error) (fsm.StateFn, *ctrl.Result, error) {
 }
 
 func StartState() fsm.StateFn {
-	return sFnValidateFunction
+	return sFnMetricsStart
 }
