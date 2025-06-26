@@ -6,6 +6,8 @@
 # Build the operator binary
 FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.24.4-alpine3.22 AS builder
 
+ARG TARGETOS TARGETARCH
+
 WORKDIR /workdir
 
 # Copy the Go Modules manifests
