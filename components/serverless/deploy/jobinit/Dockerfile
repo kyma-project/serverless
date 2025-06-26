@@ -4,8 +4,8 @@ ARG TARGETOS TARGETARCH
 
 ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/serverless \
     CGO_ENABLED=1 \
-    GOOS=linux \
-    GOARCH=amd64 \
+    GOOS=$TARGETOS \
+    GOARCH=$TARGETARCH \
     LIBGIT2_VERSION=1.5.2-r0
 
 RUN apk add --no-cache gcc libc-dev
@@ -18,7 +18,7 @@ WORKDIR ${BASE_APP_DIR}
 #
 COPY . ${BASE_APP_DIR}/
 
-RUN GOOS=$TARGETOS GOARCH=$TARGETARCH go build -ldflags "-s -w" -a -o jobinit ./components/serverless/cmd/jobinit/main.go \
+RUN go build -ldflags "-s -w" -a -o jobinit ./components/serverless/cmd/jobinit/main.go \
     && mkdir /app \
     && mv ./jobinit /app/jobinit
 
