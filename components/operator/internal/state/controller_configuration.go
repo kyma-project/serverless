@@ -26,6 +26,8 @@ func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemSta
 
 	configureControllerConfigurationFlags(s)
 
+	configureChartPath(s)
+
 	s.setState(v1alpha1.StateProcessing)
 	s.instance.UpdateConditionTrue(
 		v1alpha1.ConditionTypeConfigured,
@@ -91,4 +93,20 @@ func getNodesLen(ctx context.Context, c client.Client) (int, error) {
 	}
 
 	return len(nodeList.Items), nil
+}
+
+func configureChartPath(s *systemState) {
+	val, exists := s.instance.Annotations["serverless.kyma-project.io/buildless-mode"]
+	if !exists {
+		// we use default value from environment variable if annotation is not set
+		return
+	}
+	if val == "enabled" {
+		s.chartConfig.Release.ChartPath = "/buildless-module-chart"
+	}
+	if val == "disabled" {
+		s.chartConfig.Release.ChartPath = "/module-chart"
+	}
+	// we use default value from environment variable if annotation has unexpected value
+	return
 }
