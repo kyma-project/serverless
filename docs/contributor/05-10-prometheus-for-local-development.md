@@ -3,20 +3,20 @@
 Serverless exposes metrics for collectors like Prometheus. For local development, you can use a local instance of Prometheus.
 This document describes how to set up such an environment.
 
-## Run Serverless
+## Procedure
 
-Navigate to the `components/buildless-serverless`) directory and run:
+1. Run Serverless by navigating to the `components/buildless-serverless`) directory and running the following command:
 
-```bash
-make run
+
+   ```bash
+   make run
 ```
 
-## Test Serverless Metrics
+2. To test the Serverless metrics, run the following command:
 
-To test the metrics, run the following command:
 
-```bash
-curl http://localhost:8080/metrics
+   ```bash
+   curl http://localhost:8080/metrics
 ```
 
 You should see an output similar to the following:
@@ -31,11 +31,8 @@ certwatcher_read_certificate_total 0
 ...
 ```
 
+3. Go to the `examples/prometheus-local` directory and apply the following manifests to deploy Prometheus:
 
-
-## Deploy Prometheus
-
-Go to the `examples/prometheus-local` directory and apply the following manifests:
 
 ```bash
 kubectl apply -f - <<EOF
@@ -114,25 +111,23 @@ spec:
 EOF
 ```
 
-To access Prometheus in your browser, expose the service locally:
+4. To access Prometheus in your browser, expose the service locally:
 
 ```bash
 kubectl port-forward svc/prometheus 9090:9090 -n metrics
 ```
 
-## Use Prometheus
+5. To use Prometheus, open your browser and go to `http://localhost:9090/`.
 
-Open your browser and go to 
-`http://localhost:9090/`
 
-You can use the following query to inspect your metrics:
+- You can use the following query to inspect your metrics:
 
-```
-serverless_resources_processed_total
+   ```bash
+   serverless_resources_processed_total
 ```
 
-To list all available metrics along with their descriptions, you can also run:
+- To list all available metrics along with their descriptions, run:
 
-```bash
-curl http://localhost:8080/metrics | grep HELP
+   ```bash
+   curl http://localhost:8080/metrics | grep HELP
 ```
