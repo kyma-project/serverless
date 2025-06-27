@@ -108,5 +108,4 @@ func configureChartPath(s *systemState) {
 		s.chartConfig.Release.ChartPath = "/module-chart"
 	}
 	// we use default value from environment variable if annotation has unexpected value
-	return
 }
