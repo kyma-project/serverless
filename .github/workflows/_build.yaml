@@ -77,6 +77,7 @@ jobs:
       dockerfile: components/serverless/deploy/manager/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
       build-engine: buildx
+      platforms: linux/amd64 # this image does not support arm64
 
   build-buildless-serverless-controller:
     needs: compute-tags
@@ -104,6 +105,7 @@ jobs:
       dockerfile: components/serverless/deploy/jobinit/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
       build-engine: buildx
+      platforms: linux/amd64 # this image does not support arm64
 
   build-buildless-serverless-jobinit:
     needs: compute-tags
