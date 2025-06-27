@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+	"go.uber.org/zap"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
@@ -10,12 +11,17 @@ import (
 )
 
 const (
-	slowBuildPreset    = "slow"
-	slowRuntimePreset  = "XS"
-	normalBuildPreset  = "normal"
-	largeRuntimePreset = "L"
-	defaultLogLevel    = "info"
-	defaultLogFormat   = "json"
+	slowBuildPreset         = "slow"
+	slowRuntimePreset       = "XS"
+	normalBuildPreset       = "normal"
+	largeRuntimePreset      = "L"
+	defaultLogLevel         = "info"
+	defaultLogFormat        = "json"
+	buildlessChartPath      = "/buildless-module-chart"
+	oldServerlessChartPath  = "/module-chart"
+	buildlessModeAnnotation = "serverless.kyma-project.io/buildless-mode"
+	buildlessModeEnabled    = "enabled"
+	buildlessModeDisabled   = "disabled"
 )
 
 func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
@@ -25,6 +31,8 @@ func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemSta
 	}
 
 	configureControllerConfigurationFlags(s)
+
+	configureChartPath(s, r.log)
 
 	s.setState(v1alpha1.StateProcessing)
 	s.instance.UpdateConditionTrue(
@@ -91,4 +99,22 @@ func getNodesLen(ctx context.Context, c client.Client) (int, error) {
 	}
 
 	return len(nodeList.Items), nil
+}
+
+func configureChartPath(s *systemState, log *zap.SugaredLogger) {
+	val, exists := s.instance.Annotations[buildlessModeAnnotation]
+	if !exists {
+		// we use default value from environment variable if annotation is not set
+		return
+	}
+	if val == buildlessModeEnabled {
+		log.Info("Chart path is set to buildless serverless module chart")
+		s.chartConfig.Release.ChartPath = buildlessChartPath
+	}
+	if val == buildlessModeDisabled {
+		log.Info("Chart path is set to old serverless module chart")
+		s.chartConfig.Release.ChartPath = oldServerlessChartPath
+	}
+	log.Infof("Using chart path: %s", s.chartConfig.Release.ChartPath)
+	// we use default value from environment variable if annotation has unexpected value
 }

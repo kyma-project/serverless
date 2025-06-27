@@ -112,12 +112,6 @@ deploy: manifests kustomize generate-kustomization-dev ## Deploy operator to the
 	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit set image europe-docker.pkg.dev/kyma-project/prod/serverless-operator=${IMG}
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR_DEV) | kubectl apply -f -
 
-.PHONY: deploy-buildless
-deploy-buildless: manifests kustomize generate-kustomization-dev-buildless
-	kubectl create namespace kyma-system || true
-	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit set image europe-docker.pkg.dev/kyma-project/prod/serverless-operator=${IMG}
-	$(KUSTOMIZE) build $(CONFIG_OPERATOR_DEV) | kubectl apply -f -
-
 .PHONY: deploy-local
 deploy-local: build-image-operator ## Deploy operator to the K8s cluster specified in ~/.kube/config with locally build image.
 	$(eval HASH_TAG=$(shell docker images $(OPERATOR_NAME):latest --quiet))
@@ -140,6 +134,11 @@ apply-default-serverless-cr: ## Apply the k3d serverless CR.
 	kubectl apply \
 		-f ${PROJECT_ROOT}/config/samples/default-serverless-cr.yaml
 		
+.PHONY: apply-buildless-serverless-cr
+apply-buildless-serverless-cr: ## Apply the k3d serverless CR.
+	kubectl apply \
+		-f ${PROJECT_ROOT}/config/samples/buildless-serverless-cr.yaml
+
 .PHONY: apply-custom-serverless-cr
 apply-custom-serverless-cr: ## Apply the serverless CR by path.
 	kubectl apply \
