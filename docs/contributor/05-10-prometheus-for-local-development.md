@@ -5,7 +5,7 @@ This document describes how to set up such an environment.
 
 ## Procedure
 
-1. Run Serverless by navigating to the `components/buildless-serverless`) directory and running the following command:
+1. Run Serverless by navigating to the `components/buildless-serverless` directory and running the following command:
 
 
    ```bash
