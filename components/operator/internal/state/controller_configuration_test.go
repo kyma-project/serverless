@@ -36,11 +36,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 				Spec: v1alpha1.ServerlessSpec{},
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
-			chartConfig: &chart.Config{
-				Release: chart.Release{
-					ChartPath: "/test",
-				},
-			},
 		}
 
 		c := fake.NewClientBuilder().WithObjects(
@@ -86,11 +81,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 				},
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
-			chartConfig: &chart.Config{
-				Release: chart.Release{
-					ChartPath: "/test",
-				},
-			},
 		}
 
 		c := fake.NewClientBuilder().WithObjects(

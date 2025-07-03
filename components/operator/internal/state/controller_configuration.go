@@ -105,6 +105,9 @@ func getNodesLen(ctx context.Context, c client.Client) (int, error) {
 // TODO: remove these methods when buildless is enabled by default
 func configureChartPathAndFlag(s *systemState, log *zap.SugaredLogger) {
 	configureChartPath(s, log)
+	if s.chartConfig == nil {
+		return
+	}
 	s.flagsBuilder.WithChartPath(s.chartConfig.Release.ChartPath)
 }
 
