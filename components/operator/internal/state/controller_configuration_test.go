@@ -86,6 +86,11 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 				},
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
+			chartConfig: &chart.Config{
+				Release: chart.Release{
+					ChartPath: "/test",
+				},
+			},
 		}
 
 		c := fake.NewClientBuilder().WithObjects(
