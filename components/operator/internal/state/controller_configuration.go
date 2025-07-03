@@ -32,7 +32,8 @@ func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemSta
 
 	configureControllerConfigurationFlags(s)
 
-	configureChartPath(s, r.log)
+	//TODO: remove when buildless is enabled by default
+	configureChartPathAndFlag(s, r.log)
 
 	s.setState(v1alpha1.StateProcessing)
 	s.instance.UpdateConditionTrue(
@@ -99,6 +100,12 @@ func getNodesLen(ctx context.Context, c client.Client) (int, error) {
 	}
 
 	return len(nodeList.Items), nil
+}
+
+// TODO: remove these methods when buildless is enabled by default
+func configureChartPathAndFlag(s *systemState, log *zap.SugaredLogger) {
+	configureChartPath(s, log)
+	s.flagsBuilder.WithChartPath(s.chartConfig.Release.ChartPath)
 }
 
 func configureChartPath(s *systemState, log *zap.SugaredLogger) {

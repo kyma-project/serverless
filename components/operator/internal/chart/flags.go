@@ -21,6 +21,8 @@ type FlagsBuilder interface {
 	WithLogLevel(logLevel string) *flagsBuilder
 	WithLogFormat(logFormat string) *flagsBuilder
 	WithEnableNetworkPolicies(enableNetworkPolicies bool) *flagsBuilder
+	//TODO: remove this method when buildless is enabled by default
+	WithChartPath(chartPath string) *flagsBuilder
 }
 
 type flagsBuilder struct {
@@ -138,5 +140,11 @@ func (fb *flagsBuilder) WithLogFormat(logFormat string) *flagsBuilder {
 		fb.flags["containers.manager.logConfiguration.data.logFormat"] = logFormat
 	}
 
+	return fb
+}
+
+// TODO: remove this method when buildless is enabled by default
+func (fb *flagsBuilder) WithChartPath(chartPath string) *flagsBuilder {
+	fb.flags["chartPath"] = chartPath
 	return fb
 }
