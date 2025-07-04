@@ -1,6 +1,7 @@
 package predicate
 
 import (
+	"reflect"
 	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
@@ -20,7 +21,7 @@ func (p NoStatusChangePredicate) Update(e event.UpdateEvent) bool {
 		return true
 	}
 
-	return !isStatusUpdate(e)
+	return isAnnotationUpdate(e) || !isStatusUpdate(e)
 }
 
 func isStatusUpdate(e event.UpdateEvent) bool {
@@ -30,4 +31,10 @@ func isStatusUpdate(e event.UpdateEvent) bool {
 	}
 
 	return false
+}
+
+func isAnnotationUpdate(e event.UpdateEvent) bool {
+	oldAnnotations := e.ObjectOld.GetAnnotations()
+	newAnnotations := e.ObjectNew.GetAnnotations()
+	return !reflect.DeepEqual(oldAnnotations, newAnnotations)
 }
