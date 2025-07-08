@@ -13,14 +13,6 @@ Serverless relies heavily on Kubernetes resources. It uses [Deployments](https:/
 
 3. Function Controller (FC) detects the new, validated Function CR.
 
-4. FC creates a ConfigMap with the Function definition.
-
-5. Based on the ConfigMap, FC creates a Kubernetes Job that triggers the creation of a Function image.
-
-6. The Job creates a Pod which builds the production Docker image based on the Function's definition. The Job then pushes this image to a Docker registry.
-
-7. FC monitors the Job status. When the image creation finishes successfully, FC creates a Deployment that uses the newly built image.
-
 8. FC creates a Service that points to the Deployment.
 
 9. FC creates a HorizontalPodAutoscaler that automatically scales the number of Pods in the Deployment based on the observed CPU utilization.
