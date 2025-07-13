@@ -19,7 +19,6 @@ The Serverless module provides the following features:
 - Event-driven programming model
 - Reduced implementation and operation effort
 - Function management with Kubernetes resources like [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), [Services](https://kubernetes.io/docs/concepts/services-networking/service/), and [HorizontalPodAutoscalers](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/)
-- Docker image creation with [Kubernetes Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/job/)
 
 ## Architecture
 
