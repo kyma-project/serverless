@@ -18,6 +18,3 @@ To eliminate potential security risks when using Functions, bear in mind these f
 - All administrators and regular users who have access to a specific namespace in a cluster can also access:
 
   - Source code of all Functions within this namespace
-  - Internal Docker registry that contains Function images
-  - Secrets allowing the build Job to pull and push images from and to the Docker registry (in non-system namespaces)
-  
