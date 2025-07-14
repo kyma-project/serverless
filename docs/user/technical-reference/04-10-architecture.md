@@ -9,12 +9,12 @@ Serverless relies heavily on Kubernetes resources. It uses [Deployments](https:/
 
 1. Create a Function either through the UI or by applying a Function custom resource (CR). This CR contains the Function definition (business logic that you want to execute) and information on the environment on which it should run.
 
-2. Before the Function can be saved or modified, it is first updated and then verified by the defaulting and validation webhooks respectively.
+2. The Function CR is processed by the Function Controller (FC), which validates and updates the resource.
 
-3. Function Controller (FC) detects the new, validated Function CR.
+3. FC creates a Deployment to manage the Function's Pods.
 
-8. FC creates a Service that points to the Deployment.
+4. FC creates a Service to expose the Function.
 
-9. FC creates a HorizontalPodAutoscaler that automatically scales the number of Pods in the Deployment based on the observed CPU utilization.
+5. FC creates a HorizontalPodAutoscaler that automatically scales the number of Pods in the Deployment based on the observed CPU utilization.
 
-10. FC waits for the Deployment to become ready.
+6. FC waits for the Deployment to become ready.
