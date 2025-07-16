@@ -14,7 +14,7 @@
 - **Dynamic dependency resolution**: Dependencies are resolved at runtime, allowing for more flexibility in managing library versions.
 - **Improved flexibility**: Injecting Function code into the runtime Pod simplifies the deployment process and reduces image management overhead.
 
-## What should you know?
+## Managing Dependencies
 
 - **Avoid using `latest` versions of dependencies**: Since dependencies are downloaded at runtime, using `latest` versions can lead to inconsistencies between replicas. Always specify exact versions of dependencies to ensure stability and predictability.
 - **Dependency resolution behavior**: Be aware that each replica of a Function may resolve and use a different version of a dependency if the version is not explicitly pinned.
