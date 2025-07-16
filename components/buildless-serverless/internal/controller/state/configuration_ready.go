@@ -20,3 +20,14 @@ func sFnConfigurationReady(_ context.Context, m *fsm.StateMachine) (fsm.StateFn,
 
 	return nextState(sFnHandleDeployment)
 }
+
+func sFnSourceUpdatedConfigurationReady(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
+	m.State.Function.UpdateCondition(
+		serverlessv1alpha2.ConditionConfigurationReady,
+		metav1.ConditionTrue,
+		serverlessv1alpha2.ConditionReasonSourceUpdated,
+		"Function source updated")
+	metrics.PublishStateReachTime(m.State.Function, serverlessv1alpha2.ConditionConfigurationReady)
+
+	return nextState(sFnHandleDeployment)
+}

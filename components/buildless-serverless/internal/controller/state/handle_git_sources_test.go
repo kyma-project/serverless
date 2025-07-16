@@ -86,7 +86,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnConfigurationReady, next)
+		requireEqualFunc(t, sFnSourceUpdatedConfigurationReady, next)
 		// function conditions remain unchanged
 		require.Empty(t, m.State.Function.Status.Conditions)
 		// commit change, it should be changed only for git functions
@@ -130,7 +130,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		requireContainsCondition(t, m.State.Function.Status,
 			serverlessv1alpha2.ConditionConfigurationReady,
 			metav1.ConditionFalse,
-			serverlessv1alpha2.ConditionReasonGitSourceCheckFailed,
+			serverlessv1alpha2.ConditionReasonSourceUpdateFailed,
 			"Git repository: test-url source check failed: test-error")
 		// no  next state
 		require.Nil(t, next)
@@ -190,7 +190,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnConfigurationReady, next)
+		requireEqualFunc(t, sFnSourceUpdatedConfigurationReady, next)
 		// function has proper condition
 		requireContainsCondition(t, m.State.Function.Status,
 			serverlessv1alpha2.ConditionConfigurationReady,
@@ -238,7 +238,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnConfigurationReady, next)
+		requireEqualFunc(t, sFnSourceUpdatedConfigurationReady, next)
 		// function conditions remain unchanged
 		require.Nil(t, m.State.Function.Status.Conditions)
 		// commit change
@@ -298,7 +298,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnConfigurationReady, next)
+		requireEqualFunc(t, sFnSourceUpdatedConfigurationReady, next)
 		// function conditions remain unchanged
 		require.Empty(t, m.State.Function.Status.Conditions)
 		// commit change, it should be changed only for git functions
