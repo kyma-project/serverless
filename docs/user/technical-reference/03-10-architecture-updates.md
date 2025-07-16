@@ -12,7 +12,7 @@
 - **Simplified architecture**: By separating the Docker Registry into its own module, the Serverless module is now more lightweight and easier to manage.
 - **Faster deployment**: The removal of the build job reduces the time required to deploy Functions.
 - **Dynamic dependency resolution**: Dependencies are resolved at runtime, allowing for more flexibility in managing library versions.
-- **Improved flexibility**: Injecting function code into the runtime pod simplifies the deployment process and reduces image management overhead.
+- **Improved flexibility**: Injecting Function code into the runtime Pod simplifies the deployment process and reduces image management overhead.
 
 ## What should you know?
 
