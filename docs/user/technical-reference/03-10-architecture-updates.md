@@ -7,7 +7,7 @@
 - Libraries and dependencies are downloaded at the start of the Function's execution. This means that each replica of the Function can potentially use a different version of the dependencies.
 - Function code is now injected directly into the runtime Pod, eliminating the need for pre-built images.
 
-## What are the benefits?
+## Benefits
 
 - **Simplified architecture**: By separating the Docker Registry into its own module, the Serverless module is now more lightweight and easier to manage.
 - **Faster deployment**: The removal of the build job reduces the time required to deploy Functions.
