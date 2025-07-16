@@ -86,9 +86,9 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnSourceUpdatedConfigurationReady, next)
-		// function conditions remain unchanged
-		require.Empty(t, m.State.Function.Status.Conditions)
+		requireEqualFunc(t, sFnConfigurationReady, next)
+		// function conditions changed
+		requireContainsCondition(t, m.State.Function.Status, serverlessv1alpha2.ConditionConfigurationReady, metav1.ConditionTrue, serverlessv1alpha2.ConditionReasonSourceUpdated, "Function source updated")
 		// commit change, it should be changed only for git functions
 		require.Equal(t, "latest-test-commit", m.State.Commit)
 	})
@@ -190,11 +190,11 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnSourceUpdatedConfigurationReady, next)
+		requireEqualFunc(t, sFnConfigurationReady, next)
 		// function has proper condition
 		requireContainsCondition(t, m.State.Function.Status,
 			serverlessv1alpha2.ConditionConfigurationReady,
-			metav1.ConditionTrue, "", "")
+			metav1.ConditionTrue, serverlessv1alpha2.ConditionReasonSourceUpdated, "Function source updated")
 		// commit chang
 		require.Equal(t, "latest-commit", m.State.Commit)
 	})
@@ -238,9 +238,9 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnSourceUpdatedConfigurationReady, next)
-		// function conditions remain unchanged
-		require.Nil(t, m.State.Function.Status.Conditions)
+		requireEqualFunc(t, sFnConfigurationReady, next)
+		// function conditions changed
+		requireContainsCondition(t, m.State.Function.Status, serverlessv1alpha2.ConditionConfigurationReady, metav1.ConditionTrue, serverlessv1alpha2.ConditionReasonSourceUpdated, "Function source updated")
 		// commit change
 		require.Equal(t, "latest-commit", m.State.Commit)
 	})
@@ -298,9 +298,9 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnSourceUpdatedConfigurationReady, next)
-		// function conditions remain unchanged
-		require.Empty(t, m.State.Function.Status.Conditions)
+		requireEqualFunc(t, sFnConfigurationReady, next)
+		// function conditions changed
+		requireContainsCondition(t, m.State.Function.Status, serverlessv1alpha2.ConditionConfigurationReady, metav1.ConditionTrue, serverlessv1alpha2.ConditionReasonSourceUpdated, "Function source updated")
 		// commit change, it should be changed only for git functions
 		require.Equal(t, "latest-test-commit", m.State.Commit)
 		// git auth should be set

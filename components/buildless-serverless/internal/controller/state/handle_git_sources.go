@@ -47,9 +47,16 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 		return stopWithError(err)
 	}
 
-	m.State.Commit = latestCommit
+	if m.State.Commit != latestCommit {
+		m.State.Commit = latestCommit
+		m.State.Function.UpdateCondition(
+			serverlessv1alpha2.ConditionConfigurationReady,
+			metav1.ConditionTrue,
+			serverlessv1alpha2.ConditionReasonSourceUpdated,
+			"Function source updated")
+	}
 
-	return nextState(sFnSourceUpdatedConfigurationReady)
+	return nextState(sFnConfigurationReady)
 }
 
 func prepareErrorMessage(repoUrl string, err error) string {
