@@ -47,7 +47,7 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 		return stopWithError(err)
 	}
 
-	if m.State.Commit != latestCommit {
+	if m.State.Function.Status.GitRepository.Commit != latestCommit {
 		m.State.Commit = latestCommit
 		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionConfigurationReady,
