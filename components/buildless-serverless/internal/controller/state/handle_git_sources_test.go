@@ -88,7 +88,11 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnConfigurationReady, next)
 		// function conditions changed
-		requireContainsCondition(t, m.State.Function.Status, serverlessv1alpha2.ConditionConfigurationReady, metav1.ConditionTrue, serverlessv1alpha2.ConditionReasonSourceUpdated, "Function source updated")
+		requireContainsCondition(t, m.State.Function.Status,
+			serverlessv1alpha2.ConditionConfigurationReady,
+			metav1.ConditionTrue,
+			serverlessv1alpha2.ConditionReasonSourceUpdated,
+			"Function source updated")
 		// commit change, it should be changed only for git functions
 		require.Equal(t, "latest-test-commit", m.State.Commit)
 	})
@@ -240,7 +244,11 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnConfigurationReady, next)
 		// function conditions changed
-		requireContainsCondition(t, m.State.Function.Status, serverlessv1alpha2.ConditionConfigurationReady, metav1.ConditionTrue, serverlessv1alpha2.ConditionReasonSourceUpdated, "Function source updated")
+		requireContainsCondition(t, m.State.Function.Status,
+			serverlessv1alpha2.ConditionConfigurationReady,
+			metav1.ConditionTrue,
+			serverlessv1alpha2.ConditionReasonSourceUpdated,
+			"Function source updated")
 		// commit change
 		require.Equal(t, "latest-commit", m.State.Commit)
 	})
@@ -300,7 +308,11 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.NotNil(t, next)
 		requireEqualFunc(t, sFnConfigurationReady, next)
 		// function conditions changed
-		requireContainsCondition(t, m.State.Function.Status, serverlessv1alpha2.ConditionConfigurationReady, metav1.ConditionTrue, serverlessv1alpha2.ConditionReasonSourceUpdated, "Function source updated")
+		requireContainsCondition(t, m.State.Function.Status,
+			serverlessv1alpha2.ConditionConfigurationReady,
+			metav1.ConditionTrue,
+			serverlessv1alpha2.ConditionReasonSourceUpdated,
+			"Function source updated")
 		// commit change, it should be changed only for git functions
 		require.Equal(t, "latest-test-commit", m.State.Commit)
 		// git auth should be set
