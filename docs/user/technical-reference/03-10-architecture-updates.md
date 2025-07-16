@@ -5,7 +5,7 @@
 - The internal Docker Registry is no longer part of the Serverless module. Instead, the Docker Registry is now a separate, standalone module.
 - There is no longer a build job for Functions. Instead, a base image is used, which mounts the required dependencies dynamically.
 - Libraries and dependencies are downloaded at the start of the Function's execution. This means that each replica of the Function can potentially use a different version of the dependencies.
-- Function code is now injected directly into the runtime pod, eliminating the need for pre-built images.
+- Function code is now injected directly into the runtime Pod, eliminating the need for pre-built images.
 
 ## What are the benefits?
 
