@@ -71,7 +71,10 @@ func Test_sFnHandleGitSources(t *testing.T) {
 									BaseDir:   "main",
 									Reference: "test-reference",
 								},
-							}}}}},
+							}}},
+					Status: serverlessv1alpha2.FunctionStatus{
+						GitRepository: &serverlessv1alpha2.GitRepositoryStatus{
+							Commit: "test-commit"}}}},
 			Log:        zap.NewNop().Sugar(),
 			GitChecker: gitMock,
 		}
@@ -177,6 +180,9 @@ func Test_sFnHandleGitSources(t *testing.T) {
 								LastTransitionTime: metav1.Now(),
 							},
 						},
+						GitRepository: &serverlessv1alpha2.GitRepositoryStatus{
+							Commit: "old-commit",
+						},
 					},
 				},
 			},
@@ -226,6 +232,9 @@ func Test_sFnHandleGitSources(t *testing.T) {
 							},
 						},
 					},
+					Status: serverlessv1alpha2.FunctionStatus{
+						GitRepository: &serverlessv1alpha2.GitRepositoryStatus{
+							Commit: "test-commit"}},
 				},
 			},
 			Log:        zap.NewNop().Sugar(),
@@ -290,7 +299,11 @@ func Test_sFnHandleGitSources(t *testing.T) {
 									Type:       serverlessv1alpha2.RepositoryAuthBasic,
 									SecretName: "frosty-morse",
 								},
-							}}}}},
+							}}},
+					Status: serverlessv1alpha2.FunctionStatus{
+						GitRepository: &serverlessv1alpha2.GitRepositoryStatus{
+							Commit: "test-commit"}},
+				}},
 			Log:        zap.NewNop().Sugar(),
 			Client:     k8sClient,
 			GitChecker: gitMock,
