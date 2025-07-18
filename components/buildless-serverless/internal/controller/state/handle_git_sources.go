@@ -47,9 +47,13 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 		return stopWithError(err)
 	}
 
+<<<<<<< Updated upstream
 	if m.State.Function.Status.GitRepository == nil || 
 		m.State.Function.Status.GitRepository.Commit != latestCommit {
 
+=======
+	if m.State.Function.Status.GitRepository == nil || m.State.Function.Status.GitRepository.Commit != latestCommit {
+>>>>>>> Stashed changes
 		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionConfigurationReady,
 			metav1.ConditionTrue,
