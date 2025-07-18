@@ -47,7 +47,7 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 		return stopWithError(err)
 	}
 
-	if m.State.Function.Status.GitRepository != nil && m.State.Function.Status.GitRepository.Commit != "" &&
+	if m.State.Function.Status.GitRepository == nil || 
 		m.State.Function.Status.GitRepository.Commit != latestCommit {
 
 		m.State.Function.UpdateCondition(
