@@ -15,6 +15,4 @@ Serverless relies heavily on Kubernetes resources. It uses [Deployments](https:/
 
 4. FC creates a Service to expose the Function.
 
-5. FC creates a HorizontalPodAutoscaler that automatically scales the number of Pods in the Deployment based on the observed CPU utilization.
-
-6. FC waits for the Deployment to become ready.
+5. FC waits for the Deployment to become ready.
