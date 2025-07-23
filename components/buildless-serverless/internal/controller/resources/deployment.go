@@ -21,7 +21,6 @@ const (
 	istioConfigLabelKey                      = "proxy.istio.io/config"
 	istioEnableHoldUntilProxyStartLabelValue = "{ \"holdApplicationUntilProxyStarts\": true }"
 	istioNativeSidecarLabelKey               = "sidecar.istio.io/nativeSidecar"
-	istioInjectSidecarLabelKey               = "sidecar.istio.io/inject"
 )
 
 type Deployment struct {
@@ -110,13 +109,11 @@ func (d *Deployment) currentAnnotationsWithoutPreviousFunctionAnnotations() map[
 	return result
 }
 
+// allow istio to inject native sidecar (istio-proxy as init container)
+// this is required for init container of git sourced functions to fetch source from git repository
 func (d *Deployment) annotationsRequiredByIstio() map[string]string {
 	result := make(map[string]string)
-
-	if d.function.HasGitSources() && d.function.HasLabel(istioInjectSidecarLabelKey, "true") {
-		result[istioNativeSidecarLabelKey] = "true"
-	}
-
+	result[istioNativeSidecarLabelKey] = "true"
 	return result
 }
 
