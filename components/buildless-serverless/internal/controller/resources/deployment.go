@@ -110,13 +110,11 @@ func (d *Deployment) currentAnnotationsWithoutPreviousFunctionAnnotations() map[
 	return result
 }
 
+// allow istio to inject native sidecar (istio-proxy as init container)
+// this is required for init container of git sourced functions to fetch source from git repository
 func (d *Deployment) annotationsRequiredByIstio() map[string]string {
 	result := make(map[string]string)
-
-	if d.function.HasGitSources() {
-		result[istioNativeSidecarLabelKey] = "true"
-	}
-
+	result[istioNativeSidecarLabelKey] = "true"
 	return result
 }
 
