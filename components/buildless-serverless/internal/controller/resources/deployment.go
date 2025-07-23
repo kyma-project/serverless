@@ -21,7 +21,6 @@ const (
 	istioConfigLabelKey                      = "proxy.istio.io/config"
 	istioEnableHoldUntilProxyStartLabelValue = "{ \"holdApplicationUntilProxyStarts\": true }"
 	istioNativeSidecarLabelKey               = "sidecar.istio.io/nativeSidecar"
-	istioInjectSidecarLabelKey               = "sidecar.istio.io/inject"
 )
 
 type Deployment struct {
