@@ -113,7 +113,7 @@ func (d *Deployment) currentAnnotationsWithoutPreviousFunctionAnnotations() map[
 func (d *Deployment) annotationsRequiredByIstio() map[string]string {
 	result := make(map[string]string)
 
-	if d.function.HasGitSources() && d.function.HasLabel(istioInjectSidecarLabelKey, "true") {
+	if d.function.HasGitSources() {
 		result[istioNativeSidecarLabelKey] = "true"
 	}
 

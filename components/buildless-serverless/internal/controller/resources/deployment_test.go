@@ -143,7 +143,7 @@ func TestDeployment_construct(t *testing.T) {
 			"thompson":              "exciting",
 		}, r.Spec.Template.ObjectMeta.Annotations)
 	})
-	t.Run("enable native sidecar when istio is enabled and function has git repo", func(t *testing.T) {
+	t.Run("enable native sidecar when function has git repo", func(t *testing.T) {
 		d := minimalDeployment()
 
 		d.function.Spec.Source = serverlessv1alpha2.Source{
@@ -152,10 +152,6 @@ func TestDeployment_construct(t *testing.T) {
 				Repository: serverlessv1alpha2.Repository{
 					BaseDir:   "recursing-mcnulty",
 					Reference: "epic-mendel"}}}
-
-		d.function.Spec.Labels = map[string]string{
-			"sidecar.istio.io/inject": "true",
-		}
 
 		r := d.construct()
 
