@@ -137,25 +137,15 @@ func TestDeployment_construct(t *testing.T) {
 
 		require.NotNil(t, r)
 		require.Equal(t, map[string]string{
-			"proxy.istio.io/config": "{ \"holdApplicationUntilProxyStarts\": true }",
-			"leavitt":               "hopeful",
-			"pike":                  "tender",
-			"thompson":              "exciting",
+			"proxy.istio.io/config":          "{ \"holdApplicationUntilProxyStarts\": true }",
+			"leavitt":                        "hopeful",
+			"pike":                           "tender",
+			"thompson":                       "exciting",
+			"sidecar.istio.io/nativeSidecar": "true",
 		}, r.Spec.Template.ObjectMeta.Annotations)
 	})
-	t.Run("enable native sidecar when istio is enabled and function has git repo", func(t *testing.T) {
+	t.Run("enable native sidecar", func(t *testing.T) {
 		d := minimalDeployment()
-
-		d.function.Spec.Source = serverlessv1alpha2.Source{
-			GitRepository: &serverlessv1alpha2.GitRepositorySource{
-				URL: "wonderful-germain",
-				Repository: serverlessv1alpha2.Repository{
-					BaseDir:   "recursing-mcnulty",
-					Reference: "epic-mendel"}}}
-
-		d.function.Spec.Labels = map[string]string{
-			"sidecar.istio.io/inject": "true",
-		}
 
 		r := d.construct()
 
