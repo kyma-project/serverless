@@ -8,6 +8,10 @@ include ${PROJECT_ROOT}/hack/k3d.mk
 install-serverless-main: ## Install serverless with operator using default serverless cr
 	make -C ${OPERATOR_ROOT} deploy-main apply-default-serverless-cr check-serverless-installation
 
+.PHONY: install-buildless-serverless-main
+install-buildless-serverless-main: ## Install serverless with operator using buildless serverless cr
+	make -C ${OPERATOR_ROOT} deploy-main apply-buildless-serverless-cr check-buildless-serverless-installation
+
 .PHONY: install-serverless-custom-operator
 install-serverless-custom-operator: ## Install serverless with operator from IMG env using default serverless cr
 	$(call check-var,IMG)
@@ -53,6 +57,9 @@ remove-serverless: ## Remove serverless-cr and serverless operator
 
 .PHONY: run-main
 run-main: create-k3d install-serverless-main ## Create k3d cluster and install serverless from main
+
+.PHONY: run-buildless-main
+run-buildless-main: create-k3d install-buildless-serverless-main ## Create k3d cluster and install buildless serverless from main
 
 check-var = $(if $(strip $($1)),,$(error "$1" is not defined))
 
