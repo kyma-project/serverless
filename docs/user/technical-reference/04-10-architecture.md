@@ -1,6 +1,6 @@
 # Serverless Architecture
 
-Serverless relies heavily on Kubernetes resources. It uses [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/), [Services](https://kubernetes.io/docs/concepts/services-networking/service/) and [HorizontalPodAutoscalers](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) to deploy and manage Functions, and [Kubernetes Jobs](https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/) to create Docker images. See how these and other resources process a Function within a Kyma cluster:
+Serverless relies heavily on Kubernetes resources. It uses [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) and [Services](https://kubernetes.io/docs/concepts/services-networking/service/) to deploy and manage Functions. See how these and other resources process a Function within a Kyma cluster:
 
 ![Serverless architecture](../../assets/svls-architecture.svg)
 
