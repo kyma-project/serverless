@@ -3,9 +3,9 @@
 Serverless exposes metrics for collectors like Prometheus. For local development, you can use a local instance of Prometheus.
 This document describes how to set up such an environment.
 
-## Serverless
+## Get Serverless Metrics
 
-1. Run Operator with Serverless by running the following command (from the root directory of the project):
+1. Run Operator with Serverless by using the following command from the root directory of the project:
 
 
    ```bash
@@ -35,11 +35,10 @@ You should see an output similar to the following:
    ...
    ```
 
-## Prometheus
+## Deploy Prometheus
 
-1. Apply the following manifests to deploy Prometheus:
 
-Create a namespace for monitoring components:
+1. Create a namespace for monitoring components:
 
    ```bash
    kubectl apply -f - <<EOF
@@ -50,7 +49,7 @@ Create a namespace for monitoring components:
    EOF
    ```
 
-Prepare Prometheus configuration:
+2. Prepare Prometheus configuration:
 
    ```bash
    kubectl apply -f - <<EOF
@@ -70,7 +69,7 @@ Prepare Prometheus configuration:
    EOF
    ```
    
-Deploy Prometheus:
+3. Deploy Prometheus:
     
    ```bash
    kubectl apply -f - <<EOF
@@ -107,7 +106,7 @@ Deploy Prometheus:
    EOF
    ```
    
-Create a service to expose Prometheus:
+4. Create a service to expose Prometheus:
 
    ```bash
    kubectl apply -f - <<EOF
@@ -127,32 +126,29 @@ Create a service to expose Prometheus:
    EOF
    ```
 
-1. To access Prometheus in your browser, expose the service locally:
+5. To access Prometheus in your browser, expose the service locally:
 
    ```bash
    kubectl port-forward svc/prometheus 9090:9090 -n monitoring
    ```
 
-1. To use Prometheus, open your browser and go to `http://localhost:9090/`.
+6. Open your browser and go to `http://localhost:9090/`.
 
 
-- You can use the following query to inspect your metrics:
+- Use the following query to inspect your metrics:
 
    ```
    serverless_resources_processed_total
    ```
 
-- To list all metrics from the Serverless in the Prometheus UI, you can use the following query:
+- To list all metrics from Serverless in the Prometheus UI, use the following query:
 
    ```
    {job="buildless"}
    ```
   
-- You can also check correctness of the Prometheus scrape configuration in the Prometheus UI by navigating to:
+- To check the correctness of the Prometheus scrape configuration in the Prometheus UI, go to **Status -> Target health**
 
-   ```
-   Status -> Target health
-   ```
 
 - To list all available metrics along with their descriptions, run:
 
@@ -160,17 +156,16 @@ Create a service to expose Prometheus:
    curl http://localhost:8070/metrics | grep HELP
    ```
 
-## Kubernetes State Metrics
+## Use Serverless Metrics with kube-state-metrics
 
-1. To use metrics with kubernetes state, you need to install the `kube-state-metrics` component.
+1. Install the `kube-state-metrics` component:
 
-- You can do this by running:
 
    ```bash
    helm install kube-state-metrics kube-state-metrics --repo https://prometheus-community.github.io/helm-charts --namespace monitoring
    ```
   
-And check the available metrics by running:
+2. Check the available metrics:
 
    ```bash
    kubectl port-forward svc/kube-state-metrics -n monitoring 8060:8080
@@ -180,9 +175,8 @@ And check the available metrics by running:
    curl http://localhost:8060/metrics
    ```
    
-1. Apply the following manifests to see these metrics in Prometheus:
 
-Create RBACs for the Prometheus auto-discovery:
+3. Create RBACs for the Prometheus auto-discovery:
 
    ```bash
    kubectl apply -f - <<EOF
@@ -211,13 +205,13 @@ Create RBACs for the Prometheus auto-discovery:
    EOF
    ```
 
-Add scrape configuration for kube-state-metrics to the Prometheus configuration:
+4. Add scrape configuration for `kube-state-metrics` to the Prometheus configuration:
 
    ```bash
    kubectl edit cm -n monitoring prometheus-config
    ```
    
-by adding the following to the `scrape_configs` section:
+5. Add the following to the `scrape_configs` section:
 
    ```yaml
       - job_name: 'kube-state-metrics-custom'
@@ -236,7 +230,7 @@ by adding the following to the `scrape_configs` section:
             action: keep
    ```
    
-After editing the configuration, you need to restart the Prometheus deployment to apply the changes:
+6. Restart the Prometheus deployment to apply the changes:
 
    ```bash
    kubectl rollout restart deployment -n monitoring prometheus
@@ -244,7 +238,6 @@ After editing the configuration, you need to restart the Prometheus deployment t
 
 1. For custom kubernetes metrics, you can add your own definitions.
 
-Create file `ksm-crd-values.yaml`:
 
     ```yaml
     customResourceState:
@@ -286,13 +279,13 @@ Create file `ksm-crd-values.yaml`:
           verbs: ["list", "watch"]
    ``` 
 
-Then upgrade the `kube-state-metrics`:
+2. Upgrade `kube-state-metrics`:
 
    ```bash
    helm upgrade kube-state-metrics prometheus-community/kube-state-metrics -n monitoring -f ksm-crd-values.yaml
    ```
    
-Now in the Prometheus UI you can query your custom metrics:
+Now, in the Prometheus UI, you can query your custom metrics:
 
    ```
    kube_customresource_serverless_status
