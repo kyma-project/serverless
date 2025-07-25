@@ -160,7 +160,6 @@ You should see an output similar to the following:
 
 1. Install the `kube-state-metrics` component:
 
-
    ```bash
    helm install kube-state-metrics kube-state-metrics --repo https://prometheus-community.github.io/helm-charts --namespace monitoring
    ```
@@ -174,7 +173,6 @@ You should see an output similar to the following:
    ```bash
    curl http://localhost:8060/metrics
    ```
-   
 
 3. Create RBACs for the Prometheus auto-discovery:
 
@@ -236,8 +234,9 @@ You should see an output similar to the following:
    kubectl rollout restart deployment -n monitoring prometheus
    ```
 
-1. For custom kubernetes metrics, you can add your own definitions.
+### Adding Definitions for Custom Kubernetes Metrics
 
+1. Create the ksm-crd-values.yaml file:
 
     ```yaml
     customResourceState:
