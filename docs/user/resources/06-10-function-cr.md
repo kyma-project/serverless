@@ -142,6 +142,7 @@ spec:
 | **replicas**  | integer | Specifies the total number of non-terminated Pods targeted by this Function. |
 | **runtime**  | string | Specifies the **Runtime** type of the Function. |
 | **runtimeImage**  | string | Specifies the image version used to build and run the Function's Pods. |
+| **runtimeImageOverride**  | string | Specifies the runtime image version which overrides the **RuntimeImage** status parameter. **RuntimeImageOverride** exists for historical compatibility and should be removed with v1alpha3 version. |
 
 <!-- TABLE-END -->
 
@@ -173,7 +174,6 @@ These are the resources related to this CR:
 | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/)                   | Serves the Function's image as a microservice.                                        |
 | [Service](https://kubernetes.io/docs/concepts/services-networking/service/)                           | Exposes the Function's Deployment as a network service inside the Kubernetes cluster. |
-| [HorizontalPodAutoscaler](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/) | Automatically scales the number of Function's Pods.                                   |
 
 These components use this CR:
 
