@@ -4,7 +4,7 @@
 
 From the beginning, Kyma Serverless has aimed to accelerate the development of fast prototypes by allowing users to focus on business logic rather than containerization and Kubernetes deployment. Our goal is to remove operational barriers so developers can iterate quickly and efficiently.
 
-With the introduction of Buildless mode, we are taking this vision further. By eliminating the image build step in the Kyma runtime, we significantly shorten the feedback loop during prototype development. In buildldess mode, instead of building and pushing custom function images into in-cluster registry, your code and dependencies are simply mounted into Kyma-provided runtime images. This approach positions kymaserverless as more efficient development tool, enabling even faster iteration. Additionally it eliminates the architectural complexities and limitations of deploying serverless functions on Kubernetes.
+With the introduction of Buildless mode, we are taking this vision further. By eliminating the image build step in the Kyma runtime, we significantly shorten the feedback loop during prototype development. In buildldess mode, instead of building and pushing custom function images into in-cluster registry, your code and dependencies are simply mounted into Kyma-provided runtime images. This approach positions kyma serverless as more efficient development tool, enabling even faster iteration. Additionally it eliminates the architectural complexities and limitations of deploying serverless Functions on Kubernetes.
 
 ## Benefits
 
