@@ -1,4 +1,4 @@
-# Build-less mode of Serverless
+# Buildless Mode of Serverless
 
 ## Overview: Moving Towards Buildless Mode
 
