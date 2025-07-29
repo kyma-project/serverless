@@ -12,7 +12,7 @@ With the introduction of buildless mode, we are taking this vision further. We s
 - **Resource efficiency**: Eliminates the need for Serverless to acquire computational resources from worker nodes to build the image.
 - **Enhanced security**: By eliminating build jobs, Functions can run in namespaces with more restrictive Pod security levels enabled.
 - **No additional storage required**: No additional storage resources are used to store the Function image.
-- **Simplified Architecture**: The Serverless module no longer requires a Docker Registry, making it more lightweight and easier to manage.
+- **Simplified Architecture**: The Serverless module no longer requires Docker Registry, making it more lightweight and easier to manage.
 
 ## What would change if I switch buildless on
 
