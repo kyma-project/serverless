@@ -83,7 +83,7 @@ spec:
           command:
           - /bin/registry
           - serve
-          - /etc/docker/registry/config.yml
+          - /etc/distribution/config.yml
           ports:
             - containerPort: 5000
           livenessProbe:
@@ -189,7 +189,7 @@ spec:
               mountPath: /var/lib/registry/
 {{- end }}
             - name: "{{ template "docker-registry.fullname" . }}-config"
-              mountPath: "/etc/docker/registry"
+              mountPath: "/etc/distribution"
 {{- if .Values.tlsSecretName }}
             - mountPath: /etc/ssl/docker
               name: tls-cert
