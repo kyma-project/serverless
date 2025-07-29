@@ -9,7 +9,7 @@ With the introduction of buildless mode, we are taking this vision further. We s
 ## Benefits
 
 - **Faster deployment**: Functions deploy faster as the build job is no longer required.
-- **Resource efficiency**: Eliminates the need to for Serverless to acquire computational resources from worker nodes to build the image.
+- **Resource efficiency**: Eliminates the need for Serverless to acquire computational resources from worker nodes to build the image.
 - **Enhanced security**: By eliminating build jobs functions can run in namespaces with more restrictive pod security levels enabled.
 - **No additional storage required**: No additional storage resources are used to store the Function image.
 - **Simplified Architecture**: The Serverless module no longer requires a Docker Registry, making it more lightweight and easier to manage.
