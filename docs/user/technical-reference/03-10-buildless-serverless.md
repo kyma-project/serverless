@@ -37,7 +37,6 @@ To enable Buildless mode for Serverless, you must enable it in the annotations o
    ```
    
 2. **Add the annotation:**
-   In the metadata section of the CR, add the following annotation:
    ```yaml
     annotations:
       serverless.kyma-project.io/buildless-mode: "enabled"
