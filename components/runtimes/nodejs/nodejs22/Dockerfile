@@ -1,4 +1,4 @@
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.0
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.1
 
 # https://pkgs.alpinelinux.org/packages?name=nodejs&branch=v3.21&repo=main&arch=&maintainer=
 ENV NODE_VERSION=22.16.0-r2
