@@ -36,7 +36,7 @@ To enable Buildless mode for Serverless, you must enable it in the annotations o
    kubectl edit -n kyma-system serverlesses.operator.kyma-project.io default
    ```
    
-2. **Add the annotation:**
+2. In the metadata section of the CR, add the following annotation:
    ```yaml
     annotations:
       serverless.kyma-project.io/buildless-mode: "enabled"
