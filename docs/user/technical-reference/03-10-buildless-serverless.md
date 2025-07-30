@@ -16,7 +16,7 @@ With the introduction of buildless mode, we are taking this vision further. We s
 
 ## Changes When Switching to Buildless Serverless
 
-- The internal resources used for storing custom function images (Docker Registry) will be uninstalled from the Serverless module
+- The internal resources used for storing custom Function images (Docker Registry) are uninstalled from the Serverless module
 - Your  Functions will start quicker as build Jobs for Functions are no longer created (and existing Jobs resources will be removed).
 - Libraries and dependencies are downloaded dynamically at the start of each Function's execution.
 - Function code is directly injected into the runtime Pod, removing the need for pre-built images.
