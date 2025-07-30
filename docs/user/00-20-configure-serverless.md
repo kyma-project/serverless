@@ -251,3 +251,17 @@ by permitting essential traffic while maintaining a secure cluster environment.
    spec:
       enableNetworkPolicies: true
 ```
+
+## Enable Buildless Mode of Serverless
+
+You can enable buildless mode of Serverless to skip the image build step for Functions, accelerating prototype development by eliminating the need to build and push custom function images. 
+Instead, your code and dependencies are mounted into Kyma-provided runtime images, which shortens the feedback loop, simplifies the architecture, and removes operational barriers, 
+allowing developers to focus on business logic rather than containerization and Kubernetes deployment.
+
+   ```yaml
+    annotations:
+      serverless.kyma-project.io/buildless-mode: "enabled"
+   ```
+
+> [!WARNING]
+> Buildless mode is a feature flag and is enabled through annotations. Ensure you understand its implications before enabling it. For more information, see [Buildless Serverless](https://kyma-project.io/#/serverless-manager/user/technical-reference/03-10-buildless-serverless.md).
