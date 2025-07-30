@@ -31,7 +31,7 @@ With the introduction of buildless mode, we are taking this vision further. We s
 
 To enable buildless mode for Serverless, you must enable it in the Serverless custom resource (CR) annotations. Follow these steps:
 
-1. Edit the Serverless custom resource (CR):
+1. Edit the Serverless CR:
    ```yaml
    kubectl edit -n kyma-system serverlesses.operator.kyma-project.io default
    ```
