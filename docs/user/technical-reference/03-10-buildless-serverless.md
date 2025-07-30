@@ -14,7 +14,7 @@ With the introduction of buildless mode, we are taking this vision further. We s
 - **No additional storage required**: No additional storage resources are used to store the Function image.
 - **Simplified Architecture**: The Serverless module no longer requires Docker Registry, making it more lightweight and easier to manage.
 
-## What would change if I switch buildless on
+## Changes When Switching to Buildless Serverless
 
 - The internal resources used for storing custom function images (Docker Registry) will be uninstalled from the Serverless module
 - Your  Functions will start quicker as build Jobs for Functions are no longer created (and existing Jobs resources will be removed).
