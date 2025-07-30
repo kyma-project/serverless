@@ -29,7 +29,7 @@ With the introduction of buildless mode, we are taking this vision further. We s
 
 ## Switching to Buildless Serverless
 
-To enable Buildless mode for Serverless, you must enable it in the annotations of the Serverless Custom Resource (CR). Follow these steps:
+To enable buildless mode for Serverless, you must enable it in the Serverless Custom Resource (CR) annotations. Follow these steps:
 
 1. **Edit the Serverless Custom Resource \(CR\):**
    ```yaml
