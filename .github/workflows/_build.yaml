@@ -54,7 +54,6 @@ jobs:
       name: serverless-operator
       dockerfile: components/operator/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
-      build-engine: buildx
       build-args: |
         PURPOSE=${{ inputs.purpose }}
         IMG_DIRECTORY=${{ inputs.img_directory }}
@@ -76,7 +75,6 @@ jobs:
       name: function-controller
       dockerfile: components/serverless/deploy/manager/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
-      build-engine: buildx
       platforms: linux/amd64 # this image does not support arm64
 
   build-buildless-serverless-controller:
@@ -86,7 +84,6 @@ jobs:
       name: function-buildless-controller
       dockerfile: components/buildless-serverless/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
-      build-engine: buildx
 
   build-serverless-webhook:
     needs: compute-tags
@@ -95,7 +92,6 @@ jobs:
       name: function-webhook
       dockerfile: components/serverless/deploy/webhook/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
-      build-engine: buildx
 
   build-serverless-jobinit:
     needs: compute-tags
@@ -104,7 +100,6 @@ jobs:
       name: function-build-init
       dockerfile: components/serverless/deploy/jobinit/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
-      build-engine: buildx
       platforms: linux/amd64 # this image does not support arm64
 
   build-buildless-serverless-jobinit:
@@ -114,7 +109,6 @@ jobs:
       name: function-buildless-init
       dockerfile: components/buildless-serverless/Dockerfile.jobinit
       tags: ${{ needs.compute-tags.outputs.tags }}
-      build-engine: buildx
 
   build-nodejs20:
     needs: compute-tags
@@ -124,7 +118,6 @@ jobs:
       dockerfile: nodejs20/Dockerfile
       context: components/runtimes/nodejs
       tags: ${{ needs.compute-tags.outputs.tags }}
-      build-engine: buildx
 
   build-nodejs22:
     needs: compute-tags
@@ -134,7 +127,6 @@ jobs:
       dockerfile: nodejs22/Dockerfile
       context: components/runtimes/nodejs
       tags: ${{ needs.compute-tags.outputs.tags }}
-      build-engine: buildx
 
   build-python312:
     needs: compute-tags
@@ -144,4 +136,3 @@ jobs:
       dockerfile: python312/Dockerfile
       context: components/runtimes/python
       tags: ${{ needs.compute-tags.outputs.tags }}
-      build-engine: buildx
