@@ -17,7 +17,7 @@ With the introduction of buildless mode, we are taking this vision further. We s
 ## Changes When Switching to Buildless Serverless
 
 - The internal resources used for storing custom Function images (Docker Registry) are uninstalled from the Serverless module
-- Your  Functions will start quicker as build Jobs for Functions are no longer created (and existing Jobs resources will be removed).
+- Your Functions start quicker as build Jobs for Functions are no longer created, and the existing Job resources are deleted.
 - Libraries and dependencies are downloaded dynamically at the start of each Function's execution.
 - Function code is directly injected into the runtime Pod, removing the need for pre-built images.
 - Your existing Functions will redeploy (without downtime) and will be started as Pods based on Kyma-provided images with your code and dependencies mounted.
