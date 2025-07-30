@@ -20,7 +20,7 @@ With the introduction of buildless mode, we are taking this vision further. We s
 - Your Functions start quicker as build Jobs for Functions are no longer created, and the existing Job resources are deleted.
 - Libraries and dependencies are downloaded dynamically at the start of each Function's execution.
 - Function code is directly injected into the runtime Pod, removing the need for pre-built images.
-- Your existing Functions will redeploy (without downtime) and will be started as Pods based on Kyma-provided images with your code and dependencies mounted.
+- Your existing Functions are redeployed without downtime and started as Pods based on Kyma-provided images with your code and dependencies mounted.
 
 ## Use fixed dependency versions
 
