@@ -21,6 +21,7 @@
   * [Function CR](/serverless-manager/user/resources/06-10-function-cr.md)
   * [Serverless CR](/serverless-manager/user/resources/06-20-serverless-cr.md)
 * [Technical Reference](/serverless-manager/user/technical-reference/README.md)
+  * [Buildless Serverless](/serverless-manager/user/technical-reference/03-10-buildless-serverless.md)
   * [Serverless Architecture](/serverless-manager/user/technical-reference/04-10-architecture.md)
   * [Internal Docker Registry](/serverless-manager/user/technical-reference/04-20-internal-registry.md)
   * [Environment Variables in Functions](/serverless-manager/user/technical-reference/05-20-env-variables.md)
