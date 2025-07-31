@@ -5,7 +5,7 @@ metadata:
     kyma-project.io/module: serverless
     app.kubernetes.io/name: buildless-serverless
     app.kubernetes.io/instance: {{ .Values.global.configuration.function.configmapName }}
-    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: controller
     app.kubernetes.io/part-of: serverless
   name: {{ .Values.global.configuration.function.configmapName }}
@@ -17,16 +17,10 @@ data:
     secretMutatingWebhookPort:
     healthzPort: ":{{ .Values.containers.manager.healthzPort }}"
     images:
-      {{- $images:=.Values.global.images }}
-      {{- $containerRegistryPath:=.Values.global.containerRegistry.path }}
-      {{- $fetcher:=$images.function_init }}
-      repoFetcher: "{{$containerRegistryPath}}/{{$fetcher.directory}}/{{$fetcher.name}}:{{$fetcher.version}}"
-      {{- $js20:=$images.function_runtime_nodejs20 }}
-      nodejs20: "{{$containerRegistryPath}}/{{$js20.directory}}/{{$js20.name}}:{{$js20.version}}"
-      {{- $js22:=$images.function_runtime_nodejs22 }}
-      nodejs22: "{{$containerRegistryPath}}/{{$js22.directory}}/{{$js22.name}}:{{$js22.version}}"
-      {{- $p312:=$images.function_runtime_python312 }}
-      python312: "{{$containerRegistryPath}}/{{$p312.directory}}/{{$p312.name}}:{{$p312.version}}"
+      repoFetcher: "{{ .Values.global.images.function_init }}"
+      nodejs20: "{{ .Values.global.images.function_runtime_nodejs20 }}"
+      nodejs22: "{{ .Values.global.images.function_runtime_nodejs22 }}"
+      python312: "{{ .Values.global.images.function_runtime_python312 }}"
     {{- $config:= .Values.containers.manager.configuration.data }}
     packageRegistryConfigSecretName: "{{ $config.packageRegistryConfigSecretName }}"
     functionTraceCollectorEndpoint: "{{ $config.functionTraceCollectorEndpoint }}"
@@ -41,7 +35,7 @@ metadata:
     kyma-project.io/module: serverless
     app.kubernetes.io/name: buildless-serverless
     app.kubernetes.io/instance: {{ .Values.global.configuration.log.configmapName }}
-    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: controller
     app.kubernetes.io/part-of: serverless
   name: "{{ .Values.global.configuration.log.configmapName }}"

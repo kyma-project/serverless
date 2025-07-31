@@ -55,10 +55,10 @@ global:
   domainName: "kyma.example.com"
   commonLabels:
     app: '{{ template "name" . }}'
-    version: "{{ .Values.global.images.function_controller.version }}"
+    version: "main"
     kyma-project.io/module: 'serverless'
     app.kubernetes.io/name: '{{ template "name" . }}'
-    app.kubernetes.io/version: "{{ .Values.global.images.function_controller.version }}"
+    app.kubernetes.io/version: "{{ .Values.global.commonLabels.version }}"
     app.kubernetes.io/part-of: 'serverless'
     app.kubernetes.io/managed-by: "Helm"
     helm.sh/chart: '{{ include "chart" . }}'
@@ -71,43 +71,16 @@ global:
     filename: "config.yaml"
   ingress:
     domainName:
-  containerRegistry:
-    path: europe-docker.pkg.dev/kyma-project
-  tpiContainerRegistry:
-    path: europe-docker.pkg.dev/kyma-project
   images:
-    function_controller:
-      name: "function-controller"
-      version: "main"
-      directory: "prod"
-    function_build_init:
-      name: "function-build-init"
-      version: "main"
-      directory: "prod"
-    registry_init: # https://github.com/kyma-project/docker-registry/tree/main/components/registry-init
-      name: "registry-init"
-      version: "v20240506-57d31b1d"
-      directory: "prod"
-    function_runtime_nodejs20:
-      name: "function-runtime-nodejs20"
-      version: "main"
-      directory: "prod"
-    function_runtime_nodejs22:
-      name: "function-runtime-nodejs22"
-      version: "main"
-      directory: "prod"
-    function_runtime_python312:
-      name: "function-runtime-python312"
-      version: "main"
-      directory: "prod"
-    kaniko_executor:
-      name: "gcr.io/kaniko-project/executor"
-      version: "v1.24.0"
-      directory: "prod/external"
-    registry:
-      name: "registry"
-      version: "3.0.0"
-      directory: "prod/external/library"
+    function_controller: europe-docker.pkg.dev/kyma-project/prod/function-controller:main
+    function_build_init: europe-docker.pkg.dev/kyma-project/prod/function-build-init:main
+    # https://github.com/kyma-project/docker-registry/tree/main/components/registry-init
+    registry_init: europe-docker.pkg.dev/kyma-project/prod/registry-init:v20240506-57d31b1d
+    function_runtime_nodejs20: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main
+    function_runtime_nodejs22: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:main
+    function_runtime_python312: europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main
+    kaniko_executor: europe-docker.pkg.dev/kyma-project/prod/external/gcr.io/kaniko-project/executor:v1.24.0
+    registry: europe-docker.pkg.dev/kyma-project/prod/external/library/registry:3.0.0
   serverlessPriorityClassValue: 2000000
   serverlessPriorityClassName: "serverless-priority"
 images:
