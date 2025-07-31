@@ -11,7 +11,7 @@ metadata:
     app.kubernetes.io/component: {{ template "fullname" . }}
 data:
   Dockerfile: |-
-    ARG base_image={{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.function_runtime_nodejs20) }}
+    ARG base_image={{ .Values.global.images.function_runtime_nodejs20 }}
     FROM ${base_image}
     USER root
     ARG SRC_DIR=/src
@@ -41,7 +41,7 @@ metadata:
     app.kubernetes.io/component: {{ template "fullname" . }}
 data:
   Dockerfile: |-
-    ARG base_image={{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.function_runtime_nodejs22) }}
+    ARG base_image={{ .Values.global.images.function_runtime_nodejs22 }}
     FROM ${base_image}
     USER root
     ARG SRC_DIR=/src
@@ -72,7 +72,7 @@ metadata:
     app.kubernetes.io/component: {{ template "fullname" . }}
 data:
   Dockerfile: |-
-    ARG base_image={{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.function_runtime_python312) }}
+    ARG base_image={{ .Values.global.images.function_runtime_python312 }}
     FROM ${base_image}
     USER root
     ENV KUBELESS_INSTALL_VOLUME=/kubeless

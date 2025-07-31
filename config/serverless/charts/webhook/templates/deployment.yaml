@@ -77,7 +77,7 @@ spec:
               subPath: config.yaml
             - name: serverless-webhook
               mountPath: /tmp/k8s-webhook-server/serving-certs
-          image: "{{ include "imageurl" (dict "reg" .Values.global.containerRegistry "img" .Values.global.images.function_webhook) }}"
+          image: "{{ .Values.global.images.function_webhook }}"
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           livenessProbe:
             httpGet:

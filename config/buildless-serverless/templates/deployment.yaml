@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: buildless-serverless
     app.kubernetes.io/instance: buildless-serverless-controller-manager
-    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: controller
     app.kubernetes.io/part-of: serverless
     control-plane: controller-manager
@@ -41,8 +41,7 @@ spec:
       containers:
         - command:
             - /app/manager
-          {{- $fc:=.Values.global.images.function_controller }}
-          image: "{{ .Values.global.containerRegistry.path }}/{{ $fc.directory }}/{{$fc.name}}:{{$fc.version}}"
+          image: "{{ .Values.global.images.function_controller }}"
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: {{ .Values.containers.manager.metricsPort }}
