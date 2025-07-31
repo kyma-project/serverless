@@ -43,9 +43,6 @@ $(KUSTOMIZE): $(LOCALBIN)
 		test -s $(LOCALBIN)/kustomize || { curl -Ss $(KUSTOMIZE_INSTALL_SCRIPT) --header "Authorization: Bearer ${GITHUB_TOKEN}" | bash -s -- $(subst v,,$(KUSTOMIZE_VERSION)) $(LOCALBIN); }; \
 	fi
 
-
-
-
 ########## Controller-Gen ###########
 CONTROLLER_TOOLS_VERSION ?= v0.16.5
 CONTROLLER_GEN ?= $(LOCALBIN)/controller-gen
