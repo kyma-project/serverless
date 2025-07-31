@@ -33,9 +33,6 @@ $(KYMA):
 KUSTOMIZE ?= $(LOCALBIN)/kustomize
 KUSTOMIZE_VERSION ?= v5.5.0
 KUSTOMIZE_INSTALL_SCRIPT ?= "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"
-##releases=$(curl -Ss  $(KUSTOMIZE_INSTALL_SCRIPT))
-##releases=$(curl -Ss  $(KUSTOMIZE_INSTALL_SCRIPT) --header "Authorization: Bearer ${GITHUB_TOKEN}")
-##test -s $(LOCALBIN)/kustomize || { curl -Ss $(KUSTOMIZE_INSTALL_SCRIPT) | bash -s -- $(subst v,,$(KUSTOMIZE_VERSION)) $(LOCALBIN); }
 
 .PHONY: kustomize
 kustomize: $(KUSTOMIZE) ## Download kustomize locally if necessary.
