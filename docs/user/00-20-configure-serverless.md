@@ -264,4 +264,4 @@ With that, developers can focus on business logic rather than containerization a
    ```
 
 > [!WARNING]
-> Buildless mode is a feature flag and is enabled through annotations. Ensure you understand its implications before enabling it. For more information, see [Buildless Serverless](https://kyma-project.io/#/serverless-manager/user/technical-reference/03-10-buildless-serverless.md).
+> Buildless mode is a feature flag and is enabled through annotation. Make sure you read information about [Buildless Serverless](https://kyma-project.io/#/serverless-manager/user/technical-reference/03-10-buildless-serverless.md) before enabling the feature.
