@@ -55,10 +55,10 @@ global:
   commonLabels:
     app: '{{ template "name" . }}'
     version: "main"
-    kyma-project.io/module: 'serverless'
+    kyma-project.io/module: "serverless"
     app.kubernetes.io/name: '{{ template "name" . }}'
     app.kubernetes.io/version: "{{ .Values.global.commonLabels.version }}"
-    app.kubernetes.io/part-of: 'serverless'
+    app.kubernetes.io/part-of: "serverless"
     app.kubernetes.io/managed-by: "Helm"
     helm.sh/chart: '{{ include "chart" . }}'
   registryServicePort: 5000
@@ -71,7 +71,7 @@ global:
   ingress:
     domainName:
   images:
-    function_controller: europe-docker.pkg.dev/kyma-project/prod/function-controller:main
+    function_buildful_controller: europe-docker.pkg.dev/kyma-project/prod/function-controller:main
     function_build_init: europe-docker.pkg.dev/kyma-project/prod/function-build-init:main
     # https://github.com/kyma-project/docker-registry/tree/main/components/registry-init
     registry_init: europe-docker.pkg.dev/kyma-project/prod/registry-init:v20240506-57d31b1d

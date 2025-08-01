@@ -60,7 +60,7 @@ spec:
               mountPath: {{ .Values.global.configuration.targetDir }}
             - name: tmpdir # Needed to allow git repo fetching with read-only rootfs enabled
               mountPath: "/tmp"
-          image: "{{ .Values.global.images.function_controller }}"
+          image: "{{ .Values.global.images.function_buildful_controller }}"
           imagePullPolicy: {{ .Values.images.function_controller.pullPolicy }}
           command:
             - /app/manager
