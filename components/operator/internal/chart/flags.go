@@ -7,6 +7,8 @@ import (
 	"helm.sh/helm/v3/pkg/strvals"
 )
 
+type ImageReplace func(string) *flagsBuilder
+
 type FlagsBuilder interface {
 	Build() (map[string]interface{}, error)
 	WithControllerConfiguration(CPUUtilizationPercentage string, requeueDuration string, buildExecutorArgs string, maxSimultaneousJobs string, healthzLivenessTimeout string) *flagsBuilder
