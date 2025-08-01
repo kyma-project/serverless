@@ -54,3 +54,8 @@ yq --inplace "(${IMAGES_SELECTOR}) |= sub(\":[^:]+$\",\":${IMG_VERSION}\")" "${V
 echo "==== Local Changes (operator) ===="
 yq '.spec.template.spec.containers[0].env[] | select(.name == "IMAGE_*")' "${VALUES_FILE}"
 echo "==== End of Local Changes (operator) ===="
+
+# update versions in labels
+
+yq ".global.commonLabels.version |= \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/serverless/values.yaml 
+yq --inplace ".appVersion |= \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/buildless-serverless/Chart.yaml
