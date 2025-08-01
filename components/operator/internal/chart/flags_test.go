@@ -143,4 +143,39 @@ func Test_flagsBuilder_Build(t *testing.T) {
 		require.NoError(t, err)
 		require.Equal(t, expectedFlags, flags)
 	})
+
+	t.Run("build images flags only", func(t *testing.T) {
+		expectedFlags := map[string]interface{}{
+			"global": map[string]interface{}{
+				"images": map[string]interface{}{
+					"function_buildful_controller": "testFunctionBuildfulController",
+					"function_controller":          "testFunctionController",
+					"function_build_init":          "testFunctionBuildInit",
+					"function_init":                "testFunctionInit",
+					"registry_init":                "testRegistryInit",
+					"function_runtime_nodejs20":    "testFunctionRuntimeNodejs20",
+					"function_runtime_nodejs22":    "testFunctionRuntimeNodejs22",
+					"function_runtime_python312":   "testFunctionRuntimePython312",
+					"kaniko_executor":              "testKanikoExecutor",
+					"registry":                     "testRegistry",
+				},
+			},
+		}
+
+		flags, err := NewFlagsBuilder().
+			WithImageFunctionBuildfulController("testFunctionBuildfulController").
+			WithImageFunctionController("testFunctionController").
+			WithImageFunctionBuildInit("testFunctionBuildInit").
+			WithImageFunctionInit("testFunctionInit").
+			WithImageRegistryInit("testRegistryInit").
+			WithImageFunctionRuntimeNodejs20("testFunctionRuntimeNodejs20").
+			WithImageFunctionRuntimeNodejs22("testFunctionRuntimeNodejs22").
+			WithImageFunctionRuntimePython312("testFunctionRuntimePython312").
+			WithImageKanikoExecutor("testKanikoExecutor").
+			WithImageRegistry("testRegistry").
+			Build()
+
+		require.NoError(t, err)
+		require.Equal(t, expectedFlags, flags)
+	})
 }

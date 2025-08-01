@@ -7,6 +7,8 @@ import (
 	"helm.sh/helm/v3/pkg/strvals"
 )
 
+type ImageReplace func(string) *flagsBuilder
+
 type FlagsBuilder interface {
 	Build() (map[string]interface{}, error)
 	WithControllerConfiguration(CPUUtilizationPercentage string, requeueDuration string, buildExecutorArgs string, maxSimultaneousJobs string, healthzLivenessTimeout string) *flagsBuilder
@@ -23,6 +25,16 @@ type FlagsBuilder interface {
 	WithEnableNetworkPolicies(enableNetworkPolicies bool) *flagsBuilder
 	//TODO: remove this method when buildless is enabled by default
 	WithChartPath(chartPath string) *flagsBuilder
+	WithImageFunctionBuildfulController(image string) *flagsBuilder
+	WithImageFunctionController(image string) *flagsBuilder
+	WithImageFunctionBuildInit(image string) *flagsBuilder
+	WithImageFunctionInit(image string) *flagsBuilder
+	WithImageRegistryInit(image string) *flagsBuilder
+	WithImageFunctionRuntimeNodejs20(image string) *flagsBuilder
+	WithImageFunctionRuntimeNodejs22(image string) *flagsBuilder
+	WithImageFunctionRuntimePython312(image string) *flagsBuilder
+	WithImageKanikoExecutor(image string) *flagsBuilder
+	WithImageRegistry(image string) *flagsBuilder
 }
 
 type flagsBuilder struct {
@@ -146,5 +158,56 @@ func (fb *flagsBuilder) WithLogFormat(logFormat string) *flagsBuilder {
 // TODO: remove this method when buildless is enabled by default
 func (fb *flagsBuilder) WithChartPath(chartPath string) *flagsBuilder {
 	fb.flags["chartPath"] = chartPath
+	return fb
+}
+
+// temporary name until buildless takes over
+func (fb *flagsBuilder) WithImageFunctionBuildfulController(image string) *flagsBuilder {
+	fb.flags["global.images.function_buildful_controller"] = image
+	return fb
+}
+
+func (fb *flagsBuilder) WithImageFunctionController(image string) *flagsBuilder {
+	fb.flags["global.images.function_controller"] = image
+	return fb
+}
+
+func (fb *flagsBuilder) WithImageFunctionBuildInit(image string) *flagsBuilder {
+	fb.flags["global.images.function_build_init"] = image
+	return fb
+}
+
+func (fb *flagsBuilder) WithImageFunctionInit(image string) *flagsBuilder {
+	fb.flags["global.images.function_init"] = image
+	return fb
+}
+
+func (fb *flagsBuilder) WithImageRegistryInit(image string) *flagsBuilder {
+	fb.flags["global.images.registry_init"] = image
+	return fb
+}
+
+func (fb *flagsBuilder) WithImageFunctionRuntimeNodejs20(image string) *flagsBuilder {
+	fb.flags["global.images.function_runtime_nodejs20"] = image
+	return fb
+}
+
+func (fb *flagsBuilder) WithImageFunctionRuntimeNodejs22(image string) *flagsBuilder {
+	fb.flags["global.images.function_runtime_nodejs22"] = image
+	return fb
+}
+
+func (fb *flagsBuilder) WithImageFunctionRuntimePython312(image string) *flagsBuilder {
+	fb.flags["global.images.function_runtime_python312"] = image
+	return fb
+}
+
+func (fb *flagsBuilder) WithImageKanikoExecutor(image string) *flagsBuilder {
+	fb.flags["global.images.kaniko_executor"] = image
+	return fb
+}
+
+func (fb *flagsBuilder) WithImageRegistry(image string) *flagsBuilder {
+	fb.flags["global.images.registry"] = image
 	return fb
 }
