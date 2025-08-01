@@ -254,7 +254,7 @@ by permitting essential traffic while maintaining a secure cluster environment.
 
 ## Enable Buildless Mode of Serverless
 
-You can enable buildless mode of Serverless to skip the image build step for Functions, accelerating prototype development by eliminating the need to build and push custom function images. 
+You can enable buildless mode of Serverless to skip the image build step for Functions, accelerating prototype development by eliminating the need to build and push custom Function images. 
 Instead, your code and dependencies are mounted into Kyma-provided runtime images, which shortens the feedback loop, simplifies the architecture, and removes operational barriers, 
 allowing developers to focus on business logic rather than containerization and Kubernetes deployment.
 
