@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/part-of: serverless
     control-plane: controller-manager
-  name: serverless-controller-manager
+  name: serverless-ctrl-mngr
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
@@ -86,5 +86,5 @@ spec:
         runAsNonRoot: true
         runAsGroup: 1000
         runAsUser: 1000
-      serviceAccountName: serverless-controller-manager
+      serviceAccountName: serverless-ctrl-mngr
       terminationGracePeriodSeconds: 10

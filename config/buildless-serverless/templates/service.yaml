@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: serverless-controller-manager
+  name: serverless-ctrl-mngr
   namespace: {{ .Release.Namespace }}
   labels:
     kyma-project.io/module: serverless
