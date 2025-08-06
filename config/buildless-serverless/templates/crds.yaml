@@ -3,7 +3,7 @@ kind: CustomResourceDefinition
 metadata:
   labels:
     kyma-project.io/module: serverless
-    app.kubernetes.io/name: buildless-serverless
+    app.kubernetes.io/name: serverless
     app.kubernetes.io/instance: functions.serverless.kyma-project.io
     app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     app.kubernetes.io/component: controller

@@ -7,8 +7,8 @@ metadata:
     kyma-cli/extension: commands
     kyma-cli/extension-version: v1
     kyma-project.io/module: serverless
-    app.kubernetes.io/name: buildless-serverless
-    app.kubernetes.io/instance: buildless-serverless-cli-functions
+    app.kubernetes.io/name: serverless
+    app.kubernetes.io/instance: serverless-cli-functions
     app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: cli
     app.kubernetes.io/part-of: serverless

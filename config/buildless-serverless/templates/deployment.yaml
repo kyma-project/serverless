@@ -4,19 +4,21 @@ metadata:
   labels:
     kyma-project.io/module: serverless
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: buildless-serverless
-    app.kubernetes.io/instance: buildless-serverless-controller-manager
+    app.kubernetes.io/name: serverless
+    app.kubernetes.io/instance: serverless
     app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: controller
     app.kubernetes.io/part-of: serverless
     control-plane: controller-manager
-  name: serverless-controller-manager
+  name: serverless-ctrl-mngr
   namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      control-plane: controller-manager
+      app: serverless
+      app.kubernetes.io/instance: serverless
+      app.kubernetes.io/name: serverless
   template:
     metadata:
       annotations:
@@ -28,8 +30,8 @@ spec:
         networking.serverless.kyma-project.io/from-serverless: allowed
         kyma-project.io/module: serverless
         app: serverless
-        app.kubernetes.io/name: buildless-serverless
-        app.kubernetes.io/instance: buildless-serverless-controller-manager
+        app.kubernetes.io/name: serverless
+        app.kubernetes.io/instance: serverless
     spec:
       volumes:
         - name: configuration
