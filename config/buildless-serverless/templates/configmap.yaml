@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   labels:
     kyma-project.io/module: serverless
-    app.kubernetes.io/name: buildless-serverless
+    app.kubernetes.io/name: serverless
     app.kubernetes.io/instance: {{ .Values.global.configuration.function.configmapName }}
     app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: controller
@@ -33,7 +33,7 @@ kind: ConfigMap
 metadata:
   labels:
     kyma-project.io/module: serverless
-    app.kubernetes.io/name: buildless-serverless
+    app.kubernetes.io/name: serverless
     app.kubernetes.io/instance: {{ .Values.global.configuration.log.configmapName }}
     app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: controller
