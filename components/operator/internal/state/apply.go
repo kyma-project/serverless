@@ -66,6 +66,7 @@ func updateImages(fb chart.FlagsBuilder) {
 	updateImageIfOverride("IMAGE_KANIKO_EXECUTOR", fb.WithImageKanikoExecutor)
 	updateImageIfOverride("IMAGE_REGISTRY", fb.WithImageRegistry)
 }
+
 func updateImageIfOverride(envName string, updateFunction chart.ImageReplace) {
 	imageName := os.Getenv(envName)
 	if imageName != "" {
