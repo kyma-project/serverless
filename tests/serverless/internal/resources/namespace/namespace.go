@@ -17,7 +17,7 @@ import (
 
 const (
 	TestNamespaceLabelKey   = "created-by"
-	TestNamespaceLabelValue = "serverless-controller-manager-test"
+	TestNamespaceLabelValue = "serverless-ctrl-mngr-test"
 )
 
 type Namespace struct {

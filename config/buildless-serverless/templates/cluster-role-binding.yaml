@@ -16,5 +16,5 @@ roleRef:
   name: serverless-manager-role
 subjects:
   - kind: ServiceAccount
-    name: serverless-controller-manager
+    name: serverless-ctrl-mngr
     namespace: {{ .Release.Namespace }}
