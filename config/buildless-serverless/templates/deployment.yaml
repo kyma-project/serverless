@@ -88,5 +88,5 @@ spec:
         runAsNonRoot: true
         runAsGroup: 1000
         runAsUser: 1000
-      serviceAccountName: serverless-ctrl-mngr
+      serviceAccountName: serverless-controller-manager
       terminationGracePeriodSeconds: 10
