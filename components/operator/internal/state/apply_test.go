@@ -12,6 +12,10 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
+const (
+	envName = "IMAGE_FUNCTION_CONTROLLER"
+)
+
 func Test_buildSFnApplyResources(t *testing.T) {
 	t.Run("switch state and add condition when condition is missing", func(t *testing.T) {
 		s := &systemState{
@@ -113,5 +117,35 @@ func Test_buildSFnApplyResources(t *testing.T) {
 			v1alpha1.ConditionReasonInstallationErr,
 			"could not parse chart manifest: yaml: found character that cannot start any token",
 		)
+	})
+}
+
+func TestUpdateImageIfOverride(t *testing.T) {
+	t.Run("Override image", func(t *testing.T) {
+		t.Setenv(envName, "newImage")
+		expectedFlags := map[string]interface{}{
+			"global": map[string]interface{}{
+				"images": map[string]interface{}{
+					"function_buildful_controller": "newImage",
+				},
+			},
+		}
+
+		fb := chart.NewFlagsBuilder()
+
+		updateImageIfOverride(envName, fb.WithImageFunctionBuildfulController)
+		flags, err := fb.Build()
+		require.NoError(t, err)
+		require.Equal(t, expectedFlags, flags)
+	})
+	t.Run("Don't override image when empty env", func(t *testing.T) {
+		expectedFlags := map[string]interface{}{}
+
+		fb := chart.NewFlagsBuilder()
+
+		updateImageIfOverride(envName, fb.WithImageFunctionBuildfulController)
+		flags, err := fb.Build()
+		require.NoError(t, err)
+		require.Equal(t, expectedFlags, flags)
 	})
 }

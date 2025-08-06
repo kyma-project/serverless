@@ -7,7 +7,7 @@ metadata:
     kyma-project.io/module: serverless
     app.kubernetes.io/name: buildless-serverless
     app.kubernetes.io/instance: buildless-serverless-allow-egress-policy
-    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: network-policy
     app.kubernetes.io/part-of: serverless
     purpose: fn-code-fetching
@@ -33,7 +33,7 @@ metadata:
     kyma-project.io/module: serverless
     app.kubernetes.io/name: buildless-serverless
     app.kubernetes.io/instance: buildless-serverless-allow-metrics-policy
-    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: network-policy
     app.kubernetes.io/part-of: serverless
     purpose: metrics
@@ -62,7 +62,7 @@ metadata:
     kyma-project.io/module: serverless
     app.kubernetes.io/name: buildless-serverless
     app.kubernetes.io/instance: buildless-serverless-allow-to-apiserver-policy
-    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: network-policy
     app.kubernetes.io/part-of: serverless
     purpose: apiserver
@@ -87,7 +87,7 @@ metadata:
     kyma-project.io/module: serverless
     app.kubernetes.io/name: buildless-serverless
     app.kubernetes.io/instance: buildless-serverless-allow-to-dns-policy
-    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: network-policy
     app.kubernetes.io/part-of: serverless
     purpose: dns

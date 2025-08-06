@@ -7,3 +7,5 @@ images:
 - name: europe-docker.pkg.dev/kyma-project/prod/serverless-operator
   newName: local-registry
   newTag: local
+patches:
+- path: default-images-patch.yaml
