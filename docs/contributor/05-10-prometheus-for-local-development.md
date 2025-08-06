@@ -16,7 +16,7 @@ This document describes how to set up such an environment.
 
     
    ```bash
-   kubectl port-forward -n kyma-system services/serverless-ctrl-mngr 8070:8080
+   kubectl port-forward -n kyma-system services/serverless-controller-manager 8070:8080
    ```
 
    ```bash
@@ -65,7 +65,7 @@ You should see an output similar to the following:
        scrape_configs:
          - job_name: 'buildless'
            static_configs:
-             - targets: ['serverless-ctrl-mngr.kyma-system.svc.cluster.local:8080']
+             - targets: ['serverless-controller-manager.kyma-system.svc.cluster.local:8080']
    EOF
    ```
    
