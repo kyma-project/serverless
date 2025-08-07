@@ -1173,6 +1173,10 @@ func TestDeployment_envs(t *testing.T) {
 					Name:  "FUNC_HANDLER",
 					Value: "main",
 				},
+				{
+					Name:  "PYTHONBUFFERED",
+					Value: "1",
+				},
 			},
 		},
 	}
