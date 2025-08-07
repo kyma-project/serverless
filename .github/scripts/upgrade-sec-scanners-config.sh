@@ -8,7 +8,7 @@ yq eval-all --inplace '
             select(fileIndex == 1)
             | (
                 .global.images + {
-                    "serverless_operator" : "europe-docker.pkg.dev/kyma-project/prod/serverless-operator:main"
+                    "serverless_operator" : "europe-docker.pkg.dev/kyma-project/prod/serverless-operator:"+ env(IMG_VERSION)
                 }
             )[]
         )
