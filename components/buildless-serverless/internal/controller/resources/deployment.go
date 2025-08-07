@@ -508,8 +508,8 @@ func (d *Deployment) envs() []corev1.EnvVar {
 				Value: "main",
 			},
 			{
-				Name:  "PYTHONBUFFERED",
-				Value: "1",
+				Name:  "PYTHONUNBUFFERED",
+				Value: "TRUE",
 			},
 		}...)
 	}

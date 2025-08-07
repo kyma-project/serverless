@@ -1174,8 +1174,8 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "main",
 				},
 				{
-					Name:  "PYTHONBUFFERED",
-					Value: "1",
+					Name:  "PYTHONUNBUFFERED",
+					Value: "TRUE",
 				},
 			},
 		},
