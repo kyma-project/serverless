@@ -227,9 +227,19 @@ func (s *systemState) buildJobJob(templateSpec corev1.PodSpec) batchv1.Job {
 
 func (s *systemState) buildGitJobRepoFetcherContainer(gitOptions git.Options, cfg cfg) corev1.Container {
 	return corev1.Container{
-		Name:            "repo-fetcher",
-		Image:           cfg.fn.Build.RepoFetcherImage,
-		Env:             buildRepoFetcherEnvVars(&s.instance, gitOptions),
+		Name:  "repo-fetcher",
+		Image: cfg.fn.Build.RepoFetcherImage,
+		Env:   buildRepoFetcherEnvVars(&s.instance, gitOptions),
+		Resources: corev1.ResourceRequirements{
+			Requests: corev1.ResourceList{
+				corev1.ResourceCPU:    resource.MustParse("50m"),
+				corev1.ResourceMemory: resource.MustParse("64Mi"),
+			},
+			Limits: corev1.ResourceList{
+				corev1.ResourceCPU:    resource.MustParse("100m"),
+				corev1.ResourceMemory: resource.MustParse("128Mi"),
+			},
+		},
 		ImagePullPolicy: corev1.PullAlways,
 		VolumeMounts: []corev1.VolumeMount{
 			{
