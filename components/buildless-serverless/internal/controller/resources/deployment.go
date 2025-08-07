@@ -507,6 +507,10 @@ func (d *Deployment) envs() []corev1.EnvVar {
 				Name:  "FUNC_HANDLER",
 				Value: "main",
 			},
+			{
+				Name:  "PYTHONUNBUFFERED",
+				Value: "TRUE",
+			},
 		}...)
 	}
 	envs = append(envs, spec.Env...) //TODO: this order is critical, should we provide option for users to override envs?
