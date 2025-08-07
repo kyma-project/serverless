@@ -1020,6 +1020,7 @@ func TestDeployment_envs(t *testing.T) {
 			name: "build envs based on inline nodejs20 function",
 			function: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
+					Name:      "function-name",
 					Namespace: "function-namespace",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -1033,6 +1034,14 @@ func TestDeployment_envs(t *testing.T) {
 				},
 			},
 			want: []corev1.EnvVar{
+				{
+					Name:  "FUNC_NAME",
+					Value: "function-name",
+				},
+				{
+					Name:  "FUNC_RUNTIME",
+					Value: "nodejs20",
+				},
 				{
 					Name:  "SERVICE_NAMESPACE",
 					Value: "function-namespace",
@@ -1059,6 +1068,7 @@ func TestDeployment_envs(t *testing.T) {
 			name: "build envs based on inline nodejs22 function",
 			function: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
+					Name:      "function-name",
 					Namespace: "function-namespace",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -1072,6 +1082,14 @@ func TestDeployment_envs(t *testing.T) {
 				},
 			},
 			want: []corev1.EnvVar{
+				{
+					Name:  "FUNC_NAME",
+					Value: "function-name",
+				},
+				{
+					Name:  "FUNC_RUNTIME",
+					Value: "nodejs22",
+				},
 				{
 					Name:  "SERVICE_NAMESPACE",
 					Value: "function-namespace",
@@ -1098,6 +1116,7 @@ func TestDeployment_envs(t *testing.T) {
 			name: "build envs based on git nodejs22 function",
 			function: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
+					Name:      "function-name",
 					Namespace: "function-namespace",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -1114,6 +1133,14 @@ func TestDeployment_envs(t *testing.T) {
 				},
 			},
 			want: []corev1.EnvVar{
+				{
+					Name:  "FUNC_NAME",
+					Value: "function-name",
+				},
+				{
+					Name:  "FUNC_RUNTIME",
+					Value: "nodejs22",
+				},
 				{
 					Name:  "SERVICE_NAMESPACE",
 					Value: "function-namespace",
@@ -1132,6 +1159,7 @@ func TestDeployment_envs(t *testing.T) {
 			name: "build envs based on inline python312 function",
 			function: &serverlessv1alpha2.Function{
 				ObjectMeta: metav1.ObjectMeta{
+					Name:      "function-name",
 					Namespace: "function-namespace",
 				},
 				Spec: serverlessv1alpha2.FunctionSpec{
@@ -1145,6 +1173,14 @@ func TestDeployment_envs(t *testing.T) {
 				},
 			},
 			want: []corev1.EnvVar{
+				{
+					Name:  "FUNC_NAME",
+					Value: "function-name",
+				},
+				{
+					Name:  "FUNC_RUNTIME",
+					Value: "python312",
+				},
 				{
 					Name:  "SERVICE_NAMESPACE",
 					Value: "function-namespace",
