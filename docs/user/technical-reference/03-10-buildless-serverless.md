@@ -8,19 +8,27 @@ With the introduction of buildless mode, we are taking this vision further. We s
 
 ## Benefits
 
-- **Faster deployment**: Functions deploy faster as the build job is no longer required.
+- **Faster deployment**: Even though function dependencies are resolved and downloaded at the start time of each Function, the overall time required for the Function to become ready is significantly shorter, as there is no need to wait for a build Job to complete before the Function Pod is scheduled.
 - **Resource efficiency**: Eliminates the need for Serverless to acquire computational resources from worker nodes to build the image.
 - **Enhanced security**: By eliminating build jobs, Functions can run in namespaces with more restrictive Pod security levels enabled.
 - **No additional storage required**: No additional storage resources are used to store the Function image.
 - **Simplified Architecture**: The Serverless module no longer requires Docker Registry, making it more lightweight and easier to manage.
 
-## Changes When Switching to Buildless Serverless
+## Changes When Switching to Buildless Mode
 
 - The internal resources used for storing custom Function images (Docker Registry) are uninstalled from the Serverless module
-- Your Functions start quicker as build Jobs for Functions are no longer created, and the existing Job resources are deleted.
-- Libraries and dependencies are downloaded dynamically at the start of each Function's execution.
-- Function code is directly injected into the runtime Pod, removing the need for pre-built images.
-- Your existing Functions are redeployed without downtime and started as Pods based on Kyma-provided images with your code and dependencies mounted.
+- Your existing Functions are redeployed without downtime and started as Pods based on Kyma-provided images with your handler code and dependencies mounted.
+- Build Jobs associated with your function will be deleted.
+- All fields that were deprecated in the Serverless [1.6.0 release](https://github.com/kyma-project/serverless/releases/tag/1.6.0) are no longer functional in buildless mode:
+  - [Function CRD](https://kyma-project.io/#/serverless-manager/user/resources/06-10-function-cr)
+    - `spec.scaleConfig` (for existing functions with `scaleConfig` defined, the `HorizontalPodAutoscaler` objects will not be deleted upon switching to buildldess mode, but will be no longer managed by the serverless module. For how to scale Functions see the [tutorial](https://kyma-project.io/#/serverless-manager/user/tutorials/01-130-use-external-scalers))
+    - `spec.resourceConfiguration.​build`
+  - [Serverless CRD](https://kyma-project.io/#/serverless-manager/user/resources/06-20-serverless-cr)
+    - `spec.dockerRegistry`
+    - `spec.targetCPUUtilizationPercentage`
+    - `spec.functionBuildExecutorArgs`
+    - `spec.functionBuildMaxSimultaneousJobs`
+    - `spec.defaultBuildJobPreset`
 
 ## Using Fixed Dependency Versions
 
@@ -43,3 +51,5 @@ To enable buildless mode for Serverless, you must enable it in the Serverless cu
    ```
 
 3. Save the file to apply the changes.
+
+To disable buildless mode for Serverless, you must remove the annotation.
