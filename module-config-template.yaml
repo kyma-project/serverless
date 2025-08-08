@@ -2,7 +2,7 @@ name: kyma-project.io/module/serverless
 version:
 defaultCR:
 manifest:
-documentation: "https://kyma-project.io/#/serverless-manager/user/README"
+documentation: "https://help.sap.com/docs/btp/sap-business-technology-platform/serverless-module"
 repository: https://github.com/kyma-project/serverless-manager.git
 security: sec-scanners-config.yaml
 manager:
