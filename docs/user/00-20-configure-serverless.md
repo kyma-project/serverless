@@ -4,9 +4,9 @@ By default, the Serverless module comes with the default configuration. You can 
 
 ## Prerequisites
 
-- You have the Serverless module added. See Adding and Deleting a Kyma Module.
+- You have the [Serverless module added](https://kyma-project.io/#/02-get-started/01-quick-install).
 
-- You have access to Kyma dashboard. Alternatively, to use CLI instructions, you must install [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl).
+- You have access to Kyma dashboard. Alternatively, to use CLI instructions, you must install kubectlInformation published on non-SAP site.
 
 ## Context
 
@@ -268,10 +268,10 @@ by permitting essential traffic while maintaining a secure cluster environment.
       enableNetworkPolicies: true
 ```
 
-### Enabling Buildless Mode
+### Enabling Buildless Mode of Serverless
 
 > [!WARNING]
-> Buildless mode is a feature flag that you can enable through an annotation. Before enabling the feature, see [Serverless Buildless Mode](technical-reference/03-10-buildless-serverless.md).
+> Buildless mode is a feature flag that can be enabled through an annotation. Before enabling the feature, see [Serverless Buildless Mode](technical-reference/03-10-buildless-serverless.md).
 
 You can enable buildless mode of Serverless to skip the image build step for Functions, accelerating prototype development by eliminating the need to build and push custom Function images.
 
