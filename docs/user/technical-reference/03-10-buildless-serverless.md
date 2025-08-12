@@ -1,12 +1,12 @@
-# Buildless Mode of Serverless
+# Serverless Buildless Mode
 
-## Overview: Moving Towards Buildless Mode
+Learn how to accelerate your development with Serverless buildless mode.
 
 From the beginning, Kyma Serverless has aimed to accelerate the development of fast prototypes by allowing users to focus on business logic rather than containerization and Kubernetes deployment. Our goal is to remove operational barriers so developers can iterate quickly and efficiently.
 
-With the introduction of buildless mode, we are taking this vision further. We significantly shorten the feedback loop during prototype development by eliminating the image build step in Kyma runtime. In buildless mode, instead of building and pushing custom function images into the in-cluster registry, your code and dependencies are mounted into Kyma-provided runtime images. This approach positions Kyma Serverless as a more efficient development tool, enabling even faster iteration. Additionally, it eliminates the architectural complexities and limitations of deploying Serverless Functions on Kubernetes.
+With the introduction of buildless mode, we significantly shortened the feedback loop during prototype development by eliminating the image build step in Kyma runtime. In buildless mode, instead of building and pushing custom Function images into the in-cluster registry, your code and dependencies are mounted into Kyma-provided runtime images. This approach positions Kyma Serverless as a more efficient development tool, enabling even faster iteration. Additionally, it eliminates the architectural complexities and limitations of deploying Serverless Functions on Kubernetes.
 
-## Benefits
+## Features
 
 - **Faster deployment**: Even though Function dependencies are resolved and downloaded at the start time of each Function, the overall time required for the Function to become ready is significantly shorter, as there is no need to wait for a build Job to complete before the Function Pod is scheduled.
 - **Resource efficiency**: Eliminates the need for Serverless to acquire computational resources from worker nodes to build the image.
@@ -14,7 +14,7 @@ With the introduction of buildless mode, we are taking this vision further. We s
 - **No additional storage required**: No additional storage resources are used to store the Function image.
 - **Simplified Architecture**: The Serverless module no longer requires Docker Registry, making it more lightweight and easier to manage.
 
-## Changes When Switching to Buildless Mode
+## Outcomes of Switching to Buildless Mode
 
 - The internal resources used for storing custom Function images (Docker Registry) are uninstalled from the Serverless module
 - Your existing Functions are redeployed without downtime and started as Pods based on Kyma-provided images with your handler code and dependencies mounted.
@@ -37,19 +37,41 @@ With the introduction of buildless mode, we are taking this vision further. We s
 
 ## Switching to Buildless Serverless
 
-To enable buildless mode for Serverless, you must enable it in the Serverless custom resource (CR) annotations. Follow these steps:
+To enable buildless mode for Serverless, you must add the relevant annotation in the Serverless custom resource (CR). Follow these steps:
+
+<!-- tabs:start -->
+
+#### **Kyma Dashboard**
+
+1. Go to Kyma dashboard.
+
+2. Choose **Modify Modules**, and in the **View** tab, choose `serverless`.
+
+3. Go to **Edit**.
+
+4. In **Annotations**, enter `serverless.kyma-project.io/buildless-mode` as the key, and `enabled` as the value. Save the changes.
+
+You have enabled Serverless buildless mode.
+
+#### **kubectl**
 
 1. Edit the Serverless CR:
-   ```yaml
+
+   ```bash
    kubectl edit -n kyma-system serverlesses.operator.kyma-project.io default
    ```
-   
-2. In the metadata section of the CR, add the following annotation:
+
+2. In the `metadata` section of the CR, add the following annotation:
+
    ```yaml
-    annotations:
-      serverless.kyma-project.io/buildless-mode: "enabled"
+   annotations:
+   serverless.kyma-project.io/buildless-mode: "enabled"
    ```
 
 3. Save the file to apply the changes.
 
-To disable buildless mode for Serverless, you must remove the annotation.
+You have enabled Serverless buildless mode.
+
+<!-- tabs:end -->
+
+To disable buildless mode for Serverless, remove the annotation.

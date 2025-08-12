@@ -31,6 +31,7 @@
   * [Function Configuration File](/serverless-manager/user/technical-reference/07-60-function-configuration-file.md)
   * [Function's Specification](/serverless-manager/user/technical-reference/07-70-function-specification.md)
   * [Available Presets](/serverless-manager/user/technical-reference/07-80-available-presets.md)
+  * [Serverless Buildless Mode](/serverless-manager/user/technical-reference/03-10-buildless-serverless.md)
 * [Troubleshooting Guides](/serverless-manager/user/troubleshooting-guides/README.md)
   * [Functions Won't Build](/serverless-manager/user/troubleshooting-guides/03-10-cannot-build-functions.md)
   * [Container Fails](/serverless-manager/user/troubleshooting-guides/03-20-failing-function-container.md)
