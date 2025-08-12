@@ -1,26 +1,36 @@
-# Serverless Configuration
+# Configuring Serverless
 
-## Overview
+By default, the Serverless module comes with the default configuration. You can change the configuration using the Serverless CustomResourceDefinition (CRD), which manages Serverless custom resource (CR).
+
+## Prerequisites
+
+- You have the [Serverless module added](https://kyma-project.io/#/02-get-started/01-quick-install).
+
+- You have access to Kyma dashboard. Alternatively, to use CLI instructions, you must install [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl).
+
+## Context
 
 The Serverless module has its own operator (Serverless Operator). It watches the Serverless custom resource (CR) and reconfigures (reconciles) the Serverless workloads.
 
 The Serverless CR is an API to configure the Serverless module. You can use it to perform the following actions:
 
-- Enable or disable the internal Docker registry
-- Configure the external Docker registry
-- Override endpoint for traces collected by the Serverless Functions
-- Override endpoint for Eventing
-- Override the target CPU utilization percentage
-- Override the Function requeue duration
-- Override the Function build executor arguments
-- Override the Function build max simultaneous jobs
-- Override the healthz liveness timeout
-- Override the Function request body limit
-- Override the Function timeout
-- Override the default build Job preset
-- Override the default runtime Pod preset
-- Override the default log level
-- Override the default log format
+- Enable or disable the internal Docker registry.
+- Configure the external Docker registry.
+- Override endpoint for traces collected by the Serverless Functions.
+- Override endpoint for Eventing.
+- Override the target CPU utilization percentage.
+- Override the Function requeue duration.
+- Override the Function build executor arguments.
+- Override the Function build max simultaneous jobs.
+- Override the healthz liveness timeout.
+- Override the Function request body limit.
+- Override the Function timeout.
+- Override the default build Job preset.
+- Override the default runtime Pod preset.
+- Override the default log level.
+- Override the default log format.
+- Enable network policies.
+- Enable buildless mode of Serverless.
 
 The default configuration of the Serverless Module is following:
 
@@ -34,14 +44,20 @@ The default configuration of the Serverless Module is following:
        enableInternal: true
    ```
 
-> [!CAUTION]
+> [!WARNING]
 > The `spec.dockerRegistry` field is deprecated and will be removed in a future version of Serverless where Functions won't require building images.
 
-## Configure Docker Registry
+## Procedure
+
+1. Go to Kyma dashboard. The URL is in the Overview section of your subaccount.
+2. Choose **Modify Modules**, and in the **View** tab, choose `serverless`.
+4. Go to **Edit**, and provide your configuration changes. You can use the **Form** or **YAML** tab.
+
+### Configuring Docker Registry
 
 By default, Serverless uses PersistentVolume (PV) as the internal registry to store Docker images for Functions. The default storage size of a single volume is 20 GB. This internal registry is suitable for local development.
 
-> [!ATTENTION]
+> [!WARNING]
 > If you use Serverless for production purposes, it is recommended that you use an external registry, such as Docker Hub, Artifact Registry, or Azure Container Registry (ACR).
 
 Follow these steps to use the external Docker registry in Serverless:
@@ -64,7 +80,7 @@ Follow these steps to use the external Docker registry in Serverless:
 
    <!-- tabs:start -->
 
-   ### **Docker Hub**
+   #### **Docker Hub**
 
       ```bash
       kubectl create secret generic my-registry-config \
@@ -75,7 +91,7 @@ Follow these steps to use the external Docker registry in Serverless:
          --from-literal=registryAddress={USERNAME}
       ```
 
-   ### **Artifact Registry**
+   #### **Artifact Registry**
 
       ```bash
       kubectl create secret generic my-registry-config \
@@ -88,7 +104,7 @@ Follow these steps to use the external Docker registry in Serverless:
 
    For more information on how to set up authentication for Docker with Artifact Registry, see the [Artifact Registry documentation](https://cloud.google.com/artifact-registry/docs/docker/authentication#json-key).
 
-   ### **ACR**
+   #### **ACR**
 
       ```bash
       kubectl create secret generic my-registry-config \
@@ -113,7 +129,7 @@ Follow these steps to use the external Docker registry in Serverless:
 
 The URL of the currently used Docker registry is visible in the Serverless CR status.
 
-## Configure Trace Endpoint
+### Configuring Trace Endpoint
 
 By default, the Serverless operator checks if there is a trace endpoint available. If available, the detected trace endpoint is used as the trace collector URL in Functions.
 If no trace endpoint is detected, Functions are configured with no trace collector endpoint.
@@ -126,7 +142,7 @@ The currently used trace endpoint is visible in the Serverless CR status.
        endpoint: http://jaeger-collector.observability.svc.cluster.local:4318/v1/traces
    ```
 
-## Configure Eventing Endpoint
+### Configuring Eventing Endpoint
 
 You can configure a custom Eventing endpoint to publish events sent from your Functions.
 The currently used trace endpoint is visible in the Serverless CR status.
@@ -138,7 +154,7 @@ By default `http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publis
        endpoint: http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish
    ```
 
-## Configure Target CPU Utilization Percentage
+### Configuring Target CPU Utilization Percentage
 
 You can set a custom target threshold for CPU utilization. The default value is set to `50%`.
 
@@ -147,10 +163,10 @@ You can set a custom target threshold for CPU utilization. The default value is 
       targetCPUUtilizationPercentage: 50
 ```
 
-> [!CAUTION]
+> [!WARNING]
 > The `spec.targetCPUUtilizationPercentage` field is deprecated and will be removed in a future version of Serverless, where automatic HPA creation will be disabled.
 
-## Configure the Function Requeue Duration
+### Configuring the Function Requeue Duration
 
 By default, the Function associated with the default configuration will be requeued every 5 minutes.  
 
@@ -159,7 +175,7 @@ By default, the Function associated with the default configuration will be reque
       functionRequeueDuration: 5m
 ```
 
-## Configure the Function Build Executor Arguments
+### Configuring the Function Build Executor Arguments
 
 Use this label to choose the [arguments](https://github.com/GoogleContainerTools/kaniko?tab=readme-ov-file#additional-flags) passed to the Function build executor, for example:
 
@@ -176,10 +192,10 @@ Use this label to choose the [arguments](https://github.com/GoogleContainerTools
       functionBuildExecutorArgs: "--insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true,--use-new-run,--compressed-caching=false"
 ```
 
-> [!CAUTION]
+> [!WARNING]
 > The `spec.functionBuildExecutorArgs` field is deprecated and will be removed in a future version of Serverless where Functions won't require building images.
 
-## Configure the Function Build Max Simultaneous Jobs
+### Configuring the Function Build Max Simultaneous Jobs
 
 You can set a custom maximum number of simultaneous jobs which can run at the same time. The default value is set to `5`.
 
@@ -188,10 +204,10 @@ You can set a custom maximum number of simultaneous jobs which can run at the sa
       functionBuildMaxSimultaneousJobs: 5
 ```
 
-> [!CAUTION]
+> [!WARNING]
 > The `spec.functionBuildMaxSimultaneousJobs` field is deprecated and will be removed in a future version of Serverless where Functions won't require building images.
 
-## Configure the healthz Liveness Timeout
+### Configuring the healthz Liveness Timeout
 
 By default, Function is considered unhealthy if the liveness health check endpoint does not respond within 10 seconds.
 
@@ -200,7 +216,7 @@ By default, Function is considered unhealthy if the liveness health check endpoi
       healthzLivenessTimeout: "10s"
 ```
 
-## Configure the Default Build Job Preset
+### Configuring the Default Build Job Preset
 
 You can configure the default build Job preset to be used.
 
@@ -209,10 +225,10 @@ You can configure the default build Job preset to be used.
       defaultBuildJobPreset: "normal"
 ```
 
-> [!CAUTION]
+> [!WARNING]
 > The `spec.defaultBuildJobPreset` field is deprecated and will be removed in a future version of Serverless where Functions won't require building images.
 
-## Configure the Default Runtime Pod Preset
+### Configuring the Default Runtime Pod Preset
 
 You can configure the default runtime Pod preset to be used.
 
@@ -223,7 +239,7 @@ You can configure the default runtime Pod preset to be used.
 
 For more information on presets, see [Available Presets](https://kyma-project.io/#/serverless-manager/user/technical-reference/07-80-available-presets).
 
-## Configure the Log Level
+### Configuring the Log Level
 
 You can configure the desired log level to be used.
 
@@ -232,7 +248,7 @@ You can configure the desired log level to be used.
       logLevel: "debug"
 ```
 
-## Configure the Log Format
+### Configuring the Log Format
 
 You can configure the desired log format to be used.
 
@@ -241,7 +257,7 @@ You can configure the desired log format to be used.
       logFormat: "yaml"
 ```
 
-## Enable Network Policies
+### Enabling Network Policies
 
 You can enable built-in network policies to ensure that the necessary communication channels required by Serverless workloads remain functional,
 even on Kubernetes clusters where strict "deny-all" network policies are enforced. This allows Serverless components to operate correctly
@@ -252,10 +268,10 @@ by permitting essential traffic while maintaining a secure cluster environment.
       enableNetworkPolicies: true
 ```
 
-## Enable Buildless Mode of Serverless
+### Enabling Buildless Mode
 
 > [!WARNING]
-> Buildless mode is a feature flag and is enabled through annotation. Make sure you read information about [Buildless Serverless](https://kyma-project.io/#/serverless-manager/user/technical-reference/03-10-buildless-serverless.md) before enabling the feature.
+> Buildless mode is a feature flag that you can enable through an annotation. Before enabling the feature, see [Serverless Buildless Mode](technical-reference/03-10-buildless-serverless.md).
 
 You can enable buildless mode of Serverless to skip the image build step for Functions, accelerating prototype development by eliminating the need to build and push custom Function images.
 

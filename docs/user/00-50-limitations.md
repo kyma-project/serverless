@@ -90,4 +90,4 @@ See the [Use External Scalers](tutorials/01-130-use-external-scalers.md) tutoria
 
 ## In-Cluster Docker Registry
 
-Serverless comes with an in-cluster Docker registry for the Function images. For more information on the Docker registry configuration, see [Serverless Configuration](00-20-configure-serverless.md#configure-docker-registry).
+Serverless comes with an in-cluster Docker registry for the Function images. For more information on the Docker registry configuration, see [Configuring Docker Registry](00-20-configure-serverless.md#configuring-docker-registry).
