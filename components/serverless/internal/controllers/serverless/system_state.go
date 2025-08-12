@@ -236,8 +236,8 @@ func (s *systemState) buildGitJobRepoFetcherContainer(gitOptions git.Options, cf
 				corev1.ResourceMemory: resource.MustParse("64Mi"),
 			},
 			Limits: corev1.ResourceList{
-				corev1.ResourceCPU:    resource.MustParse("100m"),
-				corev1.ResourceMemory: resource.MustParse("128Mi"),
+				corev1.ResourceCPU:    resource.MustParse("200m"),
+				corev1.ResourceMemory: resource.MustParse("256Mi"),
 			},
 		},
 		ImagePullPolicy: corev1.PullAlways,
