@@ -6,7 +6,7 @@ By default, the Serverless module comes with the default configuration. You can 
 
 - You have the [Serverless module added](https://kyma-project.io/#/02-get-started/01-quick-install).
 
-- You have access to Kyma dashboard. Alternatively, to use CLI instructions, you must install kubectlInformation published on non-SAP site.
+- You have access to Kyma dashboard. Alternatively, to use CLI instructions, you must install [kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl).
 
 ## Context
 
@@ -14,23 +14,23 @@ The Serverless module has its own operator (Serverless Operator). It watches the
 
 The Serverless CR is an API to configure the Serverless module. You can use it to perform the following actions:
 
-- Enable or disable the internal Docker registry
-- Configure the external Docker registry
-- Override endpoint for traces collected by the Serverless Functions
-- Override endpoint for Eventing
-- Override the target CPU utilization percentage
-- Override the Function requeue duration
-- Override the Function build executor arguments
-- Override the Function build max simultaneous jobs
-- Override the healthz liveness timeout
-- Override the Function request body limit
-- Override the Function timeout
-- Override the default build Job preset
-- Override the default runtime Pod preset
-- Override the default log level
-- Override the default log format
-- Enable network policies
-- Enable buildless mode of Serverless
+- Enable or disable the internal Docker registry.
+- Configure the external Docker registry.
+- Override endpoint for traces collected by the Serverless Functions.
+- Override endpoint for Eventing.
+- Override the target CPU utilization percentage.
+- Override the Function requeue duration.
+- Override the Function build executor arguments.
+- Override the Function build max simultaneous jobs.
+- Override the healthz liveness timeout.
+- Override the Function request body limit.
+- Override the Function timeout.
+- Override the default build Job preset.
+- Override the default runtime Pod preset.
+- Override the default log level.
+- Override the default log format.
+- Enable network policies.
+- Enable buildless mode of Serverless.
 
 The default configuration of the Serverless Module is following:
 
@@ -268,10 +268,10 @@ by permitting essential traffic while maintaining a secure cluster environment.
       enableNetworkPolicies: true
 ```
 
-### Enabling Buildless Mode of Serverless
+### Enabling Buildless Mode
 
 > [!WARNING]
-> Buildless mode is a feature flag that can be enabled through an annotation. Before enabling the feature, see [Serverless Buildless Mode](technical-reference/03-10-buildless-serverless.md).
+> Buildless mode is a feature flag that you can enable through an annotation. Before enabling the feature, see [Serverless Buildless Mode](technical-reference/03-10-buildless-serverless.md).
 
 You can enable buildless mode of Serverless to skip the image build step for Functions, accelerating prototype development by eliminating the need to build and push custom Function images.
 
