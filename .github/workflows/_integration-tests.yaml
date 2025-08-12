@@ -175,6 +175,29 @@ jobs:
         if: ${{ always() }}
         run: make -C tests/serverless cluster-info
 
+  serverless-migration-test:
+    if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - uses: ./.github/actions/create-k3d-cluster
+      - name: install serverless
+        run: |
+          make install-serverless-custom-operator
+        env:
+          IMG: ${{ inputs.image }}
+      - name: install buildless cr and check cr status
+        run: |
+          kubectl apply -f config/samples/buildless-serverless-cr.yaml
+          make -C components/operator check-buildless-serverless-installation
+          make remove-serverless
+      - name: collect cluster info
+        if: ${{ always() }}
+        run: make -C tests/serverless cluster-info
+
   btp-integration-test:
     if: ${{ inputs.trigger_btp }}
     runs-on: ubuntu-latest

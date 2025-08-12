@@ -7,9 +7,9 @@ metadata:
     busola.io/extension: resource
     busola.io/extension-version: '0.5'
     kyma-project.io/module: serverless
-    app.kubernetes.io/name: buildless-serverless
-    app.kubernetes.io/instance: buildless-serverless-busola-functions
-    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/name: serverless
+    app.kubernetes.io/instance: serverless-busola-functions
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: busola
     app.kubernetes.io/part-of: serverless
 data:

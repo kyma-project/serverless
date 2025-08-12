@@ -4,9 +4,9 @@ metadata:
   labels:
     kyma-project.io/module: serverless
     app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: buildless-serverless
-    app.kubernetes.io/instance: buildless-serverless-manager-rolebinding
-    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/name: serverless
+    app.kubernetes.io/instance: serverless-manager-rolebinding
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: controller
     app.kubernetes.io/part-of: serverless
   name: serverless-manager-rolebinding

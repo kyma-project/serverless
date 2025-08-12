@@ -5,9 +5,9 @@ apiVersion: networking.k8s.io/v1
 metadata:
   labels:
     kyma-project.io/module: serverless
-    app.kubernetes.io/name: buildless-serverless
-    app.kubernetes.io/instance: buildless-serverless-allow-egress-policy
-    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/name: serverless
+    app.kubernetes.io/instance: serverless-allow-egress-policy
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: network-policy
     app.kubernetes.io/part-of: serverless
     purpose: fn-code-fetching
@@ -31,9 +31,9 @@ metadata:
   name: kyma-project.io--serverless-allow-metrics
   labels:
     kyma-project.io/module: serverless
-    app.kubernetes.io/name: buildless-serverless
-    app.kubernetes.io/instance: buildless-serverless-allow-metrics-policy
-    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/name: serverless
+    app.kubernetes.io/instance: serverless-allow-metrics-policy
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: network-policy
     app.kubernetes.io/part-of: serverless
     purpose: metrics
@@ -60,9 +60,9 @@ metadata:
   name: kyma-project.io--serverless-allow-to-apiserver
   labels:
     kyma-project.io/module: serverless
-    app.kubernetes.io/name: buildless-serverless
-    app.kubernetes.io/instance: buildless-serverless-allow-to-apiserver-policy
-    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/name: serverless
+    app.kubernetes.io/instance: serverless-allow-to-apiserver-policy
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: network-policy
     app.kubernetes.io/part-of: serverless
     purpose: apiserver
@@ -85,9 +85,9 @@ metadata:
   name: kyma-project.io--serverless-allow-to-dns
   labels:
     kyma-project.io/module: serverless
-    app.kubernetes.io/name: buildless-serverless
-    app.kubernetes.io/instance: buildless-serverless-allow-to-dns-policy
-    app.kubernetes.io/version: {{ .Values.global.images.function_controller.version }}
+    app.kubernetes.io/name: serverless
+    app.kubernetes.io/instance: serverless-allow-to-dns-policy
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
     app.kubernetes.io/component: network-policy
     app.kubernetes.io/part-of: serverless
     purpose: dns

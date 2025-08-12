@@ -484,6 +484,14 @@ func (d *Deployment) envs() []corev1.EnvVar {
 	spec := &d.function.Spec
 	envs := []corev1.EnvVar{
 		{
+			Name:  "FUNC_NAME",
+			Value: d.function.Name,
+		},
+		{
+			Name:  "FUNC_RUNTIME",
+			Value: string(spec.Runtime),
+		},
+		{
 			Name:  "SERVICE_NAMESPACE",
 			Value: d.function.Namespace,
 		},
@@ -517,6 +525,10 @@ func (d *Deployment) envs() []corev1.EnvVar {
 			{
 				Name:  "FUNC_HANDLER",
 				Value: "main",
+			},
+			{
+				Name:  "PYTHONUNBUFFERED",
+				Value: "TRUE",
 			},
 		}...)
 	}

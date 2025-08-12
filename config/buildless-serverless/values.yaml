@@ -1,6 +1,5 @@
 networkPolicies:
   enabled: false
-
 global:
   configuration:
     function:
@@ -11,29 +10,12 @@ global:
       configmapName: "serverless-log-config"
       targetDir: "/logconfig"
       filename: "log-config.yaml"
-  containerRegistry:
-    path: europe-docker.pkg.dev/kyma-project
   images:
-    function_controller:
-      name: "function-buildless-controller"
-      version: "main"
-      directory: "prod"
-    function_init:
-      name: "function-buildless-init"
-      version: "main"
-      directory: "prod"
-    function_runtime_nodejs20:
-      name: "function-runtime-nodejs20"
-      version: "main"
-      directory: "prod"
-    function_runtime_nodejs22:
-      name: "function-runtime-nodejs22"
-      version: "main"
-      directory: "prod"
-    function_runtime_python312:
-      name: "function-runtime-python312"
-      version: "main"
-      directory: "prod"
+    function_controller: europe-docker.pkg.dev/kyma-project/prod/function-buildless-controller:main
+    function_init: europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:main
+    function_runtime_nodejs20: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main
+    function_runtime_nodejs22: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:main
+    function_runtime_python312: europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main
 containers:
   manager:
     logConfiguration:
@@ -44,7 +26,7 @@ containers:
     metricsPort: "8080"
     configuration:
       data:
-        packageRegistryConfigSecretName: 'serverless-package-registry-config'
+        packageRegistryConfigSecretName: "serverless-package-registry-config"
         functionTraceCollectorEndpoint: "http://telemetry-otlp-traces.kyma-system.svc.cluster.local:4318/v1/traces"
         functionPublisherProxyAddress: "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
         resourcesConfiguration:

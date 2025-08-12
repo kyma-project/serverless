@@ -114,7 +114,7 @@ You can create a Function either with kubectl or Kyma dashboard:
      runtime: nodejs20
      source:
        gitRepository:
-         baseDir: examples/redis-rest
+         baseDir: examples/redis-rest/src
          reference: main
          url: https://github.com/kyma-project/serverless.git
    EOF

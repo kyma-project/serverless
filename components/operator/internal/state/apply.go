@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless/components/operator/internal/chart"
@@ -21,6 +22,9 @@ func sFnApplyResources(_ context.Context, r *reconciler, s *systemState) (stateF
 
 	// update common labels for all rendered resources
 	s.flagsBuilder.WithManagedByLabel("serverless-operator")
+
+	// update all used images
+	updateImages(s.flagsBuilder)
 
 	// install component
 	err := install(s)
@@ -48,4 +52,24 @@ func install(s *systemState) error {
 	}
 
 	return chart.Install(s.chartConfig, flags)
+}
+
+func updateImages(fb chart.FlagsBuilder) {
+	updateImageIfOverride("IMAGE_FUNCTION_CONTROLLER", fb.WithImageFunctionBuildfulController)
+	updateImageIfOverride("IMAGE_FUNCTION_BUILDLESS_CONTROLLER", fb.WithImageFunctionController)
+	updateImageIfOverride("IMAGE_FUNCTION_BUILD_INIT", fb.WithImageFunctionBuildInit)
+	updateImageIfOverride("IMAGE_FUNCTION_BUILDLESS_INIT", fb.WithImageFunctionInit)
+	updateImageIfOverride("IMAGE_REGISTRY_INIT", fb.WithImageRegistryInit)
+	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_NODEJS20", fb.WithImageFunctionRuntimeNodejs20)
+	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_NODEJS22", fb.WithImageFunctionRuntimeNodejs22)
+	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_PYTHON312", fb.WithImageFunctionRuntimePython312)
+	updateImageIfOverride("IMAGE_KANIKO_EXECUTOR", fb.WithImageKanikoExecutor)
+	updateImageIfOverride("IMAGE_REGISTRY", fb.WithImageRegistry)
+}
+
+func updateImageIfOverride(envName string, updateFunction chart.ImageReplace) {
+	imageName := os.Getenv(envName)
+	if imageName != "" {
+		updateFunction(imageName)
+	}
 }
