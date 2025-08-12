@@ -44,7 +44,7 @@ The default configuration of the Serverless Module is following:
        enableInternal: true
    ```
 
-> [!CAUTION]
+> [!WARNING]
 > The `spec.dockerRegistry` field is deprecated and will be removed in a future version of Serverless where Functions won't require building images.
 
 ## Procedure
@@ -57,7 +57,7 @@ The default configuration of the Serverless Module is following:
 
 By default, Serverless uses PersistentVolume (PV) as the internal registry to store Docker images for Functions. The default storage size of a single volume is 20 GB. This internal registry is suitable for local development.
 
-> [!ATTENTION]
+> [!WARNING]
 > If you use Serverless for production purposes, it is recommended that you use an external registry, such as Docker Hub, Artifact Registry, or Azure Container Registry (ACR).
 
 Follow these steps to use the external Docker registry in Serverless:
@@ -163,7 +163,7 @@ You can set a custom target threshold for CPU utilization. The default value is 
       targetCPUUtilizationPercentage: 50
 ```
 
-> [!CAUTION]
+> [!WARNING]
 > The `spec.targetCPUUtilizationPercentage` field is deprecated and will be removed in a future version of Serverless, where automatic HPA creation will be disabled.
 
 ### Configuring the Function Requeue Duration
@@ -192,7 +192,7 @@ Use this label to choose the [arguments](https://github.com/GoogleContainerTools
       functionBuildExecutorArgs: "--insecure,--skip-tls-verify,--skip-unused-stages,--log-format=text,--cache=true,--use-new-run,--compressed-caching=false"
 ```
 
-> [!CAUTION]
+> [!WARNING]
 > The `spec.functionBuildExecutorArgs` field is deprecated and will be removed in a future version of Serverless where Functions won't require building images.
 
 ### Configuring the Function Build Max Simultaneous Jobs
@@ -204,7 +204,7 @@ You can set a custom maximum number of simultaneous jobs which can run at the sa
       functionBuildMaxSimultaneousJobs: 5
 ```
 
-> [!CAUTION]
+> [!WARNING]
 > The `spec.functionBuildMaxSimultaneousJobs` field is deprecated and will be removed in a future version of Serverless where Functions won't require building images.
 
 ### Configuring the healthz Liveness Timeout
@@ -225,7 +225,7 @@ You can configure the default build Job preset to be used.
       defaultBuildJobPreset: "normal"
 ```
 
-> [!CAUTION]
+> [!WARNING]
 > The `spec.defaultBuildJobPreset` field is deprecated and will be removed in a future version of Serverless where Functions won't require building images.
 
 ### Configuring the Default Runtime Pod Preset
