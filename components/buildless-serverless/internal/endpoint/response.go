@@ -15,10 +15,6 @@ func (s *Server) writeErrorResponse(w http.ResponseWriter, status int, err error
 	fmt.Fprintf(w, `{"error": "%s"}`, err.Error())
 }
 
-type functionResponse struct {
-	Items []interface{} `json:"items"`
-}
-
 func (s *Server) writeItemListResponse(w http.ResponseWriter, data []interface{}) {
 	buf := bytes.NewBuffer([]byte{})
 	err := json.NewEncoder(buf).Encode(data)
