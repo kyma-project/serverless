@@ -18,36 +18,34 @@ package main
 
 import (
 	"context"
-	"github.com/go-logr/zapr"
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/endpoint"
 	"os"
-
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/cache"
-	serverlessmetrics "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/metrics"
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/orphaned-resources"
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/logging"
-	"github.com/vrischmann/envconfig"
-	uberzap "go.uber.org/zap"
-	uberzapcore "go.uber.org/zap/zapcore"
-	corev1 "k8s.io/api/core/v1"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
+	"github.com/go-logr/zapr"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/cache"
+	serverlessmetrics "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/metrics"
+	orphaned_resources "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/orphaned-resources"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/endpoint"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/logging"
+	"github.com/vrischmann/envconfig"
+	uberzap "go.uber.org/zap"
+	uberzapcore "go.uber.org/zap/zapcore"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	ctrlzap "sigs.k8s.io/controller-runtime/pkg/log/zap"
 	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
-
-	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller"
 	// +kubebuilder:scaffold:imports
 )
 
@@ -172,7 +170,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	go endpoint.StartInternalHTTPServer(cfg.InternalEndpointPort, mgr.GetLogger())
+	internalServer := endpoint.NewInternalServer(ctx, mgr.GetClient(), logWithCtx)
+	go func() {
+		err := internalServer.ListenAndServe(cfg.InternalEndpointPort)
+		if err != nil {
+			logWithCtx.Error(err, "internal HTTP server error")
+		}
+	}()
 
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
