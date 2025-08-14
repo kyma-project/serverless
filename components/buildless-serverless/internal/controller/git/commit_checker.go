@@ -16,7 +16,7 @@ type LastCommitChecker interface {
 	GetLatestCommit(url, reference string, gitAuth *GitAuth, force bool) (string, error)
 }
 
-type GoGitCommitChecker struct {
+type GoGitCachedCommitChecker struct {
 	Cache cache.Cache
 	Log   *zap.SugaredLogger
 }
@@ -26,12 +26,11 @@ type LastCommitKey struct {
 	reference string
 }
 
-func (g GoGitCommitChecker) GetLatestCommit(url, reference string, gitAuth *GitAuth, force bool) (string, error) {
+func (g GoGitCachedCommitChecker) GetLatestCommit(url, reference string, gitAuth *GitAuth, force bool) (string, error) {
 	commitKey := LastCommitKey{
 		url:       url,
 		reference: reference,
 	}
-	lastCommit := ""
 	if !force {
 		cachedCommit := g.Cache.Get(commitKey)
 		if cachedCommit != nil {
@@ -40,6 +39,18 @@ func (g GoGitCommitChecker) GetLatestCommit(url, reference string, gitAuth *GitA
 		}
 	}
 
+	lastCommit, err := GetLatestCommit(url, reference, gitAuth)
+	if err != nil {
+		return "", errors.Wrapf(err, "while getting latest commit for %s %s", url, reference)
+	}
+
+	g.Log.Debugf("Last commit from repository for %s %s is %s ", url, reference, lastCommit)
+	g.Cache.Set(commitKey, lastCommit)
+
+	return lastCommit, nil
+}
+
+func GetLatestCommit(url, reference string, gitAuth *GitAuth) (string, error) {
 	cloneOptions := git.CloneOptions{
 		URL:           url,
 		ReferenceName: plumbing.ReferenceName(reference),
@@ -70,9 +81,5 @@ func (g GoGitCommitChecker) GetLatestCommit(url, reference string, gitAuth *GitA
 		return "", err
 	}
 
-	lastCommit = ref.Hash().String()
-	g.Log.Debugf("Last commit from repository for %s %s is %s ", url, reference, lastCommit)
-	g.Cache.Set(commitKey, lastCommit)
-
-	return lastCommit, nil
+	return ref.Hash().String(), nil
 }

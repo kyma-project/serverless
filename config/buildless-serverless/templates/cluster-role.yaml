@@ -5,7 +5,7 @@ metadata:
     kyma-project.io/module: serverless
     app.kubernetes.io/name: serverless
     app.kubernetes.io/instance: serverless-manager-role
-    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    app.kubernetes.io/version: "{{ .Chart.AppVersion }}"
     app.kubernetes.io/component: controller
     app.kubernetes.io/part-of: serverless
   name: serverless-manager-role
