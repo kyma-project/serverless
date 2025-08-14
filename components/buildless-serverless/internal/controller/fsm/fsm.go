@@ -3,7 +3,6 @@ package fsm
 import (
 	"context"
 	"fmt"
-	serverlessmetrics "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/metrics"
 	"reflect"
 	"runtime"
 	"strings"
@@ -13,12 +12,12 @@ import (
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/cache"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
+	serverlessmetrics "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/metrics"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/resources"
-	appsv1 "k8s.io/api/apps/v1"
-	"k8s.io/client-go/tools/record"
-
 	"go.uber.org/zap"
+	appsv1 "k8s.io/api/apps/v1"
 	apimachineryruntime "k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -112,7 +111,7 @@ func New(client client.Client, functionConfig config.FunctionConfig, instance *s
 		FunctionConfig: functionConfig,
 		Client:         client,
 		Scheme:         scheme,
-		GitChecker: git.GoGitCommitChecker{
+		GitChecker: git.GoGitCachedCommitChecker{
 			Cache: cache,
 			Log:   log,
 		},

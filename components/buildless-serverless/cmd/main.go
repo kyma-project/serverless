@@ -170,7 +170,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	internalServer := endpoint.NewInternalServer(ctx, mgr.GetClient(), logWithCtx)
+	internalServer := endpoint.NewInternalServer(ctx, logWithCtx, mgr.GetClient(), cfg)
 	go func() {
 		err := internalServer.ListenAndServe(cfg.InternalEndpointPort)
 		if err != nil {

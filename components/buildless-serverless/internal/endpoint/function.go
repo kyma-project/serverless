@@ -4,13 +4,11 @@ import (
 	"net/http"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/resources"
 	"github.com/pkg/errors"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
-
-type functionResponse struct {
-	Items []interface{} `json:"items"`
-}
 
 func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 	ns := r.URL.Query().Get("namespace")
@@ -27,5 +25,35 @@ func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.writeItemListResponse(w, []interface{}{function})
+	svc := resources.NewService(&function)
+
+	deployment, err := s.buildDeployment(&function)
+	if err != nil {
+		s.writeErrorResponse(w, http.StatusInternalServerError, errors.Wrapf(err, "failed to build deployment for function '%s/%s'", ns, name))
+		return
+	}
+
+	s.writeItemListResponse(w, []interface{}{svc, deployment})
+}
+
+func (s *Server) buildDeployment(function *serverlessv1alpha2.Function) (*resources.Deployment, error) {
+	var commit string
+	var gitAuth *git.GitAuth
+	if function.Spec.Source.GitRepository != nil {
+		var err error
+		if function.HasGitAuth() {
+			gitAuth, err = git.NewGitAuth(s.ctx, s.k8s, function)
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to create git auth")
+			}
+		}
+
+		gitRepo := function.Spec.Source.GitRepository
+		commit, err = git.GetLatestCommit(gitRepo.URL, gitRepo.Reference, gitAuth)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get latest commit")
+		}
+	}
+
+	return resources.NewDeployment(function, &s.functionConfig, nil, commit, gitAuth), nil
 }
