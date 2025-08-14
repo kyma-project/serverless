@@ -2,6 +2,7 @@ package resources
 
 import (
 	"fmt"
+	"k8s.io/apimachinery/pkg/api/resource"
 	"path"
 	"strings"
 
@@ -225,6 +226,16 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 				d.initContainerCommand(),
 			},
 			Env: d.initContainerEnvs(),
+			Resources: corev1.ResourceRequirements{
+				Requests: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("50m"),
+					corev1.ResourceMemory: resource.MustParse("64Mi"),
+				},
+				Limits: corev1.ResourceList{
+					corev1.ResourceCPU:    resource.MustParse("200m"),
+					corev1.ResourceMemory: resource.MustParse("256Mi"),
+				},
+			},
 			VolumeMounts: []corev1.VolumeMount{
 				{
 					Name:      "git-repository",
