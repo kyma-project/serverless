@@ -18,6 +18,8 @@ package main
 
 import (
 	"context"
+	"io"
+	"log"
 	"os"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
@@ -93,7 +95,7 @@ func main() {
 	}
 	atomic.SetLevel(parsedLevel)
 
-	log, err := logging.ConfigureLogger(logCfg.LogLevel, logCfg.LogFormat, atomic)
+	logger, err := logging.ConfigureLogger(logCfg.LogLevel, logCfg.LogFormat, atomic)
 	if err != nil {
 		setupLog.Error(err, "unable to configure log")
 		os.Exit(1)
@@ -102,7 +104,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	logWithCtx := log.WithContext()
+	logWithCtx := logger.WithContext()
 	go logging.ReconfigureOnConfigChange(ctx, logWithCtx.Named("notifier"), atomic, envCfg.LogConfigPath)
 
 	ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
@@ -169,6 +171,9 @@ func main() {
 		setupLog.Error(err, "unable to set up ready check")
 		os.Exit(1)
 	}
+
+	// disable default log to prevent http server from logging returned status codes
+	log.SetOutput(io.Discard)
 
 	internalServer := endpoint.NewInternalServer(ctx, logWithCtx, mgr.GetClient(), cfg)
 	go func() {
