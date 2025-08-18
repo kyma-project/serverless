@@ -80,11 +80,12 @@ func TestDeployment_construct(t *testing.T) {
 		require.Equal(t, int32(78), *r.Spec.Replicas)
 	})
 	t.Run("create labels based on function", func(t *testing.T) {
-		d := minimalDeployment()
-		d.function.Spec.Labels = map[string]string{
+		f := minimalFunction()
+		f.Spec.Labels = map[string]string{
 			"shtern": "stoic",
 			"boyd":   "vigilant",
 		}
+		d := NewDeployment(f, minimalFunctionConfig(), nil, "", nil)
 
 		r := d.construct()
 
@@ -1457,9 +1458,5 @@ func minimalFunctionConfig() *config.FunctionConfig {
 }
 
 func minimalDeployment() *Deployment {
-	return &Deployment{
-		Deployment:     nil,
-		functionConfig: minimalFunctionConfig(),
-		function:       minimalFunction(),
-	}
+	return NewDeployment(minimalFunction(), minimalFunctionConfig(), nil, "", nil)
 }
