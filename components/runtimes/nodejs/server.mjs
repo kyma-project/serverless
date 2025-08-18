@@ -18,6 +18,8 @@ const serviceNamespace = process.env.SERVICE_NAMESPACE;
 const functionName = process.env.FUNC_NAME;
 const bodySizeLimit = Number(process.env.REQ_MB_LIMIT || '1');
 const funcPort = Number(process.env.FUNC_PORT || '8080');
+const timeout = Number(process.env.FUNC_TIMEOUT || '180'); // Default to 180 seconds
+const memoryLimit = process.env.FUNC_MEMORY_LIMIT; // Memory limit from environment
 
 const tracer = setupTracer(functionName);
 setupMetrics(functionName);
@@ -86,7 +88,9 @@ app.all("*path", (req, res, next) => {
         const context = {
             'function-name': functionName,
             'runtime': process.env.FUNC_RUNTIME,
-            'namespace': serviceNamespace
+            'namespace': serviceNamespace,
+            'timeout': timeout,
+            'memory-limit': memoryLimit
         };
 
         const sendResponse = (body, status, headers) => {
