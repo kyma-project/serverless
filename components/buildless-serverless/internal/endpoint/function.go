@@ -25,7 +25,7 @@ func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	svc := resources.NewService(&function)
+	svc := resources.NewService(&function, serverlessv1alpha2.TrimClusterInfoLabels)
 
 	deployment, err := s.buildDeployment(&function)
 	if err != nil {
@@ -55,5 +55,11 @@ func (s *Server) buildDeployment(function *serverlessv1alpha2.Function) (*resour
 		}
 	}
 
-	return resources.NewDeployment(function, &s.functionConfig, nil, commit, gitAuth), nil
+	deploy := resources.NewDeployment(function, &s.functionConfig, nil, commit, gitAuth, serverlessv1alpha2.TrimClusterInfoLabels)
+
+	// set strict name
+	deploy.SetName(function.GetName())
+	deploy.GenerateName = ""
+
+	return deploy, nil
 }

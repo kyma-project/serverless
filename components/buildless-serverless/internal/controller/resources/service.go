@@ -16,20 +16,24 @@ type Service struct {
 	function *serverlessv1alpha2.Function
 }
 
-func NewService(f *serverlessv1alpha2.Function) *Service {
+func NewService(f *serverlessv1alpha2.Function, callbacks ...serverlessv1alpha2.LabelModifierFunc) *Service {
 	s := &Service{
 		function: f,
 	}
-	s.Service = s.construct()
+	s.Service = s.construct(callbacks...)
 	return s
 }
 
-func (s *Service) construct() *corev1.Service {
+func (s *Service) construct(callbacks ...serverlessv1alpha2.LabelModifierFunc) *corev1.Service {
 	service := &corev1.Service{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Service",
+			APIVersion: "v1",
+		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      s.function.Name,
 			Namespace: s.function.Namespace,
-			Labels:    s.function.FunctionLabels(),
+			Labels:    s.function.FunctionLabels(callbacks...),
 			//TODO: do we need to add annotations here?
 			//Annotations: s.functionAnnotations(),
 		},
@@ -40,7 +44,7 @@ func (s *Service) construct() *corev1.Service {
 				Port:       80,
 				Protocol:   corev1.ProtocolTCP,
 			}},
-			Selector: s.function.SelectorLabels(),
+			Selector: s.function.SelectorLabels(callbacks...),
 		},
 	}
 

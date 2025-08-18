@@ -2,18 +2,17 @@ package resources
 
 import (
 	"fmt"
-	"k8s.io/apimachinery/pkg/api/resource"
 	"path"
 	"strings"
 
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
-	"k8s.io/apimachinery/pkg/labels"
-
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/utils/ptr"
 )
 
@@ -33,7 +32,7 @@ type Deployment struct {
 	gitAuth           *git.GitAuth
 }
 
-func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clusterDeployment *appsv1.Deployment, commit string, gitAuth *git.GitAuth) *Deployment {
+func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clusterDeployment *appsv1.Deployment, commit string, gitAuth *git.GitAuth, callbacks ...serverlessv1alpha2.LabelModifierFunc) *Deployment {
 	d := &Deployment{
 		functionConfig:    c,
 		function:          f,
@@ -41,24 +40,28 @@ func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clu
 		commit:            commit,
 		gitAuth:           gitAuth,
 	}
-	d.Deployment = d.construct()
+	d.Deployment = d.construct(callbacks...)
 	return d
 }
 
-func (d *Deployment) construct() *appsv1.Deployment {
+func (d *Deployment) construct(callbacks ...serverlessv1alpha2.LabelModifierFunc) *appsv1.Deployment {
 	deployment := &appsv1.Deployment{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Deployment",
+			APIVersion: "apps/v1",
+		},
 		ObjectMeta: metav1.ObjectMeta{
 			GenerateName: fmt.Sprintf("%s-", d.function.Name),
 			Namespace:    d.function.Namespace,
-			Labels:       d.function.FunctionLabels(),
+			Labels:       d.function.FunctionLabels(callbacks...),
 		},
 		Spec: appsv1.DeploymentSpec{
 			Selector: &metav1.LabelSelector{
-				MatchLabels: d.function.SelectorLabels(),
+				MatchLabels: d.function.SelectorLabels(callbacks...),
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels:      d.function.PodLabels(),
+					Labels:      d.function.PodLabels(callbacks...),
 					Annotations: d.podAnnotations(),
 				},
 				Spec: d.podSpec(),
