@@ -23,45 +23,79 @@ const (
 	istioNativeSidecarLabelKey               = "sidecar.istio.io/nativeSidecar"
 )
 
-type Deployment struct {
-	*appsv1.Deployment
-	functionConfig    *config.FunctionConfig
-	function          *serverlessv1alpha2.Function
-	clusterDeployment *appsv1.Deployment
-	commit            string
-	gitAuth           *git.GitAuth
+type deployOptions func(*Deployment)
+
+func DeployStrictName(d *Deployment) {
+	d.deployName = d.function.GetName()
+	d.deployGeneratedName = ""
 }
 
-func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clusterDeployment *appsv1.Deployment, commit string, gitAuth *git.GitAuth, callbacks ...serverlessv1alpha2.LabelModifierFunc) *Deployment {
+func DeployTrimClusterInfoLabels(d *Deployment) {
+	delete(d.functionLabels, serverlessv1alpha2.FunctionUUIDLabel)
+	delete(d.functionLabels, serverlessv1alpha2.FunctionManagedByLabel)
+
+	delete(d.selectorLabels, serverlessv1alpha2.FunctionUUIDLabel)
+	delete(d.selectorLabels, serverlessv1alpha2.FunctionManagedByLabel)
+
+	delete(d.podLabels, serverlessv1alpha2.FunctionUUIDLabel)
+	delete(d.podLabels, serverlessv1alpha2.FunctionManagedByLabel)
+}
+
+type Deployment struct {
+	*appsv1.Deployment
+	functionConfig      *config.FunctionConfig
+	function            *serverlessv1alpha2.Function
+	clusterDeployment   *appsv1.Deployment
+	commit              string
+	gitAuth             *git.GitAuth
+	functionLabels      map[string]string
+	selectorLabels      map[string]string
+	podLabels           map[string]string
+	deployName          string
+	deployGeneratedName string
+}
+
+func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clusterDeployment *appsv1.Deployment, commit string, gitAuth *git.GitAuth, opts ...deployOptions) *Deployment {
 	d := &Deployment{
-		functionConfig:    c,
-		function:          f,
-		clusterDeployment: clusterDeployment,
-		commit:            commit,
-		gitAuth:           gitAuth,
+		functionConfig:      c,
+		function:            f,
+		clusterDeployment:   clusterDeployment,
+		commit:              commit,
+		gitAuth:             gitAuth,
+		functionLabels:      f.FunctionLabels(),
+		selectorLabels:      f.SelectorLabels(),
+		podLabels:           f.PodLabels(),
+		deployName:          "",
+		deployGeneratedName: fmt.Sprintf("%s-", f.Name),
 	}
-	d.Deployment = d.construct(callbacks...)
+
+	for _, o := range opts {
+		o(d)
+	}
+
+	d.Deployment = d.construct()
 	return d
 }
 
-func (d *Deployment) construct(callbacks ...serverlessv1alpha2.LabelModifierFunc) *appsv1.Deployment {
+func (d *Deployment) construct() *appsv1.Deployment {
 	deployment := &appsv1.Deployment{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Deployment",
 			APIVersion: "apps/v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			GenerateName: fmt.Sprintf("%s-", d.function.Name),
+			Name:         d.deployName,
+			GenerateName: d.deployGeneratedName,
 			Namespace:    d.function.Namespace,
-			Labels:       d.function.FunctionLabels(callbacks...),
+			Labels:       d.functionLabels,
 		},
 		Spec: appsv1.DeploymentSpec{
 			Selector: &metav1.LabelSelector{
-				MatchLabels: d.function.SelectorLabels(callbacks...),
+				MatchLabels: d.selectorLabels,
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels:      d.function.PodLabels(callbacks...),
+					Labels:      d.podLabels,
 					Annotations: d.podAnnotations(),
 				},
 				Spec: d.podSpec(),

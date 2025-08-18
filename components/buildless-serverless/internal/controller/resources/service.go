@@ -11,20 +11,39 @@ var (
 	svcTargetPort = intstr.FromInt32(8080)
 )
 
-type Service struct {
-	*corev1.Service
-	function *serverlessv1alpha2.Function
+type serviceOptions func(*Service)
+
+func ServiceTrimClusterInfoLabels(s *Service) {
+	delete(s.functionLabels, serverlessv1alpha2.FunctionUUIDLabel)
+	delete(s.functionLabels, serverlessv1alpha2.FunctionManagedByLabel)
+
+	delete(s.selectorLabels, serverlessv1alpha2.FunctionUUIDLabel)
+	delete(s.selectorLabels, serverlessv1alpha2.FunctionManagedByLabel)
 }
 
-func NewService(f *serverlessv1alpha2.Function, callbacks ...serverlessv1alpha2.LabelModifierFunc) *Service {
+type Service struct {
+	*corev1.Service
+	function       *serverlessv1alpha2.Function
+	functionLabels map[string]string
+	selectorLabels map[string]string
+}
+
+func NewService(f *serverlessv1alpha2.Function, opts ...serviceOptions) *Service {
 	s := &Service{
-		function: f,
+		function:       f,
+		functionLabels: f.FunctionLabels(),
+		selectorLabels: f.SelectorLabels(),
 	}
-	s.Service = s.construct(callbacks...)
+
+	for _, o := range opts {
+		o(s)
+	}
+
+	s.Service = s.construct()
 	return s
 }
 
-func (s *Service) construct(callbacks ...serverlessv1alpha2.LabelModifierFunc) *corev1.Service {
+func (s *Service) construct() *corev1.Service {
 	service := &corev1.Service{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       "Service",
@@ -33,7 +52,7 @@ func (s *Service) construct(callbacks ...serverlessv1alpha2.LabelModifierFunc) *
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      s.function.Name,
 			Namespace: s.function.Namespace,
-			Labels:    s.function.FunctionLabels(callbacks...),
+			Labels:    s.functionLabels,
 			//TODO: do we need to add annotations here?
 			//Annotations: s.functionAnnotations(),
 		},
@@ -44,7 +63,7 @@ func (s *Service) construct(callbacks ...serverlessv1alpha2.LabelModifierFunc) *
 				Port:       80,
 				Protocol:   corev1.ProtocolTCP,
 			}},
-			Selector: s.function.SelectorLabels(callbacks...),
+			Selector: s.selectorLabels,
 		},
 	}
 

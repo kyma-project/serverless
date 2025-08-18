@@ -13,6 +13,9 @@ import (
 func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 	ns := r.URL.Query().Get("namespace")
 	name := r.URL.Query().Get("name")
+
+	s.log.Infof("handling function request for function '%s/%s'", ns, name)
+
 	if ns == "" || name == "" {
 		s.writeErrorResponse(w, http.StatusBadRequest, errors.New("missing namespace or name"))
 		return
@@ -25,7 +28,7 @@ func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	svc := resources.NewService(&function, serverlessv1alpha2.TrimClusterInfoLabels)
+	svc := resources.NewService(&function, resources.ServiceTrimClusterInfoLabels)
 
 	deployment, err := s.buildDeployment(&function)
 	if err != nil {
@@ -55,11 +58,5 @@ func (s *Server) buildDeployment(function *serverlessv1alpha2.Function) (*resour
 		}
 	}
 
-	deploy := resources.NewDeployment(function, &s.functionConfig, nil, commit, gitAuth, serverlessv1alpha2.TrimClusterInfoLabels)
-
-	// set strict name
-	deploy.SetName(function.GetName())
-	deploy.GenerateName = ""
-
-	return deploy, nil
+	return resources.NewDeployment(function, &s.functionConfig, nil, commit, gitAuth, resources.DeployStrictName, resources.DeployTrimClusterInfoLabels), nil
 }

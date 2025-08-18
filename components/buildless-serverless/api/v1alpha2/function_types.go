@@ -357,38 +357,34 @@ const (
 	PodAppNameLabel                      = "app.kubernetes.io/name"
 )
 
-func (f *Function) InternalFunctionLabels(callbacks ...LabelModifierFunc) map[string]string {
+func (f *Function) InternalFunctionLabels() map[string]string {
 	intLabels := make(map[string]string, 3)
 
 	intLabels[FunctionNameLabel] = f.GetName()
 	intLabels[FunctionManagedByLabel] = FunctionControllerValue
 	intLabels[FunctionUUIDLabel] = string(f.GetUID())
 
-	for _, cb := range callbacks {
-		cb(intLabels)
-	}
-
 	return intLabels
 }
 
-func (f *Function) FunctionLabels(callbacks ...LabelModifierFunc) map[string]string {
-	internalLabels := f.InternalFunctionLabels(callbacks...)
+func (f *Function) FunctionLabels() map[string]string {
+	internalLabels := f.InternalFunctionLabels()
 	functionLabels := f.GetLabels()
 
 	return labels.Merge(functionLabels, internalLabels)
 }
 
-func (f *Function) SelectorLabels(callbacks ...LabelModifierFunc) map[string]string {
+func (f *Function) SelectorLabels() map[string]string {
 	return labels.Merge(
 		map[string]string{
 			FunctionResourceLabel: FunctionResourceLabelDeploymentValue,
 		},
-		f.InternalFunctionLabels(callbacks...),
+		f.InternalFunctionLabels(),
 	)
 }
 
-func (f *Function) PodLabels(callbacks ...LabelModifierFunc) map[string]string {
-	result := f.SelectorLabels(callbacks...)
+func (f *Function) PodLabels() map[string]string {
+	result := f.SelectorLabels()
 	if f.Spec.Labels != nil {
 		result = labels.Merge(f.Spec.Labels, result)
 	}
@@ -427,11 +423,4 @@ func (f *Function) HasNodejsRuntime() bool {
 
 func (f *Function) CopyAnnotationsToStatus() {
 	f.Status.FunctionAnnotations = f.Spec.Annotations
-}
-
-type LabelModifierFunc func(labels map[string]string)
-
-func TrimClusterInfoLabels(labels map[string]string) {
-	delete(labels, FunctionUUIDLabel)
-	delete(labels, FunctionManagedByLabel)
 }
