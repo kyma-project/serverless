@@ -13,12 +13,31 @@ var (
 
 type serviceOptions func(*Service)
 
-func ServiceTrimClusterInfoLabels(s *Service) {
-	delete(s.functionLabels, serverlessv1alpha2.FunctionUUIDLabel)
-	delete(s.functionLabels, serverlessv1alpha2.FunctionManagedByLabel)
+// ServiceName - set the service name
+func ServiceName(name string) serviceOptions {
+	return func(s *Service) {
+		s.svcName = name
+	}
+}
 
-	delete(s.selectorLabels, serverlessv1alpha2.FunctionUUIDLabel)
-	delete(s.selectorLabels, serverlessv1alpha2.FunctionManagedByLabel)
+// ServiceAppendSelectorLabels - add additional labels to the service's selector
+func ServiceAppendSelectorLabels(labels map[string]string) serviceOptions {
+	return func(s *Service) {
+		for k, v := range labels {
+			s.selectorLabels[k] = v
+		}
+	}
+}
+
+// ServiceTrimClusterInfoLabels - get rid of internal labels like managed-by, function-name or uuid
+func ServiceTrimClusterInfoLabels() serviceOptions {
+	return func(s *Service) {
+		internalLabels := s.function.InternalFunctionLabels()
+		for key := range internalLabels {
+			delete(s.functionLabels, key)
+			delete(s.selectorLabels, key)
+		}
+	}
 }
 
 type Service struct {
@@ -26,6 +45,7 @@ type Service struct {
 	function       *serverlessv1alpha2.Function
 	functionLabels map[string]string
 	selectorLabels map[string]string
+	svcName        string
 }
 
 func NewService(f *serverlessv1alpha2.Function, opts ...serviceOptions) *Service {
@@ -33,6 +53,7 @@ func NewService(f *serverlessv1alpha2.Function, opts ...serviceOptions) *Service
 		function:       f,
 		functionLabels: f.FunctionLabels(),
 		selectorLabels: f.SelectorLabels(),
+		svcName:        f.Name,
 	}
 
 	for _, o := range opts {
@@ -50,7 +71,7 @@ func (s *Service) construct() *corev1.Service {
 			APIVersion: "v1",
 		},
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      s.function.Name,
+			Name:      s.svcName,
 			Namespace: s.function.Namespace,
 			Labels:    s.functionLabels,
 			//TODO: do we need to add annotations here?

@@ -25,20 +25,33 @@ const (
 
 type deployOptions func(*Deployment)
 
-func DeployStrictName(d *Deployment) {
-	d.deployName = d.function.GetName()
-	d.deployGeneratedName = ""
+// DeployName - set the deployment name and clear the generated name
+func DeployName(name string) deployOptions {
+	return func(d *Deployment) {
+		d.deployName = name
+		d.deployGeneratedName = ""
+	}
 }
 
-func DeployTrimClusterInfoLabels(d *Deployment) {
-	delete(d.functionLabels, serverlessv1alpha2.FunctionUUIDLabel)
-	delete(d.functionLabels, serverlessv1alpha2.FunctionManagedByLabel)
+// DeployTrimClusterInfoLabels - get rid of internal labels like managed-by, function-name or uuid
+func DeployTrimClusterInfoLabels() deployOptions {
+	return func(d *Deployment) {
+		internalLabels := d.function.InternalFunctionLabels()
+		for key := range internalLabels {
+			delete(d.functionLabels, key)
+			delete(d.selectorLabels, key)
+			delete(d.podLabels, key)
+		}
+	}
+}
 
-	delete(d.selectorLabels, serverlessv1alpha2.FunctionUUIDLabel)
-	delete(d.selectorLabels, serverlessv1alpha2.FunctionManagedByLabel)
-
-	delete(d.podLabels, serverlessv1alpha2.FunctionUUIDLabel)
-	delete(d.podLabels, serverlessv1alpha2.FunctionManagedByLabel)
+// DeployAppendSelectorLabels - add additional labels to the deployment's selector
+func DeployAppendSelectorLabels(labels map[string]string) deployOptions {
+	return func(d *Deployment) {
+		for k, v := range labels {
+			d.selectorLabels[k] = v
+		}
+	}
 }
 
 type Deployment struct {
