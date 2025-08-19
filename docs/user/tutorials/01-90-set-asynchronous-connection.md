@@ -19,6 +19,7 @@ This tutorial shows only one possible use case. There are many more use cases on
    ```bash
    export KUBECONFIG={KUBECONFIG_PATH}
    ```
+
 2. Enable Istio service mesh for `default` namespace:
 
    ```bash
@@ -32,7 +33,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 1. Go to the `emitter` folder and run Kyma CLI `init` command to initialize the scaffold for your first Function:
 
    ```bash
-   kyma alpha function init
+   kyma function init
    ```
 
    The `init` command creates these files in your workspace folder:
@@ -91,6 +92,7 @@ This tutorial shows only one possible use case. There are many more use cases on
    ```
 
    Include opentelemetry SDK in the Function dependencies. Add the following to the `package.json`:
+
    ```js
    {
       "dependencies": {
@@ -99,15 +101,14 @@ This tutorial shows only one possible use case. There are many more use cases on
    }
    ```
 
-
    The `payload.sanitised` is a sample event type that the emitter Function uses when publishing events. You can choose a different one that better suits your use case. Keep in mind the constraints described on the [Event names](https://kyma-project.io/docs/kyma/latest/05-technical-reference/evnt-01-event-names/) page. The receiver subscribes to the event type to consume the events.
 
    The `event` object provides a convenient API for emitting events. To learn more, read [Function's specification](../technical-reference/07-70-function-specification.md#event-object-sdk).
-   
+
 3. Apply your emitter Function:
 
    ```bash
-   kyma alpha function create emitter --source handler.js --dependencies package.json
+   kyma function create emitter --source handler.js --dependencies package.json
    ```
 
    Your Function is now built and deployed in Kyma runtime. Kyma exposes it through the APIRule. The incoming payloads are processed by your emitter Function. It then sends the sanitized content to the workload that subscribes to the selected event type. In our case, it's the receiver Function.
@@ -134,6 +135,7 @@ This tutorial shows only one possible use case. There are many more use cases on
        noAuth: true
    EOF
    ```
+
 5. Run the following command to get the domain name of your Kyma cluster:
 
     ```bash
@@ -151,7 +153,7 @@ This tutorial shows only one possible use case. There are many more use cases on
    ```bash
    curl -X POST "https://incoming.${DOMAIN}" -H 'Content-Type: application/json' -d '{"foo":"bar"}'
    ```
-   
+
    You should see the `Event sent` message as a response.
 
 ### Create the Receiver Function
@@ -159,7 +161,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 1. Go to your `receiver` folder and run Kyma CLI `init` command to initialize the scaffold for your second Function:
 
    ```bash
-   kyma alpha function init
+   kyma function init
    ```
 
    The `init` command creates the same files as in the `emitter` folder.
@@ -182,7 +184,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 3. Apply your receiver Function:
 
    ```bash
-   kyma alpha function create receiver --source handler.js --dependencies package.json
+   kyma function create receiver --source handler.js --dependencies package.json
    ```
 
    The Function is configured, built, and deployed in Kyma runtime. The Subscription becomes active and all events with the selected type are processed by the Function.  
