@@ -1,6 +1,7 @@
 package endpoint
 
 import (
+	"fmt"
 	"net/http"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
@@ -13,6 +14,9 @@ import (
 func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 	ns := r.URL.Query().Get("namespace")
 	name := r.URL.Query().Get("name")
+
+	s.log.Infof("handling function request for function '%s/%s'", ns, name)
+
 	if ns == "" || name == "" {
 		s.writeErrorResponse(w, http.StatusBadRequest, errors.New("missing namespace or name"))
 		return
@@ -25,7 +29,15 @@ func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	svc := resources.NewService(&function)
+	svcName := fmt.Sprintf("%s-ejected", function.Name)
+	svc := resources.NewService(
+		&function,
+		resources.ServiceName(svcName),
+		resources.ServiceTrimClusterInfoLabels(),
+		resources.ServiceAppendSelectorLabels(map[string]string{
+			"app.kubernetes.io/instance": svcName,
+		}),
+	)
 
 	deployment, err := s.buildDeployment(&function)
 	if err != nil {
@@ -55,5 +67,16 @@ func (s *Server) buildDeployment(function *serverlessv1alpha2.Function) (*resour
 		}
 	}
 
-	return resources.NewDeployment(function, &s.functionConfig, nil, commit, gitAuth), nil
+	deployName := fmt.Sprintf("%s-ejected", function.Name)
+	return resources.NewDeployment(
+		function,
+		&s.functionConfig, nil,
+		commit,
+		gitAuth,
+		resources.DeployName(deployName),
+		resources.DeployTrimClusterInfoLabels(),
+		resources.DeployAppendSelectorLabels(map[string]string{
+			"app.kubernetes.io/instance": deployName,
+		}),
+	), nil
 }
