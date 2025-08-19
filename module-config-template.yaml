@@ -16,7 +16,7 @@ associatedResources:
       version: v1alpha1
     - group: serverless.kyma-project.io
       kind: Function
-      version: v1alpha1
+      version: v1alpha2
 icons:
   - name: module-icon
     # TODO: provide serverless icon
