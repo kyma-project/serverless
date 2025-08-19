@@ -2,18 +2,17 @@ package resources
 
 import (
 	"fmt"
-	"k8s.io/apimachinery/pkg/api/resource"
 	"path"
 	"strings"
 
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
-	"k8s.io/apimachinery/pkg/labels"
-
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/utils/ptr"
 )
 
@@ -24,41 +23,92 @@ const (
 	istioNativeSidecarLabelKey               = "sidecar.istio.io/nativeSidecar"
 )
 
-type Deployment struct {
-	*appsv1.Deployment
-	functionConfig    *config.FunctionConfig
-	function          *serverlessv1alpha2.Function
-	clusterDeployment *appsv1.Deployment
-	commit            string
-	gitAuth           *git.GitAuth
+type deployOptions func(*Deployment)
+
+// DeployName - set the deployment name and clear the generated name
+func DeployName(name string) deployOptions {
+	return func(d *Deployment) {
+		d.deployName = name
+		d.deployGeneratedName = ""
+	}
 }
 
-func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clusterDeployment *appsv1.Deployment, commit string, gitAuth *git.GitAuth) *Deployment {
-	d := &Deployment{
-		functionConfig:    c,
-		function:          f,
-		clusterDeployment: clusterDeployment,
-		commit:            commit,
-		gitAuth:           gitAuth,
+// DeployTrimClusterInfoLabels - get rid of internal labels like managed-by, function-name or uuid
+func DeployTrimClusterInfoLabels() deployOptions {
+	return func(d *Deployment) {
+		internalLabels := d.function.InternalFunctionLabels()
+		for key := range internalLabels {
+			delete(d.functionLabels, key)
+			delete(d.selectorLabels, key)
+			delete(d.podLabels, key)
+		}
 	}
+}
+
+// DeployAppendSelectorLabels - add additional labels to the deployment's selector
+func DeployAppendSelectorLabels(labels map[string]string) deployOptions {
+	return func(d *Deployment) {
+		for k, v := range labels {
+			d.selectorLabels[k] = v
+		}
+	}
+}
+
+type Deployment struct {
+	*appsv1.Deployment
+	functionConfig      *config.FunctionConfig
+	function            *serverlessv1alpha2.Function
+	clusterDeployment   *appsv1.Deployment
+	commit              string
+	gitAuth             *git.GitAuth
+	functionLabels      map[string]string
+	selectorLabels      map[string]string
+	podLabels           map[string]string
+	deployName          string
+	deployGeneratedName string
+}
+
+func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clusterDeployment *appsv1.Deployment, commit string, gitAuth *git.GitAuth, opts ...deployOptions) *Deployment {
+	d := &Deployment{
+		functionConfig:      c,
+		function:            f,
+		clusterDeployment:   clusterDeployment,
+		commit:              commit,
+		gitAuth:             gitAuth,
+		functionLabels:      f.FunctionLabels(),
+		selectorLabels:      f.SelectorLabels(),
+		podLabels:           f.PodLabels(),
+		deployName:          "",
+		deployGeneratedName: fmt.Sprintf("%s-", f.Name),
+	}
+
+	for _, o := range opts {
+		o(d)
+	}
+
 	d.Deployment = d.construct()
 	return d
 }
 
 func (d *Deployment) construct() *appsv1.Deployment {
 	deployment := &appsv1.Deployment{
+		TypeMeta: metav1.TypeMeta{
+			Kind:       "Deployment",
+			APIVersion: "apps/v1",
+		},
 		ObjectMeta: metav1.ObjectMeta{
-			GenerateName: fmt.Sprintf("%s-", d.function.Name),
+			Name:         d.deployName,
+			GenerateName: d.deployGeneratedName,
 			Namespace:    d.function.Namespace,
-			Labels:       d.function.FunctionLabels(),
+			Labels:       d.functionLabels,
 		},
 		Spec: appsv1.DeploymentSpec{
 			Selector: &metav1.LabelSelector{
-				MatchLabels: d.function.SelectorLabels(),
+				MatchLabels: d.selectorLabels,
 			},
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					Labels:      d.function.PodLabels(),
+					Labels:      d.podLabels,
 					Annotations: d.podAnnotations(),
 				},
 				Spec: d.podSpec(),

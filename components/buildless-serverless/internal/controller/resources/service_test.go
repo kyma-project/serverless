@@ -1,12 +1,13 @@
 package resources
 
 import (
+	"testing"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	"testing"
 )
 
 func TestNewService(t *testing.T) {
@@ -22,6 +23,10 @@ func TestNewService(t *testing.T) {
 			Status: serverlessv1alpha2.FunctionStatus{},
 		}
 		expectedSvc := &corev1.Service{
+			TypeMeta: metav1.TypeMeta{
+				Kind:       "Service",
+				APIVersion: "v1",
+			},
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      "test-function-name",
 				Namespace: "test-function-namespace",
