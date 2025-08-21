@@ -49,6 +49,7 @@ function_context = {
     'timeout': timeout,
     'runtime': os.getenv('FUNC_RUNTIME'),
     'memory-limit': os.getenv('FUNC_MEMORY_LIMIT'),
+    'body-size-limit': memfile_max,
 }
 
 if __name__ == "__main__":
