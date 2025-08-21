@@ -25,8 +25,9 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 
 	// delete the annotation from each pod
 	for _, pod := range pods.Items {
+		patch := client.MergeFrom(pod.DeepCopy())
 		delete(pod.Annotations, annotation)
-		err := m.GetClient().Patch(ctx, &pod, client.Merge)
+		err := m.GetClient().Patch(ctx, &pod, patch)
 		if err != nil {
 			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to delete annotation from pod %s/%s: %s", pod.Namespace, pod.Name, err))
 		}
