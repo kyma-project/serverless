@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/fields"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
@@ -17,8 +16,7 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 	var collectedErrors []string
 
 	// list pods with the specific annotation
-	pods := &corev1.PodList{}
-	err := listAnnotatedPods(ctx, m.GetAPIReader(), pods, annotation)
+	pods, err := listAnnotatedPods(ctx, m.GetAPIReader(), annotation)
 	if err != nil {
 		collectedErrors = append(collectedErrors, fmt.Sprintf("failed to list annotated pods: %s", err))
 	}
@@ -40,8 +38,20 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 	return nil
 }
 
-func listAnnotatedPods(ctx context.Context, m client.Reader, pods *corev1.PodList, annotation string) error {
-	return m.List(ctx, pods, &client.ListOptions{
-		FieldSelector: fields.OneTermEqualSelector("metadata.annotations", annotation),
-	})
+func listAnnotatedPods(ctx context.Context, m client.Reader, annotation string) (*corev1.PodList, error) {
+	pods := &corev1.PodList{}
+	err := m.List(ctx, pods, &client.ListOptions{})
+	if err != nil {
+		return nil, err
+	}
+
+	// Filter pods that have the specific annotation
+	filteredPods := &corev1.PodList{}
+	for _, pod := range pods.Items {
+		if _, exists := pod.Annotations[annotation]; exists {
+			filteredPods.Items = append(filteredPods.Items, pod)
+		}
+	}
+
+	return filteredPods, nil
 }
