@@ -3,7 +3,10 @@ package serverless
 import (
 	"context"
 	"fmt"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/meta"
+	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
@@ -16,18 +19,34 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 	var collectedErrors []string
 
 	// list pods with the specific annotation
-	pods, err := listAnnotatedPods(ctx, m.GetAPIReader(), annotation)
+	pods := &corev1.PodList{}
+	err := listAnnotated(ctx, m.GetAPIReader(), annotation, pods)
 	if err != nil {
 		collectedErrors = append(collectedErrors, fmt.Sprintf("failed to list annotated pods: %s", err))
 	}
 
 	// delete the annotation from each pod
 	for _, pod := range pods.Items {
-		patch := client.MergeFrom(pod.DeepCopy())
+		base := pod.DeepCopy()
 		delete(pod.Annotations, annotation)
-		err := m.GetClient().Patch(ctx, &pod, patch)
-		if err != nil {
+		if err := m.GetClient().Patch(ctx, &pod, client.MergeFrom(base)); err != nil {
 			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to delete annotation from pod %s/%s: %s", pod.Namespace, pod.Name, err))
+		}
+	}
+
+	// list deployments with the specific annotation
+	deployments := &appsv1.DeploymentList{}
+	err = listAnnotated(ctx, m.GetAPIReader(), annotation, deployments)
+	if err != nil {
+		collectedErrors = append(collectedErrors, fmt.Sprintf("failed to list annotated deployments: %s", err))
+	}
+
+	// delete the annotation from each deployment
+	for _, deployment := range deployments.Items {
+		base := deployment.DeepCopy()
+		delete(deployment.Annotations, annotation)
+		if err := m.GetClient().Patch(ctx, &deployment, client.MergeFrom(base)); err != nil {
+			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to delete annotation from deployment %s/%s: %s", deployment.Namespace, deployment.Name, err))
 		}
 	}
 
@@ -38,20 +57,24 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 	return nil
 }
 
-func listAnnotatedPods(ctx context.Context, m client.Reader, annotation string) (*corev1.PodList, error) {
-	pods := &corev1.PodList{}
-	err := m.List(ctx, pods, &client.ListOptions{})
-	if err != nil {
-		return nil, err
+func listAnnotated(ctx context.Context, reader client.Reader, annotation string, list client.ObjectList) error {
+	if err := reader.List(ctx, list, &client.ListOptions{}); err != nil {
+		return err
 	}
 
-	// Filter pods that have the specific annotation
-	filteredPods := &corev1.PodList{}
-	for _, pod := range pods.Items {
-		if _, exists := pod.Annotations[annotation]; exists {
-			filteredPods.Items = append(filteredPods.Items, pod)
+	// Filter objects with the specific annotation
+	items, err := meta.ExtractList(list)
+	if err != nil {
+		return err
+	}
+
+	filteredItems := []runtime.Object{}
+	for _, item := range items {
+		obj := item.(client.Object)
+		if _, exists := obj.GetAnnotations()[annotation]; exists {
+			filteredItems = append(filteredItems, obj)
 		}
 	}
 
-	return filteredPods, nil
+	return meta.SetList(list, filteredItems)
 }
