@@ -59,10 +59,10 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 			delete(deployment.Annotations, annotation)
 		}
 		// Remove annotation from Deployment pod template
-		if deployment.Spec.Template.Annotations != nil {
+		if deployment.Spec.Template.ObjectMeta.Annotations != nil {
 			m.GetLogger().Info("Removing annotation from deployment",
 				"namespace", deployment.Namespace, "name", deployment.Name)
-			delete(deployment.Spec.Template.Annotations, annotation)
+			delete(deployment.Spec.Template.ObjectMeta.Annotations, annotation)
 		}
 		if err := m.GetClient().Patch(ctx, deployment, client.MergeFrom(base)); err != nil {
 			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to delete annotation from deployment %s/%s: %s", deployment.Namespace, deployment.Name, err))
