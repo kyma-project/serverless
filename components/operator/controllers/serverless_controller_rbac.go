@@ -40,4 +40,4 @@ package controllers
 //+kubebuilder:rbac:groups=networking.k8s.io,resources=networkpolicies,verbs=get;list;watch;create;update;patch;delete;deletecollection
 
 // TODO: This is temporary, it is necessary to delete native Istio sidecar from Function pods
-// +kubebuilder:rbac:groups="",resources=pods,verbs=get;list;patch
+// +kubebuilder:rbac:groups="",resources=pods,verbs=get;list;update;patch

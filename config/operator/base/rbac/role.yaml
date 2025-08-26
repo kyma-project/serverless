@@ -48,6 +48,7 @@ rules:
   - get
   - list
   - patch
+  - update
 - apiGroups:
   - admissionregistration.k8s.io
   resources:

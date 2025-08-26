@@ -51,7 +51,8 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 	// delete the annotation from each deployment
 	for i := range deployments.Items {
 		deployment := &deployments.Items[i]
-		base := deployment.DeepCopy()
+		m.GetLogger().Info("Before patch", "annotations", deployment.Spec.Template.ObjectMeta.Annotations)
+		//base := deployment.DeepCopy()
 		// Remove annotation from Deployment metadata
 		if deployment.Annotations != nil {
 			m.GetLogger().Info("Removing annotation from deployment",
@@ -64,9 +65,10 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 				"namespace", deployment.Namespace, "name", deployment.Name)
 			delete(deployment.Spec.Template.ObjectMeta.Annotations, annotation)
 		}
-		if err := m.GetClient().Patch(ctx, deployment, client.MergeFrom(base)); err != nil {
+		if err := m.GetClient().Update(ctx, deployment); err != nil {
 			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to delete annotation from deployment %s/%s: %s", deployment.Namespace, deployment.Name, err))
 		}
+		m.GetLogger().Info("After patch", "annotations", deployment.Spec.Template.ObjectMeta.Annotations)
 	}
 
 	if len(collectedErrors) > 0 {

@@ -102,7 +102,7 @@ func (r *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) (controller.Cont
 // +kubebuilder:rbac:groups="",resources=services,verbs=get;list;watch;create;update;delete
 // +kubebuilder:rbac:groups="autoscaling",resources=horizontalpodautoscalers,verbs=get;list;watch;create;update;deletecollection
 // TODO: This is temporary, it is necessary to delete native Istio sidecar from Function pods
-// +kubebuilder:rbac:groups="",resources=pods,verbs=get;list;patch
+// +kubebuilder:rbac:groups="",resources=pods,verbs=get;list;update;patch
 
 func (r *FunctionReconciler) Reconcile(ctx context.Context, request ctrl.Request) (ctrl.Result, error) {
 	if IsHealthCheckRequest(request) {
