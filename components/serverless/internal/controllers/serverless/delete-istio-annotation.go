@@ -26,11 +26,18 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 	}
 
 	// delete the annotation from each pod
-	for _, pod := range pods.Items {
+	for i := range pods.Items {
+		pod := &pods.Items[i]
 		base := pod.DeepCopy()
-		delete(pod.Annotations, annotation)
-		if err := m.GetClient().Patch(ctx, &pod, client.MergeFrom(base)); err != nil {
-			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to delete annotation from pod %s/%s: %s", pod.Namespace, pod.Name, err))
+
+		if pod.Annotations != nil {
+			delete(pod.Annotations, annotation)
+		}
+
+		if err := m.GetClient().Patch(ctx, pod, client.MergeFrom(base)); err != nil {
+			collectedErrors = append(collectedErrors,
+				fmt.Sprintf("failed to delete annotation from pod %s/%s: %s",
+					pod.Namespace, pod.Name, err))
 		}
 	}
 
@@ -42,12 +49,22 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 	}
 
 	// delete the annotation from each deployment
-	for _, deployment := range deployments.Items {
+	for i := range deployments.Items {
+		deployment := &deployments.Items[i]
 		base := deployment.DeepCopy()
-		delete(deployment.Annotations, annotation)
-		// delete the annotation from pod template as well to prevent it from being added back
-		delete(deployment.Spec.Template.Annotations, annotation)
-		if err := m.GetClient().Patch(ctx, &deployment, client.MergeFrom(base)); err != nil {
+		// Remove annotation from Deployment metadata
+		if deployment.Annotations != nil {
+			m.GetLogger().Info("Removing annotation from deployment",
+				"namespace", deployment.Namespace, "name", deployment.Name)
+			delete(deployment.Annotations, annotation)
+		}
+		// Remove annotation from Deployment pod template
+		if deployment.Spec.Template.Annotations != nil {
+			m.GetLogger().Info("Removing annotation from deployment",
+				"namespace", deployment.Namespace, "name", deployment.Name)
+			delete(deployment.Spec.Template.Annotations, annotation)
+		}
+		if err := m.GetClient().Patch(ctx, deployment, client.MergeFrom(base)); err != nil {
 			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to delete annotation from deployment %s/%s: %s", deployment.Namespace, deployment.Name, err))
 		}
 	}
