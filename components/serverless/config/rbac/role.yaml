@@ -35,15 +35,6 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - pods
-  verbs:
-  - get
-  - list
-  - update
-  - patch
-- apiGroups:
-  - ""
-  resources:
   - secrets
   - serviceaccounts
   verbs:
