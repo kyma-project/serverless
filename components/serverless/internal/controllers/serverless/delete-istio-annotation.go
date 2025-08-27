@@ -10,7 +10,6 @@ import (
 
 func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 	m.GetLogger().Info("Deleting Istio native sidecar annotations from Functions")
-
 	annotation := "sidecar.istio.io/nativeSidecar"
 
 	deployments, err := listAnnotatedDeployments(ctx, m.GetAPIReader(), annotation)
@@ -18,25 +17,18 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 		return fmt.Errorf("failed to list annotated deployments: %w", err)
 	}
 
-	m.GetLogger().Info(fmt.Sprintf("Length %d", len(deployments)))
-
 	var collectedErrors []string
 
 	// delete the annotation from each deployment
 	for i := range deployments {
 		deployment := &deployments[i]
 		base := deployment.DeepCopy()
-		m.GetLogger().Info("Before patch", "annotations", deployment.Spec.Template.ObjectMeta.Annotations)
-		m.GetLogger().Info(fmt.Sprintf("Annotations %v, %v", deployment.Annotations, deployment.Spec.Template.ObjectMeta.Annotations))
 
 		// Remove annotation from Deployment pod template
-		m.GetLogger().Info("Removing annotation from deployment",
-			"namespace", deployment.Namespace, "name", deployment.Name)
 		delete(deployment.Spec.Template.ObjectMeta.Annotations, annotation)
 		if err := m.GetClient().Patch(ctx, deployment, client.MergeFrom(base)); err != nil {
 			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to delete annotation from deployment %s/%s: %s", deployment.Namespace, deployment.Name, err))
 		}
-		m.GetLogger().Info("After patch", "annotations", deployment.Spec.Template.ObjectMeta.Annotations)
 	}
 
 	if len(collectedErrors) > 0 {
