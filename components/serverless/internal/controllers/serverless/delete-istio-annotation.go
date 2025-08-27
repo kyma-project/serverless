@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	appsv1 "k8s.io/api/apps/v1"
-	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -19,39 +18,44 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 	var collectedErrors []string
 
 	// list pods with the specific annotation
-	pods := &corev1.PodList{}
-	err := listAnnotated(ctx, m.GetAPIReader(), annotation, pods)
-	if err != nil {
-		collectedErrors = append(collectedErrors, fmt.Sprintf("failed to list annotated pods: %s", err))
-	}
-
-	// delete the annotation from each pod
-	for i := range pods.Items {
-		pod := &pods.Items[i]
-		base := pod.DeepCopy()
-
-		if pod.Annotations != nil {
-			delete(pod.Annotations, annotation)
-		}
-
-		if err := m.GetClient().Patch(ctx, pod, client.MergeFrom(base)); err != nil {
-			collectedErrors = append(collectedErrors,
-				fmt.Sprintf("failed to delete annotation from pod %s/%s: %s",
-					pod.Namespace, pod.Name, err))
-		}
-	}
+	//pods := &corev1.PodList{}
+	//err := listAnnotated(ctx, m.GetAPIReader(), annotation, pods)
+	//if err != nil {
+	//	collectedErrors = append(collectedErrors, fmt.Sprintf("failed to list annotated pods: %s", err))
+	//}
+	//
+	//// delete the annotation from each pod
+	//for i := range pods.Items {
+	//	pod := &pods.Items[i]
+	//	base := pod.DeepCopy()
+	//
+	//	m.GetLogger().Info(fmt.Sprintf("Annotations %v", pod.Annotations))
+	//
+	//	if pod.Annotations != nil {
+	//		delete(pod.Annotations, annotation)
+	//	}
+	//
+	//	if err := m.GetClient().Patch(ctx, pod, client.MergeFrom(base)); err != nil {
+	//		collectedErrors = append(collectedErrors,
+	//			fmt.Sprintf("failed to delete annotation from pod %s/%s: %s",
+	//				pod.Namespace, pod.Name, err))
+	//	}
+	//}
 
 	// list deployments with the specific annotation
 	deployments := &appsv1.DeploymentList{}
-	err = listAnnotated(ctx, m.GetAPIReader(), annotation, deployments)
+	err := listAnnotated(ctx, m.GetAPIReader(), annotation, deployments, m)
 	if err != nil {
 		collectedErrors = append(collectedErrors, fmt.Sprintf("failed to list annotated deployments: %s", err))
 	}
+
+	m.GetLogger().Info(fmt.Sprintf("Length %d", len(deployments.Items)))
 
 	// delete the annotation from each deployment
 	for i := range deployments.Items {
 		deployment := &deployments.Items[i]
 		m.GetLogger().Info("Before patch", "annotations", deployment.Spec.Template.ObjectMeta.Annotations)
+		m.GetLogger().Info(fmt.Sprintf("Annotations %v, %v", deployment.Annotations, deployment.Spec.Template.ObjectMeta.Annotations))
 		//base := deployment.DeepCopy()
 		// Remove annotation from Deployment metadata
 		if deployment.Annotations != nil {
@@ -78,7 +82,9 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 	return nil
 }
 
-func listAnnotated(ctx context.Context, reader client.Reader, annotation string, list client.ObjectList) error {
+func listAnnotated(ctx context.Context, reader client.Reader, annotation string, list client.ObjectList, m manager.Manager) error {
+
+	// Get the deployments from the state (deployment.go)
 	if err := reader.List(ctx, list, &client.ListOptions{}); err != nil {
 		return err
 	}
@@ -89,6 +95,8 @@ func listAnnotated(ctx context.Context, reader client.Reader, annotation string,
 		return err
 	}
 
+	m.GetLogger().Info(fmt.Sprintf("Length %d", len(items)))
+
 	filteredItems := []runtime.Object{}
 	for _, item := range items {
 		obj := item.(client.Object)
@@ -96,6 +104,8 @@ func listAnnotated(ctx context.Context, reader client.Reader, annotation string,
 			filteredItems = append(filteredItems, obj)
 		}
 	}
+
+	m.GetLogger().Info(fmt.Sprintf("Length %d", len(filteredItems)))
 
 	return meta.SetList(list, filteredItems)
 }
