@@ -3,6 +3,7 @@ package serverless
 import (
 	"context"
 	"fmt"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -17,34 +18,10 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 
 	var collectedErrors []string
 
-	// list pods with the specific annotation
-	//pods := &corev1.PodList{}
-	//err := listAnnotated(ctx, m.GetAPIReader(), annotation, pods)
-	//if err != nil {
-	//	collectedErrors = append(collectedErrors, fmt.Sprintf("failed to list annotated pods: %s", err))
-	//}
-	//
-	//// delete the annotation from each pod
-	//for i := range pods.Items {
-	//	pod := &pods.Items[i]
-	//	base := pod.DeepCopy()
-	//
-	//	m.GetLogger().Info(fmt.Sprintf("Annotations %v", pod.Annotations))
-	//
-	//	if pod.Annotations != nil {
-	//		delete(pod.Annotations, annotation)
-	//	}
-	//
-	//	if err := m.GetClient().Patch(ctx, pod, client.MergeFrom(base)); err != nil {
-	//		collectedErrors = append(collectedErrors,
-	//			fmt.Sprintf("failed to delete annotation from pod %s/%s: %s",
-	//				pod.Namespace, pod.Name, err))
-	//	}
-	//}
-
 	// list deployments with the specific annotation
 	deployments := &appsv1.DeploymentList{}
-	err := listAnnotated(ctx, m.GetAPIReader(), annotation, deployments, m)
+	var f serverlessv1alpha2.Function
+	err := listAnnotated(annotation, *deployments, m, systemState{instance: f})
 	if err != nil {
 		collectedErrors = append(collectedErrors, fmt.Sprintf("failed to list annotated deployments: %s", err))
 	}
@@ -54,6 +31,7 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 	// delete the annotation from each deployment
 	for i := range deployments.Items {
 		deployment := &deployments.Items[i]
+		base := deployment.DeepCopy()
 		m.GetLogger().Info("Before patch", "annotations", deployment.Spec.Template.ObjectMeta.Annotations)
 		m.GetLogger().Info(fmt.Sprintf("Annotations %v, %v", deployment.Annotations, deployment.Spec.Template.ObjectMeta.Annotations))
 		//base := deployment.DeepCopy()
@@ -69,7 +47,7 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 				"namespace", deployment.Namespace, "name", deployment.Name)
 			delete(deployment.Spec.Template.ObjectMeta.Annotations, annotation)
 		}
-		if err := m.GetClient().Update(ctx, deployment); err != nil {
+		if err := m.GetClient().Patch(ctx, deployment, client.MergeFrom(base)); err != nil {
 			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to delete annotation from deployment %s/%s: %s", deployment.Namespace, deployment.Name, err))
 		}
 		m.GetLogger().Info("After patch", "annotations", deployment.Spec.Template.ObjectMeta.Annotations)
@@ -82,30 +60,15 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 	return nil
 }
 
-func listAnnotated(ctx context.Context, reader client.Reader, annotation string, list client.ObjectList, m manager.Manager) error {
-
-	// Get the deployments from the state (deployment.go)
-	if err := reader.List(ctx, list, &client.ListOptions{}); err != nil {
-		return err
-	}
-
-	// Filter objects with the specific annotation
-	items, err := meta.ExtractList(list)
-	if err != nil {
-		return err
-	}
-
-	m.GetLogger().Info(fmt.Sprintf("Length %d", len(items)))
-
+func listAnnotated(annotation string, list appsv1.DeploymentList, m manager.Manager, s systemState) error {
 	filteredItems := []runtime.Object{}
-	for _, item := range items {
-		obj := item.(client.Object)
-		if _, exists := obj.GetAnnotations()[annotation]; exists {
-			filteredItems = append(filteredItems, obj)
+	for _, item := range s.deployments.Items {
+		if _, exists := item.Annotations[annotation]; exists {
+			filteredItems = append(filteredItems, &item)
 		}
 	}
 
 	m.GetLogger().Info(fmt.Sprintf("Length %d", len(filteredItems)))
 
-	return meta.SetList(list, filteredItems)
+	return meta.SetList(&list, filteredItems)
 }
