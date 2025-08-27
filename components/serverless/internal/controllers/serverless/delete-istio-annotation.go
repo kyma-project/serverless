@@ -13,7 +13,7 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 
 	annotation := "sidecar.istio.io/nativeSidecar"
 
-	deployments, err := listAnnotatedDeployments(ctx, m, annotation)
+	deployments, err := listAnnotatedDeployments(ctx, m.GetAPIReader(), annotation)
 	if err != nil {
 		return fmt.Errorf("failed to list annotated deployments: %w", err)
 	}
@@ -47,13 +47,13 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 	return nil
 }
 
-func listAnnotatedDeployments(ctx context.Context, m manager.Manager, annotation string) ([]appsv1.Deployment, error) {
+func listAnnotatedDeployments(ctx context.Context, m client.Reader, annotation string) ([]appsv1.Deployment, error) {
 	labelSelector := client.MatchingLabels{
 		"serverless.kyma-project.io/managed-by": "function-controller",
 	}
 
 	var allDeployments appsv1.DeploymentList
-	if err := m.GetClient().List(ctx, &allDeployments, labelSelector); err != nil {
+	if err := m.List(ctx, &allDeployments, labelSelector); err != nil {
 		return nil, err
 	}
 
