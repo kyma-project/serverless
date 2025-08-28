@@ -108,7 +108,7 @@ func buildStateFnUpdateDeployment(expectedSpec appsv1.DeploymentSpec, expectedLa
 
 		s.deployments.Items[0].Spec = expectedSpec
 		s.deployments.Items[0].Labels = expectedLabels
-		s.deployments.Items[0].Annotations = expectedAnnotations
+		s.deployments.Items[0].Spec.Template.Annotations = expectedAnnotations
 		deploymentName := s.deployments.Items[0].GetName()
 
 		r.log.Info(fmt.Sprintf("updating Deployment %s", deploymentName))
