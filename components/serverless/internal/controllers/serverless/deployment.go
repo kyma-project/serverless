@@ -56,10 +56,27 @@ func stateFnCheckDeployments(ctx context.Context, r *reconciler, s *systemState)
 		return stateFnDeleteDeployments, nil
 	}
 
-	if !equalDeployments(s.deployments.Items[0], expectedDeployment) {
+	// TODO: This is a temporary solution to delete istio native sidecar annotations from Functions pods see: https://github.com/kyma-project/serverless/issues/1837.
+	deployment := s.deployments.Items[0]
+	removed := sanitizeDeploymentAnnotations(&deployment)
+
+	if removed || !equalDeployments(s.deployments.Items[0], expectedDeployment) {
 		return buildStateFnUpdateDeployment(expectedDeployment.Spec, expectedDeployment.Labels), nil
 	}
 	return stateFnCheckService, nil
+}
+
+func sanitizeDeploymentAnnotations(deployment *appsv1.Deployment) bool {
+	changed := false
+	annotation := "sidecar.istio.io/nativeSidecar"
+
+	if deployment.Spec.Template.ObjectMeta.Annotations != nil {
+		if _, exists := deployment.Spec.Template.ObjectMeta.Annotations[annotation]; exists {
+			delete(deployment.Spec.Template.ObjectMeta.Annotations, annotation)
+			changed = true
+		}
+	}
+	return changed
 }
 
 func buildStateFnCreateDeployment(d appsv1.Deployment) stateFn {

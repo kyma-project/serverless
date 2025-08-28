@@ -193,15 +193,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// TODO: This is a temporary solution to delete istio native sidecar annotations from Functions pods see: https://github.com/kyma-project/serverless/issues/1837.
-	go func() {
-		err := serverless.DeleteIstioNativeSidecar(ctx, mgr)
-		if err != nil {
-			setupLog.Error(err, "unable to delete Istio native sidecar")
-			os.Exit(1)
-		}
-	}()
-
 	// +kubebuilder:scaffold:builder
 
 	logWithCtx.Info("Running manager")
