@@ -48,6 +48,10 @@ func stateFnCheckDeployments(ctx context.Context, r *reconciler, s *systemState)
 	}
 
 	expectedDeployment := s.buildDeployment(args, r.cfg)
+
+	// TODO: This is a temporary solution to delete istio native sidecar annotations from Functions pods see: https://github.com/kyma-project/serverless/issues/1837.
+	sanitizeDeploymentAnnotations(&expectedDeployment)
+
 	if len(s.deployments.Items) == 0 {
 		return buildStateFnCreateDeployment(expectedDeployment), nil
 	}
@@ -56,27 +60,20 @@ func stateFnCheckDeployments(ctx context.Context, r *reconciler, s *systemState)
 		return stateFnDeleteDeployments, nil
 	}
 
-	// TODO: This is a temporary solution to delete istio native sidecar annotations from Functions pods see: https://github.com/kyma-project/serverless/issues/1837.
-	deployment := s.deployments.Items[0]
-	removed := sanitizeDeploymentAnnotations(&deployment)
-
-	if removed || !equalDeployments(s.deployments.Items[0], expectedDeployment) {
-		return buildStateFnUpdateDeployment(expectedDeployment.Spec, expectedDeployment.Labels), nil
+	if !equalDeployments(s.deployments.Items[0], expectedDeployment) {
+		return buildStateFnUpdateDeployment(expectedDeployment.Spec, expectedDeployment.Labels, expectedDeployment.Annotations), nil
 	}
 	return stateFnCheckService, nil
 }
 
-func sanitizeDeploymentAnnotations(deployment *appsv1.Deployment) bool {
-	changed := false
+func sanitizeDeploymentAnnotations(deployment *appsv1.Deployment) {
 	annotation := "sidecar.istio.io/nativeSidecar"
 
 	if deployment.Spec.Template.ObjectMeta.Annotations != nil {
 		if _, exists := deployment.Spec.Template.ObjectMeta.Annotations[annotation]; exists {
 			delete(deployment.Spec.Template.ObjectMeta.Annotations, annotation)
-			changed = true
 		}
 	}
-	return changed
 }
 
 func buildStateFnCreateDeployment(d appsv1.Deployment) stateFn {
@@ -108,11 +105,12 @@ func stateFnDeleteDeployments(ctx context.Context, r *reconciler, s *systemState
 	return nil, errors.Wrap(err, "while deleting delpoyments")
 }
 
-func buildStateFnUpdateDeployment(expectedSpec appsv1.DeploymentSpec, expectedLabels map[string]string) stateFn {
+func buildStateFnUpdateDeployment(expectedSpec appsv1.DeploymentSpec, expectedLabels, expectedAnnotations map[string]string) stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, error) {
 
 		s.deployments.Items[0].Spec = expectedSpec
 		s.deployments.Items[0].Labels = expectedLabels
+		s.deployments.Items[0].Annotations = expectedAnnotations
 		deploymentName := s.deployments.Items[0].GetName()
 
 		r.log.Info(fmt.Sprintf("updating Deployment %s", deploymentName))
