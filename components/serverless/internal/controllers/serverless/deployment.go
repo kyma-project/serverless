@@ -57,9 +57,47 @@ func stateFnCheckDeployments(ctx context.Context, r *reconciler, s *systemState)
 	}
 
 	if !equalDeployments(s.deployments.Items[0], expectedDeployment) {
-		return buildStateFnUpdateDeployment(expectedDeployment.Spec, expectedDeployment.Labels), nil
+		return stateFnCleanupIstioAnnotation(
+			buildStateFnUpdateDeployment(expectedDeployment.Spec, expectedDeployment.Labels),
+		), nil
 	}
+
 	return stateFnCheckService, nil
+}
+
+func stateFnCleanupIstioAnnotation(next stateFn) stateFn {
+	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, error) {
+		r.log.Info("Checking Istio annotation")
+		istioNativeSidecarAnnotation := "sidecar.istio.io/nativeSidecar"
+
+		dep := &s.deployments.Items[0]
+		changed := false
+
+		if dep.Annotations != nil {
+			if _, ok := dep.Annotations[istioNativeSidecarAnnotation]; ok {
+				delete(dep.Annotations, istioNativeSidecarAnnotation)
+				changed = true
+			}
+		}
+		if dep.Spec.Template.Annotations != nil {
+			r.log.Info("Checking Istio annotation has some annotations")
+			if _, ok := dep.Spec.Template.Annotations[istioNativeSidecarAnnotation]; ok {
+				r.log.Info("Deleting Istio annotation")
+				delete(dep.Spec.Template.Annotations, istioNativeSidecarAnnotation)
+				changed = true
+			}
+		}
+
+		if changed {
+			r.log.Info("removing Istio native sidecar annotation",
+				"deployment", dep.Name, "namespace", dep.Namespace)
+			if err := r.client.Update(ctx, dep); err != nil {
+				return nil, errors.Wrap(err, "while removing istio annotation")
+			}
+		}
+
+		return next, nil
+	}
 }
 
 func buildStateFnCreateDeployment(d appsv1.Deployment) stateFn {
