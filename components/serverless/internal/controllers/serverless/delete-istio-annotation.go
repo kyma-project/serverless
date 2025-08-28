@@ -40,9 +40,7 @@ func DeleteIstioNativeSidecar(ctx context.Context, m manager.Manager) error {
 }
 
 func listAnnotatedDeployments(ctx context.Context, m client.Reader, annotation string) ([]appsv1.Deployment, error) {
-	labelSelector := client.MatchingLabels{
-		"serverless.kyma-project.io/managed-by": "function-controller",
-	}
+	labelSelector := client.HasLabels{"serverless.kyma-project.io/function-name"}
 
 	var allDeployments appsv1.DeploymentList
 	if err := m.List(ctx, &allDeployments, labelSelector); err != nil {
