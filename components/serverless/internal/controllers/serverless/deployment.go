@@ -56,6 +56,8 @@ func stateFnCheckDeployments(ctx context.Context, r *reconciler, s *systemState)
 		return stateFnDeleteDeployments, nil
 	}
 
+	logDeploymentAnnotations(r, &s.deployments.Items[0], &expectedDeployment)
+
 	if !equalDeployments(s.deployments.Items[0], expectedDeployment) {
 		return stateFnCleanupIstioAnnotation(
 			buildStateFnUpdateDeployment(expectedDeployment.Spec, expectedDeployment.Labels),
@@ -98,6 +100,16 @@ func stateFnCleanupIstioAnnotation(next stateFn) stateFn {
 
 		return next, nil
 	}
+}
+
+func logDeploymentAnnotations(r *reconciler, dep *appsv1.Deployment, expected *appsv1.Deployment) {
+	r.log.Info("=== Deployment Annotations Debug ===",
+		"deploymentName", dep.Name,
+		"namespace", dep.Namespace,
+		"currentPodTemplateAnnotations", dep.Spec.Template.Annotations,
+		"currentDeploymentAnnotations", dep.Annotations,
+		"expectedPodTemplateAnnotations", expected.Spec.Template.Annotations,
+		"expectedDeploymentAnnotations", expected.Annotations)
 }
 
 func buildStateFnCreateDeployment(d appsv1.Deployment) stateFn {
