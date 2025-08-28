@@ -70,9 +70,7 @@ func sanitizeDeploymentAnnotations(deployment *appsv1.Deployment) {
 	annotation := "sidecar.istio.io/nativeSidecar"
 
 	if deployment.Spec.Template.ObjectMeta.Annotations != nil {
-		if _, exists := deployment.Spec.Template.ObjectMeta.Annotations[annotation]; exists {
-			delete(deployment.Spec.Template.ObjectMeta.Annotations, annotation)
-		}
+		delete(deployment.Spec.Template.ObjectMeta.Annotations, annotation)
 	}
 }
 
