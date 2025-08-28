@@ -28,7 +28,6 @@
   * [Sample Functions](/serverless-manager/user/technical-reference/07-10-sample-functions.md)
   * [Function Processing](/serverless-manager/user/technical-reference/07-20-function-processing-stages.md)
   * [Git Source Type](/serverless-manager/user/technical-reference/07-40-git-source-type.md)
-  * [Function Configuration File](/serverless-manager/user/technical-reference/07-60-function-configuration-file.md)
   * [Function's Specification](/serverless-manager/user/technical-reference/07-70-function-specification.md)
   * [Available Presets](/serverless-manager/user/technical-reference/07-80-available-presets.md)
   * [Serverless Buildless Mode](/serverless-manager/user/technical-reference/03-10-buildless-serverless.md)

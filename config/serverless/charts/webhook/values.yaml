@@ -71,7 +71,7 @@ container:
     privileged: false
     capabilities:
       drop: ["ALL"]
-    procMount: default # Optional. The default is false if the entry is not there.
+    procMount: Default # Optional. The default is false if the entry is not there.
     readOnlyRootFilesystem: true # Mandatory
   envs:
     logConfigPath:
@@ -92,7 +92,7 @@ initContainer:
     privileged: false
     capabilities:
       drop: ["ALL"]
-    procMount: default # Optional. The default is false if the entry is not there.
+    procMount: Default # Optional. The default is false if the entry is not there.
     readOnlyRootFilesystem: true # Mandatory
 
 values:
