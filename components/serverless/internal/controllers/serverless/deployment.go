@@ -50,7 +50,6 @@ func stateFnCheckDeployments(ctx context.Context, r *reconciler, s *systemState)
 	expectedDeployment := s.buildDeployment(args, r.cfg)
 
 	// TODO: This is a temporary solution to delete istio native sidecar annotations from Functions pods see: https://github.com/kyma-project/serverless/issues/1837.
-	sanitizeDeploymentAnnotations(&expectedDeployment)
 
 	if len(s.deployments.Items) == 0 {
 		return buildStateFnCreateDeployment(expectedDeployment), nil
@@ -61,17 +60,32 @@ func stateFnCheckDeployments(ctx context.Context, r *reconciler, s *systemState)
 	}
 
 	if !equalDeployments(s.deployments.Items[0], expectedDeployment) {
-		return buildStateFnUpdateDeployment(expectedDeployment.Spec, expectedDeployment.Labels, expectedDeployment.Spec.Template.Annotations), nil
+		return buildStateFnUpdateDeployment(expectedDeployment.Spec, expectedDeployment.Labels), nil
 	}
-	return stateFnCheckService, nil
+	return stateFnRemoveDeploymentIstioAnnotations, nil
 }
 
-func sanitizeDeploymentAnnotations(deployment *appsv1.Deployment) {
-	annotation := "sidecar.istio.io/nativeSidecar"
+// TODO: This is a temporary solution to delete istio native sidecar annotations from Functions pods see: https://github.com/kyma-project/serverless/issues/1837.
+func stateFnRemoveDeploymentIstioAnnotations(ctx context.Context, r *reconciler, s *systemState) (stateFn, error) {
+	const annotation = "sidecar.istio.io/nativeSidecar"
 
-	if deployment.Spec.Template.ObjectMeta.Annotations != nil {
-		delete(deployment.Spec.Template.ObjectMeta.Annotations, annotation)
+	deployment := &s.deployments.Items[0]
+	if deployment.Spec.Template.Annotations == nil {
+		return stateFnCheckService, nil
 	}
+
+	if _, exists := deployment.Spec.Template.Annotations[annotation]; !exists {
+		return stateFnCheckService, nil
+	}
+
+	r.log.Info("migrating deployment: removing Istio native sidecar annotation", "deployment", deployment.Name)
+	delete(deployment.Spec.Template.Annotations, annotation)
+
+	if err := r.client.Update(ctx, deployment); err != nil {
+		return nil, errors.Wrapf(err, "while migrating deployment %s/%s", deployment.Namespace, deployment.Name)
+	}
+
+	return stateFnCheckService, nil
 }
 
 func buildStateFnCreateDeployment(d appsv1.Deployment) stateFn {
@@ -103,12 +117,11 @@ func stateFnDeleteDeployments(ctx context.Context, r *reconciler, s *systemState
 	return nil, errors.Wrap(err, "while deleting delpoyments")
 }
 
-func buildStateFnUpdateDeployment(expectedSpec appsv1.DeploymentSpec, expectedLabels, expectedAnnotations map[string]string) stateFn {
+func buildStateFnUpdateDeployment(expectedSpec appsv1.DeploymentSpec, expectedLabels map[string]string) stateFn {
 	return func(ctx context.Context, r *reconciler, s *systemState) (stateFn, error) {
 
 		s.deployments.Items[0].Spec = expectedSpec
 		s.deployments.Items[0].Labels = expectedLabels
-		s.deployments.Items[0].Spec.Template.Annotations = expectedAnnotations
 		deploymentName := s.deployments.Items[0].GetName()
 
 		r.log.Info(fmt.Sprintf("updating Deployment %s", deploymentName))
