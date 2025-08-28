@@ -61,7 +61,7 @@ func stateFnCheckDeployments(ctx context.Context, r *reconciler, s *systemState)
 	}
 
 	if !equalDeployments(s.deployments.Items[0], expectedDeployment) {
-		return buildStateFnUpdateDeployment(expectedDeployment.Spec, expectedDeployment.Labels, expectedDeployment.Annotations), nil
+		return buildStateFnUpdateDeployment(expectedDeployment.Spec, expectedDeployment.Labels, expectedDeployment.Spec.Template.Annotations), nil
 	}
 	return stateFnCheckService, nil
 }
