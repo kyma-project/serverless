@@ -399,9 +399,14 @@ func (s *systemState) podAnnotations() map[string]string {
 		result = labels.Merge(s.instance.Spec.Annotations, result)
 	}
 
+	// TODO: This is a temporary solution to delete istio native sidecar annotations from Functions pods see: https://github.com/kyma-project/serverless/issues/1837.
+	annotation := "sidecar.istio.io/nativeSidecar"
+	current := s.currentAnnotations()
+	delete(current, annotation)
+
 	// merge old and new annotations to allow other components to annotate functions deployment
 	// for example in case when someone use `kubectl rollout restart` on it
-	result = labels.Merge(s.currentAnnotations(), result)
+	result = labels.Merge(current, result)
 	return result
 }
 
