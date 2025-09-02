@@ -66,5 +66,5 @@ check-var = $(if $(strip $($1)),,$(error "$1" is not defined))
 ##@ Actions
 .PHONY: module-config
 module-config:
-	yq ".version = \"${MODULE_VERSION}\" | .defaultCR = \"default-serverless-cr.yaml\" | .manifest = \"serverless-operator.yaml\"  "\
+	yq ".version = \"${MODULE_VERSION}\" "\
     module-config-template.yaml > module-config.yaml
