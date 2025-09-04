@@ -1,6 +1,8 @@
 package endpoint
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -8,6 +10,7 @@ import (
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/resources"
 	"github.com/pkg/errors"
+	"go.yaml.in/yaml/v3"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -29,26 +32,44 @@ func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	svcName := fmt.Sprintf("%s-ejected", function.Name)
-	svc := resources.NewService(
-		&function,
-		resources.ServiceName(svcName),
-		resources.ServiceTrimClusterInfoLabels(),
-		resources.ServiceAppendSelectorLabels(map[string]string{
-			"app.kubernetes.io/instance": svcName,
-		}),
-	)
+	svc, err := s.buildServiceFileData(&function)
+	if err != nil {
+		s.writeErrorResponse(w, http.StatusInternalServerError, errors.Wrapf(err, "failed to build service for function '%s/%s'", ns, name))
+		return
+	}
 
-	deployment, err := s.buildDeployment(&function)
+	deployment, err := s.buildDeploymentFileData(&function)
 	if err != nil {
 		s.writeErrorResponse(w, http.StatusInternalServerError, errors.Wrapf(err, "failed to build deployment for function '%s/%s'", ns, name))
 		return
 	}
 
-	s.writeItemListResponse(w, []interface{}{svc, deployment})
+	s.writeFilesListResponse(w, []FileResponse{
+		{Name: "service.yaml", Data: base64.StdEncoding.EncodeToString(svc)},
+		{Name: "deployment.yaml", Data: base64.StdEncoding.EncodeToString(deployment)},
+	})
 }
 
-func (s *Server) buildDeployment(function *serverlessv1alpha2.Function) (*resources.Deployment, error) {
+func (s *Server) buildServiceFileData(function *serverlessv1alpha2.Function) ([]byte, error) {
+	svcName := fmt.Sprintf("%s-ejected", function.Name)
+	svc := resources.NewService(
+		function,
+		resources.ServiceName(svcName),
+		resources.ServiceTrimClusterInfoLabels(),
+		resources.ServiceAppendSelectorLabels(map[string]string{
+			"app.kubernetes.io/instance": svcName,
+		}),
+	).Service
+
+	data, err := convertK8SObjectToYaml(svc)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to marshal service to YAML")
+	}
+
+	return data, nil
+}
+
+func (s *Server) buildDeploymentFileData(function *serverlessv1alpha2.Function) ([]byte, error) {
 	var commit string
 	var gitAuth *git.GitAuth
 	if function.Spec.Source.GitRepository != nil {
@@ -68,7 +89,7 @@ func (s *Server) buildDeployment(function *serverlessv1alpha2.Function) (*resour
 	}
 
 	deployName := fmt.Sprintf("%s-ejected", function.Name)
-	return resources.NewDeployment(
+	deploy := resources.NewDeployment(
 		function,
 		&s.functionConfig, nil,
 		commit,
@@ -78,5 +99,37 @@ func (s *Server) buildDeployment(function *serverlessv1alpha2.Function) (*resour
 		resources.DeployAppendSelectorLabels(map[string]string{
 			"app.kubernetes.io/instance": deployName,
 		}),
-	), nil
+	).Deployment
+
+	data, err := convertK8SObjectToYaml(deploy)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to marshal deployment to YAML")
+	}
+
+	return data, nil
+}
+
+// k8s object are designed to be converted to JSON instead of YAML
+// this function does double convertion (from obj to json and from json to yaml)
+func convertK8SObjectToYaml(obj interface{}) ([]byte, error) {
+	jsonBytes, err := json.Marshal(obj)
+	if err != nil {
+		return nil, err
+	}
+
+	var jsonObj interface{}
+
+	// We are using yaml.Unmarshal here (instead of json.Unmarshal) because the
+	// Go JSON library doesn't try to pick the right number type (int, float, etc.)
+	err = yaml.Unmarshal(jsonBytes, &jsonObj)
+	if err != nil {
+		return nil, err
+	}
+
+	yamlBytes, err := yaml.Marshal(jsonObj)
+	if err != nil {
+		return nil, err
+	}
+
+	return yamlBytes, nil
 }

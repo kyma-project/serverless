@@ -31,15 +31,21 @@ func (s *Server) writeErrorResponse(w http.ResponseWriter, status int, respErr e
 	fmt.Fprint(w, buf.String())
 }
 
-type ItemListResponse struct {
-	Items []interface{} `json:"items"`
+type FileResponse struct {
+	Name string `json:"name"`
+	Data string `json:"data"` // base64 encoded file content
 }
 
-func (s *Server) writeItemListResponse(w http.ResponseWriter, data []interface{}) {
+type FilesListResponse struct {
+	Files []FileResponse `json:"files"`
+}
+
+func (s *Server) writeFilesListResponse(w http.ResponseWriter, data []FileResponse) {
 	buf := bytes.NewBuffer([]byte{})
-	err := json.NewEncoder(buf).Encode(ItemListResponse{Items: data})
+	err := json.NewEncoder(buf).Encode(FilesListResponse{Files: data})
 	if err != nil {
 		s.writeErrorResponse(w, http.StatusInternalServerError, errors.Wrap(err, "failed to encode response"))
+		return
 	}
 
 	s.log.Debugf("writing item list response with %d items", len(data))
