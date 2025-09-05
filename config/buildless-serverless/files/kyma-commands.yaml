@@ -22,7 +22,12 @@ subCommands:
     name: "all-namespaces"
     shorthand: "A"
     default: false
+  - type: string
+    name: output
+    shorthand: o
+    description: "Output format. It can be json or yaml."
   with:
+    output: ${{ .flags.output.value }}
     fromAllNamespaces: ${{.flags.allnamespaces.value}}
     resource:
       apiVersion: serverless.kyma-project.io/v1alpha2
@@ -41,7 +46,7 @@ subCommands:
       name: "generation"
 
 - metadata:
-    name: "explain"
+    name: "explain [flags]"
     description: "Explain Functions"
     descriptionLong: "Use this command to explain what Function is."
   uses: resource_explain
@@ -133,7 +138,12 @@ subCommands:
   - type: bool
     name: "dry-run"
     description: "Simulates resource creation if set to 'true'"
+  - type: string
+    name: output
+    shorthand: o
+    description: "Output format. It can be json or yaml."
   with:
+    output: ${{ .flags.output.value }}
     dryRun: ${{ .flags.dryrun.value }}
     resource:
       apiVersion: serverless.kyma-project.io/v1alpha2
