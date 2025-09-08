@@ -88,9 +88,9 @@ subCommands:
         namespace: ${{ .flags.namespace.value }}
 
 - metadata:
-    name: "create <resource_name> [flags]"
+    name: "create"
     description: "Create Function"
-    descriptionLong: "Use this command to create Function on a cluster."
+    descriptionLong: "Use this command to create a Function with the default NodeJS 22 runtime on a cluster."
   uses: resource_create
   args:
     type: string
@@ -104,11 +104,6 @@ subCommands:
     shorthand: "n"
     description: "Function's namespace"
     default: "default"
-  - type: string
-    name: "runtime"
-    description: "function runtime"
-    shorthand: "r"
-    default: "nodejs22"
   - type: int
     name: "replicas"
     description: "function replicas"
@@ -155,7 +150,7 @@ subCommands:
         namespace: ${{ .flags.namespace.value }}
       spec:
         runtimeImageOverride: ${{ .flags.runtimeimageoverride.value }}
-        runtime: ${{ .flags.runtime.value }}
+        runtime: nodejs22
         replicas: ${{ .flags.replicas.value }}
         env: ${{ .flags.env.value | toEnvs }}
         secretMounts: ${{ .flags.secretmount.value | toArray "{'secretName':'{{.key}}','mountPath':'{{.value}}'}" }}
@@ -165,6 +160,220 @@ subCommands:
               ${{ .flags.source.value | newLineIndent 20 }}
             dependencies: |
               ${{ .flags.dependencies.value | newLineIndent 20 }}
+  subCommands:
+    - metadata:
+        name: "python312 <resource_name> [flags]"
+        description: "Create Python 3.12 Function"
+        descriptionLong: "Use this command to create a Function with Python 3.12 runtime on a cluster."
+      uses: resource_create
+      args:
+        type: string
+      flags:
+      - type: string
+        name: "runtime-image-override"
+        description: "custom runtime image to be used as Function's runtime base"
+        default: "\"\""
+      - type: string
+        name: "namespace"
+        shorthand: "n"
+        description: "Function's namespace"
+        default: "default"
+      - type: int
+        name: "replicas"
+        description: "function replicas"
+        default: "1"
+      - type: path
+        name: "source"
+        description: "function source file path"
+        shorthand: "s"
+        default: |
+          def main(event, context):
+            return "Hello World!"
+      - type: path
+        name: "dependencies"
+        description: "function dependencies file path"
+        shorthand: "d"
+        default: ""
+      - type: map
+        name: "env"
+        description: "function environment variables in format key=value"
+      - type: map
+        name: secret-mount
+        description: "function secret mounts in format secret-name=mount-path"
+      - type: bool
+        name: "dry-run"
+        description: "Simulates resource creation if set to 'true'"
+      - type: string
+        name: output
+        shorthand: o
+        description: "Output format. It can be json or yaml."
+      with:
+        output: ${{ .flags.output.value }}
+        dryRun: ${{ .flags.dryrun.value }}
+        resource:
+          apiVersion: serverless.kyma-project.io/v1alpha2
+          kind: Function
+          metadata:
+            name: ${{ .args.value }}
+            namespace: ${{ .flags.namespace.value }}
+          spec:
+            runtimeImageOverride: ${{ .flags.runtimeimageoverride.value }}
+            runtime: python312
+            replicas: ${{ .flags.replicas.value }}
+            env: ${{ .flags.env.value | toEnvs }}
+            secretMounts: ${{ .flags.secretmount.value | toArray "{'secretName':'{{.key}}','mountPath':'{{.value}}'}" }}
+            source:
+              inline:
+                source: |
+                  ${{ .flags.source.value | newLineIndent 20 }}
+                dependencies: |
+                  ${{ .flags.dependencies.value | newLineIndent 20 }}
+    - metadata:
+        name: "nodejs20 <resource_name> [flags]"
+        description: "Create Node.js 20 Function"
+        descriptionLong: "Use this command to create a Function with Node.js 20 runtime on a cluster."
+      uses: resource_create
+      args:
+        type: string
+      flags:
+      - type: string
+        name: "runtime-image-override"
+        description: "custom runtime image to be used as Function's runtime base"
+        default: "\"\""
+      - type: string
+        name: "namespace"
+        shorthand: "n"
+        description: "Function's namespace"
+        default: "default"
+      - type: int
+        name: "replicas"
+        description: "function replicas"
+        default: "1"
+      - type: path
+        name: "source"
+        description: "function source file path"
+        shorthand: "s"
+        default: |
+          module.exports = {
+            main: function(event, context) {
+              return 'Hello World!'
+            }
+          }
+      - type: path
+        name: "dependencies"
+        description: "function dependencies file path"
+        shorthand: "d"
+        default: |
+          {
+            "dependencies": {}
+          }
+      - type: map
+        name: "env"
+        description: "function environment variables in format key=value"
+      - type: map
+        name: secret-mount
+        description: "function secret mounts in format secret-name=mount-path"
+      - type: bool
+        name: "dry-run"
+        description: "Simulates resource creation if set to 'true'"
+      - type: string
+        name: output
+        shorthand: o
+        description: "Output format. It can be json or yaml."
+      with:
+        output: ${{ .flags.output.value }}
+        dryRun: ${{ .flags.dryrun.value }}
+        resource:
+          apiVersion: serverless.kyma-project.io/v1alpha2
+          kind: Function
+          metadata:
+            name: ${{ .args.value }}
+            namespace: ${{ .flags.namespace.value }}
+          spec:
+            runtimeImageOverride: ${{ .flags.runtimeimageoverride.value }}
+            runtime: nodejs20
+            replicas: ${{ .flags.replicas.value }}
+            env: ${{ .flags.env.value | toEnvs }}
+            secretMounts: ${{ .flags.secretmount.value | toArray "{'secretName':'{{.key}}','mountPath':'{{.value}}'}" }}
+            source:
+              inline:
+                source: |
+                  ${{ .flags.source.value | newLineIndent 20 }}
+                dependencies: |
+                  ${{ .flags.dependencies.value | newLineIndent 20 }}
+    - metadata:
+        name: "nodejs22 <resource_name> [flags]"
+        description: "Create Node.js 22 Function"
+        descriptionLong: "Use this command to create a Function with Node.js 22 runtime on a cluster."
+      uses: resource_create
+      args:
+        type: string
+      flags:
+      - type: string
+        name: "runtime-image-override"
+        description: "custom runtime image to be used as Function's runtime base"
+        default: "\"\""
+      - type: string
+        name: "namespace"
+        shorthand: "n"
+        description: "Function's namespace"
+        default: "default"
+      - type: int
+        name: "replicas"
+        description: "function replicas"
+        default: "1"
+      - type: path
+        name: "source"
+        description: "function source file path"
+        shorthand: "s"
+        default: |
+          module.exports = {
+            main: function(event, context) {
+              return 'Hello World!'
+            }
+          }
+      - type: path
+        name: "dependencies"
+        description: "function dependencies file path"
+        shorthand: "d"
+        default: |
+          {
+            "dependencies": {}
+          }
+      - type: map
+        name: "env"
+        description: "function environment variables in format key=value"
+      - type: map
+        name: secret-mount
+        description: "function secret mounts in format secret-name=mount-path"
+      - type: bool
+        name: "dry-run"
+        description: "Simulates resource creation if set to 'true'"
+      - type: string
+        name: output
+        shorthand: o
+        description: "Output format. It can be json or yaml."
+      with:
+        output: ${{ .flags.output.value }}
+        dryRun: ${{ .flags.dryrun.value }}
+        resource:
+          apiVersion: serverless.kyma-project.io/v1alpha2
+          kind: Function
+          metadata:
+            name: ${{ .args.value }}
+            namespace: ${{ .flags.namespace.value }}
+          spec:
+            runtimeImageOverride: ${{ .flags.runtimeimageoverride.value }}
+            runtime: nodejs22
+            replicas: ${{ .flags.replicas.value }}
+            env: ${{ .flags.env.value | toEnvs }}
+            secretMounts: ${{ .flags.secretmount.value | toArray "{'secretName':'{{.key}}','mountPath':'{{.value}}'}" }}
+            source:
+              inline:
+                source: |
+                  ${{ .flags.source.value | newLineIndent 20 }}
+                dependencies: |
+                  ${{ .flags.dependencies.value | newLineIndent 20 }}
 
 - metadata:
     name: "init [flags]"
