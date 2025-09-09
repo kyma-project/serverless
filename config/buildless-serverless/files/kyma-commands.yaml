@@ -49,7 +49,7 @@ subCommands:
     name: "eject <resource_name> [flags]"
     description: "Eject Function"
     descriptionLong: "Use this command to eject Function from a cluster."
-  uses: cluster_call_files_to_save
+  uses: call_files_to_save
   args:
     type: string
   flags:
