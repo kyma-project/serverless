@@ -26,6 +26,7 @@ subCommands:
     name: output
     shorthand: o
     description: "Output format. It can be json or yaml."
+    default: "yaml"
   with:
     output: ${{ .flags.output.value }}
     fromAllNamespaces: ${{.flags.allnamespaces.value}}
@@ -109,6 +110,7 @@ subCommands:
   - type: bool
     name: "dry-run"
     description: "Simulates resource deletion if set to 'true'"
+    default: true
   with:
     dryRun: ${{ .flags.dryrun.value }}
     resource:
@@ -160,16 +162,20 @@ subCommands:
   - type: map
     name: "env"
     description: "function environment variables in format key=value"
+    default: ""
   - type: map
     name: secret-mount
     description: "function secret mounts in format secret-name=mount-path"
+    default: ""
   - type: bool
     name: "dry-run"
     description: "Simulates resource creation if set to 'true'"
+    default: true
   - type: string
     name: output
     shorthand: o
     description: "Output format. It can be json or yaml."
+    default: "yaml"
   with:
     output: ${{ .flags.output.value }}
     dryRun: ${{ .flags.dryrun.value }}
@@ -228,16 +234,20 @@ subCommands:
       - type: map
         name: "env"
         description: "function environment variables in format key=value"
+        default: ""
       - type: map
         name: secret-mount
         description: "function secret mounts in format secret-name=mount-path"
+        default: ""
       - type: bool
         name: "dry-run"
         description: "Simulates resource creation if set to 'true'"
+        default: true
       - type: string
         name: output
         shorthand: o
         description: "Output format. It can be json or yaml."
+        default: "yaml"
       with:
         output: ${{ .flags.output.value }}
         dryRun: ${{ .flags.dryrun.value }}
@@ -301,16 +311,20 @@ subCommands:
       - type: map
         name: "env"
         description: "function environment variables in format key=value"
+        default: ""
       - type: map
         name: secret-mount
         description: "function secret mounts in format secret-name=mount-path"
+        default: ""
       - type: bool
         name: "dry-run"
         description: "Simulates resource creation if set to 'true'"
+        default: true
       - type: string
         name: output
         shorthand: o
         description: "Output format. It can be json or yaml."
+        default: "yaml"
       with:
         output: ${{ .flags.output.value }}
         dryRun: ${{ .flags.dryrun.value }}
@@ -374,16 +388,20 @@ subCommands:
       - type: map
         name: "env"
         description: "function environment variables in format key=value"
+        default: ""
       - type: map
         name: secret-mount
         description: "function secret mounts in format secret-name=mount-path"
+        default: ""
       - type: bool
         name: "dry-run"
         description: "Simulates resource creation if set to 'true'"
+        default: "true"
       - type: string
         name: output
         shorthand: o
         description: "Output format. It can be json or yaml."
+        default: "yaml"
       with:
         output: ${{ .flags.output.value }}
         dryRun: ${{ .flags.dryrun.value }}
