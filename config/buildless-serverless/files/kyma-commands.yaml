@@ -86,7 +86,7 @@ subCommands:
         namespace: ${{ .flags.namespace.value }}
 
 - metadata:
-    name: "create"
+    name: "create <resource_name> [flags]"
     description: "Create Function"
     descriptionLong: "Use this command to create a Function with the default NodeJS 22 runtime on a cluster."
   uses: resource_create
