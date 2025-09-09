@@ -46,6 +46,39 @@ subCommands:
       name: "generation"
 
 - metadata:
+    name: "eject <resource_name> [flags]"
+    description: "Eject Function"
+    descriptionLong: "Use this command to eject Function from a cluster."
+  uses: call_files_to_save
+  args:
+    type: string
+  flags:
+  - type: string
+    name: "namespace"
+    shorthand: "n"
+    description: "Function's namespace"
+    default: "default"
+  - type: string
+    name: "dir"
+    description: "Directory where the files will be saved"
+    shorthand: "d"
+    default: "."
+  with:
+    outputDir: ${{ .flags.dir.value }}
+    request:
+      parameters:
+        name: ${{ .args.value }}
+        namespace: ${{ .flags.namespace.value }}
+    targetPod:
+      path: "/internal/function/eject/"
+      port: "12137"
+      namespace: kyma-system
+      selector:
+        app: serverless
+        app.kubernetes.io/instance: serverless
+        app.kubernetes.io/name: serverless
+
+- metadata:
     name: "explain [flags]"
     description: "Explain Functions"
     descriptionLong: "Use this command to explain what Function is."
