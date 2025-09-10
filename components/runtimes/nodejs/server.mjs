@@ -14,6 +14,7 @@ process.on("uncaughtException", (err) => {
     console.error(`Caught exception: ${err}`);
 });
 
+const handlerPath = process.env.HANDLER_PATH || './handler.js';
 const serviceNamespace = process.env.SERVICE_NAMESPACE;
 const functionName = process.env.FUNC_NAME;
 const bodySizeLimit = Number(process.env.REQ_MB_LIMIT || '1');
@@ -153,7 +154,7 @@ const server = app.listen(funcPort);
 helper.configureGracefulShutdown(server);
 
 let startTime = process.hrtime();
-import('./function/handler.js').then((fn) => {
+import(handlerPath).then((fn) => {
     if (helper.isFunction(fn.main)) {
         userFunction = fn.main
         let elapsed = process.hrtime(startTime);
