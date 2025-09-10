@@ -566,7 +566,15 @@ func (d *Deployment) envs() []corev1.EnvVar {
 			},
 		}...)
 	}
-	if spec.Runtime == serverlessv1alpha2.Python312 {
+	if d.function.HasNodejsRuntime() {
+		envs = append(envs, []corev1.EnvVar{
+			{
+				Name:  "HANDLER_PATH",
+				Value: "./function/handler.js",
+			},
+		}...)
+	}
+	if d.function.HasPythonRuntime() {
 		envs = append(envs, []corev1.EnvVar{
 			{
 				Name:  "MOD_NAME",

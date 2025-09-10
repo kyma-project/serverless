@@ -34,6 +34,12 @@ func GetRuntimeConfig(runtime serverlessv1alpha2.Runtime) Config {
 
 func fillConfigEnvVars(runtime serverlessv1alpha2.Runtime, config *Config) {
 	switch runtime {
+	case serverlessv1alpha2.NodeJs22, serverlessv1alpha2.NodeJs20:
+		config.RuntimeEnvs = append(config.RuntimeEnvs,
+			[]corev1.EnvVar{
+				{Name: "HANDLER_PATH", Value: "./function/handler.js"},
+			}...)
+		return
 	case serverlessv1alpha2.Python312:
 		config.RuntimeEnvs = append(config.RuntimeEnvs,
 			[]corev1.EnvVar{

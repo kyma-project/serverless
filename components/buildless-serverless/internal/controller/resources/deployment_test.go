@@ -1056,6 +1056,10 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "function-dependencies",
 				},
 				{
+					Name:  "HANDLER_PATH",
+					Value: "./function/handler.js",
+				},
+				{
 					Name:  "TRACE_COLLECTOR_ENDPOINT",
 					Value: "test-trace-collector-endpoint",
 				},
@@ -1104,6 +1108,10 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "function-dependencies",
 				},
 				{
+					Name:  "HANDLER_PATH",
+					Value: "./function/handler.js",
+				},
+				{
 					Name:  "TRACE_COLLECTOR_ENDPOINT",
 					Value: "test-trace-collector-endpoint",
 				},
@@ -1145,6 +1153,10 @@ func TestDeployment_envs(t *testing.T) {
 				{
 					Name:  "SERVICE_NAMESPACE",
 					Value: "function-namespace",
+				},
+				{
+					Name:  "HANDLER_PATH",
+					Value: "./function/handler.js",
 				},
 				{
 					Name:  "TRACE_COLLECTOR_ENDPOINT",
