@@ -12,8 +12,7 @@ import (
 
 func Test_systemState_podLabels(t *testing.T) {
 	type args struct {
-		instance    *v1alpha2.Function
-		deployments *appsv1.DeploymentList
+		instance *v1alpha2.Function
 	}
 	tests := []struct {
 		name string
@@ -22,11 +21,13 @@ func Test_systemState_podLabels(t *testing.T) {
 	}{
 		{
 			name: "Should create internal labels",
-			args: args{instance: &v1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: "fn-name",
-					UID:  "fn-uuid",
-				}},
+			args: args{
+				instance: &v1alpha2.Function{
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "fn-name",
+						UID:  "fn-uuid",
+					},
+				},
 			},
 			want: map[string]string{
 				v1alpha2.PodAppNameLabel:        "fn-name",
@@ -38,16 +39,19 @@ func Test_systemState_podLabels(t *testing.T) {
 		},
 		{
 			name: "Should create internal and additional labels",
-			args: args{instance: &v1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: "fn-name",
-					UID:  "fn-uuid",
-				},
-				Spec: v1alpha2.FunctionSpec{
-					Labels: map[string]string{
-						"test-another": "test-another-label",
+			args: args{
+				instance: &v1alpha2.Function{
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "fn-name",
+						UID:  "fn-uuid",
 					},
-				}}},
+					Spec: v1alpha2.FunctionSpec{
+						Labels: map[string]string{
+							"test-another": "test-another-label",
+						},
+					},
+				},
+			},
 			want: map[string]string{
 				v1alpha2.PodAppNameLabel:        "fn-name",
 				v1alpha2.FunctionUUIDLabel:      "fn-uuid",
@@ -59,18 +63,21 @@ func Test_systemState_podLabels(t *testing.T) {
 		},
 		{
 			name: "Should create internal labels without not supported `spec.template.labels`",
-			args: args{instance: &v1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: "fn-name",
-					UID:  "fn-uuid",
-				},
-				Spec: v1alpha2.FunctionSpec{
-					Template: &v1alpha2.Template{
-						Labels: map[string]string{
-							"test-some": "not-supported",
+			args: args{
+				instance: &v1alpha2.Function{
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "fn-name",
+						UID:  "fn-uuid",
+					},
+					Spec: v1alpha2.FunctionSpec{
+						Template: &v1alpha2.Template{
+							Labels: map[string]string{
+								"test-some": "not-supported",
+							},
 						},
 					},
-				}}},
+				},
+			},
 			want: map[string]string{
 				v1alpha2.PodAppNameLabel:        "fn-name",
 				v1alpha2.FunctionUUIDLabel:      "fn-uuid",
@@ -81,16 +88,19 @@ func Test_systemState_podLabels(t *testing.T) {
 		},
 		{
 			name: "Should create internal and from `spec.labels` labels",
-			args: args{instance: &v1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: "fn-name",
-					UID:  "fn-uuid",
-				},
-				Spec: v1alpha2.FunctionSpec{
-					Labels: map[string]string{
-						"test-some": "test-label",
+			args: args{
+				instance: &v1alpha2.Function{
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "fn-name",
+						UID:  "fn-uuid",
 					},
-				}}},
+					Spec: v1alpha2.FunctionSpec{
+						Labels: map[string]string{
+							"test-some": "test-label",
+						},
+					},
+				},
+			},
 			want: map[string]string{
 				v1alpha2.PodAppNameLabel:        "fn-name",
 				v1alpha2.FunctionUUIDLabel:      "fn-uuid",
@@ -102,18 +112,21 @@ func Test_systemState_podLabels(t *testing.T) {
 		},
 		{
 			name: "Should not overwrite internal labels",
-			args: args{instance: &v1alpha2.Function{
-				ObjectMeta: metav1.ObjectMeta{
-					Name: "fn-name",
-					UID:  "fn-uuid",
-				},
-				Spec: v1alpha2.FunctionSpec{
-					Labels: map[string]string{
-						"test-another":                 "test-label",
-						v1alpha2.FunctionResourceLabel: "another-job",
-						v1alpha2.FunctionNameLabel:     "another-name",
+			args: args{
+				instance: &v1alpha2.Function{
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "fn-name",
+						UID:  "fn-uuid",
 					},
-				}}},
+					Spec: v1alpha2.FunctionSpec{
+						Labels: map[string]string{
+							"test-another":                 "test-label",
+							v1alpha2.FunctionResourceLabel: "another-job",
+							v1alpha2.FunctionNameLabel:     "another-name",
+						},
+					},
+				},
+			},
 			want: map[string]string{
 				v1alpha2.PodAppNameLabel:        "fn-name",
 				v1alpha2.FunctionUUIDLabel:      "fn-uuid",
@@ -151,33 +164,30 @@ func Test_systemState_podAnnotations(t *testing.T) {
 	}{
 		{
 			name: "Should create internal annotations",
-			args: args{instance: &v1alpha2.Function{}},
+			args: args{
+				instance: &v1alpha2.Function{},
+				deployments: &appsv1.DeploymentList{
+					Items: []appsv1.Deployment{},
+				},
+			},
 			want: map[string]string{
 				istioConfigLabelKey: istioEnableHoldUntilProxyStartLabelValue,
 			},
 		},
 		{
 			name: "Should create internal and from `.spec.annotations` annotations",
-			args: args{instance: &v1alpha2.Function{
-				Spec: v1alpha2.FunctionSpec{
-					Annotations: map[string]string{
-						"test-some": "test-annotation",
+			args: args{
+				instance: &v1alpha2.Function{
+					Spec: v1alpha2.FunctionSpec{
+						Annotations: map[string]string{
+							"test-some": "test-annotation",
+						},
 					},
-				}}},
-			want: map[string]string{
-				istioConfigLabelKey: istioEnableHoldUntilProxyStartLabelValue,
-				"test-some":         "test-annotation",
+				},
+				deployments: &appsv1.DeploymentList{
+					Items: []appsv1.Deployment{},
+				},
 			},
-		},
-		{
-			name: "Should not overwrite internal annotations",
-			args: args{instance: &v1alpha2.Function{
-				Spec: v1alpha2.FunctionSpec{
-					Annotations: map[string]string{
-						"test-some":             "test-annotation",
-						"proxy.istio.io/config": "another-config",
-					},
-				}}},
 			want: map[string]string{
 				istioConfigLabelKey: istioEnableHoldUntilProxyStartLabelValue,
 				"test-some":         "test-annotation",
@@ -193,6 +203,29 @@ func Test_systemState_podAnnotations(t *testing.T) {
 							"proxy.istio.io/config": "another-config",
 						},
 					},
+				},
+				deployments: &appsv1.DeploymentList{
+					Items: []appsv1.Deployment{},
+				},
+			},
+			want: map[string]string{
+				istioConfigLabelKey: istioEnableHoldUntilProxyStartLabelValue,
+				"test-some":         "test-annotation",
+			},
+		},
+		{
+			name: "Should not overwrite internal annotations",
+			args: args{
+				instance: &v1alpha2.Function{
+					Spec: v1alpha2.FunctionSpec{
+						Annotations: map[string]string{
+							"test-some":             "test-annotation",
+							"proxy.istio.io/config": "another-config",
+						},
+					},
+				},
+				deployments: &appsv1.DeploymentList{
+					Items: []appsv1.Deployment{},
 				},
 			},
 			want: map[string]string{
