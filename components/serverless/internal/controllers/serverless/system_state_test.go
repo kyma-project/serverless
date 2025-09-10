@@ -179,6 +179,30 @@ func Test_systemState_podAnnotations(t *testing.T) {
 				"test-some":         "test-annotation",
 			},
 		},
+		{
+			name: "Should not remove nativeSidecar=true annotation if present in .spec.annotations",
+			args: args{instance: &v1alpha2.Function{
+				Spec: v1alpha2.FunctionSpec{
+					Annotations: map[string]string{
+						"sidecar.istio.io/nativeSidecar": "true",
+					},
+				}}},
+			want: map[string]string{
+				"sidecar.istio.io/nativeSidecar": "true",
+			},
+		},
+		{
+			name: "Should not remove nativeSidecar=false annotation if present in .spec.annotations",
+			args: args{instance: &v1alpha2.Function{
+				Spec: v1alpha2.FunctionSpec{
+					Annotations: map[string]string{
+						"sidecar.istio.io/nativeSidecar": "false",
+					},
+				}}},
+			want: map[string]string{
+				"sidecar.istio.io/nativeSidecar": "false",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
