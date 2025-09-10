@@ -5,12 +5,15 @@ import (
 
 	"github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"github.com/onsi/gomega"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func Test_systemState_podLabels(t *testing.T) {
 	type args struct {
-		instance *v1alpha2.Function
+		instance    *v1alpha2.Function
+		deployments *appsv1.DeploymentList
 	}
 	tests := []struct {
 		name string
@@ -138,7 +141,8 @@ func Test_systemState_podLabels(t *testing.T) {
 
 func Test_systemState_podAnnotations(t *testing.T) {
 	type args struct {
-		instance *v1alpha2.Function
+		instance    *v1alpha2.Function
+		deployments *appsv1.DeploymentList
 	}
 	tests := []struct {
 		name string
@@ -180,27 +184,75 @@ func Test_systemState_podAnnotations(t *testing.T) {
 			},
 		},
 		{
-			name: "Should not remove nativeSidecar=true annotation if present in .spec.annotations",
-			args: args{instance: &v1alpha2.Function{
-				Spec: v1alpha2.FunctionSpec{
-					Annotations: map[string]string{
-						"sidecar.istio.io/nativeSidecar": "true",
+			name: "Should not overwrite internal annotations",
+			args: args{
+				instance: &v1alpha2.Function{
+					Spec: v1alpha2.FunctionSpec{
+						Annotations: map[string]string{
+							"test-some":             "test-annotation",
+							"proxy.istio.io/config": "another-config",
+						},
 					},
-				}}},
+				},
+			},
 			want: map[string]string{
-				"sidecar.istio.io/nativeSidecar": "true",
+				istioConfigLabelKey: istioEnableHoldUntilProxyStartLabelValue,
+				"test-some":         "test-annotation",
 			},
 		},
 		{
-			name: "Should not remove nativeSidecar=false annotation if present in .spec.annotations",
-			args: args{instance: &v1alpha2.Function{
-				Spec: v1alpha2.FunctionSpec{
-					Annotations: map[string]string{
-						"sidecar.istio.io/nativeSidecar": "false",
+			name: "Should clear nativeSidecar annotation from deployment when not specified in function spec",
+			args: args{
+				instance: &v1alpha2.Function{},
+				deployments: &appsv1.DeploymentList{
+					Items: []appsv1.Deployment{
+						{
+							Spec: appsv1.DeploymentSpec{
+								Template: corev1.PodTemplateSpec{
+									ObjectMeta: metav1.ObjectMeta{
+										Annotations: map[string]string{
+											"sidecar.istio.io/nativeSidecar": "true",
+										},
+									},
+								},
+							},
+						},
 					},
-				}}},
+				},
+			},
 			want: map[string]string{
-				"sidecar.istio.io/nativeSidecar": "false",
+				istioConfigLabelKey: istioEnableHoldUntilProxyStartLabelValue,
+			},
+		},
+		{
+			name: "Should keep nativeSidecar annotation in deployment when specified in function spec",
+			args: args{
+				instance: &v1alpha2.Function{
+					Spec: v1alpha2.FunctionSpec{
+						Annotations: map[string]string{
+							"sidecar.istio.io/nativeSidecar": "true",
+						},
+					},
+				},
+				deployments: &appsv1.DeploymentList{
+					Items: []appsv1.Deployment{
+						{
+							Spec: appsv1.DeploymentSpec{
+								Template: corev1.PodTemplateSpec{
+									ObjectMeta: metav1.ObjectMeta{
+										Annotations: map[string]string{
+											"sidecar.istio.io/nativeSidecar": "true",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: map[string]string{
+				istioConfigLabelKey:              istioEnableHoldUntilProxyStartLabelValue,
+				"sidecar.istio.io/nativeSidecar": "true",
 			},
 		},
 	}
@@ -209,7 +261,8 @@ func Test_systemState_podAnnotations(t *testing.T) {
 			//GIVEN
 			g := gomega.NewGomegaWithT(t)
 			s := &systemState{
-				instance: *tt.args.instance,
+				instance:    *tt.args.instance,
+				deployments: *tt.args.deployments,
 			}
 			//WHEN
 			got := s.podAnnotations()
