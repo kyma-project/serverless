@@ -37,6 +37,7 @@ func TestGetRuntimeConfig(t *testing.T) {
 				FunctionFile:            "handler.js",
 				DockerfileConfigMapName: "dockerfile-nodejs20",
 				RuntimeEnvs: []corev1.EnvVar{
+					{Name: "HANDLER_PATH", Value: "./function/handler.js"},
 					{Name: "FUNC_RUNTIME", Value: "nodejs20"}},
 			},
 		},
@@ -49,6 +50,7 @@ func TestGetRuntimeConfig(t *testing.T) {
 				FunctionFile:            "handler.js",
 				DockerfileConfigMapName: "dockerfile-nodejs22",
 				RuntimeEnvs: []corev1.EnvVar{
+					{Name: "HANDLER_PATH", Value: "./function/handler.js"},
 					{Name: "FUNC_RUNTIME", Value: "nodejs22"}},
 			},
 		}} {
