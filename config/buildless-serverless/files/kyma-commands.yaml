@@ -26,7 +26,7 @@ subCommands:
     name: output
     shorthand: o
     description: "Output format. It can be json or yaml."
-    default: "yaml"
+    default: ""
   with:
     output: ${{ .flags.output.value }}
     fromAllNamespaces: ${{.flags.allnamespaces.value}}
@@ -110,7 +110,7 @@ subCommands:
   - type: bool
     name: "dry-run"
     description: "Simulates resource deletion if set to 'true'"
-    default: true
+    default: false
   with:
     dryRun: ${{ .flags.dryrun.value }}
     resource:
@@ -170,12 +170,12 @@ subCommands:
   - type: bool
     name: "dry-run"
     description: "Simulates resource creation if set to 'true'"
-    default: true
+    default: false
   - type: string
     name: output
     shorthand: o
     description: "Output format. It can be json or yaml."
-    default: "yaml"
+    default: ""
   with:
     output: ${{ .flags.output.value }}
     dryRun: ${{ .flags.dryrun.value }}
@@ -242,12 +242,12 @@ subCommands:
       - type: bool
         name: "dry-run"
         description: "Simulates resource creation if set to 'true'"
-        default: true
+        default: false
       - type: string
         name: output
         shorthand: o
         description: "Output format. It can be json or yaml."
-        default: "yaml"
+        default: ""
       with:
         output: ${{ .flags.output.value }}
         dryRun: ${{ .flags.dryrun.value }}
@@ -319,12 +319,12 @@ subCommands:
       - type: bool
         name: "dry-run"
         description: "Simulates resource creation if set to 'true'"
-        default: true
+        default: false
       - type: string
         name: output
         shorthand: o
         description: "Output format. It can be json or yaml."
-        default: "yaml"
+        default: ""
       with:
         output: ${{ .flags.output.value }}
         dryRun: ${{ .flags.dryrun.value }}
@@ -396,12 +396,12 @@ subCommands:
       - type: bool
         name: "dry-run"
         description: "Simulates resource creation if set to 'true'"
-        default: "true"
+        default: "false"
       - type: string
         name: output
         shorthand: o
         description: "Output format. It can be json or yaml."
-        default: "yaml"
+        default: ""
       with:
         output: ${{ .flags.output.value }}
         dryRun: ${{ .flags.dryrun.value }}
