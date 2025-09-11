@@ -66,6 +66,9 @@ type Deployment struct {
 	podLabels           map[string]string
 	deployName          string
 	deployGeneratedName string
+	podImage            string
+	podEnvs             []corev1.EnvVar
+	podCmd              []string
 }
 
 func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clusterDeployment *appsv1.Deployment, commit string, gitAuth *git.GitAuth, opts ...deployOptions) *Deployment {
@@ -80,6 +83,13 @@ func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clu
 		podLabels:           f.PodLabels(),
 		deployName:          "",
 		deployGeneratedName: fmt.Sprintf("%s-", f.Name),
+		podImage:            runtimeImage(f, c),
+		podEnvs:             envs(f, c),
+		podCmd: []string{
+			"sh",
+			"-c",
+			runtimeCommand(f),
+		},
 	}
 
 	for _, o := range opts {
@@ -184,16 +194,12 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 		InitContainers: d.initContainerForGitRepository(),
 		Containers: []corev1.Container{
 			{
-				Name:       "function",
-				Image:      d.runtimeImage(),
-				WorkingDir: d.workingSourcesDir(),
-				Command: []string{
-					"sh",
-					"-c",
-					d.runtimeCommand(),
-				},
+				Name:         "function",
+				Image:        d.podImage,
+				WorkingDir:   workingSourcesDir(d.function),
+				Command:      d.podCmd,
 				Resources:    d.resourceConfiguration(),
-				Env:          d.envs(),
+				Env:          d.podEnvs,
 				VolumeMounts: append(d.volumeMounts(), secretVolumeMounts...),
 				Ports: []corev1.ContainerPort{
 					{
@@ -269,7 +275,7 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 		{
 			Name:       "init",
 			Image:      d.functionConfig.Images.RepoFetcher,
-			WorkingDir: d.workingSourcesDir(),
+			WorkingDir: workingSourcesDir(d.function),
 			Command: []string{
 				"sh",
 				"-c",
@@ -401,7 +407,7 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 	volumeMounts := []corev1.VolumeMount{
 		{
 			Name:      "sources",
-			MountPath: d.workingSourcesDir(),
+			MountPath: workingSourcesDir(d.function),
 		},
 		{
 			Name:      "tmp",
@@ -418,7 +424,7 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 	if d.function.HasNodejsRuntime() {
 		volumeMounts = append(volumeMounts, corev1.VolumeMount{
 			Name:      "package-registry-config",
-			MountPath: path.Join(d.workingSourcesDir(), "package-registry-config/.npmrc"),
+			MountPath: path.Join(workingSourcesDir(d.function), "package-registry-config/.npmrc"),
 			SubPath:   ".npmrc",
 		})
 	}
@@ -430,76 +436,76 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 			},
 			corev1.VolumeMount{
 				Name:      "package-registry-config",
-				MountPath: path.Join(d.workingSourcesDir(), "package-registry-config/pip.conf"),
+				MountPath: path.Join(workingSourcesDir(d.function), "package-registry-config/pip.conf"),
 				SubPath:   "pip.conf",
 			})
 	}
 	return volumeMounts
 }
 
-func (d *Deployment) runtimeImage() string {
-	runtimeOverride := d.function.Spec.RuntimeImageOverride
+func runtimeImage(f *serverlessv1alpha2.Function, c *config.FunctionConfig) string {
+	runtimeOverride := f.Spec.RuntimeImageOverride
 	if runtimeOverride != "" {
 		return runtimeOverride
 	}
 
-	switch d.function.Spec.Runtime {
+	switch f.Spec.Runtime {
 	case serverlessv1alpha2.NodeJs20:
-		return d.functionConfig.Images.NodeJs20
+		return c.Images.NodeJs20
 	case serverlessv1alpha2.NodeJs22:
-		return d.functionConfig.Images.NodeJs22
+		return c.Images.NodeJs22
 	case serverlessv1alpha2.Python312:
-		return d.functionConfig.Images.Python312
+		return c.Images.Python312
 	default:
 		return ""
 	}
 }
 
-func (d *Deployment) workingSourcesDir() string {
-	if d.function.HasNodejsRuntime() {
+func workingSourcesDir(f *serverlessv1alpha2.Function) string {
+	if f.HasNodejsRuntime() {
 		return "/usr/src/app/function"
-	} else if d.function.HasPythonRuntime() {
+	} else if f.HasPythonRuntime() {
 		return "/kubeless"
 	}
 	return ""
 }
 
-func (d *Deployment) runtimeCommand() string {
+func runtimeCommand(f *serverlessv1alpha2.Function) string {
 	var result []string
-	result = append(result, d.runtimeCommandSources())
-	result = append(result, d.runtimeCommandInstall())
-	result = append(result, d.runtimeCommandStart())
+	result = append(result, runtimeCommandSources(f))
+	result = append(result, runtimeCommandInstall(f))
+	result = append(result, runtimeCommandStart(f))
 
 	return strings.Join(result, "\n")
 }
 
-func (d *Deployment) runtimeCommandSources() string {
-	spec := &d.function.Spec
+func runtimeCommandSources(f *serverlessv1alpha2.Function) string {
+	spec := &f.Spec
 	if spec.Source.GitRepository != nil {
-		return d.runtimeCommandGitSources()
+		return runtimeCommandGitSources(f)
 	}
-	return d.runtimeCommandInlineSources()
+	return runtimeCommandInlineSources(f)
 }
 
-func (d *Deployment) runtimeCommandGitSources() string {
+func runtimeCommandGitSources(f *serverlessv1alpha2.Function) string {
 	var result []string
-	if d.function.HasNodejsRuntime() {
+	if f.HasNodejsRuntime() {
 		result = append(result, `echo "{}" > package.json;`)
 	}
 	result = append(result, `cp /git-repository/src/* .;`)
 	return strings.Join(result, "\n")
 }
 
-func (d *Deployment) runtimeCommandInlineSources() string {
+func runtimeCommandInlineSources(f *serverlessv1alpha2.Function) string {
 	var result []string
-	spec := &d.function.Spec
+	spec := &f.Spec
 	dependencies := spec.Source.Inline.Dependencies
 
 	handlerName, dependenciesName := "", ""
-	if d.function.HasNodejsRuntime() {
+	if f.HasNodejsRuntime() {
 		handlerName, dependenciesName = "handler.js", "package.json"
 		result = append(result, `echo "{}" > package.json;`)
-	} else if d.function.HasPythonRuntime() {
+	} else if f.HasPythonRuntime() {
 		handlerName, dependenciesName = "handler.py", "requirements.txt"
 	}
 
@@ -510,32 +516,32 @@ func (d *Deployment) runtimeCommandInlineSources() string {
 	return strings.Join(result, "\n")
 }
 
-func (d *Deployment) runtimeCommandInstall() string {
-	if d.function.HasNodejsRuntime() {
+func runtimeCommandInstall(f *serverlessv1alpha2.Function) string {
+	if f.HasNodejsRuntime() {
 		return `npm install --prefer-offline --no-audit --progress=false;`
-	} else if d.function.HasPythonRuntime() {
+	} else if f.HasPythonRuntime() {
 		return `PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;`
 	}
 	return ""
 }
 
-func (d *Deployment) runtimeCommandStart() string {
-	if d.function.HasNodejsRuntime() {
+func runtimeCommandStart(f *serverlessv1alpha2.Function) string {
+	if f.HasNodejsRuntime() {
 		return `cd ..;
 npm start;`
-	} else if d.function.HasPythonRuntime() {
+	} else if f.HasPythonRuntime() {
 		return `cd ..;
 python /kubeless.py;`
 	}
 	return ""
 }
 
-func (d *Deployment) envs() []corev1.EnvVar {
-	spec := &d.function.Spec
+func envs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []corev1.EnvVar {
+	spec := &f.Spec
 	envs := []corev1.EnvVar{
 		{
 			Name:  "FUNC_NAME",
-			Value: d.function.Name,
+			Value: f.Name,
 		},
 		{
 			Name:  "FUNC_RUNTIME",
@@ -543,18 +549,18 @@ func (d *Deployment) envs() []corev1.EnvVar {
 		},
 		{
 			Name:  "SERVICE_NAMESPACE",
-			Value: d.function.Namespace,
+			Value: f.Namespace,
 		},
 		{
 			Name:  "TRACE_COLLECTOR_ENDPOINT",
-			Value: d.functionConfig.FunctionTraceCollectorEndpoint,
+			Value: c.FunctionTraceCollectorEndpoint,
 		},
 		{
 			Name:  "PUBLISHER_PROXY_ADDRESS",
-			Value: d.functionConfig.FunctionPublisherProxyAddress,
+			Value: c.FunctionPublisherProxyAddress,
 		},
 	}
-	if d.function.HasInlineSources() {
+	if f.HasInlineSources() {
 		envs = append(envs, []corev1.EnvVar{
 			{
 				Name:  "FUNC_HANDLER_SOURCE",
@@ -566,7 +572,7 @@ func (d *Deployment) envs() []corev1.EnvVar {
 			},
 		}...)
 	}
-	if d.function.HasNodejsRuntime() {
+	if f.HasNodejsRuntime() {
 		envs = append(envs, []corev1.EnvVar{
 			{
 				Name:  "HANDLER_PATH",
@@ -574,7 +580,7 @@ func (d *Deployment) envs() []corev1.EnvVar {
 			},
 		}...)
 	}
-	if d.function.HasPythonRuntime() {
+	if f.HasPythonRuntime() {
 		envs = append(envs, []corev1.EnvVar{
 			{
 				Name:  "PYTHONUNBUFFERED",
