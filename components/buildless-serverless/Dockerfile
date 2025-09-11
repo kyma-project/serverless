@@ -28,6 +28,7 @@ RUN apk add --no-cache ca-certificates
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM scratch
 
+COPY ./components/runtimes /runtimes/
 COPY --from=builder /app /app
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 USER 1000:1000
