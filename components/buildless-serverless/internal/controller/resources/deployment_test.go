@@ -166,8 +166,8 @@ func TestDeployment_construct(t *testing.T) {
 	})
 	t.Run("use container image based on function and function configuration", func(t *testing.T) {
 		d := NewDeployment(minimalFunction(), &config.FunctionConfig{
-				Images: config.ImagesConfig{Python312: "special-test-image"},
-			}, nil, "", nil)
+			Images: config.ImagesConfig{Python312: "special-test-image"},
+		}, nil, "", nil)
 
 		r := d.construct()
 
@@ -228,9 +228,9 @@ python /kubeless.py;`,
 		require.Equal(t, *rc.Function.Resources, r.Spec.Template.Spec.Containers[0].Resources)
 	})
 	t.Run("use container env based on function", func(t *testing.T) {
-		d := minimalDeployment()
-		d.function.Spec.Source.Inline.Source = "special-function-source"
-		d.podEnvs = envs(d.function, d.functionConfig)
+		f := minimalFunction()
+		f.Spec.Source.Inline.Source = "special-function-source"
+		d := minimalDeploymentForFunction(f)
 
 		r := d.construct()
 
@@ -1211,12 +1211,12 @@ func TestDeployment_envs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := envs(tt.function, &config.FunctionConfig{
+			d := NewDeployment(tt.function, &config.FunctionConfig{
 				FunctionPublisherProxyAddress:  "test-proxy-address",
 				FunctionTraceCollectorEndpoint: "test-trace-collector-endpoint",
-			})
+			}, nil, "", nil)
 
-			assert.ElementsMatch(t, tt.want, r)
+			assert.ElementsMatch(t, tt.want, d.podEnvs)
 		})
 	}
 }
@@ -1440,6 +1440,10 @@ func minimalFunctionConfig() *config.FunctionConfig {
 	}
 }
 
+func minimalDeploymentForFunction(f *serverlessv1alpha2.Function) *Deployment {
+	return NewDeployment(f, minimalFunctionConfig(), nil, "", nil)
+}
+
 func minimalDeployment() *Deployment {
-	return NewDeployment(minimalFunction(), minimalFunctionConfig(), nil, "", nil)
+	return minimalDeploymentForFunction(minimalFunction())
 }

@@ -25,8 +25,8 @@ const (
 
 type deployOptions func(*Deployment)
 
-// DeployName - set the deployment name and clear the generated name
-func DeployName(name string) deployOptions {
+// DeploySetName - set the deployment name and clear the generated name
+func DeploySetName(name string) deployOptions {
 	return func(d *Deployment) {
 		d.deployName = name
 		d.deployGeneratedName = ""
@@ -50,7 +50,29 @@ func DeployAppendSelectorLabels(labels map[string]string) deployOptions {
 	return func(d *Deployment) {
 		for k, v := range labels {
 			d.selectorLabels[k] = v
+			d.podLabels[k] = v
 		}
+	}
+}
+
+// DeployUseGeneralEnvs - use general envs function for the deployment
+func DeployUseGeneralEnvs() deployOptions {
+	return func(d *Deployment) {
+		d.podEnvs = generalEnvs(d.function, d.functionConfig)
+	}
+}
+
+// DeploySetImage - set the container image for the deployment
+func DeploySetImage(image string) deployOptions {
+	return func(d *Deployment) {
+		d.podImage = image
+	}
+}
+
+// DeploySetCmd - set the container command for the deployment
+func DeploySetCmd(cmd []string) deployOptions {
+	return func(d *Deployment) {
+		d.podCmd = cmd
 	}
 }
 
@@ -84,7 +106,7 @@ func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clu
 		deployName:          "",
 		deployGeneratedName: fmt.Sprintf("%s-", f.Name),
 		podImage:            runtimeImage(f, c),
-		podEnvs:             envs(f, c),
+		podEnvs:             append(generalEnvs(f, c), sourceEnvs(f)...),
 		podCmd: []string{
 			"sh",
 			"-c",
@@ -536,7 +558,7 @@ python /kubeless.py;`
 	return ""
 }
 
-func envs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []corev1.EnvVar {
+func generalEnvs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []corev1.EnvVar {
 	spec := &f.Spec
 	envs := []corev1.EnvVar{
 		{
@@ -560,6 +582,22 @@ func envs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []corev1.Env
 			Value: c.FunctionPublisherProxyAddress,
 		},
 	}
+
+	if f.HasPythonRuntime() {
+		envs = append(envs, []corev1.EnvVar{
+			{
+				Name:  "PYTHONUNBUFFERED",
+				Value: "TRUE",
+			},
+		}...)
+	}
+	envs = append(envs, spec.Env...) //TODO: this order is critical, should we provide option for users to override envs?
+	return envs
+}
+
+func sourceEnvs(f *serverlessv1alpha2.Function) []corev1.EnvVar {
+	spec := &f.Spec
+	envs := []corev1.EnvVar{}
 	if f.HasInlineSources() {
 		envs = append(envs, []corev1.EnvVar{
 			{
@@ -580,15 +618,6 @@ func envs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []corev1.Env
 			},
 		}...)
 	}
-	if f.HasPythonRuntime() {
-		envs = append(envs, []corev1.EnvVar{
-			{
-				Name:  "PYTHONUNBUFFERED",
-				Value: "TRUE",
-			},
-		}...)
-	}
-	envs = append(envs, spec.Env...) //TODO: this order is critical, should we provide option for users to override envs?
 	return envs
 }
 
