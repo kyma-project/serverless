@@ -577,14 +577,6 @@ func (d *Deployment) envs() []corev1.EnvVar {
 	if d.function.HasPythonRuntime() {
 		envs = append(envs, []corev1.EnvVar{
 			{
-				Name:  "MOD_NAME",
-				Value: "handler",
-			},
-			{
-				Name:  "FUNC_HANDLER",
-				Value: "main",
-			},
-			{
 				Name:  "PYTHONUNBUFFERED",
 				Value: "TRUE",
 			},
