@@ -40,25 +40,25 @@ spec:
                 fieldRef:
                   fieldPath: metadata.uid
             - name: IMAGE_FUNCTION_CONTROLLER
-              value: europe-docker.pkg.dev/kyma-project/prod/function-controller:1.8.2
+              value: europe-docker.pkg.dev/kyma-project/prod/function-controller:1.8.3
             - name: IMAGE_FUNCTION_BUILD_INIT
-              value: europe-docker.pkg.dev/kyma-project/prod/function-build-init:1.8.2
+              value: europe-docker.pkg.dev/kyma-project/prod/function-build-init:1.8.3
             - name: IMAGE_REGISTRY_INIT
               value: europe-docker.pkg.dev/kyma-project/prod/registry-init:v20240506-57d31b1d
             - name: IMAGE_FUNCTION_RUNTIME_NODEJS20
-              value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:1.8.2
+              value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:1.8.3
             - name: IMAGE_FUNCTION_RUNTIME_NODEJS22
-              value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:1.8.2
+              value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:1.8.3
             - name: IMAGE_FUNCTION_RUNTIME_PYTHON312
-              value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:1.8.2
+              value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:1.8.3
             - name: IMAGE_KANIKO_EXECUTOR
               value: europe-docker.pkg.dev/kyma-project/prod/external/gcr.io/kaniko-project/executor:v1.24.0
             - name: IMAGE_REGISTRY
               value: europe-docker.pkg.dev/kyma-project/prod/external/library/registry:3.0.0
             - name: IMAGE_FUNCTION_BUILDLESS_CONTROLLER
-              value: europe-docker.pkg.dev/kyma-project/prod/function-buildless-controller:1.8.2
+              value: europe-docker.pkg.dev/kyma-project/prod/function-buildless-controller:1.8.3
             - name: IMAGE_FUNCTION_BUILDLESS_INIT
-              value: europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:1.8.2
+              value: europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:1.8.3
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
