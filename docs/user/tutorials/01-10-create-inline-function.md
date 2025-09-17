@@ -70,7 +70,7 @@ If you decide to modify your Function, choose **Edit**, make the changes, and ch
     b. Create initial scaffolding for the Function:
 
     ```bash
-    kyma function init
+    kyma function init nodejs
     ```
 
 3. Code and configure.
@@ -88,7 +88,7 @@ If you decide to modify your Function, choose **Edit**, make the changes, and ch
     a. Call the `create` command from the workspace folder. It builds the container and runs it on the Kyma runtime pointed by your current KUBECONFIG file:
 
       ```bash
-      kyma function create ${NAME} --namespace ${NAMESPACE} --runtime nodejs22 --source handler.js --dependencies package.json
+      kyma function create nodejs ${NAME} --namespace ${NAMESPACE} --source handler.js --dependencies package.json
       ```
 
     b. Check if your Function was created successfully:
