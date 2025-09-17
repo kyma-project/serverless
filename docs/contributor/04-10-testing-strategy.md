@@ -21,17 +21,17 @@ Each pull request to the repository triggers the following CI/CD jobs that verif
 - `push / upgrades / operator-upgrade-test` - Runs the upgrade integration test suite and verifies if the latest release can be successfully upgraded to the new (`main`) revision. For the configuration, see the [_upgrade-tests.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/_upgrade-tests.yaml) file.
 - `push / upgrades / serverless-upgrade-test` - Runs the basic functionality integration and the `tracing`, `api-gateway`, and `cloud-event` contract compatibility integration test suite for Serverless in a k3d cluster after upgrading from the latest release to the actual revision to check if the Serverless component is working properly after the upgrade. For the configuration, see the [_upgrade-tests.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/_upgrade-tests.yaml) file.
 
-## Smoke-Test Serverless Module on a Given Cluster
+## Smoke-Test the Serverless Module on Your Cluster
 
-Follow these steps to verify that the serverless module works on your Kyma instance:
-1. Clone this repository locally.
-2. Point KUBECONFIG environment variable to the file containing kubeconfig configuration of your cluster.
+Follow these steps to verify that the Serverless module works on your Kyma instance:
+1. Clone the [Serverless repository](https://github.com/kyma-project/serverless) locally.
+2. Point the KUBECONFIG environment variable to the file containing the kubeconfig configuration of your cluster.
 
 ```
 export KUBECONFIG=<path-to-kubeconfig>
 ```
 
-3. Check if the `Serverless` Custom Resource is in the Ready state using the following command:
+3. Check if the `Serverless` custom resource is in the `Ready` state using the following command:
 
 ```
 kubectl get serverlesses.operator.kyma-project.io -n kyma-system
