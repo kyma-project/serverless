@@ -20,3 +20,27 @@ Each pull request to the repository triggers the following CI/CD jobs that verif
 - `push / integrations / git-auth-integration-test` - Runs the `GitHub` and `Azure DevOps` API and authentication integration test suite for Serverless. For the configuration, see the [_integration-tests.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/_integration-tests.yaml) file.
 - `push / upgrades / operator-upgrade-test` - Runs the upgrade integration test suite and verifies if the latest release can be successfully upgraded to the new (`main`) revision. For the configuration, see the [_upgrade-tests.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/_upgrade-tests.yaml) file.
 - `push / upgrades / serverless-upgrade-test` - Runs the basic functionality integration and the `tracing`, `api-gateway`, and `cloud-event` contract compatibility integration test suite for Serverless in a k3d cluster after upgrading from the latest release to the actual revision to check if the Serverless component is working properly after the upgrade. For the configuration, see the [_upgrade-tests.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/_upgrade-tests.yaml) file.
+
+## Smoke-Test Serverless Module on a Given Cluster
+
+Follow these steps to verify that the serverless module works on your Kyma instance:
+1. Clone this repository locally.
+2. Point KUBECONFIG environment variable to the file containing kubeconfig configuration of your cluster.
+
+```
+export KUBECONFIG=<path-to-kubeconfig>
+```
+
+3. Check if the `Serverless` Custom Resource is in the Ready state using the following command:
+
+```
+kubectl get serverlesses.operator.kyma-project.io -n kyma-system
+NAME      CONFIGURED   INSTALLED   GENERATION   AGE   STATE
+default   True         True        3            27h   Ready
+```
+
+4. Run the tests using the following make targets in the root of the cloned repository:
+
+```
+make -C tests/serverless serverless-integration serverless-contract-tests
+```
