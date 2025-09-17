@@ -193,9 +193,9 @@ func TestDeployment_construct(t *testing.T) {
 				"sh",
 				"-c",
 				`echo "${FUNC_HANDLER_SOURCE}" > handler.py;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /usr/src/app/function/requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
 cd ..;
-python /usr/src/app/server.py;`,
+python server.py;`,
 			},
 			r.Spec.Template.Spec.Containers[0].Command)
 	})
@@ -383,11 +383,7 @@ func TestDeployment_workingSourcesDir(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			r := workingSourcesDir(&serverlessv1alpha2.Function{
-				Spec: serverlessv1alpha2.FunctionSpec{
-					Runtime: tt.runtime,
-				},
-			})
+			r := workingSourcesDir()
 
 			assert.Equal(t, tt.want, r)
 		})
@@ -1240,9 +1236,9 @@ func TestDeployment_runtimeCommand(t *testing.T) {
 				},
 			},
 			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /usr/src/app/function/requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
 cd ..;
-python /usr/src/app/server.py;`,
+python server.py;`,
 		},
 		{
 			name: "build runtime command for inline python312 with dependencies",
@@ -1259,9 +1255,9 @@ python /usr/src/app/server.py;`,
 			},
 			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /usr/src/app/function/requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
 cd ..;
-python /usr/src/app/server.py;`,
+python server.py;`,
 		},
 		{
 			name: "build runtime command for git python312",
@@ -1280,9 +1276,9 @@ python /usr/src/app/server.py;`,
 				},
 			},
 			want: `cp /git-repository/src/* .;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /usr/src/app/function/requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
 cd ..;
-python /usr/src/app/server.py;`,
+python server.py;`,
 		},
 		{
 			name: "build runtime command for inline nodejs20 without dependencies",

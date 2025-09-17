@@ -218,7 +218,7 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 			{
 				Name:         "function",
 				Image:        d.podImage,
-				WorkingDir:   workingSourcesDir(d.function),
+				WorkingDir:   workingSourcesDir(),
 				Command:      d.podCmd,
 				Resources:    d.resourceConfiguration(),
 				Env:          d.podEnvs,
@@ -297,7 +297,7 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 		{
 			Name:       "init",
 			Image:      d.functionConfig.Images.RepoFetcher,
-			WorkingDir: workingSourcesDir(d.function),
+			WorkingDir: workingSourcesDir(),
 			Command: []string{
 				"sh",
 				"-c",
@@ -429,7 +429,7 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 	volumeMounts := []corev1.VolumeMount{
 		{
 			Name:      "sources",
-			MountPath: workingSourcesDir(d.function),
+			MountPath: workingSourcesDir(),
 		},
 		{
 			Name:      "tmp",
@@ -446,7 +446,7 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 	if d.function.HasNodejsRuntime() {
 		volumeMounts = append(volumeMounts, corev1.VolumeMount{
 			Name:      "package-registry-config",
-			MountPath: path.Join(workingSourcesDir(d.function), "package-registry-config/.npmrc"),
+			MountPath: path.Join(workingSourcesDir(), "package-registry-config/.npmrc"),
 			SubPath:   ".npmrc",
 		})
 	}
@@ -458,7 +458,7 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 			},
 			corev1.VolumeMount{
 				Name:      "package-registry-config",
-				MountPath: path.Join(workingSourcesDir(d.function), "package-registry-config/pip.conf"),
+				MountPath: path.Join(workingSourcesDir(), "package-registry-config/pip.conf"),
 				SubPath:   "pip.conf",
 			})
 	}
@@ -483,13 +483,8 @@ func runtimeImage(f *serverlessv1alpha2.Function, c *config.FunctionConfig) stri
 	}
 }
 
-func workingSourcesDir(f *serverlessv1alpha2.Function) string {
-	if f.HasNodejsRuntime() {
-		return "/usr/src/app/function"
-	} else if f.HasPythonRuntime() {
-		return "/usr/src/app/function"
-	}
-	return ""
+func workingSourcesDir() string {
+	return "/usr/src/app/function"
 }
 
 func runtimeCommand(f *serverlessv1alpha2.Function) string {
@@ -542,7 +537,7 @@ func runtimeCommandInstall(f *serverlessv1alpha2.Function) string {
 	if f.HasNodejsRuntime() {
 		return `npm install --prefer-offline --no-audit --progress=false;`
 	} else if f.HasPythonRuntime() {
-		return `PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /usr/src/app/function/requirements.txt;`
+		return `PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;`
 	}
 	return ""
 }
@@ -553,7 +548,7 @@ func runtimeCommandStart(f *serverlessv1alpha2.Function) string {
 npm start;`
 	} else if f.HasPythonRuntime() {
 		return `cd ..;
-python /usr/src/app/server.py;`
+python server.py;`
 	}
 	return ""
 }

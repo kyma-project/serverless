@@ -9,21 +9,20 @@ RUN apk add --no-cache --virtual .build-deps build-base linux-headers
 # cmake is required for some packages
 RUN apk add --no-cache cmake
 
-# TODO: copy to /usr/src/app
-COPY ./requirements.txt /usr/src/app/function/requirements.txt
-RUN chmod 644 /usr/src/app/function/requirements.txt
+WORKDIR /usr/src/app
 
-RUN pip install --no-cache-dir -r /usr/src/app/function/requirements.txt
+COPY ./requirements.txt /usr/src/app/
+RUN chmod 644 /usr/src/app/requirements.txt
 
-COPY ./ /usr/src/app
-RUN chmod -R 755 /lib
-RUN chmod 644 /usr/src/app/server.py
+RUN pip install --no-cache-dir -r /usr/src/app/requirements.txt
 
-WORKDIR /
+COPY ./ /usr/src/app/
+RUN chmod -R 755 lib
+RUN chmod 644 server.py
 
 USER 1000
 # Tracing propagators are configured based on OTEL_PROPAGATORS env variable https://opentelemetry.io/docs/instrumentation/python/manual/#using-environment-variables
 ENV OTEL_PROPAGATORS=tracecontext,baggage,b3multi
 ENV OTEL_PYTHON_REQUESTS_EXCLUDED_URLS="healthz,favicon.ico,metrics"
 
-CMD ["python", "/usr/src/app/server.py"]
+CMD ["python", "server.py"]
