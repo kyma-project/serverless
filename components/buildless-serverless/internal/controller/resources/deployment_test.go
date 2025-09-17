@@ -165,13 +165,9 @@ func TestDeployment_construct(t *testing.T) {
 		require.Equal(t, "function", r.Spec.Template.Spec.Containers[0].Name)
 	})
 	t.Run("use container image based on function and function configuration", func(t *testing.T) {
-		d := &Deployment{
-			Deployment: nil,
-			functionConfig: &config.FunctionConfig{
-				Images: config.ImagesConfig{Python312: "special-test-image"},
-			},
-			function: minimalFunction(),
-		}
+		d := NewDeployment(minimalFunction(), &config.FunctionConfig{
+			Images: config.ImagesConfig{Python312: "special-test-image"},
+		}, nil, "", nil)
 
 		r := d.construct()
 
@@ -232,8 +228,9 @@ python /kubeless.py;`,
 		require.Equal(t, *rc.Function.Resources, r.Spec.Template.Spec.Containers[0].Resources)
 	})
 	t.Run("use container env based on function", func(t *testing.T) {
-		d := minimalDeployment()
-		d.function.Spec.Source.Inline.Source = "special-function-source"
+		f := minimalFunction()
+		f.Spec.Source.Inline.Source = "special-function-source"
+		d := minimalDeploymentForFunction(f)
 
 		r := d.construct()
 
@@ -386,15 +383,11 @@ func TestDeployment_workingSourcesDir(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &Deployment{
-				function: &serverlessv1alpha2.Function{
-					Spec: serverlessv1alpha2.FunctionSpec{
-						Runtime: tt.runtime,
-					},
+			r := workingSourcesDir(&serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: tt.runtime,
 				},
-			}
-
-			r := d.workingSourcesDir()
+			})
 
 			assert.Equal(t, tt.want, r)
 		})
@@ -461,17 +454,12 @@ func TestDeployment_runtimeImage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &Deployment{
-				functionConfig: c,
-				function: &serverlessv1alpha2.Function{
-					Spec: serverlessv1alpha2.FunctionSpec{
-						Runtime:              tt.fields.runtime,
-						RuntimeImageOverride: tt.fields.runtimeImageOverride,
-					},
+			r := runtimeImage(&serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime:              tt.fields.runtime,
+					RuntimeImageOverride: tt.fields.runtimeImageOverride,
 				},
-			}
-
-			r := d.runtimeImage()
+			}, c)
 
 			assert.Equal(t, tt.want, r)
 		})
@@ -1223,17 +1211,12 @@ func TestDeployment_envs(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &Deployment{
-				function: tt.function,
-				functionConfig: &config.FunctionConfig{
-					FunctionPublisherProxyAddress:  "test-proxy-address",
-					FunctionTraceCollectorEndpoint: "test-trace-collector-endpoint",
-				},
-			}
+			d := NewDeployment(tt.function, &config.FunctionConfig{
+				FunctionPublisherProxyAddress:  "test-proxy-address",
+				FunctionTraceCollectorEndpoint: "test-trace-collector-endpoint",
+			}, nil, "", nil)
 
-			r := d.envs()
-
-			assert.ElementsMatch(t, tt.want, r)
+			assert.ElementsMatch(t, tt.want, d.podEnvs)
 		})
 	}
 }
@@ -1424,11 +1407,7 @@ npm start;`,
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := &Deployment{
-				function: tt.function,
-			}
-
-			r := d.runtimeCommand()
+			r := runtimeCommand(tt.function)
 
 			assert.Equal(t, tt.want, r)
 		})
@@ -1461,6 +1440,10 @@ func minimalFunctionConfig() *config.FunctionConfig {
 	}
 }
 
+func minimalDeploymentForFunction(f *serverlessv1alpha2.Function) *Deployment {
+	return NewDeployment(f, minimalFunctionConfig(), nil, "", nil)
+}
+
 func minimalDeployment() *Deployment {
-	return NewDeployment(minimalFunction(), minimalFunctionConfig(), nil, "", nil)
+	return minimalDeploymentForFunction(minimalFunction())
 }
