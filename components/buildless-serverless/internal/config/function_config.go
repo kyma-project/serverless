@@ -18,7 +18,7 @@ type FunctionConfig struct {
 	SecretMutatingWebhookPort       int            `yaml:"secretMutatingWebhookPort"`
 	HealthzPort                     string         `yaml:"healthzPort"`
 	Images                          ImagesConfig   `yaml:"images"`
-	RequeueDuration                 time.Duration  `yaml:"functionRequeueDuration"`
+	RequeueDuration                 time.Duration  `yaml:"requeueDuration"`
 	FunctionReadyRequeueDuration    time.Duration  `yaml:"functionReadyRequeueDuration"`
 	PackageRegistryConfigSecretName string         `yaml:"packageRegistryConfigSecretName"`
 	FunctionTraceCollectorEndpoint  string         `yaml:"functionTraceCollectorEndpoint"`
