@@ -24,7 +24,7 @@ Follow these steps:
 1. To create local files with the default configuration for a Python Function, go to the folder in which you want to initiate the workspace content and run the `init` Kyma CLI command:
 
   ```bash
-  kyma function init --runtime python312
+  kyma function init python 
   ```
 
   You can also use the `--dir {FULL_FOLDER_PATH}` flag to point to the directory where you want to create the Function's source files.
@@ -43,7 +43,7 @@ Follow these steps:
   Next steps:
   * update output files in your favorite IDE
   * create Function, for example:
-    kyma function create python312 --runtime python312 --source handler.py --dependencies requirements.txt
+    kyma function create python my-python-fn  --source handler.py --dependencies requirements.txt
   ```
 
   > [!NOTE]
@@ -52,7 +52,7 @@ Follow these steps:
 2. Run the `create` Kyma CLI command to create a Function CR in the YAML format in your cluster based on the suggestion from the previous command:
 
   ```bash
-  kyma function create python312 --runtime python312 --source handler.py --dependencies requirements.txt
+  kyma function create python my-python-fn  --source handler.py --dependencies requirements.txt
   ```
 
 3. Once applied, check the Function's state in the cluster:
