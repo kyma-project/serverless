@@ -553,7 +553,7 @@ func runtimeCommandStart(f *serverlessv1alpha2.Function) string {
 npm start;`
 	} else if f.HasPythonRuntime() {
 		return `cd ..;
-python /kubeless.py;`
+python server.py;`
 	}
 	return ""
 }

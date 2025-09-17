@@ -195,7 +195,7 @@ func TestDeployment_construct(t *testing.T) {
 				`echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
 cd ..;
-python /kubeless.py;`,
+python /server.py;`,
 			},
 			r.Spec.Template.Spec.Containers[0].Command)
 	})
@@ -1242,7 +1242,7 @@ func TestDeployment_runtimeCommand(t *testing.T) {
 			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
 cd ..;
-python /kubeless.py;`,
+python server.py;`,
 		},
 		{
 			name: "build runtime command for inline python312 with dependencies",
@@ -1261,7 +1261,7 @@ python /kubeless.py;`,
 echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
 cd ..;
-python /kubeless.py;`,
+python server.py;`,
 		},
 		{
 			name: "build runtime command for git python312",
@@ -1282,7 +1282,7 @@ python /kubeless.py;`,
 			want: `cp /git-repository/src/* .;
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
 cd ..;
-python /kubeless.py;`,
+python server.py;`,
 		},
 		{
 			name: "build runtime command for inline nodejs20 without dependencies",
