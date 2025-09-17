@@ -195,7 +195,7 @@ func TestDeployment_construct(t *testing.T) {
 				`echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
 cd ..;
-python /server.py;`,
+python server.py;`,
 			},
 			r.Spec.Template.Spec.Containers[0].Command)
 	})
