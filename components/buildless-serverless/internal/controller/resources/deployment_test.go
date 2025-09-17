@@ -1191,6 +1191,10 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "function-source-py",
 				},
 				{
+					Name:  "FUNCTION_PATH",
+					Value: "/kubeless",
+				},
+				{
 					Name:  "FUNC_HANDLER_DEPENDENCIES",
 					Value: "function-dependencies-py",
 				},

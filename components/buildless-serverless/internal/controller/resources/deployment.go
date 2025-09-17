@@ -618,6 +618,14 @@ func sourceEnvs(f *serverlessv1alpha2.Function) []corev1.EnvVar {
 			},
 		}...)
 	}
+	if f.HasPythonRuntime() {
+		envs = append(envs, []corev1.EnvVar{
+			{
+				Name:  "FUNCTION_PATH",
+				Value: "/kubeless",
+			},
+		}...)
+	}
 	return envs
 }
 
