@@ -487,7 +487,7 @@ func workingSourcesDir(f *serverlessv1alpha2.Function) string {
 	if f.HasNodejsRuntime() {
 		return "/usr/src/app/function"
 	} else if f.HasPythonRuntime() {
-		return "/kubeless"
+		return "/usr/src/app/function"
 	}
 	return ""
 }
@@ -542,7 +542,7 @@ func runtimeCommandInstall(f *serverlessv1alpha2.Function) string {
 	if f.HasNodejsRuntime() {
 		return `npm install --prefer-offline --no-audit --progress=false;`
 	} else if f.HasPythonRuntime() {
-		return `PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;`
+		return `PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /usr/src/app/function/requirements.txt;`
 	}
 	return ""
 }
@@ -553,7 +553,7 @@ func runtimeCommandStart(f *serverlessv1alpha2.Function) string {
 npm start;`
 	} else if f.HasPythonRuntime() {
 		return `cd ..;
-python /kubeless.py;`
+python /usr/src/app/server.py;`
 	}
 	return ""
 }

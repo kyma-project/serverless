@@ -3,8 +3,9 @@ package serverless
 import (
 	"context"
 	"fmt"
-	k8sresource "k8s.io/apimachinery/pkg/api/resource"
 	"path/filepath"
+
+	k8sresource "k8s.io/apimachinery/pkg/api/resource"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -25,7 +26,7 @@ const (
 	fakeDockerfile = `ARG base_image=some_image
     FROM ${base_image}
     USER root
-    ENV KUBELESS_INSTALL_VOLUME=/kubeless`
+    ENV KUBELESS_INSTALL_VOLUME=/usr/src/app/function`
 	changedFakeDockerfile   = `ARG base_image=other_image`
 	testFunctionPresetName  = "M"
 	testFunctionPresetName2 = "L"

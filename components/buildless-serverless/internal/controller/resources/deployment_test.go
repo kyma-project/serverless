@@ -180,7 +180,7 @@ func TestDeployment_construct(t *testing.T) {
 		r := d.construct()
 
 		require.NotNil(t, r)
-		require.Equal(t, "/kubeless", r.Spec.Template.Spec.Containers[0].WorkingDir)
+		require.Equal(t, "/usr/src/app/function", r.Spec.Template.Spec.Containers[0].WorkingDir)
 	})
 	t.Run("use container command dir based on function", func(t *testing.T) {
 		d := minimalDeployment()
@@ -193,9 +193,9 @@ func TestDeployment_construct(t *testing.T) {
 				"sh",
 				"-c",
 				`echo "${FUNC_HANDLER_SOURCE}" > handler.py;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /usr/src/app/function/requirements.txt;
 cd ..;
-python /kubeless.py;`,
+python /usr/src/app/server.py;`,
 			},
 			r.Spec.Template.Spec.Containers[0].Command)
 	})
@@ -258,7 +258,7 @@ python /kubeless.py;`,
 			r.Spec.Template.Spec.Containers[0].VolumeMounts,
 			corev1.VolumeMount{
 				Name:      "package-registry-config",
-				MountPath: "/kubeless/package-registry-config/pip.conf",
+				MountPath: "/usr/src/app/function/package-registry-config/pip.conf",
 				SubPath:   "pip.conf",
 			})
 		require.Contains(t,
@@ -378,7 +378,7 @@ func TestDeployment_workingSourcesDir(t *testing.T) {
 		{
 			name:    "get working dir for python312",
 			runtime: serverlessv1alpha2.Python312,
-			want:    "/kubeless",
+			want:    "/usr/src/app/function",
 		},
 	}
 	for _, tt := range tests {
@@ -627,7 +627,7 @@ func TestDeployment_volumeMounts(t *testing.T) {
 			want: []corev1.VolumeMount{
 				{
 					Name:      "sources",
-					MountPath: "/kubeless",
+					MountPath: "/usr/src/app/function",
 				},
 				{
 					Name:      "tmp",
@@ -641,7 +641,7 @@ func TestDeployment_volumeMounts(t *testing.T) {
 				{
 					Name:      "package-registry-config",
 					ReadOnly:  false,
-					MountPath: "/kubeless/package-registry-config/pip.conf",
+					MountPath: "/usr/src/app/function/package-registry-config/pip.conf",
 					SubPath:   "pip.conf",
 				},
 			},
@@ -682,7 +682,7 @@ func TestDeployment_volumeMounts(t *testing.T) {
 			want: []corev1.VolumeMount{
 				{
 					Name:      "sources",
-					MountPath: "/kubeless",
+					MountPath: "/usr/src/app/function",
 				},
 				{
 					Name:      "tmp",
@@ -701,7 +701,7 @@ func TestDeployment_volumeMounts(t *testing.T) {
 				{
 					Name:      "package-registry-config",
 					ReadOnly:  false,
-					MountPath: "/kubeless/package-registry-config/pip.conf",
+					MountPath: "/usr/src/app/function/package-registry-config/pip.conf",
 					SubPath:   "pip.conf",
 				},
 			},
@@ -1240,9 +1240,9 @@ func TestDeployment_runtimeCommand(t *testing.T) {
 				},
 			},
 			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /usr/src/app/function/requirements.txt;
 cd ..;
-python /kubeless.py;`,
+python /usr/src/app/server.py;`,
 		},
 		{
 			name: "build runtime command for inline python312 with dependencies",
@@ -1259,9 +1259,9 @@ python /kubeless.py;`,
 			},
 			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /usr/src/app/function/requirements.txt;
 cd ..;
-python /kubeless.py;`,
+python /usr/src/app/server.py;`,
 		},
 		{
 			name: "build runtime command for git python312",
@@ -1280,9 +1280,9 @@ python /kubeless.py;`,
 				},
 			},
 			want: `cp /git-repository/src/* .;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /usr/src/app/function/requirements.txt;
 cd ..;
-python /kubeless.py;`,
+python /usr/src/app/server.py;`,
 		},
 		{
 			name: "build runtime command for inline nodejs20 without dependencies",

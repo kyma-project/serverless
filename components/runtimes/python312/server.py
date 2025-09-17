@@ -22,7 +22,7 @@ if module_name == current_mod:
     print('Module cannot be named {} as current module'.format(current_mod), flush=True)
     exit(2)
 
-function_location = os.getenv('FUNCTION_PATH', default='/kubeless')
+function_location = os.getenv('FUNCTION_PATH', default='/usr/src/app/function')
 sys.path.append(function_location)
 
 mod = importlib.import_module(module_name)
