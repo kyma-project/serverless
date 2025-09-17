@@ -15,7 +15,7 @@ RUN chmod 644 /usr/src/app/function/requirements.txt
 
 RUN pip install --no-cache-dir -r /usr/src/app/function/requirements.txt
 
-COPY ./ /
+COPY ./ /usr/src/app
 RUN chmod -R 755 /lib
 RUN chmod 644 /usr/src/app/server.py
 
