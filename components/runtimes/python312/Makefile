@@ -1,0 +1,14 @@
+START_TIME := $(shell date +%s)
+IMG ?= app:$(START_TIME)
+
+.PHONY: k3d-deploy
+k3d-deploy:
+	docker build -t $(IMG) .
+	k3d image import $(IMG)
+	yq '.spec.template.spec.containers[] |= select(.name == "function") |= .image="$(IMG)"' deployment.yaml | kubectl apply -f -
+	kubectl apply -f service.yaml
+
+.PHONY: run
+run:
+	python3 -m pip install -r requirements.txt --user --break-system-packages
+	python3 server.py

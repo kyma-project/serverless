@@ -15,8 +15,7 @@ func ReadFiles(f *v1alpha2.Function) ([]types.FileResponse, error) {
 	runtimeDir := fmt.Sprintf("runtimes/%s", f.Spec.Runtime)
 
 	if f.HasPythonRuntime() {
-		// TODO: support non-nodejs runtimes
-		return nil, errors.New("ejecting functions with non-nodejs runtimes is not supported")
+		return readPythonFiles(f, runtimeDir)
 	}
 
 	return readNodejsFiles(f, runtimeDir)
@@ -49,6 +48,33 @@ func readNodejsFiles(f *v1alpha2.Function, runtimeDir string) ([]types.FileRespo
 		{Name: "package.json", Data: base64.StdEncoding.EncodeToString(packagejsonFile)},
 		{Name: "server.mjs", Data: base64.StdEncoding.EncodeToString(serverFile)},
 		{Name: "handler.js", Data: base64.StdEncoding.EncodeToString([]byte(f.Spec.Source.Inline.Source))},
+	}...), nil
+}
+
+func readPythonFiles(f *v1alpha2.Function, runtimeDir string) ([]types.FileResponse, error) {
+	commonFiles, err := readCommonFiles(runtimeDir)
+	if err != nil {
+		return nil, err
+	}
+
+	// read requirements.txt and append function dependencies
+	requirementsFile, err := os.ReadFile(runtimeDir + "/requirements.txt")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read requirements.txt")
+	}
+
+	requirementsFile = []byte(fmt.Sprintf("%s\n%s", string(requirementsFile), f.Spec.Source.Inline.Dependencies))
+
+	// read server.py
+	serverFile, err := os.ReadFile(runtimeDir + "/server.py")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read server.py")
+	}
+
+	return append(commonFiles, []types.FileResponse{
+		{Name: "requirements.txt", Data: base64.StdEncoding.EncodeToString(requirementsFile)},
+		{Name: "server.py", Data: base64.StdEncoding.EncodeToString(serverFile)},
+		{Name: "handler.py", Data: base64.StdEncoding.EncodeToString([]byte(f.Spec.Source.Inline.Source))},
 	}...), nil
 }
 
