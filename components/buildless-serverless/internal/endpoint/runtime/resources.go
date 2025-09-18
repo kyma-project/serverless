@@ -25,8 +25,8 @@ func BuildResources(functionConfig *config.FunctionConfig, f *v1alpha2.Function)
 	}
 
 	return []types.FileResponse{
-		{Name: "service.yaml", Data: base64.StdEncoding.EncodeToString(svc)},
-		{Name: "deployment.yaml", Data: base64.StdEncoding.EncodeToString(deployment)},
+		{Name: "resources/service.yaml", Data: base64.StdEncoding.EncodeToString(svc)},
+		{Name: "resources/deployment.yaml", Data: base64.StdEncoding.EncodeToString(deployment)},
 	}, nil
 }
 
