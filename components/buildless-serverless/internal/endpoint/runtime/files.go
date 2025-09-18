@@ -73,13 +73,13 @@ func readCommonFiles(runtimeDir string) ([]types.FileResponse, error) {
 	}
 
 	// read Makefile
-	makefileFile, err := os.ReadFile(runtimeDir + "/cli/Makefile")
+	makefileFile, err := os.ReadFile(runtimeDir + "/Makefile")
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to read Makefile")
 	}
 
 	// read Dockerfile
-	dockerfileFile, err := os.ReadFile(runtimeDir + "/cli/Dockerfile")
+	dockerfileFile, err := os.ReadFile(runtimeDir + "/Dockerfile")
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to read Dockerfile")
 	}
