@@ -28,9 +28,12 @@ func (s *Server) writeErrorResponse(w http.ResponseWriter, status int, respErr e
 	fmt.Fprint(w, buf.String())
 }
 
-func (s *Server) writeFilesListResponse(w http.ResponseWriter, data []types.FileResponse) {
+func (s *Server) writeFilesListResponse(w http.ResponseWriter, data []types.FileResponse, message string) {
 	buf := bytes.NewBuffer([]byte{})
-	err := json.NewEncoder(buf).Encode(types.FilesListResponse{Files: data})
+	err := json.NewEncoder(buf).Encode(types.FilesListResponse{
+		Files:         data,
+		OutputMessage: message,
+	})
 	if err != nil {
 		s.writeErrorResponse(w, http.StatusInternalServerError, errors.Wrap(err, "failed to encode response"))
 		return
