@@ -98,6 +98,18 @@ func readCommonFiles(runtimeDir string) ([]types.FileResponse, error) {
 		libFiles = append(libFiles, types.FileResponse{Name: fmt.Sprintf("/lib/%s", f.Name()), Data: base64.StdEncoding.EncodeToString(data)})
 	}
 
+	// read .gitignore
+	gitignoreFile, err := os.ReadFile(runtimeDir + "/.gitignore")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read .gitignore")
+	}
+
+	// read .dockerignore
+	dockerignoreFile, err := os.ReadFile(runtimeDir + "/.dockerignore")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read .dockerignore")
+	}
+
 	// read Makefile
 	makefileFile, err := os.ReadFile(runtimeDir + "/Makefile")
 	if err != nil {
@@ -111,6 +123,8 @@ func readCommonFiles(runtimeDir string) ([]types.FileResponse, error) {
 	}
 
 	return append(libFiles, []types.FileResponse{
+		{Name: ".gitignore", Data: base64.StdEncoding.EncodeToString(gitignoreFile)},
+		{Name: ".dockerignore", Data: base64.StdEncoding.EncodeToString(dockerignoreFile)},
 		{Name: "Dockerfile", Data: base64.StdEncoding.EncodeToString(dockerfileFile)},
 		{Name: "Makefile", Data: base64.StdEncoding.EncodeToString(makefileFile)},
 	}...), nil
