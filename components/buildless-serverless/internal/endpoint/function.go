@@ -39,5 +39,15 @@ func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.writeFilesListResponse(w, append(resourceFiles, runtimeFiles...))
+	s.writeFilesListResponse(w, append(resourceFiles, runtimeFiles...), getOutputMessage())
+}
+
+func getOutputMessage() string {
+	return "The proposed code structure contains:\n" +
+		"- functions code and dependencies\n" +
+		"- server code with its built-in functionalities (like cloudevents or tracing)\n" +
+		"- resources required to deploy the application on the cluster\n" +
+		"- scripts and automations to easily manage the application lifecycle\n" +
+		"\n" +
+		"Read more about next steps and possibilities in the 'README.md' file.\n\n"
 }
