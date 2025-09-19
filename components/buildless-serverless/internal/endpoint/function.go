@@ -43,10 +43,10 @@ func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func getOutputMessage() string {
-	return "Proposed code structure contains:\n" +
+	return "The proposed code structure contains:\n" +
 		"- functions code and dependencies\n" +
-		"- server code with its build-in functionalities (like cloudevents or tracing)\n" +
-		"- resources required to deploy application on the cluster\n" +
+		"- server code with its built-in functionalities (like cloudevents or tracing)\n" +
+		"- resources required to deploy the application on the cluster\n" +
 		"- scripts and automations to easily manage the application lifecycle\n" +
 		"\n" +
 		"Read more about next steps and possibilities in the 'README.md' file.\n\n"
