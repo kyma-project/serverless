@@ -110,6 +110,12 @@ func readCommonFiles(runtimeDir string) ([]types.FileResponse, error) {
 		return nil, errors.Wrap(err, "failed to read .dockerignore")
 	}
 
+	// read README.md
+	readmeFile, err := os.ReadFile(runtimeDir + "/README_template.md")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read README.md")
+	}
+
 	// read Makefile
 	makefileFile, err := os.ReadFile(runtimeDir + "/Makefile")
 	if err != nil {
@@ -125,6 +131,7 @@ func readCommonFiles(runtimeDir string) ([]types.FileResponse, error) {
 	return append(libFiles, []types.FileResponse{
 		{Name: ".gitignore", Data: base64.StdEncoding.EncodeToString(gitignoreFile)},
 		{Name: ".dockerignore", Data: base64.StdEncoding.EncodeToString(dockerignoreFile)},
+		{Name: "README.md", Data: base64.StdEncoding.EncodeToString(readmeFile)},
 		{Name: "Dockerfile", Data: base64.StdEncoding.EncodeToString(dockerfileFile)},
 		{Name: "Makefile", Data: base64.StdEncoding.EncodeToString(makefileFile)},
 	}...), nil
