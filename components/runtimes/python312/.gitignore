@@ -1,0 +1,3 @@
+# pip artifacts
+__pycache__/
+*.pyc

@@ -358,28 +358,15 @@ subCommands:
     descriptionLong: Use this command to initialize source and dependencies files for a Function.
   uses: function_init
   flags:
-  - name: runtime
-    type: string
-    description: "Runtime for which the files are generated [ nodejs22, nodejs20, python312 ]"
-    default: "nodejs22"
   - name: dir
     type: string
     description: "Path to the directory where files must be created"
     default: "."
   with:
-    useRuntime: ${{ .flags.runtime.value }}
+    useRuntime: nodejs
     outputDir: ${{ .flags.dir.value }}
     runtimes:
-      python312:
-        depsFilename: requirements.txt
-        depsData: ""
-        handlerFilename: handler.py
-        handlerData: |
-          def main(event, context):
-            message = "Hello World from the Kyma Function "+context['function-name']+" running on "+context['runtime']+ "!";
-            print(message)
-            return message
-      nodejs22:
+      nodejs: 
         depsFilename: package.json
         depsData: |
           {
@@ -407,31 +394,86 @@ subCommands:
               return message;
             }
           }
-      nodejs20:
-        depsFilename: package.json
-        depsData: |
-          {
-            "dependencies": {}
-          }
-        handlerFilename: handler.js
-        handlerData: |
-          module.exports = {
-            main: async function (event, context) {
-              /*
-              If you prefer mjs import/export syntax over cjs you need to specify
-              'type': 'module'
-              in the Function dependencies (package.json) and along with that change the import/export syntax to:
-              import foo from 'foo'
-              export function main(event, context) {
-                //your logic using foo library
-                return
-              }
-              */
+    nextStepsInstructions: |
+      Next steps:
+      * update output files in your favorite IDE
+      * create Function, for example:
+        kyma function create nodejs my-function --source ${{ .flags.dir.value }}/handler.js --dependencies ${{ .flags.dir.value }}/package.json
 
-              const message = `Hello World`
-                + ` from the Kyma Function ${context["function-name"]}`
-                + ` running on ${context.runtime}!`;
-              console.log(message);
-              return message;
+  subCommands:
+  - metadata:
+      name: "nodejs [flags]"
+      description: Init source and dependencies files locally
+      descriptionLong: Use this command to initialize source and dependencies files for a Function.
+    uses: function_init
+    flags:
+    - name: dir
+      type: string
+      description: "Path to the directory where files must be created"
+      default: "."
+    with:
+      useRuntime: nodejs
+      outputDir: ${{ .flags.dir.value }}
+      nextStepsInstructions: |
+        Next steps:
+        * update output files in your favorite IDE
+        * create Function, for example:
+          kyma function create nodejs my-function --source ${{ .flags.dir.value }}/handler.js --dependencies ${{ .flags.dir.value }}/package.json
+      runtimes:
+        nodejs:
+          depsFilename: package.json
+          depsData: |
+            {
+              "dependencies": {}
             }
-          }
+          handlerFilename: handler.js
+          handlerData: |
+            module.exports = {
+              main: async function (event, context) {
+                /*
+                If you prefer mjs import/export syntax over cjs you need to specify
+                'type': 'module'
+                in the Function dependencies (package.json) and along with that change the import/export syntax to:
+                import foo from 'foo'
+                export function main(event, context) {
+                  //your logic using foo library
+                  return
+                }
+                */
+
+                const message = `Hello World`
+                  + ` from the Kyma Function ${context["function-name"]}`
+                  + ` running on ${context.runtime}!`;
+                console.log(message);
+                return message;
+              }
+            }
+
+  - metadata:
+      name: "python [flags]"
+      description: Init source and dependencies files locally
+      descriptionLong: Use this command to initialize source and dependencies files for a Function.
+    uses: function_init
+    flags:
+    - name: dir
+      type: string
+      description: "Path to the directory where files must be created"
+      default: "."
+    with:
+      useRuntime: python
+      outputDir: ${{ .flags.dir.value }}
+      runtimes:
+        python:
+          depsFilename: requirements.txt
+          depsData: ""
+          handlerFilename: handler.py
+          handlerData: |
+            def main(event, context):
+              message = "Hello World from the Kyma Function "+context['function-name']+" running on "+context['runtime']+ "!";
+              print(message)
+              return message
+      nextStepsInstructions: |
+        Next steps:
+        * update output files in your favorite IDE
+        * create Function, for example:
+          kyma function create python my-function --source ${{ .flags.dir.value }}/handler.py --dependencies ${{ .flags.dir.value }}/requirements.txt

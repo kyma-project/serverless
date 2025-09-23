@@ -45,6 +45,7 @@ func fillConfigEnvVars(runtime serverlessv1alpha2.Runtime, config *Config) {
 			[]corev1.EnvVar{
 				// https://github.com/kubeless/runtimes/blob/master/stable/python/python.jsonnet#L45
 				{Name: "PYTHONPATH", Value: "$(KUBELESS_INSTALL_VOLUME)/lib.python3.12/site-packages:$(KUBELESS_INSTALL_VOLUME)"},
+				{Name: "FUNCTION_PATH", Value: "/kubeless"},
 				{Name: "PYTHONUNBUFFERED", Value: "TRUE"}}...)
 		return
 	}

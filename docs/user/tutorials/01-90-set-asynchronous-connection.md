@@ -33,7 +33,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 1. Go to the `emitter` folder and run Kyma CLI `init` command to initialize the scaffold for your first Function:
 
    ```bash
-   kyma function init
+   kyma function init nodejs
    ```
 
    The `init` command creates these files in your workspace folder:
@@ -108,7 +108,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 3. Apply your emitter Function:
 
    ```bash
-   kyma function create emitter --source handler.js --dependencies package.json
+   kyma function create nodejs emitter --source handler.js --dependencies package.json
    ```
 
    Your Function is now built and deployed in Kyma runtime. Kyma exposes it through the APIRule. The incoming payloads are processed by your emitter Function. It then sends the sanitized content to the workload that subscribes to the selected event type. In our case, it's the receiver Function.
@@ -161,7 +161,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 1. Go to your `receiver` folder and run Kyma CLI `init` command to initialize the scaffold for your second Function:
 
    ```bash
-   kyma function init
+   kyma function init nodejs
    ```
 
    The `init` command creates the same files as in the `emitter` folder.
@@ -184,7 +184,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 3. Apply your receiver Function:
 
    ```bash
-   kyma function create receiver --source handler.js --dependencies package.json
+   kyma function create nodejs receiver --source handler.js --dependencies package.json
    ```
 
    The Function is configured, built, and deployed in Kyma runtime. The Subscription becomes active and all events with the selected type are processed by the Function.  
