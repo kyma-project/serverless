@@ -30,6 +30,7 @@ containers:
         functionTraceCollectorEndpoint: "http://telemetry-otlp-traces.kyma-system.svc.cluster.local:4318/v1/traces"
         functionPublisherProxyAddress: "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish"
         functionRequeueDuration: 5m
+        healthzLivenessTimeout: "10s"
         resourcesConfiguration:
           function:
             resources:
