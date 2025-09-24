@@ -26,7 +26,7 @@ subCommands:
     name: output
     shorthand: o
     description: "Output format. It can be json or yaml."
-    default: "yaml"
+    default: ""
   with:
     output: ${{ .flags.output.value }}
     fromAllNamespaces: ${{.flags.allnamespaces.value}}
@@ -110,7 +110,7 @@ subCommands:
   - type: bool
     name: "dry-run"
     description: "Simulates resource deletion if set to 'true'"
-    default: true
+    default: false
   with:
     dryRun: ${{ .flags.dryrun.value }}
     resource:
@@ -170,12 +170,16 @@ subCommands:
   - type: bool
     name: "dry-run"
     description: "Simulates resource creation if set to 'true'"
-    default: true
+    default: false
   - type: string
     name: output
     shorthand: o
     description: "Output format. It can be json or yaml."
-    default: "yaml"
+    default: ""
+  - type: bool
+    name: istio-injection
+    description: "Enable Istio sidecar injection"
+    default: ""
   with:
     output: ${{ .flags.output.value }}
     dryRun: ${{ .flags.dryrun.value }}
@@ -185,6 +189,8 @@ subCommands:
       metadata:
         name: ${{ .args.value }}
         namespace: ${{ .flags.namespace.value }}
+        annotations:
+          ${{ .flags.istioinjection.value | wasUsed "{'sidecar.istio.io/inject':'true'}" "{'sidecar.istio.io/inject':'false'}" "" }}
       spec:
         runtimeImageOverride: ${{ .flags.runtimeimageoverride.value }}
         runtime: nodejs22
@@ -199,7 +205,7 @@ subCommands:
               ${{ .flags.dependencies.value | newLineIndent 20 }}
   subCommands:
     - metadata:
-        name: "python312 <resource_name> [flags]"
+        name: "python <resource_name> [flags]"
         description: "Create Python 3.12 Function"
         descriptionLong: "Use this command to create a Function with Python 3.12 runtime on a cluster."
       uses: resource_create
@@ -242,12 +248,12 @@ subCommands:
       - type: bool
         name: "dry-run"
         description: "Simulates resource creation if set to 'true'"
-        default: true
+        default: false
       - type: string
         name: output
         shorthand: o
         description: "Output format. It can be json or yaml."
-        default: "yaml"
+        default: ""
       with:
         output: ${{ .flags.output.value }}
         dryRun: ${{ .flags.dryrun.value }}
@@ -270,8 +276,8 @@ subCommands:
                 dependencies: |
                   ${{ .flags.dependencies.value | newLineIndent 20 }}
     - metadata:
-        name: "nodejs20 <resource_name> [flags]"
-        description: "Create Node.js 20 Function"
+        name: "nodejs <resource_name> [flags]"
+        description: "Create Node.js Function"
         descriptionLong: "Use this command to create a Function with Node.js 20 runtime on a cluster."
       uses: resource_create
       args:
@@ -319,12 +325,17 @@ subCommands:
       - type: bool
         name: "dry-run"
         description: "Simulates resource creation if set to 'true'"
-        default: true
+        default: false
       - type: string
         name: output
         shorthand: o
         description: "Output format. It can be json or yaml."
-        default: "yaml"
+        default: ""
+      - type: string
+        name: "version"
+        description: "specifies which version of node runtime should be used {20|22}"
+        shorthand: "v"
+        default: "22"
       with:
         output: ${{ .flags.output.value }}
         dryRun: ${{ .flags.dryrun.value }}
@@ -336,84 +347,7 @@ subCommands:
             namespace: ${{ .flags.namespace.value }}
           spec:
             runtimeImageOverride: ${{ .flags.runtimeimageoverride.value }}
-            runtime: nodejs20
-            replicas: ${{ .flags.replicas.value }}
-            env: ${{ .flags.env.value | toEnvs }}
-            secretMounts: ${{ .flags.secretmount.value | toArray "{'secretName':'{{.key}}','mountPath':'{{.value}}'}" }}
-            source:
-              inline:
-                source: |
-                  ${{ .flags.source.value | newLineIndent 20 }}
-                dependencies: |
-                  ${{ .flags.dependencies.value | newLineIndent 20 }}
-    - metadata:
-        name: "nodejs22 <resource_name> [flags]"
-        description: "Create Node.js 22 Function"
-        descriptionLong: "Use this command to create a Function with Node.js 22 runtime on a cluster."
-      uses: resource_create
-      args:
-        type: string
-      flags:
-      - type: string
-        name: "runtime-image-override"
-        description: "custom runtime image to be used as Function's runtime base"
-        default: "\"\""
-      - type: string
-        name: "namespace"
-        shorthand: "n"
-        description: "Function's namespace"
-        default: "default"
-      - type: int
-        name: "replicas"
-        description: "function replicas"
-        default: "1"
-      - type: path
-        name: "source"
-        description: "function source file path"
-        shorthand: "s"
-        default: |
-          module.exports = {
-            main: function(event, context) {
-              return 'Hello World!'
-            }
-          }
-      - type: path
-        name: "dependencies"
-        description: "function dependencies file path"
-        shorthand: "d"
-        default: |
-          {
-            "dependencies": {}
-          }
-      - type: map
-        name: "env"
-        description: "function environment variables in format key=value"
-        default: ""
-      - type: map
-        name: secret-mount
-        description: "function secret mounts in format secret-name=mount-path"
-        default: ""
-      - type: bool
-        name: "dry-run"
-        description: "Simulates resource creation if set to 'true'"
-        default: "true"
-      - type: string
-        name: output
-        shorthand: o
-        description: "Output format. It can be json or yaml."
-        default: "yaml"
-      with:
-        output: ${{ .flags.output.value }}
-        dryRun: ${{ .flags.dryrun.value }}
-        resource:
-          apiVersion: serverless.kyma-project.io/v1alpha2
-          kind: Function
-          metadata:
-            name: ${{ .args.value }}
-            namespace: ${{ .flags.namespace.value }}
-          spec:
-            runtimeImageOverride: ${{ .flags.runtimeimageoverride.value }}
-            runtime: nodejs22
+            runtime: nodejs${{ .flags.version.value }}
             replicas: ${{ .flags.replicas.value }}
             env: ${{ .flags.env.value | toEnvs }}
             secretMounts: ${{ .flags.secretmount.value | toArray "{'secretName':'{{.key}}','mountPath':'{{.value}}'}" }}
@@ -430,28 +364,15 @@ subCommands:
     descriptionLong: Use this command to initialize source and dependencies files for a Function.
   uses: function_init
   flags:
-  - name: runtime
-    type: string
-    description: "Runtime for which the files are generated [ nodejs22, nodejs20, python312 ]"
-    default: "nodejs22"
   - name: dir
     type: string
     description: "Path to the directory where files must be created"
     default: "."
   with:
-    useRuntime: ${{ .flags.runtime.value }}
+    useRuntime: nodejs
     outputDir: ${{ .flags.dir.value }}
     runtimes:
-      python312:
-        depsFilename: requirements.txt
-        depsData: ""
-        handlerFilename: handler.py
-        handlerData: |
-          def main(event, context):
-            message = "Hello World from the Kyma Function "+context['function-name']+" running on "+context['runtime']+ "!";
-            print(message)
-            return message
-      nodejs22:
+      nodejs:
         depsFilename: package.json
         depsData: |
           {
@@ -479,31 +400,86 @@ subCommands:
               return message;
             }
           }
-      nodejs20:
-        depsFilename: package.json
-        depsData: |
-          {
-            "dependencies": {}
-          }
-        handlerFilename: handler.js
-        handlerData: |
-          module.exports = {
-            main: async function (event, context) {
-              /*
-              If you prefer mjs import/export syntax over cjs you need to specify
-              'type': 'module'
-              in the Function dependencies (package.json) and along with that change the import/export syntax to:
-              import foo from 'foo'
-              export function main(event, context) {
-                //your logic using foo library
-                return
-              }
-              */
+    nextStepsInstructions: |
+      Next steps:
+      * update output files in your favorite IDE
+      * create Function, for example:
+        kyma function create nodejs my-function --source handler.js --dependencies package.json
 
-              const message = `Hello World`
-                + ` from the Kyma Function ${context["function-name"]}`
-                + ` running on ${context.runtime}!`;
-              console.log(message);
-              return message;
+  subCommands:
+  - metadata:
+      name: "nodejs [flags]"
+      description: Init source and dependencies files locally
+      descriptionLong: Use this command to initialize source and dependencies files for a Function.
+    uses: function_init
+    flags:
+    - name: dir
+      type: string
+      description: "Path to the directory where files must be created"
+      default: "."
+    with:
+      useRuntime: nodejs
+      outputDir: ${{ .flags.dir.value }}
+      nextStepsInstructions: |
+        Next steps:
+        * update output files in your favorite IDE
+        * create Function, for example:
+          kyma function create nodejs my-function --source handler.js --dependencies package.json
+      runtimes:
+        nodejs:
+          depsFilename: package.json
+          depsData: |
+            {
+              "dependencies": {}
             }
-          }
+          handlerFilename: handler.js
+          handlerData: |
+            module.exports = {
+              main: async function (event, context) {
+                /*
+                If you prefer mjs import/export syntax over cjs you need to specify
+                'type': 'module'
+                in the Function dependencies (package.json) and along with that change the import/export syntax to:
+                import foo from 'foo'
+                export function main(event, context) {
+                  //your logic using foo library
+                  return
+                }
+                */
+
+                const message = `Hello World`
+                  + ` from the Kyma Function ${context["function-name"]}`
+                  + ` running on ${context.runtime}!`;
+                console.log(message);
+                return message;
+              }
+            }
+
+  - metadata:
+      name: "python [flags]"
+      description: Init source and dependencies files locally
+      descriptionLong: Use this command to initialize source and dependencies files for a Function.
+    uses: function_init
+    flags:
+    - name: dir
+      type: string
+      description: "Path to the directory where files must be created"
+      default: "."
+    with:
+      useRuntime: python
+      outputDir: ${{ .flags.dir.value }}
+      runtimes:
+        python:
+          depsFilename: requirements.txt
+          depsData: ""
+          handlerFilename: handler.py
+          handlerData: |
+            def main(event, context):
+              message = "Hello World from the Kyma Function "+context['function-name']+" running on "+context['runtime']+ "!";
+              print(message)
+              return message
+      nextStepsInstructions: |
+        Next steps:
+        * update output files in your favorite IDE
+        * create Function, for example:
+          kyma function create python --source handler.py --dependencies requirements.txt
