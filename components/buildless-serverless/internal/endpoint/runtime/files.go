@@ -15,13 +15,13 @@ func ReadFiles(f *v1alpha2.Function) ([]types.FileResponse, error) {
 	runtimeDir := fmt.Sprintf("runtimes/%s", f.Spec.Runtime)
 
 	if f.HasPythonRuntime() {
-		return readPythonFiles(f, runtimeDir)
+		return readPythonFiles(f.Spec.Source.Inline, runtimeDir)
 	}
 
-	return readNodejsFiles(f, runtimeDir)
+	return readNodejsFiles(f.Spec.Source.Inline, runtimeDir)
 }
 
-func readNodejsFiles(f *v1alpha2.Function, runtimeDir string) ([]types.FileResponse, error) {
+func readNodejsFiles(inline *v1alpha2.InlineSource, runtimeDir string) ([]types.FileResponse, error) {
 	commonFiles, err := readCommonFiles(runtimeDir)
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func readNodejsFiles(f *v1alpha2.Function, runtimeDir string) ([]types.FileRespo
 		return nil, errors.Wrap(err, "failed to read package.json")
 	}
 
-	packagejsonFile, err = packagejson.Merge([]byte(f.Spec.Source.Inline.Dependencies), packagejsonFile)
+	packagejsonFile, err = packagejson.Merge([]byte(inline.Dependencies), packagejsonFile)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to merge package.json")
 	}
@@ -47,11 +47,11 @@ func readNodejsFiles(f *v1alpha2.Function, runtimeDir string) ([]types.FileRespo
 	return append(commonFiles, []types.FileResponse{
 		{Name: "package.json", Data: base64.StdEncoding.EncodeToString(packagejsonFile)},
 		{Name: "server.mjs", Data: base64.StdEncoding.EncodeToString(serverFile)},
-		{Name: "handler.js", Data: base64.StdEncoding.EncodeToString([]byte(f.Spec.Source.Inline.Source))},
+		{Name: "handler.js", Data: base64.StdEncoding.EncodeToString([]byte(inline.Source))},
 	}...), nil
 }
 
-func readPythonFiles(f *v1alpha2.Function, runtimeDir string) ([]types.FileResponse, error) {
+func readPythonFiles(inline *v1alpha2.InlineSource, runtimeDir string) ([]types.FileResponse, error) {
 	commonFiles, err := readCommonFiles(runtimeDir)
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func readPythonFiles(f *v1alpha2.Function, runtimeDir string) ([]types.FileRespo
 		return nil, errors.Wrap(err, "failed to read requirements.txt")
 	}
 
-	requirementsFile = []byte(fmt.Sprintf("%s\n%s", string(requirementsFile), f.Spec.Source.Inline.Dependencies))
+	requirementsFile = []byte(fmt.Sprintf("%s\n%s", string(requirementsFile), inline.Dependencies))
 
 	// read server.py
 	serverFile, err := os.ReadFile(runtimeDir + "/server.py")
@@ -74,7 +74,7 @@ func readPythonFiles(f *v1alpha2.Function, runtimeDir string) ([]types.FileRespo
 	return append(commonFiles, []types.FileResponse{
 		{Name: "requirements.txt", Data: base64.StdEncoding.EncodeToString(requirementsFile)},
 		{Name: "server.py", Data: base64.StdEncoding.EncodeToString(serverFile)},
-		{Name: "handler.py", Data: base64.StdEncoding.EncodeToString([]byte(f.Spec.Source.Inline.Source))},
+		{Name: "handler.py", Data: base64.StdEncoding.EncodeToString([]byte(inline.Source))},
 	}...), nil
 }
 
