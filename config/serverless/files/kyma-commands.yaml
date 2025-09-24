@@ -139,6 +139,10 @@ subCommands:
     name: output
     shorthand: o
     description: "Output format. It can be json or yaml."
+  - type: bool
+    name: istio-injection
+    description: "Enable Istio sidecar injection"
+    default: ""
   with:
     output: ${{ .flags.output.value }}
     dryRun: ${{ .flags.dryrun.value }}
