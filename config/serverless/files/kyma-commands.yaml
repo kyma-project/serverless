@@ -144,6 +144,7 @@ subCommands:
     name: output
     shorthand: o
     description: "Output format. It can be json or yaml."
+    default: ""
   - type: bool
     name: istio-injection
     description: "Enable Istio sidecar injection"
