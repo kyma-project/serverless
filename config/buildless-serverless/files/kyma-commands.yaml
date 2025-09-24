@@ -404,7 +404,7 @@ subCommands:
       Next steps:
       * update output files in your favorite IDE
       * create Function, for example:
-        kyma function create nodejs my-function --source handler.js --dependencies package.json
+        kyma function create nodejs my-function --source ${{ .flags.dir.value }}/handler.js --dependencies ${{ .flags.dir.value }}/package.json
 
   subCommands:
   - metadata:
@@ -424,7 +424,7 @@ subCommands:
         Next steps:
         * update output files in your favorite IDE
         * create Function, for example:
-          kyma function create nodejs my-function --source handler.js --dependencies package.json
+          kyma function create nodejs my-function --source ${{ .flags.dir.value }}/handler.js --dependencies ${{ .flags.dir.value }}/package.json
       runtimes:
         nodejs:
           depsFilename: package.json
@@ -482,4 +482,4 @@ subCommands:
         Next steps:
         * update output files in your favorite IDE
         * create Function, for example:
-          kyma function create python --source handler.py --dependencies requirements.txt
+          kyma function create python my-function --source ${{ .flags.dir.value }}/handler.py --dependencies ${{ .flags.dir.value }}/requirements.txt

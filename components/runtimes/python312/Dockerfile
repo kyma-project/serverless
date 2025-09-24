@@ -9,14 +9,14 @@ RUN apk add --no-cache --virtual .build-deps build-base linux-headers
 # cmake is required for some packages
 RUN apk add --no-cache cmake
 
-COPY ./python312/requirements.txt /kubeless/requirements.txt
+COPY ./requirements.txt /kubeless/requirements.txt
 RUN chmod 644 /kubeless/requirements.txt
 
 RUN pip install --no-cache-dir -r /kubeless/requirements.txt
 
 COPY ./ /
 RUN chmod -R 755 /lib
-RUN chmod 644 /kubeless.py
+RUN chmod 644 /server.py
 
 WORKDIR /
 
@@ -25,4 +25,4 @@ USER 1000
 ENV OTEL_PROPAGATORS=tracecontext,baggage,b3multi
 ENV OTEL_PYTHON_REQUESTS_EXCLUDED_URLS="healthz,favicon.ico,metrics"
 
-CMD ["python", "/kubeless.py"]
+CMD ["python", "/server.py"]

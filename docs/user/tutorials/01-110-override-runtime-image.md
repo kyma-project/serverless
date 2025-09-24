@@ -31,13 +31,13 @@ Follow these steps:
     ```bash
     mkdir {FOLDER_NAME}
     cd {FOLDER_NAME}
-    kyma function init
+    kyma function init python
     ```
 
 4. Deploy your Function:
 
     ```bash
-    kyma function create $NAME \
+    kyma function create python $NAME \
       --namespace $NAMESPACE --runtime python312 \
       --runtime-image-override $RUNTIME_IMAGE_URL \
       --source handler.py --dependencies requirements.txt
