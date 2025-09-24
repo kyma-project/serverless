@@ -145,6 +145,10 @@ subCommands:
     shorthand: o
     description: "Output format. It can be json or yaml."
     default: ""
+  - type: bool
+    name: istio-injection
+    description: "Enable Istio sidecar injection"
+    default: ""
   with:
     output: ${{ .flags.output.value }}
     dryRun: ${{ .flags.dryrun.value }}
@@ -154,6 +158,8 @@ subCommands:
       metadata:
         name: ${{ .args.value }}
         namespace: ${{ .flags.namespace.value }}
+        annotations:
+          ${{ .flags.istioinjection.value | wasUsed "{'sidecar.istio.io/inject':'true'}" "{'sidecar.istio.io/inject':'false'}" "" }}
       spec:
         runtimeImageOverride: ${{ .flags.runtimeimageoverride.value }}
         runtime: nodejs22
