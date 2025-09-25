@@ -25,6 +25,8 @@ data:
     packageRegistryConfigSecretName: "{{ $config.packageRegistryConfigSecretName }}"
     functionTraceCollectorEndpoint: "{{ $config.functionTraceCollectorEndpoint }}"
     functionPublisherProxyAddress: "{{ $config.functionPublisherProxyAddress }}"
+    functionReadyRequeueDuration: "{{ $config.functionRequeueDuration }}"
+    healthzLivenessTimeout: "{{ $config.healthzLivenessTimeout }}"
     resourcesConfiguration:
 {{ .Values.containers.manager.configuration.data.resourcesConfiguration | toYaml | indent 6 }}
 ---
