@@ -179,7 +179,6 @@ subCommands:
   - type: bool
     name: istio-injection
     description: "Enable Istio sidecar injection"
-    default: ""
   with:
     output: ${{ .flags.output.value }}
     dryRun: ${{ .flags.dryrun.value }}
@@ -190,7 +189,7 @@ subCommands:
         name: ${{ .args.value }}
         namespace: ${{ .flags.namespace.value }}
         annotations:
-          ${{ .flags.istioinjection.value | wasUsed "{'sidecar.istio.io/inject':'true'}" "{'sidecar.istio.io/inject':'false'}" "" }}
+          ${{ .flags.istioinjection.value | ifNil "{'sidecar.istio.io/inject':'${{.flags.istioinjection.value}}'}" "" }}
       spec:
         runtimeImageOverride: ${{ .flags.runtimeimageoverride.value }}
         runtime: nodejs22
