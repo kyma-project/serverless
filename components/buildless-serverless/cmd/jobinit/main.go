@@ -1,14 +1,16 @@
 package main
 
 import (
+	"crypto/fips140"
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/go-git/go-git/v5/plumbing/protocol/packp/capability"
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/vrischmann/envconfig"
-	"log"
-	"os"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -32,6 +34,10 @@ type initConfig struct {
 
 func main() {
 	log.Println("Start repo fetcher...")
+
+	if !isFIPS140Only() {
+		log.Panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+	}
 
 	cfg := initConfig{}
 	if err := envconfig.InitWithPrefix(&cfg, envPrefix); err != nil {
@@ -121,4 +127,8 @@ func basicAuth(username, password string) (transport.AuthMethod, error) {
 		Username: username,
 		Password: password,
 	}, nil
+}
+
+func isFIPS140Only() bool {
+	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=only"
 }
