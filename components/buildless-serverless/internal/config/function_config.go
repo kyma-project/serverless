@@ -1,14 +1,15 @@
 package config
 
 import (
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/pkg/errors"
 	"github.com/vrischmann/envconfig"
 	"gopkg.in/yaml.v2"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	"os"
-	"path/filepath"
-	"time"
 )
 
 type FunctionConfig struct {
@@ -43,7 +44,7 @@ func defaultFunctionConfig() FunctionConfig {
 		},
 		RequeueDuration:                 time.Minute,
 		FunctionReadyRequeueDuration:    time.Minute * 5,
-		PackageRegistryConfigSecretName: "buildless-serverless-package-registry-config",
+		PackageRegistryConfigSecretName: "serverless-package-registry-config",
 		FunctionPublisherProxyAddress:   "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish",
 		InternalEndpointPort:            ":12137",
 	}
