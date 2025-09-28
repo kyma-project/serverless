@@ -10,7 +10,7 @@ import (
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/resources"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/endpoint/types"
 	"github.com/pkg/errors"
-	"go.yaml.in/yaml/v2"
+	"go.yaml.in/yaml/v3"
 )
 
 func BuildResources(functionConfig *config.FunctionConfig, f *v1alpha2.Function, appName string) ([]types.FileResponse, error) {
