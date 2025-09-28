@@ -25,18 +25,18 @@ require (
 	github.com/stretchr/testify v1.11.1
 	github.com/vrischmann/envconfig v1.4.1
 	go.uber.org/zap v1.27.0
-	go.yaml.in/yaml/v3 v3.0.4
+	go.yaml.in/yaml/v2 v2.4.2
 	golang.org/x/crypto v0.42.0
 	golang.org/x/sync v0.17.0
 	golang.org/x/time v0.13.0
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
 	helm.sh/helm/v3 v3.18.6
-	k8s.io/api v0.33.4
-	k8s.io/apiextensions-apiserver v0.33.4
-	k8s.io/apimachinery v0.33.4
-	k8s.io/cli-runtime v0.33.4
-	k8s.io/client-go v0.33.4
+	k8s.io/api v0.33.5
+	k8s.io/apiextensions-apiserver v0.33.5
+	k8s.io/apimachinery v0.33.5
+	k8s.io/cli-runtime v0.33.5
+	k8s.io/client-go v0.33.5
 	k8s.io/klog/v2 v2.130.1
 	k8s.io/utils v0.0.0-20241104163129-6fe5fd82f078
 	sigs.k8s.io/controller-runtime v0.20.4
@@ -141,7 +141,7 @@ require (
 	github.com/xlab/treeprint v1.2.0 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	go.yaml.in/yaml/v2 v2.4.2 // indirect
+	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/net v0.43.0 // indirect
 	golang.org/x/oauth2 v0.30.0 // indirect
 	golang.org/x/sys v0.36.0 // indirect
@@ -155,8 +155,8 @@ require (
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
-	k8s.io/apiserver v0.33.4 // indirect
-	k8s.io/component-base v0.33.4 // indirect
+	k8s.io/apiserver v0.33.5 // indirect
+	k8s.io/component-base v0.33.5 // indirect
 	k8s.io/kube-openapi v0.0.0-20250318190949-c8a335a9a2ff // indirect
 	k8s.io/kubectl v0.33.3 // indirect
 	oras.land/oras-go/v2 v2.6.0 // indirect
