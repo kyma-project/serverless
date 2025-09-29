@@ -54,7 +54,7 @@ RUN if [[ "local" = "$PURPOSE" ]] ; then ./hack/replace_serverless_chart_images.
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM gcr.io/distroless/static:nonroot
 
-ENV GODEBUG=fips140=only
+ENV GODEBUG=fips140=only,tlsmlkem=0
 
 WORKDIR /
 COPY --chown=65532:65532 --from=builder /workdir/operator .

@@ -25,7 +25,7 @@ FROM scratch
 
 LABEL source=git@github.com:kyma-project/serverless.git
 
-ENV GODEBUG=fips140=only
+ENV GODEBUG=fips140=only,tlsmlkem=0
 COPY --from=builder /app /app
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 USER 1000

@@ -28,7 +28,7 @@ RUN apk add --no-cache ca-certificates
 FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.2
 
 ENV LIBGIT2_VERSION=1.5.2-r0 \
-    GODEBUG=fips140=only
+    GODEBUG=fips140=only,tlsmlkem=0
 
 RUN apk update --no-cache && apk upgrade --no-cache
 RUN apk add --no-cache --update --repository=http://dl-cdn.alpinelinux.org/alpine/edge/main openssl
