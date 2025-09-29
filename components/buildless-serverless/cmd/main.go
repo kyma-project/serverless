@@ -23,6 +23,7 @@ import (
 	"io"
 	"log"
 	"os"
+
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
@@ -218,5 +219,5 @@ func loadConfig(prefix string) (serverlessConfig, error) {
 }
 
 func isFIPS140Only() bool {
-	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=only"
+	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=only,tlsmlkem=0"
 }

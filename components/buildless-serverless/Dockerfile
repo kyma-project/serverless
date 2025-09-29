@@ -28,7 +28,7 @@ RUN apk add --no-cache ca-certificates
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM scratch
 
-ENV GODEBUG=fips140=only
+ENV GODEBUG=fips140=only,tlsmlkem=0
 
 COPY ./components/runtimes /runtimes/
 COPY --from=builder /app /app
