@@ -11,6 +11,7 @@
   * [Create a Git Function](/serverless-manager/user/tutorials/01-11-create-git-function.md)
   * [Expose the Function](/serverless-manager/user/tutorials/01-20-expose-function.md)
   * [Manage Functions Through Kyma CLI](/serverless-manager/user/tutorials/01-30-manage-functions-with-kyma-cli.md)
+  * [Log Into a Private Package Registry](/serverless-manager/user/tutorials/01-80-log-into-private-packages-registry.md)
   * [Send and Receive Cloud Events](/serverless-manager/user/tutorials/01-90-set-asynchronous-connection.md)
   * [Customize Function Traces](/serverless-manager/user/tutorials/01-100-customize-function-traces.md)
   * [Override Runtime Image](/serverless-manager/user/tutorials/01-110-override-runtime-image.md)

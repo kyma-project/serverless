@@ -7,3 +7,5 @@ images:
     tag: "1.25.0-alpine3.22"
   - source: "gcr.io/kaniko-project/executor@sha256:4e7a52dd1f14872430652bb3b027405b8dfd17c4538751c620ac005741ef9698"
     tag: "v1.24.0"
+  - source: "ghcr.io/nginx/alpine-fips@sha256:61ed75f252bde7da1e6db33d2709456e87478280dfae3d11084f94c361e9f329"
+    tag: "0.4.0-alpine3.22"

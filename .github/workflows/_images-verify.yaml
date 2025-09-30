@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout to main
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: main
 
@@ -23,7 +23,7 @@ jobs:
           echo VALUES_MAIN_IMAGES=$(yq '.global.images[] | select(.version == "main") | .name' config/serverless/values.yaml) >> $GITHUB_ENV
 
       - name: Checkout to context
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
