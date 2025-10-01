@@ -170,7 +170,7 @@ jobs:
           APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
           APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
           IMG: ${{ inputs.image }}
-          SERVERLESS_CR_PATH: config/samples/buildless-legacy-serverless-with-networkpolicies-enabled.yaml
+          SERVERLESS_CR_PATH: config/samples/buildless-serverless-with-networkpolicies-enabled.yaml
       - name: collect cluster info
         if: ${{ always() }}
         run: make -C tests/serverless cluster-info
