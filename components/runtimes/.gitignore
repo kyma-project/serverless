@@ -1,0 +1,4 @@
+# allow keeping handlers inside runtimes directories locally
+# for development purposes
+handler.js
+handler.py
