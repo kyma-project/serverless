@@ -132,7 +132,7 @@ render-manifest: kustomize ## Render serverless-operator.yaml manifest.
 .PHONY: apply-default-serverless-cr
 apply-default-serverless-cr: ## Apply the k3d serverless CR.
 	kubectl apply \
-		-f ${PROJECT_ROOT}/config/samples/default-serverless-cr.yaml
+		-f ${PROJECT_ROOT}/config/samples/legacy-serverless-cr.yaml
 		
 .PHONY: apply-buildless-serverless-cr
 apply-buildless-serverless-cr: ## Apply the k3d serverless CR.

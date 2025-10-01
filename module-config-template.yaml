@@ -1,6 +1,6 @@
 name: kyma-project.io/module/serverless
 version:
-defaultCR: default-serverless-cr.yaml
+defaultCR: buildless-serverless-cr.yaml
 manifest: serverless-operator.yaml
 documentation: "https://help.sap.com/docs/btp/sap-business-technology-platform/serverless-module"
 repository: https://github.com/kyma-project/serverless-manager.git

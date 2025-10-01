@@ -69,13 +69,13 @@ kubectl apply -f https://github.com/kyma-project/serverless/releases/latest/down
 - Create a Serverless instance.
 
     ```bash
-    kubectl apply -f config/samples/default-serverless-cr.yaml
+    kubectl apply -f config/samples/legacy-serverless-cr.yaml
     ```
 
 - Delete a Serverless instance.
 
     ```bash
-    kubectl delete -f config/samples/default-serverless-cr.yaml
+    kubectl delete -f config/samples/legacy-serverless-cr.yaml
     ```
 
 - Use external registry.
