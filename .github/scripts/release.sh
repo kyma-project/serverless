@@ -39,8 +39,8 @@ echo "Updating github release with assets"
 UPLOAD_URL="https://uploads.github.com/repos/kyma-project/serverless/releases/${RELEASE_ID}/assets"
 
 uploadFile "serverless-operator.yaml" "${UPLOAD_URL}?name=serverless-operator.yaml"
-uploadFile "config/samples/default-serverless-cr.yaml" "${UPLOAD_URL}?name=default-serverless-cr.yaml"
-uploadFile "config/samples/default-serverless-cr-k3d.yaml" "${UPLOAD_URL}?name=default-serverless-cr-k3d.yaml"
+uploadFile "config/samples/legacy-serverless-cr.yaml" "${UPLOAD_URL}?name=legacy-serverless-cr.yaml"
+uploadFile "config/samples/legacy-serverless-cr-k3d.yaml" "${UPLOAD_URL}?name=legacy-serverless-cr-k3d.yaml"
 
 
 
