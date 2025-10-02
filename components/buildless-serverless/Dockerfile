@@ -24,8 +24,6 @@ FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.1 AS c
 
 RUN apk add --no-cache ca-certificates
 
-# Use distroless as minimal base image to package the manager binary
-# Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM scratch
 
 COPY ./components/runtimes /runtimes/
