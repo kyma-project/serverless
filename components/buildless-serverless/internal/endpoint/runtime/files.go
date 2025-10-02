@@ -44,10 +44,17 @@ func readNodejsFiles(inline *v1alpha2.InlineSource, runtimeDir string) ([]types.
 		return nil, errors.Wrap(err, "failed to read server.mjs")
 	}
 
+	// read openssl.cnf
+	opensslFile, err := os.ReadFile(runtimeDir + "/openssl.cnf")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read openssl.cnf")
+	}
+
 	return append(commonFiles, []types.FileResponse{
 		{Name: "package.json", Data: base64.StdEncoding.EncodeToString(packagejsonFile)},
 		{Name: "server.mjs", Data: base64.StdEncoding.EncodeToString(serverFile)},
 		{Name: "handler.js", Data: base64.StdEncoding.EncodeToString([]byte(inline.Source))},
+		{Name: "openssl.cnf", Data: base64.StdEncoding.EncodeToString(opensslFile)},
 	}...), nil
 }
 

@@ -6,7 +6,7 @@
     "node": ">= 22.0.0"
   },
   "scripts": {
-    "start": "node server.mjs"
+    "start": "node --force-fips server.mjs"
   },
   "dependencies": {
     "@opentelemetry/api": "^1.9.0",
