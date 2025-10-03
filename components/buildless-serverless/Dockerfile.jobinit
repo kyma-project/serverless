@@ -20,14 +20,11 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o gi
   && mkdir /app \
   && mv ./gitcloner /app/gitcloner
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.1 AS certs
+FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:0.4.0-alpine3.22 AS certs
 
 RUN apk add --no-cache ca-certificates
 
-# Use distroless as minimal base image to package the manager binary
-# Refer to https://github.com/GoogleContainerTools/distroless for more details
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.1
-# FROM scratch
+FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:0.4.0-alpine3.22
 
 WORKDIR /
 
