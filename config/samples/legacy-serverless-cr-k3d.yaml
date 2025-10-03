@@ -3,6 +3,6 @@ kind: Serverless
 metadata:
   name: default
   namespace: kyma-system
-spec:
-  dockerRegistry:
-    enableInternal: false
+  annotations:
+    serverless.kyma-project.io/buildless-mode: "disabled"
+spec: {}
