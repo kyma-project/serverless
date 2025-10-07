@@ -45,7 +45,7 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run test
         run: |
-          make install-buildless-serverless-custom-operator
+          make install-serverless-custom-operator
           make -C tests/serverless serverless-integration serverless-contract-tests
           make remove-serverless
         env:
@@ -66,7 +66,7 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run test
         run: |
-          make install-serverless-custom-operator
+          make install-legacy-serverless-custom-operator
           make -C tests/serverless serverless-integration serverless-contract-tests
           make remove-serverless
         env:
@@ -87,7 +87,7 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run tests
         run: |
-          make install-serverless-custom-operator
+          make install-legacy-serverless-custom-operator
           make -C tests/serverless git-auth-integration
           make remove-serverless
         env:
@@ -111,7 +111,7 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run tests
         run: |
-          make install-serverless-custom-operator-custom-cr
+          make install-legacy-serverless-custom-operator-custom-cr
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make -C tests/serverless git-auth-integration
           make remove-serverless
@@ -137,7 +137,7 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run tests
         run: |
-          make install-buildless-serverless-custom-operator
+          make install-serverless-custom-operator
           make -C tests/serverless git-auth-integration
           make remove-serverless
         env:
@@ -161,7 +161,7 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run tests
         run: |
-          make install-buildless-serverless-custom-operator-custom-cr
+          make install-serverless-custom-operator-custom-cr
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make -C tests/serverless git-auth-integration
           make remove-serverless
@@ -184,21 +184,21 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: ./.github/actions/create-k3d-cluster
-      - name: install buildless serverless
+      - name: install legacy buildless serverless
         run: |
-          make install-buildless-serverless-custom-operator
+          make install-legacy-serverless-custom-operator
         env:
           IMG: ${{ inputs.image }}
-      - name: install legacy image-build serverless cr and check cr status
+      - name: install default serverless cr and check cr status
         run: |
-          kubectl apply -f config/samples/legacy-serverless-cr.yaml
+          kubectl apply -f config/samples/default-serverless-cr.yaml
           make -C components/operator check-serverless-installation
           make remove-serverless
       - name: collect cluster info
         if: ${{ always() }}
         run: make -C tests/serverless cluster-info
 
-  legacy-btp-integration-test:
+  btp-integration-test:
     if: ${{ inputs.trigger_btp }}
     runs-on: ubuntu-latest
     steps:
