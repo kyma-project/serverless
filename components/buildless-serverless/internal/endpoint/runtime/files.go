@@ -44,17 +44,10 @@ func readNodejsFiles(inline *v1alpha2.InlineSource, runtimeDir string) ([]types.
 		return nil, errors.Wrap(err, "failed to read server.mjs")
 	}
 
-	// read openssl.cnf
-	opensslFile, err := os.ReadFile(runtimeDir + "/openssl.cnf")
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to read openssl.cnf")
-	}
-
 	return append(commonFiles, []types.FileResponse{
 		{Name: "package.json", Data: base64.StdEncoding.EncodeToString(packagejsonFile)},
 		{Name: "server.mjs", Data: base64.StdEncoding.EncodeToString(serverFile)},
 		{Name: "handler.js", Data: base64.StdEncoding.EncodeToString([]byte(inline.Source))},
-		{Name: "openssl.cnf", Data: base64.StdEncoding.EncodeToString(opensslFile)},
 	}...), nil
 }
 
@@ -135,11 +128,18 @@ func readCommonFiles(runtimeDir string) ([]types.FileResponse, error) {
 		return nil, errors.Wrap(err, "failed to read Dockerfile")
 	}
 
+	// read openssl.cnf
+	opensslFile, err := os.ReadFile(runtimeDir + "/openssl.cnf")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read openssl.cnf")
+	}
+
 	return append(libFiles, []types.FileResponse{
 		{Name: ".gitignore", Data: base64.StdEncoding.EncodeToString(gitignoreFile)},
 		{Name: ".dockerignore", Data: base64.StdEncoding.EncodeToString(dockerignoreFile)},
 		{Name: "README.md", Data: base64.StdEncoding.EncodeToString(readmeFile)},
 		{Name: "Dockerfile", Data: base64.StdEncoding.EncodeToString(dockerfileFile)},
 		{Name: "Makefile", Data: base64.StdEncoding.EncodeToString(makefileFile)},
+		{Name: "openssl.cnf", Data: base64.StdEncoding.EncodeToString(opensslFile)},
 	}...), nil
 }
