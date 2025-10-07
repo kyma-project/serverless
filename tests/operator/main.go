@@ -79,37 +79,37 @@ func runScenario(testutil *utils.TestUtils) error {
 	}
 
 	// create Serverless
-	testutil.Logger.Infof("Creating serverless '%s'", testutil.ServerlessName)
-	if err := serverless.Create(testutil); err != nil {
+	testutil.Logger.Infof("Creating legacy serverless '%s'", testutil.ServerlessName)
+	if err := serverless.Create(testutil, true); err != nil {
 		return err
 	}
 
 	// verify Serverless
-	testutil.Logger.Infof("Verifying serverless '%s'", testutil.ServerlessName)
+	testutil.Logger.Infof("Verifying legacy serverless '%s'", testutil.ServerlessName)
 	if err := utils.WithRetry(testutil, serverless.Verify); err != nil {
 		return err
 	}
 
 	// update serverless with other spec
-	testutil.Logger.Infof("Updating serverless '%s'", testutil.ServerlessName)
+	testutil.Logger.Infof("Updating legacy serverless '%s'", testutil.ServerlessName)
 	if err := serverless.Update(testutil); err != nil {
 		return err
 	}
 
 	// verify Serverless
-	testutil.Logger.Infof("Verifying serverless '%s'", testutil.ServerlessName)
+	testutil.Logger.Infof("Verifying legacy serverless '%s'", testutil.ServerlessName)
 	if err := utils.WithRetry(testutil, serverless.Verify); err != nil {
 		return err
 	}
 
 	// delete Serverless
-	testutil.Logger.Infof("Deleting serverless '%s'", testutil.ServerlessName)
-	if err := serverless.Delete(testutil); err != nil {
+	testutil.Logger.Infof("Deleting legacy serverless '%s'", testutil.ServerlessName)
+	if err := serverless.Delete(testutil, true); err != nil {
 		return err
 	}
 
 	// verify Serverless deletion
-	testutil.Logger.Infof("Verifying serverless '%s' deletion", testutil.ServerlessName)
+	testutil.Logger.Infof("Verifying legacy serverless '%s' deletion", testutil.ServerlessName)
 	if err := utils.WithRetry(testutil, serverless.VerifyDeletion); err != nil {
 		return err
 	}
