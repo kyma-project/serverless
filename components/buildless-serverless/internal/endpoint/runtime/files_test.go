@@ -67,7 +67,7 @@ func Test_readPythonFiles(t *testing.T) {
 
 		gotList, gotErr := readPythonFiles(inline, runtimeDir)
 		require.NoError(t, gotErr)
-		require.Len(t, gotList, 10)
+		require.Len(t, gotList, 11)
 		requireFileWithName(t, gotList, "requirements.txt")
 		require.Contains(t, gotList, types.FileResponse{Name: "handler.py", Data: handlerBase64Data})
 	})
