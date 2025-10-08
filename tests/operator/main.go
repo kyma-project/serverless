@@ -35,14 +35,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Info("Start scenario")
+	log.Info("Start legacy serverless scenario")
 	err = runScenario(&utils.TestUtils{
-		Namespace: fmt.Sprintf("serverless-test-%s", uuid.New().String()),
-		Ctx:       ctx,
-		Client:    client,
-		Logger:    log,
+		LegacyMode: true,
+		Namespace:  fmt.Sprintf("serverless-legacy-test-%s", uuid.New().String()),
+		Ctx:        ctx,
+		Client:     client,
+		Logger:     log,
 
-		ServerlessName:           "default-test",
+		ServerlessName:           "legacy-test",
 		ServerlessCtrlDeployName: "serverless-ctrl-mngr",
 		ServerlessRegistryName:   "serverless-docker-registry",
 		ServerlessUpdateSpec: v1alpha1.ServerlessSpec{
@@ -69,6 +70,37 @@ func main() {
 		log.Error(err)
 		os.Exit(1)
 	}
+	log.Info("Legacy serverless scenario completed successfully")
+
+	log.Info("Start default serverless scenario")
+	err = runScenario(&utils.TestUtils{
+		LegacyMode: false,
+		Namespace:  fmt.Sprintf("serverless-test-%s", uuid.New().String()),
+		Ctx:        ctx,
+		Client:     client,
+		Logger:     log,
+
+		ServerlessName:           "default-test",
+		ServerlessCtrlDeployName: "serverless-ctrl-mngr",
+		ServerlessConfigName:     "serverless-config",
+		ServerlessUpdateSpec: v1alpha1.ServerlessSpec{
+			Tracing: &v1alpha1.Endpoint{
+				Endpoint: "http://tracing-endpoint",
+			},
+			Eventing: &v1alpha1.Endpoint{
+				Endpoint: "http://eventing-endpoint",
+			},
+			FunctionRequeueDuration: "19m",
+			HealthzLivenessTimeout:  "20",
+			DefaultRuntimePodPreset: "M",
+			EnableNetworkPolicies:   true,
+		},
+	})
+	if err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
+	log.Info("Default serverless scenario completed successfully")
 }
 
 func runScenario(testutil *utils.TestUtils) error {
@@ -79,37 +111,37 @@ func runScenario(testutil *utils.TestUtils) error {
 	}
 
 	// create Serverless
-	testutil.Logger.Infof("Creating legacy serverless '%s'", testutil.ServerlessName)
-	if err := serverless.Create(testutil, true); err != nil {
+	testutil.Logger.Infof("Creating serverless '%s'", testutil.ServerlessName)
+	if err := serverless.Create(testutil); err != nil {
 		return err
 	}
 
 	// verify Serverless
-	testutil.Logger.Infof("Verifying legacy serverless '%s'", testutil.ServerlessName)
+	testutil.Logger.Infof("Verifying serverless '%s'", testutil.ServerlessName)
 	if err := utils.WithRetry(testutil, serverless.Verify); err != nil {
 		return err
 	}
 
 	// update serverless with other spec
-	testutil.Logger.Infof("Updating legacy serverless '%s'", testutil.ServerlessName)
+	testutil.Logger.Infof("Updating serverless '%s'", testutil.ServerlessName)
 	if err := serverless.Update(testutil); err != nil {
 		return err
 	}
 
 	// verify Serverless
-	testutil.Logger.Infof("Verifying legacy serverless '%s'", testutil.ServerlessName)
+	testutil.Logger.Infof("Verifying serverless '%s'", testutil.ServerlessName)
 	if err := utils.WithRetry(testutil, serverless.Verify); err != nil {
 		return err
 	}
 
 	// delete Serverless
-	testutil.Logger.Infof("Deleting legacy serverless '%s'", testutil.ServerlessName)
-	if err := serverless.Delete(testutil, true); err != nil {
+	testutil.Logger.Infof("Deleting serverless '%s'", testutil.ServerlessName)
+	if err := serverless.Delete(testutil); err != nil {
 		return err
 	}
 
 	// verify Serverless deletion
-	testutil.Logger.Infof("Verifying legacy serverless '%s' deletion", testutil.ServerlessName)
+	testutil.Logger.Infof("Verifying serverless '%s' deletion", testutil.ServerlessName)
 	if err := utils.WithRetry(testutil, serverless.VerifyDeletion); err != nil {
 		return err
 	}

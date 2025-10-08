@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
+	"github.com/kyma-project/serverless/tests/operator/serverless/configmap"
 	"github.com/kyma-project/serverless/tests/operator/serverless/deployment"
 	"github.com/kyma-project/serverless/tests/operator/utils"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -34,39 +35,27 @@ func Verify(utils *utils.TestUtils) error {
 		return err
 	}
 
-	if err := verifyStatus(&serverless); err != nil {
+	if err := verifyStatus(&serverless, utils.LegacyMode); err != nil {
 		return err
 	}
 
-	return deployment.VerifyCtrlMngrEnvs(utils, &serverless)
+	if utils.LegacyMode {
+		return deployment.VerifyCtrlMngrEnvs(utils, &serverless)
+	}
+
+	return configmap.VerifyServerlessConfigmap(utils, &serverless)
 }
 
 // check if all data from the spec is reflected in the status
-func verifyStatus(serverless *v1alpha1.Serverless) error {
+func verifyStatus(serverless *v1alpha1.Serverless, legacy bool) error {
 	status := serverless.Status
 	spec := serverless.Spec
-
-	if err := isSpecValueReflectedInStatus(spec.TargetCPUUtilizationPercentage, status.CPUUtilizationPercentage); err != nil {
-		return err
-	}
 
 	if err := isSpecValueReflectedInStatus(spec.FunctionRequeueDuration, status.RequeueDuration); err != nil {
 		return err
 	}
 
-	if err := isSpecValueReflectedInStatus(spec.FunctionBuildExecutorArgs, status.BuildExecutorArgs); err != nil {
-		return err
-	}
-
-	if err := isSpecValueReflectedInStatus(spec.FunctionBuildMaxSimultaneousJobs, status.BuildMaxSimultaneousJobs); err != nil {
-		return err
-	}
-
 	if err := isSpecValueReflectedInStatus(spec.HealthzLivenessTimeout, status.HealthzLivenessTimeout); err != nil {
-		return err
-	}
-
-	if err := isSpecValueReflectedInStatus(spec.DefaultBuildJobPreset, status.DefaultBuildJobPreset); err != nil {
 		return err
 	}
 
@@ -96,6 +85,29 @@ func verifyStatus(serverless *v1alpha1.Serverless) error {
 
 	if err := isSpecBooleanValueReflectedInStatus(spec.EnableNetworkPolicies, status.NetworkPoliciesEnabled); err != nil {
 		return err
+	}
+
+	if legacy {
+
+		if err := isSpecValueReflectedInStatus(spec.TargetCPUUtilizationPercentage, status.CPUUtilizationPercentage); err != nil {
+			return err
+		}
+
+		if err := isSpecValueReflectedInStatus("internal", status.DockerRegistry); err != nil {
+			return err
+		}
+
+		if err := isSpecValueReflectedInStatus(spec.FunctionBuildExecutorArgs, status.BuildExecutorArgs); err != nil {
+			return err
+		}
+
+		if err := isSpecValueReflectedInStatus(spec.FunctionBuildMaxSimultaneousJobs, status.BuildMaxSimultaneousJobs); err != nil {
+			return err
+		}
+
+		if err := isSpecValueReflectedInStatus(spec.DefaultBuildJobPreset, status.DefaultBuildJobPreset); err != nil {
+			return err
+		}
 	}
 
 	return nil
