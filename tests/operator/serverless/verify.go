@@ -93,10 +93,6 @@ func verifyStatus(serverless *v1alpha1.Serverless, legacy bool) error {
 			return err
 		}
 
-		if err := isSpecValueReflectedInStatus("internal", status.DockerRegistry); err != nil {
-			return err
-		}
-
 		if err := isSpecValueReflectedInStatus(spec.FunctionBuildExecutorArgs, status.BuildExecutorArgs); err != nil {
 			return err
 		}
