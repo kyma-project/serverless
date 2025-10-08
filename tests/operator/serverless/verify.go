@@ -13,6 +13,9 @@ import (
 
 func VerifyDeletion(utils *utils.TestUtils) error {
 	err := Verify(utils)
+	if err == nil {
+		return fmt.Errorf("serverless '%s' still exists", utils.ServerlessName)
+	}
 	if !errors.IsNotFound(err) {
 		return err
 	}
