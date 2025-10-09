@@ -184,7 +184,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: ./.github/actions/create-k3d-cluster
-      - name: install legacy buildless serverless
+      - name: install legacy serverless
         run: |
           make install-legacy-serverless-custom-operator
         env:
