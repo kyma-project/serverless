@@ -271,7 +271,7 @@ by permitting essential traffic while maintaining a secure cluster environment.
 ### Disabling Buildless Mode
 
 > [!WARNING]
-> Buildless mode is enabled by default. If you need to use legacy image-building Serverless functionality, you can disable buildless mode through an annotation.
+> Buildless mode is enabled by default. To use the legacy image-building Serverless functionality, disable buildless mode through an annotation.
 
 You can disable buildless mode of Serverless to enable the legacy image build step for Functions.
 
