@@ -13,7 +13,7 @@ WORKDIR ${BASE_APP_DIR}
 COPY . ${BASE_APP_DIR}/
 
 # Build
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o webhook-server ./components/serverless/cmd/webhook/main.go \
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH GOFIPS140=v1.0.0 go build -a -o webhook-server ./components/serverless/cmd/webhook/main.go \
     && mkdir /app \
     && mv ./webhook-server /app/webhook-server
 
@@ -25,6 +25,7 @@ FROM scratch
 
 LABEL source=git@github.com:kyma-project/serverless.git
 
+ENV GODEBUG=fips140=only,tlsmlkem=0
 COPY --from=builder /app /app
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 USER 1000
