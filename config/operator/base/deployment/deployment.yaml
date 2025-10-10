@@ -34,7 +34,7 @@ spec:
           name: manager
           env:
             - name: CHART_PATH
-              value: /module-chart
+              value: /buildless-module-chart
             - name: SERVERLESS_MANAGER_UID
               valueFrom:
                 fieldRef:

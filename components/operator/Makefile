@@ -130,14 +130,14 @@ render-manifest: kustomize ## Render serverless-operator.yaml manifest.
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR) > $(PROJECT_ROOT)/serverless-operator.yaml
 
 .PHONY: apply-default-serverless-cr
-apply-default-serverless-cr: ## Apply the k3d serverless CR.
+apply-default-serverless-cr: ## Apply the serverless CR.
 	kubectl apply \
 		-f ${PROJECT_ROOT}/config/samples/default-serverless-cr.yaml
 		
-.PHONY: apply-buildless-serverless-cr
-apply-buildless-serverless-cr: ## Apply the k3d serverless CR.
+.PHONY: apply-legacy-serverless-cr
+apply-legacy-serverless-cr: ## Apply the legacy serverless CR (opt-out from buildless mode, using legacy function container in-cluster build).
 	kubectl apply \
-		-f ${PROJECT_ROOT}/config/samples/buildless-serverless-cr.yaml
+		-f ${PROJECT_ROOT}/config/samples/legacy-serverless-cr.yaml
 
 .PHONY: apply-custom-serverless-cr
 apply-custom-serverless-cr: ## Apply the serverless CR by path.
@@ -148,22 +148,9 @@ apply-custom-serverless-cr: ## Apply the serverless CR by path.
 remove-serverless: ## Remove Serverless CR
 	kubectl delete serverless -n kyma-system default --timeout 2m || (kubectl get serverless -n kyma-system -oyaml && false)
 
+
 .PHONY: check-serverless-installation
 check-serverless-installation: ## Wait for Serverless CR to be in Ready state.
-	# wait some time to make sure operator starts the reconciliation first
-	sleep 10
-
-	./hack/verify_serverless_status.sh || \
-		(make print-serverless-details && false)
-
-	kubectl wait --for condition=Available -n kyma-system deployment serverless-operator --timeout=60s || \
-		(make print-serverless-details && false)
-
-	kubectl wait --for condition=Available -n kyma-system deployment serverless-ctrl-mngr --timeout=60s || \
-		(make print-serverless-details && false)
-
-.PHONY: check-buildless-serverless-installation
-check-buildless-serverless-installation: ## Wait for Serverless CR to be in Ready state.
 	# wait some time to make sure operator starts the reconciliation first
 	sleep 10
 

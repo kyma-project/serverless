@@ -8,14 +8,19 @@ include ${PROJECT_ROOT}/hack/k3d.mk
 install-serverless-main: ## Install serverless with operator using default serverless cr
 	make -C ${OPERATOR_ROOT} deploy-main apply-default-serverless-cr check-serverless-installation
 
-.PHONY: install-buildless-serverless-main
-install-buildless-serverless-main: ## Install serverless with operator using buildless serverless cr
-	make -C ${OPERATOR_ROOT} deploy-main apply-buildless-serverless-cr check-buildless-serverless-installation
+.PHONY: install-legacy-serverless-main
+install-legacy-serverless-main: ## Install legacy serverless with operator using serverless cr with legacy function container in-cluster build
+	make -C ${OPERATOR_ROOT} deploy-main apply-legacy-serverless-cr check-serverless-installation
 
 .PHONY: install-serverless-custom-operator
 install-serverless-custom-operator: ## Install serverless with operator from IMG env using default serverless cr
 	$(call check-var,IMG)
 	make -C ${OPERATOR_ROOT} deploy apply-default-serverless-cr check-serverless-installation
+
+.PHONY: install-legacy-serverless-custom-operator
+install-legacy-serverless-custom-operator: ## Install serverless with operator from IMG env using default serverless cr with legacy function container in-cluster build
+	$(call check-var,IMG)
+	make -C ${OPERATOR_ROOT} deploy apply-legacy-serverless-cr check-serverless-installation
 
 .PHONY: install-serverless-custom-operator-custom-cr
 install-serverless-custom-operator-custom-cr: ## Install serverless with operator from IMG env using custom serverless cr
@@ -23,16 +28,6 @@ install-serverless-custom-operator-custom-cr: ## Install serverless with operato
 	$(call check-var,SERVERLESS_CR_PATH)
 	make -C ${OPERATOR_ROOT} deploy apply-custom-serverless-cr check-serverless-installation
 
-.PHONY: install-buildless-serverless-custom-operator
-install-buildless-serverless-custom-operator: ## Install buildless serverless with operator from IMG env using default serverless cr
-	$(call check-var,IMG)
-	make -C ${OPERATOR_ROOT} deploy apply-buildless-serverless-cr check-buildless-serverless-installation
-
-.PHONY: install-buildless-serverless-custom-operator-custom-cr
-install-buildless-serverless-custom-operator-custom-cr: ## Install buildless serverless with operator from IMG env using custom serverless cr
-	$(call check-var,IMG)
-	$(call check-var,SERVERLESS_CR_PATH)
-	make -C ${OPERATOR_ROOT} deploy apply-custom-serverless-cr check-buildless-serverless-installation
 
 .PHONY: install-serverless-latest-release
 install-serverless-latest-release:## Install serverless from latest release
@@ -58,8 +53,8 @@ remove-serverless: ## Remove serverless-cr and serverless operator
 .PHONY: run-main
 run-main: create-k3d install-serverless-main ## Create k3d cluster and install serverless from main
 
-.PHONY: run-buildless-main
-run-buildless-main: create-k3d install-buildless-serverless-main ## Create k3d cluster and install buildless serverless from main
+.PHONY: run-legacy-main
+run-legacy-main: create-k3d install-legacy-serverless-main ## Create k3d cluster and install legacy serverless from main
 
 check-var = $(if $(strip $($1)),,$(error "$1" is not defined))
 
