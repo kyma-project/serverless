@@ -268,14 +268,14 @@ by permitting essential traffic while maintaining a secure cluster environment.
       enableNetworkPolicies: true
 ```
 
-### Disabling Buildless Mode
+### Enabling Buildless Mode
 
 > [!WARNING]
-> Buildless mode is enabled by default. To use the legacy image-building Serverless functionality, disable buildless mode through an annotation.
+> Buildless mode is a feature flag that you can enable through an annotation. Before enabling the feature, see [Serverless Buildless Mode](technical-reference/03-10-buildless-serverless.md).
 
-You can disable buildless mode of Serverless to enable the legacy image build step for Functions.
+You can enable buildless mode of Serverless to skip the image build step for Functions, accelerating prototype development by eliminating the need to build and push custom Function images.
 
    ```yaml
     annotations:
-      serverless.kyma-project.io/buildless-mode: "disabled"
+      serverless.kyma-project.io/buildless-mode: "enabled"
    ```
