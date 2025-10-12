@@ -111,7 +111,7 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run tests
         run: |
-          make install-legacy-serverless-custom-operator-custom-cr
+          make install-serverless-custom-operator-custom-cr
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make -C tests/serverless git-auth-integration
           make remove-serverless
