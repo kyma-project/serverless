@@ -24,13 +24,8 @@ func VerifyDeletion(utils *utils.TestUtils) error {
 }
 
 func Verify(utils *utils.TestUtils) error {
-	var serverless v1alpha1.Serverless
-	objectKey := client.ObjectKey{
-		Name:      utils.ServerlessName,
-		Namespace: utils.Namespace,
-	}
-
-	if err := utils.Client.Get(utils.Ctx, objectKey, &serverless); err != nil {
+	serverless, err := getServerless(utils, utils.ServerlessName)
+	if err != nil {
 		return err
 	}
 
@@ -47,6 +42,33 @@ func Verify(utils *utils.TestUtils) error {
 	}
 
 	return configmap.VerifyServerlessConfigmap(utils, &serverless)
+}
+
+func VerifyStuck(utils *utils.TestUtils) error {
+	serverless, err := getServerless(utils, utils.ServerlessName)
+	if err != nil {
+		return err
+	}
+
+	if err := verifyStateStuck(utils, &serverless); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func getServerless(utils *utils.TestUtils, name string) (v1alpha1.Serverless, error) {
+	var serverless v1alpha1.Serverless
+	objectKey := client.ObjectKey{
+		Name:      name,
+		Namespace: utils.Namespace,
+	}
+
+	if err := utils.Client.Get(utils.Ctx, objectKey, &serverless); err != nil {
+		return v1alpha1.Serverless{}, err
+	}
+
+	return serverless, nil
 }
 
 // check if all data from the spec is reflected in the status
@@ -141,6 +163,14 @@ func isSpecBooleanValueReflectedInStatus(specFlag bool, statusValue string) erro
 func verifyState(utils *utils.TestUtils, serverless *v1alpha1.Serverless) error {
 	if serverless.Status.State != v1alpha1.StateReady {
 		return fmt.Errorf("serverless '%s' in '%s' state", utils.ServerlessName, serverless.Status.State)
+	}
+
+	return nil
+}
+
+func verifyStateStuck(utils *utils.TestUtils, serverless *v1alpha1.Serverless) error {
+	if serverless.Status.State != v1alpha1.StateWarning {
+		return fmt.Errorf("serverless '%s' in '%s' state", utils.SecondServerlessName, serverless.Status.State)
 	}
 
 	return nil

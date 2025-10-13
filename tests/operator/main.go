@@ -81,6 +81,7 @@ func main() {
 		Logger:     log,
 
 		ServerlessName:           "default-test",
+		SecondServerlessName:     "default-test-two",
 		ServerlessCtrlDeployName: "serverless-ctrl-mngr",
 		ServerlessConfigName:     "serverless-config",
 		ServerlessUpdateSpec: v1alpha1.ServerlessSpec{
@@ -119,6 +120,22 @@ func runScenario(testutil *utils.TestUtils) error {
 	// verify Serverless
 	testutil.Logger.Infof("Verifying serverless '%s'", testutil.ServerlessName)
 	if err := utils.WithRetry(testutil, serverless.Verify); err != nil {
+		return err
+	}
+
+	// create second Serverless
+	testutil.Logger.Infof("Creating second serverless '%s'", testutil.SecondServerlessName)
+	if err := serverless.CreateSecond(testutil); err != nil {
+		return err
+	}
+
+	// verify second Serverless won't create
+	testutil.Logger.Infof("Verifying second serverless '%s' won't create", testutil.SecondServerlessName)
+	if err := utils.WithRetry(testutil, serverless.VerifyStuck); err != nil {
+		return err
+	}
+	testutil.Logger.Infof("Deleting second serverless '%s'", testutil.SecondServerlessName)
+	if err := serverless.DeleteSecond(testutil); err != nil {
 		return err
 	}
 
