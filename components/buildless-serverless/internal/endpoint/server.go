@@ -27,7 +27,7 @@ func NewInternalServer(ctx context.Context, log *zap.SugaredLogger, k8s client.C
 		functionConfig: functionConfig,
 	}
 
-	server.mux.HandleFunc("/internal/function/", server.handleFunctionRequest)
+	server.mux.HandleFunc("/internal/function/eject/", server.handleFunctionRequest)
 
 	return server
 }

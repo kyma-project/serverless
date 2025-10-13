@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+
 	"go.uber.org/zap"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
@@ -116,10 +117,6 @@ func configureChartPath(s *systemState, log *zap.SugaredLogger) {
 	if !exists {
 		// we use default value from environment variable if annotation is not set
 		return
-	}
-	if val == buildlessModeEnabled {
-		log.Info("Chart path is set to buildless serverless module chart")
-		s.chartConfig.Release.ChartPath = buildlessChartPath
 	}
 	if val == buildlessModeDisabled {
 		log.Info("Chart path is set to old serverless module chart")

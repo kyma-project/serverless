@@ -18,6 +18,9 @@ package controller
 
 import (
 	"context"
+	"errors"
+	"sigs.k8s.io/controller-runtime/pkg/controller"
+	"time"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
@@ -35,6 +38,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 )
 
+const healthCheckTimeout = time.Second
+
 // FunctionReconciler reconciles a Function object
 type FunctionReconciler struct {
 	client.Client
@@ -43,6 +48,7 @@ type FunctionReconciler struct {
 	Config          config.FunctionConfig
 	LastCommitCache cache.Cache
 	EventRecorder   record.EventRecorder
+	HealthCh        chan bool
 }
 
 // +kubebuilder:rbac:groups=serverless.kyma-project.io,resources=functions,verbs=get;list;watch;create;update;patch;delete
@@ -60,6 +66,11 @@ type FunctionReconciler struct {
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
 func (fr *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+	if IsHealthCheckRequest(req) {
+		fr.sendHealthCheck()
+		return ctrl.Result{}, nil
+	}
+
 	log := fr.Log.With("request", req)
 	log.Info("reconciliation started")
 
@@ -76,7 +87,7 @@ func (fr *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (fr *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (fr *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) (controller.Controller, error) {
 	return ctrl.NewControllerManagedBy(mgr).
 		Named("function-controller").
 		For(&serverlessv1alpha2.Function{}).
@@ -84,7 +95,18 @@ func (fr *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).
 		Named("function").
-		Complete(fr)
+		Build(fr)
+}
+
+func (fr *FunctionReconciler) sendHealthCheck() {
+	fr.Log.Debug("health check request received")
+
+	select {
+	case fr.HealthCh <- true:
+		fr.Log.Debug("health check request responded")
+	case <-time.After(healthCheckTimeout):
+		fr.Log.Warn(errors.New("timeout when responding to health check"))
+	}
 }
 
 func buildPredicates() predicate.Funcs {

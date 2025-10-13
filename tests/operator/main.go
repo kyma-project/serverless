@@ -35,14 +35,15 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Info("Start scenario")
+	log.Info("Start legacy serverless scenario")
 	err = runScenario(&utils.TestUtils{
-		Namespace: fmt.Sprintf("serverless-test-%s", uuid.New().String()),
-		Ctx:       ctx,
-		Client:    client,
-		Logger:    log,
+		LegacyMode: true,
+		Namespace:  fmt.Sprintf("serverless-legacy-test-%s", uuid.New().String()),
+		Ctx:        ctx,
+		Client:     client,
+		Logger:     log,
 
-		ServerlessName:           "default-test",
+		ServerlessName:           "legacy-test",
 		ServerlessCtrlDeployName: "serverless-ctrl-mngr",
 		ServerlessRegistryName:   "serverless-docker-registry",
 		ServerlessUpdateSpec: v1alpha1.ServerlessSpec{
@@ -69,6 +70,37 @@ func main() {
 		log.Error(err)
 		os.Exit(1)
 	}
+	log.Info("Legacy serverless scenario completed successfully")
+
+	log.Info("Start default serverless scenario")
+	err = runScenario(&utils.TestUtils{
+		LegacyMode: false,
+		Namespace:  fmt.Sprintf("serverless-test-%s", uuid.New().String()),
+		Ctx:        ctx,
+		Client:     client,
+		Logger:     log,
+
+		ServerlessName:           "default-test",
+		ServerlessCtrlDeployName: "serverless-ctrl-mngr",
+		ServerlessConfigName:     "serverless-config",
+		ServerlessUpdateSpec: v1alpha1.ServerlessSpec{
+			Tracing: &v1alpha1.Endpoint{
+				Endpoint: "http://tracing-endpoint",
+			},
+			Eventing: &v1alpha1.Endpoint{
+				Endpoint: "http://eventing-endpoint",
+			},
+			FunctionRequeueDuration: "19m",
+			HealthzLivenessTimeout:  "20",
+			DefaultRuntimePodPreset: "M",
+			EnableNetworkPolicies:   true,
+		},
+	})
+	if err != nil {
+		log.Error(err)
+		os.Exit(1)
+	}
+	log.Info("Default serverless scenario completed successfully")
 }
 
 func runScenario(testutil *utils.TestUtils) error {

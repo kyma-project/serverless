@@ -21,6 +21,8 @@ import (
 	"io"
 	"log"
 	"os"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/source"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -123,7 +125,7 @@ func main() {
 		WebhookServer: webhook.NewServer(webhook.Options{
 			Port: cfg.SecretMutatingWebhookPort,
 		}),
-		HealthProbeBindAddress: cfg.HealthzPort,
+		HealthProbeBindAddress: cfg.Healthz.Port,
 		Client: client.Options{
 			Cache: &client.CacheOptions{
 				DisableFor: []client.Object{
@@ -142,14 +144,26 @@ func main() {
 
 	serverlessmetrics.Register()
 
-	if err = (&controller.FunctionReconciler{
+	healthHandler, healthEventsCh, healthResponseCh := controller.NewHealthChecker(cfg.Healthz.LivenessTimeout, logWithCtx.Named("healthz"))
+	if err := mgr.AddHealthzCheck("healthz", healthHandler.Checker); err != nil {
+		setupLog.Error(err, "unable to set up health check")
+		os.Exit(1)
+	}
+	if err := mgr.AddReadyzCheck("readyz", healthz.Ping); err != nil {
+		setupLog.Error(err, "unable to set up ready check")
+		os.Exit(1)
+	}
+
+	fnCtrl, err := (&controller.FunctionReconciler{
 		Client:          mgr.GetClient(),
 		Scheme:          mgr.GetScheme(),
 		Log:             logWithCtx,
 		Config:          cfg,
 		LastCommitCache: cache.NewRepoLastCommitCache(cfg.FunctionReadyRequeueDuration),
 		EventRecorder:   mgr.GetEventRecorderFor(serverlessv1alpha2.FunctionControllerValue),
-	}).SetupWithManager(mgr); err != nil {
+		HealthCh:        healthResponseCh,
+	}).SetupWithManager(mgr)
+	if err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Function")
 		os.Exit(1)
 	}
@@ -163,12 +177,9 @@ func main() {
 		}
 	}()
 
-	if err := mgr.AddHealthzCheck("healthz", healthz.Ping); err != nil {
-		setupLog.Error(err, "unable to set up health check")
-		os.Exit(1)
-	}
-	if err := mgr.AddReadyzCheck("readyz", healthz.Ping); err != nil {
-		setupLog.Error(err, "unable to set up ready check")
+	err = fnCtrl.Watch(source.Channel(healthEventsCh, &handler.EnqueueRequestForObject{}))
+	if err != nil {
+		setupLog.Error(err, "unable to watch health events channel")
 		os.Exit(1)
 	}
 

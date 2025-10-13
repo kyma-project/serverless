@@ -78,36 +78,6 @@ kubectl apply -f https://github.com/kyma-project/serverless/releases/latest/down
     kubectl delete -f config/samples/default-serverless-cr.yaml
     ```
 
-- Use external registry.
-
-    The following example shows how you can modify the Serverless Docker registry address using the `serverless.operator.kyma-project.io` CR:
-
-    ```bash
-    kubectl create secret generic my-secret \
-        --namespace kyma-system \
-        --from-literal username="<USERNAME>" \
-        --from-literal password="<PASSWORD>" \
-        --from-literal serverAddress="<SERVER_ADDRESS>" \
-        --from-literal registryAddress="<REGISTRY_ADDRESS>"
-    ```
-
-    > **NOTE:** For DockerHub: 
-    <!-- markdown-link-check-disable-next-line -->
-    > - SERVER_ADDRESS is "https://index.docker.io/v1/",
-    > - USERNAME and REGISTRY_ADDRESS must be identical.
-
-    ```bash
-    cat <<EOF | kubectl apply -f -
-    apiVersion: operator.kyma-project.io/v1alpha1
-    kind: Serverless
-    metadata:
-    name: serverless-sample
-    spec:
-        dockerRegistry:
-            enableInternal: false
-            secretName: my-secret
-    EOF
-    ```
 
 ## Contributing
 

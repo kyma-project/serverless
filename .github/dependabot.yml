@@ -2,6 +2,13 @@
 
 version: 2
 updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "gha"
+      include: "scope"
   - package-ecosystem: "gomod"
     directory: "/"
     labels:
@@ -90,7 +97,7 @@ updates:
       include: "scope"
 
   - package-ecosystem: "docker"
-    directory: "/components/runtimes/python/python312"
+    directory: "/components/runtimes/python312"
     labels:
       - "area/dependency"
       - "kind/chore"
@@ -104,7 +111,7 @@ updates:
       - dependency-name: kyma-project/prod/external/library/python
         update-types: ["version-update:semver-minor"]
   - package-ecosystem: "docker"
-    directory: "/components/runtimes/nodejs/nodejs20"
+    directory: "/components/runtimes/nodejs20"
     labels:
       - "area/dependency"
       - "kind/chore"
@@ -114,7 +121,7 @@ updates:
       prefix: "nodejs20"
       include: "scope"
   - package-ecosystem: "docker"
-    directory: "/components/runtimes/nodejs/nodejs22"
+    directory: "/components/runtimes/nodejs22"
     labels:
       - "area/dependency"
       - "kind/chore"
@@ -125,7 +132,7 @@ updates:
       include: "scope"
 
   - package-ecosystem: "pip"
-    directory: "/components/runtimes/python/python312"
+    directory: "/components/runtimes/python312"
     labels:
       - "area/dependency"
       - "kind/chore"
@@ -140,7 +147,7 @@ updates:
           - "opentelemetry-*"
 
   - package-ecosystem: "npm"
-    directory: "/components/runtimes/nodejs/nodejs20"
+    directory: "/components/runtimes/nodejs20"
     labels:
       - "area/dependency"
       - "kind/chore"
@@ -154,7 +161,7 @@ updates:
         patterns:
           - "@opentelemetry/*"
   - package-ecosystem: "npm"
-    directory: "/components/runtimes/nodejs/nodejs22"
+    directory: "/components/runtimes/nodejs22"
     labels:
       - "area/dependency"
       - "kind/chore"

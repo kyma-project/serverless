@@ -37,6 +37,9 @@ spec:
   - from:
     - podSelector:
         matchLabels:
+          app.kubernetes.io/instance: rma
+    - podSelector:
+        matchLabels:
           networking.kyma-project.io/metrics-scraping: allowed
     ports:
     - protocol: TCP

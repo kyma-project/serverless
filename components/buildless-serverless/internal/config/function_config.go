@@ -1,22 +1,23 @@
 package config
 
 import (
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/pkg/errors"
 	"github.com/vrischmann/envconfig"
 	"gopkg.in/yaml.v2"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
-	"os"
-	"path/filepath"
-	"time"
 )
 
 type FunctionConfig struct {
-	MetricsPort                     string         `yaml:"metricsPort"`
-	LeaderElectionEnabled           bool           `yaml:"leaderElectionEnabled"`
-	LeaderElectionID                string         `yaml:"leaderElectionID"`
-	SecretMutatingWebhookPort       int            `yaml:"secretMutatingWebhookPort"`
-	HealthzPort                     string         `yaml:"healthzPort"`
+	MetricsPort                     string `yaml:"metricsPort"`
+	LeaderElectionEnabled           bool   `yaml:"leaderElectionEnabled"`
+	LeaderElectionID                string `yaml:"leaderElectionID"`
+	SecretMutatingWebhookPort       int    `yaml:"secretMutatingWebhookPort"`
+	Healthz                         healthzConfig
 	Images                          ImagesConfig   `yaml:"images"`
 	RequeueDuration                 time.Duration  `yaml:"requeueDuration"`
 	FunctionReadyRequeueDuration    time.Duration  `yaml:"functionReadyRequeueDuration"`
@@ -26,17 +27,24 @@ type FunctionConfig struct {
 	ResourceConfig                  ResourceConfig `yaml:"resourcesConfiguration"`
 	InternalEndpointPort            string         `yaml:"internalEndpointPort"`
 }
+type healthzConfig struct {
+	Port            string        `yaml:"healthzPort"`
+	LivenessTimeout time.Duration `yaml:"healthzLivenessTimeout"`
+}
 
 func defaultFunctionConfig() FunctionConfig {
 	return FunctionConfig{
-		MetricsPort:                     ":8080",
-		LeaderElectionEnabled:           false,
-		LeaderElectionID:                "serverless-controller-leader-election-helper",
-		SecretMutatingWebhookPort:       8443,
-		HealthzPort:                     ":8090",
+		MetricsPort:               ":8080",
+		LeaderElectionEnabled:     false,
+		LeaderElectionID:          "serverless-controller-leader-election-helper",
+		SecretMutatingWebhookPort: 8443,
+		Healthz: healthzConfig{
+			Port:            ":8090",
+			LivenessTimeout: 10 * time.Second,
+		},
 		RequeueDuration:                 time.Minute,
 		FunctionReadyRequeueDuration:    time.Minute * 5,
-		PackageRegistryConfigSecretName: "buildless-serverless-package-registry-config",
+		PackageRegistryConfigSecretName: "serverless-package-registry-config",
 		FunctionPublisherProxyAddress:   "http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish",
 		InternalEndpointPort:            ":12137",
 	}

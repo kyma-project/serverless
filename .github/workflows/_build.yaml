@@ -31,7 +31,7 @@ jobs:
       tags: ${{ steps.get_tag.outputs.TAGS }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
@@ -115,8 +115,8 @@ jobs:
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: function-runtime-nodejs20
-      dockerfile: nodejs20/Dockerfile
-      context: components/runtimes/nodejs
+      dockerfile: Dockerfile
+      context: components/runtimes/nodejs20
       tags: ${{ needs.compute-tags.outputs.tags }}
 
   build-nodejs22:
@@ -124,8 +124,8 @@ jobs:
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: function-runtime-nodejs22
-      dockerfile: nodejs22/Dockerfile
-      context: components/runtimes/nodejs
+      dockerfile: Dockerfile
+      context: components/runtimes/nodejs22
       tags: ${{ needs.compute-tags.outputs.tags }}
 
   build-python312:
@@ -133,6 +133,6 @@ jobs:
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: function-runtime-python312
-      dockerfile: python312/Dockerfile
-      context: components/runtimes/python
+      dockerfile: Dockerfile
+      context: components/runtimes/python312
       tags: ${{ needs.compute-tags.outputs.tags }}

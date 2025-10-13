@@ -4,7 +4,7 @@
 
 
 # Build the operator binary
-FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.25.0-alpine3.22 AS builder
+FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.25.2-alpine3.22 AS builder
 
 ARG TARGETOS TARGETARCH
 
@@ -26,7 +26,7 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o operator ./co
 
 # Replace main images in values.yaml
 # Bumping serverless images in the values.yaml - used for building "local" and "dev" images
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.1 AS replacer
+FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:0.4.0-alpine3.22 AS replacer
 
 WORKDIR /workdir
 

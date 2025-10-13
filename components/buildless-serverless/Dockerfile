@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.25.0-alpine3.22 AS builder
+FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.25.2-alpine3.22 AS builder
 ARG TARGETOS
 ARG TARGETARCH
 ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/serverless
@@ -20,14 +20,13 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -a -o ma
     && mkdir /app \
     && mv ./manager /app/manager
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.1 AS certs
+FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:0.4.0-alpine3.22 AS certs
 
 RUN apk add --no-cache ca-certificates
 
-# Use distroless as minimal base image to package the manager binary
-# Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM scratch
 
+COPY ./components/runtimes /runtimes/
 COPY --from=builder /app /app
 COPY --from=certs /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 USER 1000:1000

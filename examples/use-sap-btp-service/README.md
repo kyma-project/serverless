@@ -1,5 +1,5 @@
 # Overview
-
+<!-- markdown-link-check-disable-next-line -->
 This example demonstrates a Serverless Function that reads mounted service binding using [`@sap/xsenv`](https://www.npmjs.com/package/@sap/xsenv) to communicate with SAP BTP service instances. In this specific case, a Function is bound to an SAP BTP Object Store service instance to read objects from the store.
 
 > [!NOTE]
