@@ -13,8 +13,8 @@ import (
 	"go.yaml.in/yaml/v2"
 )
 
-func BuildResources(functionConfig *config.FunctionConfig, f *v1alpha2.Function) ([]types.FileResponse, error) {
-	svc, err := buildServiceFileData(f)
+func BuildResources(functionConfig *config.FunctionConfig, f *v1alpha2.Function, appName string) ([]types.FileResponse, error) {
+	svc, err := buildServiceFileData(f, appName)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to build service")
 	}
@@ -30,8 +30,12 @@ func BuildResources(functionConfig *config.FunctionConfig, f *v1alpha2.Function)
 	}, nil
 }
 
-func buildServiceFileData(function *v1alpha2.Function) ([]byte, error) {
-	svcName := fmt.Sprintf("%s-ejected", function.Name)
+func buildServiceFileData(function *v1alpha2.Function, appName string) ([]byte, error) {
+	svcName := appName
+	if svcName == "" {
+		svcName = fmt.Sprintf("%s-ejected", function.Name)
+	}
+
 	svc := resources.NewService(
 		function,
 		resources.ServiceName(svcName),
