@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/kyma-project/serverless/tests/operator/function"
 	"os"
 	"time"
 
@@ -44,6 +45,8 @@ func main() {
 		Logger:     log,
 
 		ServerlessName:           "legacy-test",
+		SecondServerlessName:     "default-test-two",
+		FunctionName:             "function-name",
 		ServerlessCtrlDeployName: "serverless-ctrl-mngr",
 		ServerlessRegistryName:   "serverless-docker-registry",
 		ServerlessUpdateSpec: v1alpha1.ServerlessSpec{
@@ -82,6 +85,7 @@ func main() {
 
 		ServerlessName:           "default-test",
 		SecondServerlessName:     "default-test-two",
+		FunctionName:             "function-name",
 		ServerlessCtrlDeployName: "serverless-ctrl-mngr",
 		ServerlessConfigName:     "serverless-config",
 		ServerlessUpdateSpec: v1alpha1.ServerlessSpec{
@@ -139,6 +143,12 @@ func runScenario(testutil *utils.TestUtils) error {
 		return err
 	}
 
+	// create function
+	testutil.Logger.Infof("Creating function in namespace '%s'", testutil.Namespace)
+	if err := function.Create(testutil); err != nil {
+		return err
+	}
+
 	// update serverless with other spec
 	testutil.Logger.Infof("Updating serverless '%s'", testutil.ServerlessName)
 	if err := serverless.Update(testutil); err != nil {
@@ -148,6 +158,15 @@ func runScenario(testutil *utils.TestUtils) error {
 	// verify Serverless
 	testutil.Logger.Infof("Verifying serverless '%s'", testutil.ServerlessName)
 	if err := utils.WithRetry(testutil, serverless.Verify); err != nil {
+		return err
+	}
+
+	// verify Severless won't delete with function depending on it
+	testutil.Logger.Infof("Verifying serverless '%s' deletion is stuck", testutil.ServerlessName)
+	if err := serverless.Delete(testutil); err != nil {
+		return err
+	}
+	if err := utils.WithRetry(testutil, serverless.VerifyDeletionStuck); err != nil {
 		return err
 	}
 

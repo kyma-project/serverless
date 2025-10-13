@@ -16,6 +16,7 @@ type TestUtils struct {
 	Namespace                string
 	ServerlessName           string
 	SecondServerlessName     string
+	FunctionName             string
 	ServerlessCtrlDeployName string
 	ServerlessConfigName     string
 	ServerlessRegistryName   string
