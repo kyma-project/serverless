@@ -4,10 +4,21 @@ on:
   pull_request_target:
     types: [ opened, edited, synchronize, reopened, ready_for_review ]
 
-permissions:
-  id-token: write # This is required for requesting the JWT token
-  contents: read # This is required for actions/checkout
-
 jobs:
-  integrations:
-    uses: ./.github/workflows/_integration-tests.yaml
+  operator-integration-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - uses: ./.github/actions/setup-go
+      - uses: ./.github/actions/create-k3d-cluster
+      - name: run test
+        run: |
+          make -C components/operator deploy
+          make -C tests/operator test
+        env:
+          IMG: "europe-docker.pkg.dev/kyma-project/prod/serverless-operator:efe3c95c211d3cda98c83318bd2567f702840c35"
+      - if: ${{ always() }}
+        uses: ./.github/actions/collect-cluster-info

@@ -18,6 +18,3 @@ jobs:
           IMG: "europe-docker.pkg.dev/kyma-project/prod/serverless-operator:efe3c95c211d3cda98c83318bd2567f702840c35"
       - if: ${{ always() }}
         uses: ./.github/actions/collect-cluster-info
-
-
-
