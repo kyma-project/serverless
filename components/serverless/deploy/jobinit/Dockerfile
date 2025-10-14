@@ -20,7 +20,7 @@ RUN go build -ldflags "-s -w" -a -o jobinit ./components/serverless/cmd/jobinit/
     && mkdir /app \
     && mv ./jobinit /app/jobinit
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.1
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.2
 ENV LIBGIT2_VERSION=1.5.2-r0
 
 LABEL source=git@github.com:kyma-project/serverless.git
