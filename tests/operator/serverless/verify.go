@@ -46,7 +46,7 @@ func Verify(utils *utils.TestUtils) error {
 }
 
 func VerifyStuck(utils *utils.TestUtils) error {
-	serverless, err := getServerless(utils, utils.ServerlessName)
+	serverless, err := getServerless(utils, utils.SecondServerlessName)
 	if err != nil {
 		return err
 	}
