@@ -9,7 +9,16 @@ import (
 )
 
 func Create(utils *utils.TestUtils) error {
-	function := &serverlessv1alpha2.Function{
+	function := getFunction(utils)
+	if err := utils.Client.Create(utils.Ctx, function); err != nil {
+		return fmt.Errorf("failed to create function: %w", err)
+	}
+
+	return nil
+}
+
+func getFunction(utils *utils.TestUtils) *serverlessv1alpha2.Function {
+	return &serverlessv1alpha2.Function{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      utils.FunctionName,
 			Namespace: utils.Namespace,
@@ -27,10 +36,4 @@ func Create(utils *utils.TestUtils) error {
 			},
 		},
 	}
-
-	if err := utils.Client.Create(utils.Ctx, function); err != nil {
-		return fmt.Errorf("failed to create function: %w", err)
-	}
-
-	return nil
 }

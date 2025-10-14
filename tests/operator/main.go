@@ -169,6 +169,10 @@ func runScenario(testutil *utils.TestUtils) error {
 	if err := utils.WithRetry(testutil, serverless.VerifyDeletionStuck); err != nil {
 		return err
 	}
+	testutil.Logger.Infof("Deleting function '%s'", testutil.FunctionName)
+	if err := function.Delete(testutil); err != nil {
+		return err
+	}
 
 	// delete Serverless
 	testutil.Logger.Infof("Deleting serverless '%s'", testutil.ServerlessName)
