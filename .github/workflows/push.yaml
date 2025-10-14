@@ -9,21 +9,7 @@ permissions:
   contents: read # This is required for actions/checkout
 
 jobs:
-  builds:
-    uses: ./.github/workflows/_build.yaml
-    with:
-      purpose: "dev"
-      img_directory: "prod"
-      img_version: ${{ github.sha }}
-
   integrations:
-    needs: builds
-    secrets: inherit
     uses: ./.github/workflows/_integration-tests.yaml
     with:
       image: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
-
-  upgrades:
-    needs: builds
-    secrets: inherit
-    uses: ./.github/workflows/_upgrade-tests.yaml

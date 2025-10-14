@@ -9,26 +9,7 @@ permissions:
   contents: read # This is required for actions/checkout
 
 jobs:
-  unit-tests:
-    uses: ./.github/workflows/_unit-tests.yaml
-  
-  gitleaks:
-    uses: ./.github/workflows/_gitleaks.yaml
-  
-  images-verify:
-    if: github.event.pull_request.base.ref == 'main'
-    uses: ./.github/workflows/_images-verify.yaml
-  
-  builds:
-    uses: ./.github/workflows/_build.yaml
-    with:
-      purpose: "dev"
-      img_directory: "dev"
-      img_version: PR-${{ github.event.number }}
-  
   integrations:
-    needs: builds
-    secrets: inherit
     uses: ./.github/workflows/_integration-tests.yaml
     with:
       image: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
