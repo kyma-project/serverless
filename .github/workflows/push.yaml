@@ -4,26 +4,23 @@ on:
   push:
     branches: ["main", "release-*"]
 
-permissions:
-  id-token: write # This is required for requesting the JWT token
-  contents: read # This is required for actions/checkout
 
 jobs:
-  builds:
-    uses: ./.github/workflows/_build.yaml
-    with:
-      purpose: "dev"
-      img_directory: "prod"
-      img_version: ${{ github.sha }}
-
-  integrations:
-    needs: builds
-    secrets: inherit
-    uses: ./.github/workflows/_integration-tests.yaml
-    with:
-      image: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
-
-  upgrades:
-    needs: builds
-    secrets: inherit
-    uses: ./.github/workflows/_upgrade-tests.yaml
+  operator-integration-test:
+    if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - uses: ./.github/actions/setup-go
+      - uses: ./.github/actions/create-k3d-cluster
+      - name: run test
+        run: |
+          make -C components/operator deploy
+          make -C tests/operator test
+        env:
+          IMG: "europe-docker.pkg.dev/kyma-project/prod/serverless-operator:f72a8f437731c672d2bf2e6b57b25ae5d3050e02"
+      - if: ${{ always() }}
+        uses: ./.github/actions/collect-cluster-info
