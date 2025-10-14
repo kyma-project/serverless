@@ -51,7 +51,7 @@ func VerifyStuck(utils *utils.TestUtils) error {
 		return err
 	}
 
-	if err := verifyStateStuck(&serverless); err != nil {
+	if err := verifyStateStuck(utils, &serverless); err != nil {
 		return err
 	}
 
@@ -177,12 +177,12 @@ func verifyState(utils *utils.TestUtils, serverless *v1alpha1.Serverless) error 
 	return nil
 }
 
-func verifyStateStuck(serverless *v1alpha1.Serverless) error {
+func verifyStateStuck(utils *utils.TestUtils, serverless *v1alpha1.Serverless) error {
 	for _, condition := range serverless.Status.Conditions {
 		if condition.Type == string(v1alpha1.ConditionTypeConfigured) {
 			if condition.Reason == string(v1alpha1.ConditionReasonServerlessDuplicated) &&
 				condition.Status == metav1.ConditionFalse &&
-				condition.Message == fmt.Sprintf("only one instance of Serverless is allowed (current served instance:\n      kyma-system/default) - this Serverless CR is redundant - remove it to fix the\n      problem") {
+				condition.Message == fmt.Sprintf("only one instance of Serverless is allowed (current served instance: %s/%s) - this Serverless CR is redundant - remove it to fix the problem", utils.Namespace, utils.ServerlessName) {
 				return nil
 			}
 			return fmt.Errorf("ConditionConfigured is not in expected state: %v", condition)
