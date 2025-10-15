@@ -26,7 +26,7 @@ RUN apk add --no-cache ca-certificates
 
 FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:0.4.0-alpine3.22
 
-ENV GODEBUG=fips140=only,tlsmlkem=0
+ENV GODEBUG=fips140=on,tlsmlkem=0
 
 WORKDIR /
 
