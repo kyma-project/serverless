@@ -49,7 +49,7 @@ func Verify(utils *utils.TestUtils) error {
 func VerifyConfig(utils *utils.TestUtils) error {
 	configMap := &corev1.ConfigMap{}
 	objectKey := client.ObjectKey{
-		Name:      "serverless-config",
+		Name:      utils.ServerlessConfigMapName,
 		Namespace: utils.Namespace,
 	}
 	err := utils.Client.Get(utils.Ctx, objectKey, configMap)
