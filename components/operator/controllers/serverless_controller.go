@@ -62,7 +62,7 @@ func (sr *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&v1alpha1.Serverless{}, builder.WithPredicates(predicate.NoStatusChangePredicate{})).
 		Watches(&v1alpha1.Serverless{}, &handler.Funcs{
 			// retrigger all Serverless CRs reconciliations when one is deleted
-			// this should at least one Serverless CR is served
+			// this should ensure at least one Serverless CR is served
 			DeleteFunc: sr.retriggerAllServerlessCRs,
 		}).
 		Watches(&corev1.Service{}, tracing.ServiceCollectorWatcher()).
