@@ -47,6 +47,7 @@ func main() {
 		ServerlessName:           "legacy-test",
 		SecondServerlessName:     "default-test-two",
 		FunctionName:             "function-name",
+		ServerlessConfigMapName:  "serverless-config",
 		ServerlessCtrlDeployName: "serverless-ctrl-mngr",
 		ServerlessRegistryName:   "serverless-docker-registry",
 		ServerlessUpdateSpec: v1alpha1.ServerlessSpec{
@@ -86,6 +87,7 @@ func main() {
 		ServerlessName:           "default-test",
 		SecondServerlessName:     "default-test-two",
 		FunctionName:             "function-name",
+		ServerlessConfigMapName:  "serverless-config",
 		ServerlessCtrlDeployName: "serverless-ctrl-mngr",
 		ServerlessConfigName:     "serverless-config",
 		ServerlessUpdateSpec: v1alpha1.ServerlessSpec{
@@ -124,6 +126,12 @@ func runScenario(testutil *utils.TestUtils) error {
 	// verify Serverless
 	testutil.Logger.Infof("Verifying serverless '%s'", testutil.ServerlessName)
 	if err := utils.WithRetry(testutil, serverless.Verify); err != nil {
+		return err
+	}
+
+	// verify Serverless config map
+	testutil.Logger.Infof("Verifying serverless '%s' config map '%s'", testutil.ServerlessName, testutil.ServerlessConfigMapName)
+	if err := utils.WithRetry(testutil, serverless.VerifyConfig); err != nil {
 		return err
 	}
 

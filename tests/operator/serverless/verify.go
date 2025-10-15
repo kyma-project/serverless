@@ -2,6 +2,7 @@ package serverless
 
 import (
 	"fmt"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
@@ -43,6 +44,16 @@ func Verify(utils *utils.TestUtils) error {
 	}
 
 	return configmap.VerifyServerlessConfigmap(utils, &serverless)
+}
+
+func VerifyConfig(utils *utils.TestUtils) error {
+	configMap := &corev1.ConfigMap{}
+	objectKey := client.ObjectKey{
+		Name:      "serverless-config",
+		Namespace: utils.Namespace,
+	}
+	err := utils.Client.Get(utils.Ctx, objectKey, configMap)
+	return err
 }
 
 func VerifyStuck(utils *utils.TestUtils) error {
