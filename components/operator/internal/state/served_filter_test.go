@@ -13,7 +13,7 @@ import (
 )
 
 func Test_sFnServedFilter(t *testing.T) {
-	t.Run("skip processing when served is false", func(t *testing.T) {
+	t.Run("re-processing when served is false", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				Status: v1alpha1.ServerlessStatus{
@@ -22,10 +22,16 @@ func Test_sFnServedFilter(t *testing.T) {
 			},
 		}
 
-		nextFn, result, err := sFnServedFilter(context.TODO(), nil, s)
+		r := &reconciler{
+			k8s: k8s{
+				client: fixClient(t),
+			},
+		}
+
+		nextFn, result, err := sFnServedFilter(context.TODO(), r, s)
 		require.Nil(t, err)
 		require.Nil(t, result)
-		require.Nil(t, nextFn)
+		requireEqualFunc(t, sFnAddFinalizer, nextFn)
 	})
 
 	t.Run("do next step when served is true", func(t *testing.T) {
@@ -52,21 +58,12 @@ func Test_sFnServedFilter(t *testing.T) {
 
 		r := &reconciler{
 			k8s: k8s{
-				client: func() client.Client {
-					scheme := apiruntime.NewScheme()
-					require.NoError(t, v1alpha1.AddToScheme(scheme))
-
-					client := fake.NewClientBuilder().
-						WithScheme(scheme).
-						WithObjects(
-							fixServedServerless("test-1", "default", ""),
-							fixServedServerless("test-2", "serverless-test", v1alpha1.ServedFalse),
-							fixServedServerless("test-3", "serverless-test-2", ""),
-							fixServedServerless("test-4", "default", v1alpha1.ServedFalse),
-						).Build()
-
-					return client
-				}(),
+				client: fixClient(t,
+					fixServedServerless("test-1", "default", ""),
+					fixServedServerless("test-2", "serverless-test", ""),
+					fixServedServerless("test-3", "serverless-test-2", ""),
+					fixServedServerless("test-4", "default", ""),
+				),
 			},
 		}
 
@@ -86,21 +83,12 @@ func Test_sFnServedFilter(t *testing.T) {
 
 		r := &reconciler{
 			k8s: k8s{
-				client: func() client.Client {
-					scheme := apiruntime.NewScheme()
-					require.NoError(t, v1alpha1.AddToScheme(scheme))
-
-					client := fake.NewClientBuilder().
-						WithScheme(scheme).
-						WithObjects(
-							fixServedServerless("test-1", "default", v1alpha1.ServedFalse),
-							fixServedServerless("test-2", "serverless-test", v1alpha1.ServedTrue),
-							fixServedServerless("test-3", "serverless-test-2", ""),
-							fixServedServerless("test-4", "default", v1alpha1.ServedFalse),
-						).Build()
-
-					return client
-				}(),
+				client: fixClient(t,
+					fixServedServerless("test-1", "default", v1alpha1.ServedFalse),
+					fixServedServerless("test-2", "serverless-test", v1alpha1.ServedTrue),
+					fixServedServerless("test-3", "serverless-test-2", ""),
+					fixServedServerless("test-4", "default", v1alpha1.ServedFalse),
+				),
 			},
 		}
 
@@ -121,6 +109,15 @@ func Test_sFnServedFilter(t *testing.T) {
 			expectedErrorMessage,
 		)
 	})
+}
+
+func fixClient(t *testing.T, initObjs ...client.Object) client.Client {
+	scheme := apiruntime.NewScheme()
+	require.NoError(t, v1alpha1.AddToScheme(scheme))
+
+	return fake.NewClientBuilder().
+		WithScheme(scheme).
+		WithObjects(initObjs...).Build()
 }
 
 func fixServedServerless(name, namespace string, served v1alpha1.Served) *v1alpha1.Serverless {

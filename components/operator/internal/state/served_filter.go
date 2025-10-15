@@ -9,19 +9,16 @@ import (
 )
 
 func sFnServedFilter(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-	if s.instance.IsServedEmpty() {
-		if err := setInitialServed(ctx, r, s); err != nil {
+	if s.instance.IsServedEmpty() || s.instance.Status.Served == v1alpha1.ServedFalse {
+		if err := calculateServed(ctx, r, s); err != nil {
 			return stopWithEventualError(err)
 		}
 	}
 
-	if s.instance.Status.Served == v1alpha1.ServedFalse {
-		return stop()
-	}
 	return nextState(sFnAddFinalizer)
 }
 
-func setInitialServed(ctx context.Context, r *reconciler, s *systemState) error {
+func calculateServed(ctx context.Context, r *reconciler, s *systemState) error {
 	servedServerless, err := GetServedServerless(ctx, r.k8s.client)
 	if err != nil {
 		return err
