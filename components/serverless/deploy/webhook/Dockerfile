@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.25.1-alpine3.22 AS builder
+FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.25.2-alpine3.22 AS builder
 
 ARG TARGETOS TARGETARCH
 
@@ -18,7 +18,7 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o webhook-serve
     && mv ./webhook-server /app/webhook-server
 
 # get latest CA certs from alpine:3.17.4
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.1 AS certs
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.2 AS certs
 RUN apk add --no-cache ca-certificates
 
 FROM scratch
