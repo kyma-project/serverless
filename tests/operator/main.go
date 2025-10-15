@@ -47,7 +47,7 @@ func main() {
 		ServerlessName:           "legacy-test",
 		SecondServerlessName:     "default-test-two",
 		FunctionName:             "function-name",
-		ServerlessConfigMapName:  "serverless-config",
+		ServerlessConfigMapName:  "serverless-configuration",
 		ServerlessCtrlDeployName: "serverless-ctrl-mngr",
 		ServerlessRegistryName:   "serverless-docker-registry",
 		ServerlessUpdateSpec: v1alpha1.ServerlessSpec{
