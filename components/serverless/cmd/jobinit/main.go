@@ -86,5 +86,5 @@ func (c *config) getAuthFromType() *git.AuthOptions {
 }
 
 func isFIPS140Only() bool {
-	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=only,tlsmlkem=0"
+	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=on,tlsmlkem=0"
 }
