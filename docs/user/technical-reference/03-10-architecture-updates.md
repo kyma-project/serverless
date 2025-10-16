@@ -1,6 +1,6 @@
 # Build-less mode of Serverless
 
-## Changes
+## What would change if I switch buildldess on
 
 - The internal Docker Registry is no longer part of the Serverless module. Instead, the Docker Registry is now a separate, standalone module.
 - There is no longer a build job for Functions. Instead, a base image is used, which mounts the required dependencies dynamically.
