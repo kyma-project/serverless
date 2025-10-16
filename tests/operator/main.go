@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/kyma-project/serverless/tests/operator/function"
 	"os"
 	"time"
 
@@ -44,6 +45,9 @@ func main() {
 		Logger:     log,
 
 		ServerlessName:           "legacy-test",
+		SecondServerlessName:     "default-test-two",
+		FunctionName:             "function-name",
+		ServerlessConfigMapName:  "serverless-configuration",
 		ServerlessCtrlDeployName: "serverless-ctrl-mngr",
 		ServerlessRegistryName:   "serverless-docker-registry",
 		ServerlessUpdateSpec: v1alpha1.ServerlessSpec{
@@ -81,6 +85,9 @@ func main() {
 		Logger:     log,
 
 		ServerlessName:           "default-test",
+		SecondServerlessName:     "default-test-two",
+		FunctionName:             "function-name",
+		ServerlessConfigMapName:  "serverless-config",
 		ServerlessCtrlDeployName: "serverless-ctrl-mngr",
 		ServerlessConfigName:     "serverless-config",
 		ServerlessUpdateSpec: v1alpha1.ServerlessSpec{
@@ -118,31 +125,84 @@ func runScenario(testutil *utils.TestUtils) error {
 
 	// verify Serverless
 	testutil.Logger.Infof("Verifying serverless '%s'", testutil.ServerlessName)
-	if err := utils.WithRetry(testutil, serverless.Verify); err != nil {
+	if err := utils.WithRetry(testutil, serverless.VerifyOld); err != nil {
+		return err
+	}
+
+	// verify Serverless config map
+	testutil.Logger.Infof("Verifying serverless '%s' config map '%s'", testutil.ServerlessName, testutil.ServerlessConfigMapName)
+	if err := utils.WithRetry(testutil, serverless.VerifyConfig); err != nil {
+		return err
+	}
+
+	// create second Serverless
+	testutil.Logger.Infof("Creating second serverless '%s'", testutil.SecondServerlessName)
+	if err := serverless.CreateSecond(testutil); err != nil {
+		return err
+	}
+
+	// verify second Serverless won't create
+	testutil.Logger.Infof("Verifying second serverless '%s' won't create", testutil.SecondServerlessName)
+	if err := utils.WithRetry(testutil, serverless.VerifyStuck); err != nil {
+		return err
+	}
+
+	// delete served Serverless
+	testutil.Logger.Infof("Deleting served serverless '%s'", testutil.ServerlessName)
+	if err := serverless.DeleteOld(testutil); err != nil {
+		return err
+	}
+	testutil.Logger.Infof("Verifying serverless '%s' deletion", testutil.ServerlessName)
+	if err := utils.WithRetry(testutil, serverless.VerifyDeletionOld); err != nil {
+		return err
+	}
+
+	// verify second Serverless becomes served
+	testutil.Logger.Infof("Verifying second serverless '%s' becomes served", testutil.SecondServerlessName)
+	if err := utils.WithRetry(testutil, serverless.VerifyNew); err != nil {
+		return err
+	}
+
+	// create function
+	testutil.Logger.Infof("Creating function in namespace '%s'", testutil.Namespace)
+	if err := function.Create(testutil); err != nil {
 		return err
 	}
 
 	// update serverless with other spec
-	testutil.Logger.Infof("Updating serverless '%s'", testutil.ServerlessName)
+	testutil.Logger.Infof("Updating serverless '%s'", testutil.SecondServerlessName)
 	if err := serverless.Update(testutil); err != nil {
 		return err
 	}
 
 	// verify Serverless
-	testutil.Logger.Infof("Verifying serverless '%s'", testutil.ServerlessName)
-	if err := utils.WithRetry(testutil, serverless.Verify); err != nil {
+	testutil.Logger.Infof("Verifying serverless '%s'", testutil.SecondServerlessName)
+	if err := utils.WithRetry(testutil, serverless.VerifyNew); err != nil {
+		return err
+	}
+
+	// verify Severless won't delete with function depending on it
+	testutil.Logger.Infof("Verifying serverless '%s' deletion is stuck", testutil.SecondServerlessName)
+	if err := serverless.DeleteNew(testutil); err != nil {
+		return err
+	}
+	if err := utils.WithRetry(testutil, serverless.VerifyDeletionStuck); err != nil {
+		return err
+	}
+	testutil.Logger.Infof("Deleting function '%s'", testutil.FunctionName)
+	if err := function.Delete(testutil); err != nil {
 		return err
 	}
 
 	// delete Serverless
-	testutil.Logger.Infof("Deleting serverless '%s'", testutil.ServerlessName)
-	if err := serverless.Delete(testutil); err != nil {
+	testutil.Logger.Infof("Deleting serverless '%s'", testutil.SecondServerlessName)
+	if err := serverless.DeleteNew(testutil); err != nil {
 		return err
 	}
 
 	// verify Serverless deletion
-	testutil.Logger.Infof("Verifying serverless '%s' deletion", testutil.ServerlessName)
-	if err := utils.WithRetry(testutil, serverless.VerifyDeletion); err != nil {
+	testutil.Logger.Infof("Verifying serverless '%s' deletion", testutil.SecondServerlessName)
+	if err := utils.WithRetry(testutil, serverless.VerifyDeletionNew); err != nil {
 		return err
 	}
 

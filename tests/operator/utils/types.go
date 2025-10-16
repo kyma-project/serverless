@@ -15,9 +15,12 @@ type TestUtils struct {
 
 	Namespace                string
 	ServerlessName           string
+	SecondServerlessName     string
+	FunctionName             string
 	ServerlessCtrlDeployName string
 	ServerlessConfigName     string
 	ServerlessRegistryName   string
+	ServerlessConfigMapName  string
 	ServerlessUpdateSpec     v1alpha1.ServerlessSpec
 	LegacyMode               bool
 }

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	serverlessv1alpha1 "github.com/kyma-project/serverless/components/operator/api/v1alpha1"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -21,6 +22,11 @@ func GetKuberentesClient() (client.Client, error) {
 	}
 
 	err = serverlessv1alpha1.AddToScheme(scheme.Scheme)
+	if err != nil {
+		return nil, err
+	}
+
+	err = serverlessv1alpha2.AddToScheme(scheme.Scheme)
 	if err != nil {
 		return nil, err
 	}
