@@ -38,7 +38,7 @@ The default configuration of the Serverless Module is following:
        enableInternal: true
    ```
 
-## Configure Trace Endpoint
+### Configuring Trace Endpoint
 
 By default, the Serverless operator checks if there is a trace endpoint available. If available, the detected trace endpoint is used as the trace collector URL in Functions.
 If no trace endpoint is detected, Functions are configured with no trace collector endpoint.
@@ -51,7 +51,7 @@ The currently used trace endpoint is visible in the Serverless CR status.
        endpoint: http://jaeger-collector.observability.svc.cluster.local:4318/v1/traces
    ```
 
-## Configure Eventing Endpoint
+### Configuring Eventing Endpoint
 
 You can configure a custom Eventing endpoint to publish events sent from your Functions.
 The currently used trace endpoint is visible in the Serverless CR status.
@@ -63,7 +63,7 @@ By default `http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publis
        endpoint: http://eventing-publisher-proxy.kyma-system.svc.cluster.local/publish
    ```
 
-## Configure the Function Requeue Duration
+### Configuring the Function Requeue Duration
 
 By default, the Function associated with the default configuration will be requeued every 5 minutes.  
 
@@ -72,7 +72,7 @@ By default, the Function associated with the default configuration will be reque
       functionRequeueDuration: 5m
 ```
 
-## Configure the healthz Liveness Timeout
+### Configuring the healthz Liveness Timeout
 
 By default, Function is considered unhealthy if the liveness health check endpoint does not respond within 10 seconds.
 
@@ -81,7 +81,7 @@ By default, Function is considered unhealthy if the liveness health check endpoi
       healthzLivenessTimeout: "10s"
 ```
 
-## Configure the Default Runtime Pod Preset
+### Configuring the Default Runtime Pod Preset
 
 You can configure the default runtime Pod preset to be used.
 
