@@ -1,4 +1,4 @@
-# Serverless Architecture Updates
+# Build-less mode of Serverless
 
 ## Changes
 
