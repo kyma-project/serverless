@@ -111,7 +111,7 @@ This tutorial shows only one possible use case. There are many more use cases on
    kyma function create nodejs emitter --source handler.js --dependencies package.json
    ```
 
-   Your Function is now built and deployed in Kyma runtime. Kyma exposes it through the APIRule. The incoming payloads are processed by your emitter Function. It then sends the sanitized content to the workload that subscribes to the selected event type. In our case, it's the receiver Function.
+   Your Function is now deployed in Kyma runtime. Kyma exposes it through the APIRule. The incoming payloads are processed by your emitter Function. It then sends the sanitized content to the workload that subscribes to the selected event type. In our case, it's the receiver Function.
 
 4. Expose Function by creating the APIRule CR:
 
@@ -187,7 +187,7 @@ This tutorial shows only one possible use case. There are many more use cases on
    kyma function create nodejs receiver --source handler.js --dependencies package.json
    ```
 
-   The Function is configured, built, and deployed in Kyma runtime. The Subscription becomes active and all events with the selected type are processed by the Function.  
+   The Function is configured and deployed in Kyma runtime. The Subscription becomes active and all events with the selected type are processed by the Function.  
 
 2. Subscribe the `receiver` Function to the event:  
 
