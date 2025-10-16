@@ -52,7 +52,7 @@ type BasicAuth struct {
 
 type GithubRepo struct {
 	Reference string `envconfig:"default=main"`
-	URL       string `envconfig:"default=git@github.com:kyma-project/private-fn-for-e2e-serverless-tests.git"`
+	URL       string `envconfig:"default=git@github.com:SAP-archive/private-fn-for-e2e-serverless-tests.git"`
 	BaseDir   string `envconfig:"default=/"`
 	SSHAuth
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/fips140"
 	"os"
 
 	"github.com/go-logr/zapr"
@@ -40,6 +41,11 @@ func init() {
 
 func main() {
 	setupLog := ctrlzap.New().WithName("setup")
+
+	if !isFIPS140Only() {
+		setupLog.Error(errors.New("FIPS not enforced"), "FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+		panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+	}
 
 	setupLog.Info("reading configuration")
 	cfg := &webhook.Config{}
@@ -170,4 +176,8 @@ func main() {
 		logWithCtx.Error(err, "failed to start controller-manager")
 		os.Exit(1)
 	}
+}
+
+func isFIPS140Only() bool {
+	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=only,tlsmlkem=0"
 }
