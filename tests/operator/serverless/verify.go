@@ -13,8 +13,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func VerifyDeletion(utils *utils.TestUtils) error {
-	err := Verify(utils)
+func VerifyDeletionOld(utils *utils.TestUtils) error {
+	err := VerifyOld(utils)
 	if err == nil {
 		return fmt.Errorf("serverless '%s' still exists", utils.ServerlessName)
 	}
@@ -25,8 +25,8 @@ func VerifyDeletion(utils *utils.TestUtils) error {
 	return nil
 }
 
-func VerifyDeletionSecond(utils *utils.TestUtils) error {
-	err := Verify(utils)
+func VerifyDeletionNew(utils *utils.TestUtils) error {
+	err := VerifyOld(utils)
 	if err == nil {
 		return fmt.Errorf("serverless '%s' still exists", utils.SecondServerlessName)
 	}
@@ -37,7 +37,7 @@ func VerifyDeletionSecond(utils *utils.TestUtils) error {
 	return nil
 }
 
-func Verify(utils *utils.TestUtils) error {
+func VerifyOld(utils *utils.TestUtils) error {
 	serverless, err := getServerless(utils, utils.ServerlessName)
 	if err != nil {
 		return err
@@ -58,7 +58,7 @@ func Verify(utils *utils.TestUtils) error {
 	return configmap.VerifyServerlessConfigmap(utils, &serverless)
 }
 
-func VerifySecond(utils *utils.TestUtils) error {
+func VerifyNew(utils *utils.TestUtils) error {
 	serverless, err := getServerless(utils, utils.SecondServerlessName)
 	if err != nil {
 		return err

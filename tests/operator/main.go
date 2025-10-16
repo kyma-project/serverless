@@ -125,7 +125,7 @@ func runScenario(testutil *utils.TestUtils) error {
 
 	// verify Serverless
 	testutil.Logger.Infof("Verifying serverless '%s'", testutil.ServerlessName)
-	if err := utils.WithRetry(testutil, serverless.Verify); err != nil {
+	if err := utils.WithRetry(testutil, serverless.VerifyOld); err != nil {
 		return err
 	}
 
@@ -149,17 +149,17 @@ func runScenario(testutil *utils.TestUtils) error {
 
 	// delete served Serverless
 	testutil.Logger.Infof("Deleting served serverless '%s'", testutil.ServerlessName)
-	if err := serverless.Delete(testutil); err != nil {
+	if err := serverless.DeleteOld(testutil); err != nil {
 		return err
 	}
 	testutil.Logger.Infof("Verifying serverless '%s' deletion", testutil.ServerlessName)
-	if err := utils.WithRetry(testutil, serverless.VerifyDeletion); err != nil {
+	if err := utils.WithRetry(testutil, serverless.VerifyDeletionOld); err != nil {
 		return err
 	}
 
 	// verify second Serverless becomes served
 	testutil.Logger.Infof("Verifying second serverless '%s' becomes served", testutil.SecondServerlessName)
-	if err := utils.WithRetry(testutil, serverless.VerifySecond); err != nil {
+	if err := utils.WithRetry(testutil, serverless.VerifyNew); err != nil {
 		return err
 	}
 
@@ -177,13 +177,13 @@ func runScenario(testutil *utils.TestUtils) error {
 
 	// verify Serverless
 	testutil.Logger.Infof("Verifying serverless '%s'", testutil.SecondServerlessName)
-	if err := utils.WithRetry(testutil, serverless.VerifySecond); err != nil {
+	if err := utils.WithRetry(testutil, serverless.VerifyNew); err != nil {
 		return err
 	}
 
 	// verify Severless won't delete with function depending on it
 	testutil.Logger.Infof("Verifying serverless '%s' deletion is stuck", testutil.ServerlessName)
-	if err := serverless.Delete(testutil); err != nil {
+	if err := serverless.DeleteOld(testutil); err != nil {
 		return err
 	}
 	if err := utils.WithRetry(testutil, serverless.VerifyDeletionStuck); err != nil {
@@ -196,13 +196,13 @@ func runScenario(testutil *utils.TestUtils) error {
 
 	// delete Serverless
 	testutil.Logger.Infof("Deleting serverless '%s'", testutil.ServerlessName)
-	if err := serverless.DeleteSecond(testutil); err != nil {
+	if err := serverless.DeleteNew(testutil); err != nil {
 		return err
 	}
 
 	// verify Serverless deletion
 	testutil.Logger.Infof("Verifying serverless '%s' deletion", testutil.ServerlessName)
-	if err := utils.WithRetry(testutil, serverless.VerifyDeletionSecond); err != nil {
+	if err := utils.WithRetry(testutil, serverless.VerifyDeletionNew); err != nil {
 		return err
 	}
 
