@@ -182,8 +182,8 @@ func runScenario(testutil *utils.TestUtils) error {
 	}
 
 	// verify Severless won't delete with function depending on it
-	testutil.Logger.Infof("Verifying serverless '%s' deletion is stuck", testutil.ServerlessName)
-	if err := serverless.DeleteOld(testutil); err != nil {
+	testutil.Logger.Infof("Verifying serverless '%s' deletion is stuck", testutil.SecondServerlessName)
+	if err := serverless.DeleteNew(testutil); err != nil {
 		return err
 	}
 	if err := utils.WithRetry(testutil, serverless.VerifyDeletionStuck); err != nil {
@@ -195,13 +195,13 @@ func runScenario(testutil *utils.TestUtils) error {
 	}
 
 	// delete Serverless
-	testutil.Logger.Infof("Deleting serverless '%s'", testutil.ServerlessName)
+	testutil.Logger.Infof("Deleting serverless '%s'", testutil.SecondServerlessName)
 	if err := serverless.DeleteNew(testutil); err != nil {
 		return err
 	}
 
 	// verify Serverless deletion
-	testutil.Logger.Infof("Verifying serverless '%s' deletion", testutil.ServerlessName)
+	testutil.Logger.Infof("Verifying serverless '%s' deletion", testutil.SecondServerlessName)
 	if err := utils.WithRetry(testutil, serverless.VerifyDeletionNew); err != nil {
 		return err
 	}
