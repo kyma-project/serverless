@@ -29,9 +29,12 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/util/workqueue"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/event"
+	"sigs.k8s.io/controller-runtime/pkg/handler"
 )
 
 // serverlessReconciler reconciles a Serverless object
@@ -57,6 +60,11 @@ func NewServerlessReconciler(client client.Client, config *rest.Config, recorder
 func (sr *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&v1alpha1.Serverless{}, builder.WithPredicates(predicate.NoStatusChangePredicate{})).
+		Watches(&v1alpha1.Serverless{}, &handler.Funcs{
+			// retrigger all Serverless CRs reconciliations when one is deleted
+			// this should ensure at least one Serverless CR is served
+			DeleteFunc: sr.retriggerAllServerlessCRs,
+		}).
 		Watches(&corev1.Service{}, tracing.ServiceCollectorWatcher()).
 		Complete(sr)
 }
@@ -77,4 +85,23 @@ func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 
 	r := sr.initStateMachine(log)
 	return r.Reconcile(ctx, *instance)
+}
+
+func (sr *serverlessReconciler) retriggerAllServerlessCRs(ctx context.Context, e event.DeleteEvent, q workqueue.TypedRateLimitingInterface[ctrl.Request]) {
+	log := sr.log.With("deletion_watcher")
+
+	list := &v1alpha1.ServerlessList{}
+	err := sr.client.List(ctx, list, &client.ListOptions{})
+	if err != nil {
+		log.Errorf("error listing serverless objects: %s", err.Error())
+		return
+	}
+
+	for _, s := range list.Items {
+		log.Debugf("retriggering reconciliation for Serverless %s/%s", s.GetNamespace(), s.GetName())
+		q.Add(ctrl.Request{NamespacedName: client.ObjectKey{
+			Namespace: s.GetNamespace(),
+			Name:      s.GetName(),
+		}})
+	}
 }

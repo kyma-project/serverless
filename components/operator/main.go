@@ -17,6 +17,8 @@ limitations under the License.
 package main
 
 import (
+	"crypto/fips140"
+	"errors"
 	"flag"
 	"os"
 	"time"
@@ -64,6 +66,11 @@ func init() {
 }
 
 func main() {
+	if !isFIPS140Only() {
+		setupLog.Error(errors.New("FIPS not enforced"), "FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+		panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+	}
+
 	var metricsAddr string
 	var probeAddr string
 	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")
@@ -148,4 +155,8 @@ func main() {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
+}
+
+func isFIPS140Only() bool {
+	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=only,tlsmlkem=0"
 }

@@ -18,9 +18,12 @@ package main
 
 import (
 	"context"
+	"crypto/fips140"
+	"errors"
 	"io"
 	"log"
 	"os"
+
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
@@ -71,6 +74,11 @@ type serverlessConfig struct {
 }
 
 func main() {
+	if !isFIPS140Only() {
+		setupLog.Error(errors.New("FIPS not enforced"), "FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+		panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+	}
+
 	envCfg, err := loadConfig("APP")
 	if err != nil {
 		setupLog.Error(err, "unable to load config")
@@ -208,4 +216,8 @@ func loadConfig(prefix string) (serverlessConfig, error) {
 		return cfg, err
 	}
 	return cfg, nil
+}
+
+func isFIPS140Only() bool {
+	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=on,tlsmlkem=0"
 }

@@ -1,7 +1,7 @@
 package git
 
 import (
-	"crypto/md5"
+	"crypto/sha256"
 	"fmt"
 	"os"
 	"path"
@@ -58,7 +58,7 @@ func NewGit2Go(logger *zap.SugaredLogger) *git2GoClient {
 }
 
 func mkRepoDir(options Options) (string, error) {
-	nameHash := md5.Sum([]byte(options.URL))
+	nameHash := sha256.Sum256([]byte(options.URL))
 	repoPath := path.Join(tempDir, fmt.Sprintf("%x", nameHash))
 
 	err := os.MkdirAll(repoPath, 0700)
