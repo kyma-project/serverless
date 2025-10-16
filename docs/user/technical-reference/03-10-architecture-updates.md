@@ -1,18 +1,20 @@
 # Build-less mode of Serverless
 
-## What would change if I switch buildldess on
-
-- The internal Docker Registry is no longer part of the Serverless module. Instead, the Docker Registry is now a separate, standalone module.
-- There is no longer a build job for Functions. Instead, a base image is used, which mounts the required dependencies dynamically.
-- Libraries and dependencies are downloaded at the start of the Function's execution. This means that each replica of the Function can potentially use a different version of the dependencies.
-- Function code is now injected directly into the runtime Pod, eliminating the need for pre-built images.
-
 ## Benefits
 
 - **Simplified architecture**: By separating the Docker Registry into its own module, the Serverless module is now more lightweight and easier to manage.
 - **Faster deployment**: The removal of the build job reduces the time required to deploy Functions.
 - **Dynamic dependency resolution**: Dependencies are resolved at runtime, allowing for more flexibility in managing library versions.
 - **Improved flexibility**: Injecting Function code into the runtime Pod simplifies the deployment process and reduces image management overhead.
+- **Reduced resource consumption**: Eliminating build jobs means Serverless no longer requires computational resources from worker nodes for image building.
+- **Enhanced security**: By removing build jobs, Functions can run in namespaces with more restrictive Pod security levels enabled.
+
+## What would change if I switch buildldess on
+
+- Your Serverless module will no longer include an internal Docker Registry. You will need to use a separate, standalone Docker Registry module instead.
+- Function builds will be eliminated. Your Functions will use a base image that mounts dependencies dynamically at runtime.
+- Function dependencies will be downloaded each time a Function Pod starts. This means different replicas of the same Function may use different dependency versions if you don't pin exact versions.
+- Your Function code will be injected directly into runtime Pods without requiring pre-built container images.
 
 ## Use fixed dependency versions
 
