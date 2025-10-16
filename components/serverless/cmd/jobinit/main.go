@@ -1,7 +1,9 @@
 package main
 
 import (
+	"crypto/fips140"
 	"log"
+	"os"
 
 	"github.com/kyma-project/serverless/components/serverless/internal/git"
 	"github.com/pkg/errors"
@@ -23,6 +25,11 @@ type config struct {
 
 func main() {
 	log.Println("Start repo fetcher...")
+
+	if !isFIPS140Only() {
+		log.Panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+	}
+
 	cfg := config{}
 	if err := envconfig.InitWithPrefix(&cfg, envPrefix); err != nil {
 		log.Fatalf("while reading env variables: %s", err.Error())
@@ -76,4 +83,8 @@ func (c *config) getAuthFromType() *git.AuthOptions {
 	default:
 		return nil
 	}
+}
+
+func isFIPS140Only() bool {
+	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=on,tlsmlkem=0"
 }
