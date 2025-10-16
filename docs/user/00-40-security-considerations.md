@@ -11,7 +11,7 @@ To eliminate potential security risks when using Functions, bear in mind these f
 
 - Kyma does not define any authorization policies that would restrict Functions' access to other resources within the namespace. If you deploy a Function in a given namespace, it can freely access all events and APIs of services within this namespace.
 
-- Since Kubernetes is [moving from PodSecurityPolicies to PodSecurity Admission Controller](https://kubernetes.io/docs/tasks/configure-pod-container/migrate-from-psp/), Kyma Functions require running in namespaces with the `baseline` Pod security level. 
+- Since Kubernetes is [moving from PodSecurityPolicies to PodSecurity Admission Controller](https://kubernetes.io/docs/tasks/configure-pod-container/migrate-from-psp/), traditional Kyma Functions with build jobs require running in namespaces with the `baseline` Pod security level. However, buildless mode eliminates build jobs, allowing Functions to run in namespaces with more restrictive Pod security levels such as `restricted`.
 
 - All administrators and regular users who have access to a specific namespace in a cluster can also access:
 
