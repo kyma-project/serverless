@@ -4,7 +4,7 @@
 
 
 # Build the operator binary
-FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.25.2-alpine3.22 AS builder
+FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.25.3-alpine3.22 AS builder
 
 ARG TARGETOS TARGETARCH
 
@@ -21,7 +21,7 @@ RUN go mod download
 COPY components/operator components/operator
 
 # Build
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -a -o operator ./components/operator/main.go
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH GOFIPS140=v1.0.0 go build -a -o operator ./components/operator/main.go
 
 
 # Replace main images in values.yaml
@@ -53,6 +53,8 @@ RUN if [[ "local" = "$PURPOSE" ]] ; then ./hack/replace_serverless_chart_images.
 # Use distroless as minimal base image to package the operator binary
 # Refer to https://github.com/GoogleContainerTools/distroless for more details
 FROM gcr.io/distroless/static:nonroot
+
+ENV GODEBUG=fips140=only,tlsmlkem=0
 
 WORKDIR /
 COPY --chown=65532:65532 --from=builder /workdir/operator .
