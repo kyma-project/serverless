@@ -9,7 +9,7 @@
 - **Reduced resource consumption**: Eliminating build jobs means Serverless no longer requires computational resources from worker nodes for image building.
 - **Enhanced security**: By removing build jobs, Functions can run in namespaces with more restrictive Pod security levels enabled.
 
-## What would change if I switch buildldess on
+## What Changes with Buildless Mode
 
 - Your Serverless module will no longer include an internal Docker Registry. You will need to use a separate, standalone Docker Registry module instead.
 - Function builds will be eliminated. Your Functions will use a base image that mounts dependencies dynamically at runtime.
