@@ -24,7 +24,7 @@ The Serverless CR is an API to configure the Serverless module. You can use it t
 - Override the default log level.
 - Override the default log format.
 - Enable network policies.
-- Enable buildless mode of Serverless.
+- Disable buildless mode of Serverless.
 
 The default configuration of the Serverless Module is following:
 
