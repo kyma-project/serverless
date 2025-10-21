@@ -12,7 +12,7 @@
 ## What Changes with Buildless Mode
 
 - Your Serverless module no longer includes an internal Docker Registry. You must use a separate, standalone Docker Registry module instead.
-- Function builds will be eliminated. Your Functions will use a base image that mounts dependencies dynamically at runtime.
+- Function builds are eliminated. Your Functions use a base image that mounts dependencies dynamically at runtime.
 - Function dependencies will be downloaded each time a Function Pod starts. This means different replicas of the same Function may use different dependency versions if you don't pin exact versions.
 - Your Function code will be injected directly into runtime Pods without requiring pre-built container images.
 
