@@ -128,7 +128,7 @@ type ServerlessStatus struct {
 	DockerRegistry string `json:"dockerRegistry,omitempty"`
 
 	// State signifies current state of Serverless.
-	// Value can be one of ("Ready", "Processing", "Error", "Deleting").
+	// Value can be one of ("Ready", "Processing", "Error", "Deleting", "Warning").
 	// +kubebuilder:validation:Enum=Processing;Deleting;Ready;Error;Warning
 	State State `json:"state,omitempty"`
 
