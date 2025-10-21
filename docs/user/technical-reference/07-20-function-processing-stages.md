@@ -29,7 +29,7 @@ This initial phase starts when you create a Function CR with configuration speci
 
 This stage revolves around creating a Deployment and Service or updating them when configuration changes were made in the Function CR.
 
-In general, the Deployment is considered updated when configuration in the Deployment is up to date. Service is considered updated when there is proper labels set and configuration is up to date.
+In general, the Deployment is considered updated when its configuration is up to date. Service is considered updated when proper labels are set and the configuration is up to date.
 
 Thanks to the implemented reconciliation loop, the Function Controller constantly observes all newly created or updated resources. If it detects changes, it fetches the appropriate resource's status and only then updates the Function's status.
 
