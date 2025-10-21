@@ -9,7 +9,7 @@ import (
 func Update(testutils *utils.TestUtils) error {
 	var serverless v1alpha1.Serverless
 	objectKey := client.ObjectKey{
-		Name:      testutils.ServerlessName,
+		Name:      testutils.SecondServerlessName,
 		Namespace: testutils.Namespace,
 	}
 
