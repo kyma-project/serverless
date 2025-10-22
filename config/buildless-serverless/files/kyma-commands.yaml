@@ -74,7 +74,7 @@ subCommands:
       parameters:
         name: ${{ .args.value }}
         namespace: ${{ .flags.namespace.value }}
-        app-name: ${{ .flags.targetappname.value}}
+        targetAppName: ${{ .flags.targetappname.value}}
     targetPod:
       path: "/internal/function/eject/"
       port: "12137"

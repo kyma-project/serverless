@@ -19,7 +19,7 @@ func BuildResources(functionConfig *config.FunctionConfig, f *v1alpha2.Function,
 		return nil, errors.Wrapf(err, "failed to build service")
 	}
 
-	deployment, err := buildDeploymentFileData(functionConfig, f)
+	deployment, err := buildDeploymentFileData(functionConfig, f, appName)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to build deployment")
 	}
@@ -53,13 +53,17 @@ func buildServiceFileData(function *v1alpha2.Function, appName string) ([]byte, 
 	return data, nil
 }
 
-func buildDeploymentFileData(functionConfig *config.FunctionConfig, function *v1alpha2.Function) ([]byte, error) {
+func buildDeploymentFileData(functionConfig *config.FunctionConfig, function *v1alpha2.Function, appName string) ([]byte, error) {
 	if function.HasGitSources() {
 		// TODO: support git source
 		return nil, errors.New("ejecting functions with git source is not supported")
 	}
 
-	deployName := fmt.Sprintf("%s-ejected", function.Name)
+	deployName := appName
+	if deployName == "" {
+		deployName = fmt.Sprintf("%s-ejected", function.Name)
+	}
+
 	deploy := resources.NewDeployment(
 		function,
 		functionConfig,

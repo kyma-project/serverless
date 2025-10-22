@@ -12,7 +12,7 @@ import (
 func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 	ns := r.URL.Query().Get("namespace")
 	name := r.URL.Query().Get("name")
-	appName := r.URL.Query().Get("appName")
+	appName := r.URL.Query().Get("targetAppName")
 
 	s.log.Infof("handling function request for function '%s/%s'", ns, name)
 

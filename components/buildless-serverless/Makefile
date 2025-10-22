@@ -139,18 +139,18 @@ docker-buildx: ## Build and push docker image for the manager for cross-platform
 	rm Dockerfile.cross
 
 build-image: ## Build buildless serverless backend image
-	docker build -t $(APP_NAME) -f Dockerfile .
+	docker build -t $(APP_NAME) -f Dockerfile ../..
 
 ######## disable operator to prevent undo of local image update to k3d
 disable-operator:
-	$(KUBECTL) scale deployment serverless-operator -n kyma-system --replicas=0
+	$(KUBECTL) scale deployment serverless-operator -n kyma-system --replicas=0 || true
 
 .PHONY: install-buildless
-install-buildless: build-image disable-operator## Build buildless serverless image and install it on local k3d cluster
+install-buildless: build-image disable-operator ## Build buildless serverless image and install it on local k3d cluster
 	$(eval HASH_TAG=$(shell docker images $(APP_NAME):latest --quiet))
 	docker tag $(APP_NAME) $(APP_NAME):$(HASH_TAG)
 
-	k3d image import $(APP_NAME):$(HASH_TAG) -c kyma
+	k3d image import $(APP_NAME):$(HASH_TAG)
 	$(KUBECTL) set image deployment -n kyma-system serverless-ctrl-mngr manager=$(APP_NAME):$(HASH_TAG)
 ##@ Deployment
 
