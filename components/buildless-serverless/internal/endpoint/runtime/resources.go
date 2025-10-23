@@ -25,8 +25,8 @@ func BuildResources(functionConfig *config.FunctionConfig, f *v1alpha2.Function,
 	}
 
 	return []types.FileResponse{
-		{Name: "resources/service.yaml", Data: base64.StdEncoding.EncodeToString(svc)},
-		{Name: "resources/deployment.yaml", Data: base64.StdEncoding.EncodeToString(deployment)},
+		{Name: "k8s/service.yaml", Data: base64.StdEncoding.EncodeToString(svc)},
+		{Name: "k8s/deployment.yaml", Data: base64.StdEncoding.EncodeToString(deployment)},
 	}, nil
 }
 
@@ -70,6 +70,7 @@ func buildDeploymentFileData(functionConfig *config.FunctionConfig, function *v1
 		nil,
 		"",
 		nil,
+		appName,
 		resources.DeploySetName(deployName),
 		resources.DeployTrimClusterInfoLabels(),
 		resources.DeployAppendSelectorLabels(map[string]string{
