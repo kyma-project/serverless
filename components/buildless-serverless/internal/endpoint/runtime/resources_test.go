@@ -30,9 +30,9 @@ func TestBuildResources(t *testing.T) {
 
 		require.NoError(t, err)
 		require.Len(t, files, 2)
-		require.Equal(t, "resources/service.yaml", files[0].Name)
+		require.Equal(t, "k8s/service.yaml", files[0].Name)
 		requireEqualBase64Objects(t, fixTestService(), files[0].Data)
-		require.Equal(t, "resources/deployment.yaml", files[1].Name)
+		require.Equal(t, "k8s/deployment.yaml", files[1].Name)
 		requireEqualBase64Objects(t, fixDeployment(), files[1].Data)
 	})
 

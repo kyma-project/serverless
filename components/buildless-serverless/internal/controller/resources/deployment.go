@@ -94,22 +94,15 @@ type Deployment struct {
 }
 
 func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clusterDeployment *appsv1.Deployment, commit string, gitAuth *git.GitAuth, appName string, opts ...deployOptions) *Deployment {
-	if appName == "" {
-		appName = f.Name
-	}
-
 	d := &Deployment{
-		functionConfig:    c,
-		function:          f,
-		clusterDeployment: clusterDeployment,
-		commit:            commit,
-		gitAuth:           gitAuth,
-		functionLabels:    f.FunctionLabels(),
-		selectorLabels:    f.SelectorLabels(),
-		podLabels: map[string]string{
-			"app.kubernetes.io/name":              appName,
-			"serverless.kyma-project.io/resource": "deployment",
-		},
+		functionConfig:      c,
+		function:            f,
+		clusterDeployment:   clusterDeployment,
+		commit:              commit,
+		gitAuth:             gitAuth,
+		functionLabels:      f.FunctionLabels(),
+		selectorLabels:      f.SelectorLabels(),
+		podLabels:           f.PodLabels(),
 		deployName:          "",
 		deployGeneratedName: fmt.Sprintf("%s-", f.Name),
 		podImage:            runtimeImage(f, c),
@@ -119,6 +112,13 @@ func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clu
 			"-c",
 			runtimeCommand(f),
 		},
+	}
+
+	if appName != "" {
+		d.podLabels = map[string]string{
+			"app.kubernetes.io/name":              appName,
+			"serverless.kyma-project.io/resource": "deployment",
+		}
 	}
 
 	for _, o := range opts {
