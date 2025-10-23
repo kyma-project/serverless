@@ -115,8 +115,15 @@ func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clu
 	}
 
 	if appName != "" {
-		d.podLabels = map[string]string{
+		if d.podLabels == nil {
+			d.podLabels = make(map[string]string)
+		}
+		newLabels := map[string]string{
 			"app.kubernetes.io/name": appName,
+		}
+
+		for k, v := range newLabels {
+			d.podLabels[k] = v
 		}
 	}
 
