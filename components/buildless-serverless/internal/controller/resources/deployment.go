@@ -116,8 +116,7 @@ func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clu
 
 	if appName != "" {
 		d.podLabels = map[string]string{
-			"app.kubernetes.io/name":              appName,
-			"serverless.kyma-project.io/resource": "deployment",
+			"app.kubernetes.io/name": appName,
 		}
 	}
 
