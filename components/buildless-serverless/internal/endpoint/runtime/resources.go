@@ -13,25 +13,29 @@ import (
 	"go.yaml.in/yaml/v2"
 )
 
-func BuildResources(functionConfig *config.FunctionConfig, f *v1alpha2.Function) ([]types.FileResponse, error) {
-	svc, err := buildServiceFileData(f)
+func BuildResources(functionConfig *config.FunctionConfig, f *v1alpha2.Function, appName string) ([]types.FileResponse, error) {
+	svc, err := buildServiceFileData(f, appName)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to build service")
 	}
 
-	deployment, err := buildDeploymentFileData(functionConfig, f)
+	deployment, err := buildDeploymentFileData(functionConfig, f, appName)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to build deployment")
 	}
 
 	return []types.FileResponse{
-		{Name: "resources/service.yaml", Data: base64.StdEncoding.EncodeToString(svc)},
-		{Name: "resources/deployment.yaml", Data: base64.StdEncoding.EncodeToString(deployment)},
+		{Name: "k8s/service.yaml", Data: base64.StdEncoding.EncodeToString(svc)},
+		{Name: "k8s/deployment.yaml", Data: base64.StdEncoding.EncodeToString(deployment)},
 	}, nil
 }
 
-func buildServiceFileData(function *v1alpha2.Function) ([]byte, error) {
-	svcName := fmt.Sprintf("%s-ejected", function.Name)
+func buildServiceFileData(function *v1alpha2.Function, appName string) ([]byte, error) {
+	svcName := appName
+	if svcName == "" {
+		svcName = fmt.Sprintf("%s-ejected", function.Name)
+	}
+
 	svc := resources.NewService(
 		function,
 		resources.ServiceName(svcName),
@@ -49,19 +53,24 @@ func buildServiceFileData(function *v1alpha2.Function) ([]byte, error) {
 	return data, nil
 }
 
-func buildDeploymentFileData(functionConfig *config.FunctionConfig, function *v1alpha2.Function) ([]byte, error) {
+func buildDeploymentFileData(functionConfig *config.FunctionConfig, function *v1alpha2.Function, appName string) ([]byte, error) {
 	if function.HasGitSources() {
 		// TODO: support git source
 		return nil, errors.New("ejecting functions with git source is not supported")
 	}
 
-	deployName := fmt.Sprintf("%s-ejected", function.Name)
+	deployName := appName
+	if deployName == "" {
+		deployName = fmt.Sprintf("%s-ejected", function.Name)
+	}
+
 	deploy := resources.NewDeployment(
 		function,
 		functionConfig,
 		nil,
 		"",
 		nil,
+		appName,
 		resources.DeploySetName(deployName),
 		resources.DeployTrimClusterInfoLabels(),
 		resources.DeployAppendSelectorLabels(map[string]string{

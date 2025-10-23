@@ -93,7 +93,7 @@ type Deployment struct {
 	podCmd              []string
 }
 
-func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clusterDeployment *appsv1.Deployment, commit string, gitAuth *git.GitAuth, opts ...deployOptions) *Deployment {
+func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clusterDeployment *appsv1.Deployment, commit string, gitAuth *git.GitAuth, appName string, opts ...deployOptions) *Deployment {
 	d := &Deployment{
 		functionConfig:      c,
 		function:            f,
@@ -112,6 +112,13 @@ func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clu
 			"-c",
 			runtimeCommand(f),
 		},
+	}
+
+	if appName != "" {
+		if d.podLabels == nil {
+			d.podLabels = make(map[string]string)
+		}
+		d.podLabels["app.kubernetes.io/name"] = appName
 	}
 
 	for _, o := range opts {
