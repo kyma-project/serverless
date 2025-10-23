@@ -2,6 +2,8 @@ package state
 
 import (
 	"context"
+	"testing"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
@@ -12,7 +14,6 @@ import (
 	k8sresource "k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"testing"
 )
 
 func Test_sFnAdjustStatus(t *testing.T) {
@@ -40,7 +41,7 @@ func Test_sFnAdjustStatus(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Function:        f,
-				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil),
+				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil, ""),
 				ClusterDeployment: &appsv1.Deployment{
 					Status: appsv1.DeploymentStatus{
 						Replicas: int32(686)}}},
@@ -105,7 +106,7 @@ func Test_sFnAdjustStatus(t *testing.T) {
 			State: fsm.SystemState{
 				Function:        f,
 				Commit:          "test-commit",
-				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil),
+				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil, ""),
 				ClusterDeployment: &appsv1.Deployment{
 					Status: appsv1.DeploymentStatus{
 						Replicas: int32(686)}}},
@@ -180,7 +181,7 @@ func Test_sFnAdjustStatus(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Function:        f,
-				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil),
+				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil, ""),
 				ClusterDeployment: &appsv1.Deployment{
 					Status: appsv1.DeploymentStatus{
 						Replicas: int32(686)}}},
@@ -229,7 +230,7 @@ func Test_sFnAdjustStatus(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Function:        f,
-				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil),
+				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil, ""),
 				ClusterDeployment: &appsv1.Deployment{
 					Status: appsv1.DeploymentStatus{
 						Replicas: int32(686)}}},
