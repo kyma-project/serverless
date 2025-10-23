@@ -64,12 +64,17 @@ subCommands:
     description: "Directory where the files will be saved"
     shorthand: "d"
     default: "."
+  - type: string
+    name: "target-app-name"
+    description: "App's name"
+    default: ""
   with:
     outputDir: ${{ .flags.dir.value }}
     request:
       parameters:
         name: ${{ .args.value }}
         namespace: ${{ .flags.namespace.value }}
+        targetAppName: ${{ .flags.targetappname.value}}
     targetPod:
       path: "/internal/function/eject/"
       port: "12137"

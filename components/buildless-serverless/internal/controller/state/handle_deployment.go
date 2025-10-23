@@ -3,17 +3,18 @@ package state
 import (
 	"context"
 	"fmt"
+	"reflect"
+	"time"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/resources"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"reflect"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-	"time"
 )
 
 func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
@@ -33,7 +34,7 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	}
 	m.State.ClusterDeployment = clusterDeployment
 
-	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig, clusterDeployment, m.State.Commit, m.State.GitAuth)
+	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig, clusterDeployment, m.State.Commit, m.State.GitAuth, "")
 	builtDeployment := m.State.BuiltDeployment.Deployment
 
 	if m.State.ClusterDeployment == nil {

@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"encoding/base64"
+	"fmt"
 	"testing"
 
 	"github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
@@ -26,14 +27,14 @@ func TestBuildResources(t *testing.T) {
 				Name:      "test-function",
 				Namespace: "test-namespace",
 			},
-		})
+		}, "")
 
 		require.NoError(t, err)
 		require.Len(t, files, 2)
-		require.Equal(t, "resources/service.yaml", files[0].Name)
-		requireEqualBase64Objects(t, fixTestService(), files[0].Data)
-		require.Equal(t, "resources/deployment.yaml", files[1].Name)
-		requireEqualBase64Objects(t, fixDeployment(), files[1].Data)
+		require.Equal(t, "k8s/service.yaml", files[0].Name)
+		requireEqualBase64Objects(t, fixTestService("test-function-ejected"), files[0].Data)
+		require.Equal(t, "k8s/deployment.yaml", files[1].Name)
+		requireEqualBase64Objects(t, fixDeployment("test-function-ejected", "test-function"), files[1].Data)
 	})
 
 	t.Run("error on git source", func(t *testing.T) {
@@ -48,19 +49,45 @@ func TestBuildResources(t *testing.T) {
 				Name:      "test-function",
 				Namespace: "test-namespace",
 			},
-		})
+		}, "")
 
 		require.ErrorContains(t, err, "ejecting functions with git source is not supported")
 		require.Nil(t, files)
 	})
+
+	t.Run("build resources for function with specified app name", func(t *testing.T) {
+		files, err := BuildResources(&config.FunctionConfig{}, &v1alpha2.Function{
+			Spec: v1alpha2.FunctionSpec{
+				Runtime: "nodejs22",
+				Source: v1alpha2.Source{
+					Inline: &v1alpha2.InlineSource{
+						Source:       "console.log('Hello World')",
+						Dependencies: "{}",
+					},
+				},
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "test-function",
+				Namespace: "test-namespace",
+			},
+		}, "test-app-name")
+
+		require.NoError(t, err)
+		require.Len(t, files, 2)
+		fmt.Println(files)
+		require.Equal(t, "k8s/service.yaml", files[0].Name)
+		requireEqualBase64Objects(t, fixTestService("test-app-name"), files[0].Data)
+		require.Equal(t, "k8s/deployment.yaml", files[1].Name)
+		requireEqualBase64Objects(t, fixDeployment("test-app-name", "test-app-name"), files[1].Data)
+	})
 }
 
-func fixTestService() string {
-	return `apiVersion: v1
+func fixTestService(appName string) string {
+	return fmt.Sprintf(`apiVersion: v1
 kind: Service
 metadata:
   creationTimestamp: null
-  name: test-function-ejected
+  name: %s
   namespace: test-namespace
 spec:
   ports:
@@ -69,25 +96,25 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app.kubernetes.io/instance: test-function-ejected
+    app.kubernetes.io/instance: %s
     serverless.kyma-project.io/resource: deployment
 status:
   loadBalancer: {}
-`
+`, appName, appName)
 }
 
-func fixDeployment() string {
-	return `apiVersion: apps/v1
+func fixDeployment(appName, functionName string) string {
+	return fmt.Sprintf(`apiVersion: apps/v1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: test-function-ejected
+  name: %s
   namespace: test-namespace
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/instance: test-function-ejected
+      app.kubernetes.io/instance: %s
       serverless.kyma-project.io/resource: deployment
   strategy: {}
   template:
@@ -97,8 +124,8 @@ spec:
         sidecar.istio.io/nativeSidecar: "true"
       creationTimestamp: null
       labels:
-        app.kubernetes.io/instance: test-function-ejected
-        app.kubernetes.io/name: test-function
+        app.kubernetes.io/instance: %s
+        app.kubernetes.io/name: %s
         serverless.kyma-project.io/resource: deployment
     spec:
       containers:
@@ -170,7 +197,7 @@ spec:
       - emptyDir: {}
         name: tmp
 status: {}
-`
+`, appName, appName, appName, functionName)
 }
 
 func requireEqualBase64Objects(t *testing.T, expectedObj, actual string) {

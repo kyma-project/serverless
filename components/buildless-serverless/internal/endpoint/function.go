@@ -12,6 +12,7 @@ import (
 func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 	ns := r.URL.Query().Get("namespace")
 	name := r.URL.Query().Get("name")
+	appName := r.URL.Query().Get("targetAppName")
 
 	s.log.Infof("handling function request for function '%s/%s'", ns, name)
 
@@ -27,7 +28,7 @@ func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resourceFiles, err := runtime.BuildResources(&s.functionConfig, &function)
+	resourceFiles, err := runtime.BuildResources(&s.functionConfig, &function, appName)
 	if err != nil {
 		s.writeErrorResponse(w, http.StatusInternalServerError, errors.Wrapf(err, "failed to get resource files for function '%s/%s'", ns, name))
 		return

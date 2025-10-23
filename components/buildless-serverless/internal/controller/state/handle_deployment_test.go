@@ -3,6 +3,9 @@ package state
 import (
 	"context"
 	"errors"
+	"testing"
+	"time"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
@@ -19,8 +22,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"sigs.k8s.io/controller-runtime/pkg/client/interceptor"
-	"testing"
-	"time"
 )
 
 func Test_sFnHandleDeployment(t *testing.T) {
@@ -207,7 +208,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		}
 		cd := appsv1.Deployment{}
 		// identical deployment will be generated inside sFnHandleDeployment
-		deployment := resources.NewDeployment(&f, &fc, &cd, "test-commit", nil).Deployment
+		deployment := resources.NewDeployment(&f, &fc, &cd, "test-commit", nil, "").Deployment
 		// scheme and fake client
 		scheme := runtime.NewScheme()
 		require.NoError(t, serverlessv1alpha2.AddToScheme(scheme))
