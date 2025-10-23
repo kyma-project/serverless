@@ -19,7 +19,7 @@ func TestNewDeployment(t *testing.T) {
 		f := minimalFunction()
 		c := minimalFunctionConfig()
 
-		r := NewDeployment(f, c, nil, "test-commit", nil)
+		r := NewDeployment(f, c, nil, "test-commit", nil, "")
 
 		require.NotNil(t, r)
 		d := r.Deployment
@@ -85,7 +85,7 @@ func TestDeployment_construct(t *testing.T) {
 			"shtern": "stoic",
 			"boyd":   "vigilant",
 		}
-		d := NewDeployment(f, minimalFunctionConfig(), nil, "", nil)
+		d := NewDeployment(f, minimalFunctionConfig(), nil, "", nil, "")
 
 		r := d.construct()
 
@@ -167,7 +167,7 @@ func TestDeployment_construct(t *testing.T) {
 	t.Run("use container image based on function and function configuration", func(t *testing.T) {
 		d := NewDeployment(minimalFunction(), &config.FunctionConfig{
 			Images: config.ImagesConfig{Python312: "special-test-image"},
-		}, nil, "", nil)
+		}, nil, "", nil, "")
 
 		r := d.construct()
 
@@ -1218,7 +1218,7 @@ func TestDeployment_envs(t *testing.T) {
 			d := NewDeployment(tt.function, &config.FunctionConfig{
 				FunctionPublisherProxyAddress:  "test-proxy-address",
 				FunctionTraceCollectorEndpoint: "test-trace-collector-endpoint",
-			}, nil, "", nil)
+			}, nil, "", nil, "")
 
 			assert.ElementsMatch(t, tt.want, d.podEnvs)
 		})
@@ -1445,7 +1445,7 @@ func minimalFunctionConfig() *config.FunctionConfig {
 }
 
 func minimalDeploymentForFunction(f *serverlessv1alpha2.Function) *Deployment {
-	return NewDeployment(f, minimalFunctionConfig(), nil, "", nil)
+	return NewDeployment(f, minimalFunctionConfig(), nil, "", nil, "")
 }
 
 func minimalDeployment() *Deployment {
