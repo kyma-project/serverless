@@ -14,6 +14,9 @@ Follow these steps:
 
 1. Follow [this example](https://github.com/kyma-project/serverless/tree/main/examples/custom-serverless-runtime-image) to build the Python's custom runtime image.
 
+
+  > **NOTE:** Kyma Serverless enforces a strict Pod and container-level securityContext for all Functions (non-root execution, minimal Linux capabilities, and other hardening defaults). These constraints also apply for Functions with custom runtime image. Make sure that your custom image supports running as a non-root user under the restricted Pod security level (for example: no dependency on root ownership of writable paths, privileged operations, or added capabilities).
+
 <!-- tabs:start -->
 
 #### **Kyma CLI**
