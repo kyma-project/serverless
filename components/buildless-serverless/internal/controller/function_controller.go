@@ -19,8 +19,11 @@ package controller
 import (
 	"context"
 	"errors"
-	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"time"
+
+	"k8s.io/client-go/util/workqueue"
+	"sigs.k8s.io/controller-runtime/pkg/controller"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
@@ -94,7 +97,12 @@ func (fr *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) (controller.Con
 		WithEventFilter(buildPredicates()).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).
-		Named("function").
+		WithOptions(controller.Options{
+			RateLimiter: workqueue.NewTypedItemExponentialFailureRateLimiter[reconcile.Request](
+				5*time.Millisecond,
+				1000*time.Second,
+			),
+		}).
 		Build(fr)
 }
 
