@@ -33,9 +33,11 @@ func readNodejsFiles(inline *v1alpha2.InlineSource, runtimeDir string) ([]types.
 		return nil, errors.Wrap(err, "failed to read package.json")
 	}
 
-	packagejsonFile, err = packagejson.Merge([]byte(inline.Dependencies), packagejsonFile)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to merge package.json")
+	if inline.Dependencies != "" {
+		packagejsonFile, err = packagejson.Merge([]byte(inline.Dependencies), packagejsonFile)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to merge package.json")
+		}
 	}
 
 	// read server.mjs
@@ -70,7 +72,9 @@ func readPythonFiles(inline *v1alpha2.InlineSource, runtimeDir string) ([]types.
 		return nil, errors.Wrap(err, "failed to read requirements.txt")
 	}
 
-	requirementsFile = []byte(fmt.Sprintf("%s\n%s", string(requirementsFile), inline.Dependencies))
+	if inline.Dependencies != "" {
+		requirementsFile = []byte(fmt.Sprintf("%s\n%s", string(requirementsFile), inline.Dependencies))
+	}
 
 	// read server.py
 	serverFile, err := os.ReadFile(runtimeDir + "/server.py")
