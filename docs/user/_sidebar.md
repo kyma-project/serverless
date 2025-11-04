@@ -22,7 +22,7 @@
   * [Function CR](/serverless-manager/user/resources/06-10-function-cr.md)
   * [Serverless CR](/serverless-manager/user/resources/06-20-serverless-cr.md)
 * [Technical Reference](/serverless-manager/user/technical-reference/README.md)
-  * [Serverless Architecture Updates](/serverless-manager/user/technical-reference/serverless-architecture-updates.md) 
+  * [Serverless Architecture Updates](/serverless-manager/user/technical-reference/architecture-updates.md)
   * [Serverless Architecture](/serverless-manager/user/technical-reference/04-10-architecture.md)
   * [Environment Variables in Functions](/serverless-manager/user/technical-reference/05-20-env-variables.md)
   * [Sample Functions](/serverless-manager/user/technical-reference/07-10-sample-functions.md)
