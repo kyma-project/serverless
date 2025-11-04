@@ -3,6 +3,8 @@ package state
 import (
 	"context"
 	"fmt"
+	"testing"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/resources"
@@ -15,7 +17,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
-	"testing"
 )
 
 func Test_sFnDeploymentStatus(t *testing.T) {
@@ -118,7 +119,7 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 		require.Nil(t, err)
 		// we expect stop and requeue
 		require.NotNil(t, result)
-		require.Equal(t, ctrl.Result{RequeueAfter: defaultRequeueTime}, *result)
+		require.Equal(t, ctrl.Result{Requeue: true}, *result)
 		// no next state (we will stop)
 		require.Nil(t, next)
 		// function has proper condition
