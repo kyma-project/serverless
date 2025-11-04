@@ -21,24 +21,24 @@ import (
 	"errors"
 	"time"
 
-	"k8s.io/client-go/util/workqueue"
-	"sigs.k8s.io/controller-runtime/pkg/controller"
-	"sigs.k8s.io/controller-runtime/pkg/reconcile"
-
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/cache"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/state"
 	"go.uber.org/zap"
+	"golang.org/x/time/rate"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/util/workqueue"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
+	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 )
 
 const healthCheckTimeout = time.Second
@@ -97,10 +97,16 @@ func (fr *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) (controller.Con
 		WithEventFilter(buildPredicates()).
 		Owns(&appsv1.Deployment{}).
 		Owns(&corev1.Service{}).
+		Named("function").
 		WithOptions(controller.Options{
-			RateLimiter: workqueue.NewTypedItemExponentialFailureRateLimiter[reconcile.Request](
-				5*time.Millisecond,
-				1000*time.Second,
+			RateLimiter: workqueue.NewTypedMaxOfRateLimiter[reconcile.Request](
+				workqueue.NewTypedItemExponentialFailureRateLimiter[reconcile.Request](
+					1*time.Second,
+					1000*time.Second,
+				),
+				&workqueue.TypedBucketRateLimiter[reconcile.Request]{
+					Limiter: rate.NewLimiter(rate.Limit(10), 100),
+				},
 			),
 		}).
 		Build(fr)
