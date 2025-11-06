@@ -72,7 +72,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 			serverlessv1alpha2.ConditionReasonDeploymentWaiting,
 			fmt.Sprintf("Deployment %s is not ready yet", deploymentName))
 
-		return requeueAfter(defaultRequeueTime)
+		return requeue()
 	}
 
 	// deployment failed
