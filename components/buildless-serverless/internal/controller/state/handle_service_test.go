@@ -2,6 +2,9 @@ package state
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/resources"
@@ -17,8 +20,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 	"sigs.k8s.io/controller-runtime/pkg/client/interceptor"
-	"testing"
-	"time"
 )
 
 func Test_sFnHandleService(t *testing.T) {
@@ -61,7 +62,7 @@ func Test_sFnHandleService(t *testing.T) {
 		require.Nil(t, err)
 		// we expect stop and requeue
 		require.NotNil(t, result)
-		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
+		require.Equal(t, ctrl.Result{Requeue: true}, *result)
 		// no next state (we will stop)
 		require.Nil(t, next)
 		// service has not been updated

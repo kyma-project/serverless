@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"testing"
-	"time"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
@@ -68,7 +67,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		require.Nil(t, err)
 		// we expect stop and requeue
 		require.NotNil(t, result)
-		require.Equal(t, ctrl.Result{RequeueAfter: time.Minute}, *result)
+		require.Equal(t, ctrl.Result{Requeue: true}, *result)
 		// no next state (we will stop)
 		require.Nil(t, next)
 		// deployment has not been updated

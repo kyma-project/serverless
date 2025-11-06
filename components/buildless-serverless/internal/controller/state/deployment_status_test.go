@@ -171,7 +171,7 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 		require.Nil(t, err)
 		// we expect stop and requeue
 		require.NotNil(t, result)
-		require.Equal(t, ctrl.Result{RequeueAfter: defaultRequeueTime}, *result)
+		require.Equal(t, ctrl.Result{Requeue: true}, *result)
 		// no next state (we will stop)
 		require.Nil(t, next)
 		// function has proper condition
