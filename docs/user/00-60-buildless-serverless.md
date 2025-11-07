@@ -28,3 +28,5 @@ With the introduction of buildless mode, we significantly shortened the feedback
 - **Dependency resolution behavior**: Be aware that each replica of a Function may resolve and use a different version of a dependency if the version is not explicitly pinned.
 
 ## Disabling Buildless Mode
+
+To learn how to disable Serverless buildless mode, see [Configuring Serverless](00-20-configure-serverless.md#disabling-buildless-mode).
