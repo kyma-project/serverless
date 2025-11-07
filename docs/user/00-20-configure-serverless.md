@@ -123,15 +123,35 @@ by permitting essential traffic while maintaining a secure cluster environment.
 
 ### Disabling Buildless Mode
 
-> [!NOTE]
-> Buildless mode is enabled by default. To use the legacy image-building Serverless functionality, disable buildless mode through an annotation.
+Serverless buildless mode is enabled by default. To use the legacy image-building Serverless functionality, disable buildless mode through an annotation.
 
 > [!WARNING]  
 > The legacy image-building mode is deprecated and will be removed in a future version of Serverless. This functionality is scheduled for removal and will no longer be available in upcoming releases.
 
-You can disable buildless mode of Serverless to enable the legacy image build step for Functions.
+To disable Serverless buildless mode and enable the legacy image build step for Functions, follow these steps:
 
-   ```yaml
-    annotations:
-       serverless.kyma-project.io/buildless-mode: "disabled"
+<!-- tabs:start -->
+
+#### **Kyma Dashboard**
+
+1. Go to Kyma dashboard, and choose **Modify Modules**.
+
+2. in the **View** tab, choose `serverless`, and go **Edit**.
+
+3. In **Annotations**, delete the `serverless.kyma-project.io/buildless-mode` as the key, and `enabled` as the value. Save the changes.
+
+You have disabled Serverless buildless mode.
+
+#### **kubectl**
+
+1. Edit the Serverless CR:
+
+   ```bash
+   kubectl edit -n kyma-system serverlesses.operator.kyma-project.io default
    ```
+
+2. In the `metadata` section, change the value of the `serverless.kyma-project.io/buildless-mode` annotation to `disabled`, and save the changes.
+
+You have disabled Serverless buildless mode.
+
+<!-- tabs:end -->
