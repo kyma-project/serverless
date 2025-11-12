@@ -101,8 +101,8 @@ func (fr *FunctionReconciler) SetupWithManager(mgr ctrl.Manager) (controller.Con
 		WithOptions(controller.Options{
 			RateLimiter: workqueue.NewTypedMaxOfRateLimiter[reconcile.Request](
 				workqueue.NewTypedItemExponentialFailureRateLimiter[reconcile.Request](
-					500*time.Millisecond,
-					1000*time.Second,
+					250*time.Millisecond,
+					5*time.Minute,
 				),
 				&workqueue.TypedBucketRateLimiter[reconcile.Request]{
 					Limiter: rate.NewLimiter(rate.Limit(10), 100),
