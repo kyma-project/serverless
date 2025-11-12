@@ -3,7 +3,6 @@ package state
 import (
 	"context"
 	"fmt"
-	"time"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
@@ -16,20 +15,16 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
-const (
-	defaultRequeueTime = time.Second * 1
-)
-
 func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	m.State.Function.Status.ObservedGeneration = m.State.Function.GetGeneration()
 
 	clusterDeployments, err := getDeployments(ctx, m)
 	if err != nil {
-		return requeueAfterWithError(defaultRequeueTime, errors.Wrap(err, "while getting deployments"))
+		return stopWithError(errors.Wrap(err, "while getting deployments"))
 	}
 	// reconcile again if there are multiple or no deployments
 	if len(clusterDeployments.Items) != 1 {
-		return requeueAfterWithError(defaultRequeueTime, errors.New("multiple or no deployments found"))
+		return stopWithError(errors.New("multiple or no deployments found"))
 	}
 	deployment := clusterDeployments.Items[0]
 	deploymentName := deployment.GetName()
@@ -72,7 +67,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 			serverlessv1alpha2.ConditionReasonDeploymentWaiting,
 			fmt.Sprintf("Deployment %s is not ready yet", deploymentName))
 
-		return requeueAfter(defaultRequeueTime)
+		return requeue()
 	}
 
 	// deployment failed

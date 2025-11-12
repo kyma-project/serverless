@@ -171,7 +171,7 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 		require.Nil(t, err)
 		// we expect stop and requeue
 		require.NotNil(t, result)
-		require.Equal(t, ctrl.Result{RequeueAfter: defaultRequeueTime}, *result)
+		require.Equal(t, ctrl.Result{Requeue: true}, *result)
 		// no next state (we will stop)
 		require.Nil(t, next)
 		// function has proper condition
@@ -259,16 +259,13 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 			Scheme: scheme}
 
 		// Act
-		next, result, err := sFnDeploymentStatus(context.Background(), &m)
+		next, _, err := sFnDeploymentStatus(context.Background(), &m)
 
 		// Assert
 		// we expect error
 		require.NotNil(t, err)
 		require.EqualError(t, err, "multiple or no deployments found")
-		// we expect stop and requeue
-		require.NotNil(t, result)
-		require.Equal(t, ctrl.Result{RequeueAfter: defaultRequeueTime}, *result)
-		// no next state (we will stop)
+		// we expect stop and no next state
 		require.Nil(t, next)
 	})
 	t.Run("when many deployments exist should requeue", func(t *testing.T) {
@@ -312,16 +309,13 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 			Scheme: scheme}
 
 		// Act
-		next, result, err := sFnDeploymentStatus(context.Background(), &m)
+		next, _, err := sFnDeploymentStatus(context.Background(), &m)
 
 		// Assert
 		// we expect error
 		require.NotNil(t, err)
 		require.EqualError(t, err, "multiple or no deployments found")
-		// we expect stop and requeue
-		require.NotNil(t, result)
-		require.Equal(t, ctrl.Result{RequeueAfter: defaultRequeueTime}, *result)
-		// no next state (we will stop)
+		// we expect stop and no next state
 		require.Nil(t, next)
 	})
 }
