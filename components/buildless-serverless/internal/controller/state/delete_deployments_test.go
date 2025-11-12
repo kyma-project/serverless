@@ -2,6 +2,8 @@ package state
 
 import (
 	"context"
+	"testing"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
 	"github.com/stretchr/testify/require"
@@ -11,8 +13,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
-	"testing"
-	"time"
 )
 
 func Test_sFnDeleteDeployments(t *testing.T) {
@@ -66,7 +66,7 @@ func Test_sFnDeleteDeployments(t *testing.T) {
 		require.Nil(t, err)
 		// we expect stop and requeue
 		require.NotNil(t, result)
-		require.Equal(t, ctrl.Result{RequeueAfter: time.Second}, *result)
+		require.Equal(t, ctrl.Result{Requeue: true}, *result)
 		// no next state (we will stop)
 		require.Nil(t, next)
 		// function has proper condition

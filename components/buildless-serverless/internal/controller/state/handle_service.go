@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"fmt"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/resources"
@@ -12,7 +13,6 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-	"time"
 )
 
 func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
@@ -85,7 +85,7 @@ func createService(ctx context.Context, m *fsm.StateMachine, service *corev1.Ser
 		serverlessv1alpha2.ConditionReasonServiceCreated,
 		fmt.Sprintf("Service %s created", service.GetName()))
 
-	return &ctrl.Result{RequeueAfter: time.Minute}, nil
+	return &ctrl.Result{Requeue: true}, nil
 }
 
 func updateServiceIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterService *corev1.Service, builtService *corev1.Service) (requeueNeeded bool, err error) {
