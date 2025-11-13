@@ -301,7 +301,7 @@ type Function struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   FunctionSpec   `json:"spec,omitempty"`
+	Spec   FunctionSpec   `json:"spec"`
 	Status FunctionStatus `json:"status,omitempty"`
 }
 

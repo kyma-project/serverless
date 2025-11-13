@@ -626,6 +626,8 @@ spec:
                   and should be removed with v1alpha3 version.
                 type: string
             type: object
+        required:
+        - spec
         type: object
     served: true
     storage: true
