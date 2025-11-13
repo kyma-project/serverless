@@ -136,7 +136,7 @@ To disable Serverless buildless mode and enable the legacy image build step for 
 
 1. Go to Kyma dashboard, and choose **Modify Modules**.
 
-2. in the **View** tab, choose `serverless`, and go **Edit**.
+2. In the **View** tab, choose `serverless`, and switch to the **Edit** tab.
 
 3. In **Annotations**, delete the `serverless.kyma-project.io/buildless-mode` as the key, and `enabled` as the value. Save the changes.
 
