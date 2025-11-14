@@ -2,15 +2,15 @@
 
 This tutorial demonstrates how to connect two Functions asynchronously with [cloud events](https://github.com/cloudevents/spec). It is based on the [in-cluster Eventing example](https://github.com/kyma-project/serverless/tree/main/examples/incluster_eventing).
 
-The example provides a very simple scenario of asynchronous communication between two Functions. The first Function accepts the incoming traffic using HTTP, sanitizes the payload, and publishes the content as an in-cluster cloud event using [Kyma Eventing](https://kyma-project.io/docs/kyma/latest/01-overview/eventing/).
+The example provides a very simple scenario of asynchronous communication between two Functions. The first Function accepts the incoming traffic using HTTP, sanitizes the payload, and publishes the content as an in-cluster cloud event using the [Kyma Eventing module](https://kyma-project.io/external-content/eventing-manager/docs/user/README).
 The second Function is a message receiver. It subscribes to the given event type and stores the payload.
 
 This tutorial shows only one possible use case. There are many more use cases on how to orchestrate your application logic into specialized Functions and benefit from decoupled, re-usable components and event-driven architecture.
 
 ## Prerequisites
 
-- [Kyma CLI](https://github.com/kyma-project/cli)
-- [Nats, Eventing, Istio, and API-Gateway modules added](https://kyma-project.io/#/02-get-started/01-quick-install)
+- [Kyma CLI](https://kyma-project.io/external-content/cli/docs/user/README)
+- [Nats, Eventing, Istio, and API-Gateway modules added](https://kyma-project.io/02-get-started/01-quick-install)
 
 ## Steps
 
@@ -101,7 +101,7 @@ This tutorial shows only one possible use case. There are many more use cases on
    }
    ```
 
-   The `payload.sanitised` is a sample event type that the emitter Function uses when publishing events. You can choose a different one that better suits your use case. Keep in mind the constraints described on the [Event names](https://kyma-project.io/docs/kyma/latest/05-technical-reference/evnt-01-event-names/) page. The receiver subscribes to the event type to consume the events.
+   The `payload.sanitised` is a sample event type that the emitter Function uses when publishing events. You can choose a different one that better suits your use case. Keep in mind the constraints described on the [Event Naming and Cleanup](https://kyma-project.io/external-content/eventing-manager/docs/user/evnt-event-names) page. The receiver subscribes to the event type to consume the events.
 
    The `event` object provides a convenient API for emitting events. To learn more, read [Function's specification](../technical-reference/07-70-function-specification.md#event-object-sdk).
 

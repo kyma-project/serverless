@@ -6,7 +6,7 @@ Serverless also allows you to store the Function's code and dependencies as sour
 To learn more about Function's signature, `event` and `context` objects, and custom HTTP responses the Function returns, read [Function’s specification](../technical-reference/07-70-function-specification.md).
 
 > [!NOTE]
-> Read about [Istio sidecars in Kyma and why you want them](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-03-istio-sidecars-in-kyma/). Then, check how to [enable automatic Istio sidecar proxy injection](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/smsh-01-istio-enable-sidecar-injection/). For more details, see [Default Istio setup in Kyma](https://kyma-project.io/docs/kyma/latest/01-overview/service-mesh/smsh-02-default-istio-setup-in-kyma/).
+> Read about [Istio sidecars in Kyma and why you want them](https://kyma-project.io/external-content/istio/docs/user/00-00-istio-sidecar-proxies). Then, check how to [enable automatic Istio sidecar proxy injection](https://kyma-project.io/external-content/istio/docs/user/tutorials/01-40-enable-sidecar-injection). For more details, see [Default Istio setup in Kyma](https://kyma-project.io/external-content/istio/docs/user/00-15-overview-istio-setup).
 
 ## Prerequisites
 

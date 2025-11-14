@@ -8,7 +8,7 @@ Keep in mind that the Serverless Functions implement the [scale subresource](htt
 
 Before you start, make sure you have these tools installed:
 
-- [Keda module added](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/08-install-uninstall-upgrade-kyma-module/)
+- [Keda module added](https://kyma-project.io/02-get-started/01-quick-install)
 
 ## Steps
 

@@ -1,16 +1,17 @@
 # Serverless
 
 ## Status
+
 ![GitHub tag checks state](https://img.shields.io/github/checks-status/kyma-project/serverless/main?label=serverless-operator&link=https%3A%2F%2Fgithub.com%2Fkyma-project%2Fserverless%2Fcommits%2Fmain)
 <!-- markdown-link-check-disable-next-line -->
 [![REUSE status](https://api.reuse.software/badge/github.com/kyma-project/serverless)](https://api.reuse.software/info/github.com/kyma-project/serverless)
 
-
 ## Overview
 
-Serverless Operator allows deploying the [Serverless](https://kyma-project.io/docs/kyma/latest/01-overview/serverless/) component in the Kyma cluster in compatibility with [Lifecycle Manager](https://github.com/kyma-project/lifecycle-manager).
+Serverless Operator allows deploying the [Serverless](/docs/user/README.md) component in the Kyma cluster in compatibility with [Lifecycle Manager](https://github.com/kyma-project/lifecycle-manager).
 
 ### Architecture Diagram
+
 ![Architecture](./architecture.svg)
 
 ## Install
