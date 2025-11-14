@@ -1,6 +1,6 @@
 # Expose a Function Using the APIRule Custom Resource
 
-This tutorial shows how you can expose your Function to access it outside the cluster, through an HTTP proxy. To expose it, use an [APIRule custom resource (CR)](https://kyma-project.io/docs/kyma/latest/05-technical-reference/00-custom-resources/apix-01-apirule/). Function Controller reacts to an instance of the APIRule CR and, based on its details, it creates an Istio VirtualService and Oathkeeper Access Rules that specify your permissions for the exposed Function.
+This tutorial shows how you can expose your Function to access it outside the cluster, through an HTTP proxy. To expose it, use an [APIRule custom resource (CR)](https://kyma-project.io/external-content/api-gateway/docs/user/custom-resources/apirule/README). Function Controller reacts to an instance of the APIRule CR and, based on its details, it creates an Istio VirtualService and Oathkeeper Access Rules that specify your permissions for the exposed Function.
 
 When you complete this tutorial, you get a Function that:
 
@@ -41,8 +41,9 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
     - **Host** to determine the host on which you want to expose your Function.
 
 4. Edit the **Rules** section.
-  - Select the methods `GET`, `POST`, `PUT`, and `DELETE`. 
-  - Use the `No Auth` access strategy.
+
+   - Select the methods `GET`, `POST`, `PUT`, and `DELETE`. 
+   - Use the `No Auth` access strategy.
 
 5. Select **Create** to confirm your changes.
 

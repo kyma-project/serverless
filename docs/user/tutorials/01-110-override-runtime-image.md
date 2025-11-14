@@ -6,7 +6,7 @@ This tutorial shows how to build a custom runtime image and override the Functio
 
 Before you start, make sure you have these tools installed:
 
-- [Serverless module installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/08-install-uninstall-upgrade-kyma-module/) in a cluster
+- [Serverless module installed](https://kyma-project.io/02-get-started/01-quick-install) in a cluster
 
 ## Steps
 

@@ -9,7 +9,7 @@ Additionally, you can extend the default trace context and create your own custo
 
 Before you start, make sure you have these tools installed:
 
-- [Telemetry component installed](https://kyma-project.io/docs/kyma/latest/04-operation-guides/operations/02-install-kyma/#install-specific-components)
+- [Telemetry module installed](https://kyma-project.io/02-get-started/01-quick-install)
 - [Trace pipeline configured](https://github.com/kyma-project/telemetry-manager/blob/main/docs/user/03-traces.md#setting-up-a-tracepipeline)
 
 ## Steps
