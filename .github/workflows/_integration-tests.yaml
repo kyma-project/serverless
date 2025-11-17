@@ -1,6 +1,17 @@
 name: integration tests
 
 on:
+  workflow_dispatch:
+    inputs:
+      image:
+        description: 'The image to test'
+        required: true
+        type: string
+      trigger_btp:
+        description: 'Trigger BTP integration test'
+        required: false
+        type: boolean
+        default: false
   workflow_call:
     inputs:
       image:
