@@ -1215,6 +1215,14 @@ func TestDeployment_envs(t *testing.T) {
 					Name:  "PYTHONUNBUFFERED",
 					Value: "TRUE",
 				},
+				{
+					Name:  "MOD_NAME",
+					Value: "handler",
+				},
+				{
+					Name:  "FUNC_HANDLER",
+					Value: "main",
+				},
 			},
 		},
 	}
