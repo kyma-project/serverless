@@ -6,7 +6,7 @@ Learn more about the Serverless module. Use it to run lightweight Functions in a
 
 The Kyma Serverless module is a "code-as-a-service" tool designed to accelerate the process of prototyping applications by removing the technical overhead necessary to obtain the first testable versions. It allows developers to focus on the coding and easily run it in the context of the SAP BTP without dealing with Kubernetes orchestration or containerization complexities. The fact that no Kubernetes knowledge is required to use it makes Serverless a useful tool for beginners who want to experiment with loosely coupled microservice architecture on Kubernetes or for business consultants who need to provide extension logic for an existing Kubernetes-based system with minimal overhead.
 
-With the Serverless module, you can build, run, and manage serverless applications in Kubernetes. These applications are called Functions, and they are based on the [Function custom resource (CR)](https://kyma-project.io/#/serverless-manager/user/resources/06-10-function-cr) objects. They contain simple code snippets that implement a specific business logic. For example, you can define that you want to use a Function as a proxy that saves all incoming event details to an external database.
+With the Serverless module, you can build, run, and manage serverless applications in Kubernetes. These applications are called Functions, and they are based on the [Function custom resource (CR)](https://kyma-project.io/external-content/serverless/docs/user/resources/06-10-function-cr) objects. They contain simple code snippets that implement a specific business logic. For example, you can define that you want to use a Function as a proxy that saves all incoming event details to an external database.
 
 A Function can be triggered by other workloads in the cluster (in-cluster events) or business events coming from external sources. You can subscribe to them using a [Subscription CR](https://kyma-project.io/#/eventing-manager/user/resources/subscription-cr). You can expose your Function to an external endpoint (HTTPS). With an [APIRule CR](https://kyma-project.io/#/api-gateway/user/custom-resources/apirule/04-10-apirule-custom-resource), you can define who can reach the endpoint and what operations they can perform on it.
 
@@ -36,8 +36,8 @@ When you add the Serverless module, Serverless Operator takes care of installati
 
 The API of the Serverless module is based on Kubernetes CustomResourceDefinitions (CRDs), which extend the Kubernetes API with custom additions. To inspect the specification of the Serverless module API, see:
 
-- [Function CRD](https://kyma-project.io/#/serverless-manager/user/resources/06-10-function-cr)
-- [Serverless CRD](https://kyma-project.io/#/serverless-manager/user/resources/06-20-serverless-cr)
+- [Function CRD](https://kyma-project.io/external-content/serverless/docs/user/resources/06-10-function-cr)
+- [Serverless CRD](https://kyma-project.io/external-content/serverless/docs/user/resources/06-20-serverless-cr)
 
 ## Security Considerations
 
