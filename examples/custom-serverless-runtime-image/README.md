@@ -27,4 +27,4 @@ This example shows how to create own custom runtime for a Serverless Function ba
    ```
 
 > [!NOTE]
-> You can use it to define your Functions in Kyma. To learn more, read [how to override runtime image](https://kyma-project.io/#/serverless-manager/user/resources/06-20-serverless-cr?id=custom-resource-parameters).
+> You can use it to define your Functions in Kyma. To learn more, read [how to override runtime image](https://kyma-project.io/external-content/serverless/docs/user/resources/06-20-serverless-cr.html#custom-resource-parameters).
