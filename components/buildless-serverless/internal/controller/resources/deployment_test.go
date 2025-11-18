@@ -193,9 +193,14 @@ func TestDeployment_construct(t *testing.T) {
 				"sh",
 				"-c",
 				`echo "${FUNC_HANDLER_SOURCE}" > handler.py;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
 cd ..;
-python server.py;`,
+if [ -f "./kubeless.py" ]; then
+  # old file location support
+  python kubeless.py;
+else
+  python server.py;
+fi`,
 			},
 			r.Spec.Template.Spec.Containers[0].Command)
 	})
@@ -1244,9 +1249,14 @@ func TestDeployment_runtimeCommand(t *testing.T) {
 				},
 			},
 			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
 cd ..;
-python server.py;`,
+if [ -f "./kubeless.py" ]; then
+  # old file location support
+  python kubeless.py;
+else
+  python server.py;
+fi`,
 		},
 		{
 			name: "build runtime command for inline python312 with dependencies",
@@ -1263,9 +1273,14 @@ python server.py;`,
 			},
 			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
 cd ..;
-python server.py;`,
+if [ -f "./kubeless.py" ]; then
+  # old file location support
+  python kubeless.py;
+else
+  python server.py;
+fi`,
 		},
 		{
 			name: "build runtime command for git python312",
@@ -1284,9 +1299,14 @@ python server.py;`,
 				},
 			},
 			want: `cp /git-repository/src/* .;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
 cd ..;
-python server.py;`,
+if [ -f "./kubeless.py" ]; then
+  # old file location support
+  python kubeless.py;
+else
+  python server.py;
+fi`,
 		},
 		{
 			name: "build runtime command for inline nodejs20 without dependencies",
