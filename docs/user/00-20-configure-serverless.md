@@ -90,7 +90,7 @@ You can configure the default runtime Pod preset to be used.
       defaultRuntimePodPreset: "M"
 ```
 
-For more information on presets, see [Available Presets](https://kyma-project.io/#/serverless-manager/user/technical-reference/07-80-available-presets).
+For more information on presets, see [Available Presets](https://kyma-project.io/external-content/serverless/docs/user/technical-reference/07-80-available-presets).
 
 ### Configuring the Log Level
 
