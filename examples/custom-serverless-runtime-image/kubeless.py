@@ -16,7 +16,7 @@ from tracing import set_req_context
 
 # The reason this file has an underscore prefix in its name is to avoid a
 # name collision with the user-defined module.
-module_name = os.getenv('MOD_NAME')
+module_name = os.getenv('MOD_NAME', default='handler')
 if module_name is None:
     print('MOD_NAME have to be provided', flush=True)
     exit(1)
@@ -29,12 +29,12 @@ function_location = os.getenv('FUNCTION_PATH', default='/kubeless')
 sys.path.append(function_location)
 
 mod = importlib.import_module(module_name)
-func_name = os.getenv('FUNC_HANDLER')
+func_name = os.getenv('FUNC_HANDLER', default='main')
 if func_name is None:
     print('FUNC_HANDLER have to be provided', flush=True)
     exit(3)
 
-func = getattr(mod, os.getenv('FUNC_HANDLER'))
+func = getattr(mod, func_name)
 
 func_port = os.getenv('FUNC_PORT', 8080)
 timeout = float(os.getenv('FUNC_TIMEOUT', 180))
