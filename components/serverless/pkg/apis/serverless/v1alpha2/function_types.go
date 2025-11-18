@@ -345,7 +345,7 @@ const (
 // Functions are executed only if they are triggered by an event or an API call.
 type Function struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata"`
 
 	Spec   FunctionSpec   `json:"spec"`
 	Status FunctionStatus `json:"status,omitempty"`
@@ -377,7 +377,7 @@ func (f *Function) EffectiveRuntime() string {
 // FunctionList contains a list of Function
 type FunctionList struct {
 	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
+	metav1.ListMeta `json:"metadata"`
 	Items           []Function `json:"items"`
 }
 
