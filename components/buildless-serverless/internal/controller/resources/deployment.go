@@ -601,6 +601,14 @@ func generalEnvs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []cor
 				Name:  "PYTHONUNBUFFERED",
 				Value: "TRUE",
 			},
+			{
+				Name:  "MOD_NAME",
+				Value: "handler",
+			},
+			{
+				Name:  "FUNC_HANDLER",
+				Value: "main",
+			},
 		}...)
 	}
 	envs = append(envs, spec.Env...) //TODO: this order is critical, should we provide option for users to override envs?
