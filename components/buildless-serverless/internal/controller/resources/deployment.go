@@ -549,7 +549,7 @@ func runtimeCommandInstall(f *serverlessv1alpha2.Function) string {
 	if f.HasNodejsRuntime() {
 		return `npm install --prefer-offline --no-audit --progress=false;`
 	} else if f.HasPythonRuntime() {
-		return `PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r /kubeless/requirements.txt;`
+		return `PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;`
 	}
 	return ""
 }
@@ -560,7 +560,12 @@ func runtimeCommandStart(f *serverlessv1alpha2.Function) string {
 npm start;`
 	} else if f.HasPythonRuntime() {
 		return `cd ..;
-python server.py;`
+if [ -f "./kubeless.py" ]; then
+  # old file location support
+  python kubeless.py;
+else
+  python server.py;
+fi`
 	}
 	return ""
 }
@@ -595,6 +600,14 @@ func generalEnvs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []cor
 			{
 				Name:  "PYTHONUNBUFFERED",
 				Value: "TRUE",
+			},
+			{
+				Name:  "MOD_NAME",
+				Value: "handler",
+			},
+			{
+				Name:  "FUNC_HANDLER",
+				Value: "main",
 			},
 		}...)
 	}
