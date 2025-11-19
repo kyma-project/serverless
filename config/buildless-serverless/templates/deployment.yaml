@@ -45,7 +45,7 @@ spec:
         - command:
             - /app/manager
           image: "{{ .Values.global.images.function_controller }}"
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: {{ .Values.containers.manager.metricsPort }}
               name: http-metrics

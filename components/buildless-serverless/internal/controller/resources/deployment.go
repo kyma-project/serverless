@@ -302,9 +302,10 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 
 	return []corev1.Container{
 		{
-			Name:       "init",
-			Image:      d.functionConfig.Images.RepoFetcher,
-			WorkingDir: workingSourcesDir(d.function),
+			Name:            "init",
+			Image:           d.functionConfig.Images.RepoFetcher,
+			ImagePullPolicy: corev1.PullAlways,
+			WorkingDir:      workingSourcesDir(d.function),
 			Command: []string{
 				"sh",
 				"-c",
