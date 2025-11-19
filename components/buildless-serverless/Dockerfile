@@ -26,7 +26,6 @@ RUN apk add --no-cache ca-certificates
 
 FROM scratch
 
-# ENV GODEBUG=fips140=on,tlsmlkem=0
 
 COPY ./components/runtimes /runtimes/
 COPY --from=builder /app /app
