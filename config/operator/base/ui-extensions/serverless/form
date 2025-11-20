@@ -1,20 +1,3 @@
-- path: spec.dockerRegistry.enableInternal
-  simple: true
-  name: Enable Internal Docker Registry
-- simple: true
-  widget: Alert
-  severity: warning
-  alert: '"alert.internalregistry"'
-  visibility: $root.spec.dockerRegistry.enableInternal = true
-- path: spec.dockerRegistry.secretName
-  visibility: $root.spec.dockerRegistry.enableInternal != true
-  simple: true
-  widget: Resource
-  name: External Docker Registry Configuration
-  resource:
-    kind: Secret
-    version: v1
-    scope: namespace
 - path: spec.tracing.endpoint
   name: OTLP Trace Endpoint
   simple: true
@@ -23,19 +6,6 @@
   name: Eventing Endpoint
   simple: true
   required: false
-- path: spec.functionBuildMaxSimultaneousJobs
-  name: Simultanous Builds Limit
-  simple: true
-  required: false
-- path: spec.defaultBuildJobPreset
-  name: Default Job Preset
-  simple: true
-  required: false
-  enum:
-   - fast
-   - normal
-   - slow
-   - local-dev
 - name: Default Function Preset
   path: spec.defaultRuntimePodPreset
   simple: true

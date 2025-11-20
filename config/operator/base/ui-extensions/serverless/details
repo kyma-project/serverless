@@ -10,23 +10,13 @@ status:
     - name: status.networkPoliciesEnabled
       source: status.networkPoliciesEnabled
 body:
-  - widget: Alert
-    severity: warning
-    source: '"alert.internalregistry"'
-    visibility: $root.spec.dockerRegistry.enableInternal = true
   - name: Configuration
     widget: Panel
     children:
-    - name: Docker Registry
-      source: status.dockerRegistry
     - name: Eventing Endpoint
       source: status.eventingEndpoint
     - name: OTLP Trace Endpoint
       source: status.tracingEndpoint
-    - name: Simultanous Builds Limit
-      source: status.functionBuildMaxSimultaneousJobs
-    - name: Default Job Preset
-      source: status.defaultBuildJobPreset
     - name: Default Function Preset
       source: status.defaultRuntimePodPreset
   - widget: EventList
