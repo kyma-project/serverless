@@ -34,7 +34,7 @@ subCommands:
       apiVersion: serverless.kyma-project.io/v1alpha2
       kind: Function
       metadata:
-        name: ${{.args.value}}
+        name: ${{ .args.value | ifNil "${{.args.value}}" "" }}
         namespace: ${{.flags.namespace.value}}
     outputParameters:
     - resourcePath: '.status.conditions[] | select(.type=="ConfigurationReady") | .status'
