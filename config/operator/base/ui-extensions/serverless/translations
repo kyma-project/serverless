@@ -1,5 +1,4 @@
 en:
-  alert.internalregistry: Internal Docker Registry is not a highly available registry and should be used for development purpose only
   status:
     logLevel: Log Level
     logFormat: Log Format

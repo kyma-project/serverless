@@ -14,170 +14,130 @@ metadata:
     app.kubernetes.io/part-of: serverless
 data:
   details: |-
+    status:
+      body:
+        - name: Condition details
+          widget: ConditionList
+          source: status.conditions
+        - name: Replicas
+          widget: Badge
+          source: status.replicas
+          highlights:
+            # informative: "status.replicas"
+            # warning: "status.replicas != spec.replicas"
+            positive: "$count($filter($replicas().items, function($r){$r.status.phase = 'Running'})) = spec.replicas"
+        - name: Runtime Profile
+          source: status.functionResourceProfile
     header:
-      - name: Replicas
-        widget: Badge
-        source: "$string($count($filter($replicas().items, function($r){
-        $r.status.phase = 'Running'}))) & '/' & $string($count($replicas().items))"
-        highlights:
-          critical: "$count($replicas().items) != $count($filter($replicas().items, function($r){
-        $r.status.phase = 'Running'}))"
-          warning: "$count($replicas().items) = 0 and $count($filter($replicas().items, function($r){
-        $r.status.phase = 'Running'}) = 0)" # this condition needs to be above 'positive'
-          positive: "$count($replicas().items) = $count($filter($replicas().items, function($r){
-        $r.status.phase = 'Running'}))"
-      - name: header.status
-        widget: Badge
-        highlights:
-          positive:
-            - RUNNING
-          informative:
-            - INITIALIZING
-            - DEPLOYING
-          warning:
-            - PENDING
-            - WARNING
-          critical:
-            - FAILED
-            - ERROR
-        source: >-
-          ($.status = undefined or $.status.conditions = undefined or
-          $count($.status.conditions) = 0) ? 'INITIALIZING' :
-          $count($filter($.status.conditions, function($v) { $v.status = 'False' }))
-          != 0 ? $count($filter($.status.conditions, function($v) { $v.type =
-          'Running' and $v.status = 'True' })) != 0 ? 'WARNING' : 'FAILED' :
-          $count($filter($.status.conditions, function($v) { $v.type =
-          'ConfigurationReady' and $v.status = 'True' })) != 0 ?
-          $count($filter($.status.conditions,
-          function($v) { $v.type = 'Running' and $v.status = 'True' })) != 0 ?
-          'RUNNING' : $count($filter($.status.conditions, function($v) { $v.type =
-          'Running' and $v.status = 'Unknown' and $v.reason =
-          'MinReplicasNotAvailable' })) != 0 ? 'PENDING' : 'DEPLOYING' : 'INITIALIZING' 
-        description: >-
-          ($.status = undefined or $.status.conditions = undefined or
-          $count($.status.conditions) = 0) ? null :
-          $count($filter($.status.conditions, function($v) { $v.status = 'False' }))
-          != 0 ? $count($filter($.status.conditions, function($v) { $v.type =
-          'Running' and $v.status = 'True' })) != 0 ? 'New revision error: ' &
-          $filter($.status.conditions, function($v) { $v.status = 'False'
-          })[0].message : 'Error: ' & $filter($.status.conditions, function($v) {
-          $v.status = 'False' })[0].message : null 
       - name: header.sourceType
         source: 'spec.source.gitRepository ? "Git Repository" : "Inline Editor"'
       - name: header.runtime
         source: >-
           spec.runtime = 'python312' ? 'Python 3.12' :  (spec.runtime = 'nodejs22' ? 'Node.js 22' : (spec.runtime = 'nodejs20' ? 'Node.js 20' : spec.runtime))
     body:
-      - widget: Tabs
+      - source: spec.source.inline.source
+        widget: CodeViewer
+        name: code.source
+        language: '$contains($root.spec.runtime, "python") ? "python": "javascript"'
+        visibility: $exists($value)
+      - source: spec.source.inline.dependencies
+        widget: CodeViewer
+        name: code.dependencies
+        language: '"json"'
+        visibility: $exists($value)
+      - source: spec.source.gitRepository
+        widget: Panel
+        name: code.gitRepositoryConfig
+        visibility: $exists($value)
         children:
-          - name: tabs.code
+          - name: code.gitRepository.url
+            source: url
+          - name: code.gitRepository.reference
+            source: reference
+          - name: code.gitRepository.baseDir
+            source: baseDir
+          - name: code.gitRepository.auth
+            visibility: $exists($value)
+            widget: Panel
+            source: auth
             children:
-              - source: spec.source.inline.source
-                widget: CodeViewer
-                name: code.source
-                language: '$contains($root.spec.runtime, "python") ? "python": "javascript"'
-                visibility: $exists($value)
-              - source: spec.source.inline.dependencies
-                widget: CodeViewer
-                name: code.dependencies
-                language: '"json"'
-                visibility: $exists($value)
-              - source: spec.source.gitRepository
-                widget: Panel
-                name: code.gitRepositoryConfig
-                visibility: $exists($value)
-                children:
-                  - name: code.gitRepository.url
-                    source: url
-                  - name: code.gitRepository.reference
-                    source: reference
-                  - name: code.gitRepository.baseDir
-                    source: baseDir
-                  - name: code.gitRepository.auth
-                    visibility: $exists($value)
-                    widget: Panel
-                    source: auth
-                    children:
-                      - name: code.gitRepository.auth.secretName
-                        widget: ResourceLink
-                        source: secretName 
-                        resource:
-                          kind: "'Secret'"
-                          name: secretName
-                          namespace: $root.metadata.namespace
-                      - name: code.gitRepository.auth.type
-                        source: type
-              - source: spec.env
-                widget: Table
-                name: code.env
-                children:
-                  - source: $item.name
-                    name: code.env.name
-                  - source: $item.value
-                    name: code.env.value
-                  - name: code.env.valueFrom
-                    widget: ResourceLink
-                    source: >-
-                      $exists($item.valueFrom.configMapKeyRef)?
-                      $item.valueFrom.configMapKeyRef.name :
-                      $item.valueFrom.secretKeyRef.name
-                    resource:
-                      name: >-
-                        $exists($item.valueFrom.configMapKeyRef) ?
-                        $item.valueFrom.configMapKeyRef.name :
-                        $item.valueFrom.secretKeyRef.name
-                      namespace: $root.metadata.namespace
-                      kind: >-
-                        $exists($item.valueFrom.configMapKeyRef) ? 'ConfigMap' :
-                        'Secret'
-                  - name: code.env.source
-                    widget: Badge
-                    source: >-
-                      $exists($item.value) ? 'CUSTOM' :
-                      $exists($item.valueFrom.configMapKeyRef) ? 'CONFIG MAP' : 'SECRET'
-                  - name: code.env.key
-                    source: >-
-                      $exists($item.valueFrom.configMapKeyRef) ?
-                      $item.valueFrom.configMapKeyRef.key :
-                      $exists($item.valueFrom.secretKeyRef) ?
-                      $item.valueFrom.secretKeyRef.key : 'N/A'
-              - widget: ResourceList
-                source: $replicas()
-                name: code.replicas
-                disableCreate: true
-              - widget: EventList
-                filter: $matchEvents($item, $root.kind, $root.metadata.name)
-                name: events
-                defaultType: information
-                hideInvolvedObjects: true
-          - name: tabs.configuration
+              - name: code.gitRepository.auth.secretName
+                widget: ResourceLink
+                source: secretName 
+                resource:
+                  kind: "'Secret'"
+                  name: secretName
+                  namespace: $root.metadata.namespace
+              - name: code.gitRepository.auth.type
+                source: type
+      - source: spec.env
+        widget: Table
+        name: code.env
+        children:
+          - source: $item.name
+            name: code.env.name
+          - source: $item.value
+            name: code.env.value
+          - name: code.env.valueFrom
+            widget: ResourceLink
+            source: >-
+              $exists($item.valueFrom.configMapKeyRef)?
+              $item.valueFrom.configMapKeyRef.name :
+              $item.valueFrom.secretKeyRef.name
+            resource:
+              name: >-
+                $exists($item.valueFrom.configMapKeyRef) ?
+                $item.valueFrom.configMapKeyRef.name :
+                $item.valueFrom.secretKeyRef.name
+              namespace: $root.metadata.namespace
+              kind: >-
+                $exists($item.valueFrom.configMapKeyRef) ? 'ConfigMap' :
+                'Secret'
+          - name: code.env.source
+            widget: Badge
+            source: >-
+              $exists($item.value) ? 'CUSTOM' :
+              $exists($item.valueFrom.configMapKeyRef) ? 'CONFIG MAP' : 'SECRET'
+          - name: code.env.key
+            source: >-
+              $exists($item.valueFrom.configMapKeyRef) ?
+              $item.valueFrom.configMapKeyRef.key :
+              $exists($item.valueFrom.secretKeyRef) ?
+              $item.valueFrom.secretKeyRef.key : 'N/A'
+      - widget: ResourceList
+        source: $replicas()
+        name: code.replicas
+        disableCreate: true
+      - widget: EventList
+        filter: $matchEvents($item, $root.kind, $root.metadata.name)
+        name: events
+        defaultType: information
+        hideInvolvedObjects: true
+      - widget: ResourceList
+        source: $apiRules()
+        name: configuration.apiRules
+        disableCreate: true
+      - widget: ResourceList
+        source: $subscriptions()
+        name: configuration.subscriptions
+        disableCreate: true
+      - widget: Columns
+        inline: false
+        children:
+          - name: resources.runtimeProfile
+            widget: Panel
+            visibility: $exists(spec.resourceConfiguration.function.resources)
             children:
-              - widget: ResourceList
-                source: $apiRules()
-                name: configuration.apiRules
-                disableCreate: true
-              - widget: ResourceList
-                source: $subscriptions()
-                name: configuration.subscriptions
-                disableCreate: true
-          - name: tabs.resources
-            children:
-              - widget: Columns
-                inline: false
-                children:
-                  - name: resources.runtimeProfile
-                    widget: Panel
-                    children:
-                      - name: resources.requests.memory
-                        source: >-
-                          spec.resourceConfiguration.function.resources.requests.memory
-                      - name: resources.requests.cpu
-                        source: spec.resourceConfiguration.function.resources.requests.cpu
-                      - name: resources.limits.memory
-                        source: >-
-                          spec.resourceConfiguration.function.resources.limits.memory
-                      - name: resources.limits.cpu
-                        source: spec.resourceConfiguration.function.resources.limits.cpu
+              - name: resources.requests.memory
+                source: >-
+                  spec.resourceConfiguration.function.resources.requests.memory
+              - name: resources.requests.cpu
+                source: spec.resourceConfiguration.function.resources.requests.cpu
+              - name: resources.limits.memory
+                source: >-
+                  spec.resourceConfiguration.function.resources.limits.memory
+              - name: resources.limits.cpu
+                source: spec.resourceConfiguration.function.resources.limits.cpu
   form: |-
     - var: sourceType
       widget: Text
@@ -195,8 +155,8 @@ data:
       enum: [JavaScript, Python]
       trigger: [language]
       dynamicValue: |
-        spec.runtime in ['nodejs20', 'nodejs22'] ? 'JavaScript' :
-        spec.runtime in ['python312'] ? 'Python' :
+        $contains(spec.runtime, 'nodejs') ? 'JavaScript' :
+        $contains(spec.runtime, 'python') ? 'Python' :
         ''
     - simple: true
       path: spec.runtime
@@ -485,7 +445,7 @@ data:
     apiRules:
       resource:
         kind: APIRule
-        version: v1beta1
+        version: v2
         group: gateway.kyma-project.io
       filter: $contains($item.spec.service.name, $root.metadata.name)
     subscriptions:
