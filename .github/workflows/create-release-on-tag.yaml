@@ -57,7 +57,7 @@ jobs:
     with:
       image: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.ref_name }}
       trigger_btp: true 
-      
+ 
   publish-release:
     name: Publish release
     needs: [integrations, create-draft]
