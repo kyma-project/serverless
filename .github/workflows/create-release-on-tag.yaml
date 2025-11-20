@@ -56,7 +56,7 @@ jobs:
     uses: ./.github/workflows/_integration-tests.yaml
     with:
       image: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.ref_name }}
-      trigger_btp: false # TODO Bring back once https://jira.tools.sap/browse/NGPBUG-466434 is fixed
+      trigger_btp: true 
 
   publish-release:
     name: Publish release
