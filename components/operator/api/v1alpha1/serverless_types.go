@@ -160,9 +160,9 @@ type ServerlessStatus struct {
 // Serverless is the Schema for the serverlesses API
 type Serverless struct {
 	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata"`
 
-	Spec   ServerlessSpec   `json:"spec,omitempty"`
+	Spec   ServerlessSpec   `json:"spec"`
 	Status ServerlessStatus `json:"status,omitempty"`
 }
 
@@ -208,7 +208,7 @@ func (s *Serverless) IsServedEmpty() bool {
 // ServerlessList contains a list of Serverless
 type ServerlessList struct {
 	metav1.TypeMeta `json:",inline"`
-	metav1.ListMeta `json:"metadata,omitempty"`
+	metav1.ListMeta `json:"metadata"`
 	Items           []Serverless `json:"items"`
 }
 
