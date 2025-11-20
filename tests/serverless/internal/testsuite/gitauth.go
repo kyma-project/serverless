@@ -60,8 +60,10 @@ type GithubRepo struct {
 type AzureRepo struct {
 	Reference string `envconfig:"default=main"`
 	URL       string `envconfig:"default=https://kyma-wookiee@dev.azure.com/kyma-wookiee/kyma-function/_git/kyma-function"`
+	SSHURL    string `envconfig:"default=git@ssh.dev.azure.com:v3/kyma-wookiee/kyma-function/kyma-function"`
 	BaseDir   string `envconfig:"default=/code"`
 	BasicAuth
+	SSHAuth
 }
 
 func GitAuthTestSteps(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
@@ -86,9 +88,16 @@ func GitAuthTestSteps(restConfig *rest.Config, cfg internal.Config, logf *logrus
 		DataKey:            internal.TestDataKey,
 	}
 
-	azureTC := getAzureDevopsTestcase(testCfg)
-	azureSecret := secret.NewSecret(azureTC.auth.SecretName, genericContainer)
-	azureFn := function.NewFunction(azureTC.name, genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer)
+	azureBasicTC := getAzureDevopsBasicTestcase(testCfg)
+	azureBasicSecret := secret.NewSecret(azureBasicTC.auth.SecretName, genericContainer)
+	azureBasicFn := function.NewFunction(azureBasicTC.name, genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer)
+
+	azureSshTC, err := getAzureDevopsSshTestcase(testCfg)
+	if err != nil {
+		return nil, errors.Wrapf(err, "while setting azure ssh testcase")
+	}
+	azureSshSecret := secret.NewSecret(azureSshTC.auth.SecretName, genericContainer)
+	azureSshFn := function.NewFunction(azureSshTC.name, genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer)
 
 	githubTC, err := getGithubTestcase(testCfg)
 	if err != nil {
@@ -100,10 +109,14 @@ func GitAuthTestSteps(restConfig *rest.Config, cfg internal.Config, logf *logrus
 	return executor.NewSerialTestRunner(logf, "Test Git function authentication",
 		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
 		executor.NewParallelRunner(logf, "Providers tests",
-			executor.NewSerialTestRunner(genericContainer.Log, fmt.Sprintf("%s Function auth test", azureTC.provider),
-				secret.CreateSecret(genericContainer.Log, azureSecret, "Create Azure Auth Secret", azureTC.secretData),
-				createAzureFunctionStep(genericContainer.Log, azureFn, azureTC),
-				assertion.NewHTTPCheck(genericContainer.Log, "Git Function simple check through gateway", azureFn.FunctionURL, poll, azureTC.expectedResponse)),
+			executor.NewSerialTestRunner(genericContainer.Log, fmt.Sprintf("%s Function Azure basic auth test", azureBasicTC.provider),
+				secret.CreateSecret(genericContainer.Log, azureBasicSecret, "Create Azure Basic Auth Secret", azureBasicTC.secretData),
+				createAzureFunctionStep(genericContainer.Log, azureBasicFn, azureBasicTC),
+				assertion.NewHTTPCheck(genericContainer.Log, "Git Function simple check through gateway", azureBasicFn.FunctionURL, poll, azureBasicTC.expectedResponse)),
+			executor.NewSerialTestRunner(genericContainer.Log, fmt.Sprintf("%s Function Azure SSH auth test", azureSshTC.provider),
+				secret.CreateSecret(genericContainer.Log, azureSshSecret, "Create Azure Basic Auth Secret", azureSshTC.secretData),
+				createAzureFunctionStep(genericContainer.Log, azureSshFn, azureSshTC),
+				assertion.NewHTTPCheck(genericContainer.Log, "Git Function simple check through gateway", azureSshFn.FunctionURL, poll, azureSshTC.expectedResponse)),
 			executor.NewSerialTestRunner(genericContainer.Log, fmt.Sprintf("%s Function auth test", githubTC.provider),
 				secret.CreateSecret(genericContainer.Log, githubSecret, "Create Github Auth Secret", githubTC.secretData),
 				createGithubFunctionStep(genericContainer.Log, githubFn, githubTC),
@@ -143,7 +156,7 @@ func createSSHAuthSecretData(auth SSHAuth) (map[string]string, error) {
 	return map[string]string{"key": string(decoded)}, err
 }
 
-func getAzureDevopsTestcase(cfg *config) testRepo {
+func getAzureDevopsBasicTestcase(cfg *config) testRepo {
 	return testRepo{name: "azure-devops-func",
 		provider:         "AzureDevOps",
 		url:              cfg.Azure.URL,
@@ -156,6 +169,25 @@ func getAzureDevopsTestcase(cfg *config) testRepo {
 			SecretName: "azure-devops-auth-secret",
 		},
 		secretData: createBasicAuthSecretData(cfg.Azure.BasicAuth)}
+}
+
+func getAzureDevopsSshTestcase(cfg *config) (testRepo, error) {
+	secretData, err := createSSHAuthSecretData(cfg.Azure.SSHAuth)
+	if err != nil {
+		return testRepo{}, errors.Wrapf(err, "while decoding ssh key")
+	}
+	return testRepo{name: "azure-devops-ssh-func",
+		provider:         "AzureDevOps",
+		url:              cfg.Azure.SSHURL,
+		baseDir:          cfg.Azure.BaseDir,
+		reference:        cfg.Azure.Reference,
+		expectedResponse: "Hello azure",
+		runtime:          serverlessv1alpha2.NodeJs22,
+		auth: &serverlessv1alpha2.RepositoryAuth{
+			Type:       serverlessv1alpha2.RepositoryAuthSSHKey,
+			SecretName: "azure-devops-ssh-secret",
+		},
+		secretData: secretData}, nil
 }
 
 func getGithubTestcase(cfg *config) (testRepo, error) {
