@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/fips140"
 	"fmt"
 	"log"
 	"os"
@@ -34,10 +33,6 @@ type initConfig struct {
 
 func main() {
 	log.Println("Start repo fetcher...")
-
-	if !isFIPS140Only() {
-		log.Panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
-	}
 
 	cfg := initConfig{}
 	if err := envconfig.InitWithPrefix(&cfg, envPrefix); err != nil {
@@ -127,8 +122,4 @@ func basicAuth(username, password string) (transport.AuthMethod, error) {
 		Username: username,
 		Password: password,
 	}, nil
-}
-
-func isFIPS140Only() bool {
-	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=on,tlsmlkem=0"
 }
