@@ -7,8 +7,10 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/fields"
 	apilabels "k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -131,6 +133,12 @@ func DeleteOrphanedResources(ctx context.Context, m manager.Manager) error {
 		}
 	}
 
+	// remove BuildReady condition from Function status
+	err = removeConditionFroStatus(ctx, m)
+	if err != nil {
+		collectedErrors = append(collectedErrors, fmt.Sprintf("failed to remove BuildReady condition from Function status: %s", err))
+	}
+
 	if len(collectedErrors) > 0 {
 		return fmt.Errorf("orphaned resources collectedErrors:\n- %s", strings.Join(collectedErrors, "\n- "))
 	}
@@ -179,6 +187,82 @@ func removeMatchingFinalizers(ctx context.Context, m client.Client, resource cli
 		if err := m.Update(ctx, resource); err != nil {
 			return fmt.Errorf("failed to remove finalizers from %s/%s: %s", resource.GetNamespace(), resource.GetName(), err)
 		}
+	}
+
+	return nil
+}
+
+func removeConditionFroStatus(ctx context.Context, m manager.Manager) error {
+	const (
+		labelKey                = "serverless.kyma-project.io/managed-by"
+		labelValue              = "function-controller"
+		buildReadyConditionType = "BuildReady"
+		functionGroup           = "serverless.kyma-project.io"
+		functionVersion         = "v1alpha2"
+		functionListKind        = "FunctionList"
+		statusConditionsPathKey = "conditions"
+	)
+
+	fnList := &unstructured.UnstructuredList{}
+	fnList.SetGroupVersionKind(schema.GroupVersionKind{
+		Group:   functionGroup,
+		Version: functionVersion,
+		Kind:    functionListKind,
+	})
+
+	if err := m.GetClient().List(ctx, fnList, &client.ListOptions{
+		LabelSelector: apilabels.SelectorFromSet(map[string]string{labelKey: labelValue}),
+	}); err != nil {
+		return fmt.Errorf("failed to list Functions: %w", err)
+	}
+
+	var collectedErrors []string
+
+	for i := range fnList.Items {
+		fn := &fnList.Items[i]
+
+		conditions, found, err := unstructured.NestedSlice(fn.Object, "status", statusConditionsPathKey)
+		if err != nil {
+			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to read status.conditions for %s/%s: %v", fn.GetNamespace(), fn.GetName(), err))
+			continue
+		}
+		if !found || len(conditions) == 0 {
+			continue
+		}
+
+		newConditions := make([]interface{}, 0, len(conditions))
+		removed := false
+		for _, c := range conditions {
+			cMap, ok := c.(map[string]interface{})
+			if !ok {
+				newConditions = append(newConditions, c)
+				continue
+			}
+			if t, ok := cMap["type"].(string); ok && t == buildReadyConditionType {
+				removed = true
+				continue
+			}
+			newConditions = append(newConditions, cMap)
+		}
+
+		if !removed {
+			continue
+		}
+
+		if err := unstructured.SetNestedSlice(fn.Object, newConditions, "status", statusConditionsPathKey); err != nil {
+			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to set updated conditions for %s/%s: %v", fn.GetNamespace(), fn.GetName(), err))
+			continue
+		}
+
+		if err := m.GetClient().Status().Update(ctx, fn); err != nil {
+			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to update Function status %s/%s: %v", fn.GetNamespace(), fn.GetName(), err))
+			continue
+		}
+		m.GetLogger().Info("removed BuildReady condition", "namespace", fn.GetNamespace(), "name", fn.GetName())
+	}
+
+	if len(collectedErrors) > 0 {
+		return fmt.Errorf("errors while removing BuildReady condition:\n- %s", strings.Join(collectedErrors, "\n- "))
 	}
 
 	return nil
