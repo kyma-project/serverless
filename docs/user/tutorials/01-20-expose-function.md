@@ -7,7 +7,7 @@ When you complete this tutorial, you get a Function that:
 - Uses the `noAuth` access strategy, allowing access on an unsecured endpoint.
 - Accepts the `GET`, `POST`, `PUT`, and `DELETE` methods.
 
-To learn more about securing your Function, see the tutorial [Expose and secure a workload with JWT](https://kyma-project.io/#/api-gateway/user/tutorials/01-50-expose-and-secure-a-workload/01-52-expose-and-secure-workload-jwt).
+To learn more about securing your Function, see the tutorial [Expose and secure a workload with JWT](https://kyma-project.io/external-content/api-gateway/docs/user/tutorials/01-40-expose-workload-jwt.html).
 
 Read also about [Function’s specification](../technical-reference/07-70-function-specification.md) if you are interested in its signature, `event` and `context` objects, and custom HTTP responses the Function returns.
 
