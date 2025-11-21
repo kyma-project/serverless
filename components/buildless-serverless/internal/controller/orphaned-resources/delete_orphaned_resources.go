@@ -199,6 +199,7 @@ func removeConditionFroStatus(ctx context.Context, m manager.Manager) error {
 		buildReadyConditionType = "BuildReady"
 		functionGroup           = "serverless.kyma-project.io"
 		functionVersion         = "v1alpha2"
+		functionKind            = "Function"
 		functionListKind        = "FunctionList"
 		statusConditionsPathKey = "conditions"
 	)
@@ -221,9 +222,16 @@ func removeConditionFroStatus(ctx context.Context, m manager.Manager) error {
 	for i := range fnList.Items {
 		fn := &fnList.Items[i]
 
+		// Ensure proper GVK for status subresource operations.
+		fn.SetGroupVersionKind(schema.GroupVersionKind{
+			Group:   functionGroup,
+			Version: functionVersion,
+			Kind:    functionKind,
+		})
+
 		conditions, found, err := unstructured.NestedSlice(fn.Object, "status", statusConditionsPathKey)
 		if err != nil {
-			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to read status.conditions for %s/%s: %v", fn.GetNamespace(), fn.GetName(), err))
+			collectedErrors = append(collectedErrors, fmt.Sprintf("read status.conditions %s/%s: %v", fn.GetNamespace(), fn.GetName(), err))
 			continue
 		}
 		if !found || len(conditions) == 0 {
@@ -250,14 +258,19 @@ func removeConditionFroStatus(ctx context.Context, m manager.Manager) error {
 		}
 
 		if err := unstructured.SetNestedSlice(fn.Object, newConditions, "status", statusConditionsPathKey); err != nil {
-			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to set updated conditions for %s/%s: %v", fn.GetNamespace(), fn.GetName(), err))
+			collectedErrors = append(collectedErrors, fmt.Sprintf("set new conditions %s/%s: %v", fn.GetNamespace(), fn.GetName(), err))
 			continue
 		}
 
-		if err := m.GetClient().Status().Update(ctx, fn); err != nil {
-			collectedErrors = append(collectedErrors, fmt.Sprintf("failed to update Function status %s/%s: %v", fn.GetNamespace(), fn.GetName(), err))
-			continue
+		original := fn.DeepCopy()
+		if err := m.GetClient().Status().Patch(ctx, fn, client.MergeFrom(original)); err != nil {
+			// Fallback to Update if Patch not supported.
+			if err2 := m.GetClient().Status().Update(ctx, fn); err2 != nil {
+				collectedErrors = append(collectedErrors, fmt.Sprintf("patch/update status %s/%s: %v / %v", fn.GetNamespace(), fn.GetName(), err, err2))
+				continue
+			}
 		}
+
 		m.GetLogger().Info("removed BuildReady condition", "namespace", fn.GetNamespace(), "name", fn.GetName())
 	}
 
