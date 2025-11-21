@@ -94,7 +94,7 @@ See the detailed descriptions of these fields:
 | **ce-specversion** | Version of the CloudEvent specification used for this event |
 | **ce-id** | Unique identifier of the event |
 | **ce-time** | Time at which the event was sent |
-| **data** | Either JSON or a string, depending on the request type. Read more about [Buffer](https://nodejs.org/api/buffer.html) in Node.js and [bytes literals](https://docs.python.org/3/reference/lexical_analysis.html#string-and-bytes-literals) in Python. |
+| **data** | Either JSON or a string, depending on the request type. Read more about [Buffer](https://nodejs.org/api/buffer.html) in Node.js and [bytes literals](https://docs.python.org/3/reference/lexical_analysis.html#string-and-bytes-literals) in Python. <!-- markdown-link-check-disable-line --> |
 | **tracer** | Fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) object that allows you to communicate with the user-defined trace backend service to share tracing data. For more information on how to use the tracer object see [Customize Function traces](../tutorials/01-100-customize-function-traces.md) |
 | **extensions** | JSON object that can contain event payload, a Function's incoming request, or an outgoing response |
 
