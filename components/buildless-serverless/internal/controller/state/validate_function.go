@@ -2,16 +2,20 @@ package state
 
 import (
 	"context"
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/validator"
 	"strings"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/validator"
+	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
 func sFnValidateFunction(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
+	//TODO: It is a temporary solution to delete obsolete condition. It should be removed after migration from old serverless
+	meta.RemoveStatusCondition(&m.State.Function.Status.Conditions, "BuildReady")
+
 	v := validator.New(&m.State.Function, m.FunctionConfig)
 	validationResults := v.Validate()
 	if len(validationResults) != 0 {
