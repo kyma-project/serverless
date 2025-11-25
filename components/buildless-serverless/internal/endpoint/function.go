@@ -2,10 +2,12 @@ package endpoint
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/endpoint/runtime"
 	"github.com/pkg/errors"
+	"k8s.io/apimachinery/pkg/util/validation"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -16,8 +18,8 @@ func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 
 	s.log.Infof("handling function request for function '%s/%s'", ns, name)
 
-	if ns == "" || name == "" {
-		s.writeErrorResponse(w, http.StatusBadRequest, errors.New("missing namespace or name"))
+	if err := validateFunctionParams(ns, name, appName); err != nil {
+		s.writeErrorResponse(w, http.StatusBadRequest, err)
 		return
 	}
 
@@ -41,6 +43,26 @@ func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.writeFilesListResponse(w, append(resourceFiles, runtimeFiles...), getOutputMessage())
+}
+
+func validateFunctionParams(ns string, name string, appName string) error {
+	if ns == "" || name == "" {
+		return errors.New("missing namespace or name")
+	}
+	for paramName, paramValue := range map[string]string{
+		"namespace":     ns,
+		"name":          name,
+		"targetAppName": appName,
+	} {
+		if paramValue == "" {
+			continue
+		}
+		if errs := validation.IsDNS1123Label(paramValue); len(errs) > 0 {
+			return errors.Wrapf(errors.New(strings.Join(errs, "; ")),
+				"invalid parameter %q", paramName)
+		}
+	}
+	return nil
 }
 
 func getOutputMessage() string {
