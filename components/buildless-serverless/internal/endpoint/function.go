@@ -1,7 +1,6 @@
 package endpoint
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -59,7 +58,8 @@ func validateFunctionParams(ns string, name string, appName string) error {
 			continue
 		}
 		if errs := validation.IsDNS1123Label(paramValue); len(errs) > 0 {
-			return errors.Wrapf(fmt.Errorf(strings.Join(errs, "; ")), "invalid parameter '%s'", paramName)
+			return errors.Wrapf(errors.New(strings.Join(errs, "; ")),
+				"invalid parameter %q", paramName)
 		}
 	}
 	return nil
