@@ -55,7 +55,7 @@ jobs:
         working-directory: module-manifests
         run: |
           git fetch upstream
-          git checkout -B "${MODULE_VERSION}" upstream/main
+          git checkout -B "serverless-${MODULE_VERSION}" upstream/main
 
           mkdir -p modules/serverless/${MODULE_VERSION}
           cp ../module-config.yaml modules/serverless/${MODULE_VERSION}/module-config.yaml
@@ -64,20 +64,20 @@ jobs:
           
           git add .
           git commit -m "promote serverless ${MODULE_VERSION}"
-          git push origin "${MODULE_VERSION}" -f
+          git push origin "serverless-${MODULE_VERSION}" -f
 
       - name: Create PullRequest to module-manifests
         working-directory: module-manifests
         run: |
           prs=$(gh pr list -R "https://${GH_TOOLS_REPO_URL}/kyma/module-manifests" -A "${BOT_USERNAME}" --state open --json headRefName)
 
-          if  echo $prs | jq -e ".[] | select(.headRefName==\"${MODULE_VERSION}\")"; then
+          if  echo $prs | jq -e ".[] | select(.headRefName==\"serverless-${MODULE_VERSION}\")"; then
               echo "opened PR already exists, no need to create new one, PR will be updated by push from previous step"
               exit 0
           fi
 
           gh pr create -B main --fill \
-            -H "${BOT_USERNAME}:${MODULE_VERSION}" \
+            -H "${BOT_USERNAME}:serverless-${MODULE_VERSION}" \
             -R "https://${GH_TOOLS_REPO_URL}/kyma/module-manifests/" \
             --title "Promote Serverless ${MODULE_VERSION}" \
-            --body "https://github.com/kyma-project/serverless/actions/${{github.run_id}}"
+            --body "Adding Serverless [${MODULE_VERSION}](https://github.com/kyma-project/serverless/releases/tag/${MODULE_VERSION})"
