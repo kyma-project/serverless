@@ -91,3 +91,4 @@ spec:
         runAsUser: 1000
       serviceAccountName: serverless-controller-manager
       terminationGracePeriodSeconds: 10
+      priorityClassName: serverless-priority
