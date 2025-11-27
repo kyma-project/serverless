@@ -23,22 +23,26 @@ runs:
         kubectl get serverless -A -oyaml || true
 
         echo "##########################################################"
-        echo "kubectl describe deploy -n kyma-system serverless-operator"
+        echo "Describe serverless operator deploy"
+        echo "kubectl describe deploy -A -l app.kubernetes.io/name=serverless-operator"
         echo "##########################################################"
-        kubectl describe deploy -n kyma-system serverless-operator || true
+        kubectl describe deploy -A -l app.kubernetes.io/name=serverless-operator || true
 
         echo "####################################################################"
-        echo "kubectl describe deploy -n kyma-system serverless-controller-manager"
+        echo "Describe serverless controller deploy"
+        echo "kubectl describe deploy -A -l app.kubernetes.io/name=serverless"
         echo "####################################################################"
-        kubectl describe deploy -n kyma-system serverless-controller-manager || true
+        kubectl describe deploy -A -l app.kubernetes.io/name=serverless || true
 
         echo "########################################################"
-        echo "kubectl logs -n kyma-system -l app=serverless --tail=-1"
+        echo "Serverless controller logs"
+        echo "kubectl logs -n kyma-system -l app.kubernetes.io/name=serverless --tail=-1"
         echo "########################################################"
-        kubectl logs -n kyma-system -l app=serverless --tail=-1 || true
+        kubectl logs -n kyma-system -l app.kubernetes.io/name=serverless --tail=-1 || true
 
         echo "########################################################################################################"
-        echo "kubectl logs -n kyma-system -l app.kubernetes.io/component=serverless-operator.kyma-project.io --tail=-1"
+        echo "Serverless operator logs"
+        echo "kubectl logs -n kyma-system -l app.kubernetes.io/name=serverless-operator --tail=-1"
         echo "########################################################################################################"
-        kubectl logs -n kyma-system -l app.kubernetes.io/component=serverless-operator.kyma-project.io --tail=-1 || true
+        kubectl logs -n kyma-system -l app.kubernetes.io/name=serverless-operator --tail=-1 || true
       shell: bash
