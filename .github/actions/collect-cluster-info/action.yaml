@@ -34,6 +34,18 @@ runs:
         echo "####################################################################"
         kubectl describe deploy -A -l app.kubernetes.io/name=serverless || true
 
+        echo "##########################################################"
+        echo "Get serverless operator pod"
+        echo "kubectl get pod -A -l app.kubernetes.io/name=serverless-operator -oyaml"
+        echo "##########################################################"
+        kubectl get pod -A -l app.kubernetes.io/name=serverless-operator -oyaml || true
+
+        echo "####################################################################"
+        echo "Get serverless controller pod"
+        echo "kubectl get pod -A -l app.kubernetes.io/name=serverless -oyaml"
+        echo "####################################################################"
+        kubectl get pod -A -l app.kubernetes.io/name=serverless -oyaml || true
+
         echo "########################################################"
         echo "Serverless controller logs"
         echo "kubectl logs -n kyma-system -l app.kubernetes.io/name=serverless --tail=-1"
