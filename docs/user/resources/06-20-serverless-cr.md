@@ -95,17 +95,18 @@ Processing of a Serverless CR can succeed, continue, or fail for one of these re
 
 ## Serverless CR Conditions
 
-This section describes the possible states of the Serverless CR. Three condition types, `Installed`, `Configured` and `Deleted`, are used.
+This section describes the possible states of the Serverless CR. Three condition types, `Installed`, `Configured`, `DeploymentFailure` and `Deleted`, are used.
 
-| No | CR State   | Condition type | Condition status | Condition reason      | Remark                                        |
-|----|------------|----------------|------------------|-----------------------|-----------------------------------------------|
-| 1  | Processing | Configured     | true             | Configured            | Serverless configuration verified             |
-| 2  | Processing | Configured     | unknown          | ConfigurationCheck    | Serverless configuration verification ongoing |
-| 3  | Error      | Configured     | false            | ConfigurationCheckErr | Serverless configuration verification error   |
-| 7  | Error      | Configured     | false            | ServerlessDuplicated  | Only one Serverless CR is allowed             |
-| 4  | Ready      | Installed      | true             | Installed             | Serverless workloads deployed                 |
-| 5  | Processing | Installed      | unknown          | Installation          | Deploying serverless workloads                |
-| 6  | Error      | Installed      | false            | InstallationErr       | Deployment error                              |
-| 8  | Deleting   | Deleted        | unknown          | Deletion              | Deletion in progress                          |
-| 9  | Deleting   | Deleted        | true             | Deleted               | Serverless module deleted                     |
-| 10 | Error      | Deleted        | false            | DeletionErr           | Deletion failed                               |
+| No | CR State   | Condition type    | Condition status | Condition reason         | Remark                                              |
+|----|------------|-------------------|------------------|--------------------------|-----------------------------------------------------|
+| 1  | Processing | Configured        | true             | Configured               | Serverless configuration verified                   |
+| 2  | Processing | Configured        | unknown          | ConfigurationCheck       | Serverless configuration verification ongoing       |
+| 3  | Error      | Configured        | false            | ConfigurationCheckErr    | Serverless configuration verification error         |
+| 4  | Error      | Configured        | false            | ServerlessDuplicated     | Only one Serverless CR is allowed                   |
+| 5  | Ready      | Installed         | true             | Installed                | Serverless workloads deployed                       |
+| 6  | Processing | Installed         | unknown          | Installation             | Deploying serverless workloads                      |
+| 7  | Error      | Installed         | false            | InstallationErr          | Serverless resources installation error             |
+| 8  | Error      | DeploymentFailure | true             | DeploymentReplicaFailure | Serverless manager has the ReplicaFailure condition |
+| 9  | Deleting   | Deleted           | unknown          | Deletion                 | Deletion in progress                                |
+| 10 | Deleting   | Deleted           | true             | Deleted                  | Serverless module deleted                           |
+| 11 | Error      | Deleted           | false            | DeletionErr              | Deletion failed                                     |
