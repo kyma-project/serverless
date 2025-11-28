@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
+	"github.com/kyma-project/serverless/components/operator/internal/chart"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	gomegatypes "github.com/onsi/gomega/types"
@@ -71,12 +72,20 @@ func (h *testHelper) updateDeploymentStatus(deploymentName string) {
 		WithTimeout(time.Second * 30).
 		Should(BeTrue())
 
-	deployment.Status.Conditions = append(deployment.Status.Conditions, appsv1.DeploymentCondition{
-		Type:    appsv1.DeploymentAvailable,
-		Status:  corev1.ConditionTrue,
-		Reason:  "test-reason",
-		Message: "test-message",
-	})
+	deployment.Status.Conditions = append(deployment.Status.Conditions, []appsv1.DeploymentCondition{
+		{
+			Type:    appsv1.DeploymentAvailable,
+			Status:  corev1.ConditionTrue,
+			Reason:  chart.MinimumReplicasAvailable,
+			Message: "test-message",
+		},
+		{
+			Type:    appsv1.DeploymentProgressing,
+			Status:  corev1.ConditionTrue,
+			Reason:  chart.NewRSAvailableReason,
+			Message: "test-message",
+		},
+	}...)
 	deployment.Status.Replicas = 1
 	Expect(k8sClient.Status().Update(h.ctx, &deployment)).To(Succeed())
 
