@@ -19,6 +19,14 @@ data:
         - name: Condition details
           widget: ConditionList
           source: status.conditions
+          highlights:
+          - type: DeploymentFailure
+            positive:
+              - 'False'
+            critical:
+              - 'True'
+            informative:
+              - unknown
         - name: Replicas
           widget: Badge
           source: status.replicas
