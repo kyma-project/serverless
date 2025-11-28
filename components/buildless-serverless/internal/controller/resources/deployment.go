@@ -371,9 +371,10 @@ func (d *Deployment) initContainerEnvs() []corev1.EnvVar {
 func (d *Deployment) initContainerCommand() string {
 	gitRepo := d.function.Spec.Source.GitRepository
 	var arr []string
+	arr = append(arr, "rm -rf /git-repository/*")
 	arr = append(arr, "/app/gitcloner")
 	arr = append(arr,
-		fmt.Sprintf("mkdir /git-repository/src;cp /git-repository/repo/%s/* /git-repository/src;",
+		fmt.Sprintf("mkdir /git-repository/src;cp -r /git-repository/repo/%s/* /git-repository/src;",
 			strings.Trim(gitRepo.BaseDir, "/ ")))
 	return strings.Join(arr, "\n")
 }
@@ -521,7 +522,7 @@ func runtimeCommandGitSources(f *serverlessv1alpha2.Function) string {
 	if f.HasNodejsRuntime() {
 		result = append(result, `echo "{}" > package.json;`)
 	}
-	result = append(result, `cp /git-repository/src/* .;`)
+	result = append(result, `cp -r /git-repository/src/* .;`)
 	return strings.Join(result, "\n")
 }
 
