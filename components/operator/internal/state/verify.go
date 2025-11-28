@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+	"errors"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless/components/operator/internal/chart"
@@ -31,13 +32,13 @@ func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (state
 
 	if !result.Ready {
 		// verification failed
-		s.setState(v1alpha1.StateWarning)
+		s.setState(v1alpha1.StateError)
 		s.instance.UpdateConditionTrue(
 			v1alpha1.ConditionTypeDeploymentFailure,
 			v1alpha1.ConditionReasonDeploymentReplicaFailure,
 			result.Reason,
 		)
-		return requeueAfter(requeueDuration)
+		return stopWithEventualError(errors.New(result.Reason))
 	}
 
 	// remove possible previous DeploymentFailure condition
