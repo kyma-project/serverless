@@ -7,6 +7,14 @@ status:
     - name: Condition details
       widget: ConditionList
       source: status.conditions
+      highlights:
+        - type: DeploymentFailure
+          positive:
+            - 'False'
+          critical:
+            - 'True'
+          informative:
+            - unknown
     - name: status.networkPoliciesEnabled
       source: status.networkPoliciesEnabled
 body:
