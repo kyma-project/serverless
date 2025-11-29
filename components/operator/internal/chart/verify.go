@@ -9,19 +9,32 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 )
 
-func Verify(config *Config) (bool, error) {
+const (
+	// VerificationCompleted indicates that the verification has been completed
+	VerificationCompleted = "OK"
+
+	// DeploymentVerificationProcessing indicates that the deployment is still being processed
+	DeploymentVerificationProcessing = "DeploymentProcessing"
+)
+
+type VerificationResult struct {
+	Ready  bool
+	Reason string
+}
+
+func Verify(config *Config) (*VerificationResult, error) {
 	spec, err := config.Cache.Get(config.Ctx, config.CacheKey)
 	if err != nil {
-		return false, fmt.Errorf("could not render manifest from chart: %s", err.Error())
+		return nil, fmt.Errorf("could not render manifest from chart: %s", err.Error())
 	}
 	// sometimes cache is not created yet
 	if len(spec.Manifest) == 0 {
-		return false, nil
+		return &VerificationResult{Ready: false}, nil
 	}
 
 	objs, err := parseManifest(spec.Manifest)
 	if err != nil {
-		return false, fmt.Errorf("could not parse chart manifest: %s", err.Error())
+		return nil, fmt.Errorf("could not parse chart manifest: %s", err.Error())
 	}
 
 	for i := range objs {
@@ -31,30 +44,39 @@ func Verify(config *Config) (bool, error) {
 			continue
 		}
 
-		ready, err := verifyDeployment(config, u)
+		reason, err := verifyDeployment(config, u)
 		if err != nil {
-			return false, fmt.Errorf("could not verify deployment %s/%s: %s", u.GetNamespace(), u.GetName(), err.Error())
+			return nil, fmt.Errorf("could not verify deployment %s/%s: %s", u.GetNamespace(), u.GetName(), err.Error())
 		}
 
-		if !ready {
-			return false, nil
+		if reason != VerificationCompleted {
+			return &VerificationResult{Ready: false, Reason: reason}, nil
 		}
 	}
 
-	return true, nil
+	return &VerificationResult{Ready: true, Reason: VerificationCompleted}, nil
 }
 
-func verifyDeployment(config *Config, u unstructured.Unstructured) (bool, error) {
+func verifyDeployment(config *Config, u unstructured.Unstructured) (string, error) {
 	var deployment appsv1.Deployment
 	err := config.Cluster.Client.Get(config.Ctx, types.NamespacedName{
 		Name:      u.GetName(),
 		Namespace: u.GetNamespace(),
 	}, &deployment)
 	if err != nil {
-		return false, err
+		return "", err
 	}
 
-	return isDeploymentReady(deployment), nil
+	if isDeploymentReady(deployment) {
+		return VerificationCompleted, nil
+	}
+
+	if hasDeploymentConditionTrueStatus(deployment.Status.Conditions, appsv1.DeploymentReplicaFailure) {
+		return fmt.Sprintf("deployment %s/%s has replica failure: %s", u.GetNamespace(), u.GetName(),
+			getDeploymentCondition(deployment.Status.Conditions, appsv1.DeploymentReplicaFailure).Message), nil
+	}
+
+	return DeploymentVerificationProcessing, nil
 }
 
 const (
@@ -73,12 +95,21 @@ func isDeploymentReady(deployment appsv1.Deployment) bool {
 		hasDeploymentConditionTrueStatusWithReason(conditions, appsv1.DeploymentProgressing, NewRSAvailableReason)
 }
 
+func hasDeploymentConditionTrueStatus(conditions []appsv1.DeploymentCondition, conditionType appsv1.DeploymentConditionType) bool {
+	condition := getDeploymentCondition(conditions, conditionType)
+	return condition.Status == corev1.ConditionTrue
+}
+
 func hasDeploymentConditionTrueStatusWithReason(conditions []appsv1.DeploymentCondition, conditionType appsv1.DeploymentConditionType, reason string) bool {
+	condition := getDeploymentCondition(conditions, conditionType)
+	return condition.Status == corev1.ConditionTrue && condition.Reason == reason
+}
+
+func getDeploymentCondition(conditions []appsv1.DeploymentCondition, conditionType appsv1.DeploymentConditionType) appsv1.DeploymentCondition {
 	for _, condition := range conditions {
 		if condition.Type == conditionType {
-			return condition.Status == corev1.ConditionTrue &&
-				condition.Reason == reason
+			return condition
 		}
 	}
-	return false
+	return appsv1.DeploymentCondition{}
 }
