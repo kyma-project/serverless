@@ -371,7 +371,6 @@ func (d *Deployment) initContainerEnvs() []corev1.EnvVar {
 func (d *Deployment) initContainerCommand() string {
 	gitRepo := d.function.Spec.Source.GitRepository
 	var arr []string
-	arr = append(arr, "rm -rf /git-repository/*")
 	arr = append(arr, "/app/gitcloner")
 	arr = append(arr,
 		fmt.Sprintf("mkdir /git-repository/src;cp -r /git-repository/repo/%s/* /git-repository/src;",
@@ -594,6 +593,15 @@ func generalEnvs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []cor
 			Name:  "PUBLISHER_PROXY_ADDRESS",
 			Value: c.FunctionPublisherProxyAddress,
 		},
+	}
+
+	if f.HasNodejsRuntime() {
+		envs = append(envs, []corev1.EnvVar{
+			{
+				Name:  "FUNC_PORT",
+				Value: "8080",
+			},
+		}...)
 	}
 
 	if f.HasPythonRuntime() {
