@@ -138,6 +138,8 @@ spec:
           value: test-namespace
         - name: TRACE_COLLECTOR_ENDPOINT
         - name: PUBLISHER_PROXY_ADDRESS
+        - name: FUNC_PORT
+          value: "8080"
         image: image:tag
         livenessProbe:
           failureThreshold: 3
