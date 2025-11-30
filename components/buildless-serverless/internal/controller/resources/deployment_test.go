@@ -332,7 +332,7 @@ fi`,
 		c := r.Spec.Template.Spec.InitContainers[0]
 		expectedCommand := []string{"sh", "-c",
 			`/app/gitcloner
-mkdir /git-repository/src;cp /git-repository/repo/recursing-mcnulty/* /git-repository/src;`}
+mkdir /git-repository/src;cp -r /git-repository/repo/recursing-mcnulty/* /git-repository/src;`}
 		require.Equal(t, expectedCommand, c.Command)
 	})
 }
@@ -1060,6 +1060,10 @@ func TestDeployment_envs(t *testing.T) {
 					Name:  "PUBLISHER_PROXY_ADDRESS",
 					Value: "test-proxy-address",
 				},
+				{
+					Name:  "FUNC_PORT",
+					Value: "8080",
+				},
 			},
 		},
 		{
@@ -1112,6 +1116,10 @@ func TestDeployment_envs(t *testing.T) {
 					Name:  "PUBLISHER_PROXY_ADDRESS",
 					Value: "test-proxy-address",
 				},
+				{
+					Name:  "FUNC_PORT",
+					Value: "8080",
+				},
 			},
 		},
 		{
@@ -1158,6 +1166,10 @@ func TestDeployment_envs(t *testing.T) {
 				{
 					Name:  "PUBLISHER_PROXY_ADDRESS",
 					Value: "test-proxy-address",
+				},
+				{
+					Name:  "FUNC_PORT",
+					Value: "8080",
 				},
 			},
 		},
@@ -1306,7 +1318,7 @@ fi`,
 					},
 				},
 			},
-			want: `cp /git-repository/src/* .;
+			want: `cp -r /git-repository/src/* .;
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
 cd ..;
 if [ -f "./kubeless.py" ]; then
@@ -1371,7 +1383,7 @@ npm start;`,
 				},
 			},
 			want: `echo "{}" > package.json;
-cp /git-repository/src/* .;
+cp -r /git-repository/src/* .;
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
@@ -1431,7 +1443,7 @@ npm start;`,
 				},
 			},
 			want: `echo "{}" > package.json;
-cp /git-repository/src/* .;
+cp -r /git-repository/src/* .;
 npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
