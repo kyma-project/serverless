@@ -26,6 +26,7 @@ import (
 	"github.com/kyma-project/serverless/components/operator/internal/tracing"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
@@ -63,9 +64,14 @@ func (sr *serverlessReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Watches(&v1alpha1.Serverless{}, &handler.Funcs{
 			// retrigger all Serverless CRs reconciliations when one is deleted
 			// this should ensure at least one Serverless CR is served
-			DeleteFunc: sr.retriggerAllServerlessCRs,
+			DeleteFunc: sr.retriggerAllServerlessCRsOnDelete,
 		}).
 		Watches(&corev1.Service{}, tracing.ServiceCollectorWatcher()).
+		Watches(&appsv1.Deployment{}, &handler.Funcs{
+			// retrigger all Serverless CRs reconciliations when a serverless-controller Deployment is updated or deleted
+			UpdateFunc: sr.retriggerAllServerlessCRsOnUpdate,
+			DeleteFunc: sr.retriggerAllServerlessCRsOnDelete,
+		}, builder.WithPredicates(predicate.NewExactLabelPredicate("app.kubernetes.io/managed-by", "serverless-operator"))).
 		Complete(sr)
 }
 
@@ -87,7 +93,15 @@ func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 	return r.Reconcile(ctx, *instance)
 }
 
-func (sr *serverlessReconciler) retriggerAllServerlessCRs(ctx context.Context, e event.DeleteEvent, q workqueue.TypedRateLimitingInterface[ctrl.Request]) {
+func (sr *serverlessReconciler) retriggerAllServerlessCRsOnUpdate(ctx context.Context, _ event.TypedUpdateEvent[client.Object], q workqueue.TypedRateLimitingInterface[ctrl.Request]) {
+	sr.retriggerAllServerlessCRs(ctx, q)
+}
+
+func (sr *serverlessReconciler) retriggerAllServerlessCRsOnDelete(ctx context.Context, _ event.TypedDeleteEvent[client.Object], q workqueue.TypedRateLimitingInterface[ctrl.Request]) {
+	sr.retriggerAllServerlessCRs(ctx, q)
+}
+
+func (sr *serverlessReconciler) retriggerAllServerlessCRs(ctx context.Context, q workqueue.TypedRateLimitingInterface[ctrl.Request]) {
 	log := sr.log.With("deletion_watcher")
 
 	list := &v1alpha1.ServerlessList{}
