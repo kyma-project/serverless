@@ -595,14 +595,14 @@ func generalEnvs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []cor
 		},
 	}
 
-	if f.HasNodejsRuntime() {
-		envs = append(envs, []corev1.EnvVar{
-			{
-				Name:  "FUNC_PORT",
-				Value: "8080",
-			},
-		}...)
-	}
+	//if f.HasNodejsRuntime() {
+	//	envs = append(envs, []corev1.EnvVar{
+	//		{
+	//			Name:  "FUNC_PORT",
+	//			Value: "8080",
+	//		},
+	//	}...)
+	//}
 
 	if f.HasPythonRuntime() {
 		envs = append(envs, []corev1.EnvVar{
