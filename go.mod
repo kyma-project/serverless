@@ -1,6 +1,8 @@
 module github.com/kyma-project/serverless
 
-go 1.25.3
+go 1.24.0
+
+toolchain go1.24.3
 
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
@@ -13,7 +15,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/hashicorp/errwrap v1.1.0
 	github.com/hashicorp/go-multierror v1.1.1
-	github.com/kyma-project/manager-toolkit v0.0.0-20251130144746-e5496e101f68
+	github.com/kyma-project/manager-toolkit v0.0.0-20251201082204-449f6914b121
 	github.com/libgit2/git2go/v34 v34.0.0
 	github.com/onsi/ginkgo/v2 v2.27.2
 	github.com/onsi/gomega v1.38.2
