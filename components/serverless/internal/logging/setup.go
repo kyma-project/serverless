@@ -1,7 +1,7 @@
 package logging
 
 import (
-	"github.com/kyma-project/serverless/components/serverless/internal/logging/logger"
+	"github.com/kyma-project/manager-toolkit/logging/logger"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
