@@ -3,9 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/kyma-project/serverless/tests/operator/function"
 	"os"
 	"time"
+
+	"github.com/kyma-project/serverless/tests/operator/function"
 
 	"github.com/google/uuid"
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
@@ -64,7 +65,7 @@ func main() {
 			FunctionRequeueDuration:          "19m",
 			FunctionBuildExecutorArgs:        "executor-args",
 			FunctionBuildMaxSimultaneousJobs: "10",
-			HealthzLivenessTimeout:           "20",
+			HealthzLivenessTimeout:           "20s",
 			DefaultBuildJobPreset:            "normal",
 			DefaultRuntimePodPreset:          "M",
 			EnableNetworkPolicies:            true,
@@ -98,7 +99,7 @@ func main() {
 				Endpoint: "http://eventing-endpoint",
 			},
 			FunctionRequeueDuration: "19m",
-			HealthzLivenessTimeout:  "20",
+			HealthzLivenessTimeout:  "20s",
 			DefaultRuntimePodPreset: "M",
 			EnableNetworkPolicies:   true,
 		},

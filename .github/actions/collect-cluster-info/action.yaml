@@ -6,5 +6,54 @@ runs:
   steps:
     - name: collect cluster-info
       if: ${{ always() }}
-      run: make -C tests/operator cluster-info
+      run: |
+        echo "####################"
+        echo "kubectl get pods -A"
+        echo "####################"
+        kubectl get pods -A || true
+
+        echo "########################"
+        echo "kubectl get functions -A"
+        echo "########################"
+        kubectl get functions -A || true
+
+        echo "################################"
+        echo "kubectl get serverless -A -oyaml"
+        echo "################################"
+        kubectl get serverless -A -oyaml || true
+
+        echo "##########################################################"
+        echo "Describe serverless operator deploy"
+        echo "kubectl describe deploy -A -l app.kubernetes.io/name=serverless-operator"
+        echo "##########################################################"
+        kubectl describe deploy -A -l app.kubernetes.io/name=serverless-operator || true
+
+        echo "####################################################################"
+        echo "Describe serverless controller deploy"
+        echo "kubectl describe deploy -A -l app.kubernetes.io/name=serverless"
+        echo "####################################################################"
+        kubectl describe deploy -A -l app.kubernetes.io/name=serverless || true
+
+        echo "##########################################################"
+        echo "Get serverless operator pod"
+        echo "kubectl get pod -A -l app.kubernetes.io/name=serverless-operator -oyaml"
+        echo "##########################################################"
+        kubectl get pod -A -l app.kubernetes.io/name=serverless-operator -oyaml || true
+
+        echo "####################################################################"
+        echo "Get serverless controller pod"
+        echo "kubectl get pod -A -l app.kubernetes.io/name=serverless -oyaml"
+        echo "####################################################################"
+        kubectl get pod -A -l app.kubernetes.io/name=serverless -oyaml || true
+
+        echo "########################################################################################################"
+        echo "Serverless operator logs"
+        echo "kubectl logs -n kyma-system -l app.kubernetes.io/name=serverless-operator --tail=-1"
+        echo "########################################################################################################"
+        kubectl logs -n kyma-system -l app.kubernetes.io/name=serverless-operator --tail=-1 || true
+
+        echo "########################################################"
+        echo "Serverless controller logs across all namespaces"
+        echo "########################################################"
+        for n in `kubectl get namespaces -o json | jq -r ".items[].metadata.name"`; do kubectl logs -l app.kubernetes.io/name=serverless --tail=-1 -n $n; done || true
       shell: bash
