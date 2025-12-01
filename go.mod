@@ -38,7 +38,6 @@ require (
 	k8s.io/apimachinery v0.33.6
 	k8s.io/cli-runtime v0.33.6
 	k8s.io/client-go v0.33.6
-	k8s.io/klog/v2 v2.130.1
 	k8s.io/utils v0.0.0-20241104163129-6fe5fd82f078
 	sigs.k8s.io/controller-runtime v0.20.4
 )
@@ -158,6 +157,7 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	k8s.io/apiserver v0.33.6 // indirect
 	k8s.io/component-base v0.33.6 // indirect
+	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20250318190949-c8a335a9a2ff // indirect
 	k8s.io/kubectl v0.33.3 // indirect
 	oras.land/oras-go/v2 v2.6.0 // indirect
