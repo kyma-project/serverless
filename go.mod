@@ -15,6 +15,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/hashicorp/errwrap v1.1.0
 	github.com/hashicorp/go-multierror v1.1.1
+	github.com/kyma-project/manager-toolkit v0.0.0-20251201082204-449f6914b121
 	github.com/libgit2/git2go/v34 v34.0.0
 	github.com/onsi/ginkgo/v2 v2.27.2
 	github.com/onsi/gomega v1.38.2
@@ -37,7 +38,6 @@ require (
 	k8s.io/apimachinery v0.33.6
 	k8s.io/cli-runtime v0.33.6
 	k8s.io/client-go v0.33.6
-	k8s.io/klog/v2 v2.130.1
 	k8s.io/utils v0.0.0-20241104163129-6fe5fd82f078
 	sigs.k8s.io/controller-runtime v0.20.4
 )
@@ -157,6 +157,7 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	k8s.io/apiserver v0.33.6 // indirect
 	k8s.io/component-base v0.33.6 // indirect
+	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20250318190949-c8a335a9a2ff // indirect
 	k8s.io/kubectl v0.33.3 // indirect
 	oras.land/oras-go/v2 v2.6.0 // indirect
