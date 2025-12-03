@@ -12,7 +12,6 @@ Every runtime provides its own unique environment configuration which can be rea
 |---------------|-----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | **FUNC_HANDLER** | `main` | The name of the exported Function inside the `MOD_NAME` file.                                                                                                                  |
 | **MOD_NAME** | `handler` | The name of the main exported file. It must have an extension of `.py` for the Python runtimes and `.js` for the Node.js ones. The extension must be added on the server side. |
-| **FUNC_PORT** | `8080` | The right port a server listens to.                                                                                                                                            |
 | **SERVICE_NAMESPACE** | None | The namespace where the right Function exists in a cluster.                                                                                                                    |
 | **KUBELESS_INSTALL_VOLUME** | `/kubeless` | Full path to volume mount with users source code.                                                                                                                              |
 | **FUNC_RUNTIME** | None | The name of the actual runtime. Possible values: `nodejs20` and `python312`.                                                                          |
