@@ -18,7 +18,7 @@ const handlerPath = process.env.HANDLER_PATH || './handler.js';
 const serviceNamespace = process.env.SERVICE_NAMESPACE;
 const functionName = process.env.FUNC_NAME;
 const bodySizeLimit = Number(process.env.REQ_MB_LIMIT || '1');
-const funcPort = Number(process.env.FUNC_PORT || '8080');
+const funcPort = 8080;
 const timeout = Number(process.env.FUNC_TIMEOUT || '180'); // Default to 180 seconds
 
 const tracer = setupTracer(functionName);
