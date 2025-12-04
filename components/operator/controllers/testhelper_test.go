@@ -64,6 +64,32 @@ type testHelper struct {
 	namespaceName string
 }
 
+func (h *testHelper) updateReplicaSetStatus(deploymentName string) {
+	replicaSetName := fmt.Sprintf("%s-replica-set", deploymentName)
+
+	By(fmt.Sprintf("Updating ReplicaSet status: %s", replicaSetName))
+
+	var deployment appsv1.Deployment
+	Eventually(h.createGetKubernetesObjectFunc(deploymentName, &deployment)).
+		WithPolling(time.Second * 2).
+		WithTimeout(time.Second * 30).
+		Should(BeTrue())
+
+	h.createReplicaSetForDeployment(replicaSetName, deployment)
+
+	var replicaSet appsv1.ReplicaSet
+	Eventually(h.createGetKubernetesObjectFunc(replicaSetName, &replicaSet)).
+		WithPolling(time.Second * 2).
+		WithTimeout(time.Second * 30).
+		Should(BeTrue())
+
+	replicaSet.Status.ReadyReplicas = 1
+	replicaSet.Status.Replicas = 1
+	Expect(k8sClient.Status().Update(h.ctx, &replicaSet)).To(Succeed())
+
+	By(fmt.Sprintf("ReplicaSet status updated: %s", replicaSetName))
+}
+
 func (h *testHelper) updateDeploymentStatus(deploymentName string) {
 	By(fmt.Sprintf("Updating deployment status: %s", deploymentName))
 	var deployment appsv1.Deployment
@@ -72,7 +98,7 @@ func (h *testHelper) updateDeploymentStatus(deploymentName string) {
 		WithTimeout(time.Second * 30).
 		Should(BeTrue())
 
-	deployment.Status.Conditions = append(deployment.Status.Conditions, []appsv1.DeploymentCondition{
+	deployment.Status.Conditions = []appsv1.DeploymentCondition{
 		{
 			Type:    appsv1.DeploymentAvailable,
 			Status:  corev1.ConditionTrue,
@@ -85,27 +111,15 @@ func (h *testHelper) updateDeploymentStatus(deploymentName string) {
 			Reason:  chart.NewRSAvailableReason,
 			Message: "test-message",
 		},
-	}...)
-	deployment.Status.Replicas = 1
+	}
+	deployment.Status.ObservedGeneration = deployment.Generation
+	deployment.Status.UnavailableReplicas = 0
 	Expect(k8sClient.Status().Update(h.ctx, &deployment)).To(Succeed())
-
-	replicaSetName := h.createReplicaSetForDeployment(deployment)
-
-	var replicaSet appsv1.ReplicaSet
-	Eventually(h.createGetKubernetesObjectFunc(replicaSetName, &replicaSet)).
-		WithPolling(time.Second * 2).
-		WithTimeout(time.Second * 30).
-		Should(BeTrue())
-
-	replicaSet.Status.ReadyReplicas = 1
-	replicaSet.Status.Replicas = 1
-	Expect(k8sClient.Status().Update(h.ctx, &replicaSet)).To(Succeed())
 
 	By(fmt.Sprintf("Deployment status updated: %s", deploymentName))
 }
 
-func (h *testHelper) createReplicaSetForDeployment(deployment appsv1.Deployment) string {
-	replicaSetName := fmt.Sprintf("%s-replica-set", deployment.Name)
+func (h *testHelper) createReplicaSetForDeployment(replicaSetName string, deployment appsv1.Deployment) {
 	By(fmt.Sprintf("Creating replica set (for deployment): %s", replicaSetName))
 	var (
 		trueValue = true
@@ -135,7 +149,6 @@ func (h *testHelper) createReplicaSetForDeployment(deployment appsv1.Deployment)
 	}
 	Expect(k8sClient.Create(h.ctx, &replicaSet)).To(Succeed())
 	By(fmt.Sprintf("Replica set (for deployment) created: %s", replicaSetName))
-	return replicaSetName
 }
 
 func (h *testHelper) createServerless(serverlessName string, spec v1alpha1.ServerlessSpec) {
@@ -220,8 +233,10 @@ func (h *testHelper) listKubernetesObjectFunc(list client.ObjectList) (bool, err
 	return true, err
 }
 
-func (h *testHelper) createGetServerlessStatusFunc(serverlessName string) func() (v1alpha1.ServerlessStatus, error) {
+func (h *testHelper) createGetServerlessStatusFunc(serverlessName, deploymentName string) func() (v1alpha1.ServerlessStatus, error) {
 	return func() (v1alpha1.ServerlessStatus, error) {
+		// update deployment status to make sure .status.observedGeneration is up to date
+		h.updateDeploymentStatus(deploymentName)
 		return h.getServerlessStatus(serverlessName)
 	}
 }
