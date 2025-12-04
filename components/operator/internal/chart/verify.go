@@ -92,7 +92,9 @@ const (
 func isDeploymentReady(deployment appsv1.Deployment) bool {
 	conditions := deployment.Status.Conditions
 	return hasDeploymentConditionTrueStatusWithReason(conditions, appsv1.DeploymentAvailable, MinimumReplicasAvailable) &&
-		hasDeploymentConditionTrueStatusWithReason(conditions, appsv1.DeploymentProgressing, NewRSAvailableReason)
+		hasDeploymentConditionTrueStatusWithReason(conditions, appsv1.DeploymentProgressing, NewRSAvailableReason) &&
+		deployment.Generation == deployment.Status.ObservedGeneration && // spec changes are observed
+		deployment.Status.UnavailableReplicas == 0 // all replicas are available
 }
 
 func hasDeploymentConditionTrueStatus(conditions []appsv1.DeploymentCondition, conditionType appsv1.DeploymentConditionType) bool {
