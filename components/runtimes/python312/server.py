@@ -30,7 +30,7 @@ func_name = os.getenv('FUNC_HANDLER', default='main')
 
 func = getattr(mod, func_name)
 
-func_port = os.getenv('FUNC_PORT', 8080)
+func_port = 8080
 timeout = float(os.getenv('FUNC_TIMEOUT', 180))
 memfile_max = int(os.getenv('FUNC_MEMFILE_MAX', 100 * 1024 * 1024))
 bottle.BaseRequest.MEMFILE_MAX = memfile_max
