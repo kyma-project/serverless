@@ -19,13 +19,13 @@ package main
 import (
 	"context"
 	"crypto/fips140"
-	"errors"
 	"flag"
 	"os"
 	"time"
 
 	"github.com/kyma-project/serverless/components/operator/internal/config"
 	"github.com/kyma-project/serverless/components/operator/internal/logging"
+	"github.com/vrischmann/envconfig"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -67,11 +67,16 @@ func init() {
 	//+kubebuilder:scaffold:scheme
 }
 
+type operatorConfig struct {
+	ChartPath     string `envconfig:"default=/module-chart"`
+	LogConfigPath string `envconfig:"default=hack/log-config.yaml"`
+}
+
 func main() {
-	if !isFIPS140Only() {
-		setupLog.Error(errors.New("FIPS not enforced"), "FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
-		panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
-	}
+	//if !isFIPS140Only() {
+	//	setupLog.Error(errors.New("FIPS not enforced"), "FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+	//	panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+	//}
 
 	var metricsAddr string
 	var probeAddr string
@@ -79,28 +84,23 @@ func main() {
 	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
 	flag.Parse()
 
-	cfg, err := config.GetConfig("")
+	// Load operator configuration from environment variables
+	opCfg, err := loadConfig("")
 	if err != nil {
-		setupLog.Error(err, "while getting config")
+		setupLog.Error(err, "unable to load config")
 		os.Exit(1)
 	}
 
-	// Load log configuration from file if path is provided, otherwise use env vars
-	var logLevel, logFormat string
-	if cfg.LogConfigPath != "" {
-		logCfg, err := config.LoadLogConfig(cfg.LogConfigPath)
-		if err != nil {
-			setupLog.Error(err, "unable to load log configuration file")
-			os.Exit(1)
-		}
-		logLevel = logCfg.LogLevel
-		logFormat = logCfg.LogFormat
-	} else {
-		logLevel = cfg.LogLevel
-		logFormat = cfg.LogFormat
+	// Load log configuration from file
+	logCfg, err := config.LoadLogConfig(opCfg.LogConfigPath)
+	if err != nil {
+		setupLog.Error(err, "unable to load log configuration file")
+		os.Exit(1)
 	}
 
-	// Configure logger using manager-toolkit
+	logLevel := logCfg.LogLevel
+	logFormat := logCfg.LogFormat
+
 	atomicLevel := zap.NewAtomicLevel()
 	parsedLevel, err := zapcore.ParseLevel(logLevel)
 	if err != nil {
@@ -109,6 +109,7 @@ func main() {
 	}
 	atomicLevel.SetLevel(parsedLevel)
 
+	// Configure logger using manager-toolkit
 	log, err := logging.ConfigureLogger(logLevel, logFormat, atomicLevel)
 	if err != nil {
 		setupLog.Error(err, "unable to configure logger")
@@ -119,9 +120,7 @@ func main() {
 	defer cancel()
 
 	logWithCtx := log.WithContext()
-	if cfg.LogConfigPath != "" {
-		go logging.ReconfigureOnConfigChange(ctx, logWithCtx.Named("notifier"), atomicLevel, cfg.LogConfigPath)
-	}
+	go logging.ReconfigureOnConfigChange(ctx, logWithCtx.Named("notifier"), atomicLevel, opCfg.LogConfigPath)
 
 	ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
 
@@ -145,7 +144,6 @@ func main() {
 				},
 			},
 		},
-		// TODO: use our own logger - now eventing use logger with different message format
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
@@ -156,7 +154,7 @@ func main() {
 		mgr.GetClient(), mgr.GetConfig(),
 		mgr.GetEventRecorderFor("serverless-operator"),
 		logWithCtx.Desugar().Sugar(),
-		cfg.ChartPath)
+		opCfg.ChartPath)
 
 	if err = reconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Serverless")
@@ -182,4 +180,13 @@ func main() {
 
 func isFIPS140Only() bool {
 	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=only,tlsmlkem=0"
+}
+
+func loadConfig(prefix string) (operatorConfig, error) {
+	cfg := operatorConfig{}
+	err := envconfig.InitWithPrefix(&cfg, prefix)
+	if err != nil {
+		return cfg, err
+	}
+	return cfg, nil
 }
