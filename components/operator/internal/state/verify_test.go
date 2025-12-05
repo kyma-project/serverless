@@ -44,7 +44,7 @@ metadata:
 )
 
 func Test_sFnVerifyResources(t *testing.T) {
-	t.Run("ready", func(t *testing.T) {
+	t.Run("stop when serverless in ready", func(t *testing.T) {
 		s := &systemState{
 			warningBuilder: warning.NewBuilder(),
 			instance:       *testInstalledServerless.DeepCopy(),
@@ -72,6 +72,48 @@ func Test_sFnVerifyResources(t *testing.T) {
 		status := s.instance.Status
 		require.Equal(t, v1alpha1.StateReady, status.State)
 		require.Len(t, status.Conditions, 2)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeInstalled,
+			metav1.ConditionTrue,
+			v1alpha1.ConditionReasonInstallation,
+			"",
+		)
+	})
+
+	t.Run("set to ready and requeue", func(t *testing.T) {
+		serverless := &v1alpha1.Serverless{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      "test",
+				Namespace: "test",
+			},
+		}
+		s := &systemState{
+			warningBuilder: warning.NewBuilder(),
+			instance:       *serverless,
+			chartConfig: &chart.Config{
+				Cache: fixEmptyManifestCache(),
+				CacheKey: types.NamespacedName{
+					Name:      serverless.GetName(),
+					Namespace: serverless.GetNamespace(),
+				},
+			},
+		}
+		r := &reconciler{
+			log: zap.NewNop().Sugar(),
+			k8s: k8s{
+				client: fake.NewClientBuilder().Build(),
+			},
+		}
+
+		// verify and return update condition state
+		next, result, err := sFnVerifyResources(context.Background(), r, s)
+		require.Nil(t, err)
+		require.Equal(t, requeueResult, result)
+		require.Nil(t, next)
+
+		status := s.instance.Status
+		require.Equal(t, v1alpha1.StateReady, status.State)
+		require.Len(t, status.Conditions, 1)
 		requireContainsCondition(t, status,
 			v1alpha1.ConditionTypeInstalled,
 			metav1.ConditionTrue,
