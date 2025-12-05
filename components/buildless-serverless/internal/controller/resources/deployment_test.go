@@ -332,7 +332,27 @@ fi`,
 		c := r.Spec.Template.Spec.InitContainers[0]
 		expectedCommand := []string{"sh", "-c",
 			`/app/gitcloner
-mkdir /git-repository/src;cp -r /git-repository/repo/recursing-mcnulty/* /git-repository/src;`}
+mkdir /git-repository/src;cp -r '/git-repository/repo/recursing-mcnulty'/* /git-repository/src;`}
+		require.Equal(t, expectedCommand, c.Command)
+	})
+	t.Run("create init container for git function with baseDir containing whitespaces", func(t *testing.T) {
+		d := minimalDeployment()
+		d.commit = "test-commit"
+		d.function.Spec.Source = serverlessv1alpha2.Source{
+			GitRepository: &serverlessv1alpha2.GitRepositorySource{
+				URL: "wonderful-germain",
+				Repository: serverlessv1alpha2.Repository{
+					BaseDir:   "git functions/nodejs12",
+					Reference: "main"}}}
+
+		r := d.construct()
+
+		require.NotNil(t, r)
+		require.Len(t, r.Spec.Template.Spec.InitContainers, 1)
+		c := r.Spec.Template.Spec.InitContainers[0]
+		expectedCommand := []string{"sh", "-c",
+			`/app/gitcloner
+mkdir /git-repository/src;cp -r '/git-repository/repo/git functions/nodejs12'/* /git-repository/src;`}
 		require.Equal(t, expectedCommand, c.Command)
 	})
 }
