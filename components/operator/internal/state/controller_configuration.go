@@ -72,6 +72,22 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 		{spec.LogFormat, &instance.Status.LogFormat, "Log format", defaultLogFormat},
 	}
 
+	// Include build preset only when buildless mode is NOT disabled
+	if val, ok := instance.Annotations[buildlessModeAnnotation]; !ok || val != buildlessModeDisabled {
+		fields = append(fields,
+			// Use the same anonymous element literal type as in the slice above
+			struct {
+				specField    string
+				statusField  *string
+				fieldName    string
+				defaultValue string
+			}{spec.DefaultBuildJobPreset, &instance.Status.DefaultBuildJobPreset, "Default build job preset", defaultBuildPreset},
+		)
+	} else {
+		// Clear it so it is omitted by json:",omitempty"
+		instance.Status.DefaultBuildJobPreset = ""
+	}
+
 	updateStatusFields(r.k8s, instance, fields)
 	return nil
 }

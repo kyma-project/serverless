@@ -28,8 +28,6 @@ import (
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/apimachinery/pkg/util/json"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
@@ -91,45 +89,8 @@ func (sr *serverlessReconciler) Reconcile(ctx context.Context, req ctrl.Request)
 		return ctrl.Result{}, nil
 	}
 
-	//TODO: This is temporary solution, remove it after removing legacy serverless
-	if err = sr.cleanupSvsCR(ctx, instance); err != nil {
-		log.Warnf("failed to remove legacy serverless status fields: %s", err.Error())
-	}
-
 	r := sr.initStateMachine(log)
 	return r.Reconcile(ctx, *instance)
-}
-
-// TODO: This is temporary solution, remove it after removing legacy serverless
-func (sr *serverlessReconciler) cleanupSvsCR(ctx context.Context, instance *v1alpha1.Serverless) error {
-	// remove deprecated status fields if present, unless buildless mode is disabled
-	if mode, ok := instance.Annotations["serverless.kyma-project.io/buildless-mode"]; !ok || mode != "disabled" {
-		return sr.removeLegacyStatusFields(ctx, types.NamespacedName{
-			Namespace: instance.GetNamespace(),
-			Name:      instance.GetName(),
-		})
-	}
-	return nil
-}
-
-// TODO: This is temporary solution, remove it after removing legacy serverless
-func (sr *serverlessReconciler) removeLegacyStatusFields(ctx context.Context, nn types.NamespacedName) error {
-	// Build a JSON merge patch that nulls the deprecated fields.
-	patchObj := map[string]any{
-		"status": map[string]any{
-			"defaultBuildJobPreset": nil,
-			"dockerRegistry":        nil,
-		},
-	}
-	patchBytes, err := json.Marshal(patchObj)
-	if err != nil {
-		return err
-	}
-	
-	s := &v1alpha1.Serverless{}
-	s.SetNamespace(nn.Namespace)
-	s.SetName(nn.Name)
-	return sr.client.Status().Patch(ctx, s, client.RawPatch(types.MergePatchType, patchBytes))
 }
 
 func (sr *serverlessReconciler) retriggerAllServerlessCRsOnUpdate(ctx context.Context, _ event.TypedUpdateEvent[client.Object], q workqueue.TypedRateLimitingInterface[ctrl.Request]) {
