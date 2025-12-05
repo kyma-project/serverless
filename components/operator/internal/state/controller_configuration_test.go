@@ -30,10 +30,55 @@ const (
 func Test_sFnControllerConfiguration(t *testing.T) {
 	configurationReadyMsg := "Configuration ready"
 
+	t.Run("update status without buildPreset", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.Serverless{
+				Spec: v1alpha1.ServerlessSpec{},
+			},
+			flagsBuilder: chart.NewFlagsBuilder(),
+		}
+
+		c := fake.NewClientBuilder().WithObjects(
+			fixTestNode("node-1"),
+			fixTestNode("node-2"),
+		).Build()
+		eventRecorder := record.NewFakeRecorder(4)
+		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
+		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
+		require.Nil(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnApplyResources, next)
+
+		status := s.instance.Status
+		require.Equal(t, "", status.DefaultBuildJobPreset)
+		require.Equal(t, slowRuntimePreset, status.DefaultRuntimePodPreset)
+
+		require.Equal(t, v1alpha1.StateProcessing, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeConfigured,
+			metav1.ConditionTrue,
+			v1alpha1.ConditionReasonConfigured,
+			configurationReadyMsg,
+		)
+
+		expectedEvents := []string{
+			"Normal Configuration Default runtime pod preset set from '' to 'XS'",
+		}
+
+		for _, expectedEvent := range expectedEvents {
+			require.Equal(t, expectedEvent, <-eventRecorder.Events)
+		}
+	})
+
 	t.Run("update status with slow defaults", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{},
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						buildlessModeAnnotation: buildlessModeDisabled,
+					},
+				},
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
 		}
@@ -74,6 +119,11 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 	t.Run("update slow default to normal ones", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						buildlessModeAnnotation: buildlessModeDisabled,
+					},
+				},
 				Spec: v1alpha1.ServerlessSpec{},
 				Status: v1alpha1.ServerlessStatus{
 					DefaultBuildJobPreset:   slowBuildPreset,
@@ -121,6 +171,11 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 	t.Run("update status additional configuration overrides", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						buildlessModeAnnotation: buildlessModeDisabled,
+					},
+				},
 				Spec: v1alpha1.ServerlessSpec{
 					TargetCPUUtilizationPercentage:   cpuUtilizationTest,
 					FunctionRequeueDuration:          requeueDurationTest,
