@@ -74,7 +74,7 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 			{spec.LogFormat, &instance.Status.LogFormat, "Log format", defaultLogFormat},
 		}
 	} else {
-		// exclude DefaultBuildJobPreset
+		// TODO: This is a temporary solution, delete it after removing legacy serverless, exclude DefaultBuildJobPreset
 		instance.Status.DefaultBuildJobPreset = ""
 		fields = fieldsToUpdate{
 			{spec.TargetCPUUtilizationPercentage, &instance.Status.CPUUtilizationPercentage, "CPU utilization", ""},
@@ -93,7 +93,7 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 }
 
 func configureControllerConfigurationFlags(s *systemState) {
-	// clear flag when buildless mode is enabled
+	// TODO: This is a temporary solution, delete it after removing legacy serverless, clear flag when buildless mode is enabled
 	if val, ok := s.instance.Annotations[buildlessModeAnnotation]; ok && val != buildlessModeDisabled {
 		s.instance.Status.DefaultBuildJobPreset = ""
 	}
