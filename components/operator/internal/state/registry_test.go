@@ -17,9 +17,54 @@ import (
 )
 
 func Test_sFnRegistryConfiguration(t *testing.T) {
+	t.Run("no internal registry status", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.Serverless{
+				Spec: v1alpha1.ServerlessSpec{
+					DockerRegistry: &v1alpha1.DockerRegistry{
+						EnableInternal: ptr.To[bool](true),
+					},
+				},
+			},
+			statusSnapshot: v1alpha1.ServerlessStatus{
+				DockerRegistry: "",
+			},
+			flagsBuilder: chart.NewFlagsBuilder(),
+		}
+		r := &reconciler{
+			k8s: k8s{client: fake.NewClientBuilder().Build()},
+			log: zap.NewNop().Sugar(),
+		}
+		expectedFlags := map[string]interface{}{
+			"dockerRegistry": map[string]interface{}{
+				"enableInternal": true,
+			},
+			"global": map[string]interface{}{
+				"registryNodePort": int64(32_137),
+			},
+		}
+
+		next, result, err := sFnRegistryConfiguration(context.Background(), r, s)
+		require.NoError(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnOptionalDependencies, next)
+
+		flags, err := s.flagsBuilder.Build()
+		require.NoError(t, err)
+
+		require.EqualValues(t, expectedFlags, flags)
+		require.Equal(t, "", s.instance.Status.DockerRegistry)
+		require.Equal(t, v1alpha1.StateProcessing, s.instance.Status.State)
+	})
+
 	t.Run("internal registry and update", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						buildlessModeAnnotation: buildlessModeDisabled,
+					},
+				},
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
 						EnableInternal: ptr.To[bool](true),
