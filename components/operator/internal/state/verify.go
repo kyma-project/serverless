@@ -55,17 +55,18 @@ func sFnVerifyResources(_ context.Context, r *reconciler, s *systemState) (state
 		return stop()
 	}
 
-	if s.instance.Status.State == v1alpha1.StateReady {
-		// already ready
-		return stop()
+	if s.instance.Status.State != v1alpha1.StateReady {
+		// set to Ready state if not already there
+		s.setState(v1alpha1.StateReady)
+		s.instance.UpdateConditionTrue(
+			v1alpha1.ConditionTypeInstalled,
+			v1alpha1.ConditionReasonInstalled,
+			"Serverless installed",
+		)
+		// requeue to reconcile one more time and double check everything is fine
+		return requeue()
 	}
 
-	s.setState(v1alpha1.StateReady)
-	s.instance.UpdateConditionTrue(
-		v1alpha1.ConditionTypeInstalled,
-		v1alpha1.ConditionReasonInstalled,
-		"Serverless installed",
-	)
-	// requeue to go through one more time and double check everything is fine
-	return requeue()
+	// already ready
+	return stop()
 }
