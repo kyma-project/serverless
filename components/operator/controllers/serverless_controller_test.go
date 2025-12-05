@@ -128,9 +128,10 @@ func shouldCreateServerless(h testHelper, serverlessName, serverlessDeploymentNa
 
 	// we have to update deployment status manually
 	h.updateDeploymentStatus(serverlessDeploymentName)
+	h.updateReplicaSetStatus(serverlessDeploymentName)
 
 	// assert
-	Eventually(h.createGetServerlessStatusFunc(serverlessName)).
+	Eventually(h.createGetServerlessStatusFunc(serverlessName, serverlessDeploymentName)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 20).
 		Should(ConditionTrueMatcher())
@@ -169,7 +170,7 @@ func shouldUpdateServerless(h testHelper, serverlessSpec v1alpha1.ServerlessSpec
 
 	Expect(serverless.Spec).To(Equal(serverlessSpec))
 
-	Eventually(h.createGetServerlessStatusFunc(serverlessName)).
+	Eventually(h.createGetServerlessStatusFunc(serverlessName, serverlessDeploymentName)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 20).
 		Should(ConditionTrueMatcher())
