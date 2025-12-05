@@ -60,32 +60,32 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 	}
 
 	spec := instance.Spec
-	fields := fieldsToUpdate{
-		{spec.TargetCPUUtilizationPercentage, &instance.Status.CPUUtilizationPercentage, "CPU utilization", ""},
-		{spec.FunctionRequeueDuration, &instance.Status.RequeueDuration, "Function requeue duration", ""},
-		{spec.FunctionBuildExecutorArgs, &instance.Status.BuildExecutorArgs, "Function build executor args", ""},
-		{spec.FunctionBuildMaxSimultaneousJobs, &instance.Status.BuildMaxSimultaneousJobs, "Max number of simultaneous jobs", ""},
-		{spec.HealthzLivenessTimeout, &instance.Status.HealthzLivenessTimeout, "Duration of health check", ""},
-		{spec.DefaultBuildJobPreset, &instance.Status.DefaultBuildJobPreset, "Default build job preset", defaultBuildPreset},
-		{spec.DefaultRuntimePodPreset, &instance.Status.DefaultRuntimePodPreset, "Default runtime pod preset", defaultRuntimePreset},
-		{spec.LogLevel, &instance.Status.LogLevel, "Log level", defaultLogLevel},
-		{spec.LogFormat, &instance.Status.LogFormat, "Log format", defaultLogFormat},
-	}
-
-	// Include build preset only when buildless mode is NOT disabled
-	if val, ok := instance.Annotations[buildlessModeAnnotation]; !ok || val != buildlessModeDisabled {
-		fields = append(fields,
-			// Use the same anonymous element literal type as in the slice above
-			struct {
-				specField    string
-				statusField  *string
-				fieldName    string
-				defaultValue string
-			}{spec.DefaultBuildJobPreset, &instance.Status.DefaultBuildJobPreset, "Default build job preset", defaultBuildPreset},
-		)
+	var fields fieldsToUpdate
+	if val, ok := instance.Annotations[buildlessModeAnnotation]; ok && val == buildlessModeDisabled {
+		fields = fieldsToUpdate{
+			{spec.TargetCPUUtilizationPercentage, &instance.Status.CPUUtilizationPercentage, "CPU utilization", ""},
+			{spec.FunctionRequeueDuration, &instance.Status.RequeueDuration, "Function requeue duration", ""},
+			{spec.FunctionBuildExecutorArgs, &instance.Status.BuildExecutorArgs, "Function build executor args", ""},
+			{spec.FunctionBuildMaxSimultaneousJobs, &instance.Status.BuildMaxSimultaneousJobs, "Max number of simultaneous jobs", ""},
+			{spec.HealthzLivenessTimeout, &instance.Status.HealthzLivenessTimeout, "Duration of health check", ""},
+			{spec.DefaultBuildJobPreset, &instance.Status.DefaultBuildJobPreset, "Default build job preset", defaultBuildPreset},
+			{spec.DefaultRuntimePodPreset, &instance.Status.DefaultRuntimePodPreset, "Default runtime pod preset", defaultRuntimePreset},
+			{spec.LogLevel, &instance.Status.LogLevel, "Log level", defaultLogLevel},
+			{spec.LogFormat, &instance.Status.LogFormat, "Log format", defaultLogFormat},
+		}
 	} else {
-		// Clear it so it is omitted by json:",omitempty"
+		// exclude DefaultBuildJobPreset
 		instance.Status.DefaultBuildJobPreset = ""
+		fields = fieldsToUpdate{
+			{spec.TargetCPUUtilizationPercentage, &instance.Status.CPUUtilizationPercentage, "CPU utilization", ""},
+			{spec.FunctionRequeueDuration, &instance.Status.RequeueDuration, "Function requeue duration", ""},
+			{spec.FunctionBuildExecutorArgs, &instance.Status.BuildExecutorArgs, "Function build executor args", ""},
+			{spec.FunctionBuildMaxSimultaneousJobs, &instance.Status.BuildMaxSimultaneousJobs, "Max number of simultaneous jobs", ""},
+			{spec.HealthzLivenessTimeout, &instance.Status.HealthzLivenessTimeout, "Duration of health check", ""},
+			{spec.DefaultRuntimePodPreset, &instance.Status.DefaultRuntimePodPreset, "Default runtime pod preset", defaultRuntimePreset},
+			{spec.LogLevel, &instance.Status.LogLevel, "Log level", defaultLogLevel},
+			{spec.LogFormat, &instance.Status.LogFormat, "Log format", defaultLogFormat},
+		}
 	}
 
 	updateStatusFields(r.k8s, instance, fields)
@@ -93,6 +93,11 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 }
 
 func configureControllerConfigurationFlags(s *systemState) {
+	// clear flag when buildless mode is enabled
+	if val, ok := s.instance.Annotations[buildlessModeAnnotation]; ok && val != buildlessModeDisabled {
+		s.instance.Status.DefaultBuildJobPreset = ""
+	}
+
 	s.flagsBuilder.
 		WithControllerConfiguration(
 			s.instance.Status.CPUUtilizationPercentage,
