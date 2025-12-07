@@ -61,7 +61,7 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 
 	spec := instance.Spec
 	var fields fieldsToUpdate
-	if val, ok := instance.Annotations[buildlessModeAnnotation]; ok && val == buildlessModeDisabled {
+	if isLegacyEnabled(instance.Annotations) {
 		fields = fieldsToUpdate{
 			{spec.TargetCPUUtilizationPercentage, &instance.Status.CPUUtilizationPercentage, "CPU utilization", ""},
 			{spec.FunctionRequeueDuration, &instance.Status.RequeueDuration, "Function requeue duration", ""},
@@ -94,7 +94,7 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 
 func configureControllerConfigurationFlags(s *systemState) {
 	// TODO: This is a temporary solution, delete it after removing legacy serverless, clear flag when buildless mode is enabled
-	if val, ok := s.instance.Annotations[buildlessModeAnnotation]; ok && val != buildlessModeDisabled {
+	if !isLegacyEnabled(s.instance.Annotations) {
 		s.instance.Status.DefaultBuildJobPreset = ""
 	}
 
@@ -149,4 +149,10 @@ func configureChartPath(s *systemState, log *zap.SugaredLogger) {
 	}
 	log.Infof("Using chart path: %s", s.chartConfig.Release.ChartPath)
 	// we use default value from environment variable if annotation has unexpected value
+}
+
+// TODO: remove this method when buildless is enabled by default
+func isLegacyEnabled(annotations map[string]string) bool {
+	val, ok := annotations[buildlessModeAnnotation]
+	return ok && val == buildlessModeDisabled
 }
