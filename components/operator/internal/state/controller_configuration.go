@@ -142,7 +142,7 @@ func configureChartPath(s *systemState, log *zap.SugaredLogger) {
 	if val == buildlessModeDisabled {
 		log.Info("Chart path is set to old serverless module chart")
 		if s.chartConfig == nil {
-			log.Warn("Chart config is nil, cannot set chart path")
+			log.Warn("Chart config is empty, cannot set chart path")
 			return
 		}
 		s.chartConfig.Release.ChartPath = oldServerlessChartPath
