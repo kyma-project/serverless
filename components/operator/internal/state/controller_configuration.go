@@ -60,33 +60,50 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 	}
 
 	spec := instance.Spec
-	var fields fieldsToUpdate
-	if isLegacyEnabled(instance.Annotations) {
-		fields = fieldsToUpdate{
-			{spec.TargetCPUUtilizationPercentage, &instance.Status.CPUUtilizationPercentage, "CPU utilization", ""},
-			{spec.FunctionRequeueDuration, &instance.Status.RequeueDuration, "Function requeue duration", ""},
-			{spec.FunctionBuildExecutorArgs, &instance.Status.BuildExecutorArgs, "Function build executor args", ""},
-			{spec.FunctionBuildMaxSimultaneousJobs, &instance.Status.BuildMaxSimultaneousJobs, "Max number of simultaneous jobs", ""},
-			{spec.HealthzLivenessTimeout, &instance.Status.HealthzLivenessTimeout, "Duration of health check", ""},
-			{spec.DefaultBuildJobPreset, &instance.Status.DefaultBuildJobPreset, "Default build job preset", defaultBuildPreset},
-			{spec.DefaultRuntimePodPreset, &instance.Status.DefaultRuntimePodPreset, "Default runtime pod preset", defaultRuntimePreset},
-			{spec.LogLevel, &instance.Status.LogLevel, "Log level", defaultLogLevel},
-			{spec.LogFormat, &instance.Status.LogFormat, "Log format", defaultLogFormat},
-		}
-	} else {
-		// TODO: This is a temporary solution, delete it after removing legacy serverless, exclude DefaultBuildJobPreset
-		instance.Status.DefaultBuildJobPreset = ""
-		fields = fieldsToUpdate{
-			{spec.TargetCPUUtilizationPercentage, &instance.Status.CPUUtilizationPercentage, "CPU utilization", ""},
-			{spec.FunctionRequeueDuration, &instance.Status.RequeueDuration, "Function requeue duration", ""},
-			{spec.FunctionBuildExecutorArgs, &instance.Status.BuildExecutorArgs, "Function build executor args", ""},
-			{spec.FunctionBuildMaxSimultaneousJobs, &instance.Status.BuildMaxSimultaneousJobs, "Max number of simultaneous jobs", ""},
-			{spec.HealthzLivenessTimeout, &instance.Status.HealthzLivenessTimeout, "Duration of health check", ""},
-			{spec.DefaultRuntimePodPreset, &instance.Status.DefaultRuntimePodPreset, "Default runtime pod preset", defaultRuntimePreset},
-			{spec.LogLevel, &instance.Status.LogLevel, "Log level", defaultLogLevel},
-			{spec.LogFormat, &instance.Status.LogFormat, "Log format", defaultLogFormat},
-		}
+
+	// Common fields for both legacy and buildless modes
+	fields := fieldsToUpdate{
+		{spec.TargetCPUUtilizationPercentage, &instance.Status.CPUUtilizationPercentage, "CPU utilization", ""},
+		{spec.FunctionRequeueDuration, &instance.Status.RequeueDuration, "Function requeue duration", ""},
+		{spec.FunctionBuildExecutorArgs, &instance.Status.BuildExecutorArgs, "Function build executor args", ""},
+		{spec.FunctionBuildMaxSimultaneousJobs, &instance.Status.BuildMaxSimultaneousJobs, "Max number of simultaneous jobs", ""},
+		{spec.HealthzLivenessTimeout, &instance.Status.HealthzLivenessTimeout, "Duration of health check", ""},
 	}
+
+	// Add build preset only in legacy mode
+	// TODO: This is a temporary solution, delete it after removing legacy serverless
+	if isLegacyEnabled(instance.Annotations) {
+		fields = append(fields, struct {
+			specField    string
+			statusField  *string
+			fieldName    string
+			defaultValue string
+		}{spec.DefaultBuildJobPreset, &instance.Status.DefaultBuildJobPreset, "Default build job preset", defaultBuildPreset})
+	} else {
+		instance.Status.DefaultBuildJobPreset = ""
+	}
+
+	// Add remaining common fields
+	fields = append(fields,
+		struct {
+			specField    string
+			statusField  *string
+			fieldName    string
+			defaultValue string
+		}{spec.DefaultRuntimePodPreset, &instance.Status.DefaultRuntimePodPreset, "Default runtime pod preset", defaultRuntimePreset},
+		struct {
+			specField    string
+			statusField  *string
+			fieldName    string
+			defaultValue string
+		}{spec.LogLevel, &instance.Status.LogLevel, "Log level", defaultLogLevel},
+		struct {
+			specField    string
+			statusField  *string
+			fieldName    string
+			defaultValue string
+		}{spec.LogFormat, &instance.Status.LogFormat, "Log format", defaultLogFormat},
+	)
 
 	updateStatusFields(r.k8s, instance, fields)
 	return nil
