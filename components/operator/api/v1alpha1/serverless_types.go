@@ -91,19 +91,23 @@ const (
 	// prerequisites and soft dependencies
 	ConditionTypeConfigured = ConditionType("Configured")
 
+	// serverless controller deployment failure details
+	ConditionTypeDeploymentFailure = ConditionType("DeploymentFailure")
+
 	// deletion
 	ConditionTypeDeleted = ConditionType("Deleted")
 
-	ConditionReasonConfiguration        = ConditionReason("Configuration")
-	ConditionReasonConfigurationErr     = ConditionReason("ConfigurationErr")
-	ConditionReasonConfigured           = ConditionReason("Configured")
-	ConditionReasonInstallation         = ConditionReason("Installation")
-	ConditionReasonInstallationErr      = ConditionReason("InstallationErr")
-	ConditionReasonInstalled            = ConditionReason("Installed")
-	ConditionReasonServerlessDuplicated = ConditionReason("ServerlessDuplicated")
-	ConditionReasonDeletion             = ConditionReason("Deletion")
-	ConditionReasonDeletionErr          = ConditionReason("DeletionErr")
-	ConditionReasonDeleted              = ConditionReason("Deleted")
+	ConditionReasonConfiguration            = ConditionReason("Configuration")
+	ConditionReasonConfigurationErr         = ConditionReason("ConfigurationErr")
+	ConditionReasonConfigured               = ConditionReason("Configured")
+	ConditionReasonInstallation             = ConditionReason("Installation")
+	ConditionReasonInstallationErr          = ConditionReason("InstallationErr")
+	ConditionReasonInstalled                = ConditionReason("Installed")
+	ConditionReasonDeploymentReplicaFailure = ConditionReason("DeploymentReplicaFailure")
+	ConditionReasonServerlessDuplicated     = ConditionReason("ServerlessDuplicated")
+	ConditionReasonDeletion                 = ConditionReason("Deletion")
+	ConditionReasonDeletionErr              = ConditionReason("DeletionErr")
+	ConditionReasonDeleted                  = ConditionReason("Deleted")
 
 	Finalizer = "serverless-operator.kyma-project.io/deletion-hook"
 )
@@ -197,6 +201,10 @@ func (s *Serverless) UpdateConditionTrue(c ConditionType, r ConditionReason, msg
 		Message:            msg,
 	}
 	meta.SetStatusCondition(&s.Status.Conditions, condition)
+}
+
+func (s *Serverless) RemoveCondition(c ConditionType) {
+	_ = meta.RemoveStatusCondition(&s.Status.Conditions, string(c))
 }
 
 func (s *Serverless) IsServedEmpty() bool {

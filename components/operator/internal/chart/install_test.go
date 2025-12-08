@@ -62,7 +62,13 @@ var (
 			Conditions: []appsv1.DeploymentCondition{
 				{
 					Type:   appsv1.DeploymentAvailable,
-					Status: corev1.ConditionStatus(v1.ConditionTrue),
+					Status: corev1.ConditionTrue,
+					Reason: MinimumReplicasAvailable,
+				},
+				{
+					Type:   appsv1.DeploymentProgressing,
+					Status: corev1.ConditionTrue,
+					Reason: NewRSAvailableReason,
 				},
 			},
 		},
