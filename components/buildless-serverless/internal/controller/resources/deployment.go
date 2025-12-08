@@ -373,7 +373,7 @@ func (d *Deployment) initContainerCommand() string {
 	var arr []string
 	arr = append(arr, "/app/gitcloner")
 	arr = append(arr,
-		fmt.Sprintf("mkdir /git-repository/src;cp -r /git-repository/repo/%s/* /git-repository/src;",
+		fmt.Sprintf("mkdir /git-repository/src;cp -r '/git-repository/repo/%s'/* /git-repository/src;",
 			strings.Trim(gitRepo.BaseDir, "/ ")))
 	return strings.Join(arr, "\n")
 }
