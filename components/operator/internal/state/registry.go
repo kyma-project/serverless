@@ -67,7 +67,12 @@ func addRegistryConfigurationWarnings(s *systemState) {
 }
 
 func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemState) error {
-	s.instance.Status.DockerRegistry = "internal"
+	// TODO: this is a temporary solution, delete it after removing legacy serverless
+	if isLegacyEnabled(s.instance.Annotations) {
+		s.instance.Status.DockerRegistry = "internal"
+	} else {
+		s.instance.Status.DockerRegistry = ""
+	}
 	s.flagsBuilder.WithRegistryEnableInternal(
 		*s.instance.Spec.DockerRegistry.EnableInternal,
 	)
