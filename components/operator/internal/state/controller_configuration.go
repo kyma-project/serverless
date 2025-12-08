@@ -60,16 +60,30 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 	}
 
 	spec := instance.Spec
+
+	// Common fields for both legacy and buildless modes
 	fields := fieldsToUpdate{
 		{spec.TargetCPUUtilizationPercentage, &instance.Status.CPUUtilizationPercentage, "CPU utilization", ""},
 		{spec.FunctionRequeueDuration, &instance.Status.RequeueDuration, "Function requeue duration", ""},
 		{spec.FunctionBuildExecutorArgs, &instance.Status.BuildExecutorArgs, "Function build executor args", ""},
 		{spec.FunctionBuildMaxSimultaneousJobs, &instance.Status.BuildMaxSimultaneousJobs, "Max number of simultaneous jobs", ""},
 		{spec.HealthzLivenessTimeout, &instance.Status.HealthzLivenessTimeout, "Duration of health check", ""},
-		{spec.DefaultBuildJobPreset, &instance.Status.DefaultBuildJobPreset, "Default build job preset", defaultBuildPreset},
 		{spec.DefaultRuntimePodPreset, &instance.Status.DefaultRuntimePodPreset, "Default runtime pod preset", defaultRuntimePreset},
 		{spec.LogLevel, &instance.Status.LogLevel, "Log level", defaultLogLevel},
 		{spec.LogFormat, &instance.Status.LogFormat, "Log format", defaultLogFormat},
+	}
+
+	// Add build preset only in legacy mode
+	// TODO: This is a temporary solution, delete it after removing legacy serverless
+	if isLegacyEnabled(instance.Annotations) {
+		fields = append(fields, struct {
+			specField    string
+			statusField  *string
+			fieldName    string
+			defaultValue string
+		}{spec.DefaultBuildJobPreset, &instance.Status.DefaultBuildJobPreset, "Default build job preset", defaultBuildPreset})
+	} else {
+		instance.Status.DefaultBuildJobPreset = ""
 	}
 
 	updateStatusFields(r.k8s, instance, fields)
@@ -77,6 +91,11 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 }
 
 func configureControllerConfigurationFlags(s *systemState) {
+	// TODO: This is a temporary solution, delete it after removing legacy serverless, clear flag when buildless mode is enabled
+	if !isLegacyEnabled(s.instance.Annotations) {
+		s.instance.Status.DefaultBuildJobPreset = ""
+	}
+
 	s.flagsBuilder.
 		WithControllerConfiguration(
 			s.instance.Status.CPUUtilizationPercentage,
@@ -120,8 +139,18 @@ func configureChartPath(s *systemState, log *zap.SugaredLogger) {
 	}
 	if val == buildlessModeDisabled {
 		log.Info("Chart path is set to old serverless module chart")
+		if s.chartConfig == nil {
+			log.Warn("Chart config is empty, cannot set chart path")
+			return
+		}
 		s.chartConfig.Release.ChartPath = oldServerlessChartPath
 	}
 	log.Infof("Using chart path: %s", s.chartConfig.Release.ChartPath)
 	// we use default value from environment variable if annotation has unexpected value
+}
+
+// TODO: remove this method when buildless is enabled by default
+func isLegacyEnabled(annotations map[string]string) bool {
+	val, ok := annotations[buildlessModeAnnotation]
+	return ok && val == buildlessModeDisabled
 }
