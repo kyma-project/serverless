@@ -17,6 +17,7 @@ limitations under the License.
 package main
 
 import (
+	"context"
 	"crypto/fips140"
 	"errors"
 	"flag"
@@ -24,11 +25,14 @@ import (
 	"time"
 
 	"github.com/kyma-project/serverless/components/operator/internal/config"
+	"github.com/kyma-project/serverless/components/operator/internal/logging"
+	"github.com/vrischmann/envconfig"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
-	uberzap "go.uber.org/zap"
-	uberzapcore "go.uber.org/zap/zapcore"
+	"github.com/go-logr/zapr"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
 	corev1 "k8s.io/api/core/v1"
@@ -40,7 +44,6 @@ import (
 	ctrlcache "sigs.k8s.io/controller-runtime/pkg/cache"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
-	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	ctrlwebhook "sigs.k8s.io/controller-runtime/pkg/webhook"
 
 	operatorv1alpha1 "github.com/kyma-project/serverless/components/operator/api/v1alpha1"
@@ -65,6 +68,11 @@ func init() {
 	//+kubebuilder:scaffold:scheme
 }
 
+type operatorConfig struct {
+	ChartPath     string `envconfig:"default=/module-chart"`
+	LogConfigPath string `envconfig:"default=hack/log-config.yaml"`
+}
+
 func main() {
 	if !isFIPS140Only() {
 		setupLog.Error(errors.New("FIPS not enforced"), "FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
@@ -75,21 +83,47 @@ func main() {
 	var probeAddr string
 	flag.StringVar(&metricsAddr, "metrics-bind-address", ":8080", "The address the metric endpoint binds to.")
 	flag.StringVar(&probeAddr, "health-probe-bind-address", ":8081", "The address the probe endpoint binds to.")
-
-	opts := zap.Options{
-		Development: true,
-		TimeEncoder: uberzapcore.TimeEncoderOfLayout("Jan 02 15:04:05.000000000"),
-	}
-	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
 
-	cfg, err := config.GetConfig("")
+	// Load operator configuration from environment variables
+	opCfg, err := loadConfig("")
 	if err != nil {
-		setupLog.Error(err, "while getting config")
+		setupLog.Error(err, "unable to load config")
 		os.Exit(1)
 	}
 
-	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
+	// Load log configuration from file
+	logCfg, err := config.LoadLogConfig(opCfg.LogConfigPath)
+	if err != nil {
+		setupLog.Error(err, "unable to load log configuration file")
+		os.Exit(1)
+	}
+
+	logLevel := logCfg.LogLevel
+	logFormat := logCfg.LogFormat
+
+	atomicLevel := zap.NewAtomicLevel()
+	parsedLevel, err := zapcore.ParseLevel(logLevel)
+	if err != nil {
+		setupLog.Error(err, "unable to parse logger level")
+		os.Exit(1)
+	}
+	atomicLevel.SetLevel(parsedLevel)
+
+	// Configure logger using manager-toolkit
+	log, err := logging.ConfigureLogger(logLevel, logFormat, atomicLevel)
+	if err != nil {
+		setupLog.Error(err, "unable to configure logger")
+		os.Exit(1)
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	logWithCtx := log.WithContext()
+	go logging.ReconfigureOnConfigChange(ctx, logWithCtx.Named("notifier"), atomicLevel, opCfg.LogConfigPath)
+
+	ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme: scheme,
@@ -111,29 +145,17 @@ func main() {
 				},
 			},
 		},
-		// TODO: use our own logger - now eventing use logger with different message format
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
 		os.Exit(1)
 	}
 
-	config := uberzap.NewDevelopmentConfig()
-	config.EncoderConfig.TimeKey = "timestamp"
-	config.EncoderConfig.EncodeTime = opts.TimeEncoder
-	config.DisableCaller = true
-
-	reconcilerLogger, err := config.Build()
-	if err != nil {
-		setupLog.Error(err, "unable to setup logger")
-		os.Exit(1)
-	}
-
 	reconciler := controllers.NewServerlessReconciler(
 		mgr.GetClient(), mgr.GetConfig(),
 		mgr.GetEventRecorderFor("serverless-operator"),
-		reconcilerLogger.Sugar(),
-		cfg.ChartPath)
+		logWithCtx.Desugar().Sugar(),
+		opCfg.ChartPath)
 
 	if err = reconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Serverless")
@@ -159,4 +181,13 @@ func main() {
 
 func isFIPS140Only() bool {
 	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=only,tlsmlkem=0"
+}
+
+func loadConfig(prefix string) (operatorConfig, error) {
+	cfg := operatorConfig{}
+	err := envconfig.InitWithPrefix(&cfg, prefix)
+	if err != nil {
+		return cfg, err
+	}
+	return cfg, nil
 }
