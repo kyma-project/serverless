@@ -83,28 +83,6 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 		instance.Status.DefaultBuildJobPreset = ""
 	}
 
-	// Add remaining common fields
-	fields = append(fields,
-		struct {
-			specField    string
-			statusField  *string
-			fieldName    string
-			defaultValue string
-		}{spec.DefaultRuntimePodPreset, &instance.Status.DefaultRuntimePodPreset, "Default runtime pod preset", defaultRuntimePreset},
-		struct {
-			specField    string
-			statusField  *string
-			fieldName    string
-			defaultValue string
-		}{spec.LogLevel, &instance.Status.LogLevel, "Log level", defaultLogLevel},
-		struct {
-			specField    string
-			statusField  *string
-			fieldName    string
-			defaultValue string
-		}{spec.LogFormat, &instance.Status.LogFormat, "Log format", defaultLogFormat},
-	)
-
 	updateStatusFields(r.k8s, instance, fields)
 	return nil
 }
