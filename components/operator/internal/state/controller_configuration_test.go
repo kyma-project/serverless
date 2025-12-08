@@ -30,10 +30,55 @@ const (
 func Test_sFnControllerConfiguration(t *testing.T) {
 	configurationReadyMsg := "Configuration ready"
 
+	t.Run("update status in buildless mode", func(t *testing.T) {
+		s := &systemState{
+			instance: v1alpha1.Serverless{
+				Spec: v1alpha1.ServerlessSpec{},
+			},
+			flagsBuilder: chart.NewFlagsBuilder(),
+		}
+
+		c := fake.NewClientBuilder().WithObjects(
+			fixTestNode("node-1"),
+			fixTestNode("node-2"),
+		).Build()
+		eventRecorder := record.NewFakeRecorder(4)
+		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
+		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
+		require.Nil(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnApplyResources, next)
+
+		status := s.instance.Status
+		require.Equal(t, "", status.DefaultBuildJobPreset)
+		require.Equal(t, slowRuntimePreset, status.DefaultRuntimePodPreset)
+
+		require.Equal(t, v1alpha1.StateProcessing, status.State)
+		requireContainsCondition(t, status,
+			v1alpha1.ConditionTypeConfigured,
+			metav1.ConditionTrue,
+			v1alpha1.ConditionReasonConfigured,
+			configurationReadyMsg,
+		)
+
+		expectedEvents := []string{
+			"Normal Configuration Default runtime pod preset set from '' to 'XS'",
+		}
+
+		for _, expectedEvent := range expectedEvents {
+			require.Equal(t, expectedEvent, <-eventRecorder.Events)
+		}
+	})
+
 	t.Run("update status with slow defaults", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{},
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						buildlessModeAnnotation: buildlessModeDisabled,
+					},
+				},
 			},
 			flagsBuilder: chart.NewFlagsBuilder(),
 		}
@@ -62,8 +107,10 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		)
 
 		expectedEvents := []string{
-			"Normal Configuration Default build job preset set from '' to 'slow'",
 			"Normal Configuration Default runtime pod preset set from '' to 'XS'",
+			"Normal Configuration Log level set from '' to 'info'",
+			"Normal Configuration Log format set from '' to 'json'",
+			"Normal Configuration Default build job preset set from '' to 'slow'",
 		}
 
 		for _, expectedEvent := range expectedEvents {
@@ -74,6 +121,11 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 	t.Run("update slow default to normal ones", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						buildlessModeAnnotation: buildlessModeDisabled,
+					},
+				},
 				Spec: v1alpha1.ServerlessSpec{},
 				Status: v1alpha1.ServerlessStatus{
 					DefaultBuildJobPreset:   slowBuildPreset,
@@ -109,8 +161,10 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		)
 
 		expectedEvents := []string{
-			"Normal Configuration Default build job preset set from 'slow' to 'normal'",
 			"Normal Configuration Default runtime pod preset set from 'XS' to 'L'",
+			"Normal Configuration Log level set from '' to 'info'",
+			"Normal Configuration Log format set from '' to 'json'",
+			"Normal Configuration Default build job preset set from 'slow' to 'normal'",
 		}
 
 		for _, expectedEvent := range expectedEvents {
@@ -121,6 +175,11 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 	t.Run("update status additional configuration overrides", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
+				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						buildlessModeAnnotation: buildlessModeDisabled,
+					},
+				},
 				Spec: v1alpha1.ServerlessSpec{
 					TargetCPUUtilizationPercentage:   cpuUtilizationTest,
 					FunctionRequeueDuration:          requeueDurationTest,
@@ -169,10 +228,10 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			"Normal Configuration Function build executor args set from '' to 'test-build-executor-args'",
 			"Normal Configuration Max number of simultaneous jobs set from '' to 'test-max-simultaneous-jobs'",
 			"Normal Configuration Duration of health check set from '' to 'test-healthz-liveness-timeout'",
-			"Normal Configuration Default build job preset set from '' to 'test=default-build-job-preset'",
 			"Normal Configuration Default runtime pod preset set from '' to 'test-default-runtime-pod-preset'",
 			"Normal Configuration Log level set from '' to 'test-log-level'",
 			"Normal Configuration Log format set from '' to 'test-log-format'",
+			"Normal Configuration Default build job preset set from '' to 'test=default-build-job-preset'",
 		}
 
 		for _, expectedEvent := range expectedEvents {
