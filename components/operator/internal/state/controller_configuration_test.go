@@ -30,7 +30,7 @@ const (
 func Test_sFnControllerConfiguration(t *testing.T) {
 	configurationReadyMsg := "Configuration ready"
 
-	t.Run("update status without buildPreset", func(t *testing.T) {
+	t.Run("update status in buildless mode", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{},
@@ -107,8 +107,10 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		)
 
 		expectedEvents := []string{
-			"Normal Configuration Default build job preset set from '' to 'slow'",
 			"Normal Configuration Default runtime pod preset set from '' to 'XS'",
+			"Normal Configuration Log level set from '' to 'info'",
+			"Normal Configuration Log format set from '' to 'json'",
+			"Normal Configuration Default build job preset set from '' to 'slow'",
 		}
 
 		for _, expectedEvent := range expectedEvents {
@@ -159,8 +161,10 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		)
 
 		expectedEvents := []string{
-			"Normal Configuration Default build job preset set from 'slow' to 'normal'",
 			"Normal Configuration Default runtime pod preset set from 'XS' to 'L'",
+			"Normal Configuration Log level set from '' to 'info'",
+			"Normal Configuration Log format set from '' to 'json'",
+			"Normal Configuration Default build job preset set from 'slow' to 'normal'",
 		}
 
 		for _, expectedEvent := range expectedEvents {
@@ -224,10 +228,10 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			"Normal Configuration Function build executor args set from '' to 'test-build-executor-args'",
 			"Normal Configuration Max number of simultaneous jobs set from '' to 'test-max-simultaneous-jobs'",
 			"Normal Configuration Duration of health check set from '' to 'test-healthz-liveness-timeout'",
-			"Normal Configuration Default build job preset set from '' to 'test=default-build-job-preset'",
 			"Normal Configuration Default runtime pod preset set from '' to 'test-default-runtime-pod-preset'",
 			"Normal Configuration Log level set from '' to 'test-log-level'",
 			"Normal Configuration Log format set from '' to 'test-log-format'",
+			"Normal Configuration Default build job preset set from '' to 'test=default-build-job-preset'",
 		}
 
 		for _, expectedEvent := range expectedEvents {
