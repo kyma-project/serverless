@@ -8,7 +8,7 @@ require (
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/cloudevents/sdk-go/v2 v2.16.2
 	github.com/fsnotify/fsnotify v1.9.0
-	github.com/go-git/go-billy/v5 v5.6.2
+	github.com/go-git/go-billy/v5 v5.7.0
 	github.com/go-git/go-git/v5 v5.16.4
 	github.com/go-logr/zapr v1.3.0
 	github.com/google/uuid v1.6.0
