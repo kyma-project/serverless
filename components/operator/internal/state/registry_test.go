@@ -167,9 +167,9 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			instance: v1alpha1.Serverless{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: "some-namespace",
-					//Annotations: map[string]string{
-					//	buildlessModeAnnotation: buildlessModeDisabled,
-					//},
+					Annotations: map[string]string{
+						buildlessModeAnnotation: buildlessModeDisabled,
+					},
 				},
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
