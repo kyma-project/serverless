@@ -1,0 +1,22 @@
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  name: python
+  namespace: default
+spec:
+  runtime: python312
+  source:
+    inline:
+      dependencies: |
+        cloudevents
+        pytest
+      source: |
+        import hashlib
+        import _hashlib
+        import ssl
+
+        def main(event, context):
+          # ssl.fips_mode()  # to verify that FIPS mode is enabled, this will raise an error if not
+          print(_hashlib.get_fips_mode())  # should print 1 if FIPS mode is enabled
+          res = hashlib.sha256(b'GeeksforGeeks')
+          return res.digest()

@@ -1,0 +1,23 @@
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  name: node
+  namespace: default
+spec:
+  runtime: nodejs22
+  source:
+    inline:
+      dependencies: |
+        {
+          "dependencies": {
+            "lodash": "4.17.21"
+          }
+        }
+      source: |
+        const crypto = require('crypto')
+
+        module.exports = {
+          main: function(event, context) {
+            return crypto.createHash('md5').update('some_string').digest("hex");
+          }
+        }

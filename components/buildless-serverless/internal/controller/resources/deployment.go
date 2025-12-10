@@ -494,7 +494,7 @@ func workingSourcesDir(f *serverlessv1alpha2.Function) string {
 	if f.HasNodejsRuntime() {
 		return "/usr/src/app/function"
 	} else if f.HasPythonRuntime() {
-		return "/kubeless"
+		return "/usr/src/app/kubeless"
 	}
 	return ""
 }
@@ -642,7 +642,7 @@ func sourceEnvs(f *serverlessv1alpha2.Function) []corev1.EnvVar {
 		envs = append(envs, []corev1.EnvVar{
 			{
 				Name:  "FUNCTION_PATH",
-				Value: "/kubeless",
+				Value: "/usr/src/app/kubeless",
 			},
 		}...)
 	}
