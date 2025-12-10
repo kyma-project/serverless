@@ -157,6 +157,9 @@ func (h *testHelper) createServerless(serverlessName string, spec v1alpha1.Serve
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      serverlessName,
 			Namespace: h.namespaceName,
+			Annotations: map[string]string{
+				"serverless.kyma-project.io/buildless-mode": "disabled",
+			},
 			Labels: map[string]string{
 				"operator.kyma-project.io/kyma-name": "test",
 			},
