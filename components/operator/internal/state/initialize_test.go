@@ -11,6 +11,33 @@ import (
 )
 
 func Test_sFnInitialize(t *testing.T) {
+	t.Run("setup and return next step sFnOptionalDependencies", func(t *testing.T) {
+		r := &reconciler{
+			cfg: cfg{
+				finalizer: v1alpha1.Finalizer,
+			},
+			k8s: k8s{
+				client: fake.NewClientBuilder().Build(),
+			},
+		}
+		s := &systemState{
+			instance: v1alpha1.Serverless{
+				ObjectMeta: metav1.ObjectMeta{
+					Finalizers: []string{
+						r.cfg.finalizer,
+					},
+				},
+				Spec: v1alpha1.ServerlessSpec{},
+			},
+		}
+
+		// setup and return buildSFnPrerequisites
+		next, result, err := sFnInitialize(context.Background(), r, s)
+		require.Nil(t, err)
+		require.Nil(t, result)
+		requireEqualFunc(t, sFnOptionalDependencies, next)
+	})
+
 	t.Run("setup and return next step sFnRegistryConfiguration", func(t *testing.T) {
 		r := &reconciler{
 			cfg: cfg{
@@ -23,6 +50,9 @@ func Test_sFnInitialize(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				ObjectMeta: metav1.ObjectMeta{
+					Annotations: map[string]string{
+						buildlessModeAnnotation: buildlessModeDisabled,
+					},
 					Finalizers: []string{
 						r.cfg.finalizer,
 					},

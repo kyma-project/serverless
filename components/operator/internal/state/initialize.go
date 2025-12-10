@@ -14,5 +14,9 @@ func sFnInitialize(_ context.Context, _ *reconciler, s *systemState) (stateFn, *
 		return nextState(sFnDeleteResources)
 	}
 
-	return nextState(sFnRegistryConfiguration)
+	//TODO: this is temporary solution, delete it after removing legacy serverless
+	if isLegacyEnabled(s.instance.Annotations) {
+		return nextState(sFnRegistryConfiguration)
+	}
+	return nextState(sFnOptionalDependencies)
 }
