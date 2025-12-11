@@ -139,11 +139,6 @@ func shouldCreateServerless(h testHelper, serverlessName, serverlessDeploymentNa
 
 func shouldPropagateSpecProperties(h testHelper, expected serverlessData) {
 
-	// Eventually(h.createCheckRegistrySecretFunc(serverlessRegistrySecret, expected.registrySecretData)).
-	// 	WithPolling(time.Second * 2).
-	// 	WithTimeout(time.Second * 10).
-	// 	Should(BeTrue())
-
 	Eventually(h.createCheckOptionalDependenciesFunc(serverlessDeploymentName, expected)).
 		WithPolling(time.Second * 2).
 		WithTimeout(time.Second * 10).
