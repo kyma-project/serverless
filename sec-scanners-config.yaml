@@ -1,17 +1,17 @@
 module-name: serverless
 kind: kyma
 bdba:
-  - europe-docker.pkg.dev/kyma-project/prod/function-controller:1.9.2
-  - europe-docker.pkg.dev/kyma-project/prod/function-build-init:1.9.2
+  - europe-docker.pkg.dev/kyma-project/prod/function-controller:1.9.3
+  - europe-docker.pkg.dev/kyma-project/prod/function-build-init:1.9.3
   - europe-docker.pkg.dev/kyma-project/prod/registry-init:v20240506-57d31b1d
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:1.9.2
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:1.9.2
-  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:1.9.2
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:1.9.3
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:1.9.3
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:1.9.3
   - europe-docker.pkg.dev/kyma-project/prod/external/gcr.io/kaniko-project/executor:v1.24.0
   - europe-docker.pkg.dev/kyma-project/prod/external/library/registry:3.0.0
-  - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:1.9.2
-  - europe-docker.pkg.dev/kyma-project/prod/function-buildless-controller:1.9.2
-  - europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:1.9.2
+  - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:1.9.3
+  - europe-docker.pkg.dev/kyma-project/prod/function-buildless-controller:1.9.3
+  - europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:1.9.3
 mend:
   language: golang-mod
   exclude:
