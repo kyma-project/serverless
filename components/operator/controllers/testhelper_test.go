@@ -306,25 +306,6 @@ func (d *registrySecretData) toMap() map[string]string {
 	return result
 }
 
-func (h *testHelper) createCheckRegistrySecretFunc(serverlessRegistrySecret string, expected registrySecretData) func() (bool, error) {
-	return func() (bool, error) {
-		var configurationSecret corev1.Secret
-
-		if ok, err := h.getKubernetesObjectFunc(
-			serverlessRegistrySecret, &configurationSecret); !ok || err != nil {
-			return ok, err
-		}
-		if err := secretContainsSameValues(
-			expected.toMap(), configurationSecret); err != nil {
-			return false, err
-		}
-		if err := secretContainsRequired(configurationSecret); err != nil {
-			return false, err
-		}
-		return true, nil
-	}
-}
-
 func (h *testHelper) createCheckOptionalDependenciesFunc(deploymentName string, expected serverlessData) func() (bool, error) {
 	return func() (bool, error) {
 		var deploy appsv1.Deployment
@@ -368,27 +349,4 @@ func deploymentContainsEnv(deployment appsv1.Deployment, name, value string) err
 	}
 
 	return fmt.Errorf("env %s does not exist", name)
-}
-
-func secretContainsRequired(configurationSecret corev1.Secret) error {
-	for _, k := range []string{"username", "password", "registryAddress", "serverAddress"} {
-		_, ok := configurationSecret.Data[k]
-		if !ok {
-			return fmt.Errorf("values not propagated (%s is required)", k)
-		}
-	}
-	return nil
-}
-
-func secretContainsSameValues(expected map[string]string, configurationSecret corev1.Secret) error {
-	for k, expectedV := range expected {
-		v, okV := configurationSecret.Data[k]
-		if okV == false {
-			return fmt.Errorf("values not propagated (%s: nil != %s )", k, expectedV)
-		}
-		if expectedV != string(v) {
-			return fmt.Errorf("values not propagated (%s: %s != %s )", k, string(v), expectedV)
-		}
-	}
-	return nil
 }
