@@ -37,6 +37,13 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 
 func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error {
 
+	//TODO: This is a temporary solution, delete it when legacy serverless is removed
+	if !isLegacyEnabled(s.instance.Annotations) {
+		setK3dRegistryConfig(s)
+		s.instance.Status.DockerRegistry = ""
+		return nil
+	}
+
 	switch {
 	case isRegistrySecretName(s.instance.Spec.DockerRegistry):
 		// case: use secret from secretName field
@@ -131,9 +138,8 @@ func setExternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 }
 
 func setK3dRegistryConfig(s *systemState) {
-	if isLegacyEnabled(s.instance.Annotations) {
-		s.instance.Status.DockerRegistry = v1alpha1.DefaultServerAddress
-	}
+	s.instance.Status.DockerRegistry = v1alpha1.DefaultServerAddress
+
 	s.flagsBuilder.WithRegistryEnableInternal(
 		getEnableInternal(s.instance.Spec.DockerRegistry),
 	).WithRegistryAddresses(
