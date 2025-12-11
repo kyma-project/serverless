@@ -37,6 +37,7 @@ func sFnRegistryConfiguration(ctx context.Context, r *reconciler, s *systemState
 
 func configureRegistry(ctx context.Context, r *reconciler, s *systemState) error {
 
+	s.instance.Status.DockerRegistry = ""
 	switch {
 	case isRegistrySecretName(s.instance.Spec.DockerRegistry):
 		// case: use secret from secretName field
@@ -70,8 +71,6 @@ func setInternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 	// TODO: this is a temporary solution, delete it after removing legacy serverless
 	if isLegacyEnabled(s.instance.Annotations) {
 		s.instance.Status.DockerRegistry = "internal"
-	} else {
-		s.instance.Status.DockerRegistry = ""
 	}
 	s.flagsBuilder.WithRegistryEnableInternal(
 		*s.instance.Spec.DockerRegistry.EnableInternal,
@@ -112,8 +111,9 @@ func setExternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 	if err != nil {
 		return err
 	}
-
-	s.instance.Status.DockerRegistry = string(secret.Data["serverAddress"])
+	if isLegacyEnabled(s.instance.Annotations) {
+		s.instance.Status.DockerRegistry = string(secret.Data["serverAddress"])
+	}
 	s.flagsBuilder.
 		WithRegistryEnableInternal(
 			getEnableInternal(s.instance.Spec.DockerRegistry),

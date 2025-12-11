@@ -119,6 +119,9 @@ func Test_sFnRegistryConfiguration(t *testing.T) {
 			instance: v1alpha1.Serverless{
 				ObjectMeta: metav1.ObjectMeta{
 					Namespace: "kyma-test",
+					Annotations: map[string]string{
+						buildlessModeAnnotation: buildlessModeDisabled,
+					},
 				},
 				Spec: v1alpha1.ServerlessSpec{
 					DockerRegistry: &v1alpha1.DockerRegistry{
