@@ -65,7 +65,7 @@ yq -i ea '. |= [.].[] | select(.kind=="Deployment") |= .spec.template.spec.conta
     ${KEDA_REPO}/keda.yaml
 
 # keda installation
-make -C ${KEDA_REPO} install deploy
+IMG=europe-docker.pkg.dev/kyma-project/prod/keda-manager:main make -C ${KEDA_REPO} install deploy
 kubectl apply -f ${KEDA_REPO}/config/samples/keda-default-cr.yaml -n kyma-system
 
 #
