@@ -133,6 +133,8 @@ func setExternalRegistryConfig(ctx context.Context, r *reconciler, s *systemStat
 func setK3dRegistryConfig(s *systemState) {
 	if isLegacyEnabled(s.instance.Annotations) {
 		s.instance.Status.DockerRegistry = v1alpha1.DefaultServerAddress
+	} else {
+		s.instance.Status.DockerRegistry = ""
 	}
 	s.flagsBuilder.WithRegistryEnableInternal(
 		getEnableInternal(s.instance.Spec.DockerRegistry),
