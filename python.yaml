@@ -18,5 +18,5 @@ spec:
         def main(event, context):
           # ssl.fips_mode()  # to verify that FIPS mode is enabled, this will raise an error if not
           print(_hashlib.get_fips_mode())  # should print 1 if FIPS mode is enabled
-          res = hashlib.sha256(b'GeeksforGeeks')
+          res = hashlib.md5(b'GeeksforGeeks')
           return res.digest()
