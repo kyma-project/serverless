@@ -2,7 +2,7 @@
 
 ## Symptom
 
-After migration to serverless `1.9.3` some of the Functions show `Running=False` condition.
+After migration to Serverless 1.9.3, some of the Functions show `Running=False` condition.
 
 ```bash
 kubectl get function -A
@@ -16,11 +16,11 @@ foo         function4                   True         False     nodejs22   3     
 
 ## Cause
 
-In Serverless 1.9.3 we introduced [buildless mode](../00-60-buildless-serverless.md), which removes the in-cluster image build step. This reduces overall resource usage and speeds up delivery. As a result, dependency resolution (`pip install`/`npm install`) now happens at Function pod startup. During this brief initialization phase, the pod may require slightly more CPU and memory. If the Function’s resource limits are very low (for example, custom defined strict memory/CPU limits via `resourceConfiguration`), the pod can be OOMKilled by Kubernetes. 
+With Serverless 1.9.3, we introduced [buildless mode](../00-60-buildless-serverless.md), which removes the in-cluster image build step. This reduces overall resource usage and speeds up delivery. As a result, dependency resolution (`pip install`/`npm install`) now happens at Function Pod startup. During this brief initialization phase, the Pod may require slightly more CPU and memory. If the Function’s resource limits are very low (for example, custom-defined strict memory/CPU limits using `resourceConfiguration`), the Pod can be OOMKilled by Kubernetes. 
 
 ## Solution
 
-To avoid this, consider increasing the resource limits in the `spec.resourceConfiguration.function` or using a [larger preset](../technical-reference/07-80-available-presets.md), especially for Functions with multiple or heavy dependencies.
+To avoid this, increase the resource limits in `spec.resourceConfiguration.function` or use a [larger preset](../technical-reference/07-80-available-presets.md), especially for Functions with multiple or heavy dependencies.
 
 ```yaml
 apiVersion: serverless.kyma-project.io/v1alpha2
@@ -44,5 +44,5 @@ spec:
           memory: 32Mi
 ```
 
-Learn more how to specify resources per Function [here](../resources/06-10-function-cr.md)
-Learn more how to configure default resource preset for all functions [here](../00-20-configure-serverless.md)
+To learn how to specify resources per Function, see [Function(../resources/06-10-function-cr.md)
+To learn how to configure the default resource preset for all Functions, see [Configure Serverless](../00-20-configure-serverless.md)
