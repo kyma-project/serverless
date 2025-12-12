@@ -23,7 +23,6 @@ The Serverless CR is an API to configure the Serverless module. You can use it t
 - Override the default runtime Pod preset.
 - Override the default log level.
 - Override the default log format.
-- Enable network policies.
 - Disable buildless mode of Serverless.
 
 The default configuration of the Serverless Module is following:
@@ -108,17 +107,6 @@ You can configure the desired log format to be used.
 ```yaml
    spec:
       logFormat: "yaml"
-```
-
-### Enabling Network Policies
-
-You can enable built-in network policies to ensure that the necessary communication channels required by Serverless workloads remain functional,
-even on Kubernetes clusters where strict "deny-all" network policies are enforced. This allows Serverless components to operate correctly
-by permitting essential traffic while maintaining a secure cluster environment.
-
-```yaml
-   spec:
-      enableNetworkPolicies: true
 ```
 
 ### Disabling Buildless Mode

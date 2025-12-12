@@ -2,6 +2,7 @@ package serverless
 
 import (
 	"fmt"
+
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -160,10 +161,6 @@ func verifyStatus(serverless *v1alpha1.Serverless, legacy bool) error {
 		if err := isSpecValueReflectedInStatus(spec.Tracing.Endpoint, status.TracingEndpoint); err != nil {
 			return err
 		}
-	}
-
-	if err := isSpecBooleanValueReflectedInStatus(spec.EnableNetworkPolicies, status.NetworkPoliciesEnabled); err != nil {
-		return err
 	}
 
 	if legacy {

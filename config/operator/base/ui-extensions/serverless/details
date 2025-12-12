@@ -15,8 +15,6 @@ status:
             - 'True'
           informative:
             - unknown
-    - name: status.networkPoliciesEnabled
-      source: status.networkPoliciesEnabled
 body:
   - name: Configuration
     widget: Panel
