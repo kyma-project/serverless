@@ -12,7 +12,7 @@ For example, to modify the default values for **buildResources**, remove all its
 
 | Preset | Request CPU | Request memory | Limit CPU | Limit memory |
 | - | - | - | - | - |
-| `XS` | `50m` | `64Mi` | `150m` | `192Mi` |
+| `XS` | `50m` | `64Mi` | `150m` | `256Mi` |
 | `S` | `100m` | `128Mi` | `200m` | `256Mi` |
 | `M` | `200m` | `256Mi` | `400m` | `512Mi` |
 | `L` | `400m` | `512Mi` | `800m` | `1024Mi` |
