@@ -4,22 +4,22 @@ on:
   workflow_dispatch:
     inputs:
       image:
-        description: 'The image to test'
+        description: "The image to test"
         required: true
         type: string
       trigger_btp:
-        description: 'Trigger BTP integration test'
+        description: "Trigger BTP integration test"
         required: false
         type: boolean
         default: false
   workflow_call:
     inputs:
       image:
-        description: 'The image to test'
+        description: "The image to test"
         required: true
         type: string
       trigger_btp:
-        description: 'Trigger BTP integration test'
+        description: "Trigger BTP integration test"
         required: false
         type: boolean
         default: false
@@ -111,33 +111,6 @@ jobs:
         if: ${{ always() }}
         run: make -C tests/serverless cluster-info
 
-  legacy-git-auth-integration-with-network-policies-test:
-    if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-k3d-cluster
-      - name: run tests
-        run: |
-          make install-serverless-custom-operator-custom-cr
-          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
-          make -C tests/serverless git-auth-integration
-          make remove-serverless
-        env:
-          APP_TEST_GITHUB_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_GITHUB_SSH_KEY }}
-          APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
-          APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
-          APP_TEST_AZURE_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_AZURE_SSH_KEY }}
-          IMG: ${{ inputs.image }}
-          SERVERLESS_CR_PATH: config/samples/legacy-serverless-with-networkpolicies-enabled.yaml
-      - name: collect cluster info
-        if: ${{ always() }}
-        run: make -C tests/serverless cluster-info
-
   git-auth-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
@@ -159,33 +132,6 @@ jobs:
           APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
           APP_TEST_AZURE_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_AZURE_SSH_KEY }}
           IMG: ${{ inputs.image }}
-      - name: collect cluster info
-        if: ${{ always() }}
-        run: make -C tests/serverless cluster-info
-
-  git-auth-integration-with-network-policies-test:
-    if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-k3d-cluster
-      - name: run tests
-        run: |
-          make install-serverless-custom-operator-custom-cr
-          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
-          make -C tests/serverless git-auth-integration
-          make remove-serverless
-        env:
-          APP_TEST_GITHUB_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_GITHUB_SSH_KEY }}
-          APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
-          APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
-          APP_TEST_AZURE_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_AZURE_SSH_KEY }}
-          IMG: ${{ inputs.image }}
-          SERVERLESS_CR_PATH: config/samples/serverless-with-networkpolicies-enabled.yaml
       - name: collect cluster info
         if: ${{ always() }}
         run: make -C tests/serverless cluster-info
@@ -229,14 +175,14 @@ jobs:
         id: create-btp-resources
         with:
           btp_subaccount_name: serverless-test-${{ steps.vars.outputs.sha_short }}-${{ github.run_attempt }}
-          btp_backend_url: '${{ secrets.BTP_BACKEND_URL}}'
-          btp_user: '${{ secrets.BTP_BOT_USER}}'
-          btp_password: '${{ secrets.BTP_BOT_PASSWORD}}'
-          btp_global_account: '${{ secrets.BTP_GLOBAL_ACCOUNT }}'
-          btp_idp_tenant: '${{ secrets.BTP_CUSTOM_IAS_TENANT }}'
-          btp_subaccount_region: '${{ secrets.BTP_SUBACCOUNT_REGION }}'
-          btp_kyma_region: '${{ secrets.BTP_KYMA_REGION }}'
-          btp_kyma_plan: '${{ secrets.BTP_KYMA_PLAN }}'
+          btp_backend_url: "${{ secrets.BTP_BACKEND_URL}}"
+          btp_user: "${{ secrets.BTP_BOT_USER}}"
+          btp_password: "${{ secrets.BTP_BOT_PASSWORD}}"
+          btp_global_account: "${{ secrets.BTP_GLOBAL_ACCOUNT }}"
+          btp_idp_tenant: "${{ secrets.BTP_CUSTOM_IAS_TENANT }}"
+          btp_subaccount_region: "${{ secrets.BTP_SUBACCOUNT_REGION }}"
+          btp_kyma_region: "${{ secrets.BTP_KYMA_REGION }}"
+          btp_kyma_plan: "${{ secrets.BTP_KYMA_PLAN }}"
           btp_kyma_modules: "[]"
           btp_kyma_autoscaler_min: 4
       - name: run tests
@@ -265,4 +211,3 @@ jobs:
           btp_password: ${{ secrets.BTP_BOT_PASSWORD}}
           btp_global_account: ${{ secrets.BTP_GLOBAL_ACCOUNT }}
           btp_idp_tenant: ${{ secrets.BTP_CUSTOM_IAS_TENANT }}
-
