@@ -20,7 +20,7 @@ resourcesConfiguration:
           requestCpu: "50m"
           requestMemory: "64Mi"
           limitCpu: "150m"
-          limitMemory: "192Mi"
+          limitMemory: "256Mi"
         S:
           requestCpu: "100m"
           requestMemory: "128Mi"
