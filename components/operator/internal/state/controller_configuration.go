@@ -43,7 +43,7 @@ func sFnControllerConfiguration(ctx context.Context, r *reconciler, s *systemSta
 		"Configuration ready",
 	)
 
-	return nextState(sFnConfigureNetworkPolicies)
+	return nextState(sFnApplyResources)
 }
 
 func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, instance *v1alpha1.Serverless) error {

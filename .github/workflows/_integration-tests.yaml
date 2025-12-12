@@ -111,33 +111,6 @@ jobs:
         if: ${{ always() }}
         run: make -C tests/serverless cluster-info
 
-  legacy-git-auth-integration-with-network-policies-test:
-    if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-k3d-cluster
-      - name: run tests
-        run: |
-          make install-serverless-custom-operator-custom-cr
-          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
-          make -C tests/serverless git-auth-integration
-          make remove-serverless
-        env:
-          APP_TEST_GITHUB_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_GITHUB_SSH_KEY }}
-          APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
-          APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
-          APP_TEST_AZURE_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_AZURE_SSH_KEY }}
-          IMG: ${{ inputs.image }}
-          SERVERLESS_CR_PATH: config/samples/legacy-serverless-with-networkpolicies-enabled.yaml
-      - name: collect cluster info
-        if: ${{ always() }}
-        run: make -C tests/serverless cluster-info
-
   git-auth-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
@@ -159,33 +132,6 @@ jobs:
           APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
           APP_TEST_AZURE_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_AZURE_SSH_KEY }}
           IMG: ${{ inputs.image }}
-      - name: collect cluster info
-        if: ${{ always() }}
-        run: make -C tests/serverless cluster-info
-
-  git-auth-integration-with-network-policies-test:
-    if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-k3d-cluster
-      - name: run tests
-        run: |
-          make install-serverless-custom-operator-custom-cr
-          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
-          make -C tests/serverless git-auth-integration
-          make remove-serverless
-        env:
-          APP_TEST_GITHUB_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_GITHUB_SSH_KEY }}
-          APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
-          APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
-          APP_TEST_AZURE_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_AZURE_SSH_KEY }}
-          IMG: ${{ inputs.image }}
-          SERVERLESS_CR_PATH: config/samples/serverless-with-networkpolicies-enabled.yaml
       - name: collect cluster info
         if: ${{ always() }}
         run: make -C tests/serverless cluster-info
