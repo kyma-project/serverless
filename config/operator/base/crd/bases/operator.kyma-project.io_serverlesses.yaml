@@ -79,6 +79,11 @@ spec:
                     description: Secret used for configuration of the Docker registry
                     type: string
                 type: object
+              enableNetworkPolicies:
+                description: |-
+                  Deprecated: Enable deployment of network policies that allow serverless' essential in-cluster communication.
+                  This setting should be removed from a future version.
+                type: boolean
               eventing:
                 description: Used Eventing endpoint
                 properties:
@@ -210,6 +215,14 @@ spec:
               logFormat:
                 type: string
               logLevel:
+                type: string
+              networkPoliciesEnabled:
+                description: |-
+                  NetworkPoliciesEnabled signifies if NetworkPolicies dedicated for serverless are enabled.
+                  Value can be one of ("True", "False").
+                enum:
+                - "True"
+                - "False"
                 type: string
               served:
                 description: |-

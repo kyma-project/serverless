@@ -63,6 +63,9 @@ type ServerlessSpec struct {
 	LogLevel string `json:"logLevel,omitempty"`
 	// Sets desired log format to be used. The default value is "json"
 	LogFormat string `json:"logFormat,omitempty"`
+	// Deprecated: Enable deployment of network policies that allow serverless' essential in-cluster communication.
+	// This setting should be removed from a future version.
+	EnableNetworkPolicies bool `json:"enableNetworkPolicies,omitempty"`
 }
 
 type State string
@@ -138,6 +141,11 @@ type ServerlessStatus struct {
 	// Value can be one of ("True", "False").
 	// +kubebuilder:validation:Enum=True;False
 	Served Served `json:"served"`
+
+	// NetworkPoliciesEnabled signifies if NetworkPolicies dedicated for serverless are enabled.
+	// Value can be one of ("True", "False").
+	// +kubebuilder:validation:Enum=True;False
+	NetworkPoliciesEnabled string `json:"networkPoliciesEnabled,omitempty"`
 
 	// Conditions associated with CustomStatus.
 	Conditions []metav1.Condition `json:"conditions,omitempty"`
