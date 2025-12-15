@@ -37,6 +37,7 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run test
         run: |
+          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make -C components/operator deploy
           make -C tests/operator test
         env:
@@ -56,6 +57,7 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run test
         run: |
+          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make install-serverless-custom-operator
           make -C tests/serverless serverless-integration serverless-contract-tests
           make remove-serverless
@@ -77,6 +79,7 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run test
         run: |
+          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make install-legacy-serverless-custom-operator
           make -C tests/serverless serverless-integration serverless-contract-tests
           make remove-serverless
@@ -98,6 +101,7 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run tests
         run: |
+          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make install-legacy-serverless-custom-operator
           make -C tests/serverless git-auth-integration
           make remove-serverless
@@ -123,6 +127,7 @@ jobs:
       - uses: ./.github/actions/create-k3d-cluster
       - name: run tests
         run: |
+          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make install-serverless-custom-operator
           make -C tests/serverless git-auth-integration
           make remove-serverless
@@ -152,6 +157,7 @@ jobs:
           IMG: ${{ inputs.image }}
       - name: install default serverless cr and check cr status
         run: |
+          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           kubectl apply -f config/samples/default-serverless-cr.yaml
           make -C components/operator check-serverless-installation
           make remove-serverless
@@ -187,6 +193,7 @@ jobs:
           btp_kyma_autoscaler_min: 4
       - name: run tests
         run: |
+          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make install-serverless-custom-operator
           make -C tests/serverless serverless-integration
           kubectl delete functions.serverless.kyma-project.io -A --all
