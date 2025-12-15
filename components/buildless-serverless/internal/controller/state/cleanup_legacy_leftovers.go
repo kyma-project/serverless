@@ -22,13 +22,13 @@ func sFnCleanupLegacyLeftovers(ctx context.Context, m *fsm.StateMachine) (fsm.St
 				continue
 			}
 			m.Log.Info("Cleaning up legacy service account from Function's Deployment")
-			deployment.Spec.Template.Spec.ServiceAccountName = ""
+			deployment.Spec.Template.Spec.ServiceAccountName = "default"
 			deployment.Spec.Template.Spec.AutomountServiceAccountToken = nil
-			m.Log.Info("Updatind Deployment to use empty service account")
 			err := m.Client.Update(ctx, &deployment)
 			if err != nil {
 				m.Log.Error(err, "Failed to clean up legacy service account from Deployment")
 			}
+			m.Log.Info("Function's Deployment updated with default service account")
 		}
 	}
 
