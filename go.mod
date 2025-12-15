@@ -17,8 +17,8 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/kyma-project/manager-toolkit v0.0.0-20251201082204-449f6914b121
 	github.com/libgit2/git2go/v34 v34.0.0
-	github.com/onsi/ginkgo/v2 v2.27.2
-	github.com/onsi/gomega v1.38.2
+	github.com/onsi/ginkgo/v2 v2.27.3
+	github.com/onsi/gomega v1.38.3
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.23.2
 	github.com/sirupsen/logrus v1.9.3
@@ -33,11 +33,11 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
 	helm.sh/helm/v3 v3.18.6
-	k8s.io/api v0.33.6
-	k8s.io/apiextensions-apiserver v0.33.6
-	k8s.io/apimachinery v0.33.6
-	k8s.io/cli-runtime v0.33.6
-	k8s.io/client-go v0.33.6
+	k8s.io/api v0.33.7
+	k8s.io/apiextensions-apiserver v0.33.7
+	k8s.io/apimachinery v0.33.7
+	k8s.io/cli-runtime v0.33.7
+	k8s.io/client-go v0.33.7
 	k8s.io/utils v0.0.0-20241104163129-6fe5fd82f078
 	sigs.k8s.io/controller-runtime v0.20.4
 )
@@ -155,8 +155,8 @@ require (
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
-	k8s.io/apiserver v0.33.6 // indirect
-	k8s.io/component-base v0.33.6 // indirect
+	k8s.io/apiserver v0.33.7 // indirect
+	k8s.io/component-base v0.33.7 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20250318190949-c8a335a9a2ff // indirect
 	k8s.io/kubectl v0.33.3 // indirect
