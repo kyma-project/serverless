@@ -219,8 +219,9 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 	secretVolumes, secretVolumeMounts := d.deploymentSecretVolumes()
 
 	return corev1.PodSpec{
-		Volumes:        append(d.volumes(), secretVolumes...),
-		InitContainers: d.initContainerForGitRepository(),
+		Volumes:            append(d.volumes(), secretVolumes...),
+		InitContainers:     d.initContainerForGitRepository(),
+		ServiceAccountName: "",
 		Containers: []corev1.Container{
 			{
 				Name:         "function",
