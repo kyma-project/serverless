@@ -138,6 +138,9 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 	volumeMountsChanged := !reflect.DeepEqual(aContainer.VolumeMounts, bContainer.VolumeMounts)
 	portsChanged := !reflect.DeepEqual(aContainer.Ports, bContainer.Ports)
 
+	//TODO: this is a temporary solution, remove it after migrating legacy serverless
+	serviceAccountChanged := a.Spec.Template.Spec.ServiceAccountName != b.Spec.Template.Spec.ServiceAccountName
+
 	return imageChanged ||
 		labelsChanged ||
 		annotationsChanged ||
@@ -148,6 +151,7 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 		envChanged ||
 		volumeMountsChanged ||
 		portsChanged ||
+		serviceAccountChanged ||
 		initContainerChanged(a, b)
 }
 
