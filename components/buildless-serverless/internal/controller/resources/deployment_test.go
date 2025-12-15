@@ -331,7 +331,8 @@ fi`,
 		require.Len(t, r.Spec.Template.Spec.InitContainers, 1)
 		c := r.Spec.Template.Spec.InitContainers[0]
 		expectedCommand := []string{"sh", "-c",
-			`/app/gitcloner
+			`rm -rf /git-repository/*
+/app/gitcloner
 mkdir /git-repository/src;cp -r '/git-repository/repo/recursing-mcnulty'/* /git-repository/src;`}
 		require.Equal(t, expectedCommand, c.Command)
 	})
@@ -351,7 +352,8 @@ mkdir /git-repository/src;cp -r '/git-repository/repo/recursing-mcnulty'/* /git-
 		require.Len(t, r.Spec.Template.Spec.InitContainers, 1)
 		c := r.Spec.Template.Spec.InitContainers[0]
 		expectedCommand := []string{"sh", "-c",
-			`/app/gitcloner
+			`rm -rf /git-repository/*
+/app/gitcloner
 mkdir /git-repository/src;cp -r '/git-repository/repo/git functions/nodejs12'/* /git-repository/src;`}
 		require.Equal(t, expectedCommand, c.Command)
 	})
