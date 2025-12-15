@@ -318,7 +318,7 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 				},
 				Limits: corev1.ResourceList{
 					corev1.ResourceCPU:    resource.MustParse("200m"),
-					corev1.ResourceMemory: resource.MustParse("256Mi"),
+					corev1.ResourceMemory: resource.MustParse("512Mi"),
 				},
 			},
 			VolumeMounts: []corev1.VolumeMount{
@@ -371,6 +371,7 @@ func (d *Deployment) initContainerEnvs() []corev1.EnvVar {
 func (d *Deployment) initContainerCommand() string {
 	gitRepo := d.function.Spec.Source.GitRepository
 	var arr []string
+	arr = append(arr, "rm -rf /git-repository/*")
 	arr = append(arr, "/app/gitcloner")
 	arr = append(arr,
 		fmt.Sprintf("mkdir /git-repository/src;cp -r '/git-repository/repo/%s'/* /git-repository/src;",
