@@ -21,9 +21,10 @@ func sFnCleanupLegacyLeftovers(ctx context.Context, m *fsm.StateMachine) (fsm.St
 			if serviceAccountName == "" {
 				continue
 			}
-			m.Log.Info("CCCCleaning up legacy service account '%s' from Function's Deployment %s/%s", serviceAccountName, deployment.GetNamespace(), deployment.GetName())
-			deployment.Spec.Template.Spec.ServiceAccountName = "makapaka"
-			m.Log.Info("UUUpdated Deployment %s/%s to use makapaka service account", deployment.GetNamespace(), deployment.GetName())
+			m.Log.Info("Cleaning up legacy service account from Function's Deployment")
+			deployment.Spec.Template.Spec.ServiceAccountName = ""
+			deployment.Spec.Template.Spec.AutomountServiceAccountToken = nil
+			m.Log.Info("Updatind Deployment to use empty service account")
 			err := m.Client.Update(ctx, &deployment)
 			if err != nil {
 				m.Log.Error(err, "Failed to clean up legacy service account from Deployment")
