@@ -2,6 +2,3 @@ en:
   status:
     logLevel: Log Level
     logFormat: Log Format
-    networkPoliciesEnabled: Network Policies Enabled
-  spec:
-    enableNetworkPolicies: Enable Network Policies

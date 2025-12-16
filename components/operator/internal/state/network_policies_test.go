@@ -20,7 +20,6 @@ func TestUpdateNetworkPoliciesStatus(t *testing.T) {
 		name           string
 		functionSpec   v1alpha1.ServerlessSpec
 		expectedStatus string
-		expectedFlags  map[string]interface{}
 	}{
 		{
 			name: "NetworkPolicies enabled",
@@ -28,33 +27,18 @@ func TestUpdateNetworkPoliciesStatus(t *testing.T) {
 				EnableNetworkPolicies: true,
 			},
 			expectedStatus: "True",
-			expectedFlags: map[string]interface{}{
-				"networkPolicies": map[string]interface{}{
-					"enabled": true,
-				},
-			},
 		},
 		{
 			name: "NetworkPolicies disabled",
 			functionSpec: v1alpha1.ServerlessSpec{
 				EnableNetworkPolicies: false,
 			},
-			expectedStatus: "False",
-			expectedFlags: map[string]interface{}{
-				"networkPolicies": map[string]interface{}{
-					"enabled": false,
-				},
-			},
+			expectedStatus: "True",
 		},
 		{
 			name:           "NetworkPolicies not set",
 			functionSpec:   v1alpha1.ServerlessSpec{},
-			expectedStatus: "False",
-			expectedFlags: map[string]interface{}{
-				"networkPolicies": map[string]interface{}{
-					"enabled": false,
-				},
-			},
+			expectedStatus: "True",
 		},
 	}
 

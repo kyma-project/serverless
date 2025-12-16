@@ -80,8 +80,9 @@ spec:
                     type: string
                 type: object
               enableNetworkPolicies:
-                description: Enable deployment of network policies that allow serverless'
-                  essential in-cluster communication.
+                description: |-
+                  Deprecated: Enable deployment of network policies that allow serverless' essential in-cluster communication.
+                  This setting should be removed from a future version.
                 type: boolean
               eventing:
                 description: Used Eventing endpoint

@@ -1,4 +1,3 @@
-{{- if .Values.networkPolicies.enabled }}
 # This allows serverless controller to fetch function code from git repositories
 kind: NetworkPolicy
 apiVersion: networking.k8s.io/v1
@@ -133,4 +132,3 @@ spec:
           podSelector:
             matchLabels:
               k8s-app: node-local-dns
-{{- end }}
