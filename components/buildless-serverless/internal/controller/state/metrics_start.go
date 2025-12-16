@@ -14,5 +14,5 @@ func sFnMetricsStart(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl
 	serverlessmetrics.PublishFunctionsTotal(f)
 	serverlessmetrics.StartForStateReachTime(f)
 
-	return nextState(sFnCleanupLegacyLeftovers)
+	return nextState(sFnCleanupLegacyServiceAccount)
 }

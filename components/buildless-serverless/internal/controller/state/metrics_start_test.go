@@ -40,7 +40,7 @@ func Test_sFnMetricsStart(t *testing.T) {
 		require.Nil(t, result)
 		// with expected next state
 		require.NotNil(t, next)
-		requireEqualFunc(t, sFnCleanupLegacyLeftovers, next)
+		requireEqualFunc(t, sFnCleanupLegacyServiceAccount, next)
 		// metrics are set
 		require.Equal(t, float64(1), testutil.ToFloat64(metrics.ReconciliationsTotal))
 		require.Equal(t, float64(1), testutil.ToFloat64(metrics.FunctionsTotal))
