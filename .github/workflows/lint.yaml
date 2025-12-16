@@ -8,30 +8,31 @@ jobs:
   operator-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      # check
       - uses: ./.github/actions/setup-go
+      - uses: actions/checkout@v6
       - uses: golangci/golangci-lint-action@v9
         with:
           version: v2.1
-          working-directory: 'components/operator'
+          working-directory: "components/operator"
 
   serverless-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-go
+      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-libgit2
       - uses: golangci/golangci-lint-action@v9
         with:
           version: v2.1
-          working-directory: 'components/serverless'
+          working-directory: "components/serverless"
 
   buildless-serverless-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
       - uses: ./.github/actions/setup-go
+      - uses: actions/checkout@v6
       - uses: golangci/golangci-lint-action@v9
         with:
           version: v2.1
-          working-directory: 'components/buildless-serverless'
+          working-directory: "components/buildless-serverless"
