@@ -10,6 +10,7 @@ import (
 	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/function"
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/namespace"
+	"github.com/kyma-project/serverless/tests/serverless/internal/resources/networkpolicy"
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/runtimes"
 	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 
@@ -18,6 +19,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/dynamic"
 	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
+	networkingv1 "k8s.io/client-go/kubernetes/typed/networking/v1"
 	"k8s.io/client-go/rest"
 )
 
@@ -33,6 +35,11 @@ func FunctionCloudEventsTest(restConfig *rest.Config, cfg internal.Config, logf 
 	coreCli, err := typedcorev1.NewForConfig(restConfig)
 	if err != nil {
 		return nil, errors.Wrap(err, "while creating k8s CoreV1Client")
+	}
+
+	networkingCli, err := networkingv1.NewForConfig(restConfig)
+	if err != nil {
+		return nil, errors.Wrap(err, "while creating k8s NetworkingV1Client")
 	}
 
 	python312Logger := logf.WithField(runtimeKey, "python312")
@@ -56,6 +63,7 @@ func FunctionCloudEventsTest(restConfig *rest.Config, cfg internal.Config, logf 
 
 	return executor.NewSerialTestRunner(logf, "Runtime test",
 		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
+		networkpolicy.CreateNetworkPoliciesStep(logf, "Create network policies for publisher proxy mock", "kyma-system", networkingCli.NetworkPolicies("kyma-system")),
 		function.CreateFunction(logf, publisherProxyMock, "Create publisher proxy mock", runtimes.PythonPublisherProxyMock()),
 		executor.NewParallelRunner(logf, "Fn tests",
 			executor.NewSerialTestRunner(python312Logger, "Python312 test",
