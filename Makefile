@@ -6,26 +6,31 @@ include ${PROJECT_ROOT}/hack/k3d.mk
 ##@ Installation
 .PHONY: install-serverless-main
 install-serverless-main: ## Install serverless with operator using default serverless cr
+	kubectl delete -f tests/fixtures/deny-all-networkpolicy.yaml -n kyma-system --ignore-not-found
 	make -C ${OPERATOR_ROOT} deploy-main apply-default-serverless-cr check-serverless-installation
 
 .PHONY: install-legacy-serverless-main
 install-legacy-serverless-main: ## Install legacy serverless with operator using serverless cr with legacy function container in-cluster build
+	kubectl delete -f tests/fixtures/deny-all-networkpolicy.yaml -n kyma-system --ignore-not-found
 	make -C ${OPERATOR_ROOT} deploy-main apply-legacy-serverless-cr check-serverless-installation
 
 .PHONY: install-serverless-custom-operator
 install-serverless-custom-operator: ## Install serverless with operator from IMG env using default serverless cr
 	$(call check-var,IMG)
+	kubectl delete -f tests/fixtures/deny-all-networkpolicy.yaml -n kyma-system --ignore-not-found
 	make -C ${OPERATOR_ROOT} deploy apply-default-serverless-cr check-serverless-installation
 
 .PHONY: install-legacy-serverless-custom-operator
 install-legacy-serverless-custom-operator: ## Install serverless with operator from IMG env using default serverless cr with legacy function container in-cluster build
 	$(call check-var,IMG)
+	kubectl delete -f tests/fixtures/deny-all-networkpolicy.yaml -n kyma-system --ignore-not-found
 	make -C ${OPERATOR_ROOT} deploy apply-legacy-serverless-cr check-serverless-installation
 
 .PHONY: install-serverless-custom-operator-custom-cr
 install-serverless-custom-operator-custom-cr: ## Install serverless with operator from IMG env using custom serverless cr
 	$(call check-var,IMG)
 	$(call check-var,SERVERLESS_CR_PATH)
+	kubectl delete -f tests/fixtures/deny-all-networkpolicy.yaml -n kyma-system --ignore-not-found
 	make -C ${OPERATOR_ROOT} deploy apply-custom-serverless-cr check-serverless-installation
 
 
