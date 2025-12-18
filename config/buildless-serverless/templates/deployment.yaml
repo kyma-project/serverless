@@ -55,7 +55,8 @@ spec:
               path: /healthz
               port: {{ .Values.containers.manager.healthzPort }}
             initialDelaySeconds: 15
-            periodSeconds: 20
+            periodSeconds: 30
+            failureThreshold: 20
           name: manager
           readinessProbe:
             httpGet:
