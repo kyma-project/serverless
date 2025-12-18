@@ -11,11 +11,11 @@ global:
       targetDir: "/logconfig"
       filename: "log-config.yaml"
   images:
-    function_controller: europe-docker.pkg.dev/kyma-project/prod/function-buildless-controller:1.9.4
-    function_init: europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:1.9.4
-    function_runtime_nodejs20: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:1.9.4
-    function_runtime_nodejs22: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:1.9.4
-    function_runtime_python312: europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:1.9.4
+    function_controller: europe-docker.pkg.dev/kyma-project/prod/function-buildless-controller:1.9.5
+    function_init: europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:1.9.5
+    function_runtime_nodejs20: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:1.9.5
+    function_runtime_nodejs22: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:1.9.5
+    function_runtime_python312: europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:1.9.5
 containers:
   manager:
     logConfiguration:

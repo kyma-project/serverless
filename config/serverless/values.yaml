@@ -71,13 +71,13 @@ global:
   ingress:
     domainName:
   images:
-    function_buildful_controller: europe-docker.pkg.dev/kyma-project/prod/function-controller:1.9.4
-    function_build_init: europe-docker.pkg.dev/kyma-project/prod/function-build-init:1.9.4
+    function_buildful_controller: europe-docker.pkg.dev/kyma-project/prod/function-controller:1.9.5
+    function_build_init: europe-docker.pkg.dev/kyma-project/prod/function-build-init:1.9.5
     # https://github.com/kyma-project/docker-registry/tree/main/components/registry-init
     registry_init: europe-docker.pkg.dev/kyma-project/prod/registry-init:v20240506-57d31b1d
-    function_runtime_nodejs20: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:1.9.4
-    function_runtime_nodejs22: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:1.9.4
-    function_runtime_python312: europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:1.9.4
+    function_runtime_nodejs20: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:1.9.5
+    function_runtime_nodejs22: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:1.9.5
+    function_runtime_python312: europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:1.9.5
     kaniko_executor: europe-docker.pkg.dev/kyma-project/prod/external/gcr.io/kaniko-project/executor:v1.24.0
     registry: europe-docker.pkg.dev/kyma-project/prod/external/library/registry:3.0.0
   serverlessPriorityClassValue: 2000000
