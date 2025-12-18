@@ -20,7 +20,7 @@ func sFnCleanupLegacyServiceAccount(ctx context.Context, m *fsm.StateMachine) (f
 	for _, deployment := range deployments.Items {
 		// Remove reference to legacy service account name, if present
 		serviceAccountName := deployment.Spec.Template.Spec.ServiceAccountName
-		if serviceAccountName == "" {
+		if serviceAccountName == "" || serviceAccountName == "default" {
 			continue
 		}
 		m.Log.Info("Cleaning up legacy service account from Function's Deployment")
