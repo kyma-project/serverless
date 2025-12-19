@@ -82,7 +82,7 @@ func parseReconciliationMetrics(metric *io_prometheus_client.MetricFamily) Recon
 	return reconcilations
 }
 
-func (h HealthChecker) Checker(req *http.Request) error {
+func (h *HealthChecker) Checker(req *http.Request) error {
 	h.log.Debug("Liveness handler triggered")
 	// check in metrics if the module was doing something in a last few seconds
 
