@@ -85,7 +85,7 @@ func parseReconciliationMetrics(metric *io_prometheus_client.MetricFamily) Recon
 func (h HealthChecker) Checker(req *http.Request) error {
 	h.log.Debug("Liveness handler triggered")
 	// check in metrics if the module was doing something in a last few seconds
-	h.log.Warnf("gather test")
+
 	metrics, err := metrics.Registry.Gather()
 	if err != nil {
 		h.log.Errorf("can't gather metrics: %v", err)
@@ -105,11 +105,13 @@ func (h HealthChecker) Checker(req *http.Request) error {
 	}
 	totalReconciles := parseReconciliationMetrics(totalReconcilesMetric)
 
-	workqueueDepth := workqueueDepthMetric.Metric[0].Gauge.GetValue()
+	workqueueDepth := int64(workqueueDepthMetric.Metric[0].Gauge.GetValue())
 
 	// if the queue is not empty, check if the number of reconciliations has increased
 	defer func() { h.previousMetrics = totalReconciles }()
 	if workqueueDepth > 0 {
+		h.log.Debug("workqueue not empty, checking reconciliation metrics")
+		h.log.Debugf("depth %d, total reconciled prev -> now: %d -> %d", workqueueDepth, h.previousMetrics.Total(), totalReconciles.Total())
 		if totalReconciles.Total() <= h.previousMetrics.Total() {
 			h.log.Error("reconcile loop is stuck based on metrics")
 			return errors.New("reconcile loop is stuck based on metrics")
