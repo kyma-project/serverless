@@ -1,4 +1,4 @@
-FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:0.4.0-alpine3.22
+FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:0.5.0-alpine3.23
 
 # https://pkgs.alpinelinux.org/packages?name=nodejs&branch=v3.21&repo=main&arch=&maintainer=
 ENV NODE_VERSION=22.16.0-r2

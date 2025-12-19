@@ -1,4 +1,4 @@
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.25.5-alpine3.22 AS builder
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.25.5-alpine3.23 AS builder
 
 ENV BASE_APP_DIR=/workspace/go/src/github.com/kyma-project/serverless \
     CGO_ENABLED=1 \
@@ -21,7 +21,7 @@ RUN go build -ldflags "-s -w" -a -o jobinit ./components/serverless/cmd/jobinit/
     && mkdir /app \
     && mv ./jobinit /app/jobinit
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.22.2
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.23.2
 ENV LIBGIT2_VERSION=1.5.2-r0 \
     GODEBUG=fips140=on,tlsmlkem=0
 
