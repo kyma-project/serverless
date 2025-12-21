@@ -20,6 +20,14 @@ linters:
       - std-error-handling
     rules:
       - path: (.+)\.go$
+        text: '^SA1019: m.result.Requeue is deprecated:'
+      - path: (.+)\.go$
+        text: '^SA1019: res.Requeue is deprecated:'
+      - path: (.+)\.go$
+        text: '^SA1019: r.result.Requeue is deprecated:'
+      - path: (.+)\.go$
+        text: '^SA1019: result.Requeue is deprecated:'
+      - path: (.+)\.go$
         text: '^SA1019: status.RuntimeImageOverride is deprecated:'
       - path: (.+)\.go$
         text: '^SA1019: s.instance.Spec.Template is deprecated:'

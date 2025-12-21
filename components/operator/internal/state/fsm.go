@@ -7,8 +7,9 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless/components/operator/internal/chart"
+	"github.com/kyma-project/serverless/components/operator/internal/flags"
 	"github.com/kyma-project/serverless/components/operator/internal/warning"
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/types"
@@ -39,7 +40,7 @@ type systemState struct {
 	statusSnapshot v1alpha1.ServerlessStatus
 	chartConfig    *chart.Config
 	warningBuilder *warning.Builder
-	flagsBuilder   chart.FlagsBuilder
+	flagsBuilder   *flags.Builder
 }
 
 func (s *systemState) saveStatusSnapshot() {
@@ -60,11 +61,12 @@ func (s *systemState) setServed(served v1alpha1.Served) {
 
 func chartConfig(ctx context.Context, r *reconciler, namespace string) *chart.Config {
 	return &chart.Config{
-		Ctx:        ctx,
-		Log:        r.log,
-		Cache:      r.cache,
-		CacheKey:   secretCacheKey,
-		ManagerUID: r.managerPodUID,
+		Ctx:         ctx,
+		Log:         r.log,
+		Cache:       r.cache,
+		CacheKey:    secretCacheKey,
+		ManagerUID:  r.managerPodUID,
+		ManagerName: "serverless-manager",
 		Cluster: chart.Cluster{
 			Client: r.client,
 			Config: r.config,
@@ -107,7 +109,7 @@ func (m *reconciler) Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl
 	state := systemState{
 		instance:       v,
 		warningBuilder: warning.NewBuilder(),
-		flagsBuilder:   chart.NewFlagsBuilder(),
+		flagsBuilder:   flags.NewBuilder(),
 		chartConfig:    chartConfig(ctx, m, v.Namespace),
 	}
 	state.saveStatusSnapshot()

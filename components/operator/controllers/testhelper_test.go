@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/kyma-project/manager-toolkit/installation/base/resource"
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless/components/operator/internal/chart"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	gomegatypes "github.com/onsi/gomega/types"
@@ -102,13 +102,13 @@ func (h *testHelper) updateDeploymentStatus(deploymentName string) {
 		{
 			Type:    appsv1.DeploymentAvailable,
 			Status:  corev1.ConditionTrue,
-			Reason:  chart.MinimumReplicasAvailable,
+			Reason:  resource.MinimumReplicasAvailableReason,
 			Message: "test-message",
 		},
 		{
 			Type:    appsv1.DeploymentProgressing,
 			Status:  corev1.ConditionTrue,
-			Reason:  chart.NewRSAvailableReason,
+			Reason:  resource.NewRSAvailableReason,
 			Message: "test-message",
 		},
 	}

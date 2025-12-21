@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless/components/operator/internal/chart"
+	"github.com/kyma-project/serverless/components/operator/internal/flags"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
@@ -35,7 +35,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{},
 			},
-			flagsBuilder: chart.NewFlagsBuilder(),
+			flagsBuilder: flags.NewBuilder(),
 		}
 
 		c := fake.NewClientBuilder().WithObjects(
@@ -80,7 +80,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 					},
 				},
 			},
-			flagsBuilder: chart.NewFlagsBuilder(),
+			flagsBuilder: flags.NewBuilder(),
 		}
 
 		c := fake.NewClientBuilder().WithObjects(
@@ -132,7 +132,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 					DefaultRuntimePodPreset: slowRuntimePreset,
 				},
 			},
-			flagsBuilder: chart.NewFlagsBuilder(),
+			flagsBuilder: flags.NewBuilder(),
 		}
 
 		c := fake.NewClientBuilder().WithObjects(
@@ -192,7 +192,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 					LogFormat:                        logFormatTest,
 				},
 			},
-			flagsBuilder: chart.NewFlagsBuilder(),
+			flagsBuilder: flags.NewBuilder(),
 		}
 
 		c := fake.NewClientBuilder().Build()
@@ -271,7 +271,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			statusSnapshot: v1alpha1.ServerlessStatus{
 				DockerRegistry: "",
 			},
-			flagsBuilder: chart.NewFlagsBuilder(),
+			flagsBuilder: flags.NewBuilder(),
 		}
 		secret := &corev1.Secret{
 			ObjectMeta: metav1.ObjectMeta{
