@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless/components/operator/internal/chart"
+	"github.com/kyma-project/serverless/components/operator/internal/flags"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
@@ -70,7 +70,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 						Tracing:  testCase.tracing,
 					},
 				},
-				flagsBuilder: chart.NewFlagsBuilder(),
+				flagsBuilder: flags.NewBuilder(),
 			}
 			c := fake.NewClientBuilder().WithScheme(scheme).WithObjects(testCase.extraCR...).Build()
 			r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: record.NewFakeRecorder(5)}}
@@ -100,7 +100,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 					TracingEndpoint:  tracingCollectorURL,
 				},
 			},
-			flagsBuilder: chart.NewFlagsBuilder(),
+			flagsBuilder: flags.NewBuilder(),
 		}
 		c := fake.NewClientBuilder().WithScheme(scheme).WithObjects(fixTracingSvc()).Build()
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c}}

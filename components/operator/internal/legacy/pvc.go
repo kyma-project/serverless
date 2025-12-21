@@ -1,4 +1,4 @@
-package chart
+package legacy
 
 import (
 	"context"
@@ -8,15 +8,11 @@ import (
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
 	dockerRegistryPVCName = "serverless-docker-registry"
-	pvcKind               = "PersistentVolumeClaim"
-	pvcVersion            = "v1"
-	pvcGroup              = ""
 )
 
 func AdjustDockerRegToClusterPVCSize(ctx context.Context, c client.Client, obj unstructured.Unstructured) (unstructured.Unstructured, error) {
@@ -51,14 +47,4 @@ func AdjustDockerRegToClusterPVCSize(ctx context.Context, c client.Client, obj u
 	}
 
 	return unstructured.Unstructured{Object: out}, nil
-}
-
-func IsPVC(objKind schema.GroupVersionKind) bool {
-	expected := schema.GroupVersionKind{
-		Group:   pvcGroup,
-		Version: pvcVersion,
-		Kind:    pvcKind,
-	}
-
-	return expected.Group == objKind.Group && expected.Kind == objKind.Kind && expected.Version == objKind.Version
 }
