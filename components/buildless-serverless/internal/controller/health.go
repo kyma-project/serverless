@@ -7,7 +7,6 @@ import (
 
 	io_prometheus_client "github.com/prometheus/client_model/go"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/metrics"
 
 	"go.uber.org/zap"
@@ -17,8 +16,6 @@ import (
 )
 
 const HealthEvent = "HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT_HEALTH_EVENT"
-
-var _ healthz.Checker = HealthChecker{}.Checker
 
 type ReconciliationMetrics struct {
 	Errors       int64
@@ -109,7 +106,6 @@ func (h *HealthChecker) Checker(req *http.Request) error {
 
 	// if the queue is not empty, check if the number of reconciliations has increased
 	defer func() {
-		h.log.Debug("setting prevMetrics")
 		h.previousMetrics = totalReconciles
 	}()
 	if workqueueDepth > 0 {
