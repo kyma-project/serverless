@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/kyma-project/manager-toolkit/installation/base/resource"
 	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/manager-toolkit/installation/chart/action"
+	"github.com/kyma-project/manager-toolkit/installation/chart/base/resource"
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless/components/operator/internal/legacy"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -26,13 +26,14 @@ func sFnDeleteResources(ctx context.Context, r *reconciler, s *systemState) (sta
 	if err := chart.CheckCRDOrphanResources(s.chartConfig); err != nil {
 		// stop state machine with a warning and requeue reconciliation in 1min
 		// warning state indicates that user intervention would fix it. Its not reconciliation error.
-		s.setState(v1alpha1.StateWarning)
-		s.instance.UpdateConditionFalse(
-			v1alpha1.ConditionTypeDeleted,
-			v1alpha1.ConditionReasonDeletionErr,
-			err,
-		)
-		return stopWithEventualError(err)
+		// TODO: uncomment
+		// s.setState(v1alpha1.StateWarning)
+		// s.instance.UpdateConditionFalse(
+		// 	v1alpha1.ConditionTypeDeleted,
+		// 	v1alpha1.ConditionReasonDeletionErr,
+		// 	err,
+		// )
+		// return stopWithEventualError(err)
 	}
 
 	return deleteResourcesWithFilter(ctx, r, s)
