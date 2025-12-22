@@ -104,13 +104,12 @@ func (h *HealthChecker) Checker(req *http.Request) error {
 
 	workqueueDepth := int64(workqueueDepthMetric.Metric[0].Gauge.GetValue())
 
-	// if the queue is not empty, check if the number of reconciliations has increased
+	// if the queue is not empty, check if the number of reconciliations has increased; update the state at the end
 	defer func() {
 		h.previousMetrics = totalReconciles
 	}()
 	if workqueueDepth > 0 {
-		h.log.Debug("workqueue not empty, checking reconciliation metrics")
-		h.log.Debugf("depth %d, total reconciled prev -> now: %d -> %d", workqueueDepth, h.previousMetrics.Total(), totalReconciles.Total())
+		h.log.Debugf("workqueue not empty, depth %d, total reconciled prev -> now: %d -> %d", workqueueDepth, h.previousMetrics.Total(), totalReconciles.Total())
 		if totalReconciles.Total() <= h.previousMetrics.Total() {
 			h.log.Error("reconcile loop is stuck based on metrics")
 			return errors.New("reconcile loop is stuck based on metrics")

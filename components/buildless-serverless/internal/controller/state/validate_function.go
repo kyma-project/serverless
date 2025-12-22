@@ -3,7 +3,6 @@ package state
 import (
 	"context"
 	"strings"
-	"time"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
@@ -16,8 +15,6 @@ import (
 func sFnValidateFunction(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	//TODO: It is a temporary solution to delete obsolete condition. It should be removed after migration from old serverless
 	meta.RemoveStatusCondition(&m.State.Function.Status.Conditions, "BuildReady")
-	// TOODO: nly for testing, sleep for 10s
-	time.Sleep(10 * time.Second)
 
 	v := validator.New(&m.State.Function, m.FunctionConfig)
 	validationResults := v.Validate()
