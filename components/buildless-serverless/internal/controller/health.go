@@ -83,19 +83,19 @@ func (h *HealthChecker) Checker(req *http.Request) error {
 	h.log.Debug("Liveness handler triggered")
 	// check in metrics if the module was doing something in a last few seconds
 
-	metrics, err := metrics.Registry.Gather()
+	allMetrics, err := metrics.Registry.Gather()
 	if err != nil {
 		h.log.Errorf("can't gather metrics: %v", err)
 		return errors.New("can't gather metrics")
 	}
 
-	workqueueDepthMetric := findMetric(metrics, "workqueue_depth")
+	workqueueDepthMetric := findMetric(allMetrics, "workqueue_depth")
 	if workqueueDepthMetric == nil {
 		h.log.Error("can't find workqueue_depth metric")
 		return errors.New("can't find workqueue_depth metric")
 	}
 
-	totalReconcilesMetric := findMetric(metrics, "controller_runtime_reconcile_total")
+	totalReconcilesMetric := findMetric(allMetrics, "controller_runtime_reconcile_total")
 	if totalReconcilesMetric == nil {
 		h.log.Error("can't find controller_runtime_reconcile_total metric")
 		return errors.New("can't find controller_runtime_reconcile_total metric")
