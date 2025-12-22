@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kyma-project/manager-toolkit/installation/resource"
+	"github.com/kyma-project/manager-toolkit/installation/base/resource"
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

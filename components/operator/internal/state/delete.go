@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
+	"github.com/kyma-project/manager-toolkit/installation/base/resource"
 	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/manager-toolkit/installation/chart/action"
-	"github.com/kyma-project/manager-toolkit/installation/resource"
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless/components/operator/internal/legacy"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -41,24 +41,26 @@ func sFnDeleteResources(ctx context.Context, r *reconciler, s *systemState) (sta
 func deleteResourcesWithFilter(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	done, err := chart.Uninstall(s.chartConfig, &chart.UninstallOpts{
 		// these resources have finalizer and the serverless-ctrl-mngr will remove them from all namespaces
-		UninstallFirst: []resource.Predicate{
-			resource.OrPredicates(
+		UninstallFirst: resource.OrPredicates(
+			resource.AndPredicates(
 				resource.HasKind("ConfigMap"),
-				resource.HasKind("Secret"),
-			),
-			resource.OrPredicates(
-				resource.HasLabel(legacy.ConfigLabelKey, legacy.RegistrySecretLabelValue),
 				resource.HasLabel(legacy.ConfigLabelKey, legacy.DockerfileConfigmapLabelValue),
 			),
-		},
+			resource.AndPredicates(
+				resource.HasKind("Secret"),
+				resource.HasLabel(legacy.ConfigLabelKey, legacy.RegistrySecretLabelValue),
+			),
+		),
 		// this resource is spread in all namespaces, but serverless-ctrl-mngr is not removing them
 		PostActions: []action.PostUninstall{
-			action.PostUninstallWithPredicates(
+			action.PostUninstallWithPredicate(
 				func(u unstructured.Unstructured) (bool, error) {
 					return legacy.RemoveResourceFromAllNamespaces(ctx, r.client, r.log, u)
 				},
-				resource.HasKind("ServiceAccount"),
-				resource.HasLabel(legacy.ConfigLabelKey, legacy.ServiceAccountLabelValue),
+				resource.AndPredicates(
+					resource.HasKind("ServiceAccount"),
+					resource.HasLabel(legacy.ConfigLabelKey, legacy.ServiceAccountLabelValue),
+				),
 			),
 		},
 	})
