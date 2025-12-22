@@ -55,7 +55,7 @@ func deleteResourcesWithFilter(ctx context.Context, r *reconciler, s *systemStat
 		PostActions: []action.PostUninstall{
 			action.PostUninstallWithPredicates(
 				func(u unstructured.Unstructured) (bool, error) {
-					return legacy.RemoveResourceInAllNamespaces(ctx, r.client, r.log, u)
+					return legacy.RemoveResourceFromAllNamespaces(ctx, r.client, r.log, u)
 				},
 				resource.HasKind("ServiceAccount"),
 				resource.HasLabel(legacy.ConfigLabelKey, legacy.ServiceAccountLabelValue),

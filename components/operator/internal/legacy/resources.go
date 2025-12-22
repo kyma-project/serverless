@@ -19,8 +19,8 @@ const (
 	RegistrySecretLabelValue      = "credentials"
 )
 
-// RemoveResourceInAllNamespaces removes the given resource template from all namespaces in the cluster
-func RemoveResourceInAllNamespaces(ctx context.Context, c client.Client, log *zap.SugaredLogger, template unstructured.Unstructured) (bool, error) {
+// RemoveResourceFromAllNamespaces removes the given resource template from all namespaces in the cluster
+func RemoveResourceFromAllNamespaces(ctx context.Context, c client.Client, log *zap.SugaredLogger, template unstructured.Unstructured) (bool, error) {
 	done := true
 	var namespaces corev1.NamespaceList
 	if err := c.List(ctx, &namespaces); err != nil {
