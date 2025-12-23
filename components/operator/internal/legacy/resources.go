@@ -3,7 +3,7 @@ package legacy
 import (
 	"context"
 
-	"github.com/kyma-project/manager-toolkit/installation/chart/base/resource"
+	"github.com/kyma-project/manager-toolkit/installation/base/resource"
 
 	"github.com/pkg/errors"
 	"go.uber.org/zap"

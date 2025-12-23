@@ -7,7 +7,7 @@ import (
 
 	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/manager-toolkit/installation/chart/action"
-	"github.com/kyma-project/manager-toolkit/installation/chart/base/resource"
+	"github.com/kyma-project/manager-toolkit/installation/base/resource"
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless/components/operator/internal/flags"
 	"github.com/kyma-project/serverless/components/operator/internal/legacy"

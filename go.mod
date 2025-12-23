@@ -4,10 +4,6 @@ go 1.24.0
 
 toolchain go1.24.3
 
-replace github.com/kyma-project/manager-toolkit/installation/chart => ../manager-toolkit/installation/chart
-
-replace github.com/kyma-project/manager-toolkit/logging => ../manager-toolkit/logging
-
 require (
 	github.com/avast/retry-go v3.0.0+incompatible
 	github.com/cloudevents/sdk-go/v2 v2.16.2
@@ -19,8 +15,9 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/hashicorp/errwrap v1.1.0
 	github.com/hashicorp/go-multierror v1.1.1
-	github.com/kyma-project/manager-toolkit/installation/chart v0.0.0-20251217072146-89399407e246
-	github.com/kyma-project/manager-toolkit/logging v0.0.0-20251217072146-89399407e246
+	github.com/kyma-project/manager-toolkit v0.0.0-20251201082204-449f6914b121
+	github.com/kyma-project/manager-toolkit/installation/base v0.0.0-20251223124401-15cdc52dde7f
+	github.com/kyma-project/manager-toolkit/installation/chart v0.0.0-20251223124401-15cdc52dde7f
 	github.com/libgit2/git2go/v34 v34.0.0
 	github.com/onsi/ginkgo/v2 v2.27.3
 	github.com/onsi/gomega v1.38.3
