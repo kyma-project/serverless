@@ -26,14 +26,13 @@ func sFnDeleteResources(ctx context.Context, r *reconciler, s *systemState) (sta
 	if err := chart.CheckCRDOrphanResources(s.chartConfig); err != nil {
 		// stop state machine with a warning and requeue reconciliation in 1min
 		// warning state indicates that user intervention would fix it. Its not reconciliation error.
-		// TODO: uncomment
-		// s.setState(v1alpha1.StateWarning)
-		// s.instance.UpdateConditionFalse(
-		// 	v1alpha1.ConditionTypeDeleted,
-		// 	v1alpha1.ConditionReasonDeletionErr,
-		// 	err,
-		// )
-		// return stopWithEventualError(err)
+		s.setState(v1alpha1.StateWarning)
+		s.instance.UpdateConditionFalse(
+			v1alpha1.ConditionTypeDeleted,
+			v1alpha1.ConditionReasonDeletionErr,
+			err,
+		)
+		return stopWithEventualError(err)
 	}
 
 	return deleteResourcesWithFilter(ctx, r, s)
