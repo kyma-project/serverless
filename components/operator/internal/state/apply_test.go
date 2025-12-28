@@ -4,12 +4,14 @@ import (
 	"context"
 	"testing"
 
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless/components/operator/internal/chart"
+	"github.com/kyma-project/serverless/components/operator/internal/flags"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
 const (
@@ -31,10 +33,16 @@ func Test_buildSFnApplyResources(t *testing.T) {
 					Namespace: testInstalledServerless.GetNamespace(),
 				},
 			},
-			flagsBuilder: chart.NewFlagsBuilder(),
+			flagsBuilder: flags.NewBuilder(),
 		}
 
-		next, result, err := sFnApplyResources(context.Background(), nil, s)
+		r := &reconciler{
+			k8s: k8s{
+				client: fake.NewClientBuilder().Build(),
+			},
+		}
+
+		next, result, err := sFnApplyResources(context.Background(), r, s)
 		require.Nil(t, err)
 		require.Nil(t, result)
 		requireEqualFunc(t, sFnVerifyResources, next)
@@ -76,7 +84,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 					Namespace: testInstalledServerless.GetNamespace(),
 				},
 			},
-			flagsBuilder: chart.NewFlagsBuilder(),
+			flagsBuilder: flags.NewBuilder(),
 		}
 		r := &reconciler{}
 
@@ -97,7 +105,7 @@ func Test_buildSFnApplyResources(t *testing.T) {
 					Namespace: testInstalledServerless.GetNamespace(),
 				},
 			},
-			flagsBuilder: chart.NewFlagsBuilder(),
+			flagsBuilder: flags.NewBuilder(),
 		}
 		r := &reconciler{
 			log: zap.NewNop().Sugar(),
@@ -131,7 +139,7 @@ func TestUpdateImageIfOverride(t *testing.T) {
 			},
 		}
 
-		fb := chart.NewFlagsBuilder()
+		fb := flags.NewBuilder()
 
 		updateImageIfOverride(envName, fb.WithImageFunctionBuildfulController)
 		flags, err := fb.Build()
@@ -141,7 +149,7 @@ func TestUpdateImageIfOverride(t *testing.T) {
 	t.Run("Don't override image when empty env", func(t *testing.T) {
 		expectedFlags := map[string]interface{}{}
 
-		fb := chart.NewFlagsBuilder()
+		fb := flags.NewBuilder()
 
 		updateImageIfOverride(envName, fb.WithImageFunctionBuildfulController)
 		flags, err := fb.Build()

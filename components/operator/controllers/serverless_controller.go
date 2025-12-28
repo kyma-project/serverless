@@ -19,8 +19,8 @@ package controllers
 import (
 	"context"
 
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless/components/operator/internal/chart"
 	"github.com/kyma-project/serverless/components/operator/internal/predicate"
 	"github.com/kyma-project/serverless/components/operator/internal/state"
 	"github.com/kyma-project/serverless/components/operator/internal/tracing"

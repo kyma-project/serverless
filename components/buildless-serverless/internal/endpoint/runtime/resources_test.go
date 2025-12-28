@@ -86,7 +86,6 @@ func fixTestService(appName string) string {
 	return fmt.Sprintf(`apiVersion: v1
 kind: Service
 metadata:
-  creationTimestamp: null
   name: %s
   namespace: test-namespace
 spec:
@@ -107,7 +106,6 @@ func fixDeployment(appName, functionName string) string {
 	return fmt.Sprintf(`apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
   name: %s
   namespace: test-namespace
 spec:
@@ -122,7 +120,6 @@ spec:
       annotations:
         proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
         sidecar.istio.io/nativeSidecar: "true"
-      creationTimestamp: null
       labels:
         app.kubernetes.io/instance: %s
         app.kubernetes.io/name: %s

@@ -4,26 +4,18 @@ import (
 	"context"
 	"time"
 
+	"github.com/kyma-project/manager-toolkit/installation/base/resource"
+	"github.com/kyma-project/manager-toolkit/installation/chart"
+	"github.com/kyma-project/manager-toolkit/installation/chart/action"
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless/components/operator/internal/chart"
+	"github.com/kyma-project/serverless/components/operator/internal/legacy"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-const (
-	defaultDeletionStrategy = safeDeletionStrategy
-)
-
-type deletionStrategy string
-
-const (
-	cascadeDeletionStrategy  deletionStrategy = "cascadeDeletionStrategy"
-	safeDeletionStrategy     deletionStrategy = "safeDeletionStrategy"
-	upstreamDeletionStrategy deletionStrategy = "upstreamDeletionStrategy"
-)
-
 // delete serverless based on previously installed resources
-func sFnDeleteResources(_ context.Context, _ *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func sFnDeleteResources(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	s.setState(v1alpha1.StateDeleting)
 	s.instance.UpdateConditionUnknown(
 		v1alpha1.ConditionTypeDeleted,
@@ -31,34 +23,6 @@ func sFnDeleteResources(_ context.Context, _ *reconciler, s *systemState) (state
 		"Uninstalling",
 	)
 
-	// TODO: thinkg about deletion configuration
-	return nextState(
-		deletionStrategyBuilder(defaultDeletionStrategy),
-	)
-}
-
-func deletionStrategyBuilder(strategy deletionStrategy) stateFn {
-	switch strategy {
-	case cascadeDeletionStrategy:
-		return sFnCascadeDeletionState
-	case upstreamDeletionStrategy:
-		return sFnUpstreamDeletionState
-	case safeDeletionStrategy:
-		return sFnSafeDeletionState
-	default:
-		return deletionStrategyBuilder(safeDeletionStrategy)
-	}
-}
-
-func sFnCascadeDeletionState(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-	return deleteResourcesWithFilter(r, s)
-}
-
-func sFnUpstreamDeletionState(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
-	return deleteResourcesWithFilter(r, s, chart.WithoutCRDFilter)
-}
-
-func sFnSafeDeletionState(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	if err := chart.CheckCRDOrphanResources(s.chartConfig); err != nil {
 		// stop state machine with a warning and requeue reconciliation in 1min
 		// warning state indicates that user intervention would fix it. Its not reconciliation error.
@@ -71,24 +35,41 @@ func sFnSafeDeletionState(_ context.Context, r *reconciler, s *systemState) (sta
 		return stopWithEventualError(err)
 	}
 
-	return deleteResourcesWithFilter(r, s)
+	return deleteResourcesWithFilter(ctx, r, s)
 }
 
-func deleteResourcesWithFilter(r *reconciler, s *systemState, filterFuncs ...chart.FilterFunc) (stateFn, *ctrl.Result, error) {
-	resourceTypesToUninstall := []string{"Secret", "ConfigMap"}
-
-	for _, resourceType := range resourceTypesToUninstall {
-		err, done := chart.UninstallResourcesByType(s.chartConfig, resourceType, filterFuncs...)
-		if err != nil {
-			return uninstallResourcesError(r, s, err)
-		}
-		if !done {
-			return awaitingResourcesRemoval(s, resourceType)
-		}
+func deleteResourcesWithFilter(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+	done, err := chart.Uninstall(s.chartConfig, &chart.UninstallOpts{
+		// these resources have finalizer and the serverless-ctrl-mngr will remove them from all namespaces
+		UninstallFirst: resource.OrPredicates(
+			resource.AndPredicates(
+				resource.HasKind("ConfigMap"),
+				resource.HasLabel(legacy.ConfigLabelKey, legacy.DockerfileConfigmapLabelValue),
+			),
+			resource.AndPredicates(
+				resource.HasKind("Secret"),
+				resource.HasLabel(legacy.ConfigLabelKey, legacy.RegistrySecretLabelValue),
+			),
+		),
+		// this resource is spread in all namespaces, but serverless-ctrl-mngr is not removing them
+		PostActions: []action.PostUninstall{
+			action.PostUninstallWithPredicate(
+				func(u unstructured.Unstructured) (bool, error) {
+					return legacy.RemoveResourceFromAllNamespaces(ctx, r.client, r.log, u)
+				},
+				resource.AndPredicates(
+					resource.HasKind("ServiceAccount"),
+					resource.HasLabel(legacy.ConfigLabelKey, legacy.ServiceAccountLabelValue),
+				),
+			),
+		},
+	})
+	if err != nil {
+		return uninstallResourcesError(r, s, err)
 	}
 
-	if err := chart.Uninstall(s.chartConfig, filterFuncs...); err != nil {
-		return uninstallResourcesError(r, s, err)
+	if !done {
+		return awaitingResourcesRemoval(s)
 	}
 
 	s.setState(v1alpha1.StateDeleting)
@@ -114,13 +95,13 @@ func uninstallResourcesError(r *reconciler, s *systemState, err error) (stateFn,
 	return stopWithEventualError(err)
 }
 
-func awaitingResourcesRemoval(s *systemState, resourceType string) (stateFn, *ctrl.Result, error) {
+func awaitingResourcesRemoval(s *systemState) (stateFn, *ctrl.Result, error) {
 	s.setState(v1alpha1.StateDeleting)
-
-	s.instance.UpdateConditionTrue(
+	s.instance.UpdateConditionUnknown(
 		v1alpha1.ConditionTypeDeleted,
 		v1alpha1.ConditionReasonDeletion,
-		"Deleting "+resourceType)
+		"Deleting module resources",
+	)
 
 	// wait one sec until ctrl-mngr remove finalizers from secrets
 	return requeueAfter(time.Second)
