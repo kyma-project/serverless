@@ -102,7 +102,7 @@ func (sr *serverlessReconciler) retriggerAllServerlessCRsOnDelete(ctx context.Co
 }
 
 func (sr *serverlessReconciler) retriggerAllServerlessCRs(ctx context.Context, q workqueue.TypedRateLimitingInterface[ctrl.Request]) {
-	log := sr.log.With("deletion_watcher")
+	log := sr.log.Named("deletion_watcher")
 
 	list := &v1alpha1.ServerlessList{}
 	err := sr.client.List(ctx, list, &client.ListOptions{})
