@@ -19,6 +19,7 @@ package main
 import (
 	"context"
 	"crypto/fips140"
+	"errors"
 	"flag"
 	"os"
 	"time"
@@ -73,10 +74,10 @@ type operatorConfig struct {
 }
 
 func main() {
-	//if !isFIPS140Only() {
-	//	setupLog.Error(errors.New("FIPS not enforced"), "FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
-	//	panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
-	//}
+	if !isFIPS140Only() {
+		setupLog.Error(errors.New("FIPS not enforced"), "FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+		panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+	}
 
 	var metricsAddr string
 	var probeAddr string

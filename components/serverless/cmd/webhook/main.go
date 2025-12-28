@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/go-logr/zapr"
-	fileconfig "github.com/kyma-project/serverless/components/serverless/internal/config"
+	logconfig "github.com/kyma-project/manager-toolkit/logging/config"
 	"github.com/kyma-project/serverless/components/serverless/internal/logging"
 	"github.com/kyma-project/serverless/components/serverless/internal/webhook"
 	"github.com/kyma-project/serverless/components/serverless/internal/webhook/resources"
@@ -53,7 +53,7 @@ func main() {
 		panic(errors.Wrap(err, "while reading env variables"))
 	}
 
-	logCfg, err := fileconfig.LoadLogConfig(cfg.LogConfigPath)
+	logCfg, err := logconfig.LoadConfig(cfg.LogConfigPath)
 	if err != nil {
 		setupLog.Error(err, "unable to load log configuration file")
 		os.Exit(1)
