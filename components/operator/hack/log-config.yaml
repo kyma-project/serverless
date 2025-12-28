@@ -1,3 +1,3 @@
-logLevel: info
-logFormat: json
+logLevel: debug
+logFormat: text
 

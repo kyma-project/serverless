@@ -1,2 +1,2 @@
 logLevel: info
-logFormat: text
+logFormat: json
