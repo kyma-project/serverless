@@ -20,35 +20,37 @@ linters:
       - std-error-handling
     rules:
       - path: (.+)\.go$
-        text: '^SA1019: m.result.Requeue is deprecated:'
+        text: "^SA1019: m.result.Requeue is deprecated:"
       - path: (.+)\.go$
-        text: '^SA1019: res.Requeue is deprecated:'
+        text: "^SA1019: res.Requeue is deprecated:"
       - path: (.+)\.go$
-        text: '^SA1019: r.result.Requeue is deprecated:'
+        text: "^SA1019: r.result.Requeue is deprecated:"
       - path: (.+)\.go$
-        text: '^SA1019: result.Requeue is deprecated:'
+        text: "^SA1019: result.Requeue is deprecated:"
       - path: (.+)\.go$
-        text: '^SA1019: status.RuntimeImageOverride is deprecated:'
+        text: "^SA1019: status.RuntimeImageOverride is deprecated:"
       - path: (.+)\.go$
-        text: '^SA1019: s.instance.Spec.Template is deprecated:'
+        text: "^SA1019: s.instance.Spec.Template is deprecated:"
       - path: (.+)\.go$
-        text: '^SA1019: s.instance.Spec.Template.Labels is deprecated:'
+        text: "^SA1019: s.instance.Spec.Template.Labels is deprecated:"
       - path: (.+)\.go$
-        text: '^SA1019: function.Status.RuntimeImageOverride is deprecated:'
+        text: "^SA1019: function.Status.RuntimeImageOverride is deprecated:"
       - path: (.+)\.go$
-        text: '^SA1019: status.BuildResourceProfile is deprecated:'
+        text: "^SA1019: status.BuildResourceProfile is deprecated:"
       - path: (.+)\.go$
-        text: '^SA1019: status.BuildResourceProfile is deprecated:'
+        text: "^SA1019: status.BuildResourceProfile is deprecated:"
       - path: (.+)\.go$
-        text: '^SA1019: instance.Spec.ResourceConfiguration.Build is deprecated:'
+        text: "^SA1019: instance.Spec.ResourceConfiguration.Build is deprecated:"
       - path: (.+)\.go$
-        text: '^SA1019: rc.Build is deprecated:'
+        text: "^SA1019: rc.Build is deprecated:"
       - path: (.+)\.go$
-        text: '^SA1019: function.Status.BuildResourceProfile is deprecated:'
+        text: "^SA1019: function.Status.BuildResourceProfile is deprecated:"
       - path: (.+)\.go$
-        text: '^SA1019: s.instance.Spec.ResourceConfiguration.Build is deprecated:'
+        text: "^SA1019: s.instance.Spec.ResourceConfiguration.Build is deprecated:"
       - path: (.+)\.go$
-        text: '^QF1008:'
+        text: "^QF1008:"
+      - path: (.+)\.go$
+        text: "^SA1019: result.Requeue is deprecated:"
     paths:
       - third_party$
       - builtin$
