@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -10,7 +11,7 @@ import (
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/resources"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/endpoint/types"
 	"github.com/pkg/errors"
-	"go.yaml.in/yaml/v2"
+	"go.yaml.in/yaml/v3"
 )
 
 func BuildResources(functionConfig *config.FunctionConfig, f *v1alpha2.Function, appName string) ([]types.FileResponse, error) {
@@ -106,10 +107,14 @@ func convertK8SObjectToYaml(obj interface{}) ([]byte, error) {
 		return nil, err
 	}
 
-	yamlBytes, err := yaml.Marshal(jsonObj)
+	yamlBytes := bytes.Buffer{}
+	e := yaml.NewEncoder(&yamlBytes)
+	e.SetIndent(2)
+	e.Encode(jsonObj)
+	err = e.Encode(jsonObj)
 	if err != nil {
 		return nil, err
 	}
 
-	return yamlBytes, nil
+	return yamlBytes.Bytes(), nil
 }
