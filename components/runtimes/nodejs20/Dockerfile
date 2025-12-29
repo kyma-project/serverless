@@ -2,10 +2,10 @@ FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:
 
 # https://pkgs.alpinelinux.org/packages?name=nodejs&branch=v3.20&repo=main&arch=&maintainer=
 ENV NODE_VERSION=20.17.0-r0
-# use Ada version compatible with the Node version
-ENV ADA_VERSION=2.7.8-r0
+# use Ada version compatible with the Alpine 3.23 and Node version
+ENV ADA_VERSION=3.3.0-r0
 
-RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.20/main ada-libs=${ADA_VERSION} nodejs=${NODE_VERSION} npm
+RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.23/main ada-libs=${ADA_VERSION} nodejs=${NODE_VERSION} npm
 
 # FIPS
 COPY openssl.cnf /etc/ssl/openssl.cnf
