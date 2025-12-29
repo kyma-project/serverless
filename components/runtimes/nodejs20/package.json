@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "NodeJS v20 container for kyma serverless",
   "engines": {
-    "node": ">= 20.0.0"
+    "node": ">= 20.17.0"
   },
   "scripts": {
     "start": "node --force-fips server.mjs"
