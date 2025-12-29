@@ -1,6 +1,7 @@
 package runtime
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -106,10 +107,14 @@ func convertK8SObjectToYaml(obj interface{}) ([]byte, error) {
 		return nil, err
 	}
 
-	yamlBytes, err := yaml.Marshal(jsonObj)
+	yamlBytes := bytes.Buffer{}
+	e := yaml.NewEncoder(&yamlBytes)
+	e.SetIndent(2)
+	e.Encode(jsonObj)
+	err = e.Encode(jsonObj)
 	if err != nil {
 		return nil, err
 	}
 
-	return yamlBytes, nil
+	return yamlBytes.Bytes(), nil
 }
