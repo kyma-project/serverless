@@ -5,7 +5,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/vrischmann/envconfig"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 )
