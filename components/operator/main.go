@@ -24,13 +24,13 @@ import (
 	"os"
 	"time"
 
-	"github.com/kyma-project/serverless/components/operator/internal/config"
 	"github.com/kyma-project/serverless/components/operator/internal/logging"
 	"github.com/vrischmann/envconfig"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
 	"github.com/go-logr/zapr"
+	logconfig "github.com/kyma-project/manager-toolkit/logging/config"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
@@ -93,7 +93,7 @@ func main() {
 	}
 
 	// Load log configuration from file
-	logCfg, err := config.LoadLogConfig(opCfg.LogConfigPath)
+	logCfg, err := logconfig.LoadConfig(opCfg.LogConfigPath)
 	if err != nil {
 		setupLog.Error(err, "unable to load log configuration file")
 		os.Exit(1)

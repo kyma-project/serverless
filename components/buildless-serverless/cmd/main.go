@@ -30,6 +30,7 @@ import (
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
 	"github.com/go-logr/zapr"
+	logconfig "github.com/kyma-project/manager-toolkit/logging/config"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller"
@@ -85,7 +86,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	logCfg, err := config.LoadLogConfig(envCfg.LogConfigPath)
+	logCfg, err := logconfig.LoadConfig(envCfg.LogConfigPath)
 	if err != nil {
 		setupLog.Error(err, "unable to load log configuration file")
 		os.Exit(1)

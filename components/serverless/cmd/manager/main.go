@@ -4,11 +4,8 @@ import (
 	"context"
 	"crypto/fips140"
 	"errors"
-	"os"
-	"time"
-
 	"github.com/go-logr/zapr"
-	fileconfig "github.com/kyma-project/serverless/components/serverless/internal/config"
+	logconfig "github.com/kyma-project/manager-toolkit/logging/config"
 	k8s "github.com/kyma-project/serverless/components/serverless/internal/controllers/kubernetes"
 	"github.com/kyma-project/serverless/components/serverless/internal/controllers/serverless"
 	"github.com/kyma-project/serverless/components/serverless/internal/controllers/serverless/metrics"
@@ -19,6 +16,8 @@ import (
 	"github.com/vrischmann/envconfig"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"os"
+	"time"
 
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -79,7 +78,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	logCfg, err := fileconfig.LoadLogConfig(config.LogConfigPath)
+	logCfg, err := logconfig.LoadConfig(config.LogConfigPath)
 	if err != nil {
 		setupLog.Error(err, "unable to load configuration file")
 		os.Exit(1)
