@@ -8,7 +8,7 @@ ENV ADA_VERSION=2.7.8-r0
 ENV NPM_VERSION=10.9.1-r0
 
 # Remove nodejs and npm installed with the base image
-RUN apk del --no-cache nodejs npm || true
+RUN apk del --no-cache npm || true
 RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.20/main ada-libs=${ADA_VERSION} nodejs=${NODE_VERSION} npm=${NPM_VERSION}
 
 # FIPS
