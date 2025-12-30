@@ -494,6 +494,8 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 		g.Expect(job).ToNot(gomega.BeNil())
 		job.Status.Succeeded = 1
 		now := metav1.Now()
+		startTime := metav1.NewTime(now.Add(-time.Second))
+		job.Status.StartTime = &startTime
 		job.Status.CompletionTime = &now
 		job.Status.Conditions = []batchv1.JobCondition{
 			{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
@@ -642,6 +644,8 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 		g.Expect(job).ToNot(gomega.BeNil())
 		job.Status.Succeeded = 1
 		now := metav1.Now()
+		startTime := metav1.NewTime(now.Add(-time.Second))
+		job.Status.StartTime = &startTime
 		job.Status.CompletionTime = &now
 		job.Status.Conditions = []batchv1.JobCondition{
 			{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
@@ -868,6 +872,8 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 		g.Expect(job).ToNot(gomega.BeNil())
 		job.Status.Succeeded = 1
 		now := metav1.Now()
+		startTime := metav1.NewTime(now.Add(-time.Second))
+		job.Status.StartTime = &startTime
 		job.Status.CompletionTime = &now
 		job.Status.Conditions = []batchv1.JobCondition{
 			{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
@@ -895,6 +901,8 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 		g.Expect(secJob).ToNot(gomega.BeNil())
 		secJob.Status.Succeeded = 1
 		now = metav1.Now()
+		startTime = metav1.NewTime(now.Add(-time.Second))
+		secJob.Status.StartTime = &startTime
 		secJob.Status.CompletionTime = &now
 		secJob.Status.Conditions = []batchv1.JobCondition{
 			{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
@@ -943,6 +951,8 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 		g.Expect(job).ToNot(gomega.BeNil())
 		job.Status.Succeeded = 1
 		now := metav1.Now()
+		startTime := metav1.NewTime(now.Add(-time.Second))
+		job.Status.StartTime = &startTime
 		job.Status.CompletionTime = &now
 		job.Status.Conditions = []batchv1.JobCondition{
 			{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
@@ -1246,6 +1256,8 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 		g.Expect(job).ToNot(gomega.BeNil())
 		job.Status.Succeeded = 1
 		now := metav1.Now()
+		startTime := metav1.NewTime(now.Add(-time.Second))
+		job.Status.StartTime = &startTime
 		job.Status.CompletionTime = &now
 		job.Status.Conditions = []batchv1.JobCondition{
 			{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},

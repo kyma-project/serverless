@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"testing"
+	"time"
 
 	"go.uber.org/zap"
 
@@ -205,6 +206,8 @@ func TestGitOpsWithContinuousGitCheckout(t *testing.T) {
 			g.Expect(job).ToNot(gomega.BeNil())
 			job.Status.Succeeded = 1
 			now := metav1.Now()
+			startTime := metav1.NewTime(now.Add(-time.Second))
+			job.Status.StartTime = &startTime
 			job.Status.CompletionTime = &now
 			job.Status.Conditions = []batchv1.JobCondition{
 				{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
@@ -286,6 +289,8 @@ func TestGitOpsWithContinuousGitCheckout(t *testing.T) {
 			g.Expect(job).ToNot(gomega.BeNil())
 			job.Status.Succeeded = 1
 			now = metav1.Now()
+			startTime = metav1.NewTime(now.Add(-time.Second))
+			job.Status.StartTime = &startTime
 			job.Status.CompletionTime = &now
 			job.Status.Conditions = []batchv1.JobCondition{
 				{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
@@ -537,6 +542,8 @@ func TestGitOpsWithoutContinuousGitCheckout(t *testing.T) {
 			g.Expect(job).ToNot(gomega.BeNil())
 			job.Status.Succeeded = 1
 			now := metav1.Now()
+			startTime := metav1.NewTime(now.Add(-time.Second))
+			job.Status.StartTime = &startTime
 			job.Status.CompletionTime = &now
 			job.Status.Conditions = []batchv1.JobCondition{
 				{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
