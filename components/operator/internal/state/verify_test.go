@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless/components/operator/internal/chart"
 	"github.com/kyma-project/serverless/components/operator/internal/warning"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
@@ -153,7 +153,7 @@ func Test_sFnVerifyResources(t *testing.T) {
 					_ = cache.Set(context.Background(), types.NamespacedName{
 						Name:      testInstalledServerless.GetName(),
 						Namespace: testInstalledServerless.GetNamespace(),
-					}, chart.ServerlessSpecManifest{Manifest: testDeployManifest})
+					}, chart.ContextManifest{Manifest: testDeployManifest})
 					return cache
 				}(),
 				CacheKey: types.NamespacedName{
