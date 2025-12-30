@@ -206,6 +206,9 @@ func TestGitOpsWithContinuousGitCheckout(t *testing.T) {
 			job.Status.Succeeded = 1
 			now := metav1.Now()
 			job.Status.CompletionTime = &now
+			job.Status.Conditions = []batchv1.JobCondition{
+				{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
+			}
 			g.Expect(resourceClient.Status().Update(context.TODO(), job)).To(gomega.Succeed())
 
 			g.Expect(reconciler.Reconcile(ctx, request)).To(beOKReconcileResult)
@@ -284,6 +287,9 @@ func TestGitOpsWithContinuousGitCheckout(t *testing.T) {
 			job.Status.Succeeded = 1
 			now = metav1.Now()
 			job.Status.CompletionTime = &now
+			job.Status.Conditions = []batchv1.JobCondition{
+				{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
+			}
 			g.Expect(resourceClient.Status().Update(context.TODO(), job)).To(gomega.Succeed())
 
 			g.Expect(reconciler.Reconcile(ctx, request)).To(beOKReconcileResult)
@@ -532,6 +538,9 @@ func TestGitOpsWithoutContinuousGitCheckout(t *testing.T) {
 			job.Status.Succeeded = 1
 			now := metav1.Now()
 			job.Status.CompletionTime = &now
+			job.Status.Conditions = []batchv1.JobCondition{
+				{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
+			}
 			g.Expect(resourceClient.Status().Update(context.TODO(), job)).To(gomega.Succeed())
 
 			g.Expect(reconciler.Reconcile(ctx, request)).To(beOKReconcileResult)

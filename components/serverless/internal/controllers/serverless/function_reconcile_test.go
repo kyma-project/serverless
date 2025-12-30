@@ -869,6 +869,9 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 		job.Status.Succeeded = 1
 		now := metav1.Now()
 		job.Status.CompletionTime = &now
+		job.Status.Conditions = []batchv1.JobCondition{
+			{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
+		}
 		g.Expect(resourceClient.Status().Update(context.TODO(), job)).To(gomega.Succeed())
 
 		t.Log("first job finished")
@@ -893,6 +896,9 @@ func TestFunctionReconciler_Reconcile(t *testing.T) {
 		secJob.Status.Succeeded = 1
 		now = metav1.Now()
 		secJob.Status.CompletionTime = &now
+		secJob.Status.Conditions = []batchv1.JobCondition{
+			{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
+		}
 		g.Expect(resourceClient.Status().Update(context.TODO(), secJob)).To(gomega.Succeed())
 
 		t.Log("second job finished")
