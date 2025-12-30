@@ -49,14 +49,6 @@ linters:
         text: "^SA1019: s.instance.Spec.ResourceConfiguration.Build is deprecated:"
       - path: (.+)\.go$
         text: "^QF1008:"
-      - path: (.+)\.go$
-        text: "^SA1019: result.Requeue is deprecated:"
-      - path: (.+)\.go$
-        text: "^SA1019: m.result.Requeue is deprecated:"
-      - path: (.+)\.go$
-        text: "^SA1019: res.Requeue is deprecated:"
-      - path: (.+)\.go$
-        text: "^SA1019: r.result.Requeue is deprecated:"
     paths:
       - third_party$
       - builtin$
