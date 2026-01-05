@@ -67,14 +67,14 @@ func (a *GitAuth) loadSecret(ctx context.Context) error {
 func (a *GitAuth) parseSecret() error {
 	switch a.secret.Type {
 	case corev1.SecretTypeSSHAuth:
-		return a.parseSshAuthKubernetesSecret()
+		return a.parseSSHAuthKubernetesSecret()
 	case corev1.SecretTypeBasicAuth:
 		return a.parseBasicAuthKubernetesSecret()
 		// It is for compatibility with the previous implementation
 	default:
 		switch a.authType {
 		case serverlessv1alpha2.RepositoryAuthSSHKey:
-			return a.parseSshAuthOldServerlessSecret()
+			return a.parseSSHAuthOldServerlessSecret()
 		case serverlessv1alpha2.RepositoryAuthBasic:
 			return a.parseBasicAuthOldServerlessSecret()
 		default:
@@ -120,7 +120,7 @@ const (
 	sshKeyEnvVarName               = "APP_REPOSITORY_KEY"
 )
 
-func (a *GitAuth) parseSshAuthKubernetesSecret() error {
+func (a *GitAuth) parseSSHAuthKubernetesSecret() error {
 	if a.authType != serverlessv1alpha2.RepositoryAuthSSHKey {
 		return errors.New(fmt.Sprintf("inconsistent secret type: %s, %s", a.authType, corev1.SecretTypeSSHAuth))
 	}
@@ -158,7 +158,7 @@ func (a *GitAuth) parseBasicAuthKubernetesSecret() error {
 	return nil
 }
 
-func (a *GitAuth) parseSshAuthOldServerlessSecret() error {
+func (a *GitAuth) parseSSHAuthOldServerlessSecret() error {
 	key, keyFound := a.secret.Data[oldServerlessKeyFieldName]
 	if !keyFound {
 		return errors.New(fmt.Sprintf("missing '%s'", oldServerlessKeyFieldName))
