@@ -36,7 +36,7 @@ func assertSuccessfulFunctionBuild(t *testing.T, resourceClient resource.Client,
 	result, err := reconciler.Reconcile(ctx, request)
 	g.Expect(err).To(gomega.BeNil())
 	g.Expect(result.Requeue).To(gomega.BeFalse())
-	g.Expect(result.RequeueAfter).To(gomega.Equal(time.Second * 5))
+	g.Expect(result.RequeueAfter).To(gomega.Equal(time.Second * 1))
 
 	function := &serverlessv1alpha2.Function{}
 	g.Expect(resourceClient.Get(context.TODO(), request.NamespacedName, function)).To(gomega.Succeed())
@@ -76,6 +76,7 @@ func assertSuccessfulFunctionBuild(t *testing.T, resourceClient resource.Client,
 	job.Status.CompletionTime = &now
 	job.Status.Conditions = []batchv1.JobCondition{
 		{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
+		{Type: batchv1.JobSuccessCriteriaMet, Status: corev1.ConditionTrue},
 	}
 	g.Expect(resourceClient.Status().Update(context.TODO(), job)).To(gomega.Succeed())
 

@@ -211,6 +211,7 @@ func TestGitOpsWithContinuousGitCheckout(t *testing.T) {
 			job.Status.CompletionTime = &now
 			job.Status.Conditions = []batchv1.JobCondition{
 				{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
+				{Type: batchv1.JobSuccessCriteriaMet, Status: corev1.ConditionTrue},
 			}
 			g.Expect(resourceClient.Status().Update(context.TODO(), job)).To(gomega.Succeed())
 
@@ -294,6 +295,7 @@ func TestGitOpsWithContinuousGitCheckout(t *testing.T) {
 			job.Status.CompletionTime = &now
 			job.Status.Conditions = []batchv1.JobCondition{
 				{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
+				{Type: batchv1.JobSuccessCriteriaMet, Status: corev1.ConditionTrue},
 			}
 			g.Expect(resourceClient.Status().Update(context.TODO(), job)).To(gomega.Succeed())
 
@@ -547,6 +549,7 @@ func TestGitOpsWithoutContinuousGitCheckout(t *testing.T) {
 			job.Status.CompletionTime = &now
 			job.Status.Conditions = []batchv1.JobCondition{
 				{Type: batchv1.JobComplete, Status: corev1.ConditionTrue},
+				{Type: batchv1.JobSuccessCriteriaMet, Status: corev1.ConditionTrue},
 			}
 			g.Expect(resourceClient.Status().Update(context.TODO(), job)).To(gomega.Succeed())
 
