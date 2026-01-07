@@ -32,9 +32,7 @@ The default configuration of the Serverless Module is following:
    kind: Serverless
    metadata:
      name: serverless-sample
-   spec:
-     dockerRegistry:
-       enableInternal: true
+   spec: {}
    ```
 
 ### Configuring Trace Endpoint
