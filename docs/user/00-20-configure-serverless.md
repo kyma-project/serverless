@@ -122,6 +122,8 @@ To disable Serverless buildless mode and enable the legacy image build step for 
 
 You have [kubectl](https://kubernetes.io/docs/tasks/tools/) installed.
 
+#### Procedure
+
 1. Edit the Serverless CR:
 
    ```bash
