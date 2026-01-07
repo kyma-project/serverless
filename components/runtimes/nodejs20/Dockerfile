@@ -4,8 +4,14 @@ FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:
 ENV NODE_VERSION=20.15.1-r0
 # use Ada version compatible with the Node version
 ENV ADA_VERSION=2.7.8-r0
+# use NPM version compatible with the Node version
+ENV NPM_VERSION=10.9.1-r0
 
-RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.20/main ada-libs=${ADA_VERSION} nodejs=${NODE_VERSION} npm
+# Update repositories to prioritize v3.20 and allow downgrades
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.20/main" > /etc/apk/repositories && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.20/community" >> /etc/apk/repositories && \
+    apk update && \
+    apk add --no-cache --allow-untrusted --force-overwrite ada-libs=${ADA_VERSION} nodejs=${NODE_VERSION} npm=${NPM_VERSION}
 
 # FIPS
 COPY openssl.cnf /etc/ssl/openssl.cnf
