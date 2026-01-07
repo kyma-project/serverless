@@ -118,17 +118,9 @@ To disable Serverless buildless mode and enable the legacy image build step for 
 
 <!-- tabs:start -->
 
-#### **Kyma Dashboard**
+#### Prerequisites
 
-1. Go to Kyma dashboard, and choose **Modify Modules**.
-
-2. In the **View** tab, choose `serverless`, and switch to the **Edit** tab.
-
-3. In **Annotations**, delete the `serverless.kyma-project.io/buildless-mode` as the key, and `enabled` as the value. Save the changes.
-
-You have disabled Serverless buildless mode.
-
-#### **kubectl**
+You have [kubectl](https://kubernetes.io/docs/tasks/tools/) installed.
 
 1. Edit the Serverless CR:
 
@@ -136,7 +128,7 @@ You have disabled Serverless buildless mode.
    kubectl edit -n kyma-system serverlesses.operator.kyma-project.io default
    ```
 
-2. In the `metadata` section, change the value of the `serverless.kyma-project.io/buildless-mode` annotation to `disabled`, and save the changes.
+2. In the `metadata` section, add `annotations`, and add the `serverless.kyma-project.io/buildless-mode: "disabled"` key-value pair in it. Save the changes.
 
 You have disabled Serverless buildless mode.
 
