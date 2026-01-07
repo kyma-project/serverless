@@ -26,7 +26,7 @@ There is no upper limit of Functions that you can run on Kyma. Once you define a
 
 Functions serve user-provided logic wrapped in the web framework, Express for Node.js and Bottle for Python. Taking the user logic aside, those frameworks have limitations and depend on the selected [runtime profile](technical-reference/07-80-available-presets.md#functions-resources) and the Kubernetes nodes specification.
 
-The following table present the response times of the selected runtime profiles for a "Hello World" Function requested at 50 requests/second. This describes the overhead of the serving framework itself. Any user logic added on top of that adds extra milliseconds and must be profiled separately.
+The following table presents the response times of the selected runtime profiles for a "Hello World" Function requested at 50 requests/second. This describes the overhead of the serving framework itself. Any user logic added on top of that adds extra milliseconds and must be profiled separately.
 
 <!-- tabs:start -->
 
@@ -34,7 +34,7 @@ The following table present the response times of the selected runtime profiles 
 
 |                               | XL     | L      | M      | S      | XS      |
 |-------------------------------|--------|--------|--------|--------|---------|
-| response time [avarage]       | ~13ms  | 13ms   | ~15ms  | ~60ms  | ~400ms  |
+| response time [average]       | ~13ms  | 13ms   | ~15ms  | ~60ms  | ~400ms  |
 | response time [95 percentile] | ~20ms  | ~30ms  | ~70ms  | ~200ms | ~800ms  |
 | response time [99 percentile] | ~200ms | ~200ms | ~220ms | ~500ms | ~1.25ms |
 
@@ -42,7 +42,7 @@ The following table present the response times of the selected runtime profiles 
 
 |                               | XL     | L      | M      | S      |
 |-------------------------------|--------|--------|--------|--------|
-| response time [avarage]       | ~11ms  | 12ms   | ~12ms  | ~14ms  |
+| response time [average]       | ~11ms  | 12ms   | ~12ms  | ~14ms  |
 | response time [95 percentile] | ~25ms  | ~25ms  | ~25ms  | ~25ms  |
 | response time [99 percentile] | ~175ms | ~180ms | ~210ms | ~280ms |
 
