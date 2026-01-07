@@ -82,40 +82,44 @@ func parseReconciliationMetrics(metric *io_prometheus_client.MetricFamily) Recon
 func (h *HealthChecker) Checker(req *http.Request) error {
 	h.log.Debug("Liveness handler triggered")
 	// check in metrics if the module was doing something in a last few seconds
+	metricsMissing := false
 
 	allMetrics, err := metrics.Registry.Gather()
 	if err != nil {
 		h.log.Errorf("can't gather metrics: %v", err)
-		return errors.New("can't gather metrics")
+		metricsMissing = true
 	}
 
 	workqueueDepthMetric := findMetric(allMetrics, "workqueue_depth")
 	if workqueueDepthMetric == nil {
 		h.log.Error("can't find workqueue_depth metric")
-		return errors.New("can't find workqueue_depth metric")
+		metricsMissing = true
 	}
 
 	totalReconcilesMetric := findMetric(allMetrics, "controller_runtime_reconcile_total")
 	if totalReconcilesMetric == nil {
 		h.log.Error("can't find controller_runtime_reconcile_total metric")
-		return errors.New("can't find controller_runtime_reconcile_total metric")
+		metricsMissing = true
 	}
-	totalReconciles := parseReconciliationMetrics(totalReconcilesMetric)
 
-	workqueueDepth := int64(workqueueDepthMetric.Metric[0].Gauge.GetValue())
+	// in case metrics are missing skip directly to event-based check
+	if !metricsMissing {
+		totalReconciles := parseReconciliationMetrics(totalReconcilesMetric)
+		workqueueDepth := int64(workqueueDepthMetric.Metric[0].Gauge.GetValue())
 
-	// if the queue is not empty, check if the number of reconciliations has increased; update the state at the end
-	defer func() {
-		h.previousMetrics = totalReconciles
-	}()
-	if workqueueDepth > 0 {
-		h.log.Debugf("workqueue not empty, depth %d, total reconciled prev -> now: %d -> %d", workqueueDepth, h.previousMetrics.Total(), totalReconciles.Total())
-		if totalReconciles.Total() <= h.previousMetrics.Total() {
-			h.log.Error("reconcile loop is stuck based on metrics")
-			return errors.New("reconcile loop is stuck based on metrics")
-		} else {
-			h.log.Info("reconcile loop is healthy based on metrics")
-			return nil
+		// if the queue is not empty, check if the number of reconciliations has increased; update the state at the end
+		defer func() {
+			h.previousMetrics = totalReconciles
+		}()
+		if workqueueDepth > 0 {
+			h.log.Debugf("workqueue not empty, depth %d, total reconciled prev -> now: %d -> %d", workqueueDepth, h.previousMetrics.Total(), totalReconciles.Total())
+			if totalReconciles.Total() <= h.previousMetrics.Total() {
+				h.log.Error("reconcile loop is stuck based on metrics")
+				return errors.New("reconcile loop is stuck based on metrics")
+			} else {
+				h.log.Info("reconcile loop is healthy based on metrics")
+				return nil
+			}
 		}
 	}
 
