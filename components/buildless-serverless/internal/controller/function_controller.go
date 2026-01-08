@@ -23,8 +23,8 @@ import (
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/cache"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git/cache"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/state"
 	"go.uber.org/zap"
 	"golang.org/x/time/rate"

@@ -10,8 +10,8 @@ import (
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/cache"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git/cache"
 	serverlessmetrics "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/metrics"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/resources"
 	"go.uber.org/zap"
