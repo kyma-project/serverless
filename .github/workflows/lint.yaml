@@ -12,7 +12,7 @@ jobs:
       - uses: ./.github/actions/setup-go
       - uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.1
+          version: latest
           working-directory: 'components/operator'
 
   serverless-lint:
@@ -23,7 +23,7 @@ jobs:
       - uses: ./.github/actions/setup-libgit2
       - uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.1
+          version: latest
           working-directory: 'components/serverless'
 
   buildless-serverless-lint:
@@ -33,5 +33,5 @@ jobs:
       - uses: ./.github/actions/setup-go
       - uses: golangci/golangci-lint-action@v9
         with:
-          version: v2.1
+          version: latest
           working-directory: 'components/buildless-serverless'
