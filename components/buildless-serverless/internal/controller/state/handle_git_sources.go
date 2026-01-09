@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/go-git/go-git/v5/plumbing/transport"
-	"github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
@@ -68,7 +67,7 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	return nextState(sFnConfigurationReady)
 }
 
-func checkLastCommit(ctx context.Context, m *fsm.StateMachine, gitRepository *v1alpha2.GitRepositorySource) *git.OrderResult {
+func checkLastCommit(ctx context.Context, m *fsm.StateMachine, gitRepository *serverlessv1alpha2.GitRepositorySource) *git.OrderResult {
 	url := gitRepository.URL
 	ref := gitRepository.Reference
 	auth := m.State.GitAuth
