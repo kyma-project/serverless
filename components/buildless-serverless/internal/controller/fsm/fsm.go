@@ -11,7 +11,6 @@ import (
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git/cache"
 	serverlessmetrics "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/metrics"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/resources"
 	"go.uber.org/zap"
@@ -48,7 +47,7 @@ type StateMachine struct {
 	Client         client.Client
 	FunctionConfig config.FunctionConfig
 	Scheme         *apimachineryruntime.Scheme
-	GitChecker     git.LastCommitChecker
+	GitChecker     git.AsyncLastCommitChecker
 	EventRecorder  record.EventRecorder
 }
 
@@ -101,7 +100,7 @@ type StateMachineReconciler interface {
 	Reconcile(ctx context.Context) (ctrl.Result, error)
 }
 
-func New(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function, startState StateFn, recorder record.EventRecorder, scheme *apimachineryruntime.Scheme, cache cache.Cache, log *zap.SugaredLogger) StateMachineReconciler {
+func New(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function, startState StateFn, recorder record.EventRecorder, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger) StateMachineReconciler {
 	sm := StateMachine{
 		nextFn: startState,
 		State: SystemState{
@@ -111,11 +110,8 @@ func New(client client.Client, functionConfig config.FunctionConfig, instance *s
 		FunctionConfig: functionConfig,
 		Client:         client,
 		Scheme:         scheme,
-		GitChecker: git.GoGitCachedCommitChecker{
-			Cache: cache,
-			Log:   log,
-		},
-		EventRecorder: recorder,
+		GitChecker:     git.NewAsyncLastCommitChecker(log, functionConfig.FunctionReadyRequeueDuration),
+		EventRecorder:  recorder,
 	}
 	sm.State.saveStatusSnapshot()
 	return &sm

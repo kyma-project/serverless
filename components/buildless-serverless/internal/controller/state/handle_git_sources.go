@@ -4,13 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/go-git/go-git/v5/plumbing/transport"
+	"github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"strings"
 )
 
 const (
@@ -37,17 +40,22 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 		m.State.GitAuth = gitAuth
 	}
 
-	latestCommit, err := m.GitChecker.GetLatestCommit(gitRepository.URL, gitRepository.Reference, m.State.GitAuth, forceGitSourceCheck(m.State.Function))
-	if err != nil {
+	result := checkLastCommit(ctx, m, gitRepository)
+	if result == nil {
+		// Commit check is still in progress, requeue the reconciliation
+		return requeueAfter(250 * time.Millisecond)
+	}
+
+	if result.Error != nil {
 		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionConfigurationReady,
 			metav1.ConditionFalse,
 			serverlessv1alpha2.ConditionReasonSourceUpdateFailed,
-			prepareErrorMessage(gitRepository.URL, err))
-		return stopWithError(err)
+			prepareErrorMessage(gitRepository.URL, result.Error))
+		return stopWithError(result.Error)
 	}
 
-	if m.State.Function.Status.GitRepository == nil || m.State.Function.Status.GitRepository.Commit != latestCommit {
+	if m.State.Function.Status.GitRepository == nil || m.State.Function.Status.GitRepository.Commit != result.Commit {
 		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionConfigurationReady,
 			metav1.ConditionTrue,
@@ -55,9 +63,28 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 			"Function source updated")
 	}
 
-	m.State.Commit = latestCommit
+	m.State.Commit = result.Commit
 
 	return nextState(sFnConfigurationReady)
+}
+
+func checkLastCommit(ctx context.Context, m *fsm.StateMachine, gitRepository *v1alpha2.GitRepositorySource) *git.OrderResult {
+	url := gitRepository.URL
+	ref := gitRepository.Reference
+	auth := m.State.GitAuth
+	if !m.GitChecker.IsLastCommitCheckOrdered(url, ref, auth) {
+		// Order the commit check and return nil result for now
+		m.GitChecker.OrderLastCommitCheck(ctx, url, ref, auth)
+		return nil
+	}
+
+	result := m.GitChecker.GetLastCommitCheckResult(url, ref, auth)
+	if result != nil && forceGitSourceCheck(m.State.Function) {
+		// Clean up the order after getting the result if force check was requested
+		m.GitChecker.DeleteLastCommitCheckOrder(url, ref, auth)
+	}
+
+	return result
 }
 
 func prepareErrorMessage(repoUrl string, err error) string {
