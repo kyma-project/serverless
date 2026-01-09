@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"testing"
+	"time"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
@@ -16,6 +17,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
@@ -52,6 +54,50 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.Empty(t, m.State.Function.Status.Conditions)
 		// no commit change, it should be changed only for git functions
 		require.Equal(t, "", m.State.Commit)
+	})
+	t.Run("for git function where the commit should not be empty and last commit checking is not ordered", func(t *testing.T) {
+		// Arrange
+		// machine with our function
+		gitMock := new(automock.AsyncLastCommitChecker)
+		gitMock.On("IsLastCommitCheckOrdered", mock.Anything, mock.Anything, mock.Anything).Return(false)
+		gitMock.On("OrderLastCommitCheck", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return()
+		// gitMock.On("GetLatestCommit", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return("latest-test-commit", nil)
+		m := fsm.StateMachine{
+			State: fsm.SystemState{
+				Function: serverlessv1alpha2.Function{
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      "nice-matsumoto-name",
+						Namespace: "festive-dewdney-ns"},
+					Spec: serverlessv1alpha2.FunctionSpec{
+						Runtime: serverlessv1alpha2.NodeJs22,
+						Source: serverlessv1alpha2.Source{
+							GitRepository: &serverlessv1alpha2.GitRepositorySource{
+								URL: "test-url",
+								Repository: serverlessv1alpha2.Repository{
+									BaseDir:   "main",
+									Reference: "test-reference",
+								},
+							}}},
+					Status: serverlessv1alpha2.FunctionStatus{
+						GitRepository: &serverlessv1alpha2.GitRepositoryStatus{
+							Commit: "test-commit"}}}},
+			Log:        zap.NewNop().Sugar(),
+			GitChecker: gitMock,
+		}
+
+		// Act
+		next, result, err := sFnHandleGitSources(context.Background(), &m)
+
+		// Assert
+		// we are not expecting error
+		require.Nil(t, err)
+		// expected requeue after result
+		require.NotNil(t, result)
+		require.Equal(t, ctrl.Result{RequeueAfter: time.Millisecond * 250}, *result)
+		// no next state
+		require.Nil(t, next)
+		// function commit unchanged
+		require.Equal(t, "test-commit", m.State.Function.Status.GitRepository.Commit)
 	})
 	t.Run("for git function where the commit should not be empty and move to the nextState", func(t *testing.T) {
 		// Arrange
