@@ -3,8 +3,6 @@
 package automock
 
 import (
-	context "context"
-
 	git "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
 	mock "github.com/stretchr/testify/mock"
 )
@@ -57,9 +55,9 @@ func (_m *AsyncLastCommitChecker) IsLastCommitCheckOrdered(_a0 string, _a1 strin
 	return r0
 }
 
-// OrderLastCommitCheck provides a mock function with given fields: _a0, _a1, _a2, _a3
-func (_m *AsyncLastCommitChecker) OrderLastCommitCheck(_a0 context.Context, _a1 string, _a2 string, _a3 *git.GitAuth) {
-	_m.Called(_a0, _a1, _a2, _a3)
+// OrderLastCommitCheck provides a mock function with given fields: _a0, _a1, _a2
+func (_m *AsyncLastCommitChecker) OrderLastCommitCheck(_a0 string, _a1 string, _a2 *git.GitAuth) {
+	_m.Called(_a0, _a1, _a2)
 }
 
 // NewAsyncLastCommitChecker creates a new instance of AsyncLastCommitChecker. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.

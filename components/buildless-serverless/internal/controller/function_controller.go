@@ -24,6 +24,7 @@ import (
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/state"
 	"go.uber.org/zap"
 	"golang.org/x/time/rate"
@@ -49,6 +50,7 @@ type FunctionReconciler struct {
 	Log           *zap.SugaredLogger
 	Config        config.FunctionConfig
 	EventRecorder record.EventRecorder
+	GitChecker    git.AsyncLastCommitChecker
 	HealthCh      chan bool
 }
 
@@ -83,7 +85,7 @@ func (fr *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, nil
 	}
 
-	sm := fsm.New(fr.Client, fr.Config, &instance, state.StartState(), fr.EventRecorder, fr.Scheme, log)
+	sm := fsm.New(fr.Client, fr.Config, &instance, state.StartState(), fr.EventRecorder, fr.GitChecker, fr.Scheme, log)
 	return sm.Reconcile(ctx)
 }
 

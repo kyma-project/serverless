@@ -10,13 +10,14 @@ import (
 
 //go:generate mockery --name=AsyncLastCommitChecker --output=automock --outpkg=automock --case=underscore
 type AsyncLastCommitChecker interface {
-	OrderLastCommitCheck(context.Context, string, string, *GitAuth)
+	OrderLastCommitCheck(string, string, *GitAuth)
 	IsLastCommitCheckOrdered(string, string, *GitAuth) bool
 	DeleteLastCommitCheckOrder(string, string, *GitAuth)
 	GetLastCommitCheckResult(string, string, *GitAuth) *OrderResult
 }
 
 type asyncLastCommitChecker struct {
+	ctx                context.Context
 	cache              sync.Map
 	log                *zap.SugaredLogger
 	cacheEntryLifespan time.Duration
@@ -39,8 +40,9 @@ type OrderResult struct {
 	cancel context.CancelFunc
 }
 
-func NewAsyncLastCommitChecker(log *zap.SugaredLogger, cacheEntryLifespan time.Duration) AsyncLastCommitChecker {
+func NewAsyncLastCommitChecker(ctx context.Context, log *zap.SugaredLogger, cacheEntryLifespan time.Duration) AsyncLastCommitChecker {
 	return &asyncLastCommitChecker{
+		ctx:                ctx,
 		log:                log,
 		cacheEntryLifespan: cacheEntryLifespan,
 		getLastCommit:      GetLatestCommit,
@@ -48,7 +50,7 @@ func NewAsyncLastCommitChecker(log *zap.SugaredLogger, cacheEntryLifespan time.D
 }
 
 // OrderLastCommitCheck orders asynchronous git last commit check
-func (c *asyncLastCommitChecker) OrderLastCommitCheck(ctx context.Context, repo, ref string, auth *GitAuth) {
+func (c *asyncLastCommitChecker) OrderLastCommitCheck(repo, ref string, auth *GitAuth) {
 	key := orderCacheKey{
 		repo: repo,
 		ref:  ref,
@@ -63,7 +65,7 @@ func (c *asyncLastCommitChecker) OrderLastCommitCheck(ctx context.Context, repo,
 		commit, err := c.getLastCommit(key.repo, key.ref, key.auth)
 
 		// timeout context will be used to cleanup cache entry after some time
-		timeoutCtx, cancel := context.WithTimeout(ctx, c.cacheEntryLifespan)
+		timeoutCtx, cancel := context.WithTimeout(c.ctx, c.cacheEntryLifespan)
 		defer cancel()
 
 		c.log.Debugf("finished async last commit check for %s %s with commit %s", key.repo, key.ref, commit)

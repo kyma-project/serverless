@@ -39,7 +39,7 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 		m.State.GitAuth = gitAuth
 	}
 
-	result := checkLastCommit(ctx, m, gitRepository)
+	result := checkLastCommit(m, gitRepository)
 	if result == nil {
 		// Commit check is still in progress, requeue the reconciliation
 		return requeueAfter(250 * time.Millisecond)
@@ -67,13 +67,13 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	return nextState(sFnConfigurationReady)
 }
 
-func checkLastCommit(ctx context.Context, m *fsm.StateMachine, gitRepository *serverlessv1alpha2.GitRepositorySource) *git.OrderResult {
+func checkLastCommit(m *fsm.StateMachine, gitRepository *serverlessv1alpha2.GitRepositorySource) *git.OrderResult {
 	url := gitRepository.URL
 	ref := gitRepository.Reference
 	auth := m.State.GitAuth
 	if !m.GitChecker.IsLastCommitCheckOrdered(url, ref, auth) {
 		// Order the commit check and return nil result for now
-		m.GitChecker.OrderLastCommitCheck(ctx, url, ref, auth)
+		m.GitChecker.OrderLastCommitCheck(url, ref, auth)
 		return nil
 	}
 

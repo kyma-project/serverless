@@ -60,7 +60,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		// machine with our function
 		gitMock := new(automock.AsyncLastCommitChecker)
 		gitMock.On("IsLastCommitCheckOrdered", mock.Anything, mock.Anything, mock.Anything).Return(false)
-		gitMock.On("OrderLastCommitCheck", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return()
+		gitMock.On("OrderLastCommitCheck", mock.Anything, mock.Anything, mock.Anything).Return()
 		// gitMock.On("GetLatestCommit", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return("latest-test-commit", nil)
 		m := fsm.StateMachine{
 			State: fsm.SystemState{

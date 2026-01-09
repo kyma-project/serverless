@@ -19,6 +19,7 @@ func TestAsyncLastCommitChecker(t *testing.T) {
 			secretNamespace: "default",
 		}
 		checker := asyncLastCommitChecker{
+			ctx:                context.Background(),
 			log:                zap.NewNop().Sugar(),
 			cacheEntryLifespan: time.Microsecond,
 			getLastCommit: func(repo, ref string, auth *GitAuth) (string, error) {
@@ -29,7 +30,7 @@ func TestAsyncLastCommitChecker(t *testing.T) {
 		isOrdered := checker.IsLastCommitCheckOrdered(repo, ref, auth)
 		require.False(t, isOrdered, "commit check should not be ordered yet")
 
-		checker.OrderLastCommitCheck(context.Background(), repo, ref, auth)
+		checker.OrderLastCommitCheck(repo, ref, auth)
 		isOrdered = checker.IsLastCommitCheckOrdered(repo, ref, auth)
 		require.True(t, isOrdered, "commit check should be ordered")
 
@@ -48,6 +49,7 @@ func TestAsyncLastCommitChecker(t *testing.T) {
 		}
 
 		checker := asyncLastCommitChecker{
+			ctx:                context.Background(),
 			log:                zap.NewNop().Sugar(),
 			cacheEntryLifespan: time.Minute,
 			getLastCommit: func(repo, ref string, auth *GitAuth) (string, error) {
@@ -55,7 +57,7 @@ func TestAsyncLastCommitChecker(t *testing.T) {
 			},
 		}
 
-		checker.OrderLastCommitCheck(context.Background(), repo, ref, auth)
+		checker.OrderLastCommitCheck(repo, ref, auth)
 
 		// wait for cache entry to expire
 		time.Sleep(2 * time.Millisecond)

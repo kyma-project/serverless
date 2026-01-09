@@ -34,6 +34,7 @@ import (
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
 	serverlessmetrics "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/metrics"
 	orphaned_resources "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/orphaned-resources"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/endpoint"
@@ -162,6 +163,7 @@ func main() {
 		Log:           logWithCtx,
 		Config:        cfg,
 		EventRecorder: mgr.GetEventRecorderFor(serverlessv1alpha2.FunctionControllerValue),
+		GitChecker:    git.NewAsyncLastCommitChecker(ctx, logWithCtx, cfg.FunctionReadyRequeueDuration),
 		HealthCh:      healthResponseCh,
 	}).SetupWithManager(mgr)
 	if err != nil {
