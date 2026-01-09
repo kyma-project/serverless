@@ -20,6 +20,9 @@ type asyncLastCommitChecker struct {
 	cache              sync.Map
 	log                *zap.SugaredLogger
 	cacheEntryLifespan time.Duration
+
+	// implemented to allow easier testing
+	getLastCommit func(repo, ref string, auth *GitAuth) (string, error)
 }
 
 type orderCacheKey struct {
@@ -40,6 +43,7 @@ func NewAsyncLastCommitChecker(log *zap.SugaredLogger, cacheEntryLifespan time.D
 	return &asyncLastCommitChecker{
 		log:                log,
 		cacheEntryLifespan: cacheEntryLifespan,
+		getLastCommit:      GetLatestCommit,
 	}
 }
 
@@ -56,7 +60,7 @@ func (c *asyncLastCommitChecker) OrderLastCommitCheck(ctx context.Context, repo,
 
 	go func() {
 		c.log.Debugf("starting async last commit check for %s %s", key.repo, key.ref)
-		commit, err := GetLatestCommit(key.repo, key.ref, key.auth)
+		commit, err := c.getLastCommit(key.repo, key.ref, key.auth)
 
 		// timeout context will be used to cleanup cache entry after some time
 		timeoutCtx, cancel := context.WithTimeout(ctx, c.cacheEntryLifespan)
