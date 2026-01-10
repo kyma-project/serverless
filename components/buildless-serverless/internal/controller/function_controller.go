@@ -23,8 +23,8 @@ import (
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
-	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/cache"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
+	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/state"
 	"go.uber.org/zap"
 	"golang.org/x/time/rate"
@@ -46,12 +46,12 @@ const healthCheckTimeout = time.Second
 // FunctionReconciler reconciles a Function object
 type FunctionReconciler struct {
 	client.Client
-	Scheme          *runtime.Scheme
-	Log             *zap.SugaredLogger
-	Config          config.FunctionConfig
-	LastCommitCache cache.Cache
-	EventRecorder   record.EventRecorder
-	HealthCh        chan bool
+	Scheme        *runtime.Scheme
+	Log           *zap.SugaredLogger
+	Config        config.FunctionConfig
+	EventRecorder record.EventRecorder
+	GitChecker    git.AsyncLatestCommitChecker
+	HealthCh      chan bool
 }
 
 // +kubebuilder:rbac:groups=serverless.kyma-project.io,resources=functions,verbs=get;list;watch;create;update;patch;delete
@@ -85,7 +85,7 @@ func (fr *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, nil
 	}
 
-	sm := fsm.New(fr.Client, fr.Config, &instance, state.StartState(), fr.EventRecorder, fr.Scheme, fr.LastCommitCache, log)
+	sm := fsm.New(fr.Client, fr.Config, &instance, state.StartState(), fr.EventRecorder, fr.GitChecker, fr.Scheme, log)
 	return sm.Reconcile(ctx)
 }
 
