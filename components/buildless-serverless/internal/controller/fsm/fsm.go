@@ -47,7 +47,7 @@ type StateMachine struct {
 	Client         client.Client
 	FunctionConfig config.FunctionConfig
 	Scheme         *apimachineryruntime.Scheme
-	GitChecker     git.AsyncLastCommitChecker
+	GitChecker     git.AsyncLatestCommitChecker
 	EventRecorder  record.EventRecorder
 }
 
@@ -100,7 +100,7 @@ type StateMachineReconciler interface {
 	Reconcile(ctx context.Context) (ctrl.Result, error)
 }
 
-func New(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function, startState StateFn, recorder record.EventRecorder, gitChecker git.AsyncLastCommitChecker, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger) StateMachineReconciler {
+func New(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function, startState StateFn, recorder record.EventRecorder, gitChecker git.AsyncLatestCommitChecker, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger) StateMachineReconciler {
 	sm := StateMachine{
 		nextFn: startState,
 		State: SystemState{

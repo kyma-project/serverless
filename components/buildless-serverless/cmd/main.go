@@ -163,7 +163,7 @@ func main() {
 		Log:           logWithCtx,
 		Config:        cfg,
 		EventRecorder: mgr.GetEventRecorderFor(serverlessv1alpha2.FunctionControllerValue),
-		GitChecker:    git.NewAsyncLastCommitChecker(ctx, logWithCtx, cfg.FunctionReadyRequeueDuration),
+		GitChecker:    git.NewAsyncLatestCommitChecker(ctx, logWithCtx),
 		HealthCh:      healthResponseCh,
 	}).SetupWithManager(mgr)
 	if err != nil {

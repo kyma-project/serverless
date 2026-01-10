@@ -5,71 +5,42 @@ import (
 	"testing"
 	"time"
 
-	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 )
 
 func TestAsyncLastCommitChecker(t *testing.T) {
 	t.Run("order last commit check and cleanup cache entry", func(t *testing.T) {
+		id := "order-id"
 		repo := "test-repo"
 		ref := "test-ref"
 		auth := &GitAuth{
 			secretName:      "test",
 			secretNamespace: "default",
 		}
-		checker := asyncLastCommitChecker{
-			ctx:                context.Background(),
-			log:                zap.NewNop().Sugar(),
-			cacheEntryLifespan: time.Microsecond,
-			getLastCommit: func(repo, ref string, auth *GitAuth) (string, error) {
+		checker := asyncLatestCommitChecker{
+			ctx: context.Background(),
+			log: zap.NewNop().Sugar(),
+			getLatestCommit: func(repo, ref string, auth *GitAuth) (string, error) {
 				return "test-commit", nil
 			},
 		}
 
-		isOrdered := checker.IsLastCommitCheckOrdered(repo, ref, auth)
-		require.False(t, isOrdered, "commit check should not be ordered yet")
+		result := checker.CollectOrder(id)
+		require.Nil(t, result)
 
-		checker.OrderLastCommitCheck(repo, ref, auth)
-		isOrdered = checker.IsLastCommitCheckOrdered(repo, ref, auth)
-		require.True(t, isOrdered, "commit check should be ordered")
+		checker.MakeOrder(id, repo, ref, auth)
 
-		// wait for cache entry to expire
-		time.Sleep(2 * time.Millisecond)
+		time.Sleep(2 * time.Millisecond) // wait for async operation to complete
 
-		isOrdered = checker.IsLastCommitCheckOrdered(repo, ref, auth)
-		require.False(t, isOrdered, "commit check order should be cleaned up after lifespan")
-	})
+		result = checker.CollectOrder(id)
+		require.NotNil(t, result, "commit check should be ordered and finished")
+		require.Equal(t, "test-commit", result.Commit)
+		require.NoError(t, result.Error)
 
-	t.Run("remove order manually after getting error result", func(t *testing.T) {
-		repo := "test-repo"
-		ref := "test-ref"
-		auth := &GitAuth{
-			secretName: "test",
-		}
+		// subsequent call should return nil as the entry should be removed from cache
+		result = checker.CollectOrder(id)
+		require.Nil(t, result, "commit check order should be removed from cache after collecting the result")
 
-		checker := asyncLastCommitChecker{
-			ctx:                context.Background(),
-			log:                zap.NewNop().Sugar(),
-			cacheEntryLifespan: time.Minute,
-			getLastCommit: func(repo, ref string, auth *GitAuth) (string, error) {
-				return "", errors.New("test error")
-			},
-		}
-
-		checker.OrderLastCommitCheck(repo, ref, auth)
-
-		// wait for cache entry to expire
-		time.Sleep(2 * time.Millisecond)
-
-		result := checker.GetLastCommitCheckResult(repo, ref, auth)
-		require.NotNil(t, result)
-		require.Empty(t, result.Commit)
-		require.ErrorContains(t, result.Error, "test error")
-
-		checker.DeleteLastCommitCheckOrder(repo, ref, auth)
-
-		isOrdered := checker.IsLastCommitCheckOrdered(repo, ref, auth)
-		require.False(t, isOrdered, "commit check order should be removed manually")
 	})
 }

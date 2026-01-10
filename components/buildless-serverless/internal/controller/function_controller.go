@@ -50,7 +50,7 @@ type FunctionReconciler struct {
 	Log           *zap.SugaredLogger
 	Config        config.FunctionConfig
 	EventRecorder record.EventRecorder
-	GitChecker    git.AsyncLastCommitChecker
+	GitChecker    git.AsyncLatestCommitChecker
 	HealthCh      chan bool
 }
 

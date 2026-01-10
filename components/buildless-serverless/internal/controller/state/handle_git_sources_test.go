@@ -58,7 +58,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 	t.Run("for git function where the commit should not be empty and last commit checking is not ordered", func(t *testing.T) {
 		// Arrange
 		// machine with our function
-		gitMock := new(automock.AsyncLastCommitChecker)
+		gitMock := new(automock.AsyncLatestCommitChecker)
 		gitMock.On("IsLastCommitCheckOrdered", mock.Anything, mock.Anything, mock.Anything).Return(false)
 		gitMock.On("OrderLastCommitCheck", mock.Anything, mock.Anything, mock.Anything).Return()
 		// gitMock.On("GetLatestCommit", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return("latest-test-commit", nil)
@@ -102,7 +102,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 	t.Run("for git function where the commit should not be empty and move to the nextState", func(t *testing.T) {
 		// Arrange
 		// machine with our function
-		gitMock := new(automock.AsyncLastCommitChecker)
+		gitMock := new(automock.AsyncLatestCommitChecker)
 		gitMock.On("IsLastCommitCheckOrdered", mock.Anything, mock.Anything, mock.Anything).Return(true)
 		gitMock.On("GetLastCommitCheckResult", mock.Anything, mock.Anything, mock.Anything).Return(&git.OrderResult{
 			Commit: "latest-test-commit",
@@ -155,7 +155,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 	t.Run("for git function where the commit should be empty and stop with condition", func(t *testing.T) {
 		// Arrange
 		// machine with our function
-		gitMock := new(automock.AsyncLastCommitChecker)
+		gitMock := new(automock.AsyncLatestCommitChecker)
 		gitMock.On("IsLastCommitCheckOrdered", mock.Anything, mock.Anything, mock.Anything).Return(true)
 		gitMock.On("GetLastCommitCheckResult", mock.Anything, mock.Anything, mock.Anything).Return(&git.OrderResult{
 			Commit: "",
@@ -208,7 +208,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 	t.Run("do not skip source check for updated function and return commit", func(t *testing.T) {
 		// Arrange
 		// machine with our function
-		gitMock := new(automock.AsyncLastCommitChecker)
+		gitMock := new(automock.AsyncLatestCommitChecker)
 		gitMock.On("IsLastCommitCheckOrdered", mock.Anything, mock.Anything, mock.Anything).Return(true)
 		gitMock.On("GetLastCommitCheckResult", mock.Anything, mock.Anything, mock.Anything).Return(&git.OrderResult{
 			Commit: "latest-commit",
@@ -272,7 +272,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 	})
 	t.Run("skip source check for function with continuousGitCheckoutAnnotation annotation set to true and return latest commit", func(t *testing.T) {
 		// Arrange
-		gitMock := new(automock.AsyncLastCommitChecker)
+		gitMock := new(automock.AsyncLatestCommitChecker)
 		gitMock.On("IsLastCommitCheckOrdered", mock.Anything, mock.Anything, mock.Anything).Return(true)
 		gitMock.On("GetLastCommitCheckResult", mock.Anything, mock.Anything, mock.Anything).Return(&git.OrderResult{
 			Commit: "latest-commit",
@@ -345,7 +345,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		require.NoError(t, corev1.AddToScheme(scheme))
 		k8sClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(&secret).Build()
 		// machine with our function
-		gitMock := new(automock.AsyncLastCommitChecker)
+		gitMock := new(automock.AsyncLatestCommitChecker)
 		gitMock.On("IsLastCommitCheckOrdered", mock.Anything, mock.Anything, mock.Anything).Return(true)
 		gitMock.On("GetLastCommitCheckResult", mock.Anything, mock.Anything, mock.Anything).Return(&git.OrderResult{
 			Commit: "latest-test-commit",
