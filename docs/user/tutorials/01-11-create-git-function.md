@@ -140,10 +140,7 @@ You can create a Function either with kubectl or Kyma dashboard:
       auth:
         type: key
         secretName: "git-creds-ssh"
-    ```  
-
-    > [!NOTE]
-    > To avoid performance degradation caused by large Git repositories and large monorepos, [Function Controller](../resources/06-10-function-cr.md#related-resources-and-components) implements a configurable backoff period for the source checkout based on `APP_FUNCTION_REQUEUE_DURATION`. If you want to allow the controller to perform the source checkout with every reconciliation loop, disable the backoff period by marking the Function CR with the annotation `serverless.kyma-project.io/continuousGitCheckout: true`
+    ```
 
     > [!NOTE]
     > See this [Function's code and dependencies](https://github.com/kyma-project/serverless/tree/main/examples/redis-rest).
