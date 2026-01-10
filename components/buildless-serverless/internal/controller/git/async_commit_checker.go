@@ -50,6 +50,9 @@ func (c *asyncLatestCommitChecker) MakeOrder(orderID, repo, ref string, auth *Gi
 		return
 	}
 
+	// store a nil value to indicate that the order is in progress
+	c.cache.Store(orderID, nil)
+
 	go func() {
 		c.log.Debugf("starting async latest commit check for %s %s", repo, ref)
 		commit, err := c.getLatestCommit(repo, ref, auth)
