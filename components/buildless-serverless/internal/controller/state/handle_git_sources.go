@@ -4,17 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"strings"
-)
-
-const (
-	continuousGitCheckoutAnnotation = "serverless.kyma-project.io/continuousGitCheckout"
 )
 
 func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
@@ -37,7 +33,7 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 		m.State.GitAuth = gitAuth
 	}
 
-	latestCommit, err := m.GitChecker.GetLatestCommit(gitRepository.URL, gitRepository.Reference, m.State.GitAuth, forceGitSourceCheck(m.State.Function))
+	latestCommit, err := m.GitChecker.GetLatestCommit(gitRepository.URL, gitRepository.Reference, m.State.GitAuth, false)
 	if err != nil {
 		m.State.Function.UpdateCondition(
 			serverlessv1alpha2.ConditionConfigurationReady,
@@ -66,11 +62,4 @@ func prepareErrorMessage(repoUrl string, err error) string {
 	}
 
 	return fmt.Sprintf("Git repository: %s source check failed: %s", repoUrl, err.Error())
-}
-
-func forceGitSourceCheck(f serverlessv1alpha2.Function) bool {
-	if v, ok := f.Annotations[continuousGitCheckoutAnnotation]; ok && strings.ToLower(v) == "true" {
-		return true
-	}
-	return false
 }
