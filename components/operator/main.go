@@ -21,6 +21,7 @@ import (
 	"crypto/fips140"
 	"errors"
 	"flag"
+	"fmt"
 	"os"
 	"time"
 
@@ -74,7 +75,9 @@ type operatorConfig struct {
 }
 
 func main() {
+	fmt.Printf("START")
 	if !isFIPS140Only() {
+		fmt.Printf("FIPS check failed")
 		setupLog.Error(errors.New("FIPS not enforced"), "FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
 		panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
 	}
@@ -88,6 +91,7 @@ func main() {
 	// Load operator configuration from environment variables
 	opCfg, err := loadConfig("")
 	if err != nil {
+		fmt.Printf("unable to load config: %v", err)
 		setupLog.Error(err, "unable to load config")
 		os.Exit(1)
 	}
@@ -95,6 +99,7 @@ func main() {
 	// Load log configuration from file
 	logCfg, err := logconfig.LoadConfig(opCfg.LogConfigPath)
 	if err != nil {
+		fmt.Printf("unable to load configuration file: %v", err)
 		setupLog.Error(err, "unable to load log configuration file")
 		os.Exit(1)
 	}
@@ -105,6 +110,7 @@ func main() {
 	atomicLevel := zap.NewAtomicLevel()
 	parsedLevel, err := zapcore.ParseLevel(logLevel)
 	if err != nil {
+		fmt.Printf("unable to parse logger level: %v", err)
 		setupLog.Error(err, "unable to parse logger level")
 		os.Exit(1)
 	}
@@ -113,6 +119,7 @@ func main() {
 	// Configure logger using manager-toolkit
 	log, err := logging.ConfigureLogger(logLevel, logFormat, atomicLevel)
 	if err != nil {
+		fmt.Printf("unable to configure logger: %v", err)
 		setupLog.Error(err, "unable to configure logger")
 		os.Exit(1)
 	}
