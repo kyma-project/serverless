@@ -13,6 +13,24 @@ import (
 func TestHealthChecker_Checker(t *testing.T) {
 	log := zap.NewNop().Sugar()
 
+	t.Run("missing metrics and event success", func(t *testing.T) {
+		metrics.Registry = prometheus.NewRegistry()
+
+		timeout := 10 * time.Second
+		checker, inCh, outCh := NewHealthChecker(timeout, log)
+
+		//WHEN
+		go func() {
+			check := <-inCh
+			require.Equal(t, check.Object.GetName(), HealthEvent)
+			outCh <- true
+		}()
+		err := checker.Checker(nil)
+
+		//THEN
+		require.NoError(t, err)
+	})
+
 	t.Run("Metrics success", func(t *testing.T) {
 		registerPrometheusGauges(1, 2)
 		//GIVEN

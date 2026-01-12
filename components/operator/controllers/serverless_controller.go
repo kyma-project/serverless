@@ -19,8 +19,8 @@ package controllers
 import (
 	"context"
 
+	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
-	"github.com/kyma-project/serverless/components/operator/internal/chart"
 	"github.com/kyma-project/serverless/components/operator/internal/predicate"
 	"github.com/kyma-project/serverless/components/operator/internal/state"
 	"github.com/kyma-project/serverless/components/operator/internal/tracing"
@@ -102,7 +102,7 @@ func (sr *serverlessReconciler) retriggerAllServerlessCRsOnDelete(ctx context.Co
 }
 
 func (sr *serverlessReconciler) retriggerAllServerlessCRs(ctx context.Context, q workqueue.TypedRateLimitingInterface[ctrl.Request]) {
-	log := sr.log.With("deletion_watcher")
+	log := sr.log.Named("deletion_watcher")
 
 	list := &v1alpha1.ServerlessList{}
 	err := sr.client.List(ctx, list, &client.ListOptions{})
