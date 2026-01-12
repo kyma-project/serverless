@@ -83,7 +83,8 @@ spec:
             - name: configuration
               mountPath: {{ .Values.global.configuration.function.targetDir }}
             - name: log-configuration
-              mountPath: {{ .Values.global.configuration.log.targetDir }}
+              mountPath: {{ .Values.global.configuration.log.targetDir }}/{{ .Values.global.configuration.log.filename }}
+              subPath: {{ .Values.global.configuration.log.filename }}
       securityContext:
         runAsNonRoot: true
         runAsGroup: 1000
