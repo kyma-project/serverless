@@ -25,6 +25,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/go-logr/logr"
 	"github.com/kyma-project/serverless/components/operator/internal/logging"
 	"github.com/vrischmann/envconfig"
 
@@ -55,7 +56,7 @@ import (
 
 var (
 	scheme     = runtime.NewScheme()
-	setupLog   = ctrl.Log.WithName("setup")
+	setupLog   logr.Logger
 	syncPeriod = time.Minute * 30
 )
 
@@ -75,9 +76,9 @@ type operatorConfig struct {
 }
 
 func main() {
-	fmt.Printf("START")
+	fmt.Printf("P-START")
 	if !isFIPS140Only() {
-		fmt.Printf("FIPS check failed")
+		fmt.Printf("P-FIPS check failed")
 		setupLog.Error(errors.New("FIPS not enforced"), "FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
 		panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
 	}
@@ -91,7 +92,7 @@ func main() {
 	// Load operator configuration from environment variables
 	opCfg, err := loadConfig("")
 	if err != nil {
-		fmt.Printf("unable to load config: %v", err)
+		fmt.Printf("P-unable to load config: %v", err)
 		setupLog.Error(err, "unable to load config")
 		os.Exit(1)
 	}
@@ -99,7 +100,7 @@ func main() {
 	// Load log configuration from file
 	logCfg, err := logconfig.LoadConfig(opCfg.LogConfigPath)
 	if err != nil {
-		fmt.Printf("unable to load configuration file: %v", err)
+		fmt.Printf("P-unable to load configuration file: %v", err)
 		setupLog.Error(err, "unable to load log configuration file")
 		os.Exit(1)
 	}
@@ -110,7 +111,7 @@ func main() {
 	atomicLevel := zap.NewAtomicLevel()
 	parsedLevel, err := zapcore.ParseLevel(logLevel)
 	if err != nil {
-		fmt.Printf("unable to parse logger level: %v", err)
+		fmt.Printf("P-unable to parse logger level: %v", err)
 		setupLog.Error(err, "unable to parse logger level")
 		os.Exit(1)
 	}
@@ -119,7 +120,7 @@ func main() {
 	// Configure logger using manager-toolkit
 	log, err := logging.ConfigureLogger(logLevel, logFormat, atomicLevel)
 	if err != nil {
-		fmt.Printf("unable to configure logger: %v", err)
+		fmt.Printf("P-unable to configure logger: %v", err)
 		setupLog.Error(err, "unable to configure logger")
 		os.Exit(1)
 	}
@@ -131,6 +132,7 @@ func main() {
 	go logging.ReconfigureOnConfigChange(ctx, logWithCtx.Named("notifier"), atomicLevel, opCfg.LogConfigPath)
 
 	ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
+	setupLog = ctrl.Log.WithName("setup")
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme: scheme,
