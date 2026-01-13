@@ -19,8 +19,9 @@ func Test_AsyncLatestCommitChecker(t *testing.T) {
 			secretNamespace: "default",
 		}
 		checker := asyncLatestCommitChecker{
-			ctx: context.Background(),
-			log: zap.NewNop().Sugar(),
+			ctx:               context.Background(),
+			log:               zap.NewNop().Sugar(),
+			cacheElemLifetime: 0,
 			getLatestCommit: func(repo, ref string, auth *GitAuth) (string, error) {
 				return "test-commit", nil
 			},
@@ -44,6 +45,32 @@ func Test_AsyncLatestCommitChecker(t *testing.T) {
 
 		_, exists := checker.cache.Load(id)
 		require.False(t, exists, "cache entry should be removed after collecting the result")
+	})
+
+	t.Run("get last order without removing it from cache", func(t *testing.T) {
+		id := "order-id"
+		order := &OrderResult{
+			Commit:    "test-commit",
+			timestamp: time.Now(),
+		}
+
+		checker := asyncLatestCommitChecker{
+			ctx:               context.Background(),
+			log:               zap.NewNop().Sugar(),
+			cacheElemLifetime: time.Hour,
+			getLatestCommit: func(repo, ref string, auth *GitAuth) (string, error) {
+				return "test-commit", nil
+			},
+		}
+
+		checker.cache.Store(id, order)
+
+		result := checker.CollectOrder(id)
+		require.NotNil(t, result, "should get existing order result")
+		require.Equal(t, "test-commit", result.Commit)
+
+		_, exists := checker.cache.Load(id)
+		require.True(t, exists, "cache entry should still exist after collecting the result")
 	})
 
 	t.Run("do not order last commit check again if already ordered", func(t *testing.T) {

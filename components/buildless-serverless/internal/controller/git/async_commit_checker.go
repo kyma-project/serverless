@@ -15,24 +15,27 @@ type AsyncLatestCommitChecker interface {
 }
 
 type asyncLatestCommitChecker struct {
-	ctx   context.Context
-	cache sync.Map
-	log   *zap.SugaredLogger
+	ctx               context.Context
+	cache             sync.Map
+	log               *zap.SugaredLogger
+	cacheElemLifetime time.Duration
 
 	// implemented to allow easier testing
 	getLatestCommit func(repo, ref string, auth *GitAuth) (string, error)
 }
 
 type OrderResult struct {
-	Commit string
-	Error  error
+	Commit    string
+	Error     error
+	timestamp time.Time
 }
 
 func NewAsyncLatestCommitChecker(ctx context.Context, log *zap.SugaredLogger) AsyncLatestCommitChecker {
 	checker := &asyncLatestCommitChecker{
-		ctx:             ctx,
-		log:             log,
-		getLatestCommit: GetLatestCommit,
+		ctx:               ctx,
+		log:               log,
+		getLatestCommit:   GetLatestCommit,
+		cacheElemLifetime: 2 * time.Minute,
 	}
 
 	// start periodic cache cleanup
@@ -59,17 +62,20 @@ func (c *asyncLatestCommitChecker) MakeOrder(orderID, repo, ref string, auth *Gi
 
 		c.log.Debugf("finished async lalatestst commit check for %s %s with commit %s", repo, ref, commit)
 		c.cache.Store(orderID, &OrderResult{
-			Commit: commit,
-			Error:  err,
+			Commit:    commit,
+			Error:     err,
+			timestamp: time.Now(),
 		})
 	}()
 }
 
 // CollectOrder collects the result of the latest commit check for the given orderID
-// if the result is found, it is removed from the cache
+// if the result is found or the order is still in progress, nil is returned
+// if order is older than 2 minutes, it is removed from the cache but latest order is returned
 func (c *asyncLatestCommitChecker) CollectOrder(orderID string) *OrderResult {
 	result := c.load(orderID)
-	if result != nil {
+	if result != nil && time.Since(result.timestamp) > c.cacheElemLifetime {
+		// remove old result from cache if is older than 2 minutes
 		c.cache.Delete(orderID)
 	}
 
