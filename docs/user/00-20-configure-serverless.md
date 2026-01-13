@@ -23,7 +23,7 @@ The Serverless CR is an API to configure the Serverless module. You can use it t
 - Configuring the log format.
 - Disabling buildless mode.
 
-The default configuration of the Serverless Module is the following:
+The default configuration of the Serverless module is the following:
 
    ```yaml
    apiVersion: operator.kyma-project.io/v1alpha1
