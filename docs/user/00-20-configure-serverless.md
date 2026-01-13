@@ -14,18 +14,16 @@ The Serverless module has its own operator (Serverless Operator). It watches the
 
 The Serverless CR is an API to configure the Serverless module. You can use it to perform the following actions:
 
-- Override endpoint for traces collected by the Serverless Functions.
-- Override endpoint for Eventing.
-- Override the Function requeue duration.
-- Override the healthz liveness timeout.
-- Override the Function request body limit.
-- Override the Function timeout.
-- Override the default runtime Pod preset.
-- Override the default log level.
-- Override the default log format.
-- Disable buildless mode of Serverless.
+- Configuring trace endpoint.
+- Configuring eventing endpoint.
+- Configuring the Function requeue duration
+- Configuring the healthz liveness timeout.
+- Configuring the default runtime Pod preset.
+- Configuring the log level.
+- Configuring the log format.
+- Disabling buildless mode.
 
-The default configuration of the Serverless Module is following:
+The default configuration of the Serverless Module is the following:
 
    ```yaml
    apiVersion: operator.kyma-project.io/v1alpha1
@@ -116,8 +114,6 @@ Serverless buildless mode is enabled by default. To use the legacy image-buildin
 
 To disable Serverless buildless mode and enable the legacy image build step for Functions, follow these steps:
 
-<!-- tabs:start -->
-
 #### Prerequisites
 
 You have [kubectl](https://kubernetes.io/docs/tasks/tools/) installed.
@@ -133,5 +129,3 @@ You have [kubectl](https://kubernetes.io/docs/tasks/tools/) installed.
 2. In the `metadata` section, add `annotations`, and add the `serverless.kyma-project.io/buildless-mode: "disabled"` key-value pair in it. Save the changes.
 
 You have disabled Serverless buildless mode.
-
-<!-- tabs:end -->
