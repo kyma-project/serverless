@@ -219,8 +219,8 @@ github.com/kylelemons/godebug v1.1.0 h1:RPNrshWIDI6G2gRW9EHilWtl7Z6Sb1BR0xunSBf0
 github.com/kylelemons/godebug v1.1.0/go.mod h1:9/0rRGxNHcop5bhtWyNeEfOS8JIWk580+fNqagV/RAw=
 github.com/kyma-project/manager-toolkit/installation/base v0.0.0-20251228124903-71c93d767d90 h1:k6mqIte2ZqUdypmTphIcjDhENAEOKUhiLlhRBlxYSAw=
 github.com/kyma-project/manager-toolkit/installation/base v0.0.0-20251228124903-71c93d767d90/go.mod h1:rFwv39Z+0qjimnI9YA6qWFc3WIbn538lUG0KbpcUVDc=
-github.com/kyma-project/manager-toolkit/installation/chart v0.0.0-20251228124903-71c93d767d90 h1:ivMi/CrrfbeApJXMxO94tmYAj3ekRssroUjrqFUReD8=
-github.com/kyma-project/manager-toolkit/installation/chart v0.0.0-20251228124903-71c93d767d90/go.mod h1:W42Eiz0PcsGL6Vzn8OArgGbdo9j9WyH5TR11Kzwm+Lo=
+github.com/kyma-project/manager-toolkit/installation/chart v0.260113.143439-fb9dc47 h1:moGeFxVIh3eAN6uNSo70zNUHhjgTITJiW9pfPSJ1SPY=
+github.com/kyma-project/manager-toolkit/installation/chart v0.260113.143439-fb9dc47/go.mod h1:V48Eth+EFtqh1skq2iB4Btd3geE13iUboebFSWW8CJQ=
 github.com/kyma-project/manager-toolkit/logging v0.0.0-20251228124903-71c93d767d90 h1:hQKa+R4lInF+A0gV4/F7UNyjoQxiiiTkxef2UfIgcmg=
 github.com/kyma-project/manager-toolkit/logging v0.0.0-20251228124903-71c93d767d90/go.mod h1:L0y8CWiLK3si95kLiHWBwbE9SBddpyndpG4Ek23V0kk=
 github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 h1:SOEGU9fKiNWd/HOJuq6+3iTQz8KNCLtVX6idSoTLdUw=
