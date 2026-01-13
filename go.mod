@@ -13,7 +13,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/hashicorp/errwrap v1.1.0
 	github.com/hashicorp/go-multierror v1.1.1
-	github.com/kyma-project/manager-toolkit/installation/base v0.0.0-20251228124903-71c93d767d90
+	github.com/kyma-project/manager-toolkit/installation/base v0.260112.171735-414ac39
 	github.com/kyma-project/manager-toolkit/installation/chart v0.0.0-20251228124903-71c93d767d90
 	github.com/kyma-project/manager-toolkit/logging v0.0.0-20251228124903-71c93d767d90
 	github.com/libgit2/git2go/v34 v34.0.0
