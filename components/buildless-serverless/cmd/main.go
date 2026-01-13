@@ -110,6 +110,10 @@ func main() {
 	defer cancel()
 
 	logWithCtx := logger.WithContext()
+
+	// Set initial format for change detection (pod will auto-restart on format changes)
+	logconfig.SetInitialFormat(logCfg.LogFormat)
+
 	go logging.ReconfigureOnConfigChange(ctx, logWithCtx.Named("notifier"), atomic, envCfg.LogConfigPath)
 
 	ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
