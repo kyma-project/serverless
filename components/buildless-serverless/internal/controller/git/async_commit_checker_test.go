@@ -30,7 +30,7 @@ func Test_AsyncLatestCommitChecker(t *testing.T) {
 		result := checker.CollectOrder(id)
 		require.Nil(t, result)
 
-		checker.MakeOrder(id, repo, ref, auth)
+		checker.PlaceOrder(id, repo, ref, auth)
 
 		time.Sleep(2 * time.Millisecond) // wait for async operation to complete
 
@@ -93,9 +93,9 @@ func Test_AsyncLatestCommitChecker(t *testing.T) {
 			},
 		}
 
-		checker.MakeOrder(id, repo, ref, auth)
-		checker.MakeOrder(id, repo, ref, auth)
-		checker.MakeOrder(id, repo, ref, auth)
+		checker.PlaceOrder(id, repo, ref, auth)
+		checker.PlaceOrder(id, repo, ref, auth)
+		checker.PlaceOrder(id, repo, ref, auth)
 
 		// wait for async operation to complete
 		time.Sleep(time.Millisecond * 10)

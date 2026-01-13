@@ -32,8 +32,8 @@ func (_m *AsyncLatestCommitChecker) CollectOrder(_a0 string) *git.OrderResult {
 	return r0
 }
 
-// MakeOrder provides a mock function with given fields: _a0, _a1, _a2, _a3
-func (_m *AsyncLatestCommitChecker) MakeOrder(_a0 string, _a1 string, _a2 string, _a3 *git.GitAuth) {
+// PlaceOrder provides a mock function with given fields: _a0, _a1, _a2, _a3
+func (_m *AsyncLatestCommitChecker) PlaceOrder(_a0 string, _a1 string, _a2 string, _a3 *git.GitAuth) {
 	_m.Called(_a0, _a1, _a2, _a3)
 }
 

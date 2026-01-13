@@ -10,7 +10,7 @@ import (
 
 //go:generate mockery --name=AsyncLatestCommitChecker --output=automock --outpkg=automock --case=underscore
 type AsyncLatestCommitChecker interface {
-	MakeOrder(string, string, string, *GitAuth)
+	PlaceOrder(string, string, string, *GitAuth)
 	CollectOrder(string) *OrderResult
 }
 
@@ -44,9 +44,9 @@ func NewAsyncLatestCommitChecker(ctx context.Context, log *zap.SugaredLogger) As
 	return checker
 }
 
-// MakeOrder orders asynchronous git latest commit check
+// PlaceOrder orders asynchronous git latest commit check
 // when the check is complete, the result can be accessed using the orderID
-func (c *asyncLatestCommitChecker) MakeOrder(orderID, repo, ref string, auth *GitAuth) {
+func (c *asyncLatestCommitChecker) PlaceOrder(orderID, repo, ref string, auth *GitAuth) {
 	_, exists := c.cache.Load(orderID)
 	if exists {
 		// already ordered

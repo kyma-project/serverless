@@ -59,7 +59,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		// Arrange
 		// machine with our function
 		gitMock := new(automock.AsyncLatestCommitChecker)
-		gitMock.On("MakeOrder", "any-UID", "test-url", "test-reference", mock.Anything).Return()
+		gitMock.On("PlaceOrder", "any-UID", "test-url", "test-reference", mock.Anything).Return()
 		gitMock.On("CollectOrder", "any-UID").Return(nil)
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
@@ -103,7 +103,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		// Arrange
 		// machine with our function
 		gitMock := new(automock.AsyncLatestCommitChecker)
-		gitMock.On("MakeOrder", "any-UID", "test-url", "test-reference", mock.Anything).Return()
+		gitMock.On("PlaceOrder", "any-UID", "test-url", "test-reference", mock.Anything).Return()
 		gitMock.On("CollectOrder", "any-UID").Return(&git.OrderResult{
 			Commit: "latest-test-commit",
 			Error:  nil,
@@ -157,7 +157,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		// Arrange
 		// machine with our function
 		gitMock := new(automock.AsyncLatestCommitChecker)
-		gitMock.On("MakeOrder", "any-UID", "test-url", "test-reference", mock.Anything).Return()
+		gitMock.On("PlaceOrder", "any-UID", "test-url", "test-reference", mock.Anything).Return()
 		gitMock.On("CollectOrder", "any-UID").Return(&git.OrderResult{
 			Commit: "",
 			Error:  errors.New("test-error"),
@@ -211,7 +211,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		// Arrange
 		// machine with our function
 		gitMock := new(automock.AsyncLatestCommitChecker)
-		gitMock.On("MakeOrder", "any-UID", "test-url", "test-reference", mock.Anything).Return()
+		gitMock.On("PlaceOrder", "any-UID", "test-url", "test-reference", mock.Anything).Return()
 		gitMock.On("CollectOrder", "any-UID").Return(&git.OrderResult{
 			Commit: "latest-commit",
 			Error:  nil,
@@ -287,7 +287,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 		k8sClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(&secret).Build()
 		// machine with our function
 		gitMock := new(automock.AsyncLatestCommitChecker)
-		gitMock.On("MakeOrder", "any-UID", "test-url", "test-reference", mock.Anything).Return()
+		gitMock.On("PlaceOrder", "any-UID", "test-url", "test-reference", mock.Anything).Return()
 		gitMock.On("CollectOrder", "any-UID").Return(&git.OrderResult{
 			Commit: "latest-test-commit",
 			Error:  nil,

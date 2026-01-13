@@ -35,7 +35,7 @@ func sFnHandleGitSources(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	}
 
 	orderID := string(m.State.Function.GetUID())
-	m.GitChecker.MakeOrder(orderID, gitRepository.URL, gitRepository.Reference, m.State.GitAuth)
+	m.GitChecker.PlaceOrder(orderID, gitRepository.URL, gitRepository.Reference, m.State.GitAuth)
 
 	result := m.GitChecker.CollectOrder(orderID)
 	if result == nil {
