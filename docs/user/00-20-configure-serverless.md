@@ -14,16 +14,16 @@ The Serverless module has its own operator (Serverless Operator). It watches the
 
 The Serverless CR is an API to configure the Serverless module. You can use it to perform the following actions:
 
-- Configuring trace endpoint.
-- Configuring eventing endpoint.
-- Configuring the Function requeue duration
+- Configuring the trace endpoint.
+- Configuring the eventing endpoint.
+- Configuring the Function requeue duration.
 - Configuring the healthz liveness timeout.
 - Configuring the default runtime Pod preset.
 - Configuring the log level.
 - Configuring the log format.
 - Disabling buildless mode.
 
-The default configuration of the Serverless Module is the following:
+The default configuration of the Serverless module is the following:
 
    ```yaml
    apiVersion: operator.kyma-project.io/v1alpha1
@@ -33,7 +33,7 @@ The default configuration of the Serverless Module is the following:
    spec: {}
    ```
 
-### Configuring Trace Endpoint
+### Configuring the Trace Endpoint
 
 By default, the Serverless operator checks if there is a trace endpoint available. If available, the detected trace endpoint is used as the trace collector URL in Functions.
 If no trace endpoint is detected, Functions are configured with no trace collector endpoint.
@@ -46,7 +46,7 @@ The currently used trace endpoint is visible in the Serverless CR status.
        endpoint: http://jaeger-collector.observability.svc.cluster.local:4318/v1/traces
    ```
 
-### Configuring Eventing Endpoint
+### Configuring the Eventing Endpoint
 
 You can configure a custom Eventing endpoint to publish events sent from your Functions.
 The currently used trace endpoint is visible in the Serverless CR status.
