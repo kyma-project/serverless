@@ -28,6 +28,9 @@ updates:
       - dependency-name: "helm.sh/helm/v3"
         update-types: ["version-update:semver-minor"]
     groups:
+      manager-toolkit:
+        patterns:
+          - "github.com/kyma-project/manager-toolkit*"
       k8s-io:
         patterns:
           - "k8s.io/*"
