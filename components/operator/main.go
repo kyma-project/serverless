@@ -89,7 +89,7 @@ func main() {
 	// Load operator configuration from environment variables
 	opCfg, err := loadConfig("")
 	if err != nil {
-		fmt.Printf("Error loading config: %v\n", err)
+		fmt.Printf("unable to load config: %v\n", err)
 		os.Exit(1)
 	}
 
