@@ -19,11 +19,12 @@ package main
 import (
 	"context"
 	"crypto/fips140"
-	"errors"
 	"flag"
+	"fmt"
 	"os"
 	"time"
 
+	"github.com/go-logr/logr"
 	"github.com/kyma-project/serverless/components/operator/internal/logging"
 	"github.com/vrischmann/envconfig"
 
@@ -54,7 +55,7 @@ import (
 
 var (
 	scheme     = runtime.NewScheme()
-	setupLog   = ctrl.Log.WithName("setup")
+	setupLog   logr.Logger
 	syncPeriod = time.Minute * 30
 )
 
@@ -75,7 +76,7 @@ type operatorConfig struct {
 
 func main() {
 	if !isFIPS140Only() {
-		setupLog.Error(errors.New("FIPS not enforced"), "FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
+		fmt.Printf("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags. FIPS not enforced\n")
 		panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
 	}
 
@@ -88,14 +89,14 @@ func main() {
 	// Load operator configuration from environment variables
 	opCfg, err := loadConfig("")
 	if err != nil {
-		setupLog.Error(err, "unable to load config")
+		fmt.Printf("unable to load config: %v\n", err)
 		os.Exit(1)
 	}
 
 	// Load log configuration from file
 	logCfg, err := logconfig.LoadConfig(opCfg.LogConfigPath)
 	if err != nil {
-		setupLog.Error(err, "unable to load log configuration file")
+		fmt.Printf("unable to load log configuration file: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -105,7 +106,7 @@ func main() {
 	atomicLevel := zap.NewAtomicLevel()
 	parsedLevel, err := zapcore.ParseLevel(logLevel)
 	if err != nil {
-		setupLog.Error(err, "unable to parse logger level")
+		fmt.Printf("unable to parse logger level: %v\n", err)
 		os.Exit(1)
 	}
 	atomicLevel.SetLevel(parsedLevel)
@@ -113,7 +114,7 @@ func main() {
 	// Configure logger using manager-toolkit
 	log, err := logging.ConfigureLogger(logLevel, logFormat, atomicLevel)
 	if err != nil {
-		setupLog.Error(err, "unable to configure logger")
+		fmt.Printf("unable to configure logger: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -124,6 +125,7 @@ func main() {
 	go logging.ReconfigureOnConfigChange(ctx, logWithCtx.Named("notifier"), atomicLevel, opCfg.LogConfigPath)
 
 	ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
+	setupLog = ctrl.Log.WithName("setup")
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme: scheme,
