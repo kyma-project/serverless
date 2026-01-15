@@ -72,32 +72,3 @@ spec:
       podSelector:
         matchLabels:
           k8s-app: node-local-dns
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  namespace: kyma-system
-  name: kyma-project.io--serverless-operator-allow-for-metrics
-  labels:
-    control-plane: operator
-    purpose: allow-for-metrics
-    app.kubernetes.io/component: serverless-operator.kyma-project.io
-    app.kubernetes.io/instance: serverless-operator-allow-for-metrics-policy
-spec:
-  podSelector:
-    matchLabels:
-      control-plane: operator
-      app.kubernetes.io/component: serverless-operator.kyma-project.io
-  policyTypes:
-  - Ingress
-  ingress:
-  - from:
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: kyma-system
-      podSelector:
-        matchLabels:
-          networking.kyma-project.io/metrics-scraping: allowed
-    ports:
-    - protocol: TCP
-      port: 8080
