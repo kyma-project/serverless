@@ -8,6 +8,7 @@ require (
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/go-git/go-billy/v5 v5.7.0
 	github.com/go-git/go-git/v5 v5.16.4
+	github.com/go-logr/logr v1.4.3
 	github.com/go-logr/zapr v1.3.0
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/mux v1.8.1
@@ -17,7 +18,7 @@ require (
 	github.com/kyma-project/manager-toolkit/installation/chart v0.260113.143439-fb9dc47
 	github.com/kyma-project/manager-toolkit/logging v0.260113.143439-fb9dc47
 	github.com/libgit2/git2go/v34 v34.0.0
-	github.com/onsi/ginkgo/v2 v2.27.3
+	github.com/onsi/ginkgo/v2 v2.27.5
 	github.com/onsi/gomega v1.39.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.23.2
@@ -74,7 +75,6 @@ require (
 	github.com/go-errors/errors v1.4.2 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-gorp/gorp/v3 v3.1.0 // indirect
-	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
 	github.com/go-openapi/swag v0.23.0 // indirect
