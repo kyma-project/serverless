@@ -34,17 +34,19 @@ jobs:
       # copy .github/workflows/pull.yaml to a new file .github/workflows/pull-<branch-name>.yaml,
       # replace `main` with `<branch-name>` in the new file
       # push the new file to the main branch using bot
-      - name: Create pull workflow for release branch
+      - name: Create pull workflow file
         run: |
           new_workflow_file=".github/workflows/pull-${BRANCH_NAME}.yaml"
           sed "s/@main/@${BRANCH_NAME}/g" .github/workflows/pull.yaml > "${new_workflow_file}"
           # replace main branch in the .on.pull_request_target.branches with the branch name with yq
           yq eval ".on.pull_request_target.branches[0] = \"${BRANCH_NAME}\"" -i "${new_workflow_file}"
-          git config --local user.email "team-otters@sap.com"
-          git config --local user.name "ottersbot"
-          git add "${new_workflow_file}"
-          git commit -m "Create pull workflow for ${BRANCH_NAME} branch"
-          git push origin main
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           BRANCH_NAME: ${{ needs.prerequisite.outputs.branch-name }}
+      - name: Commit&Push
+        run: |
+          git config --local user.email "team-otters@sap.com"
+          git config --local user.name "ottersbot"
+          git add .
+          git commit -m "Create pull workflow for ${BRANCH_NAME} branch"
+          git push origin main
