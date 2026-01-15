@@ -7,8 +7,11 @@ jobs:
   prerequisite:
     # We can't filter out specific names in the 'on' section, so we need to do it here
     runs-on: ubuntu-latest
+    outputs:
+      branch-name: ${{ steps.set-branch-name.outputs.branch-name }}
     steps:
-      - run: |
+      - id: set-branch-name
+        run: |
           name=""
           # if is branch and name is regex release-*, e.g release-1.0 or release-2.1
           if [[ "${TYPE}" == "branch" && "${NAME}" =~ ^release-.* ]]; then
