@@ -126,7 +126,15 @@ func main() {
 	// Set initial format for change detection (pod will auto-restart on format changes)
 	logconfig.SetInitialFormat(logFormat)
 
-	go logging.ReconfigureOnConfigChangeWithRestart(ctx, logWithCtx.Named("notifier"), atomicLevel, opCfg.LogConfigPath)
+	// Start log config watcher with restart callback
+	go logging.ReconfigureOnConfigChangeWithRestart(ctx, logWithCtx.Named("notifier"), atomicLevel, opCfg.LogConfigPath, func() {
+		// Trigger graceful restart by exiting after a short delay
+		go func() {
+			time.Sleep(2 * time.Second)
+			logWithCtx.Info("Exiting for pod restart due to log format change")
+			os.Exit(0)
+		}()
+	})
 
 	ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
 	setupLog = ctrl.Log.WithName("setup")

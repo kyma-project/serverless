@@ -2,8 +2,6 @@ package logging
 
 import (
 	"context"
-	"os"
-	"time"
 
 	"github.com/kyma-project/manager-toolkit/logging/config"
 	"github.com/kyma-project/manager-toolkit/logging/logger"
@@ -13,7 +11,7 @@ import (
 // ReconfigureOnConfigChange monitors config changes and updates log level dynamically.
 // When log format changes, it triggers a graceful pod restart by exiting the process.
 // This implements the restart logic locally on the buildless-serverless side.
-func ReconfigureOnConfigChange(ctx context.Context, log *zap.SugaredLogger, atomic zap.AtomicLevel, cfgPath string) {
+func ReconfigureOnConfigChange(ctx context.Context, log *zap.SugaredLogger, atomic zap.AtomicLevel, cfgPath string, onFormatChange func()) {
 	log.Info("Starting log configuration watcher")
 	defer log.Info("Log configuration watcher stopped")
 
@@ -34,7 +32,6 @@ func ReconfigureOnConfigChange(ctx context.Context, log *zap.SugaredLogger, atom
 			return
 		}
 		atomic.SetLevel(zapLevel)
-		log.Infof("Log level updated to: %s", cfg.LogLevel)
 
 		// Validate and map log format using manager-toolkit's MapFormat
 		// This handles normalization (e.g., "text" -> "console")
@@ -55,9 +52,11 @@ func ReconfigureOnConfigChange(ctx context.Context, log *zap.SugaredLogger, atom
 
 		if currentFormatMapped != newFormat {
 			log.Infof("Log format changed from %s to %s, triggering graceful restart", currentFormat, cfg.LogFormat)
-			// Give time for log message to flush before exiting
-			time.Sleep(1 * time.Second)
-			os.Exit(0)
+			// Trigger restart callback
+			if onFormatChange != nil {
+				onFormatChange()
+			}
+			return
 		}
 
 		log.Infof("logger reconfigured with level '%s' and format '%s'", cfg.LogLevel, cfg.LogFormat)

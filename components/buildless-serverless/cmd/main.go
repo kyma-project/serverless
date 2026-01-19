@@ -21,6 +21,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/source"
@@ -114,7 +115,15 @@ func main() {
 	// Set initial format for change detection (pod will auto-restart on format changes)
 	logconfig.SetInitialFormat(logCfg.LogFormat)
 
-	go logging.ReconfigureOnConfigChange(ctx, logWithCtx.Named("notifier"), atomic, envCfg.LogConfigPath)
+	// Start log config watcher with restart callback
+	go logging.ReconfigureOnConfigChange(ctx, logWithCtx.Named("notifier"), atomic, envCfg.LogConfigPath, func() {
+		// Trigger graceful restart by exiting after a short delay
+		go func() {
+			time.Sleep(2 * time.Second)
+			logWithCtx.Info("Exiting for pod restart due to log format change")
+			os.Exit(0)
+		}()
+	})
 
 	ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
 
