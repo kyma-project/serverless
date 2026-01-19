@@ -148,7 +148,6 @@ func main() {
 		setupLog.Error(err, "unable to start manager")
 		os.Exit(1)
 	}
-
 	serverlessmetrics.Register()
 
 	healthHandler, healthEventsCh, healthResponseCh := controller.NewHealthChecker(cfg.Healthz.LivenessTimeout, logWithCtx.Named("healthz"))
