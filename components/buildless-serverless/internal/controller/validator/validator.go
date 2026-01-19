@@ -3,6 +3,11 @@ package validator
 import (
 	"errors"
 	"fmt"
+	"net/url"
+	"regexp"
+	"slices"
+	"strings"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	corev1 "k8s.io/api/core/v1"
@@ -11,10 +16,6 @@ import (
 	v1validation "k8s.io/apimachinery/pkg/apis/meta/v1/validation"
 	utilvalidation "k8s.io/apimachinery/pkg/util/validation"
 	"k8s.io/apimachinery/pkg/util/validation/field"
-	"net/url"
-	"regexp"
-	"slices"
-	"strings"
 )
 
 type validator struct {
@@ -169,6 +170,7 @@ func validateDependencies(runtime serverlessv1alpha2.Runtime, dependencies strin
 	case serverlessv1alpha2.Python312:
 		return nil
 	}
+	// TODO
 	return fmt.Errorf("cannot find runtime: %s", runtime)
 }
 
