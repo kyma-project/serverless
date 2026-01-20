@@ -27,6 +27,7 @@ import (
 	"github.com/go-logr/logr"
 	"github.com/kyma-project/serverless/components/operator/internal/logging"
 	"github.com/vrischmann/envconfig"
+	"k8s.io/client-go/rest"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -140,7 +141,11 @@ func main() {
 	setupLog = ctrl.Log.WithName("setup")
 
 	setupLog.Info("Generating Kubernetes client config")
-	restConfig := ctrl.GetConfigOrDie()
+	restConfig, err := getConfigWithRetry(setupLog, 5, 2*time.Second)
+	if err != nil {
+		setupLog.Error(err, "unable to get Kubernetes config")
+		os.Exit(1)
+	}
 
 	setupLog.Info("Initializing controller manager")
 	mgr, err := ctrl.NewManager(restConfig, ctrl.Options{
@@ -208,4 +213,34 @@ func loadConfig(prefix string) (operatorConfig, error) {
 		return cfg, err
 	}
 	return cfg, nil
+}
+
+// getConfigWithRetry attempts to get Kubernetes REST config with retry logic
+// to handle transient connection issues after pod restarts
+func getConfigWithRetry(log logr.Logger, maxRetries int, initialDelay time.Duration) (*rest.Config, error) {
+	var config *rest.Config
+	var err error
+
+	delay := initialDelay
+	for i := 0; i < maxRetries; i++ {
+		config, err = ctrl.GetConfig()
+		if err == nil {
+			if i > 0 {
+				log.Info("Successfully obtained Kubernetes config", "attempt", i+1)
+			}
+			return config, nil
+		}
+
+		if i < maxRetries-1 {
+			log.Info("Failed to get Kubernetes config, retrying...",
+				"attempt", i+1,
+				"maxRetries", maxRetries,
+				"delay", delay.String(),
+				"error", err.Error())
+			time.Sleep(delay)
+			delay *= 2 // exponential backoff
+		}
+	}
+
+	return nil, fmt.Errorf("failed to get Kubernetes config after %d attempts: %w", maxRetries, err)
 }
