@@ -481,7 +481,7 @@ func (runtime Runtime) SupportedRuntimeEquivalent() Runtime {
 	return runtime.latestRuntimeEquivalent()
 }
 
-// latestRuntimeEquivalent returns latest runtime for given kind, or empty string if runtime is unknown
+// latestRuntimeEquivalent returns latest runtime for given kind, or the same runtime if kind is unknown
 func (runtime Runtime) latestRuntimeEquivalent() Runtime {
 	if runtime.IsRuntimeNodejs() {
 		return LatestNodejsRuntime()
@@ -489,5 +489,5 @@ func (runtime Runtime) latestRuntimeEquivalent() Runtime {
 	if runtime.IsRuntimePython() {
 		return LatestPythonRuntime()
 	}
-	return Runtime("")
+	return runtime
 }
