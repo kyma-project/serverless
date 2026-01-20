@@ -139,7 +139,11 @@ func main() {
 	ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
 	setupLog = ctrl.Log.WithName("setup")
 
-	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
+	setupLog.Info("Generating Kubernetes client config")
+	restConfig := ctrl.GetConfigOrDie()
+
+	setupLog.Info("Initializing controller manager")
+	mgr, err := ctrl.NewManager(restConfig, ctrl.Options{
 		Scheme: scheme,
 		Metrics: ctrlmetrics.Options{
 			BindAddress: metricsAddr,
