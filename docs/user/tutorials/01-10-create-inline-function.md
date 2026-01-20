@@ -10,8 +10,8 @@ To learn more about Function's signature, `event` and `context` objects, and cus
 
 ## Prerequisites
 
-* You have the [Serverless module added](https://kyma-project.io/#/02-get-started/01-quick-install).
-* For the Kyma CLI scenario, you have Kyma CLI installed.
+* You have the [Serverless module added](https://kyma-project.io/02-get-started/01-quick-install.html).
+* For the Kyma CLI scenario, you have [Kyma CLI](https://kyma-project.io/external-content/cli/docs/user/README.html) installed.
 
 ## Procedure
 

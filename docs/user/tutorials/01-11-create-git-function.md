@@ -9,7 +9,7 @@ To learn more about Git repository sources for Functions and different ways of s
 
 ## Prerequisites
 
-* You have the Serverless module added.
+* You have the [Serverless module added](https://kyma-project.io/02-get-started/01-quick-install.html).
 
 ## Procedure
 
