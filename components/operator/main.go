@@ -127,16 +127,6 @@ func main() {
 	// Set initial format for change detection (pod will auto-restart on format changes)
 	logconfig.SetInitialFormat(logFormat)
 
-	// Start log config watcher with restart callback
-	go logging.ReconfigureOnConfigChangeWithRestart(ctx, logWithCtx.Named("notifier"), atomicLevel, opCfg.LogConfigPath, func() {
-		// Trigger graceful restart by exiting after a short delay
-		go func() {
-			time.Sleep(2 * time.Second)
-			logWithCtx.Info("Exiting for pod restart due to log format change")
-			os.Exit(0)
-		}()
-	})
-
 	ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
 	setupLog = ctrl.Log.WithName("setup")
 
@@ -194,6 +184,23 @@ func main() {
 		setupLog.Error(err, "unable to set up ready check")
 		os.Exit(1)
 	}
+
+	// Start log config watcher with restart callback
+	// This is started AFTER manager initialization to avoid immediate restart on startup
+	startupTime := time.Now()
+	go logging.ReconfigureOnConfigChangeWithRestart(ctx, logWithCtx.Named("notifier"), atomicLevel, opCfg.LogConfigPath, func() {
+		// Prevent restart during the first 30 seconds to allow manager caches to sync
+		if time.Since(startupTime) < 30*time.Second {
+			logWithCtx.Warn("Ignoring log format change during startup grace period")
+			return
+		}
+		// Trigger graceful restart by exiting after a short delay
+		go func() {
+			time.Sleep(2 * time.Second)
+			logWithCtx.Info("Exiting for pod restart due to log format change")
+			os.Exit(0)
+		}()
+	})
 
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
