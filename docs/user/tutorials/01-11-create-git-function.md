@@ -7,6 +7,9 @@ To learn more about Git repository sources for Functions and different ways of s
 > [!NOTE]
 > Read about the [purpose and benefits of Istio sidecar proxies](https://kyma-project.io/#/istio/user/00-00-istio-sidecar-proxies?id=purpose-and-benefits-of-istio-sidecar-proxies). Then, check how to [enable Istio sidecar proxy injection](https://kyma-project.io/#/istio/user/tutorials/01-40-enable-sidecar-injection). For more details, see [Default Istio Configuration](https://kyma-project.io/#/istio/user/00-15-overview-istio-setup?id=default-istio-configuration).
 
+> [!NOTE]
+> Git-sourced Functions require that your Kyma cluster can reach the Git repository over the network. If outbound connectivity to external Git hosts is restricted (for example in some regulated markets such as China), fetching code from external repositories will fail.
+
 ## Prerequisites
 
 * You have the [Serverless module added](https://kyma-project.io/02-get-started/01-quick-install.html).
