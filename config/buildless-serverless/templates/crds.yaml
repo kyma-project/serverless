@@ -409,8 +409,6 @@ spec:
                 runtime:
                   description: Specifies the runtime of the Function. The available values are `nodejs20`, `nodejs22`, and `python312`.
                   enum:
-                    - nodejs14
-                    - python39
                     - nodejs20
                     - nodejs22
                     - python312
