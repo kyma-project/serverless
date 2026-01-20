@@ -7,7 +7,7 @@ It's based on a simple Function in Python 3.9. The Function reads data from Secr
 
 Before you start, make sure you have these tools installed:
 
-- [Serverless module installed](https://kyma-project.io/02-get-started/01-quick-install) in a cluster
+- You have the [Serverless module added](https://kyma-project.io/02-get-started/01-quick-install.html).
 
 ## Steps
 

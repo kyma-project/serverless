@@ -11,11 +11,9 @@ This tutorial is based on a sample Python Function run in a lightweight [k3d](ht
 
 ## Prerequisites
 
-Before you start, make sure you have these tools installed:
-
 - [Docker](https://www.docker.com/)
-- [Kyma CLI](https://github.com/kyma-project/cli)
-- Serverless module
+- You have [Kyma CLI](https://kyma-project.io/external-content/cli/docs/user/README.html) installed.
+- You have the [Serverless module added](https://kyma-project.io/02-get-started/01-quick-install.html).
 
 ## Procedure
 
