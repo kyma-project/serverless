@@ -17,6 +17,8 @@ limitations under the License.
 package v1alpha2
 
 import (
+	"strings"
+
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -27,9 +29,17 @@ import (
 type Runtime string
 
 const (
-	Python312 Runtime = "python312"
-	NodeJs20  Runtime = "nodejs20"
-	NodeJs22  Runtime = "nodejs22"
+	PythonPrefix string  = "python"
+	NodeJsPrefix string  = "nodejs"
+	Python312    Runtime = "python312"
+	NodeJs20     Runtime = "nodejs20"
+	NodeJs22     Runtime = "nodejs22"
+	// deprecated runtimes
+	NodeJs12 Runtime = "nodejs12"
+	NodeJs14 Runtime = "nodejs14"
+	NodeJs16 Runtime = "nodejs16"
+	NodeJs18 Runtime = "nodejs18"
+	Python39 Runtime = "python39"
 )
 
 // FunctionSpec defines the desired state of Function.
@@ -412,15 +422,72 @@ func (f *Function) HasInlineSources() bool {
 }
 
 func (f *Function) HasPythonRuntime() bool {
-	runtime := f.Spec.Runtime
-	return runtime == Python312
+	return f.Spec.Runtime.IsRuntimePython()
 }
 
 func (f *Function) HasNodejsRuntime() bool {
-	runtime := f.Spec.Runtime
-	return runtime == NodeJs20 || runtime == NodeJs22
+	return f.Spec.Runtime.IsRuntimeNodejs()
 }
 
 func (f *Function) CopyAnnotationsToStatus() {
 	f.Status.FunctionAnnotations = f.Spec.Annotations
+}
+
+// runtime helper functions
+// almost all functions that check for supported runtime versions should be here, for simpler bumps
+
+func (runtime Runtime) IsRuntimeSupported() bool {
+	supportedRuntimes := []Runtime{NodeJs20, NodeJs22, Python312}
+	for _, r := range supportedRuntimes {
+		if r == runtime {
+			return true
+		}
+	}
+	return false
+}
+
+// IsRuntimeKnown checks if the runtime is of known, even if the version is unsupported
+func (runtime Runtime) IsRuntimeKnown() bool {
+	supportedRuntimes := []Runtime{NodeJs12, NodeJs14, NodeJs16, NodeJs18, NodeJs20, NodeJs22, Python39, Python312}
+	for _, r := range supportedRuntimes {
+		if r == runtime {
+			return true
+		}
+	}
+	return false
+}
+
+func LatestNodejsRuntime() Runtime {
+	return NodeJs22
+}
+
+func LatestPythonRuntime() Runtime {
+	return Python312
+}
+
+func (runtime Runtime) IsRuntimePython() bool {
+	return strings.HasPrefix(string(runtime), PythonPrefix)
+}
+
+func (runtime Runtime) IsRuntimeNodejs() bool {
+	return strings.HasPrefix(string(runtime), NodeJsPrefix)
+}
+
+// supportedRuntimeEquivalent maps given runtime to the supported one
+func (runtime Runtime) SupportedRuntimeEquivalent() Runtime {
+	if runtime.IsRuntimeSupported() {
+		return runtime
+	}
+	return runtime.latestRuntimeEquivalent()
+}
+
+// latestRuntimeEquivalent returns latest runtime for given kind, or empty string if runtime is unknown
+func (runtime Runtime) latestRuntimeEquivalent() Runtime {
+	if runtime.IsRuntimeNodejs() {
+		return LatestNodejsRuntime()
+	}
+	if runtime.IsRuntimePython() {
+		return LatestPythonRuntime()
+	}
+	return Runtime("")
 }

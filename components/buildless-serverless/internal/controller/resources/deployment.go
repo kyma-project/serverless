@@ -479,8 +479,7 @@ func runtimeImage(f *serverlessv1alpha2.Function, c *config.FunctionConfig) stri
 		return runtimeOverride
 	}
 
-	// TODO
-	switch f.Spec.Runtime {
+	switch f.Spec.Runtime.SupportedRuntimeEquivalent() {
 	case serverlessv1alpha2.NodeJs20:
 		return c.Images.NodeJs20
 	case serverlessv1alpha2.NodeJs22:

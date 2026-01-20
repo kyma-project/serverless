@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
-	"slices"
 	"strings"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
@@ -164,13 +163,12 @@ func (v *validator) validateFunctionResources() []string {
 }
 
 func validateDependencies(runtime serverlessv1alpha2.Runtime, dependencies string) error {
-	switch runtime {
-	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
+	if runtime.IsRuntimeNodejs() {
 		return validateNodeJSDependencies(dependencies)
-	case serverlessv1alpha2.Python312:
+	}
+	if runtime.IsRuntimePython() {
 		return nil
 	}
-	// TODO
 	return fmt.Errorf("cannot find runtime: %s", runtime)
 }
 
@@ -185,8 +183,7 @@ func validateRuntime(runtime serverlessv1alpha2.Runtime) error {
 	if len(runtime) == 0 {
 		return nil
 	}
-	supportedruntimes := []serverlessv1alpha2.Runtime{serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22, serverlessv1alpha2.Python312}
-	if slices.Contains(supportedruntimes, runtime) {
+	if runtime.IsRuntimeKnown() {
 		return nil
 	}
 	return fmt.Errorf("cannot find runtime: %s", runtime)
