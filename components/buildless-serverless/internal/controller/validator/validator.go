@@ -3,6 +3,10 @@ package validator
 import (
 	"errors"
 	"fmt"
+	"net/url"
+	"regexp"
+	"strings"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	corev1 "k8s.io/api/core/v1"
@@ -11,10 +15,6 @@ import (
 	v1validation "k8s.io/apimachinery/pkg/apis/meta/v1/validation"
 	utilvalidation "k8s.io/apimachinery/pkg/util/validation"
 	"k8s.io/apimachinery/pkg/util/validation/field"
-	"net/url"
-	"regexp"
-	"slices"
-	"strings"
 )
 
 type validator struct {
@@ -163,10 +163,10 @@ func (v *validator) validateFunctionResources() []string {
 }
 
 func validateDependencies(runtime serverlessv1alpha2.Runtime, dependencies string) error {
-	switch runtime {
-	case serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22:
+	if runtime.IsRuntimeNodejs() {
 		return validateNodeJSDependencies(dependencies)
-	case serverlessv1alpha2.Python312:
+	}
+	if runtime.IsRuntimePython() {
 		return nil
 	}
 	return fmt.Errorf("cannot find runtime: %s", runtime)
@@ -183,8 +183,7 @@ func validateRuntime(runtime serverlessv1alpha2.Runtime) error {
 	if len(runtime) == 0 {
 		return nil
 	}
-	supportedruntimes := []serverlessv1alpha2.Runtime{serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22, serverlessv1alpha2.Python312}
-	if slices.Contains(supportedruntimes, runtime) {
+	if runtime.IsRuntimeKnown() {
 		return nil
 	}
 	return fmt.Errorf("cannot find runtime: %s", runtime)
