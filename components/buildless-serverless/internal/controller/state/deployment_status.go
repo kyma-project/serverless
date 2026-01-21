@@ -35,7 +35,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 
 		// emit warning if runtime is legacy
 		if !m.State.Function.Spec.Runtime.IsRuntimeSupported() {
-			m.Log.Info(fmt.Sprintf("deployment %s ready, using supported runtime %s", deploymentName))
+			m.Log.Info(fmt.Sprintf("deployment %s ready, using supported runtime", deploymentName))
 
 			m.State.Function.UpdateCondition(
 				serverlessv1alpha2.ConditionRunning,
