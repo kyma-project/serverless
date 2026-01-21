@@ -118,28 +118,16 @@ func main() {
 		os.Exit(1)
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctrl.SetupSignalHandler())
 	defer cancel()
 
 	logWithCtx := log.WithContext()
 
-	// Set initial format for change detection (pod will auto-restart on format changes)
 	logconfig.SetInitialFormat(logFormat)
-
-	// Start log config watcher with restart callback
-	go logging.ReconfigureOnConfigChangeWithRestart(ctx, logWithCtx.Named("notifier"), atomicLevel, opCfg.LogConfigPath, func() {
-		// Trigger graceful restart by exiting after a short delay
-		go func() {
-			time.Sleep(2 * time.Second)
-			logWithCtx.Info("Exiting for pod restart due to log format change")
-			os.Exit(0)
-		}()
-	})
 
 	ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
 	setupLog = ctrl.Log.WithName("setup")
 
-	setupLog.Info("Generating Kubernetes client config")
 	restConfig := ctrl.GetConfigOrDie()
 
 	setupLog.Info("Initializing controller manager")
@@ -169,6 +157,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Start log config watcher with restart callback
+	go logging.ReconfigureOnConfigChangeWithRestart(ctx, logWithCtx.Named("notifier"), atomicLevel, opCfg.LogConfigPath, func() {
+		// Trigger graceful restart by exiting after a short delay
+		logWithCtx.Info("Exiting for pod restart due to log format change")
+		cancel()
+	})
+
 	reconciler := controllers.NewServerlessReconciler(
 		mgr.GetClient(), mgr.GetConfig(),
 		mgr.GetEventRecorderFor("serverless-operator"),
@@ -191,7 +186,7 @@ func main() {
 	}
 
 	setupLog.Info("starting manager")
-	if err := mgr.Start(ctrl.SetupSignalHandler()); err != nil {
+	if err := mgr.Start(ctx); err != nil {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
