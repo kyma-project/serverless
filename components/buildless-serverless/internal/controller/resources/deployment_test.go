@@ -193,7 +193,8 @@ func TestDeployment_construct(t *testing.T) {
 				"sh",
 				"-c",
 				`echo "${FUNC_HANDLER_SOURCE}" > handler.py;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
+export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
 if [ -f "./kubeless.py" ]; then
   # old file location support
@@ -1279,7 +1280,8 @@ func TestDeployment_runtimeCommand(t *testing.T) {
 				},
 			},
 			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
+export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
 if [ -f "./kubeless.py" ]; then
   # old file location support
@@ -1303,7 +1305,8 @@ fi`,
 			},
 			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
+export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
 if [ -f "./kubeless.py" ]; then
   # old file location support
@@ -1329,7 +1332,8 @@ fi`,
 				},
 			},
 			want: `cp -r /git-repository/src/* .;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
+export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
 if [ -f "./kubeless.py" ]; then
   # old file location support

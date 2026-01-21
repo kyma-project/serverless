@@ -14,7 +14,7 @@ Read also about [Function’s specification](../technical-reference/07-70-functi
 ## Prerequisites
 
 - You have an [existing Function](01-10-create-inline-function.md).
-- You have the [Istio, API Gateway, and Serverless modules added](https://kyma-project.io/#/02-get-started/01-quick-install).
+- You have the [Istio, API Gateway, and Serverless modules added](https://kyma-project.io/02-get-started/01-quick-install).
 - For the Kyma CLI scenario, you have Kyma CLI installed.
 
 ## Procedure
