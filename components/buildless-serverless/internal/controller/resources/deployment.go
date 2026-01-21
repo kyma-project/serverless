@@ -272,16 +272,16 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 					TimeoutSeconds:   4,
 				},
 				SecurityContext: &corev1.SecurityContext{
-					Privileged: ptr.To[bool](false),
+					Privileged: ptr.To(false),
 					Capabilities: &corev1.Capabilities{
 						Drop: []corev1.Capability{
 							"ALL",
 						},
 					},
 					ProcMount:                ptr.To(corev1.DefaultProcMount),
-					ReadOnlyRootFilesystem:   ptr.To[bool](false),
-					AllowPrivilegeEscalation: ptr.To[bool](false),
-					RunAsNonRoot:             ptr.To[bool](true),
+					ReadOnlyRootFilesystem:   ptr.To(true),
+					AllowPrivilegeEscalation: ptr.To(false),
+					RunAsNonRoot:             ptr.To(true),
 				},
 			},
 		},
@@ -329,14 +329,14 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 				},
 			},
 			SecurityContext: &corev1.SecurityContext{
-				Privileged: ptr.To[bool](false),
+				Privileged: ptr.To(false),
 				Capabilities: &corev1.Capabilities{
 					Drop: []corev1.Capability{
 						"ALL",
 					},
 				},
 				ProcMount:              ptr.To(corev1.DefaultProcMount),
-				ReadOnlyRootFilesystem: ptr.To[bool](false),
+				ReadOnlyRootFilesystem: ptr.To(true),
 			},
 		},
 	}
@@ -402,7 +402,7 @@ func (d *Deployment) volumes() []corev1.Volume {
 			VolumeSource: corev1.VolumeSource{
 				Secret: &corev1.SecretVolumeSource{
 					SecretName: d.functionConfig.PackageRegistryConfigSecretName,
-					Optional:   ptr.To[bool](true),
+					Optional:   ptr.To(true),
 				},
 			},
 		},
@@ -550,7 +550,8 @@ func runtimeCommandInstall(f *serverlessv1alpha2.Function) string {
 	if f.HasNodejsRuntime() {
 		return `npm install --prefer-offline --no-audit --progress=false;`
 	} else if f.HasPythonRuntime() {
-		return `PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;`
+		return `export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;`
 	}
 	return ""
 }
@@ -692,7 +693,7 @@ func (d *Deployment) deploymentSecretVolumes() (volumes []corev1.Volume, volumeM
 				Secret: &corev1.SecretVolumeSource{
 					SecretName:  secretMount.SecretName,
 					DefaultMode: ptr.To[int32](0666), //read and write only for everybody
-					Optional:    ptr.To[bool](false),
+					Optional:    ptr.To(false),
 				},
 			},
 		}
