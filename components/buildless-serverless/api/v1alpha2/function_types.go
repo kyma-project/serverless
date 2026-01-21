@@ -45,7 +45,7 @@ const (
 // FunctionSpec defines the desired state of Function.
 type FunctionSpec struct {
 	// Specifies the runtime of the Function. The available values are `nodejs20`, `nodejs22`, and `python312`.
-	// +kubebuilder:validation:Enum=nodejs20;nodejs22;python312;
+	// +kubebuilder:validation:Enum=nodejs14;python39;nodejs20;nodejs22;python312;
 	Runtime Runtime `json:"runtime"`
 
 	// Specifies the runtime image used instead of the default one.
