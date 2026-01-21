@@ -162,7 +162,7 @@ spec:
             - ALL
           privileged: false
           procMount: Default
-          readOnlyRootFilesystem: false
+          readOnlyRootFilesystem: true
           runAsNonRoot: true
         startupProbe:
           failureThreshold: 30
