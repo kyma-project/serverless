@@ -185,10 +185,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// TODO: remove this delay after controller-runtime fixes
-	// https://github.com/kubernetes-sigs/controller-runtime/issues/2753
-	time.Sleep(15 * time.Second)
-
 	setupLog.Info("starting manager")
 	if err := mgr.Start(ctx); err != nil {
 		setupLog.Error(err, "problem running manager")
