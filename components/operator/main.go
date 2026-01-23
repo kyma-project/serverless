@@ -22,7 +22,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/go-logr/logr"
 	"github.com/kyma-project/serverless/components/operator/internal/logging"
@@ -52,9 +51,9 @@ import (
 )
 
 var (
-	scheme     = runtime.NewScheme()
-	setupLog   logr.Logger
-	syncPeriod = time.Minute * 30
+	scheme   = runtime.NewScheme()
+	setupLog logr.Logger
+	//syncPeriod = time.Minute * 30
 )
 
 func init() {
@@ -147,7 +146,6 @@ func main() {
 
 	// Start log config watcher with restart callback
 	go logging.ReconfigureOnConfigChangeWithRestart(ctx, logWithCtx.Named("notifier"), atomicLevel, opCfg.LogConfigPath, func() {
-		// Trigger graceful restart by exiting after a short delay
 		logWithCtx.Info("Exiting for pod restart due to log format change")
 		cancel()
 	})
