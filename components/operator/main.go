@@ -150,13 +150,12 @@ func main() {
 		// Trigger graceful restart by exiting after a short delay
 		logWithCtx.Info("Exiting for pod restart due to log format change")
 		cancel()
-
 	})
 
 	reconciler := controllers.NewServerlessReconciler(
 		mgr.GetClient(), mgr.GetConfig(),
 		mgr.GetEventRecorderFor("serverless-operator"),
-		logWithCtx.Desugar().Sugar(),
+		logWithCtx,
 		opCfg.ChartPath)
 
 	if err = reconciler.SetupWithManager(mgr); err != nil {
