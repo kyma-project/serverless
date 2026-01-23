@@ -26,6 +26,8 @@ import (
 	"github.com/go-logr/logr"
 	"github.com/kyma-project/serverless/components/operator/internal/logging"
 	"github.com/vrischmann/envconfig"
+	v1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -147,6 +149,9 @@ func main() {
 	// Start log config watcher with restart callback
 	go logging.ReconfigureOnConfigChangeWithRestart(ctx, logWithCtx.Named("notifier"), atomicLevel, opCfg.LogConfigPath, func() {
 		logWithCtx.Info("Exiting for pod restart due to log format change")
+		mgr.GetCache().RemoveInformer(ctx, &operatorv1alpha1.Serverless{})
+		mgr.GetCache().RemoveInformer(ctx, &v1.Deployment{})
+		mgr.GetCache().RemoveInformer(ctx, &corev1.Service{})
 		cancel()
 	})
 
