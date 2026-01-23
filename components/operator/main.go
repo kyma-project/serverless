@@ -149,7 +149,7 @@ func main() {
 	go logging.ReconfigureOnConfigChangeWithRestart(ctx, logWithCtx.Named("notifier"), atomicLevel, opCfg.LogConfigPath, func() {
 		// Trigger graceful restart by exiting after a short delay
 		logWithCtx.Info("Exiting for pod restart due to log format change")
-		cancel()
+		os.Exit(1)
 	})
 
 	reconciler := controllers.NewServerlessReconciler(
