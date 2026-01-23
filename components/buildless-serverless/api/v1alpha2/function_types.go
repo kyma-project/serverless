@@ -278,21 +278,22 @@ const (
 type ConditionReason string
 
 const (
-	ConditionReasonInvalidFunctionSpec      ConditionReason = "InvalidFunctionSpec"
-	ConditionReasonFunctionSpecValidated    ConditionReason = "FunctionSpecValidated"
-	ConditionReasonSourceUpdated            ConditionReason = "SourceUpdated"
-	ConditionReasonSourceUpdateFailed       ConditionReason = "SourceUpdateFailed"
-	ConditionReasonDeploymentCreated        ConditionReason = "DeploymentCreated"
-	ConditionReasonDeploymentUpdated        ConditionReason = "DeploymentUpdated"
-	ConditionReasonDeploymentFailed         ConditionReason = "DeploymentFailed"
-	ConditionReasonDeploymentDeleted        ConditionReason = "DeploymentDeleted"
-	ConditionReasonDeploymentDeletionFailed ConditionReason = "DeploymentDeletionFailed"
-	ConditionReasonDeploymentWaiting        ConditionReason = "DeploymentWaiting"
-	ConditionReasonDeploymentReady          ConditionReason = "DeploymentReady"
-	ConditionReasonServiceCreated           ConditionReason = "ServiceCreated"
-	ConditionReasonServiceUpdated           ConditionReason = "ServiceUpdated"
-	ConditionReasonServiceFailed            ConditionReason = "ServiceFailed"
-	ConditionReasonMinReplicasNotAvailable  ConditionReason = "MinReplicasNotAvailable"
+	ConditionReasonInvalidFunctionSpec          ConditionReason = "InvalidFunctionSpec"
+	ConditionReasonFunctionSpecValidated        ConditionReason = "FunctionSpecValidated"
+	ConditionReasonSourceUpdated                ConditionReason = "SourceUpdated"
+	ConditionReasonSourceUpdateFailed           ConditionReason = "SourceUpdateFailed"
+	ConditionReasonDeploymentCreated            ConditionReason = "DeploymentCreated"
+	ConditionReasonDeploymentUpdated            ConditionReason = "DeploymentUpdated"
+	ConditionReasonDeploymentFailed             ConditionReason = "DeploymentFailed"
+	ConditionReasonDeploymentDeleted            ConditionReason = "DeploymentDeleted"
+	ConditionReasonDeploymentDeletionFailed     ConditionReason = "DeploymentDeletionFailed"
+	ConditionReasonDeploymentWaiting            ConditionReason = "DeploymentWaiting"
+	ConditionReasonDeploymentReady              ConditionReason = "DeploymentReady"
+	ConditionReasonDeploymentReadyLegacyRuntime ConditionReason = "DeploymentReadyLegacy"
+	ConditionReasonServiceCreated               ConditionReason = "ServiceCreated"
+	ConditionReasonServiceUpdated               ConditionReason = "ServiceUpdated"
+	ConditionReasonServiceFailed                ConditionReason = "ServiceFailed"
+	ConditionReasonMinReplicasNotAvailable      ConditionReason = "MinReplicasNotAvailable"
 )
 
 // +kubebuilder:object:root=true
@@ -457,11 +458,11 @@ func (runtime Runtime) IsRuntimeKnown() bool {
 	return false
 }
 
-func LatestNodejsRuntime() Runtime {
-	return NodeJs22
+func SupportedNodejsRuntime() Runtime {
+	return NodeJs20
 }
 
-func LatestPythonRuntime() Runtime {
+func SupportedPythonRuntime() Runtime {
 	return Python312
 }
 
@@ -484,10 +485,10 @@ func (runtime Runtime) SupportedRuntimeEquivalent() Runtime {
 // latestRuntimeEquivalent returns latest runtime for given kind, or the same runtime if kind is unknown
 func (runtime Runtime) latestRuntimeEquivalent() Runtime {
 	if runtime.IsRuntimeNodejs() {
-		return LatestNodejsRuntime()
+		return SupportedNodejsRuntime()
 	}
 	if runtime.IsRuntimePython() {
-		return LatestPythonRuntime()
+		return SupportedPythonRuntime()
 	}
 	return runtime
 }

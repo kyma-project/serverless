@@ -32,14 +32,27 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 
 	// ready deployment
 	if isDeploymentReady(deployment) {
-		m.Log.Info(fmt.Sprintf("deployment %s ready", deploymentName))
 
-		m.State.Function.UpdateCondition(
-			serverlessv1alpha2.ConditionRunning,
-			metav1.ConditionTrue,
-			serverlessv1alpha2.ConditionReasonDeploymentReady,
-			fmt.Sprintf("Deployment %s is ready", deploymentName))
-		metrics.PublishStateReachTime(m.State.Function, serverlessv1alpha2.ConditionRunning)
+		// emit warning if runtime is legacy
+		if !m.State.Function.Spec.Runtime.IsRuntimeSupported() {
+			m.Log.Info(fmt.Sprintf("deployment %s ready, using supported runtime", deploymentName))
+
+			m.State.Function.UpdateCondition(
+				serverlessv1alpha2.ConditionRunning,
+				metav1.ConditionTrue,
+				serverlessv1alpha2.ConditionReasonDeploymentReadyLegacyRuntime,
+				fmt.Sprintf("Warning: Deployment %s is ready, runtime too old, used supported runtime version", deploymentName))
+			metrics.PublishStateReachTime(m.State.Function, serverlessv1alpha2.ConditionRunning)
+		} else {
+			m.Log.Info(fmt.Sprintf("deployment %s ready", deploymentName))
+
+			m.State.Function.UpdateCondition(
+				serverlessv1alpha2.ConditionRunning,
+				metav1.ConditionTrue,
+				serverlessv1alpha2.ConditionReasonDeploymentReady,
+				fmt.Sprintf("Deployment %s is ready", deploymentName))
+			metrics.PublishStateReachTime(m.State.Function, serverlessv1alpha2.ConditionRunning)
+		}
 
 		return nextState(sFnAdjustStatus)
 	}
