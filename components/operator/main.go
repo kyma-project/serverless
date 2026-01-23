@@ -36,13 +36,11 @@ import (
 	"go.uber.org/zap/zapcore"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
-	corev1 "k8s.io/api/core/v1"
 	apiextensionsscheme "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset/scheme"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
-	ctrlcache "sigs.k8s.io/controller-runtime/pkg/cache"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	ctrlwebhook "sigs.k8s.io/controller-runtime/pkg/webhook"
@@ -140,17 +138,7 @@ func main() {
 			Port: 9443,
 		}),
 		HealthProbeBindAddress: probeAddr,
-		Cache: ctrlcache.Options{
-			SyncPeriod: &syncPeriod,
-		},
-		Client: ctrlclient.Options{
-			Cache: &ctrlclient.CacheOptions{
-				DisableFor: []ctrlclient.Object{
-					&corev1.Secret{},
-					&corev1.ConfigMap{},
-				},
-			},
-		},
+		Client:                 ctrlclient.Options{},
 	})
 	if err != nil {
 		setupLog.Error(err, "unable to start manager")
@@ -160,9 +148,9 @@ func main() {
 	// Start log config watcher with restart callback
 	go logging.ReconfigureOnConfigChangeWithRestart(ctx, logWithCtx.Named("notifier"), atomicLevel, opCfg.LogConfigPath, func() {
 		// Trigger graceful restart by exiting after a short delay
-		//logWithCtx.Info("Exiting for pod restart due to log format change")
-		//cancel()
-		ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
+		logWithCtx.Info("Exiting for pod restart due to log format change")
+		cancel()
+
 	})
 
 	reconciler := controllers.NewServerlessReconciler(
