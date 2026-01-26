@@ -1,11 +1,17 @@
 FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:0.5.0-alpine3.23
 
 # https://pkgs.alpinelinux.org/packages?name=nodejs&branch=v3.22&repo=main&arch=&maintainer=
-ENV NODE_VERSION=22.16.0-r2
+ENV NODE_VERSION=22.22.0-r0
 # use Ada version compatible with the Node version
 ENV ADA_VERSION=2.9.2-r4
+# use NPM version compatible with the Node version
+ENV NPM_VERSION=11.6.4-r0
 
-RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.22/main ada-libs=${ADA_VERSION} nodejs=${NODE_VERSION} npm
+# Update repositories to prioritize v3.22 and allow downgrades
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.22/main" > /etc/apk/repositories && \
+    echo "http://dl-cdn.alpinelinux.org/alpine/v3.22/community" >> /etc/apk/repositories && \
+    apk update && \
+    apk add --no-cache --allow-untrusted --force-overwrite ada-libs=${ADA_VERSION} nodejs=${NODE_VERSION} npm=${NPM_VERSION}
 
 # FIPS
 COPY openssl.cnf /etc/ssl/openssl.cnf
