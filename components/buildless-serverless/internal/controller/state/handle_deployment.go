@@ -44,7 +44,6 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 		return nil, result, errCreate
 	}
 
-
 	requeueNeeded, errUpdate := updateDeploymentIfNeeded(ctx, m, clusterDeployment, builtDeployment)
 	if errUpdate != nil {
 		return stopWithError(errUpdate)
