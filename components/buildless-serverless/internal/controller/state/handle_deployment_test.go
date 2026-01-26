@@ -538,6 +538,7 @@ func Test_deploymentChanged(t *testing.T) {
 							Spec: corev1.PodSpec{
 								SecurityContext: &corev1.PodSecurityContext{
 									RunAsUser: ptr.To[int64](1000),
+									FSGroup:   ptr.To[int64](1000),
 								},
 							}}}},
 				b: &appsv1.Deployment{
