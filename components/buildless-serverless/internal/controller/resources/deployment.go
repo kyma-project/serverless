@@ -495,11 +495,12 @@ func containerSecurityContext(f *serverlessv1alpha2.Function) *corev1.SecurityCo
 }
 
 func podSecurityContext(f *serverlessv1alpha2.Function) *corev1.PodSecurityContext {
-
 	baseSecCtx := &corev1.PodSecurityContext{
 		// runAsUser 1000 is the most popular and standard value for non-root user
-		RunAsUser:  ptr.To[int64](1000),
-		RunAsGroup: ptr.To[int64](1000),
+		RunAsUser:          ptr.To[int64](1000),
+		RunAsGroup:         ptr.To[int64](1000),
+		FSGroup:            ptr.To[int64](1000),
+		SupplementalGroups: []int64{1000},
 		SeccompProfile: &corev1.SeccompProfile{
 			Type: corev1.SeccompProfileTypeRuntimeDefault,
 		},
@@ -513,11 +514,20 @@ func podSecurityContext(f *serverlessv1alpha2.Function) *corev1.PodSecurityConte
 	customSecCtx.RunAsUser = getValueOrDefault(customSecCtx.RunAsUser, baseSecCtx.RunAsUser)
 	customSecCtx.RunAsGroup = getValueOrDefault(customSecCtx.RunAsGroup, baseSecCtx.RunAsGroup)
 	customSecCtx.SeccompProfile = getValueOrDefault(customSecCtx.SeccompProfile, baseSecCtx.SeccompProfile)
+	customSecCtx.FSGroup = getValueOrDefault(customSecCtx.FSGroup, baseSecCtx.FSGroup)
+	customSecCtx.SupplementalGroups = getSliceOrDefault(customSecCtx.SupplementalGroups, baseSecCtx.SupplementalGroups)
 
 	return &customSecCtx
 }
 
 func getValueOrDefault[T any](field *T, defaultValue *T) *T {
+	if field == nil {
+		return defaultValue
+	}
+	return field
+}
+
+func getSliceOrDefault[T any](field []T, defaultValue []T) []T {
 	if field == nil {
 		return defaultValue
 	}

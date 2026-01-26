@@ -74,7 +74,6 @@ func TestBuildResources(t *testing.T) {
 
 		require.NoError(t, err)
 		require.Len(t, files, 2)
-		fmt.Println(files)
 		require.Equal(t, "k8s/service.yaml", files[0].Name)
 		requireEqualBase64Objects(t, fixTestService("test-app-name"), files[0].Data)
 		require.Equal(t, "k8s/deployment.yaml", files[1].Name)
@@ -181,10 +180,13 @@ spec:
           subPath: .npmrc
         workingDir: /usr/src/app/function
       securityContext:
+        fsGroup: 1000
         runAsGroup: 1000
         runAsUser: 1000
         seccompProfile:
           type: RuntimeDefault
+        supplementalGroups:
+        - 1000
       volumes:
       - emptyDir: {}
         name: sources

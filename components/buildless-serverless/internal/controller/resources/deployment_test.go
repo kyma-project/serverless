@@ -1516,8 +1516,10 @@ func Test_podSecurityContext(t *testing.T) {
 			name: "return default pod security context when none is specified in function spec",
 			f:    minimalFunction(),
 			want: &corev1.PodSecurityContext{
-				RunAsUser:  ptr.To[int64](1000),
-				RunAsGroup: ptr.To[int64](1000),
+				RunAsUser:          ptr.To[int64](1000),
+				RunAsGroup:         ptr.To[int64](1000),
+				FSGroup:            ptr.To[int64](1000),
+				SupplementalGroups: []int64{1000},
 				SeccompProfile: &corev1.SeccompProfile{
 					Type: corev1.SeccompProfileTypeRuntimeDefault,
 				},
@@ -1531,8 +1533,10 @@ func Test_podSecurityContext(t *testing.T) {
 				},
 			},
 			want: &corev1.PodSecurityContext{
-				RunAsUser:  ptr.To[int64](1000),
-				RunAsGroup: ptr.To[int64](1000),
+				RunAsUser:          ptr.To[int64](1000),
+				RunAsGroup:         ptr.To[int64](1000),
+				FSGroup:            ptr.To[int64](1000),
+				SupplementalGroups: []int64{1000},
 				SeccompProfile: &corev1.SeccompProfile{
 					Type: corev1.SeccompProfileTypeRuntimeDefault,
 				},
@@ -1552,9 +1556,10 @@ func Test_podSecurityContext(t *testing.T) {
 				},
 			},
 			want: &corev1.PodSecurityContext{
-				FSGroup:    ptr.To[int64](1111),
-				RunAsUser:  ptr.To[int64](666),
-				RunAsGroup: ptr.To[int64](1000),
+				FSGroup:            ptr.To[int64](1111),
+				RunAsUser:          ptr.To[int64](666),
+				RunAsGroup:         ptr.To[int64](1000),
+				SupplementalGroups: []int64{1000},
 				SeccompProfile: &corev1.SeccompProfile{
 					LocalhostProfile: ptr.To("my-profile"),
 				},
