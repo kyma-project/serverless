@@ -290,6 +290,7 @@ type ConditionReason string
 const (
 	ConditionReasonInvalidFunctionSpec          ConditionReason = "InvalidFunctionSpec"
 	ConditionReasonFunctionSpecValidated        ConditionReason = "FunctionSpecValidated"
+	ConditionReasonFunctionSpecRuntimeOutdated  ConditionReason = "FunctionSpecRuntimeOutdated"
 	ConditionReasonSourceUpdated                ConditionReason = "SourceUpdated"
 	ConditionReasonSourceUpdateFailed           ConditionReason = "SourceUpdateFailed"
 	ConditionReasonDeploymentCreated            ConditionReason = "DeploymentCreated"
