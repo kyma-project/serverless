@@ -89,6 +89,16 @@ func (in *FunctionList) DeepCopyObject() runtime.Object {
 func (in *FunctionSpec) DeepCopyInto(out *FunctionSpec) {
 	*out = *in
 	in.Source.DeepCopyInto(&out.Source)
+	if in.PodSecurityContext != nil {
+		in, out := &in.PodSecurityContext, &out.PodSecurityContext
+		*out = new(v1.PodSecurityContext)
+		(*in).DeepCopyInto(*out)
+	}
+	if in.ContainerSecurityContext != nil {
+		in, out := &in.ContainerSecurityContext, &out.ContainerSecurityContext
+		*out = new(v1.SecurityContext)
+		(*in).DeepCopyInto(*out)
+	}
 	if in.Env != nil {
 		in, out := &in.Env, &out.Env
 		*out = make([]v1.EnvVar, len(*in))
@@ -169,6 +179,16 @@ func (in *FunctionStatus) DeepCopyInto(out *FunctionStatus) {
 		in, out := &in.GitRepository, &out.GitRepository
 		*out = new(GitRepositoryStatus)
 		**out = **in
+	}
+	if in.ContainerSecurityContext != nil {
+		in, out := &in.ContainerSecurityContext, &out.ContainerSecurityContext
+		*out = new(v1.SecurityContext)
+		(*in).DeepCopyInto(*out)
+	}
+	if in.PodSecurityContext != nil {
+		in, out := &in.PodSecurityContext, &out.PodSecurityContext
+		*out = new(v1.PodSecurityContext)
+		(*in).DeepCopyInto(*out)
 	}
 }
 

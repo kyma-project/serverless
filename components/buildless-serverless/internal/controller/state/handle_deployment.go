@@ -137,6 +137,8 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 	envChanged := !reflect.DeepEqual(aContainer.Env, bContainer.Env)
 	volumeMountsChanged := !reflect.DeepEqual(aContainer.VolumeMounts, bContainer.VolumeMounts)
 	portsChanged := !reflect.DeepEqual(aContainer.Ports, bContainer.Ports)
+	podSecurityContextChanged := !reflect.DeepEqual(a.Spec.Template.Spec.SecurityContext, b.Spec.Template.Spec.SecurityContext)
+	containerSecurityContextChanged := !reflect.DeepEqual(aContainer.SecurityContext, bContainer.SecurityContext)
 
 	return imageChanged ||
 		labelsChanged ||
@@ -148,6 +150,8 @@ func deploymentChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 		envChanged ||
 		volumeMountsChanged ||
 		portsChanged ||
+		podSecurityContextChanged ||
+		containerSecurityContextChanged ||
 		initContainerChanged(a, b)
 }
 
