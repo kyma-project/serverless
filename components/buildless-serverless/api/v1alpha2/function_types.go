@@ -57,6 +57,12 @@ type FunctionSpec struct {
 	// +kubebuilder:validation:Required
 	Source Source `json:"source"`
 
+	// Configures PodSecurityContext for all functions
+	PodSecurityContext *corev1.PodSecurityContext `json:"podSecurityContext,omitempty"`
+
+	// Configures SecurityContext for the Function's container
+	ContainerSecurityContext *corev1.SecurityContext `json:"containerSecurityContext,omitempty"`
+
 	// Specifies an array of key-value pairs to be used as environment variables for the Function.
 	// You can define values as static strings or reference values from ConfigMaps or Secrets.
 	// For configuration details, see the [official Kubernetes documentation](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/).
@@ -260,6 +266,10 @@ type FunctionStatus struct {
 	Repository `json:",inline,omitempty"`
 	// Specifies the GitRepository status when the Function is sourced from a Git repository.
 	GitRepository *GitRepositoryStatus `json:"gitRepository,omitempty"`
+	// ContainerSecurityContext used by the Function's container
+	ContainerSecurityContext *corev1.SecurityContext `json:"containerSecurityContext,omitempty"`
+	// PodSecurityContext used by the Function's Pod
+	PodSecurityContext *corev1.PodSecurityContext `json:"podSecurityContext,omitempty"`
 }
 
 type GitRepositoryStatus struct {

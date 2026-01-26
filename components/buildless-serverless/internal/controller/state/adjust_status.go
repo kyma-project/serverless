@@ -26,6 +26,8 @@ func sFnAdjustStatus(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl
 	s.PodSelector = selector.String()
 
 	s.FunctionResourceProfile = m.State.BuiltDeployment.ResourceProfile()
+	s.ContainerSecurityContext = m.State.BuiltDeployment.ContainerSecurityContext()
+	s.PodSecurityContext = m.State.BuiltDeployment.PodSecurityContext()
 
 	if m.State.Function.HasGitSources() {
 		s.GitRepository = &serverlessv1alpha2.GitRepositoryStatus{
