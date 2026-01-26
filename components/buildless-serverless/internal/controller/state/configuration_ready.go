@@ -23,9 +23,9 @@ func sFnConfigurationReady(_ context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	msg := configurationReadyMessage
 	reason := serverlessv1alpha2.ConditionReasonFunctionSpecValidated
 	if !m.State.Function.Spec.Runtime.IsRuntimeSupported() {
-		msg = fmt.Sprintf("Warning: invalid runtime value: cannot find runtime %s, using %s instead", m.State.Function.Spec.Runtime, m.State.Function.Spec.Runtime.SupportedRuntimeEquivalent())
+		msg = fmt.Sprintf("Warning: invalid runtime value: cannot find runtime %s, using runtime %s as a fallback to migrate from legacy serverless", m.State.Function.Spec.Runtime, m.State.Function.Spec.Runtime.SupportedRuntimeEquivalent())
 		condition = metav1.ConditionFalse
-		reason = serverlessv1alpha2.ConditionReasonFunctionSpecRuntimeOutdated
+		reason = serverlessv1alpha2.ConditionReasonFunctionSpecRuntimeFallback
 	}
 
 	m.State.Function.UpdateCondition(

@@ -68,7 +68,7 @@ func Test_sFnConfigurationReady(t *testing.T) {
 		requireContainsCondition(t, m.State.Function.Status,
 			serverlessv1alpha2.ConditionConfigurationReady,
 			metav1.ConditionFalse,
-			serverlessv1alpha2.ConditionReasonFunctionSpecRuntimeOutdated,
-			"Warning: invalid runtime value: cannot find runtime nodejs14, using nodejs20 instead")
+			serverlessv1alpha2.ConditionReasonFunctionSpecRuntimeFallback,
+			"Warning: invalid runtime value: cannot find runtime nodejs14, using runtime nodejs20 as a fallback to migrate from legacy serverless")
 	})
 }
