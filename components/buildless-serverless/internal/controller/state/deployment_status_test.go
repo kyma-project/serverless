@@ -135,8 +135,8 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 		requireContainsCondition(t, m.State.Function.Status,
 			serverlessv1alpha2.ConditionRunning,
 			metav1.ConditionTrue,
-			serverlessv1alpha2.ConditionReasonDeploymentReadyLegacyRuntime,
-			"Warning: Deployment strange-chebyshev-name is ready, runtime too old, used supported runtime version")
+			serverlessv1alpha2.ConditionReasonDeploymentReadyFallbackRuntime,
+			"Warning: Deployment strange-chebyshev-name is ready, runtime nodejs14 too old, used nodejs20 as a fallback to migrate from legacy serverless")
 		// observed generation is set to the function generation
 		require.Equal(t, int64(22), m.State.Function.Status.ObservedGeneration)
 	})

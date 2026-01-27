@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/metrics"
@@ -11,12 +12,27 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
+const (
+	configurationReadyMessage = "Function configured"
+	warningConfigurationReady = "Warning: Function configured, runtime too old, used the latest supported runtime version"
+)
+
 func sFnConfigurationReady(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
+	condition := metav1.ConditionTrue
+	// warn users when runtime is not supported
+	msg := configurationReadyMessage
+	reason := serverlessv1alpha2.ConditionReasonFunctionSpecValidated
+	if !m.State.Function.Spec.Runtime.IsRuntimeSupported() {
+		msg = fmt.Sprintf("Warning: invalid runtime value: cannot find runtime %s, using runtime %s as a fallback to migrate from legacy serverless", m.State.Function.Spec.Runtime, m.State.Function.Spec.Runtime.SupportedRuntimeEquivalent())
+		condition = metav1.ConditionFalse
+		reason = serverlessv1alpha2.ConditionReasonFunctionSpecRuntimeFallback
+	}
+
 	m.State.Function.UpdateCondition(
 		serverlessv1alpha2.ConditionConfigurationReady,
-		metav1.ConditionTrue,
-		serverlessv1alpha2.ConditionReasonFunctionSpecValidated,
-		"Function configured")
+		condition,
+		reason,
+		msg)
 	metrics.PublishStateReachTime(m.State.Function, serverlessv1alpha2.ConditionConfigurationReady)
 
 	return nextState(sFnHandleDeployment)
