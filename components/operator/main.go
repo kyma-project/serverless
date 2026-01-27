@@ -22,6 +22,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/go-logr/logr"
 	"github.com/kyma-project/serverless/components/operator/internal/logging"
@@ -181,6 +182,9 @@ func main() {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
+
+	time.Sleep(1 * time.Minute)
+	cancel()
 }
 
 func isFIPS140Only() bool {
