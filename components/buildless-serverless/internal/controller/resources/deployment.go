@@ -78,35 +78,39 @@ func DeploySetCmd(cmd []string) deployOptions {
 
 type Deployment struct {
 	*appsv1.Deployment
-	functionConfig      *config.FunctionConfig
-	function            *serverlessv1alpha2.Function
-	clusterDeployment   *appsv1.Deployment
-	commit              string
-	gitAuth             *git.GitAuth
-	functionLabels      map[string]string
-	selectorLabels      map[string]string
-	podLabels           map[string]string
-	deployName          string
-	deployGeneratedName string
-	podImage            string
-	podEnvs             []corev1.EnvVar
-	podCmd              []string
+	functionConfig           *config.FunctionConfig
+	function                 *serverlessv1alpha2.Function
+	clusterDeployment        *appsv1.Deployment
+	commit                   string
+	gitAuth                  *git.GitAuth
+	functionLabels           map[string]string
+	selectorLabels           map[string]string
+	podLabels                map[string]string
+	deployName               string
+	deployGeneratedName      string
+	podImage                 string
+	podEnvs                  []corev1.EnvVar
+	podCmd                   []string
+	podSecurityContext       *corev1.PodSecurityContext
+	containerSecurityContext *corev1.SecurityContext
 }
 
 func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clusterDeployment *appsv1.Deployment, commit string, gitAuth *git.GitAuth, appName string, opts ...deployOptions) *Deployment {
 	d := &Deployment{
-		functionConfig:      c,
-		function:            f,
-		clusterDeployment:   clusterDeployment,
-		commit:              commit,
-		gitAuth:             gitAuth,
-		functionLabels:      f.FunctionLabels(),
-		selectorLabels:      f.SelectorLabels(),
-		podLabels:           f.PodLabels(),
-		deployName:          "",
-		deployGeneratedName: fmt.Sprintf("%s-", f.Name),
-		podImage:            runtimeImage(f, c),
-		podEnvs:             append(generalEnvs(f, c), sourceEnvs(f)...),
+		functionConfig:           c,
+		function:                 f,
+		clusterDeployment:        clusterDeployment,
+		commit:                   commit,
+		gitAuth:                  gitAuth,
+		functionLabels:           f.FunctionLabels(),
+		selectorLabels:           f.SelectorLabels(),
+		podLabels:                f.PodLabels(),
+		deployName:               "",
+		deployGeneratedName:      fmt.Sprintf("%s-", f.Name),
+		podImage:                 runtimeImage(f, c),
+		podEnvs:                  append(generalEnvs(f, c), sourceEnvs(f)...),
+		podSecurityContext:       podSecurityContext(f),
+		containerSecurityContext: containerSecurityContext(f),
 		podCmd: []string{
 			"sh",
 			"-c",
@@ -158,12 +162,16 @@ func (d *Deployment) construct() *appsv1.Deployment {
 	return deployment
 }
 
-func (d *Deployment) RuntimeImage() string {
-	return d.Spec.Template.Spec.Containers[0].Image
+func (d *Deployment) PodSecurityContext() *corev1.PodSecurityContext {
+	return d.Spec.Template.Spec.SecurityContext
 }
 
-func (d *Deployment) podRunAsUserUID() *int64 {
-	return ptr.To[int64](1000) // runAsUser 1000 is the most popular and standard value for non-root user
+func (d *Deployment) ContainerSecurityContext() *corev1.SecurityContext {
+	return d.Spec.Template.Spec.Containers[0].SecurityContext
+}
+
+func (d *Deployment) RuntimeImage() string {
+	return d.Spec.Template.Spec.Containers[0].Image
 }
 
 func (d *Deployment) podAnnotations() map[string]string {
@@ -271,27 +279,10 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 					PeriodSeconds:    5,
 					TimeoutSeconds:   4,
 				},
-				SecurityContext: &corev1.SecurityContext{
-					Privileged: ptr.To[bool](false),
-					Capabilities: &corev1.Capabilities{
-						Drop: []corev1.Capability{
-							"ALL",
-						},
-					},
-					ProcMount:                ptr.To(corev1.DefaultProcMount),
-					ReadOnlyRootFilesystem:   ptr.To[bool](false),
-					AllowPrivilegeEscalation: ptr.To[bool](false),
-					RunAsNonRoot:             ptr.To[bool](true),
-				},
+				SecurityContext: d.containerSecurityContext,
 			},
 		},
-		SecurityContext: &corev1.PodSecurityContext{
-			RunAsUser:  d.podRunAsUserUID(),
-			RunAsGroup: d.podRunAsUserUID(),
-			SeccompProfile: &corev1.SeccompProfile{
-				Type: corev1.SeccompProfileTypeRuntimeDefault,
-			},
-		},
+		SecurityContext: d.podSecurityContext,
 	}
 }
 
@@ -329,14 +320,14 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 				},
 			},
 			SecurityContext: &corev1.SecurityContext{
-				Privileged: ptr.To[bool](false),
+				Privileged: ptr.To(false),
 				Capabilities: &corev1.Capabilities{
 					Drop: []corev1.Capability{
 						"ALL",
 					},
 				},
 				ProcMount:              ptr.To(corev1.DefaultProcMount),
-				ReadOnlyRootFilesystem: ptr.To[bool](false),
+				ReadOnlyRootFilesystem: ptr.To(true),
 			},
 		},
 	}
@@ -402,7 +393,7 @@ func (d *Deployment) volumes() []corev1.Volume {
 			VolumeSource: corev1.VolumeSource{
 				Secret: &corev1.SecretVolumeSource{
 					SecretName: d.functionConfig.PackageRegistryConfigSecretName,
-					Optional:   ptr.To[bool](true),
+					Optional:   ptr.To(true),
 				},
 			},
 		},
@@ -473,13 +464,83 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 	return volumeMounts
 }
 
+func containerSecurityContext(f *serverlessv1alpha2.Function) *corev1.SecurityContext {
+	baseSecCtx := &corev1.SecurityContext{
+		Privileged: ptr.To(false),
+		Capabilities: &corev1.Capabilities{
+			Drop: []corev1.Capability{
+				"ALL",
+			},
+		},
+		ProcMount:                ptr.To(corev1.DefaultProcMount),
+		ReadOnlyRootFilesystem:   ptr.To(true),
+		AllowPrivilegeEscalation: ptr.To(false),
+		RunAsNonRoot:             ptr.To(true),
+	}
+
+	if f.Spec.ContainerSecurityContext == nil {
+		// no custom security context provided, return base one
+		return baseSecCtx
+	}
+
+	customSecCtx := *f.Spec.ContainerSecurityContext
+	customSecCtx.Privileged = getValueOrDefault(customSecCtx.Privileged, baseSecCtx.Privileged)
+	customSecCtx.Capabilities = getValueOrDefault(customSecCtx.Capabilities, baseSecCtx.Capabilities)
+	customSecCtx.ProcMount = getValueOrDefault(customSecCtx.ProcMount, baseSecCtx.ProcMount)
+	customSecCtx.ReadOnlyRootFilesystem = getValueOrDefault(customSecCtx.ReadOnlyRootFilesystem, baseSecCtx.ReadOnlyRootFilesystem)
+	customSecCtx.AllowPrivilegeEscalation = getValueOrDefault(customSecCtx.AllowPrivilegeEscalation, baseSecCtx.AllowPrivilegeEscalation)
+	customSecCtx.RunAsNonRoot = getValueOrDefault(customSecCtx.RunAsNonRoot, baseSecCtx.RunAsNonRoot)
+
+	return &customSecCtx
+}
+
+func podSecurityContext(f *serverlessv1alpha2.Function) *corev1.PodSecurityContext {
+	baseSecCtx := &corev1.PodSecurityContext{
+		// runAsUser 1000 is the most popular and standard value for non-root user
+		RunAsUser:          ptr.To[int64](1000),
+		RunAsGroup:         ptr.To[int64](1000),
+		FSGroup:            ptr.To[int64](1000),
+		SupplementalGroups: []int64{1000},
+		SeccompProfile: &corev1.SeccompProfile{
+			Type: corev1.SeccompProfileTypeRuntimeDefault,
+		},
+	}
+	if f.Spec.PodSecurityContext == nil {
+		// no custom security context provided, return base one
+		return baseSecCtx
+	}
+
+	customSecCtx := *f.Spec.PodSecurityContext
+	customSecCtx.RunAsUser = getValueOrDefault(customSecCtx.RunAsUser, baseSecCtx.RunAsUser)
+	customSecCtx.RunAsGroup = getValueOrDefault(customSecCtx.RunAsGroup, baseSecCtx.RunAsGroup)
+	customSecCtx.SeccompProfile = getValueOrDefault(customSecCtx.SeccompProfile, baseSecCtx.SeccompProfile)
+	customSecCtx.FSGroup = getValueOrDefault(customSecCtx.FSGroup, baseSecCtx.FSGroup)
+	customSecCtx.SupplementalGroups = getSliceOrDefault(customSecCtx.SupplementalGroups, baseSecCtx.SupplementalGroups)
+
+	return &customSecCtx
+}
+
+func getValueOrDefault[T any](field *T, defaultValue *T) *T {
+	if field == nil {
+		return defaultValue
+	}
+	return field
+}
+
+func getSliceOrDefault[T any](field []T, defaultValue []T) []T {
+	if field == nil {
+		return defaultValue
+	}
+	return field
+}
+
 func runtimeImage(f *serverlessv1alpha2.Function, c *config.FunctionConfig) string {
 	runtimeOverride := f.Spec.RuntimeImageOverride
 	if runtimeOverride != "" {
 		return runtimeOverride
 	}
 
-	switch f.Spec.Runtime {
+	switch f.Spec.Runtime.SupportedRuntimeEquivalent() {
 	case serverlessv1alpha2.NodeJs20:
 		return c.Images.NodeJs20
 	case serverlessv1alpha2.NodeJs22:
@@ -550,7 +611,8 @@ func runtimeCommandInstall(f *serverlessv1alpha2.Function) string {
 	if f.HasNodejsRuntime() {
 		return `npm install --prefer-offline --no-audit --progress=false;`
 	} else if f.HasPythonRuntime() {
-		return `PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;`
+		return `export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;`
 	}
 	return ""
 }
@@ -692,7 +754,7 @@ func (d *Deployment) deploymentSecretVolumes() (volumes []corev1.Volume, volumeM
 				Secret: &corev1.SecretVolumeSource{
 					SecretName:  secretMount.SecretName,
 					DefaultMode: ptr.To[int32](0666), //read and write only for everybody
-					Optional:    ptr.To[bool](false),
+					Optional:    ptr.To(false),
 				},
 			},
 		}

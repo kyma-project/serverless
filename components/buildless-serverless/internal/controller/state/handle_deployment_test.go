@@ -508,6 +508,51 @@ func Test_deploymentChanged(t *testing.T) {
 			want: true,
 		},
 		{
+			name: "when securityContexts are different should return true",
+			args: args{
+				a: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{{
+									SecurityContext: &corev1.SecurityContext{
+										Privileged: ptr.To(true),
+									}}}}}}},
+				b: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								Containers: []corev1.Container{{
+									SecurityContext: &corev1.SecurityContext{
+										Privileged: ptr.To(false),
+									}}}}}}},
+			},
+			want: true,
+		},
+		{
+			name: "when podSecurityContexts are different should return true",
+			args: args{
+				a: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								SecurityContext: &corev1.PodSecurityContext{
+									RunAsUser: ptr.To[int64](1000),
+									FSGroup:   ptr.To[int64](1000),
+								},
+							}}}},
+				b: &appsv1.Deployment{
+					Spec: appsv1.DeploymentSpec{
+						Template: corev1.PodTemplateSpec{
+							Spec: corev1.PodSpec{
+								SecurityContext: &corev1.PodSecurityContext{
+									RunAsUser: ptr.To[int64](2000),
+								},
+							}}}},
+			},
+			want: true,
+		},
+		{
 			name: "when images are different should return true",
 			args: args{
 				a: &appsv1.Deployment{
@@ -830,9 +875,9 @@ func Test_deploymentChanged(t *testing.T) {
 									Args:            []string{"thirsty-jemison"},
 									ImagePullPolicy: corev1.PullNever,
 									SecurityContext: &corev1.SecurityContext{
-										RunAsUser:    ptr.To[int64](246),
-										RunAsGroup:   ptr.To[int64](246),
-										RunAsNonRoot: ptr.To[bool](false)}}},
+										RunAsUser:    ptr.To[int64](579),
+										RunAsGroup:   ptr.To[int64](579),
+										RunAsNonRoot: ptr.To[bool](true)}}},
 								NodeName:          "thirsty-jemison",
 								Hostname:          "thirsty-jemison",
 								Subdomain:         "thirsty-jemison",

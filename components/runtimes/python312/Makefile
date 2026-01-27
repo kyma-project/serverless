@@ -25,5 +25,6 @@ k3d-deploy: docker-build ## Build and deploy the image to k3d cluster.
 
 .PHONY: run
 run: ## Run the application locally.
-	python3 -m pip install -r requirements.txt --user --break-system-packages
-	python3 server.py
+	python3 -m venv --without-scm-ignore-files .
+	./bin/pip install -r requirements.txt
+	./bin/python server.py

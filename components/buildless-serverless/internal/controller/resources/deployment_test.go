@@ -193,7 +193,8 @@ func TestDeployment_construct(t *testing.T) {
 				"sh",
 				"-c",
 				`echo "${FUNC_HANDLER_SOURCE}" > handler.py;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
+export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
 if [ -f "./kubeless.py" ]; then
   # old file location support
@@ -1279,7 +1280,8 @@ func TestDeployment_runtimeCommand(t *testing.T) {
 				},
 			},
 			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
+export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
 if [ -f "./kubeless.py" ]; then
   # old file location support
@@ -1303,7 +1305,8 @@ fi`,
 			},
 			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
+export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
 if [ -f "./kubeless.py" ]; then
   # old file location support
@@ -1329,7 +1332,8 @@ fi`,
 				},
 			},
 			want: `cp -r /git-repository/src/* .;
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --user --no-cache-dir -r requirements.txt;
+export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
 if [ -f "./kubeless.py" ]; then
   # old file location support
@@ -1500,4 +1504,152 @@ func minimalDeploymentForFunction(f *serverlessv1alpha2.Function) *Deployment {
 
 func minimalDeployment() *Deployment {
 	return minimalDeploymentForFunction(minimalFunction())
+}
+
+func Test_podSecurityContext(t *testing.T) {
+	tests := []struct {
+		name string
+		f    *serverlessv1alpha2.Function
+		want *corev1.PodSecurityContext
+	}{
+		{
+			name: "return default pod security context when none is specified in function spec",
+			f:    minimalFunction(),
+			want: &corev1.PodSecurityContext{
+				RunAsUser:          ptr.To[int64](1000),
+				RunAsGroup:         ptr.To[int64](1000),
+				FSGroup:            ptr.To[int64](1000),
+				SupplementalGroups: []int64{1000},
+				SeccompProfile: &corev1.SeccompProfile{
+					Type: corev1.SeccompProfileTypeRuntimeDefault,
+				},
+			},
+		},
+		{
+			name: "return default pod security context when empty is specified in function spec",
+			f: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					PodSecurityContext: &corev1.PodSecurityContext{},
+				},
+			},
+			want: &corev1.PodSecurityContext{
+				RunAsUser:          ptr.To[int64](1000),
+				RunAsGroup:         ptr.To[int64](1000),
+				FSGroup:            ptr.To[int64](1000),
+				SupplementalGroups: []int64{1000},
+				SeccompProfile: &corev1.SeccompProfile{
+					Type: corev1.SeccompProfileTypeRuntimeDefault,
+				},
+			},
+		},
+		{
+			name: "return pod security context as specified in function spec",
+			f: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					PodSecurityContext: &corev1.PodSecurityContext{
+						FSGroup:   ptr.To[int64](1111),
+						RunAsUser: ptr.To[int64](666),
+						SeccompProfile: &corev1.SeccompProfile{
+							LocalhostProfile: ptr.To("my-profile"),
+						},
+					},
+				},
+			},
+			want: &corev1.PodSecurityContext{
+				FSGroup:            ptr.To[int64](1111),
+				RunAsUser:          ptr.To[int64](666),
+				RunAsGroup:         ptr.To[int64](1000),
+				SupplementalGroups: []int64{1000},
+				SeccompProfile: &corev1.SeccompProfile{
+					LocalhostProfile: ptr.To("my-profile"),
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := podSecurityContext(tt.f)
+			require.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_containerSecurityContext(t *testing.T) {
+	tests := []struct {
+		name string
+		f    *serverlessv1alpha2.Function
+		want *corev1.SecurityContext
+	}{
+		{
+			name: "return default container security context when none is specified in function spec",
+			f:    minimalFunction(),
+			want: &corev1.SecurityContext{
+				Privileged: ptr.To(false),
+				Capabilities: &corev1.Capabilities{
+					Drop: []corev1.Capability{
+						"ALL",
+					},
+				},
+				ProcMount:                ptr.To(corev1.DefaultProcMount),
+				ReadOnlyRootFilesystem:   ptr.To(true),
+				AllowPrivilegeEscalation: ptr.To(false),
+				RunAsNonRoot:             ptr.To(true),
+			},
+		},
+		{
+			name: "return default container security context when empty is specified in function spec",
+			f: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ContainerSecurityContext: &corev1.SecurityContext{},
+				},
+			},
+			want: &corev1.SecurityContext{
+				Privileged: ptr.To(false),
+				Capabilities: &corev1.Capabilities{
+					Drop: []corev1.Capability{
+						"ALL",
+					},
+				},
+				ProcMount:                ptr.To(corev1.DefaultProcMount),
+				ReadOnlyRootFilesystem:   ptr.To(true),
+				AllowPrivilegeEscalation: ptr.To(false),
+				RunAsNonRoot:             ptr.To(true),
+			},
+		},
+		{
+			name: "return container security context as specified in function spec",
+			f: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					ContainerSecurityContext: &corev1.SecurityContext{
+						Privileged: ptr.To(true),
+						Capabilities: &corev1.Capabilities{
+							Add: []corev1.Capability{
+								"SYS_TIME",
+							},
+						},
+						ReadOnlyRootFilesystem:   ptr.To(false),
+						AllowPrivilegeEscalation: ptr.To(true),
+					},
+				},
+			},
+			want: &corev1.SecurityContext{
+				Privileged: ptr.To(true),
+				Capabilities: &corev1.Capabilities{
+					Add: []corev1.Capability{
+						"SYS_TIME",
+					},
+				},
+				ProcMount:                ptr.To(corev1.DefaultProcMount),
+				ReadOnlyRootFilesystem:   ptr.To(false),
+				AllowPrivilegeEscalation: ptr.To(true),
+				RunAsNonRoot:             ptr.To(true),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := containerSecurityContext(tt.f)
+			require.Equal(t, tt.want, got)
+		})
+	}
 }

@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
 	"github.com/pkg/errors"
@@ -12,7 +13,7 @@ import (
 func sFnAdjustStatus(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	s := &m.State.Function.Status
 	f := m.State.Function
-	s.Runtime = f.Spec.Runtime
+	s.Runtime = f.Spec.Runtime.SupportedRuntimeEquivalent()
 	s.RuntimeImage = m.State.BuiltDeployment.RuntimeImage()
 	s.Replicas = m.State.ClusterDeployment.Status.Replicas
 
@@ -25,6 +26,8 @@ func sFnAdjustStatus(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl
 	s.PodSelector = selector.String()
 
 	s.FunctionResourceProfile = m.State.BuiltDeployment.ResourceProfile()
+	s.ContainerSecurityContext = m.State.BuiltDeployment.ContainerSecurityContext()
+	s.PodSecurityContext = m.State.BuiltDeployment.PodSecurityContext()
 
 	if m.State.Function.HasGitSources() {
 		s.GitRepository = &serverlessv1alpha2.GitRepositoryStatus{
