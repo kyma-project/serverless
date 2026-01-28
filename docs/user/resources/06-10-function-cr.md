@@ -111,7 +111,8 @@ spec:
 
 ## Custom Resource Parameters
 <!-- TABLE-START -->
-### Function.serverless.Kyma-project.io/v1alpha2
+<!-- markdownlint-disable-next-line -->
+### function.serverless.kyma-project.io/v1alpha2
 
 **Spec:**
 
