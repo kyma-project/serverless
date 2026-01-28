@@ -4,7 +4,7 @@ This document describes how to configure logging for Serverless components. The 
 
 
 > [NOTE]
-> It is not possible to dynamically change the log format without restarting the Pod. If you want your format to persist use `kubectl rollout restart deployment <deployment-name>` after changing the format in the ConfigMap for a zero downtime restart.
+> It is not possible to dynamically change the log format if you wish to change it, update the configmap and restart the pods.
 
 ## Supported Log Levels
 
@@ -20,11 +20,11 @@ From the least to the most verbose: `fatal`, `panic`, `dpanic`, `error`, `warn`,
 Update the log configuration in the `serverless-log-config` ConfigMap in the `kyma-system` namespace:
 
    ```bash
-   # Change log level (applied immediately without restart)
-   kubectl patch configmap serverless-log-config -n kyma-system --type merge -p '{"data":{"log-config.yaml":"logLevel: debug\nlogFormat: json"}}'
+   # Change log level
+   kubectl patch configmap serverless-log-config -n kyma-system --type merge -p '{"data":{"log-config.yaml":"logLevel: debug"}}'
 
-   # Change log format (triggers an automatic Pod restart)
-   kubectl patch configmap serverless-log-config -n kyma-system --type merge -p '{"data":{"log-config.yaml":"logLevel: debug\nlogFormat: console"}}'
+   # Change log format
+   kubectl patch configmap serverless-log-config -n kyma-system --type merge -p '{"data":{"log-config.yaml":"logFormat: console"}}'
 
    # Change both, level and format
    kubectl patch configmap serverless-log-config -n kyma-system --type merge -p '{"data":{"log-config.yaml":"logLevel: info\nlogFormat: json"}}'
@@ -41,10 +41,10 @@ Verify the change:
 Update the log configuration in the `serverless-operator-log-config` ConfigMap in the `kyma-system` namespace:
 
    ```bash
-   # Change log level (applied immediately without restart)
-   kubectl patch configmap serverless-operator-log-config -n kyma-system --type merge -p '{"data":{"log-config.yaml":"logLevel: debug\nlogFormat: json"}}'
+   # Change log level
+   kubectl patch configmap serverless-operator-log-config -n kyma-system --type merge -p '{"data":{"log-config.yaml":"logLevel: debug"}}'
 
-   # Change log format (triggers an automatic Pod restart)
+   # Change log level and format
    kubectl patch configmap serverless-operator-log-config -n kyma-system --type merge -p '{"data":{"log-config.yaml":"logLevel: debug\nlogFormat: console"}}'
    ```
 
