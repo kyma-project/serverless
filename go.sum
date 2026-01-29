@@ -221,8 +221,8 @@ github.com/kyma-project/manager-toolkit/installation/base v0.260113.143439-fb9dc
 github.com/kyma-project/manager-toolkit/installation/base v0.260113.143439-fb9dc47/go.mod h1:2KqK2QMLWrQIiPSUWEe0MOMWZ2uFXvZQBp0nuWffG2U=
 github.com/kyma-project/manager-toolkit/installation/chart v0.260113.143439-fb9dc47 h1:moGeFxVIh3eAN6uNSo70zNUHhjgTITJiW9pfPSJ1SPY=
 github.com/kyma-project/manager-toolkit/installation/chart v0.260113.143439-fb9dc47/go.mod h1:V48Eth+EFtqh1skq2iB4Btd3geE13iUboebFSWW8CJQ=
-github.com/kyma-project/manager-toolkit/logging v0.260113.143439-fb9dc47 h1:VU2UEHZQnll/sYPlR3+/PLOGyjSe6nEt+kWU/yxM/7s=
-github.com/kyma-project/manager-toolkit/logging v0.260113.143439-fb9dc47/go.mod h1:L0y8CWiLK3si95kLiHWBwbE9SBddpyndpG4Ek23V0kk=
+github.com/kyma-project/manager-toolkit/logging v0.260128.123422-9ec1c8b h1:7/AVi0YGf+fblg0qUobPb1xi8Nt/nVuZPXe0VvP2qT4=
+github.com/kyma-project/manager-toolkit/logging v0.260128.123422-9ec1c8b/go.mod h1:L0y8CWiLK3si95kLiHWBwbE9SBddpyndpG4Ek23V0kk=
 github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 h1:SOEGU9fKiNWd/HOJuq6+3iTQz8KNCLtVX6idSoTLdUw=
 github.com/lann/builder v0.0.0-20180802200727-47ae307949d0/go.mod h1:dXGbAdH5GtBTC4WfIxhKZfyBF/HBFgRZSWwZ9g/He9o=
 github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 h1:P6pPBnrTSX3DEVR4fDembhRWSsG5rVo6hYhAB/ADZrk=
