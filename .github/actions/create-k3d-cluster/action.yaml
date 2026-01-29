@@ -14,7 +14,7 @@ runs:
       run: |
         k3d cluster create kyma \
           --agents 1 \
-          --image rancher/k3s:v1.31.7-k3s1 \
+          --image rancher/k3s:v1.33.4-k3s1 \
           --port 80:80@loadbalancer \
           --port 443:443@loadbalancer \
           --k3s-arg "--flannel-backend=none@server:*" \
