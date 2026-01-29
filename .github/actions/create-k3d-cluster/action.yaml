@@ -4,14 +4,31 @@ description: 'Action for creating single cluster'
 runs:
   using: 'composite'
   steps:
+    - name: install k3d
+      run: |
+        curl -s https://raw.githubusercontent.com/k3d-io/k3d/v5.8.3/install.sh | bash
+        k3d version
+      shell: bash
+
     - name: create k3d cluster
-      uses: AbsaOSS/k3d-action@4e8b3239042be1dc0aed6c5eb80c13b18200fc79 #v2.4.0
-      with:
-        cluster-name: "k3dCluster"
-        k3d-version: "v5.8.3"
-        args: >-
-          --agents 1
-          --image rancher/k3s:v1.33.4-k3s1
-          --port 80:80@loadbalancer
-          --port 443:443@loadbalancer
-          --wait
+      run: |
+        k3d cluster create kyma \
+          --agents 1 \
+          --image rancher/k3s:v1.33.4-k3s1 \
+          --port 80:80@loadbalancer \
+          --port 443:443@loadbalancer \
+          --k3s-arg "--flannel-backend=none@server:*" \
+          --k3s-arg "--disable=traefik@server:0"
+      shell: bash
+
+    - name: install Calico CNI
+      run: |
+        kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/operator-crds.yaml
+        kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/tigera-operator.yaml
+        kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/custom-resources.yaml
+        # Wait until CoreDNS is ready
+        kubectl rollout status -n kube-system deployment coredns
+        # Patch the CNI config to make sure it is set up same as with the default Flannel backend
+        kubectl patch installation default \
+          --type=merge -p '{"spec":{"cni":{"binDir":"/var/lib/rancher/k3s/data/cni", "confDir":"/var/lib/rancher/k3s/agent/etc/cni/net.d"}}}'
+      shell: bash
