@@ -4,7 +4,7 @@ This document describes how to configure logging for Serverless components. The 
 
 
 > [NOTE]
-> It is not possible to dynamically change the log format if you wish to change it, update the configmap and restart the pods.
+> It is not possible to dynamically change the log format. If you want to change it, update the ConfigMap and restart the Pods.
 
 ## Supported Log Levels
 
@@ -48,7 +48,7 @@ Update the log configuration in the `serverless-operator-log-config` ConfigMap i
    kubectl patch configmap serverless-operator-log-config -n kyma-system --type merge -p '{"data":{"log-config.yaml":"logLevel: debug\nlogFormat: console"}}'
    ```
 
-[!TIP]
+Verify the change:
 
    ```bash
    kubectl logs -n kyma-system -l control-plane=operator
