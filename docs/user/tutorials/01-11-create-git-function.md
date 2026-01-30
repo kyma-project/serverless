@@ -23,7 +23,7 @@ You can create a Function either with kubectl or Kyma dashboard:
 #### **Kyma Dashboard**
 
 > [!NOTE]
-> Kyma dashboard uses Busola, which is not installed by default. See [Deploying and Accessing Busola in k3d](https://github.com/kyma-project/busola/blob/main/docs/contributor/deploy-access-k3d.md) and [Deploying and Accessing Busola in a Kubernetes Cluster](https://github.com/kyma-project/busola/blob/main/docs/contributor/deploy-access-kubernetes.md).
+> Kyma dashboard uses Busola, which is not installed by default. To install Busola, see [Deploying and Accessing Busola in k3d](https://github.com/kyma-project/busola/blob/main/docs/contributor/deploy-access-k3d.md) and [Deploying and Accessing Busola in a Kubernetes Cluster](https://github.com/kyma-project/busola/blob/main/docs/contributor/deploy-access-kubernetes.md).
 
 1. Create a namespace or select one from the drop-down list in the top navigation panel.
 
