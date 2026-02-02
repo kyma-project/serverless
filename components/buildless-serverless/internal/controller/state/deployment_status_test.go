@@ -80,66 +80,6 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 		// observed generation is set to the function generation
 		require.Equal(t, int64(22), m.State.Function.Status.ObservedGeneration)
 	})
-	t.Run("when deployment is ready with legacy runtimeshould go to the next state", func(t *testing.T) {
-		// Arrange
-		// our function
-		f := serverlessv1alpha2.Function{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:       "strange-chebyshev-name",
-				Namespace:  "busy-ramanujan-ns",
-				Generation: 22},
-			Spec: serverlessv1alpha2.FunctionSpec{
-				Runtime: serverlessv1alpha2.NodeJs14,
-			}}
-		// deployment which will be returned from kubernetes
-		deployment := appsv1.Deployment{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      "strange-chebyshev-name",
-				Namespace: "busy-ramanujan-ns",
-				Labels:    f.InternalFunctionLabels()},
-			Status: appsv1.DeploymentStatus{
-				Conditions: []appsv1.DeploymentCondition{
-					{Type: appsv1.DeploymentAvailable, Status: corev1.ConditionTrue, Reason: MinimumReplicasAvailable},
-					{Type: appsv1.DeploymentProgressing, Status: corev1.ConditionTrue, Reason: NewRSAvailableReason}},
-				ObservedGeneration: 15}}
-		// scheme and fake client
-		scheme := runtime.NewScheme()
-		require.NoError(t, serverlessv1alpha2.AddToScheme(scheme))
-		require.NoError(t, appsv1.AddToScheme(scheme))
-		k8sClient := fake.NewClientBuilder().WithScheme(scheme).WithObjects(&deployment).Build()
-		// machine with our function
-		m := fsm.StateMachine{
-			State: fsm.SystemState{
-				BuiltDeployment: &resources.Deployment{
-					Deployment: &appsv1.Deployment{
-						ObjectMeta: metav1.ObjectMeta{
-							Name:      "strange-chebyshev-name",
-							Namespace: "busy-ramanujan-ns"}}},
-				Function: f},
-			Log:    zap.NewNop().Sugar(),
-			Client: k8sClient,
-			Scheme: scheme}
-
-		// Act
-		next, result, err := sFnDeploymentStatus(context.Background(), &m)
-
-		// Assert
-		// no errors
-		require.Nil(t, err)
-		// without stopping processing
-		require.Nil(t, result)
-		// with expected next state
-		require.NotNil(t, next)
-		requireEqualFunc(t, sFnAdjustStatus, next)
-		// function has proper condition
-		requireContainsCondition(t, m.State.Function.Status,
-			serverlessv1alpha2.ConditionRunning,
-			metav1.ConditionTrue,
-			serverlessv1alpha2.ConditionReasonDeploymentReadyFallbackRuntime,
-			"Warning: Deployment strange-chebyshev-name is ready, runtime nodejs14 too old, used nodejs20 as a fallback to migrate from legacy serverless")
-		// observed generation is set to the function generation
-		require.Equal(t, int64(22), m.State.Function.Status.ObservedGeneration)
-	})
 	t.Run("when deployment is unhealthy should requeue", func(t *testing.T) {
 		// Arrange
 		// our function

@@ -183,7 +183,7 @@ func validateRuntime(runtime serverlessv1alpha2.Runtime) error {
 	if len(runtime) == 0 {
 		return nil
 	}
-	if runtime.IsRuntimeKnown() {
+	if runtime.IsRuntimeSupported() {
 		return nil
 	}
 	return fmt.Errorf("cannot find runtime: %s", runtime)

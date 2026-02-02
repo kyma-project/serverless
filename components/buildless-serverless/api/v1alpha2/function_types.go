@@ -34,12 +34,7 @@ const (
 	Python312    Runtime = "python312"
 	NodeJs22     Runtime = "nodejs22"
 	// deprecated runtimes
-	NodeJs12 Runtime = "nodejs12"
-	NodeJs14 Runtime = "nodejs14"
-	NodeJs16 Runtime = "nodejs16"
-	NodeJs18 Runtime = "nodejs18"
 	NodeJs20 Runtime = "nodejs20"
-	Python39 Runtime = "python39"
 )
 
 // FunctionSpec defines the desired state of Function.
@@ -288,23 +283,21 @@ const (
 type ConditionReason string
 
 const (
-	ConditionReasonInvalidFunctionSpec            ConditionReason = "InvalidFunctionSpec"
-	ConditionReasonFunctionSpecValidated          ConditionReason = "FunctionSpecValidated"
-	ConditionReasonFunctionSpecRuntimeFallback    ConditionReason = "FunctionSpecRuntimeFallback"
-	ConditionReasonSourceUpdated                  ConditionReason = "SourceUpdated"
-	ConditionReasonSourceUpdateFailed             ConditionReason = "SourceUpdateFailed"
-	ConditionReasonDeploymentCreated              ConditionReason = "DeploymentCreated"
-	ConditionReasonDeploymentUpdated              ConditionReason = "DeploymentUpdated"
-	ConditionReasonDeploymentFailed               ConditionReason = "DeploymentFailed"
-	ConditionReasonDeploymentDeleted              ConditionReason = "DeploymentDeleted"
-	ConditionReasonDeploymentDeletionFailed       ConditionReason = "DeploymentDeletionFailed"
-	ConditionReasonDeploymentWaiting              ConditionReason = "DeploymentWaiting"
-	ConditionReasonDeploymentReady                ConditionReason = "DeploymentReady"
-	ConditionReasonDeploymentReadyFallbackRuntime ConditionReason = "DeploymentReadyFallback"
-	ConditionReasonServiceCreated                 ConditionReason = "ServiceCreated"
-	ConditionReasonServiceUpdated                 ConditionReason = "ServiceUpdated"
-	ConditionReasonServiceFailed                  ConditionReason = "ServiceFailed"
-	ConditionReasonMinReplicasNotAvailable        ConditionReason = "MinReplicasNotAvailable"
+	ConditionReasonInvalidFunctionSpec      ConditionReason = "InvalidFunctionSpec"
+	ConditionReasonFunctionSpecValidated    ConditionReason = "FunctionSpecValidated"
+	ConditionReasonSourceUpdated            ConditionReason = "SourceUpdated"
+	ConditionReasonSourceUpdateFailed       ConditionReason = "SourceUpdateFailed"
+	ConditionReasonDeploymentCreated        ConditionReason = "DeploymentCreated"
+	ConditionReasonDeploymentUpdated        ConditionReason = "DeploymentUpdated"
+	ConditionReasonDeploymentFailed         ConditionReason = "DeploymentFailed"
+	ConditionReasonDeploymentDeleted        ConditionReason = "DeploymentDeleted"
+	ConditionReasonDeploymentDeletionFailed ConditionReason = "DeploymentDeletionFailed"
+	ConditionReasonDeploymentWaiting        ConditionReason = "DeploymentWaiting"
+	ConditionReasonDeploymentReady          ConditionReason = "DeploymentReady"
+	ConditionReasonServiceCreated           ConditionReason = "ServiceCreated"
+	ConditionReasonServiceUpdated           ConditionReason = "ServiceUpdated"
+	ConditionReasonServiceFailed            ConditionReason = "ServiceFailed"
+	ConditionReasonMinReplicasNotAvailable  ConditionReason = "MinReplicasNotAvailable"
 )
 
 // +kubebuilder:object:root=true
@@ -458,48 +451,10 @@ func (runtime Runtime) IsRuntimeSupported() bool {
 	return false
 }
 
-// IsRuntimeKnown checks if the runtime is of known, even if the version is unsupported
-func (runtime Runtime) IsRuntimeKnown() bool {
-	supportedRuntimes := []Runtime{NodeJs12, NodeJs14, NodeJs16, NodeJs18, NodeJs20, NodeJs22, Python39, Python312}
-	for _, r := range supportedRuntimes {
-		if r == runtime {
-			return true
-		}
-	}
-	return false
-}
-
-func SupportedNodejsRuntime() Runtime {
-	return NodeJs20
-}
-
-func SupportedPythonRuntime() Runtime {
-	return Python312
-}
-
 func (runtime Runtime) IsRuntimePython() bool {
 	return strings.HasPrefix(string(runtime), PythonPrefix)
 }
 
 func (runtime Runtime) IsRuntimeNodejs() bool {
 	return strings.HasPrefix(string(runtime), NodeJsPrefix)
-}
-
-// supportedRuntimeEquivalent maps given runtime to the supported one
-func (runtime Runtime) SupportedRuntimeEquivalent() Runtime {
-	if runtime.IsRuntimeSupported() {
-		return runtime
-	}
-	return runtime.latestRuntimeEquivalent()
-}
-
-// latestRuntimeEquivalent returns latest runtime for given kind, or the same runtime if kind is unknown
-func (runtime Runtime) latestRuntimeEquivalent() Runtime {
-	if runtime.IsRuntimeNodejs() {
-		return SupportedNodejsRuntime()
-	}
-	if runtime.IsRuntimePython() {
-		return SupportedPythonRuntime()
-	}
-	return runtime
 }
