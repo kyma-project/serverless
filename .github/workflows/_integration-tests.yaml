@@ -33,8 +33,8 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-k3d-cluster
+      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
+      - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
       - name: run test
         run: |
           kubectl create namespace kyma-system || true
@@ -54,8 +54,8 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-k3d-cluster
+      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
+      - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
       - name: run test
         run: |
           kubectl create namespace kyma-system || true
@@ -77,8 +77,8 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-k3d-cluster
+      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
+      - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
       - name: run test
         run: |
           kubectl create namespace kyma-system || true
@@ -100,8 +100,8 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-k3d-cluster
+      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
+      - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
       - name: run tests
         run: |
           kubectl create namespace kyma-system || true
@@ -127,8 +127,8 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-k3d-cluster
+      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
+      - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
       - name: run tests
         run: |
           kubectl create namespace kyma-system || true
@@ -154,7 +154,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: ./.github/actions/create-k3d-cluster
+      - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
       - name: install legacy serverless
         run: |
           make install-legacy-serverless-custom-operator
@@ -179,7 +179,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: ./.github/actions/setup-go
+      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
       - name: compute github commit sha
         id: vars
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT

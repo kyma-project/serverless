@@ -8,8 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-k3d-cluster
+      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
+      - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
       - name: upgrade test
         run: |
           make -C components/operator deploy-release
@@ -24,8 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: ./.github/actions/setup-go
-      - uses: ./.github/actions/create-k3d-cluster
+      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
+      - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
       - name: upgrade test
         run: |
           make install-serverless-latest-release install-serverless-custom-operator
