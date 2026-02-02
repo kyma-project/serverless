@@ -5,7 +5,7 @@ runs:
   using: "composite"
   steps:
     - name: Setup go
-      uses: actions/setup-go@v6
+      uses: actions/setup-go@v5
       with:
         go-version-file: "go.mod"
         cache-dependency-path: "go.sum"

@@ -4,13 +4,13 @@ description: 'Action for creating single cluster'
 runs:
   using: 'composite'
   steps:
-    - name: Install k3d
+    - name: install k3d
       run: |
         curl -s https://raw.githubusercontent.com/k3d-io/k3d/v5.8.3/install.sh | bash
         k3d version
       shell: bash
 
-    - name: Create k3d cluster
+    - name: create k3d cluster
       run: |
         k3d cluster create kyma \
           --agents 1 \
@@ -21,7 +21,7 @@ runs:
           --k3s-arg "--disable=traefik@server:0"
       shell: bash
 
-    - name: Install Calico CNI
+    - name: install Calico CNI
       run: |
         kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/operator-crds.yaml
         kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.31.3/manifests/tigera-operator.yaml
