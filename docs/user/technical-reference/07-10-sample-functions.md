@@ -23,7 +23,7 @@ kind: Function
 metadata:
   name: test-function-nodejs-cjs
 spec:
-  runtime: nodejs20
+  runtime: nodejs22
   source:
     inline:
       dependencies: |
@@ -53,7 +53,7 @@ kind: Function
 metadata:
   name: test-function-nodejs-esm
 spec:
-  runtime: nodejs20
+  runtime: nodejs22
   source:
     inline:
       dependencies: |
