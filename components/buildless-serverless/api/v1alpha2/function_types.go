@@ -451,6 +451,16 @@ func (runtime Runtime) IsRuntimeSupported() bool {
 	return false
 }
 
+func (runtime Runtime) IsRuntimeDeprecated() bool {
+	deprecatedRuntimes := []Runtime{NodeJs20}
+	for _, r := range deprecatedRuntimes {
+		if r == runtime {
+			return true
+		}
+	}
+	return false
+}
+
 func (runtime Runtime) IsRuntimePython() bool {
 	return strings.HasPrefix(string(runtime), PythonPrefix)
 }

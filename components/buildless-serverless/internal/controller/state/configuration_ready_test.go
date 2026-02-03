@@ -35,7 +35,7 @@ func Test_sFnConfigurationReady(t *testing.T) {
 			"Function configured")
 	})
 
-	t.Run("should set condition to false on old runtime and go to the next state", func(t *testing.T) {
+	t.Run("should set cwarning on deprecated runtime and go to the next state", func(t *testing.T) {
 		// Arrange
 		// machine with our function
 		m := fsm.StateMachine{State: fsm.SystemState{
@@ -62,6 +62,6 @@ func Test_sFnConfigurationReady(t *testing.T) {
 			serverlessv1alpha2.ConditionConfigurationReady,
 			metav1.ConditionTrue,
 			serverlessv1alpha2.ConditionReasonFunctionSpecValidated,
-			warningNodejs20Deprecated)
+			"Warning: function configured, runtime nodejs20 is deprecated and will be removed in the future")
 	})
 }

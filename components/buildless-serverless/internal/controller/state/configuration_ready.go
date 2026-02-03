@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/metrics"
@@ -12,17 +13,17 @@ import (
 )
 
 const (
-	configurationReadyMessage = "Function configured"
-	warningNodejs20Deprecated = "Warning: function configured, runtime Node.js 20 is deprecated and will be removed in the future"
+	configurationReadyMessage      = "Function configured"
+	warningDeprecatedRuntimeFormat = "Warning: function configured, runtime %s is deprecated and will be removed in the future"
 )
 
 func sFnConfigurationReady(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	msg := configurationReadyMessage
 	reason := serverlessv1alpha2.ConditionReasonFunctionSpecValidated
 
-	if m.State.Function.Spec.Runtime == serverlessv1alpha2.NodeJs20 {
+	if m.State.Function.Spec.Runtime.IsRuntimeDeprecated() {
 		// warn users when runtime is deprecated
-		msg = warningNodejs20Deprecated
+		msg = fmt.Sprintf(warningDeprecatedRuntimeFormat, m.State.Function.Spec.Runtime)
 	}
 
 	m.State.Function.UpdateCondition(
