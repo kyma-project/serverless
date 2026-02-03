@@ -33,7 +33,7 @@ data:
         source: 'spec.source.gitRepository ? "Git Repository" : "Inline Editor"'
       - name: header.runtime
         source: >-
-          spec.runtime = 'python312' ? 'Python 3.12' :  (spec.runtime = 'nodejs22' ? 'Node.js 22' : (spec.runtime = 'nodejs20' ? 'Node.js 20' : spec.runtime))
+          spec.runtime = 'python312' ? 'Python 3.12' :  (spec.runtime = 'nodejs22' ? 'Node.js 22' : (spec.runtime = 'nodejs20' ? 'Node.js 20 - deprecated' : spec.runtime))
     body:
       - source: spec.source.inline.source
         widget: CodeViewer
@@ -393,7 +393,7 @@ data:
   list: |-
     - name: header.runtime
       source: >-
-        spec.runtime = 'python312' ? 'Python 3.12' : (spec.runtime = 'nodejs22' ? 'Node.js 22' :(spec.runtime = 'nodejs20' ? 'Node.js 20' : spec.runtime))
+        spec.runtime = 'python312' ? 'Python 3.12' : (spec.runtime = 'nodejs22' ? 'Node.js 22' :(spec.runtime = 'nodejs20' ? 'Node.js 20 - deprecated' : spec.runtime))
     - name: header.sourceType
       source: 'spec.source.gitRepository ? "Git Repository" : "Inline Editor"'
     - name: header.status
@@ -499,7 +499,7 @@ data:
       Status: Status
       Runtime: Runtime
       'Source Type': Source Type
-      spec.runtime.nodejs20: Node.js 20
+      spec.runtime.nodejs20: Node.js 20 - deprecated
       spec.runtime.nodejs22: Node.js 22
       spec.runtime.python312: Python 3.12
       spec.resourceConfiguration.function: Function

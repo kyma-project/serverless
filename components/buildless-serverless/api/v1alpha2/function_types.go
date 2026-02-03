@@ -32,19 +32,19 @@ const (
 	PythonPrefix string  = "python"
 	NodeJsPrefix string  = "nodejs"
 	Python312    Runtime = "python312"
-	NodeJs20     Runtime = "nodejs20"
 	NodeJs22     Runtime = "nodejs22"
 	// deprecated runtimes
 	NodeJs12 Runtime = "nodejs12"
 	NodeJs14 Runtime = "nodejs14"
 	NodeJs16 Runtime = "nodejs16"
 	NodeJs18 Runtime = "nodejs18"
+	NodeJs20 Runtime = "nodejs20"
 	Python39 Runtime = "python39"
 )
 
 // FunctionSpec defines the desired state of Function.
 type FunctionSpec struct {
-	// Specifies the runtime of the Function. The available values are `nodejs20`, `nodejs22`, and `python312`.
+	// Specifies the runtime of the Function. The available values are `nodejs20` - deprecated, `nodejs22`, and `python312`.
 	// +kubebuilder:validation:Enum=nodejs20;nodejs22;python312;
 	Runtime Runtime `json:"runtime"`
 
