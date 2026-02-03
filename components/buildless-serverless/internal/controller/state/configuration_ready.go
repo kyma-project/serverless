@@ -13,19 +13,24 @@ import (
 )
 
 const (
-	configurationReadyMessage = "Function configured"
-	warningConfigurationReady = "Warning: Function configured, runtime too old, used the latest supported runtime version"
+	configurationReadyMessage       = "Function configured"
+	warningNodejs20Deprecated       = "Warning: function configured, runtime Node.js 20 is deprecated and will be removed in the future"
+	warningUnsupportedRuntimeFormat = "Warning: invalid runtime value: cannot find runtime %s, using runtime %s as a fallback to migrate from legacy serverless"
 )
 
 func sFnConfigurationReady(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	condition := metav1.ConditionTrue
-	// warn users when runtime is not supported
 	msg := configurationReadyMessage
 	reason := serverlessv1alpha2.ConditionReasonFunctionSpecValidated
+
 	if !m.State.Function.Spec.Runtime.IsRuntimeSupported() {
-		msg = fmt.Sprintf("Warning: invalid runtime value: cannot find runtime %s, using runtime %s as a fallback to migrate from legacy serverless", m.State.Function.Spec.Runtime, m.State.Function.Spec.Runtime.SupportedRuntimeEquivalent())
+		// warn users when runtime is not supported
+		msg = fmt.Sprintf(warningUnsupportedRuntimeFormat, m.State.Function.Spec.Runtime, m.State.Function.Spec.Runtime.SupportedRuntimeEquivalent())
 		condition = metav1.ConditionFalse
 		reason = serverlessv1alpha2.ConditionReasonFunctionSpecRuntimeFallback
+	} else if m.State.Function.Spec.Runtime == serverlessv1alpha2.NodeJs20 {
+		// warn users when runtime is deprecated
+		msg = warningNodejs20Deprecated
 	}
 
 	m.State.Function.UpdateCondition(
