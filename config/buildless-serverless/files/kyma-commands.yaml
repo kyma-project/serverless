@@ -341,8 +341,12 @@ subCommands:
         shorthand: "v"
         default: "22"
       with:
-        output: ${{ .flags.output.value }}
         dryRun: ${{ .flags.dryrun.value }}
+        output: ${{ .flags.output.value }}
+        outputWarning: |-
+          ${{ if eq .flags.version.value "20" -}}
+          warning: runtime Node.js 20 is deprecated and will be removed in the future releases - please consider upgrading to Node.js 22 runtime
+          ${{- end }}
         resource:
           apiVersion: serverless.kyma-project.io/v1alpha2
           kind: Function

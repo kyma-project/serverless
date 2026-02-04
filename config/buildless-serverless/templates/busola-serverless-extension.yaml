@@ -35,6 +35,10 @@ data:
         source: >-
           spec.runtime = 'python312' ? 'Python 3.12' :  (spec.runtime = 'nodejs22' ? 'Node.js 22' : (spec.runtime = 'nodejs20' ? 'Node.js 20 - deprecated' : spec.runtime))
     body:
+      - widget: Alert
+        severity: warning
+        source: "'alert.nodejs20.deprecated'"
+        visibility: $boolean($contains($root.spec.runtime, "nodejs20"))
       - source: spec.source.inline.source
         widget: CodeViewer
         name: code.source
@@ -167,9 +171,13 @@ data:
         []
       subscribe:
         language: |
-          $language = 'JavaScript' ? ($exists($root.spec.runtime) and $root.spec.runtime != 'python312') ? $root.spec.runtime : 'nodejs20' :
+          $language = 'JavaScript' ? ($exists($root.spec.runtime) and $root.spec.runtime != 'python312') ? $root.spec.runtime : 'nodejs22' :
           $language = 'Python' ? 'python312' :
           ''
+    - widget: Alert
+      severity: warning
+      alert: "'alert.nodejs20.deprecated'"
+      visibility: $boolean($contains($root.spec.runtime, "nodejs20"))
     - path: spec.resourceConfiguration.function.profile
       simple: true
       enum: ['XS', 'S', 'M', 'L', 'XL']
@@ -418,9 +426,9 @@ data:
         'Running' and $v.status = 'True' })) != 0 ? 'WARNING' : 'FAILED' :
         $count($filter($.status.conditions, function($v) { $v.type =
         'ConfigurationReady' and $v.status = 'True' })) != 0 ?
-        $count($filter($.status.conditions,
-        function($v) { $v.type = 'Running' and $v.status = 'True' })) != 0 ?
-        'RUNNING' : $count($filter($.status.conditions, function($v) { $v.type =
+        $count($filter($.status.conditions, function($v) { $v.type = 'Running' and $v.status = 'True' })) 
+        != 0 ? $count($filter($.status.conditions, function($v) { $contains($v.message, "Warning") }))
+        != 0 ? 'WARNING' : 'RUNNING' : $count($filter($.status.conditions, function($v) { $v.type =
         'Running' and $v.status = 'Unknown' and $v.reason =
         'MinReplicasNotAvailable' })) != 0 ? 'PENDING' : 'DEPLOYING' :
         'INITIALIZING' 
@@ -510,22 +518,16 @@ data:
       envType: Variable Type
       'Node.js Function': Node.js Function
       'Python Function': Python Function
+      alert.nodejs20.deprecated: Runtime Node.js 20 is deprecated and will be removed in the future releases. Please consider upgrading to Node.js 22 runtime.
       alert.resources.requests: If you want to provide your own requests configuration, leave the Function profile field empty.
       alert.resources.limits: If you want to provide your own limits configuration, leave the Function profile field empty.
       spec.labels: Runtime Labels
       spec.annotations: Runtime Annotations
   presets: |-
-    - name: Default
-      default: true
-      value:
-        spec:
-          resourceConfiguration:
-            function:
-              profile: XS
     - name: Node.js Function
       value:
         spec:
-          runtime: nodejs20
+          runtime: nodejs22
           source:
             inline:
               source: |-
