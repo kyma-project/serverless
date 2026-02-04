@@ -98,6 +98,6 @@ func Test_sFnConfigurationReady(t *testing.T) {
 			serverlessv1alpha2.ConditionConfigurationReady,
 			metav1.ConditionTrue,
 			serverlessv1alpha2.ConditionReasonFunctionSpecValidated,
-			warningNodejs20Deprecated)
+			"Warning: function configured, runtime nodejs20 is deprecated and will be removed in the future")
 	})
 }
