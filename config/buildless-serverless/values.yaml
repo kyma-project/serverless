@@ -17,6 +17,7 @@ global:
 containers:
   manager:
     logConfiguration:
+      restartAnnotationValue: "json"
       data:
         logLevel: "info"
         logFormat: "json"

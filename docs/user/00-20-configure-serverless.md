@@ -102,7 +102,7 @@ You can configure the desired log format to be used.
 
 ```yaml
    spec:
-      logFormat: "yaml"
+      logFormat: "json"
 ```
 
 ### Disabling Buildless Mode

@@ -109,6 +109,15 @@ func (b *Builder) WithLogFormat(logFormat string) *Builder {
 	return b
 }
 
+// WithLogFormatRestartAnnotation sets the restart annotation value which triggers a pod restart when logFormat changes
+func (b *Builder) WithLogFormatRestartAnnotation(logFormat string) *Builder {
+	if logFormat != "" {
+		b.With("containers.manager.logConfiguration.restartAnnotationValue", logFormat)
+	}
+
+	return b
+}
+
 // TODO: remove this method when buildless is enabled by default
 func (b *Builder) WithChartPath(chartPath string) *Builder {
 	b.With("chartPath", chartPath)

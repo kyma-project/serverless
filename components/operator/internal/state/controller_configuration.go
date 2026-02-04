@@ -109,7 +109,8 @@ func configureControllerConfigurationFlags(s *systemState) {
 			s.instance.Status.DefaultRuntimePodPreset,
 		).
 		WithLogLevel(s.instance.Status.LogLevel).
-		WithLogFormat(s.instance.Status.LogFormat)
+		WithLogFormat(s.instance.Status.LogFormat).
+		WithLogFormatRestartAnnotation(s.instance.Status.LogFormat)
 }
 
 func getNodesLen(ctx context.Context, c client.Client) (int, error) {
