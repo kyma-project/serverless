@@ -160,6 +160,11 @@ func (b *Builder) WithImageFunctionRuntimeNodejs22(image string) *Builder {
 	return b
 }
 
+func (b *Builder) WithImageFunctionRuntimeNodejs24(image string) *Builder {
+	b.With("global.images.function_runtime_nodejs24", image)
+	return b
+}
+
 func (b *Builder) WithImageFunctionRuntimePython312(image string) *Builder {
 	b.With("global.images.function_runtime_python312", image)
 	return b

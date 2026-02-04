@@ -76,6 +76,7 @@ func updateImages(fb *flags.Builder) {
 	updateImageIfOverride("IMAGE_REGISTRY_INIT", fb.WithImageRegistryInit)
 	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_NODEJS20", fb.WithImageFunctionRuntimeNodejs20)
 	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_NODEJS22", fb.WithImageFunctionRuntimeNodejs22)
+	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_NODEJS24", fb.WithImageFunctionRuntimeNodejs24)
 	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_PYTHON312", fb.WithImageFunctionRuntimePython312)
 	updateImageIfOverride("IMAGE_KANIKO_EXECUTOR", fb.WithImageKanikoExecutor)
 	updateImageIfOverride("IMAGE_REGISTRY", fb.WithImageRegistry)

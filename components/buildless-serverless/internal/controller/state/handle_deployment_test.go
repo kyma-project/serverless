@@ -50,7 +50,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 						Name:      "peaceful-merkle-name",
 						Namespace: "gifted-khorana-ns"},
 					Spec: serverlessv1alpha2.FunctionSpec{
-						Runtime: serverlessv1alpha2.NodeJs22,
+						Runtime: serverlessv1alpha2.NodeJs24,
 						Source: serverlessv1alpha2.Source{
 							Inline: &serverlessv1alpha2.InlineSource{
 								Source: "silly-kowalevski"}},
@@ -123,7 +123,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 						Name:      "nice-matsumoto-name",
 						Namespace: "festive-dewdney-ns"},
 					Spec: serverlessv1alpha2.FunctionSpec{
-						Runtime: serverlessv1alpha2.NodeJs22,
+						Runtime: serverlessv1alpha2.NodeJs24,
 						Source: serverlessv1alpha2.Source{
 							Inline: &serverlessv1alpha2.InlineSource{
 								Source: "xenodochial-napier"}}}}},
@@ -165,7 +165,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 						Name:      "nostalgic-hugle-name",
 						Namespace: "amazing-khayyam-ns"},
 					Spec: serverlessv1alpha2.FunctionSpec{
-						Runtime: serverlessv1alpha2.NodeJs22,
+						Runtime: serverlessv1alpha2.NodeJs24,
 						Source: serverlessv1alpha2.Source{
 							Inline: &serverlessv1alpha2.InlineSource{
 								Source: "sleepy-stonebraker"}}}}},
@@ -198,12 +198,12 @@ func Test_sFnHandleDeployment(t *testing.T) {
 				Name:      "awesome-kapitsa-name",
 				Namespace: "stoic-swanson-ns"},
 			Spec: serverlessv1alpha2.FunctionSpec{
-				Runtime: serverlessv1alpha2.NodeJs22,
+				Runtime: serverlessv1alpha2.NodeJs24,
 				Source: serverlessv1alpha2.Source{
 					Inline: &serverlessv1alpha2.InlineSource{
 						Source: "affectionate-mclean"}}}}
 		fc := config.FunctionConfig{
-			Images: config.ImagesConfig{NodeJs22: "boring-bartik"},
+			Images: config.ImagesConfig{NodeJs24: "boring-bartik"},
 		}
 		cd := appsv1.Deployment{}
 		// identical deployment will be generated inside sFnHandleDeployment

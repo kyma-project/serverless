@@ -13,7 +13,7 @@ import (
 	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 	"github.com/pkg/errors"
 
-	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/dynamic"
 	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -23,6 +23,7 @@ import (
 const (
 	nodejs20  = "nodejs20"
 	nodejs22  = "nodejs22"
+	nodejs24  = "nodejs24"
 	python312 = "python312"
 )
 
@@ -43,6 +44,7 @@ func FunctionAPIGatewayTest(restConfig *rest.Config, cfg internal.Config, logf *
 	python312Logger := logf.WithField(runtimeKey, "python312")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
 	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
+	nodejs24Logger := logf.WithField(runtimeKey, "nodejs24")
 
 	genericContainer := utils.Container{
 		DynamicCli:  dynamicCli,
@@ -55,6 +57,7 @@ func FunctionAPIGatewayTest(restConfig *rest.Config, cfg internal.Config, logf *
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
 	nodejs20Fn := function.NewFunction("nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
 	nodejs22Fn := function.NewFunction("nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
+	nodejs24Fn := function.NewFunction("nodejs24", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs24Logger))
 
 	logf.Infof("Testing function in namespace: %s", cfg.Namespace)
 
@@ -72,6 +75,10 @@ func FunctionAPIGatewayTest(restConfig *rest.Config, cfg internal.Config, logf *
 			executor.NewSerialTestRunner(nodejs22Logger, "NodeJS22 test",
 				function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.BasicNodeJSFunction("Hello from nodejs22", serverlessv1alpha2.NodeJs22)),
 				assertion.APIGatewayFunctionCheck("nodejs22", nodejs22Fn, coreCli, genericContainer.Namespace, nodejs22),
+			),
+			executor.NewSerialTestRunner(nodejs24Logger, "NodeJS24 test",
+				function.CreateFunction(nodejs24Logger, nodejs24Fn, "Create NodeJS24 Function", runtimes.BasicNodeJSFunction("Hello from nodejs24", serverlessv1alpha2.NodeJs24)),
+				assertion.APIGatewayFunctionCheck("nodejs24", nodejs24Fn, coreCli, genericContainer.Namespace, nodejs24),
 			),
 		),
 	), nil

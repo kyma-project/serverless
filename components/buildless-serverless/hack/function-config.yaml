@@ -5,6 +5,7 @@ images:
   repoFetcher: "europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:main"
   nodejs20: "europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main"
   nodejs22: "europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:main"
+  nodejs24: "europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs24:main"
   python312: "europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main"
 packageRegistryConfigSecretName: "serverless-package-registry-config"
 functionTraceCollectorEndpoint: "http://telemetry-otlp-traces.kyma-system.svc.cluster.local:4318/v1/traces"

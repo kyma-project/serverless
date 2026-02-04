@@ -13,6 +13,7 @@ global:
     function_init: europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:main
     function_runtime_nodejs20: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main
     function_runtime_nodejs22: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:main
+    function_runtime_nodejs24: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs24:main
     function_runtime_python312: europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main
 containers:
   manager:

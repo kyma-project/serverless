@@ -16,6 +16,20 @@ const (
 )
 
 func Test_readNodejsFiles(t *testing.T) {
+	t.Run("read true nodejs24 runtime files", func(t *testing.T) {
+		inline := &v1alpha2.InlineSource{
+			Source:       handlerData,
+			Dependencies: "{}",
+		}
+		runtimeDir := fmt.Sprintf("%s/%s", runtimesDir, "nodejs24")
+
+		gotList, gotErr := readNodejsFiles(inline, runtimeDir)
+		require.NoError(t, gotErr)
+		require.Len(t, gotList, 13)
+		requireFileWithName(t, gotList, "package.json")
+		require.Contains(t, gotList, types.FileResponse{Name: "handler.js", Data: handlerBase64Data})
+	})
+
 	t.Run("read true nodejs22 runtime files", func(t *testing.T) {
 		inline := &v1alpha2.InlineSource{
 			Source:       handlerData,

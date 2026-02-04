@@ -1,0 +1,25 @@
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  labels:
+    serverless.kyma-project.io/function-resources-preset: L
+  name: nodejs24-l
+spec:
+  scaleConfig:
+    maxReplicas: 1
+    minReplicas: 1
+  runtime: nodejs24
+  source:
+    inline:
+      dependencies: |-
+        {
+          "name": "nodejs24-l",
+          "version": "0.0.1",
+          "dependencies": {}
+        }
+      source: |-
+        module.exports = {
+            main: function (event, context) {
+                return 'Hello Serverless'
+            }
+        }

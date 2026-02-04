@@ -55,6 +55,8 @@ spec:
               value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main
             - name: IMAGE_FUNCTION_RUNTIME_NODEJS22
               value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:main
+            - name: IMAGE_FUNCTION_RUNTIME_NODEJS24
+              value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs24:main
             - name: IMAGE_FUNCTION_RUNTIME_PYTHON312
               value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main
             - name: IMAGE_KANIKO_EXECUTOR

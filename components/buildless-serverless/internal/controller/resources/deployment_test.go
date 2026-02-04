@@ -404,6 +404,11 @@ func TestDeployment_workingSourcesDir(t *testing.T) {
 			want:    "/usr/src/app/function",
 		},
 		{
+			name:    "get working dir for nodejs24",
+			runtime: serverlessv1alpha2.NodeJs24,
+			want:    "/usr/src/app/function",
+		},
+		{
 			name:    "get working dir for python312",
 			runtime: serverlessv1alpha2.Python312,
 			want:    "/kubeless",
@@ -427,6 +432,7 @@ func TestDeployment_runtimeImage(t *testing.T) {
 		Images: config.ImagesConfig{
 			NodeJs20:  "image-for-nodejs20",
 			NodeJs22:  "image-for-nodejs22",
+			NodeJs24:  "image-for-nodejs24",
 			Python312: "image-for-python312",
 		},
 	}
@@ -464,6 +470,14 @@ func TestDeployment_runtimeImage(t *testing.T) {
 			want: "image-for-nodejs22",
 		},
 		{
+			name: "get nodejs24 image from function config",
+			fields: fields{
+				runtime:              serverlessv1alpha2.NodeJs24,
+				runtimeImageOverride: "",
+			},
+			want: "image-for-nodejs24",
+		},
+		{
 			name: "get overridden image name from function",
 			fields: fields{
 				runtime:              serverlessv1alpha2.NodeJs20,
@@ -475,6 +489,14 @@ func TestDeployment_runtimeImage(t *testing.T) {
 			name: "get overridden image name from function",
 			fields: fields{
 				runtime:              serverlessv1alpha2.NodeJs22,
+				runtimeImageOverride: "overridden-image",
+			},
+			want: "overridden-image",
+		},
+		{
+			name: "get overridden image name from function",
+			fields: fields{
+				runtime:              serverlessv1alpha2.NodeJs24,
 				runtimeImageOverride: "overridden-image",
 			},
 			want: "overridden-image",
@@ -649,6 +671,28 @@ func TestDeployment_volumeMounts(t *testing.T) {
 			},
 		},
 		{
+			name:    "build volume mounts for inline nodejs24 based on function",
+			runtime: serverlessv1alpha2.NodeJs24,
+			source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{Source: "x", Dependencies: "x"}},
+			want: []corev1.VolumeMount{
+				{
+					Name:      "sources",
+					MountPath: "/usr/src/app/function",
+				},
+				{
+					Name:      "tmp",
+					ReadOnly:  false,
+					MountPath: "/tmp",
+				},
+				{
+					Name:      "package-registry-config",
+					ReadOnly:  false,
+					MountPath: "/usr/src/app/function/package-registry-config/.npmrc",
+					SubPath:   ".npmrc",
+				},
+			},
+		},
+		{
 			name:    "build volume mounts for inline python312 based on function",
 			runtime: serverlessv1alpha2.Python312,
 			source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{Source: "x", Dependencies: "x"}},
@@ -677,6 +721,34 @@ func TestDeployment_volumeMounts(t *testing.T) {
 		{
 			name:    "build volume mounts for git nodejs22 based on function",
 			runtime: serverlessv1alpha2.NodeJs22,
+			source: serverlessv1alpha2.Source{GitRepository: &serverlessv1alpha2.GitRepositorySource{
+				URL: "x", Repository: serverlessv1alpha2.Repository{BaseDir: "x", Reference: "x"}}},
+			want: []corev1.VolumeMount{
+				{
+					Name:      "sources",
+					MountPath: "/usr/src/app/function",
+				},
+				{
+					Name:      "tmp",
+					ReadOnly:  false,
+					MountPath: "/tmp",
+				},
+				{
+					Name:      "git-repository",
+					ReadOnly:  false,
+					MountPath: "/git-repository",
+				},
+				{
+					Name:      "package-registry-config",
+					ReadOnly:  false,
+					MountPath: "/usr/src/app/function/package-registry-config/.npmrc",
+					SubPath:   ".npmrc",
+				},
+			},
+		},
+		{
+			name:    "build volume mounts for git nodejs24 based on function",
+			runtime: serverlessv1alpha2.NodeJs24,
 			source: serverlessv1alpha2.Source{GitRepository: &serverlessv1alpha2.GitRepositorySource{
 				URL: "x", Repository: serverlessv1alpha2.Repository{BaseDir: "x", Reference: "x"}}},
 			want: []corev1.VolumeMount{
@@ -820,6 +892,34 @@ func TestDeployment_volumes(t *testing.T) {
 			},
 		},
 		{
+			name:    "build volumes for inline nodejs24 based on function",
+			runtime: serverlessv1alpha2.NodeJs24,
+			source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{Source: "x", Dependencies: "x"}},
+			want: []corev1.Volume{
+				{
+					Name: "sources",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+				{
+					Name: "package-registry-config",
+					VolumeSource: corev1.VolumeSource{
+						Secret: &corev1.SecretVolumeSource{
+							SecretName: "test-secret-name",
+							Optional:   ptr.To(true),
+						},
+					},
+				},
+				{
+					Name: "tmp",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+			},
+		},
+		{
 			name:    "build volumes for inline python312 based on function",
 			runtime: serverlessv1alpha2.Python312,
 			source:  serverlessv1alpha2.Source{Inline: &serverlessv1alpha2.InlineSource{Source: "x", Dependencies: "x"}},
@@ -871,6 +971,41 @@ func TestDeployment_volumes(t *testing.T) {
 						Secret: &corev1.SecretVolumeSource{
 							SecretName: "test-secret-name",
 							Optional:   ptr.To[bool](true),
+						},
+					},
+				},
+				{
+					Name: "tmp",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+				{
+					Name: "git-repository",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+			},
+		},
+		{
+			name:    "build volumes for git nodejs24 based on function",
+			runtime: serverlessv1alpha2.NodeJs24,
+			source: serverlessv1alpha2.Source{GitRepository: &serverlessv1alpha2.GitRepositorySource{
+				URL: "x", Repository: serverlessv1alpha2.Repository{BaseDir: "x", Reference: "x"}}},
+			want: []corev1.Volume{
+				{
+					Name: "sources",
+					VolumeSource: corev1.VolumeSource{
+						EmptyDir: &corev1.EmptyDirVolumeSource{},
+					},
+				},
+				{
+					Name: "package-registry-config",
+					VolumeSource: corev1.VolumeSource{
+						Secret: &corev1.SecretVolumeSource{
+							SecretName: "test-secret-name",
+							Optional:   ptr.To(true),
 						},
 					},
 				},
@@ -1110,6 +1245,58 @@ func TestDeployment_envs(t *testing.T) {
 				{
 					Name:  "FUNC_RUNTIME",
 					Value: "nodejs22",
+				},
+				{
+					Name:  "SERVICE_NAMESPACE",
+					Value: "function-namespace",
+				},
+				{
+					Name:  "FUNC_HANDLER_SOURCE",
+					Value: "function-source",
+				},
+				{
+					Name:  "FUNC_HANDLER_DEPENDENCIES",
+					Value: "function-dependencies",
+				},
+				{
+					Name:  "HANDLER_PATH",
+					Value: "./function/handler.js",
+				},
+				{
+					Name:  "TRACE_COLLECTOR_ENDPOINT",
+					Value: "test-trace-collector-endpoint",
+				},
+				{
+					Name:  "PUBLISHER_PROXY_ADDRESS",
+					Value: "test-proxy-address",
+				},
+			},
+		},
+		{
+			name: "build envs based on inline nodejs24 function",
+			function: &serverlessv1alpha2.Function{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      "function-name",
+					Namespace: "function-namespace",
+				},
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs24,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source:       "function-source",
+							Dependencies: "function-dependencies",
+						},
+					},
+				},
+			},
+			want: []corev1.EnvVar{
+				{
+					Name:  "FUNC_NAME",
+					Value: "function-name",
+				},
+				{
+					Name:  "FUNC_RUNTIME",
+					Value: "nodejs24",
 				},
 				{
 					Name:  "SERVICE_NAMESPACE",
@@ -1445,6 +1632,66 @@ npm start;`,
 			function: &serverlessv1alpha2.Function{
 				Spec: serverlessv1alpha2.FunctionSpec{
 					Runtime: serverlessv1alpha2.NodeJs22,
+					Source: serverlessv1alpha2.Source{
+						GitRepository: &serverlessv1alpha2.GitRepositorySource{
+							URL: "/some/url",
+							Repository: serverlessv1alpha2.Repository{
+								BaseDir:   "/some/dir",
+								Reference: "some-reference",
+							},
+						},
+					},
+				},
+			},
+			want: `echo "{}" > package.json;
+cp -r /git-repository/src/* .;
+npm install --prefer-offline --no-audit --progress=false;
+cd ..;
+npm start;`,
+		},
+		{
+			name: "build runtime command for inline nodejs24 without dependencies",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs24,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source: "function-source",
+						},
+					},
+				},
+			},
+			want: `echo "{}" > package.json;
+echo "${FUNC_HANDLER_SOURCE}" > handler.js;
+npm install --prefer-offline --no-audit --progress=false;
+cd ..;
+npm start;`,
+		},
+		{
+			name: "build runtime command for inline nodejs24 with dependencies",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs24,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{
+							Source:       "function-source",
+							Dependencies: "function-dependencies",
+						},
+					},
+				},
+			},
+			want: `echo "{}" > package.json;
+echo "${FUNC_HANDLER_SOURCE}" > handler.js;
+echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
+npm install --prefer-offline --no-audit --progress=false;
+cd ..;
+npm start;`,
+		},
+		{
+			name: "build runtime command for git nodejs24",
+			function: &serverlessv1alpha2.Function{
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs24,
 					Source: serverlessv1alpha2.Source{
 						GitRepository: &serverlessv1alpha2.GitRepositorySource{
 							URL: "/some/url",
