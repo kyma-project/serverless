@@ -22,5 +22,4 @@ type TestUtils struct {
 	ServerlessRegistryName   string
 	ServerlessConfigMapName  string
 	ServerlessUpdateSpec     v1alpha1.ServerlessSpec
-	LegacyMode               bool
 }

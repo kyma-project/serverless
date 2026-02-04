@@ -19,21 +19,11 @@ func CreateSecond(utils *utils.TestUtils) error {
 }
 
 func fixServerless(testUtils *utils.TestUtils, name string) *v1alpha1.Serverless {
-	annotations := map[string]string{}
-	if testUtils.LegacyMode {
-		annotations["serverless.kyma-project.io/buildless-mode"] = "disabled"
-	}
-
 	return &v1alpha1.Serverless{
 		ObjectMeta: v1.ObjectMeta{
-			Name:        name,
-			Namespace:   testUtils.Namespace,
-			Annotations: annotations,
+			Name:      name,
+			Namespace: testUtils.Namespace,
 		},
-		Spec: v1alpha1.ServerlessSpec{
-			DockerRegistry: &v1alpha1.DockerRegistry{
-				EnableInternal: utils.PtrFromVal(false),
-			},
-		},
+		Spec: v1alpha1.ServerlessSpec{},
 	}
 }

@@ -37,53 +37,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Info("Start legacy serverless scenario")
-	err = runScenario(&utils.TestUtils{
-		LegacyMode: true,
-		Namespace:  fmt.Sprintf("serverless-legacy-test-%s", uuid.New().String()),
-		Ctx:        ctx,
-		Client:     client,
-		Logger:     log,
-
-		ServerlessName:           "legacy-test",
-		SecondServerlessName:     "default-test-two",
-		FunctionName:             "function-name",
-		ServerlessConfigMapName:  "serverless-configuration",
-		ServerlessCtrlDeployName: "serverless-ctrl-mngr",
-		ServerlessRegistryName:   "serverless-docker-registry",
-		ServerlessUpdateSpec: v1alpha1.ServerlessSpec{
-			DockerRegistry: &v1alpha1.DockerRegistry{
-				EnableInternal: utils.PtrFromVal(true),
-			},
-			Tracing: &v1alpha1.Endpoint{
-				Endpoint: "http://tracing-endpoint",
-			},
-			Eventing: &v1alpha1.Endpoint{
-				Endpoint: "http://eventing-endpoint",
-			},
-			TargetCPUUtilizationPercentage:   "10",
-			FunctionRequeueDuration:          "19m",
-			FunctionBuildExecutorArgs:        "executor-args",
-			FunctionBuildMaxSimultaneousJobs: "10",
-			HealthzLivenessTimeout:           "20s",
-			DefaultBuildJobPreset:            "normal",
-			DefaultRuntimePodPreset:          "M",
-			EnableNetworkPolicies:            true,
-		},
-	})
-	if err != nil {
-		log.Error(err)
-		os.Exit(1)
-	}
-	log.Info("Legacy serverless scenario completed successfully")
-
 	log.Info("Start default serverless scenario")
 	err = runScenario(&utils.TestUtils{
-		LegacyMode: false,
-		Namespace:  fmt.Sprintf("serverless-test-%s", uuid.New().String()),
-		Ctx:        ctx,
-		Client:     client,
-		Logger:     log,
+		Namespace: fmt.Sprintf("serverless-test-%s", uuid.New().String()),
+		Ctx:       ctx,
+		Client:    client,
+		Logger:    log,
 
 		ServerlessName:           "default-test",
 		SecondServerlessName:     "default-test-two",
