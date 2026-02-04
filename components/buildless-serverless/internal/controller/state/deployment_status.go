@@ -41,7 +41,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 				serverlessv1alpha2.ConditionRunning,
 				metav1.ConditionTrue,
 				serverlessv1alpha2.ConditionReasonDeploymentReadyFallbackRuntime,
-				fmt.Sprintf("Warning: Deployment %s is ready, runtime %s too old, used %s as a fallback to migrate from legacy serverless", deploymentName, m.State.Function.Spec.Runtime, m.State.Function.Spec.Runtime.SupportedRuntimeEquivalent()))
+				fmt.Sprintf("Warning: Deployment %s is ready, runtime %s is unsupported, used %s as a fallback to migrate from legacy serverless", deploymentName, m.State.Function.Spec.Runtime, m.State.Function.Spec.Runtime.SupportedRuntimeEquivalent()))
 			metrics.PublishStateReachTime(m.State.Function, serverlessv1alpha2.ConditionRunning)
 		} else {
 			m.Log.Info(fmt.Sprintf("deployment %s ready", deploymentName))
