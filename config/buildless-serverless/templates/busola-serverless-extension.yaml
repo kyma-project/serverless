@@ -170,7 +170,6 @@ data:
         $language = 'Python' ? ['python312'] :
         []
       subscribe:
-        # TODO: what is this, how there's no 22/24
         language: |
           $language = 'JavaScript' ? ($exists($root.spec.runtime) and $root.spec.runtime != 'python312') ? $root.spec.runtime : 'nodejs22' :
           $language = 'Python' ? 'python312' :
