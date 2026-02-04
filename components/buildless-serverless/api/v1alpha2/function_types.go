@@ -458,6 +458,18 @@ func (runtime Runtime) IsRuntimeSupported() bool {
 	return false
 }
 
+// IsRuntimeDeprecated checks if the runtime is deprecated
+// Deprecated runtimes are still supported, but their use is discouraged
+func (runtime Runtime) IsRuntimeDeprecated() bool {
+	deprecatedRuntimes := []Runtime{NodeJs20}
+	for _, r := range deprecatedRuntimes {
+		if r == runtime {
+			return true
+		}
+	}
+	return false
+}
+
 // IsRuntimeKnown checks if the runtime is of known, even if the version is unsupported
 func (runtime Runtime) IsRuntimeKnown() bool {
 	supportedRuntimes := []Runtime{NodeJs12, NodeJs14, NodeJs16, NodeJs18, NodeJs20, NodeJs22, Python39, Python312}
