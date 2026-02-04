@@ -32,19 +32,19 @@ const (
 	PythonPrefix string  = "python"
 	NodeJsPrefix string  = "nodejs"
 	Python312    Runtime = "python312"
-	NodeJs20     Runtime = "nodejs20"
 	NodeJs22     Runtime = "nodejs22"
 	// deprecated runtimes
 	NodeJs12 Runtime = "nodejs12"
 	NodeJs14 Runtime = "nodejs14"
 	NodeJs16 Runtime = "nodejs16"
 	NodeJs18 Runtime = "nodejs18"
+	NodeJs20 Runtime = "nodejs20"
 	Python39 Runtime = "python39"
 )
 
 // FunctionSpec defines the desired state of Function.
 type FunctionSpec struct {
-	// Specifies the runtime of the Function. The available values are `nodejs20`, `nodejs22`, and `python312`.
+	// Specifies the runtime of the Function. The available values are `nodejs20` - deprecated, `nodejs22`, and `python312`.
 	// +kubebuilder:validation:Enum=nodejs20;nodejs22;python312;
 	Runtime Runtime `json:"runtime"`
 
@@ -288,22 +288,23 @@ const (
 type ConditionReason string
 
 const (
-	ConditionReasonInvalidFunctionSpec          ConditionReason = "InvalidFunctionSpec"
-	ConditionReasonFunctionSpecValidated        ConditionReason = "FunctionSpecValidated"
-	ConditionReasonSourceUpdated                ConditionReason = "SourceUpdated"
-	ConditionReasonSourceUpdateFailed           ConditionReason = "SourceUpdateFailed"
-	ConditionReasonDeploymentCreated            ConditionReason = "DeploymentCreated"
-	ConditionReasonDeploymentUpdated            ConditionReason = "DeploymentUpdated"
-	ConditionReasonDeploymentFailed             ConditionReason = "DeploymentFailed"
-	ConditionReasonDeploymentDeleted            ConditionReason = "DeploymentDeleted"
-	ConditionReasonDeploymentDeletionFailed     ConditionReason = "DeploymentDeletionFailed"
-	ConditionReasonDeploymentWaiting            ConditionReason = "DeploymentWaiting"
-	ConditionReasonDeploymentReady              ConditionReason = "DeploymentReady"
-	ConditionReasonDeploymentReadyLegacyRuntime ConditionReason = "DeploymentReadyLegacy"
-	ConditionReasonServiceCreated               ConditionReason = "ServiceCreated"
-	ConditionReasonServiceUpdated               ConditionReason = "ServiceUpdated"
-	ConditionReasonServiceFailed                ConditionReason = "ServiceFailed"
-	ConditionReasonMinReplicasNotAvailable      ConditionReason = "MinReplicasNotAvailable"
+	ConditionReasonInvalidFunctionSpec            ConditionReason = "InvalidFunctionSpec"
+	ConditionReasonFunctionSpecValidated          ConditionReason = "FunctionSpecValidated"
+	ConditionReasonFunctionSpecRuntimeFallback    ConditionReason = "FunctionSpecRuntimeFallback"
+	ConditionReasonSourceUpdated                  ConditionReason = "SourceUpdated"
+	ConditionReasonSourceUpdateFailed             ConditionReason = "SourceUpdateFailed"
+	ConditionReasonDeploymentCreated              ConditionReason = "DeploymentCreated"
+	ConditionReasonDeploymentUpdated              ConditionReason = "DeploymentUpdated"
+	ConditionReasonDeploymentFailed               ConditionReason = "DeploymentFailed"
+	ConditionReasonDeploymentDeleted              ConditionReason = "DeploymentDeleted"
+	ConditionReasonDeploymentDeletionFailed       ConditionReason = "DeploymentDeletionFailed"
+	ConditionReasonDeploymentWaiting              ConditionReason = "DeploymentWaiting"
+	ConditionReasonDeploymentReady                ConditionReason = "DeploymentReady"
+	ConditionReasonDeploymentReadyFallbackRuntime ConditionReason = "DeploymentReadyFallback"
+	ConditionReasonServiceCreated                 ConditionReason = "ServiceCreated"
+	ConditionReasonServiceUpdated                 ConditionReason = "ServiceUpdated"
+	ConditionReasonServiceFailed                  ConditionReason = "ServiceFailed"
+	ConditionReasonMinReplicasNotAvailable        ConditionReason = "MinReplicasNotAvailable"
 )
 
 // +kubebuilder:object:root=true

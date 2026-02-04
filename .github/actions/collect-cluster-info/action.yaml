@@ -56,4 +56,9 @@ runs:
         echo "Serverless controller logs across all namespaces"
         echo "########################################################"
         for n in `kubectl get namespaces -o json | jq -r ".items[].metadata.name"`; do kubectl logs -l app.kubernetes.io/name=serverless --tail=-1 -n $n; done || true
+
+        echo "################################################"
+        echo "kubectl get networkpolicies.networking.k8s.io -A"
+        echo "################################################"
+        kubectl get networkpolicies.networking.k8s.io -A
       shell: bash

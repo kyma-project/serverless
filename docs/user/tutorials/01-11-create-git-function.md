@@ -23,7 +23,7 @@ You can create a Function either with kubectl or Kyma dashboard:
 #### **Kyma Dashboard**
 
 > [!NOTE]
-> Kyma dashboard uses Busola, which is not installed by default. Follow the [installation instructions](https://github.com/kyma-project/busola/blob/main/docs/install-kyma-dashboard-manually.md).
+> Kyma dashboard uses Busola, which is not installed by default. To install Busola, follow [Deploying and Accessing Busola in k3d](https://github.com/kyma-project/busola/blob/main/docs/contributor/deploy-access-k3d.md) or [Deploying and Accessing Busola in a Kubernetes Cluster](https://github.com/kyma-project/busola/blob/main/docs/contributor/deploy-access-kubernetes.md).
 
 1. Create a namespace or select one from the drop-down list in the top navigation panel.
 
@@ -114,7 +114,7 @@ You can create a Function either with kubectl or Kyma dashboard:
      name: $GIT_FUNCTION
      namespace: $NAMESPACE
    spec:
-     runtime: nodejs20
+     runtime: nodejs22
      source:
        gitRepository:
          baseDir: examples/redis-rest/src
@@ -158,7 +158,7 @@ You can create a Function either with kubectl or Kyma dashboard:
 
     ```bash
     NAME            CONFIGURED   BUILT     RUNNING   RUNTIME    VERSION   AGE
-    test-function   True         True      True      nodejs20   1         96s
+    test-function   True         True      True      nodejs22   1         96s
     ```
 
 <!-- tabs:end -->

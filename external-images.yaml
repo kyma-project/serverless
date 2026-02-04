@@ -1,6 +1,6 @@
 images:
-  - source: "alpine@sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62"
-    tag: "3.23.2"
+  - source: "alpine@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659"
+    tag: "3.23.3"
   - source: "python@sha256:2c36f9de70d61461464367459649732c6b0b58a66b6855a640644b3752454da1"
     tag: "3.12.12-alpine3.23"
   - source: "golang@sha256:bc2596742c7a01aa8c520a075515c7fee21024b05bfaa18bd674fe82c100a05d"

@@ -128,7 +128,7 @@ subCommands:
 - metadata:
     name: "create <resource_name> [flags]"
     description: "Create Function"
-    descriptionLong: "Use this command to create a Function with the default NodeJS 22 runtime on a cluster."
+    descriptionLong: "Use this command to create a Function with the default NodeJS runtime on a cluster."
   uses: resource_create
   args:
     type: string
@@ -210,8 +210,8 @@ subCommands:
   subCommands:
     - metadata:
         name: "python <resource_name> [flags]"
-        description: "Create Python 3.12 Function"
-        descriptionLong: "Use this command to create a Function with Python 3.12 runtime on a cluster."
+        description: "Create Python Function"
+        descriptionLong: "Use this command to create a Function with Python runtime on a cluster."
       uses: resource_create
       args:
         type: string
@@ -282,7 +282,7 @@ subCommands:
     - metadata:
         name: "nodejs <resource_name> [flags]"
         description: "Create Node.js Function"
-        descriptionLong: "Use this command to create a Function with Node.js 20 runtime on a cluster."
+        descriptionLong: "Use this command to create a Function with Node.js runtime on a cluster."
       uses: resource_create
       args:
         type: string
@@ -337,7 +337,7 @@ subCommands:
         default: ""
       - type: string
         name: "version"
-        description: "specifies which version of node runtime should be used {20|22}"
+        description: "specifies which version of node runtime should be used {20 - deprecated|22}"
         shorthand: "v"
         default: "22"
       with:

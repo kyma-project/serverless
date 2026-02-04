@@ -133,6 +133,16 @@ updates:
     commit-message:
       prefix: "nodejs22"
       include: "scope"
+  - package-ecosystem: "docker"
+    directory: "/components/runtimes/nodejs24"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "nodejs24"
+      include: "scope"
 
   - package-ecosystem: "pip"
     directory: "/components/runtimes/python312"
@@ -172,6 +182,20 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "npm-nodejs22"
+      include: "scope"
+    groups:
+      opentelemetry:
+        patterns:
+          - "@opentelemetry/*"
+  - package-ecosystem: "npm"
+    directory: "/components/runtimes/nodejs24"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "npm-nodejs24"
       include: "scope"
     groups:
       opentelemetry:

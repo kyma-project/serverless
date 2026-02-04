@@ -1,6 +1,6 @@
 # Sample Functions
 
-Functions support multiple languages through the use of runtimes. To use a chosen runtime, add its name and version as a value in the **spec.runtime** field of the [Function custom resource (CR)](../resources/06-10-function-cr.md). If this value is not specified, it defaults to `nodejs20`. Dependencies for a Node.js Function must be specified using the [`package.json`](https://docs.npmjs.com/creating-a-package-json-file) file format. Dependencies for a Python Function must follow the format used by [pip](https://packaging.python.org/key_projects/#pip).
+Functions support multiple languages through the use of runtimes. To use a chosen runtime, add its name and version as a value in the **spec.runtime** field of the [Function custom resource (CR)](../resources/06-10-function-cr.md). If this value is not specified, it defaults to `nodejs22`. Dependencies for a Node.js Function must be specified using the [`package.json`](https://docs.npmjs.com/creating-a-package-json-file) file format. Dependencies for a Python Function must follow the format used by [pip](https://packaging.python.org/key_projects/#pip).
 
 > [!TIP]
 > If you are interested in the Function's signature, `event` and `context` objects, and custom HTTP responses the Function returns, read about [Function’s specification](07-70-function-specification.md).
@@ -23,7 +23,7 @@ kind: Function
 metadata:
   name: test-function-nodejs-cjs
 spec:
-  runtime: nodejs20
+  runtime: nodejs22
   source:
     inline:
       dependencies: |
@@ -53,7 +53,7 @@ kind: Function
 metadata:
   name: test-function-nodejs-esm
 spec:
-  runtime: nodejs20
+  runtime: nodejs22
   source:
     inline:
       dependencies: |

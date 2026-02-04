@@ -42,12 +42,12 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
 
 4. Edit the **Rules** section.
 
-   - Select the methods `GET`, `POST`, `PUT`, and `DELETE`. 
+   - Select the methods `GET`, `POST`, `PUT`, and `DELETE`.
    - Use the `No Auth` access strategy.
 
 5. Select **Create** to confirm your changes.
 
-6. To check if you can access the Function, copy the host link from the **General** section and paste it into your browser. If successful, the following message appears: `Hello World from the Kyma Function my-function running on nodejs20!`.
+6. To check if you can access the Function, copy the host link from the **General** section and paste it into your browser. If successful, the following message appears: `Hello World!`.
 
 #### **Kyma CLI**
 
@@ -115,6 +115,6 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
     curl https://$NAME.$DOMAIN
     ```
 
-    If successful, the following mesage appears: `Hello World from the Kyma Function my-function running on nodejs20!`.
+    If successful, the following mesage appears: `Hello World!`.
 
 <!-- tabs:end -->

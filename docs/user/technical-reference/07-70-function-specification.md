@@ -86,17 +86,17 @@ Functions in Kyma accept [CloudEvents](https://cloudevents.io/) (**ce**) with th
 
 See the detailed descriptions of these fields:
 
-| Field | Description |
-|-------|-------------|
-| **ce-type** | Type of the CloudEvent data related to the originating occurrence |
-| **ce-source** | Unique context in which an event happened and can relate to an organization or a process |
-| **ce-eventtypeversion** | Version of the CloudEvent type |
-| **ce-specversion** | Version of the CloudEvent specification used for this event |
-| **ce-id** | Unique identifier of the event |
-| **ce-time** | Time at which the event was sent |
-| **data** | Either JSON or a string, depending on the request type. Read more about [Buffer](https://nodejs.org/api/buffer.html) in Node.js and [bytes literals](https://docs.python.org/3/reference/lexical_analysis.html#string-and-bytes-literals) in Python. <!-- markdown-link-check-disable-line --> |
-| **tracer** | Fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) object that allows you to communicate with the user-defined trace backend service to share tracing data. For more information on how to use the tracer object see [Customize Function traces](../tutorials/01-100-customize-function-traces.md) |
-| **extensions** | JSON object that can contain event payload, a Function's incoming request, or an outgoing response |
+| Field                   | Description                                                                                                                                                                                                                                                                                                                                                      |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **ce-type**             | Type of the CloudEvent data related to the originating occurrence                                                                                                                                                                                                                                                                                                |
+| **ce-source**           | Unique context in which an event happened and can relate to an organization or a process                                                                                                                                                                                                                                                                         |
+| **ce-eventtypeversion** | Version of the CloudEvent type                                                                                                                                                                                                                                                                                                                                   |
+| **ce-specversion**      | Version of the CloudEvent specification used for this event                                                                                                                                                                                                                                                                                                      |
+| **ce-id**               | Unique identifier of the event                                                                                                                                                                                                                                                                                                                                   |
+| **ce-time**             | Time at which the event was sent                                                                                                                                                                                                                                                                                                                                 |
+| **data**                | Either JSON or a string, depending on the request type. Read more about [Buffer](https://nodejs.org/api/buffer.html) in Node.js and [bytes literals](https://docs.python.org/3/reference/lexical_analysis.html#string-and-bytes-literals) in Python. <!-- markdown-link-check-disable-line -->                                                                   |
+| **tracer**              | Fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) object that allows you to communicate with the user-defined trace backend service to share tracing data. For more information on how to use the tracer object see [Customize Function traces](../tutorials/01-100-customize-function-traces.md) |
+| **extensions**          | JSON object that can contain event payload, a Function's incoming request, or an outgoing response                                                                                                                                                                                                                                                               |
 
 ### Event Object SDK
 
@@ -106,12 +106,12 @@ The `event` object is extended by methods making some operations easier. You can
 
 #### **Node.js**
 
-| Method name | Arguments | Description |
-|---------------|-----------|-------------|
-| **setResponseHeader** | key, value | Sets a header to the `response` object based on the given key and value |
-| **setResponseContentType** | type | Sets the `ContentType` header to the `response` object based on the given type |
-| **setResponseStatus** | status | Sets the `response` status based on the given status |
-| **emitCloudEvent** | type, source, data, optionalCloudEventAttribute | Builds a CloudEvent based on the arguments and emits it on the eventing publisher service. You can pass any additional [cloudevent attributes](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/formats/json-format.md#2-attributes) as properties of the last optional argument `optionalCloudEventAttribute` |
+| Method name                | Arguments                                       | Description                                                                                                                                                                                                                                                                                                               |
+| -------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **setResponseHeader**      | key, value                                      | Sets a header to the `response` object based on the given key and value                                                                                                                                                                                                                                                   |
+| **setResponseContentType** | type                                            | Sets the `ContentType` header to the `response` object based on the given type                                                                                                                                                                                                                                            |
+| **setResponseStatus**      | status                                          | Sets the `response` status based on the given status                                                                                                                                                                                                                                                                      |
+| **emitCloudEvent**         | type, source, data, optionalCloudEventAttribute | Builds a CloudEvent based on the arguments and emits it on the eventing publisher service. You can pass any additional [cloudevent attributes](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/formats/json-format.md#2-attributes) as properties of the last optional argument `optionalCloudEventAttribute` |
 
 #### **Python**
 
@@ -131,19 +131,19 @@ See sample context details:
 { 
     "function-name": "main",
     "timeout": 180,
-    "runtime": "nodejs20",
+    "runtime": "nodejs22",
     "memory-limit": 200Mi
 }
 ```
 
 See the detailed descriptions of these fields:
 
-| Field | Description                                                                                                                                |
-|-------|--------------------------------------------------------------------------------------------------------------------------------------------|
-| **function-name** | Name of the invoked Function                                                                                                               |
-| **timeout** | Time, in seconds, after which the system cancels the request to invoke the Function                                                        |
-| **runtime** | Environment used to run the Function. You can use `nodejs20` or `python312`. |
-| **memory-limit** | Deprecated: Maximum amount of memory assigned to run a Function                                                                                        |
+| Field             | Description                                                                                           |
+| ----------------- | ----------------------------------------------------------------------------------------------------- |
+| **function-name** | Name of the invoked Function                                                                          |
+| **timeout**       | Time, in seconds, after which the system cancels the request to invoke the Function                   |
+| **runtime**       | Environment used to run the Function. You can use `nodejs20` - deprecated, `nodejs22` or `python312`. |
+| **memory-limit**  | Deprecated: Maximum amount of memory assigned to run a Function                                       |
 
 ## HTTP Requests
 

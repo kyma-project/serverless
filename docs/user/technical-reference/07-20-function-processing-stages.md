@@ -9,7 +9,7 @@ For a Function to be considered ready, the status of all three conditions must b
 
 ```bash
 NAME            CONFIGURED   RUNNING   RUNTIME    VERSION   AGE
-test-function   True         True      nodejs20   1         96s
+test-function   True         True      nodejs22   1         96s
 ```
 
 When you update an existing Function, conditions change asynchronously depending on the change type.  
