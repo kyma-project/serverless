@@ -18,7 +18,7 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH GOFIPS140=v1.0.0 go build -a
     && mv ./webhook-server /app/webhook-server
 
 # get latest CA certs from alpine:3.17.4
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.23.2 AS certs
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.23.3 AS certs
 RUN apk add --no-cache ca-certificates
 
 FROM scratch
