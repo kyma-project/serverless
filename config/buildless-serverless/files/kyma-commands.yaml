@@ -345,7 +345,7 @@ subCommands:
         output: ${{ .flags.output.value }}
         outputWarning: |-
           ${{ if eq .flags.version.value "20" -}}
-          warning: runtime Node.js 20 is deprecated and will be removed in the future releases - please consider upgrading to Node.js 22 runtime
+          warning: nodejs20 is deprecated and will be removed in future releases - consider upgrading to nodejs22
           ${{- end }}
         resource:
           apiVersion: serverless.kyma-project.io/v1alpha2
