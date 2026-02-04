@@ -2,7 +2,6 @@ package function
 
 import (
 	"fmt"
-
 	"github.com/kyma-project/serverless/tests/operator/utils"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
@@ -25,7 +24,7 @@ func getFunction(utils *utils.TestUtils) *serverlessv1alpha2.Function {
 			Namespace: utils.Namespace,
 		},
 		Spec: serverlessv1alpha2.FunctionSpec{
-			Runtime: serverlessv1alpha2.NodeJs22,
+			Runtime: serverlessv1alpha2.NodeJs20,
 			Source: serverlessv1alpha2.Source{
 				Inline: &serverlessv1alpha2.InlineSource{
 					Source: `module.exports = { 
