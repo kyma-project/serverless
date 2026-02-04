@@ -518,7 +518,7 @@ data:
       envType: Variable Type
       'Node.js Function': Node.js Function
       'Python Function': Python Function
-      alert.nodejs20.deprecated: Node.js 20 is deprecated and will be removed in future releases. Consider upgrading to Node.js 22.
+      alert.nodejs20.deprecated: Node.js 20 is deprecated and will be removed in future releases. Using newer version is recommended.
       alert.resources.requests: If you want to provide your own requests configuration, leave the Function profile field empty.
       alert.resources.limits: If you want to provide your own limits configuration, leave the Function profile field empty.
       spec.labels: Runtime Labels
