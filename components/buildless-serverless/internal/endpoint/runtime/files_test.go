@@ -25,7 +25,7 @@ func Test_readNodejsFiles(t *testing.T) {
 
 		gotList, gotErr := readNodejsFiles(inline, runtimeDir)
 		require.NoError(t, gotErr)
-		require.Len(t, gotList, 13)
+		require.Len(t, gotList, 12)
 		requireFileWithName(t, gotList, "package.json")
 		require.Contains(t, gotList, types.FileResponse{Name: "handler.js", Data: handlerBase64Data})
 	})
@@ -39,7 +39,7 @@ func Test_readNodejsFiles(t *testing.T) {
 
 		gotList, gotErr := readNodejsFiles(inline, runtimeDir)
 		require.NoError(t, gotErr)
-		require.Len(t, gotList, 13)
+		require.Len(t, gotList, 12)
 		requireFileWithName(t, gotList, "package.json")
 		require.Contains(t, gotList, types.FileResponse{Name: "handler.js", Data: handlerBase64Data})
 	})
