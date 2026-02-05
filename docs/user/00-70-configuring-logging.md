@@ -1,11 +1,11 @@
 # Configuring Logging
 
-This document describes how to configure logging for Serverless components. The Serverless module supports dynamic log reconfiguration through the Serverless Custom Resource.
+This document describes how to configure logging for Serverless components. The Serverless module supports dynamic log reconfiguration through the Serverless custom resource (CR).
 
 
 > [!NOTE]
-> - **logLevel** changes are applied dynamically without restarting the Serverless pods
-> - **logFormat** changes automatically restart the Serverless pods to apply the new format
+> - **logLevel** changes are applied dynamically without restarting the Serverless Pods
+> - **logFormat** changes automatically restart the Serverless Pods to apply the new format
 
 ## Supported Log Levels
 
@@ -18,13 +18,13 @@ From the least to the most verbose: `fatal`, `panic`, `dpanic`, `error`, `warn`,
 
 ## Configure Serverless Controller
 
-Update the log configuration by modifying the Serverless Custom Resource in the `kyma-system` namespace:
+Update the log configuration by modifying the Serverless CR in the `kyma-system` namespace:
 
    ```bash
-   # Change log level (updates ConfigMap without restarting pods)
+   # Change log level (updates ConfigMap without restarting Pods)
    kubectl patch serverless -n kyma-system default --type merge -p '{"spec":{"logLevel":"debug"}}'
 
-   # Change log format (updates ConfigMap and restarts pods)
+   # Change log format (updates ConfigMap and restarts Pods)
    kubectl patch serverless -n kyma-system default --type merge -p '{"spec":{"logFormat":"console"}}'
 
    # Change both level and format

@@ -105,7 +105,7 @@ You can configure the desired log format to be used.
       logFormat: "json"
 ```
 
-For more detailed explanation see [Configuring Serverless Logging](00-70-configuring-logging.md).
+For more details, see [Configuring Serverless Logging](00-70-configuring-logging.md).
 
 ### Disabling Buildless Mode
 
