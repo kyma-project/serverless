@@ -105,6 +105,8 @@ You can configure the desired log format to be used.
       logFormat: "json"
 ```
 
+For more detailed explanation see [Configuring Serverless Logging](00-70-configuring-logging.md).
+
 ### Disabling Buildless Mode
 
 Serverless buildless mode is enabled by default. To use the legacy image-building Serverless functionality, disable buildless mode through an annotation.
