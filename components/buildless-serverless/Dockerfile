@@ -20,7 +20,7 @@ RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} GOFIPS140=v1.0.0 
     && mkdir /app \
     && mv ./manager /app/manager
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/ghcr.io/nginx/alpine-fips:0.5.0-alpine3.23 AS certs
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.23.3 AS certs
 
 RUN apk add --no-cache ca-certificates
 
