@@ -13,13 +13,6 @@ RUN echo "http://dl-cdn.alpinelinux.org/alpine/v3.20/main" > /etc/apk/repositori
     apk update && \
     apk add --no-cache --allow-untrusted --force-overwrite ada-libs=${ADA_VERSION} nodejs=${NODE_VERSION} npm=${NPM_VERSION}
 
-# FIPS
-COPY openssl.cnf /etc/ssl/openssl.cnf
-ENV OPENSSL_FIPS=1
-ENV OPENSSL_DIR=/usr
-ENV OPENSSL_CONF=/etc/ssl/openssl.cnf
-ENV OPENSSL_MODULES=/usr/lib/ossl-modules
-
 ARG NODE_ENV
 ENV NODE_ENV=$NODE_ENV
 ENV npm_config_cache=/tmp/
