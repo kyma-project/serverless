@@ -102,8 +102,10 @@ You can configure the desired log format to be used.
 
 ```yaml
    spec:
-      logFormat: "yaml"
+      logFormat: "json"
 ```
+
+For more details, see [Configuring Serverless Logging](00-70-configuring-logging.md).
 
 ### Disabling Buildless Mode
 
