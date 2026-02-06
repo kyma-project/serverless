@@ -20,6 +20,7 @@ data:
       repoFetcher: "{{ .Values.global.images.function_init }}"
       nodejs20: "{{ .Values.global.images.function_runtime_nodejs20 }}"
       nodejs22: "{{ .Values.global.images.function_runtime_nodejs22 }}"
+      nodejs24: "{{ .Values.global.images.function_runtime_nodejs24 }}"
       python312: "{{ .Values.global.images.function_runtime_python312 }}"
     {{- $config:= .Values.containers.manager.configuration.data }}
     packageRegistryConfigSecretName: "{{ $config.packageRegistryConfigSecretName }}"

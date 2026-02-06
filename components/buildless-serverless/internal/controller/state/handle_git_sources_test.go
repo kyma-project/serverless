@@ -32,7 +32,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 						Name:      "nice-matsumoto-name",
 						Namespace: "festive-dewdney-ns"},
 					Spec: serverlessv1alpha2.FunctionSpec{
-						Runtime: serverlessv1alpha2.NodeJs22,
+						Runtime: serverlessv1alpha2.NodeJs24,
 						Source: serverlessv1alpha2.Source{
 							Inline: &serverlessv1alpha2.InlineSource{
 								Source: "xenodochial-napier"}}}}},
@@ -69,7 +69,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 						Namespace: "festive-dewdney-ns",
 						UID:       "any-UID"},
 					Spec: serverlessv1alpha2.FunctionSpec{
-						Runtime: serverlessv1alpha2.NodeJs22,
+						Runtime: serverlessv1alpha2.NodeJs24,
 						Source: serverlessv1alpha2.Source{
 							GitRepository: &serverlessv1alpha2.GitRepositorySource{
 								URL: "test-url",
@@ -117,7 +117,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 						Namespace: "festive-dewdney-ns",
 						UID:       "any-UID"},
 					Spec: serverlessv1alpha2.FunctionSpec{
-						Runtime: serverlessv1alpha2.NodeJs22,
+						Runtime: serverlessv1alpha2.NodeJs24,
 						Source: serverlessv1alpha2.Source{
 							GitRepository: &serverlessv1alpha2.GitRepositorySource{
 								URL: "test-url",
@@ -171,7 +171,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 						Namespace: "festive-dewdney-ns",
 						UID:       "any-UID"},
 					Spec: serverlessv1alpha2.FunctionSpec{
-						Runtime: serverlessv1alpha2.NodeJs22,
+						Runtime: serverlessv1alpha2.NodeJs24,
 						Source: serverlessv1alpha2.Source{
 							GitRepository: &serverlessv1alpha2.GitRepositorySource{
 								URL: "test-url",
@@ -300,7 +300,7 @@ func Test_sFnHandleGitSources(t *testing.T) {
 						Namespace: "sharp-williams",
 						UID:       "any-UID"},
 					Spec: serverlessv1alpha2.FunctionSpec{
-						Runtime: serverlessv1alpha2.NodeJs22,
+						Runtime: serverlessv1alpha2.NodeJs24,
 						Source: serverlessv1alpha2.Source{
 							GitRepository: &serverlessv1alpha2.GitRepositorySource{
 								URL: "test-url",

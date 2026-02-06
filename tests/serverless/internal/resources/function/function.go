@@ -6,12 +6,11 @@ import (
 	"net/url"
 	"time"
 
-	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources"
 	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -30,7 +29,7 @@ type Function struct {
 func NewFunction(name, namespace string, proxyEnabled bool, c utils.Container) *Function {
 	function := &serverlessv1alpha2.Function{
 		TypeMeta: metav1.TypeMeta{
-			Kind:       serverlessv1alpha2.FunctionKind,
+			Kind:       "Function",
 			APIVersion: serverlessv1alpha2.GroupVersion.String(),
 		},
 		ObjectMeta: metav1.ObjectMeta{
@@ -167,8 +166,8 @@ func (f Function) isConditionReady(fn serverlessv1alpha2.Function) bool {
 	var ready bool
 	for i := range conditions {
 		condition := conditions[i]
-		if condition.Type == serverlessv1alpha2.ConditionRunning {
-			ready = (condition.Status == corev1.ConditionTrue)
+		if condition.Type == string(serverlessv1alpha2.ConditionRunning) {
+			ready = (condition.Status == metav1.ConditionTrue)
 		}
 	}
 

@@ -13,7 +13,7 @@ import (
 	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 	"github.com/pkg/errors"
 
-	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/dynamic"
 	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
@@ -36,6 +36,7 @@ func HanaClientTest(restConfig *rest.Config, cfg internal.Config, logf *logrus.E
 
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
 	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
+	nodejs24Logger := logf.WithField(runtimeKey, "nodejs24")
 
 	genericContainer := utils.Container{
 		DynamicCli:  dynamicCli,
@@ -48,6 +49,8 @@ func HanaClientTest(restConfig *rest.Config, cfg internal.Config, logf *logrus.E
 	nodejs20Fn := function.NewFunction("hana-nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
 
 	nodejs22Fn := function.NewFunction("hana-nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
+
+	nodejs24Fn := function.NewFunction("hana-nodejs24", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs24Logger))
 
 	logf.Infof("Testing function in namespace: %s", cfg.Namespace)
 
@@ -67,6 +70,10 @@ func HanaClientTest(restConfig *rest.Config, cfg internal.Config, logf *logrus.E
 			executor.NewSerialTestRunner(nodejs22Logger, "NodeJS22 test",
 				function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.NodeJSFunctionUsingHanaClient(serverlessv1alpha2.NodeJs22)),
 				assertion.NewHTTPCheck(nodejs22Logger, "Testing hana-client in nodejs22 function", nodejs22Fn.FunctionURL, poll, "OK"),
+			),
+			executor.NewSerialTestRunner(nodejs24Logger, "NodeJS24 test",
+				function.CreateFunction(nodejs24Logger, nodejs24Fn, "Create NodeJS24 Function", runtimes.NodeJSFunctionUsingHanaClient(serverlessv1alpha2.NodeJs24)),
+				assertion.NewHTTPCheck(nodejs24Logger, "Testing hana-client in nodejs24 function", nodejs24Fn.FunctionURL, poll, "OK"),
 			),
 		),
 	), nil

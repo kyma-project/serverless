@@ -24,7 +24,7 @@ func Test_sFnDeleteDeployments(t *testing.T) {
 				Name:      "bold-galois",
 				Namespace: "youthful-brahmagupta"},
 			Spec: serverlessv1alpha2.FunctionSpec{
-				Runtime: serverlessv1alpha2.NodeJs22,
+				Runtime: serverlessv1alpha2.NodeJs24,
 				Source: serverlessv1alpha2.Source{
 					Inline: &serverlessv1alpha2.InlineSource{
 						Source: "confident-ardinghelli"}},

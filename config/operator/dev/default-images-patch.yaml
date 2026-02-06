@@ -19,6 +19,8 @@ spec:
               value: ""
             - name: IMAGE_FUNCTION_RUNTIME_NODEJS22
               value: ""
+            - name: IMAGE_FUNCTION_RUNTIME_NODEJS24
+              value: ""
             - name: IMAGE_FUNCTION_RUNTIME_PYTHON312
               value: ""
             - name: IMAGE_KANIKO_EXECUTOR

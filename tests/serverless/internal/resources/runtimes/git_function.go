@@ -1,7 +1,7 @@
 package runtimes
 
 import (
-	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 )
 
 type GitopsFunctionBuilder struct {

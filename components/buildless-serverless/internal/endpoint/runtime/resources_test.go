@@ -15,7 +15,7 @@ func TestBuildResources(t *testing.T) {
 	t.Run("build resources for function", func(t *testing.T) {
 		files, err := BuildResources(&config.FunctionConfig{}, &v1alpha2.Function{
 			Spec: v1alpha2.FunctionSpec{
-				Runtime: "nodejs22",
+				Runtime: "nodejs24",
 				Source: v1alpha2.Source{
 					Inline: &v1alpha2.InlineSource{
 						Source:       "console.log('Hello World')",
@@ -40,7 +40,7 @@ func TestBuildResources(t *testing.T) {
 	t.Run("error on git source", func(t *testing.T) {
 		files, err := BuildResources(&config.FunctionConfig{}, &v1alpha2.Function{
 			Spec: v1alpha2.FunctionSpec{
-				Runtime: "nodejs22",
+				Runtime: "nodejs24",
 				Source: v1alpha2.Source{
 					GitRepository: &v1alpha2.GitRepositorySource{},
 				},
@@ -58,7 +58,7 @@ func TestBuildResources(t *testing.T) {
 	t.Run("build resources for function with specified app name", func(t *testing.T) {
 		files, err := BuildResources(&config.FunctionConfig{}, &v1alpha2.Function{
 			Spec: v1alpha2.FunctionSpec{
-				Runtime: "nodejs22",
+				Runtime: "nodejs24",
 				Source: v1alpha2.Source{
 					Inline: &v1alpha2.InlineSource{
 						Source:       "console.log('Hello World')",
@@ -129,7 +129,7 @@ spec:
         - name: FUNC_NAME
           value: test-function
         - name: FUNC_RUNTIME
-          value: nodejs22
+          value: nodejs24
         - name: SERVICE_NAMESPACE
           value: test-namespace
         - name: TRACE_COLLECTOR_ENDPOINT

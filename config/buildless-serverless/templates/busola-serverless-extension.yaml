@@ -33,7 +33,7 @@ data:
         source: 'spec.source.gitRepository ? "Git Repository" : "Inline Editor"'
       - name: header.runtime
         source: >-
-          spec.runtime = 'python312' ? 'Python 3.12' :  (spec.runtime = 'nodejs22' ? 'Node.js 22' : (spec.runtime = 'nodejs20' ? 'Node.js 20 - deprecated' : spec.runtime))
+          spec.runtime = 'python312' ? 'Python 3.12' :  ( spec.runtime = 'nodejs24' ? 'Node.js 24' : (spec.runtime = 'nodejs22' ? 'Node.js 22' : (spec.runtime = 'nodejs20' ? 'Node.js 20 - deprecated' : spec.runtime)))
     body:
       - widget: Alert
         severity: warning
@@ -166,7 +166,7 @@ data:
       path: spec.runtime
       placeholder: placeholders.spec.runtime
       enum: |
-        $language = 'JavaScript' ? ['nodejs20', 'nodejs22'] :
+        $language = 'JavaScript' ? ['nodejs20', 'nodejs22', 'nodejs24'] :
         $language = 'Python' ? ['python312'] :
         []
       subscribe:
@@ -242,7 +242,7 @@ data:
               module.exports = {
                 main: async function (event, context) {
                   var queryParams = event['extensions']['request']['query'];
-    
+
                   //read query param, for example `?greeting=Hi`
                   var greetingMsg = queryParams['greeting']; 
                   if(!greetingMsg) {
@@ -401,7 +401,7 @@ data:
   list: |-
     - name: header.runtime
       source: >-
-        spec.runtime = 'python312' ? 'Python 3.12' : (spec.runtime = 'nodejs22' ? 'Node.js 22' :(spec.runtime = 'nodejs20' ? 'Node.js 20 - deprecated' : spec.runtime))
+        spec.runtime = 'python312' ? 'Python 3.12' : (spec.runtime = 'nodejs24' ? 'Node.js 24' : (spec.runtime = 'nodejs22' ? 'Node.js 22' :(spec.runtime = 'nodejs20' ? 'Node.js 20 - deprecated' : spec.runtime)))
     - name: header.sourceType
       source: 'spec.source.gitRepository ? "Git Repository" : "Inline Editor"'
     - name: header.status
@@ -509,6 +509,7 @@ data:
       'Source Type': Source Type
       spec.runtime.nodejs20: Node.js 20 - deprecated
       spec.runtime.nodejs22: Node.js 22
+      spec.runtime.nodejs24: Node.js 24
       spec.runtime.python312: Python 3.12
       spec.resourceConfiguration.function: Function
       spec.resourceConfiguration.function.profile: Function profile

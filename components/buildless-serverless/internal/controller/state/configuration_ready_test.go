@@ -18,7 +18,7 @@ func Test_sFnConfigurationReady(t *testing.T) {
 			State: fsm.SystemState{
 				Function: serverlessv1alpha2.Function{
 					Spec: serverlessv1alpha2.FunctionSpec{
-						Runtime: serverlessv1alpha2.NodeJs22,
+						Runtime: serverlessv1alpha2.NodeJs24,
 					},
 				},
 			},

@@ -2,13 +2,14 @@ package validator
 
 import (
 	"fmt"
+	"testing"
+
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"testing"
 )
 
 func TestNewFunctionValidator(t *testing.T) {
@@ -139,7 +140,7 @@ func Test_functionValidator_validateInlineDeps(t *testing.T) {
 		{
 			name: "when js runtime with invalid dependencies then return error",
 			spec: serverlessv1alpha2.FunctionSpec{
-				Runtime: serverlessv1alpha2.NodeJs22,
+				Runtime: serverlessv1alpha2.NodeJs24,
 				Source: serverlessv1alpha2.Source{
 					Inline: &serverlessv1alpha2.InlineSource{
 						Source:       "intelligent-fermi",
@@ -154,7 +155,7 @@ func Test_functionValidator_validateInlineDeps(t *testing.T) {
 		{
 			name: "when js runtime with valid dependencies then no errors",
 			spec: serverlessv1alpha2.FunctionSpec{
-				Runtime: serverlessv1alpha2.NodeJs22,
+				Runtime: serverlessv1alpha2.NodeJs24,
 				Source: serverlessv1alpha2.Source{
 					Inline: &serverlessv1alpha2.InlineSource{
 						Source:       "epic-swirles",
@@ -198,7 +199,7 @@ func Test_functionValidator_validateRuntime(t *testing.T) {
 			},
 		},
 	}
-	for _, runtime := range []serverlessv1alpha2.Runtime{serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22, serverlessv1alpha2.Python312} {
+	for _, runtime := range []serverlessv1alpha2.Runtime{serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22, serverlessv1alpha2.NodeJs24, serverlessv1alpha2.Python312} {
 		tests = append(tests, testData{
 			name:    fmt.Sprintf("when %s then no errors", runtime),
 			runtime: runtime,

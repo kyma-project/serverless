@@ -69,56 +69,6 @@ jobs:
         if: ${{ always() }}
         run: make -C tests/serverless cluster-info
 
-  legacy-serverless-integration-test:
-    if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
-      - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
-      - name: run test
-        run: |
-          kubectl create namespace kyma-system || true
-          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
-          make install-legacy-serverless-custom-operator
-          make -C tests/serverless serverless-integration serverless-contract-tests
-          make remove-serverless
-        env:
-          IMG: ${{ inputs.image }}
-      - name: collect cluster info
-        if: ${{ always() }}
-        run: make -C tests/serverless cluster-info
-
-  legacy-git-auth-integration-test:
-    if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
-      - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
-      - name: run tests
-        run: |
-          kubectl create namespace kyma-system || true
-          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
-          make install-legacy-serverless-custom-operator
-          make -C tests/serverless git-auth-integration
-          make remove-serverless
-        env:
-          APP_TEST_GITHUB_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_GITHUB_SSH_KEY }}
-          APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
-          APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
-          APP_TEST_AZURE_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_AZURE_SSH_KEY }}
-          IMG: ${{ inputs.image }}
-      - name: collect cluster info
-        if: ${{ always() }}
-        run: make -C tests/serverless cluster-info
-
   git-auth-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest

@@ -14,7 +14,7 @@ import (
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/runtimes"
 	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 
-	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/dynamic"
@@ -45,6 +45,7 @@ func FunctionCloudEventsTest(restConfig *rest.Config, cfg internal.Config, logf 
 	python312Logger := logf.WithField(runtimeKey, "python312")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
 	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
+	nodejs24Logger := logf.WithField(runtimeKey, "nodejs24")
 
 	genericContainer := utils.Container{
 		DynamicCli:  dynamicCli,
@@ -58,6 +59,7 @@ func FunctionCloudEventsTest(restConfig *rest.Config, cfg internal.Config, logf 
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
 	nodejs20Fn := function.NewFunction("nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
 	nodejs22Fn := function.NewFunction("nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
+	nodejs24Fn := function.NewFunction("nodejs24", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs24Logger))
 
 	logf.Infof("Testing function in namespace: %s", cfg.Namespace)
 
@@ -83,6 +85,12 @@ func FunctionCloudEventsTest(restConfig *rest.Config, cfg internal.Config, logf 
 				assertion.CloudEventReceiveCheck(nodejs22Logger, "NodeJS22 cloud event structured check", cloudevents.EncodingStructured, nodejs22Fn.FunctionURL),
 				assertion.CloudEventReceiveCheck(nodejs22Logger, "NodeJS22 cloud event binary check", cloudevents.EncodingBinary, nodejs22Fn.FunctionURL),
 				assertion.CloudEventSendCheck(nodejs22Logger, "NodeJS22 cloud event sent check", string(serverlessv1alpha2.NodeJs22), nodejs22Fn.FunctionURL, publisherProxyMock.FunctionURL),
+			),
+			executor.NewSerialTestRunner(nodejs24Logger, "NodeJS24 test",
+				function.CreateFunction(nodejs24Logger, nodejs24Fn, "Create NodeJS24 Function", runtimes.NodeJSFunctionWithCloudEvent(serverlessv1alpha2.NodeJs24)),
+				assertion.CloudEventReceiveCheck(nodejs24Logger, "NodeJS24 cloud event structured check", cloudevents.EncodingStructured, nodejs24Fn.FunctionURL),
+				assertion.CloudEventReceiveCheck(nodejs24Logger, "NodeJS24 cloud event binary check", cloudevents.EncodingBinary, nodejs24Fn.FunctionURL),
+				assertion.CloudEventSendCheck(nodejs24Logger, "NodeJS24 cloud event sent check", string(serverlessv1alpha2.NodeJs24), nodejs24Fn.FunctionURL, publisherProxyMock.FunctionURL),
 			),
 		),
 	), nil

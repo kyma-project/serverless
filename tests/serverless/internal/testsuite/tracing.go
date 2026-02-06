@@ -14,7 +14,7 @@ import (
 	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 	typedappsv1 "k8s.io/client-go/kubernetes/typed/apps/v1"
 
-	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/dynamic"
@@ -49,6 +49,7 @@ func FunctionTracingTest(restConfig *rest.Config, cfg internal.Config, logf *log
 	python312Logger := logf.WithField(runtimeKey, "python312")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
 	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
+	nodejs24Logger := logf.WithField(runtimeKey, "nodejs24")
 
 	genericContainer := utils.Container{
 		DynamicCli:  dynamicCli,
@@ -63,6 +64,8 @@ func FunctionTracingTest(restConfig *rest.Config, cfg internal.Config, logf *log
 	nodejs20Fn := function.NewFunction("nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
 
 	nodejs22Fn := function.NewFunction("nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
+
+	nodejs24Fn := function.NewFunction("nodejs24", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs24Logger))
 
 	logf.Infof("Testing function in namespace: %s", cfg.Namespace)
 
@@ -91,6 +94,10 @@ func FunctionTracingTest(restConfig *rest.Config, cfg internal.Config, logf *log
 			executor.NewSerialTestRunner(nodejs22Logger, "NodeJS22 test",
 				function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.BasicTracingNodeFunction(serverlessv1alpha2.NodeJs22, httpAppURL.String())),
 				assertion.TracingHTTPCheck(nodejs22Logger, "NodeJS22 tracing headers check", nodejs22Fn.FunctionURL, poll),
+			),
+			executor.NewSerialTestRunner(nodejs24Logger, "NodeJS24 test",
+				function.CreateFunction(nodejs24Logger, nodejs24Fn, "Create NodeJS24 Function", runtimes.BasicTracingNodeFunction(serverlessv1alpha2.NodeJs24, httpAppURL.String())),
+				assertion.TracingHTTPCheck(nodejs24Logger, "NodeJS24 tracing headers check", nodejs24Fn.FunctionURL, poll),
 			),
 		),
 	), nil

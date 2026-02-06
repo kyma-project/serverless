@@ -14,7 +14,7 @@ import (
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/secret"
 	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 
-	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/dynamic"
@@ -41,6 +41,7 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 	python312Logger := logf.WithField(runtimeKey, "python312")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
 	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
+	nodejs24Logger := logf.WithField(runtimeKey, "nodejs24")
 
 	genericContainer := utils.Container{
 		DynamicCli:  dynamicCli,
@@ -56,8 +57,11 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 
 	nodejs22Fn := function.NewFunction("nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
 
+	nodejs24Fn := function.NewFunction("nodejs24", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs24Logger))
+
 	cmNodeJS20 := configmap.NewConfigMap("test-serverless-configmap-nodejs20", genericContainer.WithLogger(nodejs20Logger))
 	cmNodeJS22 := configmap.NewConfigMap("test-serverless-configmap-nodejs22", genericContainer.WithLogger(nodejs22Logger))
+	cmNodeJS24 := configmap.NewConfigMap("test-serverless-configmap-nodejs24", genericContainer.WithLogger(nodejs24Logger))
 	cmEnvKey := "CM_ENV_KEY"
 	cmEnvValue := "Value taken as env from ConfigMap"
 	cmData := map[string]string{
@@ -66,6 +70,7 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 
 	secNodeJS20 := secret.NewSecret("test-serverless-secret-nodejs20", genericContainer.WithLogger(nodejs20Logger))
 	secNodeJS22 := secret.NewSecret("test-serverless-secret-nodejs22", genericContainer.WithLogger(nodejs22Logger))
+	secNodeJS24 := secret.NewSecret("test-serverless-secret-nodejs24", genericContainer.WithLogger(nodejs24Logger))
 	secEnvKey := "SECRET_ENV_KEY"
 	secEnvValue := "Value taken as env from Secret"
 	secretData := map[string]string{
@@ -110,6 +115,14 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 				assertion.NewHTTPCheck(nodejs22Logger, "NodeJS22 pre update simple check through service", nodejs22Fn.FunctionURL, poll, fmt.Sprintf("%s-%s", cmEnvValue, secEnvValue)),
 				function.UpdateFunction(nodejs22Logger, nodejs22Fn, "Update NodeJS22 Function", runtimes.BasicNodeJSFunctionWithCustomDependency("Hello from updated nodejs22", serverlessv1alpha2.NodeJs22)),
 				assertion.NewHTTPCheck(nodejs22Logger, "NodeJS22 post update simple check through service", nodejs22Fn.FunctionURL, poll, "Hello from updated nodejs22"),
+			),
+			executor.NewSerialTestRunner(nodejs24Logger, "NodeJS24 test",
+				configmap.CreateConfigMap(nodejs24Logger, cmNodeJS24, "Create Test ConfigMap", cmData),
+				secret.CreateSecret(nodejs24Logger, secNodeJS24, "Create Test Secret", secretData),
+				function.CreateFunction(nodejs24Logger, nodejs24Fn, "Create NodeJS24 Function", runtimes.NodeJSFunctionWithEnvFromConfigMapAndSecret(cmNodeJS24.Name(), cmEnvKey, secNodeJS24.Name(), secEnvKey, serverlessv1alpha2.NodeJs24)),
+				assertion.NewHTTPCheck(nodejs24Logger, "NodeJS24 pre update simple check through service", nodejs24Fn.FunctionURL, poll, fmt.Sprintf("%s-%s", cmEnvValue, secEnvValue)),
+				function.UpdateFunction(nodejs24Logger, nodejs24Fn, "Update NodeJS24 Function", runtimes.BasicNodeJSFunctionWithCustomDependency("Hello from updated nodejs24", serverlessv1alpha2.NodeJs24)),
+				assertion.NewHTTPCheck(nodejs24Logger, "NodeJS24 post update simple check through service", nodejs24Fn.FunctionURL, poll, "Hello from updated nodejs24"),
 			),
 		),
 	), nil

@@ -251,6 +251,16 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 				},
 			},
 		},
+		"allowed runtime: nodejs24": {
+			fn: &serverlessv1alpha2.Function{
+				ObjectMeta: fixMetadata,
+				Spec: serverlessv1alpha2.FunctionSpec{
+					Runtime: serverlessv1alpha2.NodeJs24,
+					Source: serverlessv1alpha2.Source{
+						Inline: &serverlessv1alpha2.InlineSource{Source: "a"}},
+				},
+			},
+		},
 		"allowed runtime: python312": {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
@@ -349,7 +359,7 @@ func Test_XKubernetesValidations_Valid(t *testing.T) {
 			fn: &serverlessv1alpha2.Function{
 				ObjectMeta: fixMetadata,
 				Spec: serverlessv1alpha2.FunctionSpec{
-					Runtime: serverlessv1alpha2.NodeJs22,
+					Runtime: serverlessv1alpha2.NodeJs24,
 					Source: serverlessv1alpha2.Source{
 						GitRepository: &serverlessv1alpha2.GitRepositorySource{
 							URL: "git@github.com:example/repo.git",
@@ -867,7 +877,7 @@ func Test_XKubernetesValidations_InvalidMultipleCauses(t *testing.T) {
 			},
 			expectedCause:  metav1.CauseTypeFieldValueNotSupported,
 			fieldPath:      "spec.runtime",
-			expectedErrMsg: "Unsupported value: \"custom\": supported values: \"nodejs20\", \"nodejs22\", \"python312\"",
+			expectedErrMsg: "Unsupported value: \"custom\": supported values: \"nodejs20\", \"nodejs22\", \"nodejs24\", \"python312\"",
 		},
 		"Git source auth has incorrect Type": {
 			fn: &serverlessv1alpha2.Function{

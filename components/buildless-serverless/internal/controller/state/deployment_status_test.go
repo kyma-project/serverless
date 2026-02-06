@@ -29,7 +29,7 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 				Namespace:  "busy-ramanujan-ns",
 				Generation: 22},
 			Spec: serverlessv1alpha2.FunctionSpec{
-				Runtime: serverlessv1alpha2.NodeJs22,
+				Runtime: serverlessv1alpha2.NodeJs24,
 			}}
 		// deployment which will be returned from kubernetes
 		deployment := appsv1.Deployment{

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/tests/serverless/internal"
 	"github.com/kyma-project/serverless/tests/serverless/internal/assertion"
 	"github.com/kyma-project/serverless/tests/serverless/internal/executor"
@@ -73,7 +73,7 @@ func GitopsSteps(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entr
 
 func createFunctionStep(logf *logrus.Entry, gitFn *function.Function, gitCfg git.GitopsConfig) executor.Step {
 	gitopsFunction := runtimes.
-		NewGitopsFunctionBuilder(gitCfg.GetGitServerInClusterURL(), serverlessv1alpha2.NodeJs22).
+		NewGitopsFunctionBuilder(gitCfg.GetGitServerInClusterURL(), serverlessv1alpha2.NodeJs24).
 		Reference("master").
 		AddLabel("sidecar.istio.io/inject", "true"). // configured with istio sidecar
 		Build()
