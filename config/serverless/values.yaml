@@ -107,9 +107,6 @@ pod:
   annotations:
     sidecar.istio.io/inject: "false"
     prometheus.io/scrape: "false"
-    rt-cfg.kyma-project.io/alter-img-registry: "true"
-    rt-cfg.kyma-project.io/add-img-pull-secret: "true"
-    rt-cfg.kyma-project.io/set-fips-mode: "true"
   extraProperties:
     terminationGracePeriodSeconds: 10
     # the following guidelines should be followed for this https://github.com/kyma-project/community/tree/main/concepts/psp-replacement
