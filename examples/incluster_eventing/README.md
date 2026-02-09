@@ -34,7 +34,7 @@ Send an HTTP request to the emitter Function.
 Fetch the logs of the receiver Function to observe the incoming message.
 
    ```bash
-   > nodejs22-runtime@0.1.0 start
+   > nodejs24-runtime@0.1.0 start
    > node server.mjs
 
    user code loaded in 0sec 0.649274ms

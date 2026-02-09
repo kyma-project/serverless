@@ -101,7 +101,7 @@ If you decide to modify your Function, choose **Edit**, make the changes, and ch
 
     ```bash
     NAME       CONFIGURED   BUILT   RUNNING   RUNTIME    GENERATION
-    nodejs22   True         True    True      nodejs22   1
+    nodejs24   True         True    True      nodejs24   1
     ```
 
 #### **kubectl**
@@ -124,7 +124,7 @@ If you decide to modify your Function, choose **Edit**, make the changes, and ch
      name: $NAME
      namespace: $NAMESPACE
    spec:
-     runtime: nodejs22
+     runtime: nodejs24
      source:
        inline:
          source: |
@@ -146,7 +146,7 @@ If you decide to modify your Function, choose **Edit**, make the changes, and ch
 
     ```bash
     NAME            CONFIGURED   BUILT     RUNNING   RUNTIME    VERSION   AGE
-    test-function   True         True      True      nodejs22   1         96s
+    test-function   True         True      True      nodejs24   1         96s
     ```
 
 <!-- tabs:end -->

@@ -114,7 +114,7 @@ You can create a Function either with kubectl or Kyma dashboard:
      name: $GIT_FUNCTION
      namespace: $NAMESPACE
    spec:
-     runtime: nodejs22
+     runtime: nodejs24
      source:
        gitRepository:
          baseDir: examples/redis-rest/src
@@ -158,7 +158,7 @@ You can create a Function either with kubectl or Kyma dashboard:
 
     ```bash
     NAME            CONFIGURED   BUILT     RUNNING   RUNTIME    VERSION   AGE
-    test-function   True         True      True      nodejs22   1         96s
+    test-function   True         True      True      nodejs24   1         96s
     ```
 
 <!-- tabs:end -->

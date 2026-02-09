@@ -171,7 +171,7 @@ data:
         []
       subscribe:
         language: |
-          $language = 'JavaScript' ? ($exists($root.spec.runtime) and $root.spec.runtime != 'python312') ? $root.spec.runtime : 'nodejs22' :
+          $language = 'JavaScript' ? ($exists($root.spec.runtime) and $root.spec.runtime != 'python312') ? $root.spec.runtime : 'nodejs24' :
           $language = 'Python' ? 'python312' :
           ''
     - widget: Alert
@@ -528,7 +528,7 @@ data:
     - name: Node.js Function
       value:
         spec:
-          runtime: nodejs22
+          runtime: nodejs24
           source:
             inline:
               source: |-

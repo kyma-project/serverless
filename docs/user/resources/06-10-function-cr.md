@@ -19,7 +19,7 @@ metadata:
   labels:
     app: my-test-function
 spec:
-  runtime: nodejs22
+  runtime: nodejs24
   source:
     inline:
       dependencies: |
@@ -86,8 +86,8 @@ spec:
     - 1000
   podSelector: serverless.kyma-project.io/function-name=my-node,serverless.kyma-project.io/managed-by=function-controller,serverless.kyma-project.io/resource=deployment,serverless.kyma-project.io/uuid=055aa888-44db-4d8b-aa32-f0fd42d6c95e
   replicas: 1
-  runtime: nodejs22
-  runtimeImage: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:main
+  runtime: nodejs24
+  runtimeImage: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs24:main
 ```
 
 If you store the Function's source code and dependencies in a Git repository and want the Function Controller to fetch them from it, use these parameters in the Function CR:
@@ -106,7 +106,7 @@ spec:
       auth:
         type: basic
         secretName: secret-name
-  runtime: "nodejs22"
+  runtime: "nodejs24"
 ```
 
 ## Custom Resource Parameters

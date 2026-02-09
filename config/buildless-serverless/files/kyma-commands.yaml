@@ -197,7 +197,7 @@ subCommands:
           ${{ .flags.istioinjection.value | ifNil "{'sidecar.istio.io/inject':'${{.flags.istioinjection.value}}'}" "" }}
       spec:
         runtimeImageOverride: ${{ .flags.runtimeimageoverride.value }}
-        runtime: nodejs22
+        runtime: nodejs24
         replicas: ${{ .flags.replicas.value }}
         env: ${{ .flags.env.value | toEnvs }}
         secretMounts: ${{ .flags.secretmount.value | toArray "{'secretName':'{{.key}}','mountPath':'{{.value}}'}" }}
