@@ -14,7 +14,7 @@ import prometheus_client
 server_host=os.getenv('SERVER_HOST', '0.0.0.0')
 server_port=int(os.getenv('SERVER_PORT', '8080'))
 server_numthreads=int(os.getenv('SERVER_NUMTHREADS', '50'))
-server_timeout=float(os.getenv('SERVER_TIMEOUT', '180'))
+server_route_timeout=float(os.getenv('SERVER_ROUTE_TIMEOUT', '180'))
 handler_module_folder=os.getenv('HANDLER_FOLDER', '/')
 handler_module_name=os.getenv('HANDLER_MODULE_NAME', 'handler')
 handler_module_function=os.getenv('HANDLER_FUNCTION_NAME', 'main')
@@ -22,6 +22,8 @@ tracecollector_endpoint = os.getenv('TRACE_COLLECTOR_ENDPOINT')
 publisher_proxy_address = os.getenv('PUBLISHER_PROXY_ADDRESS')
 
 app = flask.Flask(__name__)
+
+tracer = tracing.setup(tracecollector_endpoint)
 
 handler = module.Handler(
     handler_module_folder, 
@@ -32,8 +34,8 @@ handler = module.Handler(
 # TODO: I've added PUT and OPTIONS methods. is it ok?
 @app.route('/', methods=['GET', 'POST', 'PUT', 'HEAD', 'OPTIONS', 'DELETE'])
 def userfunc_call():
-    # TODO: implement user function call with timeout and error handling
-    return handler.call(None)
+    # TODO: deprecate context and allow using both event and context in user function
+    return handler.call(module.Event(flask.request, tracer, publisher_proxy_address))
 
 @app.get('/favicon.ico')
 def favicon():
@@ -55,6 +57,7 @@ if __name__ == "__main__":
     # TODO: implement request timeout handling - for example using gevent.Timeout
     # TODO: maybe we should run server using common target like `./run.sh`? or `make run-prod`? 
     #       to move whole code and deps related logic to one place and to build one common deploy for both runtimes
+    # TODO: replace with gunicorn + gevent worker if it works with our multiprocessing model
     pywsgi.WSGIServer(
         (server_host, server_port),
         app,
