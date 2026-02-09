@@ -1,0 +1,12 @@
+setuptools==80.10.2
+requests>=2.31.0
+flask==3.1.2
+gevent==25.9.1
+wsgi-request-logger==0.4.6
+prometheus_client==0.24.1
+opentelemetry-api==1.39.1
+opentelemetry-sdk==1.39.1
+opentelemetry-exporter-otlp-proto-http==1.39.1
+opentelemetry-propagator-b3==1.39.1
+opentelemetry-instrumentation-requests==0.60b1
+cloudevents
