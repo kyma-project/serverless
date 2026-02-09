@@ -10,12 +10,12 @@ images:
     tag: "v1.24.0"
   - source: "ghcr.io/nginx/alpine-fips@sha256:15cf5753964eca17557083313d2a39e6a3cc659a5a2143ecebc476b14cc687e6"
     tag: "0.5.0-alpine3.23"
-    # https://hub.docker.com/layers/library/node/24-alpine3.23
-  - source: "node@sha256:26eb49fbfdf03bf69f728b73178fa6f9e7c2cef88b06561b65497f5ae8e50a3d"
+  # https://hub.docker.com/layers/library/node/24-alpine
+  - source: "node@sha256:cd6fb7efa6490f039f3471a189214d5f548c11df1ff9e5b181aa49e22c14383e"
     tag: "24.13.0-alpine3.23"
-  # https://hub.docker.com/layers/library/node/22-alpine3.23
+  # https://hub.docker.com/layers/library/node/22-alpine
   - source: "node@sha256:e4bf2a82ad0a4037d28035ae71529873c069b13eb0455466ae0bc13363826e34"
     tag: "22.22.0-alpine3.23"
-  # https://hub.docker.com/layers/library/node/20-alpine3.23
-  - source: "node@sha256:c3324aa3efea082c8d294a93b97ba82adc5498a202bd48802f5a8af152e7dd9e"
+  # https://hub.docker.com/layers/library/node/20-alpine
+  - source: "node@sha256:09e2b3d9726018aecf269bd35325f46bf75046a643a66d28360ec71132750ec8"
     tag: "20.20.0-alpine3.23"
