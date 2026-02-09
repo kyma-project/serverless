@@ -22,12 +22,22 @@ func VerifyCtrlMngrEnvs(testutils *utils.TestUtils, serverless *v1alpha1.Serverl
 		return err
 	}
 
-	err = verifyPodTemplateAnnotations(&deploy.Spec.Template)
+	return verifyDeployEnvs(&deploy, serverless)
+}
+
+func VerifyCtrlMngrAnnotations(testutils *utils.TestUtils) error {
+	var deploy appsv1.Deployment
+	objectKey := client.ObjectKey{
+		Name:      testutils.ServerlessCtrlDeployName,
+		Namespace: testutils.Namespace,
+	}
+
+	err := testutils.Client.Get(testutils.Ctx, objectKey, &deploy)
 	if err != nil {
 		return err
 	}
 
-	return verifyDeployEnvs(&deploy, serverless)
+	return verifyPodTemplateAnnotations(&deploy.Spec.Template)
 }
 
 func verifyPodTemplateAnnotations(podTemplate *corev1.PodTemplateSpec) error {
