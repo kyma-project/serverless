@@ -57,7 +57,7 @@ kubectl create secret generic my-secret --from-literal secret-env="I come from s
            secretKeyRef:
              key: secret-env
              name: my-secret
-     runtime: nodejs22
+     runtime: nodejs24
      source:
        inline:
          source: |-

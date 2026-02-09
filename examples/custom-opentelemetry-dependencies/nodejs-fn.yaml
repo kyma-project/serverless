@@ -3,7 +3,7 @@ kind: Function
 metadata:
   name: custom-tracer-nodejs-fn
 spec:
-  runtime: nodejs22
+  runtime: nodejs24
   resourceConfiguration:
     function:
       profile: XS

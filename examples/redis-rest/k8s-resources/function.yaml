@@ -4,7 +4,7 @@ metadata:
   name: rest-fn
 spec:
   replicas: 1
-  runtime: nodejs22
+  runtime: nodejs24
   env:
         - name: REDIS_HOST
           value: my-redis-master.default.svc.cluster.local
