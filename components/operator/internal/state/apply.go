@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/kyma-project/manager-toolkit/installation/base/resource"
 	"github.com/kyma-project/manager-toolkit/installation/chart"
@@ -84,9 +85,24 @@ func updateImages(fb *flags.Builder) {
 
 func updateImageIfOverride(envName string, updateFunction flags.ImageReplace) {
 	imageName := os.Getenv(envName)
+	if isFipsModeEnabled() {
+		fipsImageName := getFipsVariantImageEnv(envName)
+		if fipsImageName != "" {
+			imageName = fipsImageName
+		}
+	}
+
 	if imageName != "" {
 		updateFunction(imageName)
 	}
+}
+
+func isFipsModeEnabled() bool {
+	return strings.ToLower(os.Getenv("KYMA_FIPS_MODE_ENABLED")) == "true"
+}
+
+func getFipsVariantImageEnv(envName string) string {
+	return os.Getenv(envName + "_FIPS")
 }
 
 func adjustPVCPreApplyAction(ctx context.Context, c client.Client) action.PreApply {
