@@ -16,7 +16,7 @@ foo         function4                   True         False     nodejs22   3     
 
 ## Cause
 
-With Serverless 1.9.3, we introduced [buildless mode](../00-60-buildless-serverless.md), which removes the in-cluster image build step. This reduces overall resource usage and speeds up delivery. As a result, dependency resolution (`pip install`/`npm install`) now happens at Function Pod startup. During this brief initialization phase, the Pod may require slightly more CPU and memory. If the Function’s resource limits are very low (for example, custom-defined strict memory/CPU limits using `resourceConfiguration`), the Pod can be OOMKilled by Kubernetes. 
+With Serverless 1.9.3, we introduced [buildless mode](../00-60-buildless-serverless.md), which removes the in-cluster image build step. This reduces overall resource usage and speeds up delivery. As a result, dependency resolution (`pip install`/`npm install`) now happens at Function Pod startup. During this brief initialization phase, the Pod may require slightly more CPU and memory. If the Function’s resource limits are very low (for example, custom-defined strict memory/CPU limits using `resourceConfiguration`), the Pod can be OOMKilled by Kubernetes.
 
 ## Solution
 
@@ -44,5 +44,5 @@ spec:
           memory: 32Mi
 ```
 
-To learn how to specify resources per Function, see [Function(../resources/06-10-function-cr.md)
-To learn how to configure the default resource preset for all Functions, see [Configure Serverless](../00-20-configure-serverless.md)
+To learn how to specify resources per Function, see [Function](../resources/06-10-function-cr.md)
+To learn how to configure the default resource preset for all Functions, see [Configure Serverless](../00-20-configure-serverless.md).

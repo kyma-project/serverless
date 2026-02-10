@@ -33,8 +33,8 @@ export default [
     { text: 'Available Presets', link: './technical-reference/07-80-available-presets' },
     ] },
   { text: 'Troubleshooting Guides', link: './troubleshooting-guides/README', collapsed: true, items: [
-    { text: 'Container Fails', link: './troubleshooting-guides/03-20-failing-function-container' },
     { text: 'Serverless Periodically Restarting', link: './troubleshooting-guides/03-50-serverless-periodically-restaring' },
+    {text: 'Function Fails to Start With Customized OpenTelemetry Dependencies', link: './troubleshooting-guides/03-60-conflicting-opentelemetry-dependencies.md' },
     { text: 'Function Pod Won\'t Start (OOM) ', link: './troubleshooting-guides/03-70-new-function-replica-is-oomkilled.md' }
     ] },
   { text: 'Best Practices', link: './08-10-best-practices' }
