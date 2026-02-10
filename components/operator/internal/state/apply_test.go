@@ -189,9 +189,7 @@ func TestUpdateImageIfOverride(t *testing.T) {
 	}
 
 	for _, tc := range cases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			//t.Parallel()
 
 			// set provided envs using t.Setenv so they are cleaned up automatically
 			for k, v := range tc.envs {
