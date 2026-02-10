@@ -157,7 +157,7 @@ func TestUpdateImageIfOverride(t *testing.T) {
 		{
 			name:          "Choose FIPS variant images when Fips mode enabled",
 			envKey:        runtimeImageEnvName,
-			envs:          map[string]string{runtimeImageEnvName: "non-fips-image", runtimeImageEnvName + "_FIPS": "fips-image", "KYMA_FIPS_MODE_ENABLED": "true"},
+			envs:          map[string]string{runtimeImageEnvName: "non-fips-image", runtimeImageEnvName + fipsVariantImageEnvKeySuffix: "fips-image", kymaFipsModeEnv: "true"},
 			bindUpdater:   func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionRuntimeNodejs24 },
 			expectedKey:   "function_runtime_nodejs24",
 			expectedValue: "fips-image",
@@ -165,7 +165,7 @@ func TestUpdateImageIfOverride(t *testing.T) {
 		{
 			name:          "Fallback to non-FIPS when FIPS variant not set",
 			envKey:        runtimeImageEnvName,
-			envs:          map[string]string{runtimeImageEnvName: "non-fips-image", "KYMA_FIPS_MODE_ENABLED": "true"},
+			envs:          map[string]string{runtimeImageEnvName: "non-fips-image", kymaFipsModeEnv: "true"},
 			bindUpdater:   func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionRuntimeNodejs24 },
 			expectedKey:   "function_runtime_nodejs24",
 			expectedValue: "non-fips-image",
@@ -173,7 +173,7 @@ func TestUpdateImageIfOverride(t *testing.T) {
 		{
 			name:          "Use non-FIPS when Fips flag not set",
 			envKey:        runtimeImageEnvName,
-			envs:          map[string]string{runtimeImageEnvName: "non-fips-image", runtimeImageEnvName + "_FIPS": "fips-image"},
+			envs:          map[string]string{runtimeImageEnvName: "non-fips-image", runtimeImageEnvName + fipsVariantImageEnvKeySuffix: "fips-image"},
 			bindUpdater:   func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionRuntimeNodejs24 },
 			expectedKey:   "function_runtime_nodejs24",
 			expectedValue: "non-fips-image",
@@ -181,7 +181,7 @@ func TestUpdateImageIfOverride(t *testing.T) {
 		{
 			name:          "Use non-FIPS when Fips flag non-true",
 			envKey:        runtimeImageEnvName,
-			envs:          map[string]string{runtimeImageEnvName: "non-fips-image", runtimeImageEnvName + "_FIPS": "fips-image", "KYMA_FIPS_MODE_ENABLED": "makapaka"},
+			envs:          map[string]string{runtimeImageEnvName: "non-fips-image", runtimeImageEnvName + fipsVariantImageEnvKeySuffix: "fips-image", kymaFipsModeEnv: "makapaka"},
 			bindUpdater:   func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionRuntimeNodejs24 },
 			expectedKey:   "function_runtime_nodejs24",
 			expectedValue: "non-fips-image",

@@ -17,6 +17,11 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+const (
+	kymaFipsModeEnv              = "KYMA_FIPS_MODE_ENABLED"
+	fipsVariantImageEnvKeySuffix = "_FIPS"
+)
+
 // run serverless chart installation
 func sFnApplyResources(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	// set condition Installed if it does not exist
@@ -98,11 +103,11 @@ func updateImageIfOverride(envName string, updateFunction flags.ImageReplace) {
 }
 
 func isFipsModeEnabled() bool {
-	return strings.ToLower(os.Getenv("KYMA_FIPS_MODE_ENABLED")) == "true"
+	return strings.ToLower(os.Getenv(kymaFipsModeEnv)) == "true"
 }
 
 func getFipsVariantImageEnv(envName string) string {
-	return os.Getenv(envName + "_FIPS")
+	return os.Getenv(envName + fipsVariantImageEnvKeySuffix)
 }
 
 func adjustPVCPreApplyAction(ctx context.Context, c client.Client) action.PreApply {
