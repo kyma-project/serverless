@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/kyma-project/manager-toolkit/installation/base/resource"
 	"github.com/kyma-project/manager-toolkit/installation/chart"
@@ -18,7 +17,6 @@ import (
 )
 
 const (
-	kymaFipsModeEnv              = "KYMA_FIPS_MODE_ENABLED"
 	fipsVariantImageEnvKeySuffix = "_FIPS"
 )
 
@@ -35,7 +33,8 @@ func sFnApplyResources(ctx context.Context, r *reconciler, s *systemState) (stat
 	s.flagsBuilder.WithManagedByLabel("serverless-operator")
 
 	// update all used images
-	updateImages(s.flagsBuilder)
+	fipsModeEnabled := r.cfg.kymaFipsEnabled
+	updateImages(fipsModeEnabled, s.flagsBuilder)
 
 	// install component
 	err := install(ctx, r, s)
@@ -74,23 +73,23 @@ func install(ctx context.Context, r *reconciler, s *systemState) error {
 	})
 }
 
-func updateImages(fb *flags.Builder) {
-	updateImageIfOverride("IMAGE_FUNCTION_CONTROLLER", fb.WithImageFunctionBuildfulController)
-	updateImageIfOverride("IMAGE_FUNCTION_BUILDLESS_CONTROLLER", fb.WithImageFunctionController)
-	updateImageIfOverride("IMAGE_FUNCTION_BUILD_INIT", fb.WithImageFunctionBuildInit)
-	updateImageIfOverride("IMAGE_FUNCTION_BUILDLESS_INIT", fb.WithImageFunctionInit)
-	updateImageIfOverride("IMAGE_REGISTRY_INIT", fb.WithImageRegistryInit)
-	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_NODEJS20", fb.WithImageFunctionRuntimeNodejs20)
-	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_NODEJS22", fb.WithImageFunctionRuntimeNodejs22)
-	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_NODEJS24", fb.WithImageFunctionRuntimeNodejs24)
-	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_PYTHON312", fb.WithImageFunctionRuntimePython312)
-	updateImageIfOverride("IMAGE_KANIKO_EXECUTOR", fb.WithImageKanikoExecutor)
-	updateImageIfOverride("IMAGE_REGISTRY", fb.WithImageRegistry)
+func updateImages(fipsModeEnabled bool, fb *flags.Builder) {
+	updateImageIfOverride(fipsModeEnabled, "IMAGE_FUNCTION_CONTROLLER", fb.WithImageFunctionBuildfulController)
+	updateImageIfOverride(fipsModeEnabled, "IMAGE_FUNCTION_BUILDLESS_CONTROLLER", fb.WithImageFunctionController)
+	updateImageIfOverride(fipsModeEnabled, "IMAGE_FUNCTION_BUILD_INIT", fb.WithImageFunctionBuildInit)
+	updateImageIfOverride(fipsModeEnabled, "IMAGE_FUNCTION_BUILDLESS_INIT", fb.WithImageFunctionInit)
+	updateImageIfOverride(fipsModeEnabled, "IMAGE_REGISTRY_INIT", fb.WithImageRegistryInit)
+	updateImageIfOverride(fipsModeEnabled, "IMAGE_FUNCTION_RUNTIME_NODEJS20", fb.WithImageFunctionRuntimeNodejs20)
+	updateImageIfOverride(fipsModeEnabled, "IMAGE_FUNCTION_RUNTIME_NODEJS22", fb.WithImageFunctionRuntimeNodejs22)
+	updateImageIfOverride(fipsModeEnabled, "IMAGE_FUNCTION_RUNTIME_NODEJS24", fb.WithImageFunctionRuntimeNodejs24)
+	updateImageIfOverride(fipsModeEnabled, "IMAGE_FUNCTION_RUNTIME_PYTHON312", fb.WithImageFunctionRuntimePython312)
+	updateImageIfOverride(fipsModeEnabled, "IMAGE_KANIKO_EXECUTOR", fb.WithImageKanikoExecutor)
+	updateImageIfOverride(fipsModeEnabled, "IMAGE_REGISTRY", fb.WithImageRegistry)
 }
 
-func updateImageIfOverride(envName string, updateFunction flags.ImageReplace) {
+func updateImageIfOverride(fipsModeEnabled bool, envName string, updateFunction flags.ImageReplace) {
 	imageName := os.Getenv(envName)
-	if isFipsModeEnabled() {
+	if fipsModeEnabled {
 		fipsImageName := getFipsVariantImageEnv(envName)
 		if fipsImageName != "" {
 			imageName = fipsImageName
@@ -100,10 +99,6 @@ func updateImageIfOverride(envName string, updateFunction flags.ImageReplace) {
 	if imageName != "" {
 		updateFunction(imageName)
 	}
-}
-
-func isFipsModeEnabled() bool {
-	return strings.ToLower(os.Getenv(kymaFipsModeEnv)) == "true"
 }
 
 func getFipsVariantImageEnv(envName string) string {

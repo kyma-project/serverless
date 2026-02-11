@@ -70,8 +70,9 @@ func init() {
 }
 
 type operatorConfig struct {
-	ChartPath     string `envconfig:"default=/module-chart"`
-	LogConfigPath string `envconfig:"default=hack/log-config.yaml"`
+	ChartPath           string `envconfig:"default=/module-chart"`
+	KymaFIPSModeEnabled bool   `envconfig:"default:false"`
+	LogConfigPath       string `envconfig:"default=hack/log-config.yaml"`
 }
 
 func main() {
@@ -157,7 +158,8 @@ func main() {
 		mgr.GetClient(), mgr.GetConfig(),
 		mgr.GetEventRecorderFor("serverless-operator"),
 		logWithCtx.Desugar().Sugar(),
-		opCfg.ChartPath)
+		opCfg.ChartPath,
+		opCfg.KymaFIPSModeEnabled)
 
 	if err = reconciler.SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Serverless")

@@ -17,6 +17,7 @@ import (
 const (
 	envName             = "IMAGE_FUNCTION_CONTROLLER"
 	runtimeImageEnvName = "IMAGE_FUNCTION_RUNTIME_NODEJS24"
+	kymaFipsModeEnv     = "KYMA_FIPS_MODE_ENABLED"
 )
 
 func Test_buildSFnApplyResources(t *testing.T) {
@@ -199,7 +200,7 @@ func TestUpdateImageIfOverride(t *testing.T) {
 			fb := flags.NewBuilder()
 			updater := tc.bindUpdater(fb)
 
-			updateImageIfOverride(tc.envKey, updater)
+			updateImageIfOverride(tc.envs[kymaFipsModeEnv] == "true", tc.envKey, updater)
 
 			flagsMap, err := fb.Build()
 			require.NoError(t, err)
