@@ -15,9 +15,10 @@ import (
 )
 
 const (
-	envName             = "IMAGE_FUNCTION_CONTROLLER"
-	runtimeImageEnvName = "IMAGE_FUNCTION_RUNTIME_NODEJS24"
-	kymaFipsModeEnv     = "KYMA_FIPS_MODE_ENABLED"
+	envName                      = "IMAGE_FUNCTION_CONTROLLER"
+	runtimeImageEnvName          = "IMAGE_FUNCTION_RUNTIME_NODEJS24"
+	kymaFipsModeEnv              = "KYMA_FIPS_MODE_ENABLED"
+	fipsVariantImageEnvKeySuffix = "_FIPS"
 )
 
 func Test_buildSFnApplyResources(t *testing.T) {
@@ -164,12 +165,10 @@ func TestUpdateImageIfOverride(t *testing.T) {
 			expectedValue: "fips-image",
 		},
 		{
-			name:          "Fallback to non-FIPS when FIPS variant not set",
-			envKey:        runtimeImageEnvName,
-			envs:          map[string]string{runtimeImageEnvName: "non-fips-image", kymaFipsModeEnv: "true"},
-			bindUpdater:   func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionRuntimeNodejs24 },
-			expectedKey:   "function_runtime_nodejs24",
-			expectedValue: "non-fips-image",
+			name:        "Do not override when FIPS variant not set and Fips mode enabled",
+			envKey:      runtimeImageEnvName,
+			envs:        map[string]string{runtimeImageEnvName: "non-fips-image", kymaFipsModeEnv: "true"},
+			bindUpdater: func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionRuntimeNodejs24 },
 		},
 		{
 			name:          "Use non-FIPS when Fips flag not set",
@@ -200,7 +199,7 @@ func TestUpdateImageIfOverride(t *testing.T) {
 			fb := flags.NewBuilder()
 			updater := tc.bindUpdater(fb)
 
-			updateImageIfOverride(tc.envs[kymaFipsModeEnv] == "true", tc.envKey, updater)
+			updateImageIfOverride(tc.envKey, updater, tc.envs[kymaFipsModeEnv] == "true")
 
 			flagsMap, err := fb.Build()
 			require.NoError(t, err)
