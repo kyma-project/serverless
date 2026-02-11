@@ -138,7 +138,9 @@ func TestDeployment_construct(t *testing.T) {
 
 		require.NotNil(t, r)
 		require.Equal(t, map[string]string{
-			"proxy.istio.io/config":          "{ \"holdApplicationUntilProxyStarts\": true }",
+			"proxy.istio.io/config":                      "{ \"holdApplicationUntilProxyStarts\": true }",
+			"rt-cfg.kyma-project.io/alter-img-registry":  "true",
+			"rt-cfg.kyma-project.io/add-img-pull-secret": "true",
 			"leavitt":                        "hopeful",
 			"pike":                           "tender",
 			"thompson":                       "exciting",
@@ -152,8 +154,10 @@ func TestDeployment_construct(t *testing.T) {
 
 		require.NotNil(t, r)
 		require.Equal(t, map[string]string{
-			"proxy.istio.io/config":          "{ \"holdApplicationUntilProxyStarts\": true }",
-			"sidecar.istio.io/nativeSidecar": "true",
+			"proxy.istio.io/config":                      "{ \"holdApplicationUntilProxyStarts\": true }",
+			"rt-cfg.kyma-project.io/alter-img-registry":  "true",
+			"rt-cfg.kyma-project.io/add-img-pull-secret": "true",
+			"sidecar.istio.io/nativeSidecar":             "true",
 		}, r.Spec.Template.ObjectMeta.Annotations)
 	})
 	t.Run("use fixed container name", func(t *testing.T) {

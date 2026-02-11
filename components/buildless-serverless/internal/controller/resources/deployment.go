@@ -18,9 +18,11 @@ import (
 
 const DefaultDeploymentReplicas int32 = 1
 const (
-	istioConfigLabelKey                      = "proxy.istio.io/config"
-	istioEnableHoldUntilProxyStartLabelValue = "{ \"holdApplicationUntilProxyStarts\": true }"
-	istioNativeSidecarLabelKey               = "sidecar.istio.io/nativeSidecar"
+	istioConfigLabelKey                       = "proxy.istio.io/config"
+	istioEnableHoldUntilProxyStartLabelValue  = "{ \"holdApplicationUntilProxyStarts\": true }"
+	istioNativeSidecarLabelKey                = "sidecar.istio.io/nativeSidecar"
+	kymaBootstraperRegistryUrlMutation        = "rt-cfg.kyma-project.io/alter-img-registry"
+	kymaBootstraperAddImagePullSecretMutation = "rt-cfg.kyma-project.io/add-img-pull-secret"
 )
 
 type deployOptions func(*Deployment)
@@ -191,7 +193,9 @@ func (d *Deployment) podAnnotations() map[string]string {
 
 func (d *Deployment) defaultAnnotations() map[string]string {
 	return map[string]string{
-		istioConfigLabelKey: istioEnableHoldUntilProxyStartLabelValue,
+		istioConfigLabelKey:                       istioEnableHoldUntilProxyStartLabelValue,
+		kymaBootstraperRegistryUrlMutation:        "true",
+		kymaBootstraperAddImagePullSecretMutation: "true",
 	}
 }
 
