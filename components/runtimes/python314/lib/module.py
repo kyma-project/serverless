@@ -37,11 +37,12 @@ class Handler:
             'function_failures_total', 'Number of exceptions in user function', ['method']
         )
 
-    def call(self, event):
+    def call(self, event, context):
         """
         Call the user function with context and measure metrics
         
         :param event: Event object passed to user function
+        :param context: Context object passed to user function
         """
         method = event.request.method
         self.func_calls.labels(method).inc()
@@ -49,7 +50,7 @@ class Handler:
             with self.func_hist.labels(method).time():
                 self.func_calls.labels(method).inc()
                 # TODO: do we need context?
-                return self.func(event, None)
+                return self.func(event, context)
 
 
 # TODO: can we base event on flask.Request type and get rid of extensions and dict?

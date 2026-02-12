@@ -3,7 +3,7 @@ import os
 from lib import tracing, module
 
 import flask
-from gevent import pywsgi, Timeout
+from gevent import pywsgi
 import prometheus_client
 # TODO: tracing
 # TODO: cloudevents
@@ -31,11 +31,21 @@ handler = module.Handler(
     handler_module_function,
 )
 
+handler_context = {
+    'function-name': os.getenv('FUNC_NAME'),
+    'namespace': os.getenv('SERVICE_NAMESPACE'),
+    'timeout': server_route_timeout,
+    'runtime': os.getenv('FUNC_RUNTIME', 'python314'),
+}
+
 # TODO: I've added PUT and OPTIONS methods. is it ok?
 @app.route('/', methods=['GET', 'POST', 'PUT', 'HEAD', 'OPTIONS', 'DELETE'])
 def userfunc_call():
     # TODO: deprecate context and allow using both event and context in user function
-    return handler.call(module.Event(flask.request, tracer, publisher_proxy_address))
+    return handler.call(
+        module.Event(flask.request, tracer, publisher_proxy_address),
+        handler_context,
+    )
 
 @app.get('/favicon.ico')
 def favicon():
