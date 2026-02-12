@@ -15,7 +15,10 @@ import (
 )
 
 const (
-	envName = "IMAGE_FUNCTION_CONTROLLER"
+	envName                      = "IMAGE_FUNCTION_CONTROLLER"
+	runtimeImageEnvName          = "IMAGE_FUNCTION_RUNTIME_NODEJS24"
+	kymaFipsModeEnv              = "KYMA_FIPS_MODE_ENABLED"
+	fipsVariantImageEnvKeySuffix = "_FIPS"
 )
 
 func Test_buildSFnApplyResources(t *testing.T) {
@@ -129,31 +132,93 @@ func Test_buildSFnApplyResources(t *testing.T) {
 }
 
 func TestUpdateImageIfOverride(t *testing.T) {
-	t.Run("Override image", func(t *testing.T) {
-		t.Setenv(envName, "newImage")
-		expectedFlags := map[string]interface{}{
-			"global": map[string]interface{}{
-				"images": map[string]interface{}{
-					"function_buildful_controller": "newImage",
-				},
-			},
-		}
+	type caseDef struct {
+		name          string
+		envKey        string
+		envs          map[string]string
+		bindUpdater   func(*flags.Builder) flags.ImageReplace
+		expectedKey   string
+		expectedValue string
+	}
 
-		fb := flags.NewBuilder()
+	cases := []caseDef{
+		{
+			name:          "Override image",
+			envKey:        envName,
+			envs:          map[string]string{envName: "newImage"},
+			bindUpdater:   func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionBuildfulController },
+			expectedKey:   "function_buildful_controller",
+			expectedValue: "newImage",
+		},
+		{
+			name:        "Don't override image when empty env",
+			envKey:      envName,
+			envs:        map[string]string{},
+			bindUpdater: func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionBuildfulController },
+		},
+		{
+			name:          "Choose FIPS variant images when Fips mode enabled",
+			envKey:        runtimeImageEnvName,
+			envs:          map[string]string{runtimeImageEnvName: "non-fips-image", runtimeImageEnvName + fipsVariantImageEnvKeySuffix: "fips-image", kymaFipsModeEnv: "true"},
+			bindUpdater:   func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionRuntimeNodejs24 },
+			expectedKey:   "function_runtime_nodejs24",
+			expectedValue: "fips-image",
+		},
+		{
+			name:        "Do not override when FIPS variant not set and Fips mode enabled",
+			envKey:      runtimeImageEnvName,
+			envs:        map[string]string{runtimeImageEnvName: "non-fips-image", kymaFipsModeEnv: "true"},
+			bindUpdater: func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionRuntimeNodejs24 },
+		},
+		{
+			name:          "Use non-FIPS when Fips flag not set",
+			envKey:        runtimeImageEnvName,
+			envs:          map[string]string{runtimeImageEnvName: "non-fips-image", runtimeImageEnvName + fipsVariantImageEnvKeySuffix: "fips-image"},
+			bindUpdater:   func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionRuntimeNodejs24 },
+			expectedKey:   "function_runtime_nodejs24",
+			expectedValue: "non-fips-image",
+		},
+		{
+			name:          "Use non-FIPS when Fips flag non-true",
+			envKey:        runtimeImageEnvName,
+			envs:          map[string]string{runtimeImageEnvName: "non-fips-image", runtimeImageEnvName + fipsVariantImageEnvKeySuffix: "fips-image", kymaFipsModeEnv: "makapaka"},
+			bindUpdater:   func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionRuntimeNodejs24 },
+			expectedKey:   "function_runtime_nodejs24",
+			expectedValue: "non-fips-image",
+		},
+	}
 
-		updateImageIfOverride(envName, fb.WithImageFunctionBuildfulController)
-		flags, err := fb.Build()
-		require.NoError(t, err)
-		require.Equal(t, expectedFlags, flags)
-	})
-	t.Run("Don't override image when empty env", func(t *testing.T) {
-		expectedFlags := map[string]interface{}{}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
 
-		fb := flags.NewBuilder()
+			// set provided envs using t.Setenv so they are cleaned up automatically
+			for k, v := range tc.envs {
+				t.Setenv(k, v)
+			}
 
-		updateImageIfOverride(envName, fb.WithImageFunctionBuildfulController)
-		flags, err := fb.Build()
-		require.NoError(t, err)
-		require.Equal(t, expectedFlags, flags)
-	})
+			fb := flags.NewBuilder()
+			updater := tc.bindUpdater(fb)
+
+			updateImageIfOverride(tc.envKey, updater, tc.envs[kymaFipsModeEnv] == "true")
+
+			flagsMap, err := fb.Build()
+			require.NoError(t, err)
+
+			// build expected flags
+			var expected map[string]interface{}
+			if tc.expectedKey != "" {
+				expected = map[string]interface{}{
+					"global": map[string]interface{}{
+						"images": map[string]interface{}{
+							tc.expectedKey: tc.expectedValue,
+						},
+					},
+				}
+			} else {
+				expected = map[string]interface{}{}
+			}
+
+			require.Equal(t, expected, flagsMap)
+		})
+	}
 }

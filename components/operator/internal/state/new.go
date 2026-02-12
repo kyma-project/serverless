@@ -17,15 +17,16 @@ type StateReconciler interface {
 	Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl.Result, error)
 }
 
-func NewMachine(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, cache chart.ManifestCache, chartPath string) StateReconciler {
+func NewMachine(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, cache chart.ManifestCache, chartPath string, kymaFipsEnabled bool) StateReconciler {
 	return &reconciler{
 		fn:    sFnServedFilter,
 		cache: cache,
 		log:   log,
 		cfg: cfg{
-			finalizer:     v1alpha1.Finalizer,
-			chartPath:     chartPath,
-			managerPodUID: os.Getenv("SERVERLESS_MANAGER_UID"),
+			finalizer:       v1alpha1.Finalizer,
+			chartPath:       chartPath,
+			managerPodUID:   os.Getenv("SERVERLESS_MANAGER_UID"),
+			kymaFipsEnabled: kymaFipsEnabled,
 		},
 		k8s: k8s{
 			client:        client,

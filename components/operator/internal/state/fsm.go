@@ -30,9 +30,10 @@ var (
 type stateFn func(context.Context, *reconciler, *systemState) (stateFn, *ctrl.Result, error)
 
 type cfg struct {
-	finalizer     string
-	chartPath     string
-	managerPodUID string
+	finalizer       string
+	chartPath       string
+	managerPodUID   string
+	kymaFipsEnabled bool
 }
 
 type systemState struct {
