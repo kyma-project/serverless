@@ -44,7 +44,6 @@ func verifyPodTemplateAnnotations(podTemplate *corev1.PodTemplateSpec) error {
 	expectedAnnotations := map[string]string{
 		"kubectl.kubernetes.io/default-container":    "manager",
 		"sidecar.istio.io/inject":                    "false",
-		"serverless.kyma-project.io/log-format":      "json",
 		"rt-cfg.kyma-project.io/add-img-pull-secret": "true",
 		"rt-cfg.kyma-project.io/alter-img-registry":  "true",
 		"rt-cfg.kyma-project.io/set-fips-mode":       "true",
