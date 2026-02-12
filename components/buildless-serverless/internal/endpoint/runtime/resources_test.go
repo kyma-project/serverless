@@ -121,6 +121,8 @@ spec:
     metadata:
       annotations:
         proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
+        rt-cfg.kyma-project.io/add-img-pull-secret: "true"
+        rt-cfg.kyma-project.io/alter-img-registry: "true"
         sidecar.istio.io/nativeSidecar: "true"
       creationTimestamp: null
       labels:

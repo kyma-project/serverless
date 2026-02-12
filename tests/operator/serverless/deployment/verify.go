@@ -25,6 +25,38 @@ func VerifyCtrlMngrEnvs(testutils *utils.TestUtils, serverless *v1alpha1.Serverl
 	return verifyDeployEnvs(&deploy, serverless)
 }
 
+func VerifyCtrlMngrAnnotations(testutils *utils.TestUtils) error {
+	var deploy appsv1.Deployment
+	objectKey := client.ObjectKey{
+		Name:      testutils.ServerlessCtrlDeployName,
+		Namespace: testutils.Namespace,
+	}
+
+	err := testutils.Client.Get(testutils.Ctx, objectKey, &deploy)
+	if err != nil {
+		return err
+	}
+
+	return verifyPodTemplateAnnotations(&deploy.Spec.Template)
+}
+
+func verifyPodTemplateAnnotations(podTemplate *corev1.PodTemplateSpec) error {
+	expectedAnnotations := map[string]string{
+		"kubectl.kubernetes.io/default-container":    "manager",
+		"sidecar.istio.io/inject":                    "false",
+		"rt-cfg.kyma-project.io/add-img-pull-secret": "true",
+		"rt-cfg.kyma-project.io/alter-img-registry":  "true",
+		"rt-cfg.kyma-project.io/set-fips-mode":       "true",
+	}
+	for key, value := range expectedAnnotations {
+		if podTemplate.ObjectMeta.Annotations[key] != value {
+			return fmt.Errorf("annotation '%s' with value '%s' not found in pod template", key, value)
+		}
+	}
+
+	return nil
+}
+
 func verifyDeployEnvs(deploy *appsv1.Deployment, serverless *v1alpha1.Serverless) error {
 	expectedEnvs := []corev1.EnvVar{
 		{
