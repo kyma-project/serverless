@@ -53,6 +53,8 @@ if __name__ == "__main__":
     # TODO: check if we still need to setup loggedapp through WSGILogger
     # TODO: handle ctrl+c and SIGTERM signals to gracefully shutdown the server
     # TODO: implement request timeout handling - for example using gevent.Timeout
+    # TODO: maybe we should run server using common target like `./run.sh`? or `make run-prod`? 
+    #       to move whole code and deps related logic to one place and to build one common deploy for both runtimes
     pywsgi.WSGIServer(
         (server_host, server_port),
         app,

@@ -145,3 +145,12 @@ jobs:
       dockerfile: Dockerfile
       context: components/runtimes/python312
       tags: ${{ needs.compute-tags.outputs.tags }}
+  
+  build-python314:
+    needs: compute-tags
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: function-runtime-python314
+      dockerfile: Dockerfile
+      context: components/runtimes/python314
+      tags: ${{ needs.compute-tags.outputs.tags }}
