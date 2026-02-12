@@ -11,6 +11,7 @@ import prometheus_client
 # TODO: sdk
 
 # Configuration from environment variables
+# TODO: unify envs between python314 and nodejs26
 server_host=os.getenv('SERVER_HOST', '0.0.0.0')
 server_port=int(os.getenv('SERVER_PORT', '8080'))
 server_numthreads=int(os.getenv('SERVER_NUMTHREADS', '50'))
