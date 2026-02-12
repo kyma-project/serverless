@@ -20,8 +20,12 @@ RUN chmod -R 755 ./lib
 RUN chmod 644 ./server.py
 
 USER 1000
+
 # Tracing propagators are configured based on OTEL_PROPAGATORS env variable https://opentelemetry.io/docs/instrumentation/python/manual/#using-environment-variables
 ENV OTEL_PROPAGATORS=tracecontext,baggage,b3multi
 ENV OTEL_PYTHON_REQUESTS_EXCLUDED_URLS="healthz,favicon.ico,metrics"
+
+# Set PYTHONUNBUFFERED to ensure that logs are flushed immediately
+ENV PYTHONUNBUFFERED=TRUE
 
 CMD ["python", "./server.py"]
