@@ -15,7 +15,7 @@ import prometheus_client
 server_host=os.getenv('SERVER_HOST', '0.0.0.0')
 server_port=int(os.getenv('SERVER_PORT', '8080'))
 server_numthreads=int(os.getenv('SERVER_NUMTHREADS', '50'))
-server_route_timeout=float(os.getenv('SERVER_ROUTE_TIMEOUT', '180'))
+server_call_timeout=float(os.getenv('SERVER_CALL_TIMEOUT', '180'))
 handler_module_folder=os.getenv('HANDLER_FOLDER', '/')
 handler_module_name=os.getenv('HANDLER_MODULE_NAME', 'handler')
 handler_module_function=os.getenv('HANDLER_FUNCTION_NAME', 'main')
@@ -35,7 +35,7 @@ handler = module.Handler(
 handler_context = {
     'function-name': os.getenv('FUNC_NAME'),
     'namespace': os.getenv('SERVICE_NAMESPACE'),
-    'timeout': server_route_timeout,
+    'timeout': server_call_timeout,
     'runtime': os.getenv('FUNC_RUNTIME', 'python314'),
 }
 
