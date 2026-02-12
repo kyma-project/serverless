@@ -1,0 +1,8 @@
+# pip venv artifacts
+__pycache__/
+*.pyc
+lib/python*
+pyvenv.cfg
+include/
+lib/python3.*
+bin/

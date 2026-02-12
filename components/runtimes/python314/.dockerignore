@@ -1,0 +1,10 @@
+Dockerfile
+.gitignore
+README.md
+
+# python venv artifacts
+__pycache__/
+bin
+lib/python*
+include
+pyvenv.cfg
