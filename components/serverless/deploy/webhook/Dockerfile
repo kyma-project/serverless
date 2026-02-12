@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.25.7-alpine3.23 AS builder
+FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.26.0-alpine3.23 AS builder
 
 ARG TARGETOS TARGETARCH
 
