@@ -70,7 +70,7 @@ func init() {
 }
 
 type operatorConfig struct {
-	ChartPath           string `envconfig:"default=/module-chart"`
+	ChartPath           string `envconfig:"default=/buildless-module-chart"`
 	KymaFIPSModeEnabled bool   `envconfig:"default=false"`
 	LogConfigPath       string `envconfig:"default=hack/log-config.yaml"`
 }

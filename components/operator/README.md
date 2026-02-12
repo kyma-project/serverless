@@ -37,5 +37,5 @@ To develop the component as a normal binary, set up environment variables.
 
 | Variable                   | Description                                                                                                         | Default value   |
 |----------------------------|---------------------------------------------------------------------------------------------------------------------|-----------------|
-| **CHART_PATH**             | Location of the Serverless chart                                                                                        | `/module-chart` |
+| **CHART_PATH**             | Location of the Serverless chart                                                                                        | `/buildless-module-chart` |
 | **SERVERLESS_MANAGER_UID** | Unique ID of operator instance. Used to mark created resources to distinguish which version of the Operator created it. | ``              |
