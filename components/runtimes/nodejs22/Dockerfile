@@ -1,4 +1,4 @@
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/node:22.22.0-alpine3.23
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/node:24.13.0-alpine3.23
 
 ARG NODE_ENV
 ENV NODE_ENV=$NODE_ENV
