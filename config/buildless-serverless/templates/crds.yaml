@@ -819,12 +819,13 @@ spec:
                           rule: (!has(self.profile) || self.profile in ['XS','S','M','L','XL'])
                   type: object
                 runtime:
-                  description: Specifies the runtime of the Function. The available values are `nodejs20` - deprecated, `nodejs22`, `nodejs24`, and `python312`.
+                  description: Specifies the runtime of the Function. The available values are `nodejs20` - deprecated, `nodejs22`, `nodejs24`, `python312`, and `python314`.
                   enum:
                     - nodejs20
                     - nodejs22
                     - nodejs24
                     - python312
+                    - python314
                   type: string
                 runtimeImageOverride:
                   description: Specifies the runtime image used instead of the default one.
