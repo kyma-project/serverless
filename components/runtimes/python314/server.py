@@ -51,6 +51,10 @@ def userfunc_call():
         handler_context,
     )
 
+@app.errorhandler(500)
+def internal_error(error):
+    return 'Internal Server Error', 500
+
 @app.get('/favicon.ico')
 def favicon():
     # TODO: serve a real favicon - for example redirect to kyma-project.io favicon
@@ -58,7 +62,7 @@ def favicon():
 
 @app.get('/healthz')
 def healthz():
-    return 'OK'
+    return 'OK', 200
 
 @app.get('/metrics')
 def metrics():
@@ -77,6 +81,6 @@ if __name__ == "__main__":
         app,
         spawn=server_numthreads,
         # TODO: do we need these logs?
-        # log=None,
+        log=None,
         # error_log=None,
     ).serve_forever()
