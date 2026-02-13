@@ -12,6 +12,9 @@ import prometheus_client
 
 # Configuration from environment variables
 # TODO: unify envs between python314 and nodejs26
+func_namespace=os.getenv('SERVICE_NAMESPACE', '')
+func_name=os.getenv('FUNC_NAME', '')
+func_runtime=os.getenv('FUNC_RUNTIME', 'python314')
 server_host=os.getenv('SERVER_HOST', '0.0.0.0')
 server_port=int(os.getenv('SERVER_PORT', '8080'))
 server_numthreads=int(os.getenv('SERVER_NUMTHREADS', '50'))
@@ -33,10 +36,10 @@ handler = module.Handler(
 )
 
 handler_context = {
-    'function-name': os.getenv('FUNC_NAME'),
-    'namespace': os.getenv('SERVICE_NAMESPACE'),
+    'function-name': func_name,
+    'namespace': func_namespace,
     'timeout': server_call_timeout,
-    'runtime': os.getenv('FUNC_RUNTIME', 'python314'),
+    'runtime': func_runtime,
 }
 
 # TODO: I've added PUT and OPTIONS methods. is it ok?
