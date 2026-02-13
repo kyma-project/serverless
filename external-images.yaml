@@ -2,8 +2,6 @@
 images:
   - source: "alpine@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659"
     tag: "3.23.3"
-  - source: "python@sha256:2c36f9de70d61461464367459649732c6b0b58a66b6855a640644b3752454da1"
-    tag: "3.12.12-alpine3.23"
   - source: "golang@sha256:d4c4845f5d60c6a974c6000ce58ae079328d03ab7f721a0734277e69905473e5"
     tag: "1.26.0-alpine3.23"
   - source: "gcr.io/kaniko-project/executor@sha256:4e7a52dd1f14872430652bb3b027405b8dfd17c4538751c620ac005741ef9698"
@@ -19,3 +17,9 @@ images:
   # https://hub.docker.com/layers/library/node/20-alpine
   - source: "node@sha256:09e2b3d9726018aecf269bd35325f46bf75046a643a66d28360ec71132750ec8"
     tag: "20.20.0-alpine3.23"
+  # https://hub.docker.com/layers/library/python/3.12-alpine
+  - source: "python@sha256:2c36f9de70d61461464367459649732c6b0b58a66b6855a640644b3752454da1"
+    tag: "3.12.12-alpine3.23"
+  # https://hub.docker.com/layers/library/python/3.14-alpine
+  - source: "python@sha256:faee120f7885a06fcc9677922331391fa690d911c020abb9e8025ff3d908e510"
+    tag: "3.14.3-alpine3.23"
