@@ -114,6 +114,21 @@ updates:
       - dependency-name: kyma-project/prod/external/library/python
         update-types: ["version-update:semver-minor"]
   - package-ecosystem: "docker"
+    directory: "/components/runtimes/python314"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "python314"
+      include: "scope"
+    ignore:
+      # ignore minor python updates, e.g. 3.9 -> 3.12
+      - dependency-name: kyma-project/prod/external/library/python
+        update-types: ["version-update:semver-minor"]
+  
+  - package-ecosystem: "docker"
     directory: "/components/runtimes/nodejs20"
     labels:
       - "area/dependency"
@@ -133,6 +148,10 @@ updates:
     commit-message:
       prefix: "nodejs22"
       include: "scope"
+    ignore:
+      # ignore minor node updates, e.g. 20.x -> 21.x
+      - dependency-name: kyma-project/prod/external/library/node
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: "docker"
     directory: "/components/runtimes/nodejs24"
     labels:
@@ -143,6 +162,10 @@ updates:
     commit-message:
       prefix: "nodejs24"
       include: "scope"
+    ignore:
+      # ignore minor node updates, e.g. 20.x -> 21.x
+      - dependency-name: kyma-project/prod/external/library/node
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "pip"
     directory: "/components/runtimes/python312"
