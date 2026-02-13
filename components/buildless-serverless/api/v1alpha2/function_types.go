@@ -31,6 +31,7 @@ type Runtime string
 const (
 	PythonPrefix string  = "python"
 	NodeJsPrefix string  = "nodejs"
+	Python314    Runtime = "python314"
 	Python312    Runtime = "python312"
 	NodeJs22     Runtime = "nodejs22"
 	NodeJs24     Runtime = "nodejs24"
@@ -45,8 +46,8 @@ const (
 
 // FunctionSpec defines the desired state of Function.
 type FunctionSpec struct {
-	// Specifies the runtime of the Function. The available values are `nodejs20` - deprecated, `nodejs22`, `nodejs24`, and `python312`.
-	// +kubebuilder:validation:Enum=nodejs20;nodejs22;nodejs24;python312;
+	// Specifies the runtime of the Function. The available values are `nodejs20` - deprecated, `nodejs22`, `nodejs24`, `python312`, and `python314`.
+	// +kubebuilder:validation:Enum=nodejs20;nodejs22;nodejs24;python312;python314;
 	Runtime Runtime `json:"runtime"`
 
 	// Specifies the runtime image used instead of the default one.
@@ -438,6 +439,12 @@ func (f *Function) HasPythonRuntime() bool {
 	return f.Spec.Runtime.IsRuntimePython()
 }
 
+// HasExperimentalRuntime checks if the function is using a runtime that is not generally available yet, and may be subject to fallback or other instability.
+// Experimental runtimes can introduce new features, breaking changes so should be handler differently
+func (f *Function) HasExperimentalRuntime() bool {
+	return f.Spec.Runtime == Python314
+}
+
 func (f *Function) HasNodejsRuntime() bool {
 	return f.Spec.Runtime.IsRuntimeNodejs()
 }
@@ -450,7 +457,7 @@ func (f *Function) CopyAnnotationsToStatus() {
 // almost all functions that check for supported runtime versions should be here, for simpler bumps
 
 func (runtime Runtime) IsRuntimeSupported() bool {
-	supportedRuntimes := []Runtime{NodeJs20, NodeJs22, NodeJs24, Python312}
+	supportedRuntimes := []Runtime{NodeJs20, NodeJs22, NodeJs24, Python312, Python314}
 	for _, r := range supportedRuntimes {
 		if r == runtime {
 			return true
@@ -473,7 +480,7 @@ func (runtime Runtime) IsRuntimeDeprecated() bool {
 
 // IsRuntimeKnown checks if the runtime is of known, even if the version is unsupported
 func (runtime Runtime) IsRuntimeKnown() bool {
-	supportedRuntimes := []Runtime{NodeJs12, NodeJs14, NodeJs16, NodeJs18, NodeJs20, NodeJs22, NodeJs24, Python39, Python312}
+	supportedRuntimes := []Runtime{NodeJs12, NodeJs14, NodeJs16, NodeJs18, NodeJs20, NodeJs22, NodeJs24, Python39, Python312, Python314}
 	for _, r := range supportedRuntimes {
 		if r == runtime {
 			return true

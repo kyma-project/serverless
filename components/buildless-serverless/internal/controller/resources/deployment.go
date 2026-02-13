@@ -237,7 +237,7 @@ func (d *Deployment) podSpec() corev1.PodSpec {
 			{
 				Name:         "function",
 				Image:        d.podImage,
-				WorkingDir:   workingSourcesDir(d.function),
+				WorkingDir:   workingDir(d.function),
 				Command:      d.podCmd,
 				Resources:    d.resourceConfiguration(),
 				Env:          d.podEnvs,
@@ -369,6 +369,7 @@ func (d *Deployment) initContainerCommand() string {
 	arr = append(arr, "rm -rf /git-repository/*")
 	arr = append(arr, "/app/gitcloner")
 	arr = append(arr,
+		// should we use emptyDir volume instead of creating dir?
 		fmt.Sprintf("mkdir /git-repository/src;cp -r '/git-repository/repo/%s'/* /git-repository/src;",
 			strings.Trim(gitRepo.BaseDir, "/ ")))
 	return strings.Join(arr, "\n")
@@ -445,6 +446,18 @@ func (d *Deployment) volumeMounts() []corev1.VolumeMount {
 			Name:      "git-repository",
 			MountPath: "/git-repository",
 		})
+	}
+	if d.function.HasExperimentalRuntime() {
+		return append(volumeMounts,
+			corev1.VolumeMount{
+				Name:      "local",
+				MountPath: path.Join(workingDir(d.function), ".local"),
+			},
+			corev1.VolumeMount{
+				Name:      "package-registry-config",
+				MountPath: path.Join(workingSourcesDir(d.function), "package-registry-config/pip.conf"),
+				SubPath:   "pip.conf",
+			})
 	}
 	if d.function.HasNodejsRuntime() {
 		volumeMounts = append(volumeMounts, corev1.VolumeMount{
@@ -553,13 +566,24 @@ func runtimeImage(f *serverlessv1alpha2.Function, c *config.FunctionConfig) stri
 		return c.Images.NodeJs24
 	case serverlessv1alpha2.Python312:
 		return c.Images.Python312
+	case serverlessv1alpha2.Python314:
+		return c.Images.Python314
 	default:
 		return ""
 	}
 }
 
 func workingSourcesDir(f *serverlessv1alpha2.Function) string {
-	if f.HasNodejsRuntime() {
+	if f.HasExperimentalRuntime() {
+		return fmt.Sprintf("%s/%s", workingDir(f), "function")
+	}
+	return workingDir(f)
+}
+
+func workingDir(f *serverlessv1alpha2.Function) string {
+	if f.HasExperimentalRuntime() {
+		return "/usr/src/app"
+	} else if f.HasNodejsRuntime() {
 		return "/usr/src/app/function"
 	} else if f.HasPythonRuntime() {
 		return "/kubeless"
@@ -579,6 +603,7 @@ func runtimeCommand(f *serverlessv1alpha2.Function) string {
 func runtimeCommandSources(f *serverlessv1alpha2.Function) string {
 	spec := &f.Spec
 	if spec.Source.GitRepository != nil {
+		// TODO: support experimental runtimes
 		return runtimeCommandGitSources(f)
 	}
 	return runtimeCommandInlineSources(f)
@@ -599,7 +624,9 @@ func runtimeCommandInlineSources(f *serverlessv1alpha2.Function) string {
 	dependencies := spec.Source.Inline.Dependencies
 
 	handlerName, dependenciesName := "", ""
-	if f.HasNodejsRuntime() {
+	if f.HasExperimentalRuntime() {
+		handlerName, dependenciesName = "${HANDLER_FOLDER}/handler.py", "${HANDLER_FOLDER}/requirements.txt"
+	} else if f.HasNodejsRuntime() {
 		handlerName, dependenciesName = "handler.js", "package.json"
 		result = append(result, `echo "{}" > package.json;`)
 	} else if f.HasPythonRuntime() {
@@ -607,14 +634,17 @@ func runtimeCommandInlineSources(f *serverlessv1alpha2.Function) string {
 	}
 
 	result = append(result, fmt.Sprintf(`echo "${FUNC_HANDLER_SOURCE}" > %s;`, handlerName))
-	if dependencies != "" {
+	if dependencies != "" || f.HasExperimentalRuntime() {
 		result = append(result, fmt.Sprintf(`echo "${FUNC_HANDLER_DEPENDENCIES}" > %s;`, dependenciesName))
 	}
 	return strings.Join(result, "\n")
 }
 
 func runtimeCommandInstall(f *serverlessv1alpha2.Function) string {
-	if f.HasNodejsRuntime() {
+	if f.HasExperimentalRuntime() {
+		return `export PYTHONPATH="${PWD}/.local:${PYTHONPATH}"
+PIP_CONFIG_FILE=${HANDLER_FOLDER}/package-registry-config/pip.conf pip install --target=${PWD}/.local --no-cache-dir -r ${HANDLER_FOLDER}/requirements.txt;`
+	} else if f.HasNodejsRuntime() {
 		return `npm install --prefer-offline --no-audit --progress=false;`
 	} else if f.HasPythonRuntime() {
 		return `export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
@@ -624,7 +654,9 @@ PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/
 }
 
 func runtimeCommandStart(f *serverlessv1alpha2.Function) string {
-	if f.HasNodejsRuntime() {
+	if f.HasExperimentalRuntime() {
+		return `python server.py`
+	} else if f.HasNodejsRuntime() {
 		return `cd ..;
 npm start;`
 	} else if f.HasPythonRuntime() {
@@ -664,7 +696,8 @@ func generalEnvs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []cor
 		},
 	}
 
-	if f.HasPythonRuntime() {
+	if f.HasPythonRuntime() && !f.HasExperimentalRuntime() {
+		//
 		envs = append(envs, []corev1.EnvVar{
 			{
 				Name:  "PYTHONUNBUFFERED",
@@ -699,6 +732,28 @@ func sourceEnvs(f *serverlessv1alpha2.Function) []corev1.EnvVar {
 			},
 		}...)
 	}
+
+	// setup envs for experimental runtimes and return early to avoid setting up envs that are not relevant for them
+	if f.HasExperimentalRuntime() {
+		// goal is to provide new runtimes without need of additional env configuration
+		// expect deps and source code essentials
+		envs = append(envs, []corev1.EnvVar{
+			{
+				Name:  "HANDLER_FOLDER",
+				Value: "function",
+			},
+			{
+				Name:  "HANDLER_MODULE_NAME",
+				Value: "handler",
+			},
+			{
+				Name:  "HANDLER_FUNCTION_NAME",
+				Value: "main",
+			},
+		}...)
+		return envs
+	}
+
 	if f.HasNodejsRuntime() {
 		envs = append(envs, []corev1.EnvVar{
 			{

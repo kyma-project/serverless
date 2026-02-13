@@ -438,6 +438,7 @@ func TestDeployment_runtimeImage(t *testing.T) {
 			NodeJs22:  "image-for-nodejs22",
 			NodeJs24:  "image-for-nodejs24",
 			Python312: "image-for-python312",
+			Python314: "image-for-python314",
 		},
 	}
 	type fields struct {
