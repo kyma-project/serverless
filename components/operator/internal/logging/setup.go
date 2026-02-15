@@ -3,11 +3,10 @@ package logging
 import (
 	"github.com/kyma-project/manager-toolkit/logging/logger"
 	"github.com/pkg/errors"
-	"go.uber.org/zap"
 )
 
 // ConfigureLogger - builds logger based on logLevel and logFormat
-func ConfigureLogger(logLevel, logFormat string, atomic zap.AtomicLevel) (*logger.Logger, error) {
+func ConfigureLogger(logLevel, logFormat string) (*logger.Logger, error) {
 	parsedLogLevel, err := logger.MapLevel(logLevel)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to parse logging level")
@@ -18,7 +17,7 @@ func ConfigureLogger(logLevel, logFormat string, atomic zap.AtomicLevel) (*logge
 		return nil, errors.Wrap(err, "unable to set logging format")
 	}
 
-	l, err := logger.NewWithAtomicLevel(format, atomic)
+	l, err := logger.New(format, parsedLogLevel)
 	if err != nil {
 		return nil, errors.Wrap(err, "unable to set logger")
 	}

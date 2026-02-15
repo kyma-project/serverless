@@ -17,7 +17,6 @@ limitations under the License.
 package main
 
 import (
-	"context"
 	"crypto/fips140"
 	"flag"
 	"fmt"
@@ -31,9 +30,6 @@ import (
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
 	"github.com/go-logr/zapr"
-	logconfig "github.com/kyma-project/manager-toolkit/logging/config"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
 	corev1 "k8s.io/api/core/v1"
@@ -72,7 +68,8 @@ func init() {
 type operatorConfig struct {
 	ChartPath           string `envconfig:"default=/buildless-module-chart"`
 	KymaFIPSModeEnabled bool   `envconfig:"default=false"`
-	LogConfigPath       string `envconfig:"default=hack/log-config.yaml"`
+	LogLevel            string `envconfig:"default=info"`
+	LogFormat           string `envconfig:"default=json"`
 }
 
 func main() {
@@ -94,36 +91,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Load log configuration from file
-	logCfg, err := logconfig.LoadConfig(opCfg.LogConfigPath)
-	if err != nil {
-		fmt.Printf("unable to load log configuration file: %v\n", err)
-		os.Exit(1)
-	}
-
-	logLevel := logCfg.LogLevel
-	logFormat := logCfg.LogFormat
-
-	atomicLevel := zap.NewAtomicLevel()
-	parsedLevel, err := zapcore.ParseLevel(logLevel)
-	if err != nil {
-		fmt.Printf("unable to parse logger level: %v\n", err)
-		os.Exit(1)
-	}
-	atomicLevel.SetLevel(parsedLevel)
-
 	// Configure logger using manager-toolkit
-	log, err := logging.ConfigureLogger(logLevel, logFormat, atomicLevel)
+	log, err := logging.ConfigureLogger(opCfg.LogLevel, opCfg.LogFormat)
 	if err != nil {
 		fmt.Printf("unable to configure logger: %v\n", err)
 		os.Exit(1)
 	}
 
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	logWithCtx := log.WithContext()
-	go logging.ReconfigureOnConfigChange(ctx, logWithCtx.Named("notifier"), atomicLevel, opCfg.LogConfigPath)
 
 	ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
 	setupLog = ctrl.Log.WithName("setup")
