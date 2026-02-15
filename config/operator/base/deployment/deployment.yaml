@@ -29,10 +29,6 @@ spec:
       priorityClassName: "operator-priority"
       securityContext:
         runAsNonRoot: true
-      volumes:
-        - name: log-configuration
-          configMap:
-            name: operator-log-config
       containers:
         - command:
             - /operator
@@ -42,8 +38,10 @@ spec:
           env:
             - name: CHART_PATH
               value: /buildless-module-chart
-            - name: LOG_CONFIG_PATH
-              value: /logconfig/log-config.yaml
+            - name: LOG_LEVEL
+              value: info
+            - name: LOG_FORMAT
+              value: json
             - name: SERVERLESS_MANAGER_UID
               valueFrom:
                 fieldRef:
@@ -88,9 +86,6 @@ spec:
             capabilities:
               drop:
                 - "ALL"
-          volumeMounts:
-            - name: log-configuration
-              mountPath: /logconfig
           livenessProbe:
             httpGet:
               path: /healthz
