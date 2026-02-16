@@ -18,7 +18,7 @@ labels:
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/name: serverless-operator
     app.kubernetes.io/part-of: serverless-operator
-    app.kubernetes.io/version: main
+    app.kubernetes.io/version: 1.10.0
     kyma-project.io/module: serverless
 
 resources:
