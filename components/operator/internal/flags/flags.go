@@ -119,7 +119,7 @@ func (b *Builder) WithLogFormatRestartAnnotation(logFormat string) *Builder {
 }
 
 func (b *Builder) WithFipsModeEnabled(enabled bool) *Builder {
-	b.With("containers.manager.fipsModeEnabled", fmt.Sprintf("%t", enabled))
+	b.With("containers.manager.fipsModeEnabled", enabled)
 	return b
 }
 
