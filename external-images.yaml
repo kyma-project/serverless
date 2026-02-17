@@ -9,8 +9,8 @@ images:
   - source: "ghcr.io/nginx/alpine-fips@sha256:15cf5753964eca17557083313d2a39e6a3cc659a5a2143ecebc476b14cc687e6"
     tag: "0.5.0-alpine3.23"
   # https://hub.docker.com/layers/library/node/24-alpine
-  - source: "node@sha256:cd6fb7efa6490f039f3471a189214d5f548c11df1ff9e5b181aa49e22c14383e"
-    tag: "24.13.0-alpine3.23"
+  - source: "node@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03"
+    tag: "24.13.1-alpine3.23"
   # https://hub.docker.com/layers/library/node/22-alpine
   - source: "node@sha256:e4bf2a82ad0a4037d28035ae71529873c069b13eb0455466ae0bc13363826e34"
     tag: "22.22.0-alpine3.23"
