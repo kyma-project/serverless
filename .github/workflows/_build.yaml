@@ -138,7 +138,7 @@ jobs:
       tags: ${{ needs.compute-tags.outputs.tags }}
       use-restricted-registry: true
       build-args: |
-        BASE_IMAGE=europe-docker.pkg.dev/kyma-project/restricted-prod/sap.com/node-fips:22.22.0-dev
+        BASE=fips
 
   build-nodejs24:
     needs: compute-tags
@@ -159,7 +159,7 @@ jobs:
       tags: ${{ needs.compute-tags.outputs.tags }}
       use-restricted-registry: true
       build-args: |
-        BASE_IMAGE=europe-docker.pkg.dev/kyma-project/restricted-prod/sap.com/node-fips:24.13.1-dev
+        BASE_IMAGE=fips
 
   build-python312:
     needs: compute-tags
@@ -189,4 +189,4 @@ jobs:
       tags: ${{ needs.compute-tags.outputs.tags }}
       use-restricted-registry: true
       build-args: |
-        BASE_IMAGE=europe-docker.pkg.dev/kyma-project/restricted-prod/sap.com/python-fips:3.14.3-dev
+        BASE_IMAGE=fips
