@@ -159,7 +159,7 @@ jobs:
       tags: ${{ needs.compute-tags.outputs.tags }}
       use-restricted-registry: true
       build-args: |
-        BASE_IMAGE=fips
+        BASE=fips
 
   build-python312:
     needs: compute-tags
@@ -189,4 +189,4 @@ jobs:
       tags: ${{ needs.compute-tags.outputs.tags }}
       use-restricted-registry: true
       build-args: |
-        BASE_IMAGE=fips
+        BASE=fips
