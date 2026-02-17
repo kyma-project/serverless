@@ -114,6 +114,7 @@ func main() {
 	go logging.ReconfigureOnConfigChange(ctx, logWithCtx.Named("notifier"), atomic, envCfg.LogConfigPath)
 
 	ctrl.SetLogger(zapr.NewLogger(logWithCtx.Desugar()))
+	setupLog = ctrl.Log.WithName("setup")
 
 	logWithCtx.Info("Generating Kubernetes client config")
 	restConfig := ctrl.GetConfigOrDie()
