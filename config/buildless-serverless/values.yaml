@@ -17,6 +17,7 @@ global:
     function_runtime_python312: europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main
 containers:
   manager:
+    fipsModeEnabled: "false"
     logConfiguration:
       restartAnnotationValue: "json"
       data:
