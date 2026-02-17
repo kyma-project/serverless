@@ -1,7 +1,10 @@
-FROM python:3.14-alpine
+ARG BASE_IMAGE=europe-docker.pkg.dev/kyma-project/prod/external/library/python:3.14.3-alpine3.23
+FROM ${BASE_IMAGE}
 
 # Serverless
 LABEL source = git@github.com:kyma-project/serverless.git
+
+USER root
 
 # build-base and linux-headers are needed to install all requirements
 RUN apk add --no-cache --virtual .build-deps build-base linux-headers

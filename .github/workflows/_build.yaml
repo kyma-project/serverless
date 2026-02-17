@@ -128,6 +128,18 @@ jobs:
       context: components/runtimes/nodejs22
       tags: ${{ needs.compute-tags.outputs.tags }}
 
+  build-nodejs22-fips:
+    needs: compute-tags
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: function-runtime-nodejs22-fips
+      dockerfile: Dockerfile
+      context: components/runtimes/nodejs22
+      tags: ${{ needs.compute-tags.outputs.tags }}
+      use-restricted-registry: true
+      build-args: |
+        BASE_IMAGE=europe-docker.pkg.dev/kyma-project/restricted-prod/sap.com/node-fips:22.22.0-dev
+
   build-nodejs24:
     needs: compute-tags
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
@@ -136,6 +148,18 @@ jobs:
       dockerfile: Dockerfile
       context: components/runtimes/nodejs24
       tags: ${{ needs.compute-tags.outputs.tags }}
+
+  build-nodejs24-fips:
+    needs: compute-tags
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: function-runtime-nodejs24-fips
+      dockerfile: Dockerfile
+      context: components/runtimes/nodejs24
+      tags: ${{ needs.compute-tags.outputs.tags }}
+      use-restricted-registry: true
+      build-args: |
+        BASE_IMAGE=europe-docker.pkg.dev/kyma-project/restricted-prod/sap.com/node-fips:24.13.1-dev
 
   build-python312:
     needs: compute-tags
@@ -154,3 +178,15 @@ jobs:
       dockerfile: Dockerfile
       context: components/runtimes/python314
       tags: ${{ needs.compute-tags.outputs.tags }}
+
+  build-python314-fips:
+    needs: compute-tags
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: function-runtime-python314-fips
+      dockerfile: Dockerfile
+      context: components/runtimes/python314
+      tags: ${{ needs.compute-tags.outputs.tags }}
+      use-restricted-registry: true
+      build-args: |
+        BASE_IMAGE=europe-docker.pkg.dev/kyma-project/restricted-prod/sap.com/python-fips:3.14.3-dev
