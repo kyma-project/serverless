@@ -78,7 +78,7 @@ spec:
               drop:
                 - ALL
           env:
-            - name: KYMA_FIPS_MODE_ENABLED
+            - name: APP_KYMA_FIPS_MODE_ENABLED
               value: "{{ .Values.containers.manager.fipsModeEnabled }}"
             - name: GODEBUG
               value: "fips140={{ if .Values.containers.manager.fipsModeEnabled }}only{{ else }}off{{ end }},tlsmlkem=0" 

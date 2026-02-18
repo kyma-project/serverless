@@ -18,9 +18,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"log"
 	"os"
+
+	"crypto/fips140"
 
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/source"
@@ -68,8 +71,9 @@ func init() {
 }
 
 type serverlessConfig struct {
-	FunctionConfigPath string `envconfig:"default=hack/function-config.yaml"` // path to development version of function config file
-	LogConfigPath      string `envconfig:"default=hack/log-config.yaml"`      // path to development version of log config file
+	FunctionConfigPath  string `envconfig:"default=hack/function-config.yaml"` // path to development version of function config file
+	LogConfigPath       string `envconfig:"default=hack/log-config.yaml"`      // path to development version of log config file
+	KymaFipsModeEnabled bool   `envconfig:"default=false"`                     // flag to enable FIPS 140 exclusive mode
 }
 
 func main() {
@@ -78,6 +82,11 @@ func main() {
 	if err != nil {
 		setupLog.Error(err, "unable to load config")
 		os.Exit(1)
+	}
+
+	if envCfg.KymaFipsModeEnabled && !isFIPS140Only() {
+		fmt.Printf("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags. FIPS not enforced\n")
+		panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
 	}
 
 	cfg, err := config.LoadFunctionConfig(envCfg.FunctionConfigPath)
@@ -213,4 +222,8 @@ func loadConfig(prefix string) (serverlessConfig, error) {
 		return cfg, err
 	}
 	return cfg, nil
+}
+
+func isFIPS140Only() bool {
+	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=only,tlsmlkem=0"
 }
