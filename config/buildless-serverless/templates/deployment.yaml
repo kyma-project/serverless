@@ -80,6 +80,8 @@ spec:
           env:
             - name: KYMA_FIPS_MODE_ENABLED
               value: "{{ .Values.containers.manager.fipsModeEnabled }}"
+            - name: GODEBUG
+              value: "fips140={{ if .Values.containers.manager.fipsModeEnabled }}only{{ else }}off{{ end }},tlsmlkem=0" 
             - name: APP_FUNCTION_CONFIG_PATH
               value: "{{ .Values.global.configuration.function.targetDir }}/{{ .Values.global.configuration.function.filename }}"
             - name: APP_LOG_CONFIG_PATH
