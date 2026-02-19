@@ -49,6 +49,7 @@ fi
 IMAGES_SELECTOR=".spec.template.spec.containers[0].env[] | select(.name == \"IMAGE_FUNCTION*\") | .value ${MAIN_ONLY_SELECTOR}"
 # replace /dev/|/prod/ with /IMG_DIRECTORY/
 yq --inplace "(${IMAGES_SELECTOR}) |= sub (\"/dev/|/prod/\", \"/${IMG_DIRECTORY}/\") " "${VALUES_FILE}"
+yq --inplace "(${IMAGES_SELECTOR}) |= sub (\"/restricted-dev/|/restricted-prod/\", \"/restricted-${IMG_DIRECTORY}/\") " "${VALUES_FILE}"
 # replace the last :.* with :IMG_VERSION, sicne the URL can contain a port number
 yq --inplace "(${IMAGES_SELECTOR}) |= sub(\":[^:]+$\",\":${IMG_VERSION}\")" "${VALUES_FILE}"
 echo "==== Local Changes (operator) ===="

@@ -14,10 +14,8 @@ if [ "${IMG_DIRECTORY}" = "" ] || [ "${IMG_VERSION}" = "" ]; then
     exit 0
 fi
 
-CONFIG_DEV_DIR=${PROJECT_ROOT}/config/operator/dev
-CONFIG_BASE_DIR=${PROJECT_ROOT}/config/operator/base
-DEFAULT_IMAGES_PATCH=${CONFIG_DEV_DIR}/default-images-patch.yaml
-OPERATOR_DEPLOYMENT=${CONFIG_BASE_DIR}/deployment/deployment.yaml
+OPERATOR_DEPLOYMENT=${PROJECT_ROOT}/config/operator/base/deployment/deployment.yaml
+DEFAULT_IMAGES_PATCH=${PROJECT_ROOT}/config/operator/dev/default-images-patch.yaml
 
 echo "Replacing images in ${DEFAULT_IMAGES_PATCH} with directory ${IMG_DIRECTORY} and version ${IMG_VERSION}"
 
