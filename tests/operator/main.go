@@ -68,7 +68,6 @@ func main() {
 			HealthzLivenessTimeout:           "20s",
 			DefaultBuildJobPreset:            "normal",
 			DefaultRuntimePodPreset:          "M",
-			EnableNetworkPolicies:            true,
 		},
 	})
 	if err != nil {
@@ -101,7 +100,6 @@ func main() {
 			FunctionRequeueDuration: "19m",
 			HealthzLivenessTimeout:  "20s",
 			DefaultRuntimePodPreset: "M",
-			EnableNetworkPolicies:   true,
 		},
 	})
 	if err != nil {
