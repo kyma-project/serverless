@@ -96,11 +96,6 @@ deploy-main: manifests kustomize ## Deploy operator to the K8s cluster specified
 generate-kustomization-dev:
 	cp $(CONFIG_OPERATOR_DEV)/kustomization.yaml.tpl $(CONFIG_OPERATOR_DEV)/kustomization.yaml
 
-.PHONY: generate-kustomization-dev-buildless
-generate-kustomization-dev-buildless:
-	cp $(CONFIG_OPERATOR_DEV)/kustomization.yaml.tpl $(CONFIG_OPERATOR_DEV)/kustomization.yaml
-	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit add patch --path buildless-env-patch.yaml
-
 .PHONY: deploy-release
 deploy-release: ## Deploy operator to the k8s cluster specified in ~/.kube/config with image from latest release.
 	kubectl create namespace kyma-system || true
