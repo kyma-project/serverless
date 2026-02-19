@@ -64,6 +64,12 @@ spec:
               value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main
             - name: IMAGE_FUNCTION_RUNTIME_PYTHON312_FIPS
               value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main #TODO: update to actual python312 fips image when available
+            # Python314 is not yet available, but we already prepare for it by adding the env vars with the expected image references.
+            # Once the images are available, the values should be updated to point to the actual python314 images.
+            - name: IMAGE_FUNCTION_RUNTIME_PYTHON314
+              value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-python314:main
+            - name: IMAGE_FUNCTION_RUNTIME_PYTHON314_FIPS
+              value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-python314:main #TODO: update to actual python314 fips image when available
             - name: IMAGE_FUNCTION_BUILDLESS_CONTROLLER
               value: europe-docker.pkg.dev/kyma-project/prod/function-buildless-controller:main
             - name: IMAGE_FUNCTION_BUILDLESS_CONTROLLER_FIPS
