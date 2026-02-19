@@ -56,8 +56,8 @@ func VerifyOld(utils *utils.TestUtils) error {
 		return deployment.VerifyCtrlMngrEnvs(utils, &serverless)
 	}
 
-	if !utils.LegacyMode {
-		return deployment.VerifyCtrlMngrAnnotations(utils)
+	if err := deployment.VerifyCtrlMngrAnnotations(utils); err != nil {
+		return err
 	}
 
 	return configmap.VerifyServerlessConfigmap(utils, &serverless)
