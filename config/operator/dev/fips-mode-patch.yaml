@@ -11,15 +11,3 @@ spec:
           env:
             - name: KYMA_FIPS_MODE_ENABLED
               value: "true"
-            - name: IMAGE_FUNCTION_RUNTIME_NODEJS20_FIPS
-              value: "europe-docker.pkg.dev/kyma-project/restricted-prod/function-runtime-nodejs20-fips:main"
-            - name: IMAGE_FUNCTION_RUNTIME_NODEJS22_FIPS
-              value: "europe-docker.pkg.dev/kyma-project/restricted-prod/function-runtime-nodejs22-fips:main"
-            - name: IMAGE_FUNCTION_RUNTIME_NODEJS24_FIPS
-              value: "europe-docker.pkg.dev/kyma-project/restricted-prod/function-runtime-nodejs24-fips:main"
-            - name: IMAGE_FUNCTION_RUNTIME_PYTHON314_FIPS
-              value: europe-docker.pkg.dev/kyma-project/restricted-prod/function-runtime-python314-fips:main
-            - name: IMAGE_FUNCTION_BUILDLESS_CONTROLLER_FIPS
-              value: "europe-docker.pkg.dev/kyma-project/prod/function-buildless-controller:main"
-            - name: IMAGE_FUNCTION_BUILDLESS_INIT_FIPS
-              value: "europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:main"
