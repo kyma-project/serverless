@@ -17,7 +17,8 @@ yq --inplace '.spec.template.spec.containers[0].env |= env(DEPLOY_ENVS)' ${DEFAU
 
 # replace images in images patch with desired ones
 IMAGES_SELECTOR=".spec.template.spec.containers[0].env[] | select(.name == \"IMAGE_FUNCTION*\") | .value ${MAIN_ONLY_SELECTOR}"
-# replace /dev/|/prod/ with /IMG_DIRECTORY/
+# replace /dev/|/prod/ with /IMG_DIRECTORY/ and the same for restricted ones
 yq --inplace "(${IMAGES_SELECTOR}) |= sub (\"/dev/|/prod/\", \"/${IMG_DIRECTORY}/\") " "${DEFAULT_IMAGES_PATCH}"
+yq --inplace "(${IMAGES_SELECTOR}) |= sub (\"/restricted-dev/|/restricted-prod/\", \"/restricted-${IMG_DIRECTORY}/\") " "${DEFAULT_IMAGES_PATCH}"
 # replace the last :.* with :IMG_VERSION, sicne the URL can contain a port number
 yq --inplace "(${IMAGES_SELECTOR}) |= sub(\":[^:]+$\",\":${IMG_VERSION}\")" "${DEFAULT_IMAGES_PATCH}"
