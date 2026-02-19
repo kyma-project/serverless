@@ -18,7 +18,6 @@ SHELL = /usr/bin/env bash -o pipefail
 CONFIG_OPERATOR = $(PROJECT_ROOT)/config/operator/base
 CONFIG_OPERATOR_DEV = $(PROJECT_ROOT)/config/operator/dev
 CONFIG_OPERATOR_MAIN = https://github.com/kyma-project/serverless/config/operator/base?ref=main
-CONFIG_OPERATOR_IMAGE_SOURCE=chart # possible chart, operator_env
 
 .PHONY: manifests
 manifests: controller-gen ## Generate WebhookConfiguration, ClusterRole and CustomResourceDefinition objects.
@@ -97,7 +96,7 @@ deploy-main: manifests kustomize ## Deploy operator to the K8s cluster specified
 generate-kustomization-dev:
 	cp $(CONFIG_OPERATOR_DEV)/kustomization.yaml.tpl $(CONFIG_OPERATOR_DEV)/kustomization.yaml
 	cp $(CONFIG_OPERATOR_DEV)/default-images-patch.yaml.tpl $(CONFIG_OPERATOR_DEV)/default-images-patch.yaml
-	$(if CONFIG_OPERATOR_IMAGE_SOURCE=="operator_env", PROJECT_ROOT=$(PROJECT_ROOT) IMG_DIRECTORY=$(IMG_DIRECTORY) IMG_VERSION=$(IMG_VERSION) $(CONFIG_OPERATOR_DEV)/replcase_images_patch.sh)
+	PROJECT_ROOT=$(PROJECT_ROOT) IMG_DIRECTORY=$(IMG_DIRECTORY) IMG_VERSION=$(IMG_VERSION) $(CONFIG_OPERATOR_DEV)/replcase_images_patch.sh
 
 .PHONY: deploy-release
 deploy-release: ## Deploy operator to the k8s cluster specified in ~/.kube/config with image from latest release.
