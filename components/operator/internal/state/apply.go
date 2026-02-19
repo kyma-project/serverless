@@ -30,6 +30,7 @@ func sFnApplyResources(ctx context.Context, r *reconciler, s *systemState) (stat
 
 	// update all used images
 	fipsModeEnabled := r.cfg.kymaFipsEnabled
+	s.flagsBuilder.WithFipsModeEnabled(fipsModeEnabled)
 	updateImages(s.flagsBuilder, fipsModeEnabled)
 
 	// install component

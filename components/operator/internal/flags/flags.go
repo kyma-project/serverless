@@ -118,6 +118,11 @@ func (b *Builder) WithLogFormatRestartAnnotation(logFormat string) *Builder {
 	return b
 }
 
+func (b *Builder) WithFipsModeEnabled(enabled bool) *Builder {
+	b.With("containers.manager.fipsModeEnabled", enabled)
+	return b
+}
+
 // TODO: remove this method when buildless is enabled by default
 func (b *Builder) WithChartPath(chartPath string) *Builder {
 	b.With("chartPath", chartPath)

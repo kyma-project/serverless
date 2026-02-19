@@ -56,6 +56,11 @@ func Test_buildSFnApplyResources(t *testing.T) {
 					"app.kubernetes.io/managed-by": "serverless-operator",
 				},
 			},
+			"containers": map[string]interface{}{
+				"manager": map[string]interface{}{
+					"fipsModeEnabled": false,
+				},
+			},
 		}
 
 		flags, err := s.flagsBuilder.Build()

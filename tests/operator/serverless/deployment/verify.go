@@ -47,7 +47,6 @@ func verifyPodTemplateAnnotations(podTemplate *corev1.PodTemplateSpec) error {
 		"serverless.kyma-project.io/log-format":      "json",
 		"rt-cfg.kyma-project.io/add-img-pull-secret": "true",
 		"rt-cfg.kyma-project.io/alter-img-registry":  "true",
-		"rt-cfg.kyma-project.io/set-fips-mode":       "true",
 	}
 	for key, value := range expectedAnnotations {
 		if podTemplate.ObjectMeta.Annotations[key] != value {
