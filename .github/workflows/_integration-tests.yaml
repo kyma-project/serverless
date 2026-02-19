@@ -12,6 +12,16 @@ on:
         required: false
         type: boolean
         default: false
+      img_directory:
+        description: "Directory of the image (dev/prod)"
+        required: false
+        type: string
+        default: ""
+      img_version:
+        description: "Version of the image"
+        required: false
+        type: string
+        default: ""
   workflow_call:
     inputs:
       image:
@@ -23,6 +33,16 @@ on:
         required: false
         type: boolean
         default: false
+      img_directory:
+        description: "Directory of the image (dev/prod)"
+        required: false
+        type: string
+        default: ""
+      img_version:
+        description: "Version of the image"
+        required: false
+        type: string
+        default: ""
 
 jobs:
   operator-integration-test:
@@ -43,6 +63,8 @@ jobs:
           make -C tests/operator test
         env:
           IMG: ${{ inputs.image }}
+          IMG_DIRECTORY: ${{ inputs.img_directory }}
+          IMG_VERSION: ${{ inputs.img_version }}
       - if: ${{ always() }}
         uses: ./.github/actions/collect-cluster-info
 
@@ -65,6 +87,8 @@ jobs:
           make remove-serverless
         env:
           IMG: ${{ inputs.image }}
+          IMG_DIRECTORY: ${{ inputs.img_directory }}
+          IMG_VERSION: ${{ inputs.img_version }}
       - name: collect cluster info
         if: ${{ always() }}
         run: make -C tests/serverless cluster-info
@@ -92,6 +116,8 @@ jobs:
           APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
           APP_TEST_AZURE_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_AZURE_SSH_KEY }}
           IMG: ${{ inputs.image }}
+          IMG_DIRECTORY: ${{ inputs.img_directory }}
+          IMG_VERSION: ${{ inputs.img_version }}
       - name: collect cluster info
         if: ${{ always() }}
         run: make -C tests/serverless cluster-info
@@ -110,6 +136,8 @@ jobs:
           make install-legacy-serverless-custom-operator
         env:
           IMG: ${{ inputs.image }}
+          IMG_DIRECTORY: ${{ inputs.img_directory }}
+          IMG_VERSION: ${{ inputs.img_version }}
       - name: install default serverless cr and check cr status
         run: |
           kubectl create namespace kyma-system || true
@@ -158,6 +186,8 @@ jobs:
           kubectl delete functions.serverless.kyma-project.io -A --all
         env:
           IMG: ${{ inputs.image }}
+          IMG_DIRECTORY: ${{ inputs.img_directory }}
+          IMG_VERSION: ${{ inputs.img_version }}
           APP_TEST_GITHUB_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_GITHUB_SSH_KEY }}
           APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
           APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}

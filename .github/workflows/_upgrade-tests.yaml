@@ -2,6 +2,21 @@ name: upgrade tests
 
 on:
   workflow_call:
+    inputs:
+      image:
+        description: 'The image to test'
+        required: true
+        type: string
+      img_directory:
+        description: "Directory of the image (dev/prod)"
+        required: false
+        type: string
+        default: ""
+      img_version:
+        description: "Version of the image"
+        required: false
+        type: string
+        default: ""
 
 jobs:
   operator-upgrade-test:
@@ -16,7 +31,9 @@ jobs:
           make -C components/operator deploy
           make -C tests/operator test
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+          IMG: ${{ inputs.image }}
+          IMG_DIRECTORY: ${{ inputs.img_directory }}
+          IMG_VERSION: ${{ inputs.img_version }}
       - if: ${{ always() }}
         uses: ./.github/actions/collect-cluster-info
 
@@ -32,4 +49,6 @@ jobs:
           make -C tests/serverless serverless-integration serverless-contract-tests
           make remove-serverless
         env:
-          IMG: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.sha }}
+          IMG: ${{ inputs.image }}
+          IMG_DIRECTORY: ${{ inputs.img_directory }}
+          IMG_VERSION: ${{ inputs.img_version }}
