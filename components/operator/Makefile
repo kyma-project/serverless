@@ -101,9 +101,8 @@ generate-kustomization-dev:
 	PROJECT_ROOT=$(PROJECT_ROOT) IMG_DIRECTORY=$(IMG_DIRECTORY) IMG_VERSION=$(IMG_VERSION) $(CONFIG_OPERATOR_DEV)/replcase_images_patch.sh
 
 .PHONY: generate-kustomization-dev-fips-mode
-generate-kustomization-dev-fips-mode:
-	cp $(CONFIG_OPERATOR_DEV)/kustomization.yaml.tpl $(CONFIG_OPERATOR_DEV)/kustomization.yaml
-	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit add patch --path fips-mode-patch.yaml
+generate-kustomization-dev-fips-mode: generate-kustomization-dev
+	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit add patch --path fips-mode-enabled-patch.yaml
 
 .PHONY: deploy-release
 deploy-release: ## Deploy operator to the k8s cluster specified in ~/.kube/config with image from latest release.
