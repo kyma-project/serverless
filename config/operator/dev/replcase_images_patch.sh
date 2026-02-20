@@ -9,21 +9,23 @@ IMG_DIRECTORY=${IMG_DIRECTORY:-""}
 IMG_VERSION=${IMG_VERSION:-""}
 PROJECT_ROOT=${PROJECT_ROOT?"Define PROJECT_ROOT env"}
 
+OPERATOR_DEPLOYMENT=${PROJECT_ROOT}/config/operator/base/deployment/deployment.yaml
+DEFAULT_IMAGES_PATCH=${PROJECT_ROOT}/config/operator/dev/default-images-patch.yaml
+
+# get current images from operatror as template for replacement
+DEPLOY_ENVS="$(yq '.spec.template.spec.containers[0].env | filter(.name == "IMAGE_FUNCTION_*")' ${OPERATOR_DEPLOYMENT})"
+
+echo "Copying image from the operator deployment from ${OPERATOR_DEPLOYMENT}"
+
+# replace images in images patch with current images from operator
+yq --inplace '.spec.template.spec.containers[0].env |= env(DEPLOY_ENVS)' ${DEFAULT_IMAGES_PATCH}
+
 if [ "${IMG_DIRECTORY}" = "" ] || [ "${IMG_VERSION}" = "" ]; then
     echo "Input parameters are not set - skipping images replacement. Images from chart will be used"
     exit 0
 fi
 
-OPERATOR_DEPLOYMENT=${PROJECT_ROOT}/config/operator/base/deployment/deployment.yaml
-DEFAULT_IMAGES_PATCH=${PROJECT_ROOT}/config/operator/dev/default-images-patch.yaml
-
 echo "Replacing images in ${DEFAULT_IMAGES_PATCH} with directory ${IMG_DIRECTORY} and version ${IMG_VERSION}"
-
-# get current images from operatror as template for replacement
-DEPLOY_ENVS="$(yq '.spec.template.spec.containers[0].env | filter(.name == "IMAGE_FUNCTION_*")' ${OPERATOR_DEPLOYMENT})"
-
-# replace images in images patch with current images from operator
-yq --inplace '.spec.template.spec.containers[0].env |= env(DEPLOY_ENVS)' ${DEFAULT_IMAGES_PATCH}
 
 # replace images in images patch with desired ones
 IMAGES_SELECTOR=".spec.template.spec.containers[0].env[] | select(.name == \"IMAGE_FUNCTION*\") | .value ${MAIN_ONLY_SELECTOR}"

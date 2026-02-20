@@ -43,7 +43,3 @@ spec:
               value: ""
             - name: IMAGE_FUNCTION_BUILD_INIT
               value: ""
-            - name: IMAGE_REGISTRY_INIT
-              value: ""
-            - name: IMAGE_REGISTRY
-              value: ""
