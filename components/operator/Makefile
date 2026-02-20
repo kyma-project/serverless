@@ -7,7 +7,9 @@ include ${PROJECT_ROOT}/hack/help.mk
 # incoming variables
 
 # Image URL to use all building/pushing image targets
-IMG ?= europe-docker.pkg.dev/kyma-project/prod/serverless-operator:main
+IMG_DIRECTORY ?= prod
+IMG_VERSION ?= main
+IMG ?= europe-docker.pkg.dev/kyma-project/${IMG_DIRECTORY}/serverless-operator:${IMG_VERSION}
 
 # Setting SHELL to bash allows bash commands to be executed by recipes.
 # Options are set to exit when a recipe line exits non-zero or a piped command fails.

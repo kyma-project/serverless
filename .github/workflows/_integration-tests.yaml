@@ -3,43 +3,35 @@ name: integration tests
 on:
   workflow_dispatch:
     inputs:
-      image:
-        description: 'The image to test'
-        required: true
-        type: string
       trigger_btp:
         description: 'Trigger BTP integration test'
         required: false
         type: boolean
         default: false
       img_directory:
-        description: "Directory of the image (dev/prod)"
+        description: "Directory of the image (dev/prod) used to build right operator's image and its envs in tests"
         required: false
         type: string
         default: ""
       img_version:
-        description: "Version of the image"
+        description: "Version of the image used to build right operator's image and its envs in tests"
         required: false
         type: string
         default: ""
   workflow_call:
     inputs:
-      image:
-        description: 'The image to test'
-        required: true
-        type: string
       trigger_btp:
         description: 'Trigger BTP integration test'
         required: false
         type: boolean
         default: false
       img_directory:
-        description: "Directory of the image (dev/prod)"
+        description: "Directory of the image (dev/prod) used to build right operator's image and its envs in tests"
         required: false
         type: string
         default: ""
       img_version:
-        description: "Version of the image"
+        description: "Version of the image used to build right operator's image and its envs in tests"
         required: false
         type: string
         default: ""
@@ -62,7 +54,6 @@ jobs:
           make -C components/operator deploy
           make -C tests/operator test
         env:
-          IMG: ${{ inputs.image }}
           IMG_DIRECTORY: ${{ inputs.img_directory }}
           IMG_VERSION: ${{ inputs.img_version }}
       - if: ${{ always() }}
@@ -86,7 +77,6 @@ jobs:
           make -C tests/serverless serverless-integration serverless-contract-tests
           make remove-serverless
         env:
-          IMG: ${{ inputs.image }}
           IMG_DIRECTORY: ${{ inputs.img_directory }}
           IMG_VERSION: ${{ inputs.img_version }}
       - name: collect cluster info
@@ -115,7 +105,6 @@ jobs:
           APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}
           APP_TEST_AZURE_BASIC_AUTH_PASSWORD: ${{ secrets.GIT_AUTH_TEST_AZURE_PASSWORD }}
           APP_TEST_AZURE_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_AZURE_SSH_KEY }}
-          IMG: ${{ inputs.image }}
           IMG_DIRECTORY: ${{ inputs.img_directory }}
           IMG_VERSION: ${{ inputs.img_version }}
       - name: collect cluster info
@@ -135,7 +124,6 @@ jobs:
         run: |
           make install-legacy-serverless-custom-operator
         env:
-          IMG: ${{ inputs.image }}
           IMG_DIRECTORY: ${{ inputs.img_directory }}
           IMG_VERSION: ${{ inputs.img_version }}
       - name: install default serverless cr and check cr status
@@ -185,7 +173,6 @@ jobs:
           make -C tests/serverless git-auth-integration
           kubectl delete functions.serverless.kyma-project.io -A --all
         env:
-          IMG: ${{ inputs.image }}
           IMG_DIRECTORY: ${{ inputs.img_directory }}
           IMG_VERSION: ${{ inputs.img_version }}
           APP_TEST_GITHUB_SSH_AUTH_KEY: ${{ secrets.GIT_AUTH_TEST_GITHUB_SSH_KEY }}

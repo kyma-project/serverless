@@ -3,6 +3,10 @@ OPERATOR_ROOT=./components/operator
 include ${PROJECT_ROOT}/hack/help.mk
 include ${PROJECT_ROOT}/hack/k3d.mk
 
+IMG_DIRECTORY ?= dev
+IMG_VERSION ?= main
+IMG ?= europe-docker.pkg.dev/kyma-project/${IMG_DIRECTORY}/serverless-operator:${IMG_VERSION}
+
 ##@ Installation
 .PHONY: install-serverless-main
 install-serverless-main: ## Install serverless with operator using default serverless cr
@@ -15,18 +19,18 @@ install-legacy-serverless-main: ## Install legacy serverless with operator using
 .PHONY: install-serverless-custom-operator
 install-serverless-custom-operator: ## Install serverless with operator from IMG env using default serverless cr
 	$(call check-var,IMG)
-	make -C ${OPERATOR_ROOT} deploy apply-default-serverless-cr check-serverless-installation
+	IMG=$(IMG) make -C ${OPERATOR_ROOT} deploy apply-default-serverless-cr check-serverless-installation
 
 .PHONY: install-legacy-serverless-custom-operator
 install-legacy-serverless-custom-operator: ## Install serverless with operator from IMG env using default serverless cr with legacy function container in-cluster build
 	$(call check-var,IMG)
-	make -C ${OPERATOR_ROOT} deploy apply-legacy-serverless-cr check-serverless-installation
+	IMG=$(IMG) make -C ${OPERATOR_ROOT} deploy apply-legacy-serverless-cr check-serverless-installation
 
 .PHONY: install-serverless-custom-operator-custom-cr
 install-serverless-custom-operator-custom-cr: ## Install serverless with operator from IMG env using custom serverless cr
 	$(call check-var,IMG)
 	$(call check-var,SERVERLESS_CR_PATH)
-	make -C ${OPERATOR_ROOT} deploy apply-custom-serverless-cr check-serverless-installation
+	IMG=$(IMG) make -C ${OPERATOR_ROOT} deploy apply-custom-serverless-cr check-serverless-installation
 
 
 .PHONY: install-serverless-latest-release
