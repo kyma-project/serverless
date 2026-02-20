@@ -45,6 +45,8 @@ COPY config/serverless config/serverless
 COPY config/buildless-serverless config/buildless-serverless
 COPY hack/ hack/
 
+# TODO: do we still need to replace images in buildless-serverless charts?
+# Now we use images from ENVs to replace these images, so maybe we can skip replacing images in buildless-serverless charts?
 RUN if [[ "dev" = "$PURPOSE" ]] ; then ./hack/replace_serverless_chart_images.sh all ; fi
 RUN if [[ "local" = "$PURPOSE" ]] ; then ./hack/replace_serverless_chart_images.sh main-only ; fi
 # do nothing (keep unchanged versions) for "release"

@@ -9,12 +9,6 @@ spec:
       containers:
         - name: manager
           env:
-            - name: IMAGE_FUNCTION_CONTROLLER
-              value: ""
-            - name: IMAGE_FUNCTION_BUILD_INIT
-              value: ""
-            - name: IMAGE_REGISTRY_INIT
-              value: ""
             - name: IMAGE_FUNCTION_RUNTIME_NODEJS20
               value: ""
             - name: IMAGE_FUNCTION_RUNTIME_NODEJS20_FIPS
@@ -31,11 +25,21 @@ spec:
               value: ""
             - name: IMAGE_FUNCTION_RUNTIME_PYTHON312_FIPS
               value: ""
-            - name: IMAGE_KANIKO_EXECUTOR
+            - name: IMAGE_FUNCTION_RUNTIME_PYTHON314
               value: ""
-            - name: IMAGE_REGISTRY
+            - name: IMAGE_FUNCTION_RUNTIME_PYTHON314_FIPS
               value: ""
             - name: IMAGE_FUNCTION_BUILDLESS_CONTROLLER
               value: ""
+            - name: IMAGE_FUNCTION_BUILDLESS_CONTROLLER_FIPS
+              value: ""
             - name: IMAGE_FUNCTION_BUILDLESS_INIT
+              value: ""
+            - name: IMAGE_FUNCTION_BUILDLESS_INIT_FIPS
+              value: ""
+            - name: IMAGE_KANIKO_EXECUTOR
+              value: ""
+            - name: IMAGE_FUNCTION_CONTROLLER
+              value: ""
+            - name: IMAGE_FUNCTION_BUILD_INIT
               value: ""

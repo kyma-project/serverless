@@ -7,7 +7,9 @@ include ${PROJECT_ROOT}/hack/help.mk
 # incoming variables
 
 # Image URL to use all building/pushing image targets
-IMG ?= europe-docker.pkg.dev/kyma-project/prod/serverless-operator:main
+IMG_DIRECTORY ?= prod
+IMG_VERSION ?= main
+IMG ?= europe-docker.pkg.dev/kyma-project/${IMG_DIRECTORY}/serverless-operator:${IMG_VERSION}
 
 # Setting SHELL to bash allows bash commands to be executed by recipes.
 # Options are set to exit when a recipe line exits non-zero or a piped command fails.
@@ -95,11 +97,8 @@ deploy-main: manifests kustomize ## Deploy operator to the K8s cluster specified
 .PHONY: generate-kustomization-dev
 generate-kustomization-dev:
 	cp $(CONFIG_OPERATOR_DEV)/kustomization.yaml.tpl $(CONFIG_OPERATOR_DEV)/kustomization.yaml
-
-.PHONY: generate-kustomization-dev-buildless
-generate-kustomization-dev-buildless:
-	cp $(CONFIG_OPERATOR_DEV)/kustomization.yaml.tpl $(CONFIG_OPERATOR_DEV)/kustomization.yaml
-	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit add patch --path buildless-env-patch.yaml
+	cp $(CONFIG_OPERATOR_DEV)/default-images-patch.yaml.tpl $(CONFIG_OPERATOR_DEV)/default-images-patch.yaml
+	PROJECT_ROOT=$(PROJECT_ROOT) IMG_DIRECTORY=$(IMG_DIRECTORY) IMG_VERSION=$(IMG_VERSION) $(CONFIG_OPERATOR_DEV)/replcase_images_patch.sh
 
 .PHONY: deploy-release
 deploy-release: ## Deploy operator to the k8s cluster specified in ~/.kube/config with image from latest release.

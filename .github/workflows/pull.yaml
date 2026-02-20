@@ -33,4 +33,8 @@ jobs:
     secrets: inherit
     uses: kyma-project/serverless/.github/workflows/_integration-tests.yaml@main
     with:
+      # TODO: remove 'image' and uncomment after merging the changes in _integration-tests.yaml
+      # this job uses workflow from @main so changes on PR will only break the pipeline. We should merge first and then migrate to new args
       image: europe-docker.pkg.dev/kyma-project/dev/serverless-operator:PR-${{ github.event.number }}
+      # img_directory: "dev"
+      # img_version: PR-${{ github.event.number }}

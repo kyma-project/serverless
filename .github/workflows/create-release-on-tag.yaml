@@ -56,7 +56,8 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/_integration-tests.yaml
     with:
-      image: europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.ref_name }}
+      img_directory: "prod"
+      img_version: ${{ github.ref_name }}
       trigger_btp: true 
 
   publish-release:
