@@ -19,14 +19,16 @@ import (
 )
 
 type validator struct {
-	instance *serverlessv1alpha2.Function
-	fnConfig config.FunctionConfig
+	instance  *serverlessv1alpha2.Function
+	fnConfig  config.FunctionConfig
+	checkFips fips.FipsChecker
 }
 
-func New(instance *serverlessv1alpha2.Function, fnConfig config.FunctionConfig) *validator {
+func New(instance *serverlessv1alpha2.Function, fnConfig config.FunctionConfig, checkFips fips.FipsChecker) *validator {
 	return &validator{
-		instance: instance,
-		fnConfig: fnConfig,
+		instance:  instance,
+		fnConfig:  fnConfig,
+		checkFips: checkFips,
 	}
 }
 
@@ -153,7 +155,7 @@ func (v *validator) validateGitRepoURL() []string {
 
 func (v *validator) validateFips() []string {
 	var result []string
-	if !fips.IsFIPS140Only() {
+	if !v.checkFips() {
 		return result
 	}
 	if err := validateSshGitIsForbiddenInFipsMode(v.instance.Spec.Source.GitRepository); err != nil {

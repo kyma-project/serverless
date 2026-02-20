@@ -5,6 +5,12 @@ import (
 	"os"
 )
 
+const (
+	GODEBUG_VALUE = "fips140=on,tlsmlkem=0"
+)
+
+type FipsChecker func() bool
+
 func IsFIPS140Only() bool {
-	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=only,tlsmlkem=0"
+	return fips140.Enabled() && os.Getenv("GODEBUG") == GODEBUG_VALUE
 }
