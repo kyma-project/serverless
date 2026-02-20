@@ -18,13 +18,13 @@ package main
 
 import (
 	"context"
-	"crypto/fips140"
 	"flag"
 	"fmt"
 	"os"
 	"time"
 
 	"github.com/go-logr/logr"
+	"github.com/kyma-project/serverless/components/common/fips"
 	"github.com/kyma-project/serverless/components/operator/internal/logging"
 	"github.com/vrischmann/envconfig"
 
@@ -76,7 +76,7 @@ type operatorConfig struct {
 }
 
 func main() {
-	if !isFIPS140Only() {
+	if !fips.IsFIPS140Only() {
 		fmt.Printf("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags. FIPS not enforced\n")
 		panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
 	}
@@ -181,10 +181,6 @@ func main() {
 		setupLog.Error(err, "problem running manager")
 		os.Exit(1)
 	}
-}
-
-func isFIPS140Only() bool {
-	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=only,tlsmlkem=0"
 }
 
 func loadConfig(prefix string) (operatorConfig, error) {

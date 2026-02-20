@@ -1,6 +1,7 @@
 # Ignore all
 **
 # Allow
+!components/common
 !components/operator/main.go
 !components/operator/api
 !components/operator/controllers

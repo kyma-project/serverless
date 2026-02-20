@@ -1,6 +1,7 @@
 # Ignore all
 **
 # Allow
+!components/common
 !components/buildless-serverless
 !components/runtimes
 !go.sum

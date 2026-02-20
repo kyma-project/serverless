@@ -23,8 +23,6 @@ import (
 	"log"
 	"os"
 
-	"crypto/fips140"
-
 	"sigs.k8s.io/controller-runtime/pkg/handler"
 	"sigs.k8s.io/controller-runtime/pkg/source"
 
@@ -42,6 +40,7 @@ import (
 	orphaned_resources "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/orphaned-resources"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/endpoint"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/logging"
+	"github.com/kyma-project/serverless/components/common/fips"
 	"github.com/vrischmann/envconfig"
 	uberzap "go.uber.org/zap"
 	uberzapcore "go.uber.org/zap/zapcore"
@@ -84,7 +83,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if envCfg.KymaFipsModeEnabled && !isFIPS140Only() {
+	if envCfg.KymaFipsModeEnabled && !fips.IsFIPS140Only() {
 		fmt.Printf("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags. FIPS not enforced\n")
 		panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
 	}
@@ -222,8 +221,4 @@ func loadConfig(prefix string) (serverlessConfig, error) {
 		return cfg, err
 	}
 	return cfg, nil
-}
-
-func isFIPS140Only() bool {
-	return fips140.Enabled() && os.Getenv("GODEBUG") == "fips140=only,tlsmlkem=0"
 }

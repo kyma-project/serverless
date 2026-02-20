@@ -6,11 +6,18 @@ import (
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
+	"github.com/kyma-project/serverless/components/common/fips"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
+
+func mockFipsChecker(enabled bool) fips.FipsChecker {
+	return func() bool {
+		return enabled
+	}
+}
 
 func TestNewFunctionValidator(t *testing.T) {
 	t.Run("create function validator", func(t *testing.T) {
@@ -19,7 +26,7 @@ func TestNewFunctionValidator(t *testing.T) {
 				Name:      "compassionate-villani-name",
 				Namespace: "vigorous-jang-ns"}}
 
-		r := New(f, config.FunctionConfig{})
+		r := New(f, config.FunctionConfig{}, mockFipsChecker(false))
 
 		require.NotNil(t, r)
 		require.NotNil(t, r.instance)
@@ -30,7 +37,7 @@ func TestNewFunctionValidator(t *testing.T) {
 
 func Test_functionValidator_Validate(t *testing.T) {
 	t.Run("when function is valid should return empty list", func(t *testing.T) {
-		v := New(&serverlessv1alpha2.Function{}, config.FunctionConfig{})
+		v := New(&serverlessv1alpha2.Function{}, config.FunctionConfig{}, mockFipsChecker(false))
 
 		r := v.Validate()
 
@@ -44,7 +51,7 @@ func Test_functionValidator_Validate(t *testing.T) {
 				Runtime: "upbeat-boyd",
 			}}
 
-		v := New(f, config.FunctionConfig{})
+		v := New(f, config.FunctionConfig{}, mockFipsChecker(false))
 
 		r := v.Validate()
 
@@ -94,7 +101,7 @@ func Test_functionValidator_validateEnvs(t *testing.T) {
 					Env: tt.envs,
 				}}
 
-			v := New(f, config.FunctionConfig{})
+			v := New(f, config.FunctionConfig{}, mockFipsChecker(false))
 			r := v.validateEnvs()
 			require.ElementsMatch(t, tt.want, r)
 		})
@@ -172,7 +179,7 @@ func Test_functionValidator_validateInlineDeps(t *testing.T) {
 				Spec: tt.spec,
 			}
 
-			v := New(f, config.FunctionConfig{})
+			v := New(f, config.FunctionConfig{}, mockFipsChecker(false))
 			r := v.validateInlineDeps()
 			require.ElementsMatch(t, tt.want, r)
 		})
@@ -214,7 +221,7 @@ func Test_functionValidator_validateRuntime(t *testing.T) {
 				},
 			}
 
-			v := New(f, config.FunctionConfig{})
+			v := New(f, config.FunctionConfig{}, mockFipsChecker(false))
 			r := v.validateRuntime()
 			require.ElementsMatch(t, tt.want, r)
 		})
@@ -429,6 +436,66 @@ func Test_validator_validateGitRepoURL(t *testing.T) {
 				},
 			}
 			got := v.validateGitRepoURL()
+			require.ElementsMatch(t, tt.want, got)
+		})
+	}
+}
+
+func Test_validator_validateFips(t *testing.T) {
+	type testData struct {
+		name     string
+		fipsMode bool
+		URL      string
+		want     []string
+	}
+	tests := []testData{
+		{
+			name:     "FIPS enabled with SSH URL should return error",
+			fipsMode: true,
+			URL:      "git@github.com:user/repo.git",
+			want:     []string{"SSH source.gitRepository.URL is not allowed in FIPS mode"},
+		},
+		{
+			name:     "FIPS enabled with HTTPS URL should return no errors",
+			fipsMode: true,
+			URL:      "https://github.com/user/repo.git",
+			want:     []string{},
+		},
+		{
+			name:     "FIPS enabled with HTTP URL should return no errors",
+			fipsMode: true,
+			URL:      "http://github.com/user/repo.git",
+			want:     []string{},
+		},
+		{
+			name:     "FIPS disabled with SSH URL should return no errors",
+			fipsMode: false,
+			URL:      "git@github.com:user/repo.git",
+			want:     []string{},
+		},
+		{
+			name:     "FIPS disabled with HTTPS URL should return no errors",
+			fipsMode: false,
+			URL:      "https://github.com/user/repo.git",
+			want:     []string{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			v := &validator{
+				instance: &serverlessv1alpha2.Function{
+					Spec: serverlessv1alpha2.FunctionSpec{
+						Source: serverlessv1alpha2.Source{
+							GitRepository: &serverlessv1alpha2.GitRepositorySource{
+								URL: tt.URL,
+							},
+						},
+					},
+				},
+				checkFips: mockFipsChecker(tt.fipsMode),
+			}
+			got := v.validateFips()
 			require.ElementsMatch(t, tt.want, got)
 		})
 	}

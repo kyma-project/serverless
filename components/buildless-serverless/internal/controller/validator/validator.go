@@ -9,6 +9,7 @@ import (
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
+	"github.com/kyma-project/serverless/components/common/fips"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/api/validation"
@@ -18,14 +19,16 @@ import (
 )
 
 type validator struct {
-	instance *serverlessv1alpha2.Function
-	fnConfig config.FunctionConfig
+	instance  *serverlessv1alpha2.Function
+	fnConfig  config.FunctionConfig
+	checkFips fips.FipsChecker
 }
 
-func New(instance *serverlessv1alpha2.Function, fnConfig config.FunctionConfig) *validator {
+func New(instance *serverlessv1alpha2.Function, fnConfig config.FunctionConfig, checkFips fips.FipsChecker) *validator {
 	return &validator{
-		instance: instance,
-		fnConfig: fnConfig,
+		instance:  instance,
+		fnConfig:  fnConfig,
+		checkFips: checkFips,
 	}
 }
 
@@ -38,6 +41,7 @@ func (v *validator) Validate() []string {
 		v.validateFunctionLabels,
 		v.validateFunctionAnnotations,
 		v.validateGitRepoURL,
+		v.validateFips,
 		v.validateFunctionResources,
 	}
 
@@ -149,6 +153,17 @@ func (v *validator) validateGitRepoURL() []string {
 	return result
 }
 
+func (v *validator) validateFips() []string {
+	var result []string
+	if !v.checkFips() {
+		return result
+	}
+	if err := validateSshGitIsForbiddenInFipsMode(v.instance.Spec.Source.GitRepository); err != nil {
+		result = append(result, err.Error())
+	}
+	return result
+}
+
 func (v *validator) validateFunctionResources() []string {
 	rc := v.instance.Spec.ResourceConfiguration
 	minCPU := v.fnConfig.ResourceConfig.Function.Resources.MinRequestCPU.Quantity
@@ -219,6 +234,16 @@ func validateGitRepoURL(gitRepo *serverlessv1alpha2.GitRepositorySource) error {
 		return nil
 	} else if _, err := url.ParseRequestURI(gitRepo.URL); err != nil {
 		return fmt.Errorf("source.gitRepository.URL: %v", err)
+	}
+	return nil
+}
+
+func validateSshGitIsForbiddenInFipsMode(gitRepo *serverlessv1alpha2.GitRepositorySource) error {
+	if gitRepo == nil {
+		return nil
+	}
+	if urlIsSSH(gitRepo.URL) {
+		return errors.New("SSH source.gitRepository.URL is not allowed in FIPS mode")
 	}
 	return nil
 }
