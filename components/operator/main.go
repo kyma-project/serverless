@@ -18,7 +18,6 @@ package main
 
 import (
 	"context"
-	"crypto/fips140"
 	"flag"
 	"fmt"
 	"os"
