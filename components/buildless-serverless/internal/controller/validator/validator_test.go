@@ -446,38 +446,91 @@ func Test_validator_validateFips(t *testing.T) {
 		name     string
 		fipsMode bool
 		URL      string
+		runtime  serverlessv1alpha2.Runtime
 		want     []string
 	}
+	runtimeAllowedInFips := serverlessv1alpha2.NodeJs24
+	urlAllowedInFips := "http://github.com/user/repo.git"
 	tests := []testData{
 		{
 			name:     "FIPS enabled with SSH URL should return error",
 			fipsMode: true,
 			URL:      "git@github.com:user/repo.git",
+			runtime:  runtimeAllowedInFips,
 			want:     []string{"SSH source.gitRepository.URL is not allowed in FIPS mode"},
 		},
 		{
 			name:     "FIPS enabled with HTTPS URL should return no errors",
 			fipsMode: true,
 			URL:      "https://github.com/user/repo.git",
+			runtime:  runtimeAllowedInFips,
 			want:     []string{},
 		},
 		{
 			name:     "FIPS enabled with HTTP URL should return no errors",
 			fipsMode: true,
 			URL:      "http://github.com/user/repo.git",
+			runtime:  runtimeAllowedInFips,
 			want:     []string{},
 		},
 		{
 			name:     "FIPS disabled with SSH URL should return no errors",
 			fipsMode: false,
 			URL:      "git@github.com:user/repo.git",
+			runtime:  runtimeAllowedInFips,
 			want:     []string{},
 		},
 		{
 			name:     "FIPS disabled with HTTPS URL should return no errors",
 			fipsMode: false,
 			URL:      "https://github.com/user/repo.git",
+			runtime:  runtimeAllowedInFips,
 			want:     []string{},
+		},
+		{
+			name:     "FIPS enabled with Python 3.12 runtime should return error",
+			fipsMode: true,
+			URL:      urlAllowedInFips,
+			runtime:  serverlessv1alpha2.Python312,
+			want:     []string{"runtime python312 is not allowed in FIPS mode"},
+		},
+		{
+			name:     "FIPS enabled with Python 3.9 runtime should return error",
+			fipsMode: true,
+			URL:      urlAllowedInFips,
+			runtime:  serverlessv1alpha2.Python39,
+			want:     []string{"runtime python39 is not allowed in FIPS mode"},
+		},
+		{
+			name:     "FIPS enabled with Node.js runtime should return no errors",
+			fipsMode: true,
+			URL:      urlAllowedInFips,
+			runtime:  serverlessv1alpha2.NodeJs24,
+			want:     []string{},
+		},
+		{
+			name:     "FIPS disabled with Python 3.12 runtime should return no errors",
+			fipsMode: false,
+			URL:      urlAllowedInFips,
+			runtime:  serverlessv1alpha2.Python312,
+			want:     []string{},
+		},
+		{
+			name:     "FIPS disabled with Node.js runtime should return no errors",
+			fipsMode: false,
+			URL:      urlAllowedInFips,
+			runtime:  serverlessv1alpha2.NodeJs24,
+			want:     []string{},
+		},
+		{
+			name:     "FIPS enabled with SSH URL and Python 3.12 runtime should return both errors",
+			fipsMode: true,
+			URL:      "git@github.com:user/repo.git",
+			runtime:  serverlessv1alpha2.Python312,
+			want: []string{
+				"SSH source.gitRepository.URL is not allowed in FIPS mode",
+				"runtime python312 is not allowed in FIPS mode",
+			},
 		},
 	}
 
@@ -486,6 +539,7 @@ func Test_validator_validateFips(t *testing.T) {
 			v := &validator{
 				instance: &serverlessv1alpha2.Function{
 					Spec: serverlessv1alpha2.FunctionSpec{
+						Runtime: tt.runtime,
 						Source: serverlessv1alpha2.Source{
 							GitRepository: &serverlessv1alpha2.GitRepositorySource{
 								URL: tt.URL,
