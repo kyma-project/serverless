@@ -9,3 +9,5 @@ images:
   newTag: local
 patches:
 - path: default-images-patch.yaml
+- path: fips-mode-patch.yaml
+

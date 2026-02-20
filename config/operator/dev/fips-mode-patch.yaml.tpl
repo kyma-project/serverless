@@ -10,4 +10,4 @@ spec:
         - name: manager
           env:
             - name: KYMA_FIPS_MODE_ENABLED
-              value: "true"
+              value: "false"
