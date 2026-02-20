@@ -161,6 +161,9 @@ func (v *validator) validateFips() []string {
 	if err := validateSshGitIsForbiddenInFipsMode(v.instance.Spec.Source.GitRepository); err != nil {
 		result = append(result, err.Error())
 	}
+	if err := validatePython312OrOlderIsForbiddenInFipsMode(v.instance.Spec.Runtime); err != nil {
+		result = append(result, err.Error())
+	}
 	return result
 }
 
@@ -244,6 +247,13 @@ func validateSshGitIsForbiddenInFipsMode(gitRepo *serverlessv1alpha2.GitReposito
 	}
 	if urlIsSSH(gitRepo.URL) {
 		return errors.New("SSH source.gitRepository.URL is not allowed in FIPS mode")
+	}
+	return nil
+}
+
+func validatePython312OrOlderIsForbiddenInFipsMode(runtime serverlessv1alpha2.Runtime) error {
+	if runtime == serverlessv1alpha2.Python312 || runtime == serverlessv1alpha2.Python39 {
+		return fmt.Errorf("runtime %s is not allowed in FIPS mode", runtime)
 	}
 	return nil
 }
