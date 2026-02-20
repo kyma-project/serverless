@@ -18,6 +18,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy the go source
+COPY components/common components/common
 COPY components/operator components/operator
 
 # Build
