@@ -162,16 +162,6 @@ func (v *validator) validateFips() []string {
 	return result
 }
 
-func validateSshGitIsForbiddenInFipsMode(gitRepo *serverlessv1alpha2.GitRepositorySource) error {
-	if gitRepo == nil {
-		return nil
-	}
-	if urlIsSSH(gitRepo.URL) {
-		return errors.New("SSH source.gitRepository.URL is not allowed in FIPS mode")
-	}
-	return nil
-}
-
 func (v *validator) validateFunctionResources() []string {
 	rc := v.instance.Spec.ResourceConfiguration
 	minCPU := v.fnConfig.ResourceConfig.Function.Resources.MinRequestCPU.Quantity
@@ -242,6 +232,16 @@ func validateGitRepoURL(gitRepo *serverlessv1alpha2.GitRepositorySource) error {
 		return nil
 	} else if _, err := url.ParseRequestURI(gitRepo.URL); err != nil {
 		return fmt.Errorf("source.gitRepository.URL: %v", err)
+	}
+	return nil
+}
+
+func validateSshGitIsForbiddenInFipsMode(gitRepo *serverlessv1alpha2.GitRepositorySource) error {
+	if gitRepo == nil {
+		return nil
+	}
+	if urlIsSSH(gitRepo.URL) {
+		return errors.New("SSH source.gitRepository.URL is not allowed in FIPS mode")
 	}
 	return nil
 }
