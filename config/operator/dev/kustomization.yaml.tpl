@@ -9,5 +9,3 @@ images:
   newTag: local
 patches:
 - path: default-images-patch.yaml
-
-
