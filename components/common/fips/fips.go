@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	GODEBUG_VALUE = "fips140=on,tlsmlkem=0"
+	GODEBUG_VALUE = "fips140=only,tlsmlkem=0"
 )
 
 type FipsChecker func() bool
