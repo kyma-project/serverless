@@ -52,12 +52,12 @@ func VerifyOld(utils *utils.TestUtils) error {
 		return err
 	}
 
-	if utils.LegacyMode {
-		return deployment.VerifyCtrlMngrEnvs(utils, &serverless)
+	if err := deployment.VerifyCtrlMngrEnvs(utils, &serverless); err != nil {
+		return err
 	}
 
-	if !utils.LegacyMode {
-		return deployment.VerifyCtrlMngrAnnotations(utils)
+	if err := deployment.VerifyCtrlMngrAnnotations(utils); err != nil {
+		return err
 	}
 
 	return configmap.VerifyServerlessConfigmap(utils, &serverless)

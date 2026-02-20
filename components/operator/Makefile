@@ -98,7 +98,12 @@ deploy-main: manifests kustomize ## Deploy operator to the K8s cluster specified
 generate-kustomization-dev:
 	cp $(CONFIG_OPERATOR_DEV)/kustomization.yaml.tpl $(CONFIG_OPERATOR_DEV)/kustomization.yaml
 	cp $(CONFIG_OPERATOR_DEV)/default-images-patch.yaml.tpl $(CONFIG_OPERATOR_DEV)/default-images-patch.yaml
-	PROJECT_ROOT=$(PROJECT_ROOT) IMG_DIRECTORY=$(IMG_DIRECTORY) IMG_VERSION=$(IMG_VERSION) $(CONFIG_OPERATOR_DEV)/replcase_images_patch.sh
+	cp $(CONFIG_OPERATOR_DEV)/fips-mode-patch.yaml.tpl $(CONFIG_OPERATOR_DEV)/fips-mode-patch.yaml
+	PROJECT_ROOT=$(PROJECT_ROOT) IMG_DIRECTORY=$(IMG_DIRECTORY) IMG_VERSION=$(IMG_VERSION) $(CONFIG_OPERATOR_DEV)/replace_images_patch.sh
+
+.PHONY: generate-kustomization-dev-fips-mode
+generate-kustomization-dev-fips-mode: generate-kustomization-dev
+	PROJECT_ROOT=$(PROJECT_ROOT) $(CONFIG_OPERATOR_DEV)/replace_fips_mode_env.sh
 
 .PHONY: deploy-release
 deploy-release: ## Deploy operator to the k8s cluster specified in ~/.kube/config with image from latest release.
@@ -107,6 +112,12 @@ deploy-release: ## Deploy operator to the k8s cluster specified in ~/.kube/confi
 
 .PHONY: deploy
 deploy: manifests kustomize generate-kustomization-dev ## Deploy operator to the K8s cluster specified in ~/.kube/config with image from IMG env.
+	kubectl create namespace kyma-system || true
+	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit set image europe-docker.pkg.dev/kyma-project/prod/serverless-operator=${IMG}
+	$(KUSTOMIZE) build $(CONFIG_OPERATOR_DEV) | kubectl apply -f -
+
+.PHONY: deploy-fips-mode
+deploy-fips-mode: manifests kustomize generate-kustomization-dev-fips-mode ## Deploy operator in FIPS mode to the K8s cluster specified in ~/.kube/config with image from
 	kubectl create namespace kyma-system || true
 	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit set image europe-docker.pkg.dev/kyma-project/prod/serverless-operator=${IMG}
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR_DEV) | kubectl apply -f -

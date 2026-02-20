@@ -51,7 +51,7 @@ spec:
             - name: IMAGE_FUNCTION_RUNTIME_NODEJS20
               value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main
             - name: IMAGE_FUNCTION_RUNTIME_NODEJS20_FIPS
-              value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main
+              value: europe-docker.pkg.dev/kyma-project/restricted-prod/function-runtime-nodejs20-fips:main
             - name: IMAGE_FUNCTION_RUNTIME_NODEJS22
               value: europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:main
             - name: IMAGE_FUNCTION_RUNTIME_NODEJS22_FIPS

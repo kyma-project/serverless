@@ -22,10 +22,37 @@ func VerifyCtrlMngrEnvs(testutils *utils.TestUtils, serverless *v1alpha1.Serverl
 		return err
 	}
 
-	return verifyDeployEnvs(&deploy, serverless)
+	if testutils.FipsMode {
+		return verifyFipsModeDeployEnvs(&deploy, serverless)
+	}
+
+	if testutils.LegacyMode {
+		return verifyLegacyDeployEnvs(&deploy, serverless)
+	}
+
+	return nil
+}
+
+func VerifyFipsModeCtrlMngrEnvs(testutils *utils.TestUtils, serverless *v1alpha1.Serverless) error {
+	var deploy appsv1.Deployment
+	objectKey := client.ObjectKey{
+		Name:      testutils.ServerlessCtrlDeployName,
+		Namespace: testutils.Namespace,
+	}
+
+	err := testutils.Client.Get(testutils.Ctx, objectKey, &deploy)
+	if err != nil {
+		return err
+	}
+
+	return verifyFipsModeDeployEnvs(&deploy, serverless)
 }
 
 func VerifyCtrlMngrAnnotations(testutils *utils.TestUtils) error {
+	if testutils.LegacyMode {
+		// in legacy mode annotations are not applied, so skip the check
+		return nil
+	}
 	var deploy appsv1.Deployment
 	objectKey := client.ObjectKey{
 		Name:      testutils.ServerlessCtrlDeployName,
@@ -57,7 +84,27 @@ func verifyPodTemplateAnnotations(podTemplate *corev1.PodTemplateSpec) error {
 	return nil
 }
 
-func verifyDeployEnvs(deploy *appsv1.Deployment, serverless *v1alpha1.Serverless) error {
+func verifyFipsModeDeployEnvs(deploy *appsv1.Deployment, serverless *v1alpha1.Serverless) error {
+	expectedEnvs := []corev1.EnvVar{
+		{
+			Name:  "APP_KYMA_FIPS_MODE_ENABLED",
+			Value: "true",
+		},
+		{
+			Name:  "GODEBUG",
+			Value: "fips140=only,tlsmlkem=0",
+		},
+	}
+	for _, expectedEnv := range expectedEnvs {
+		if !isEnvReflected(expectedEnv, &deploy.Spec.Template.Spec.Containers[0]) {
+			return fmt.Errorf("env '%s' with value '%s' not found in deployment", expectedEnv.Name, expectedEnv.Value)
+		}
+	}
+
+	return nil
+}
+
+func verifyLegacyDeployEnvs(deploy *appsv1.Deployment, serverless *v1alpha1.Serverless) error {
 	expectedEnvs := []corev1.EnvVar{
 		{
 			Name:  "APP_FUNCTION_TRACE_COLLECTOR_ENDPOINT",
