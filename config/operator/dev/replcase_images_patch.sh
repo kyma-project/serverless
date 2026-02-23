@@ -18,7 +18,8 @@ DEPLOY_ENVS="$(yq '.spec.template.spec.containers[0].env | filter(.name == "IMAG
 echo "Copying image from the operator deployment from ${OPERATOR_DEPLOYMENT}"
 
 # replace images in images patch with current images from operator
-yq --inplace '.spec.template.spec.containers[0].env |= env(DEPLOY_ENVS)' ${DEFAULT_IMAGES_PATCH}
+DEPLOY_ENVS=${DEPLOY_ENVS} \
+    yq --inplace '.spec.template.spec.containers[0].env |= env(DEPLOY_ENVS)' ${DEFAULT_IMAGES_PATCH}
 
 if [ "${IMG_DIRECTORY}" = "" ] || [ "${IMG_VERSION}" = "" ]; then
     echo "Input parameters are not set - skipping images replacement. Images from chart will be used"
