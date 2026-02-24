@@ -119,7 +119,7 @@ jobs:
         run: |
           kubectl create namespace kyma-system || true
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
-          make install-serverless-custom-operator
+          make install-fips-serverless-custom-operator
           make -C tests/serverless serverless-integration-fips serverless-contract-tests
           make remove-serverless
         env:
