@@ -1,6 +1,12 @@
 # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
 
 version: 2
+registries:
+  restricted: # Define access for a restricted registry
+    type: docker-registry
+    url: europe-docker.pkg.dev
+    username: _json_key_base64
+    password: ${{secrets.RESTRICTED_REPO_SA_BASE64}}
 updates:
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -118,6 +124,8 @@ updates:
     labels:
       - "area/dependency"
       - "kind/chore"
+    registries:
+      - restricted
     schedule:
       interval: "weekly"
     commit-message:
@@ -145,6 +153,8 @@ updates:
       - "kind/chore"
     schedule:
       interval: "weekly"
+    registries:
+      - restricted
     commit-message:
       prefix: "nodejs22"
       include: "scope"
@@ -159,6 +169,8 @@ updates:
       - "kind/chore"
     schedule:
       interval: "weekly"
+    registries:
+      - restricted
     commit-message:
       prefix: "nodejs24"
       include: "scope"
