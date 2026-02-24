@@ -64,7 +64,13 @@ var availableScenarios = map[string][]testSuite{
 		{name: "simple", test: testsuite.SimpleFunctionTest},
 		{name: "gitops", test: testsuite.GitopsSteps},
 	},
-	"git-auth-integration": {{name: "gitauth", test: testsuite.GitAuthTestSteps}},
+	"serverless-integration-fips": {
+		{name: "simple", test: testsuite.FIPSSimpleFunctionTest},
+		{name: "gitops", test: testsuite.GitopsSteps},
+	},
+	"git-auth-integration": {
+		{name: "gitauth", test: testsuite.GitAuthTestSteps},
+	},
 	"serverless-contract-tests": {
 		{name: "tracing", test: testsuite.FunctionTracingTest},
 		{name: "api-gateway", test: testsuite.FunctionAPIGatewayTest},
