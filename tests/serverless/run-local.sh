@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source "collect_logs.sh"
+set -e -o pipefail
 
 kubectl proxy &
 KUBECTL_PID=$!

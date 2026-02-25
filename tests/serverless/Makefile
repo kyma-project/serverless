@@ -16,6 +16,10 @@ compile:
 serverless-integration: ## Run serverless integration scenario with kubectl proxy
 	./run-local.sh serverless-integration
 
+.PHONY: serverless-integration-fips-mode
+serverless-integration-fips-mode: ## Run serverless integration scenario with kubectl proxy in FIPS mode
+	./run-local.sh serverless-integration-fips-mode
+
 .PHONY: git-auth-integration
 git-auth-integration: ## Run git authorization integration scenario with kubectl proxy
 	./run-local.sh git-auth-integration
