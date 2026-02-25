@@ -165,6 +165,75 @@ func NodeJSFunctionWithEnvFromConfigMapAndSecret(configMapName, cmEnvKey, secret
 	}
 }
 
+func NodeJSPublishingProxyMock(rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
+	src := `let event_data = new Map();
+
+module.exports = {
+  main: async function (event, context) {
+    console.log("event headers: " + JSON.stringify(event.extensions.request.headers));
+    console.log("event data: ", JSON.stringify(event.extensions.request.body));
+    console.log("event method: ", event.extensions.request.method);
+    req = event.extensions.request;
+
+    if (event.extensions.request.method === "GET") {
+      event_type = req.query.type;
+      if (event_type === undefined) {
+        data = JSON.stringify(Object.fromEntries(event_data));
+        console.log("type is not specified, returning all event data: " + data);
+        return data;
+      }
+      source = req.query.source;
+      runtime_events = event_data.get(source);
+      console.log(JSON.stringify(runtime_events));
+      saved_event = runtime_events[event_type];
+      console.log("getting saved event from memory for type:", event_type, ", for source: ", source, ", returning: ", JSON.stringify(saved_event));
+      return JSON.stringify(saved_event);
+    }
+
+    if (event.extensions.request.method === "POST") {
+      resp = event.extensions.response;
+      delete event.extensions;
+      delete event.tracer;
+      ce_source = event["ce-source"];
+      subMap = new Map();
+      subMap.set(event["ce-type"], event);
+      event_data.set(ce_source, Object.fromEntries(subMap));
+      console.log("saving event data to memory: " + JSON.stringify(event));
+      console.log("currently saved events: " + JSON.stringify(Object.fromEntries(event_data)));
+      resp.status(201);
+      return ;
+    }
+    
+
+    event.setResponseStatus(405);
+    return "Unexpected call, returning: 405";
+  }
+}
+`
+
+	return serverlessv1alpha2.FunctionSpec{
+		Runtime: rtm,
+		Source: serverlessv1alpha2.Source{
+			Inline: &serverlessv1alpha2.InlineSource{
+				Source:       src,
+				Dependencies: `{ "dependencies": {} }`,
+			},
+		},
+		Env: []v1.EnvVar{},
+		Labels: map[string]string{
+			"app.kubernetes.io/name": "eventing-publisher-proxy",
+		},
+		ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
+			Function: &serverlessv1alpha2.ResourceRequirements{
+				Profile: "L",
+			},
+			Build: &serverlessv1alpha2.ResourceRequirements{
+				Profile: "fast",
+			},
+		},
+	}
+}
+
 func NodeJSFunctionWithCloudEvent(rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
 	src := `const process = require("process");
 const axios = require('axios');

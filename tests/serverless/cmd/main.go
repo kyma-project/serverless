@@ -83,7 +83,7 @@ var availableScenarios = map[string][]testSuite{
 	"serverless-contract-tests-fips-mode": {
 		{name: "tracing", test: testsuite.FunctionTracingFIPS},
 		{name: "api-gateway", test: testsuite.FunctionAPIGatewayFIPS},
-		{name: "cloud-events", test: testsuite.FunctionCloudEvents},
+		{name: "cloud-events", test: testsuite.FunctionCloudEventsFIPS},
 		{name: "hana-client", test: testsuite.HanaClientFIPS},
 	},
 }
