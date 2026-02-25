@@ -20,7 +20,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func HanaClientTest(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
+func HanaClient(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
 	now := time.Now()
 	cfg.Namespace = fmt.Sprintf("%s-%02dh%02dm%02ds", "test-hana-client", now.Hour(), now.Minute(), now.Second())
 

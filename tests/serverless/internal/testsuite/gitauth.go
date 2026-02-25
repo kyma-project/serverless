@@ -66,7 +66,7 @@ type AzureRepo struct {
 	SSHAuth
 }
 
-func FIPSGitAuthTestSteps(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
+func GitAuthFIPS(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
 	testCfg := &config{}
 	if err := envconfig.InitWithPrefix(testCfg, "APP_TEST"); err != nil {
 		return nil, errors.Wrap(err, "while loading git auth test config")
@@ -94,7 +94,7 @@ func FIPSGitAuthTestSteps(restConfig *rest.Config, cfg internal.Config, logf *lo
 				createAzureFunctionStep(genericContainer.Log, azureBasicFn, azureBasicTC)))), nil
 }
 
-func GitAuthTestSteps(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
+func GitAuth(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
 	testCfg := &config{}
 	if err := envconfig.InitWithPrefix(testCfg, "APP_TEST"); err != nil {
 		return nil, errors.Wrap(err, "while loading git auth test config")
