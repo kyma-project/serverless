@@ -7,11 +7,11 @@
 
 
 PROJECT_ROOT=${PROJECT_ROOT?"Define PROJECT_ROOT env"}
+FIPS_MODE=${FIPS_MODE:-"true"}
 
 FIPS_MODE_PATCH=${PROJECT_ROOT}/config/operator/dev/fips-mode-patch.yaml
 
 echo "Enabling fips mode in ${FIPS_MODE_PATCH}"
 
 # replace images in images patch with current images from operator
-yq --inplace '.spec.template.spec.containers[0].env[0].value = "true"' ${FIPS_MODE_PATCH}
-
+yq --inplace ".spec.template.spec.containers[0].env[0].value = \"${FIPS_MODE}\"" ${FIPS_MODE_PATCH}
