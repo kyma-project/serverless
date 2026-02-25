@@ -105,7 +105,7 @@ jobs:
         if: ${{ always() }}
         run: make -C tests/serverless cluster-info
   
-  serverless-integration-test-fips:
+  fips-mode-serverless-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
     steps:
@@ -119,8 +119,8 @@ jobs:
         run: |
           kubectl create namespace kyma-system || true
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
-          make install-fips-serverless-custom-operator
-          make -C tests/serverless serverless-integration-fips serverless-contract-tests
+          make install-serverless-fips-mode-custom-operator
+          make -C tests/serverless serverless-integration-fips-mode serverless-contract-tests
           make remove-serverless
         env:
           IMG_DIRECTORY: ${{ inputs.img_directory }}

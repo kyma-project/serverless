@@ -64,7 +64,7 @@ var availableScenarios = map[string][]testSuite{
 		{name: "simple", test: testsuite.SimpleFunctionTest},
 		{name: "gitops", test: testsuite.GitopsSteps},
 	},
-	"serverless-integration-fips": {
+	"serverless-integration-fips-mode": {
 		{name: "simple", test: testsuite.SimpleFunctionFIPSTest},
 		{name: "gitops", test: testsuite.GitopsSteps},
 	},

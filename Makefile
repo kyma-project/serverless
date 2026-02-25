@@ -21,8 +21,8 @@ install-serverless-custom-operator: ## Install serverless with operator from IMG
 	$(call check-var,IMG)
 	IMG=$(IMG) make -C ${OPERATOR_ROOT} deploy apply-default-serverless-cr check-serverless-installation
 
-.PHONY: install-fips-serverless-custom-operator
-install-fips-serverless-custom-operator: ## Install serverless with operator from IMG env using default serverless cr in FIPS mode
+.PHONY: install-serverless-fips-mode-custom-operator
+install-serverless-fips-mode-custom-operator: ## Install serverless with operator from IMG env using default serverless cr in FIPS mode
 	$(call check-var,IMG)
 	IMG=$(IMG) make -C ${OPERATOR_ROOT} deploy-fips-mode apply-default-serverless-cr-fips check-serverless-installation
 
