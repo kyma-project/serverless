@@ -175,7 +175,7 @@ jobs:
         run: |
           kubectl create namespace kyma-system || true
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
-          make install-fips-mode-serverless-custom-operator
+          make install-serverless-fips-mode-custom-operator
           make -C tests/serverless git-auth-integration-fips-mode
           make remove-serverless
         env:
