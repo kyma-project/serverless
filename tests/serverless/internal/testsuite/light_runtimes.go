@@ -40,7 +40,7 @@ var (
 	}
 )
 
-func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
+func SimpleFunction(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
 	now := time.Now()
 	cfg.Namespace = fmt.Sprintf("%s-%02dh%02dm%02ds", "test-serverless-simple", now.Hour(), now.Minute(), now.Second())
 
@@ -73,7 +73,7 @@ func SimpleFunctionTest(restConfig *rest.Config, cfg internal.Config, logf *logr
 	), nil
 }
 
-func SimpleFunctionFIPSTest(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
+func SimpleFunctionFIPS(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
 	now := time.Now()
 	cfg.Namespace = fmt.Sprintf("%s-%02dh%02dm%02ds", "test-serverless-simple", now.Hour(), now.Minute(), now.Second())
 

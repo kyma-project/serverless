@@ -66,7 +66,35 @@ type AzureRepo struct {
 	SSHAuth
 }
 
-func GitAuthTestSteps(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
+func GitAuthFIPS(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
+	testCfg := &config{}
+	if err := envconfig.InitWithPrefix(testCfg, "APP_TEST"); err != nil {
+		return nil, errors.Wrap(err, "while loading git auth test config")
+	}
+
+	coreCli, err := typedcorev1.NewForConfig(restConfig)
+	if err != nil {
+		return nil, errors.Wrapf(err, "while creating k8s core client")
+	}
+
+	genericContainer, err := setupSharedContainer(restConfig, cfg, logf)
+	if err != nil {
+		return nil, errors.Wrapf(err, "while creating Shared Container")
+	}
+
+	azureBasicTC := getAzureDevopsBasicTestcase(testCfg)
+	azureBasicSecret := secret.NewSecret(azureBasicTC.auth.SecretName, genericContainer)
+	azureBasicFn := function.NewFunction(azureBasicTC.name, genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer)
+
+	return executor.NewSerialTestRunner(logf, "Test Git function authentication",
+		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
+		executor.NewParallelRunner(logf, "Providers tests",
+			executor.NewSerialTestRunner(genericContainer.Log, fmt.Sprintf("%s Function Azure basic auth test", azureBasicTC.provider),
+				secret.CreateSecret(genericContainer.Log, azureBasicSecret, "Create Azure Basic Auth Secret", azureBasicTC.secretData),
+				createAzureFunctionStep(genericContainer.Log, azureBasicFn, azureBasicTC)))), nil
+}
+
+func GitAuth(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
 	testCfg := &config{}
 	if err := envconfig.InitWithPrefix(testCfg, "APP_TEST"); err != nil {
 		return nil, errors.Wrap(err, "while loading git auth test config")
@@ -92,12 +120,12 @@ func GitAuthTestSteps(restConfig *rest.Config, cfg internal.Config, logf *logrus
 	azureBasicSecret := secret.NewSecret(azureBasicTC.auth.SecretName, genericContainer)
 	azureBasicFn := function.NewFunction(azureBasicTC.name, genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer)
 
-	azureSshTC, err := getAzureDevopsSshTestcase(testCfg)
+	azureSSHTC, err := getAzureDevopsSshTestcase(testCfg)
 	if err != nil {
 		return nil, errors.Wrapf(err, "while setting azure ssh testcase")
 	}
-	azureSshSecret := secret.NewSecret(azureSshTC.auth.SecretName, genericContainer)
-	azureSshFn := function.NewFunction(azureSshTC.name, genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer)
+	azureSSHSecret := secret.NewSecret(azureSSHTC.auth.SecretName, genericContainer)
+	azureSSHFn := function.NewFunction(azureSSHTC.name, genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer)
 
 	githubTC, err := getGithubTestcase(testCfg)
 	if err != nil {
@@ -113,10 +141,10 @@ func GitAuthTestSteps(restConfig *rest.Config, cfg internal.Config, logf *logrus
 				secret.CreateSecret(genericContainer.Log, azureBasicSecret, "Create Azure Basic Auth Secret", azureBasicTC.secretData),
 				createAzureFunctionStep(genericContainer.Log, azureBasicFn, azureBasicTC),
 				assertion.NewHTTPCheck(genericContainer.Log, "Git Function simple check through gateway", azureBasicFn.FunctionURL, poll, azureBasicTC.expectedResponse)),
-			executor.NewSerialTestRunner(genericContainer.Log, fmt.Sprintf("%s Function Azure SSH auth test", azureSshTC.provider),
-				secret.CreateSecret(genericContainer.Log, azureSshSecret, "Create Azure Basic Auth Secret", azureSshTC.secretData),
-				createAzureFunctionStep(genericContainer.Log, azureSshFn, azureSshTC),
-				assertion.NewHTTPCheck(genericContainer.Log, "Git Function simple check through gateway", azureSshFn.FunctionURL, poll, azureSshTC.expectedResponse)),
+			executor.NewSerialTestRunner(genericContainer.Log, fmt.Sprintf("%s Function Azure SSH auth test", azureSSHTC.provider),
+				secret.CreateSecret(genericContainer.Log, azureSSHSecret, "Create Azure SSH Auth Secret", azureSSHTC.secretData),
+				createAzureFunctionStep(genericContainer.Log, azureSSHFn, azureSSHTC),
+				assertion.NewHTTPCheck(genericContainer.Log, "Git Function simple check through gateway", azureSSHFn.FunctionURL, poll, azureSSHTC.expectedResponse)),
 			executor.NewSerialTestRunner(genericContainer.Log, fmt.Sprintf("%s Function auth test", githubTC.provider),
 				secret.CreateSecret(genericContainer.Log, githubSecret, "Create Github Auth Secret", githubTC.secretData),
 				createGithubFunctionStep(genericContainer.Log, githubFn, githubTC),

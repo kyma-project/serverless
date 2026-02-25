@@ -61,21 +61,24 @@ type testSuite struct {
 
 var availableScenarios = map[string][]testSuite{
 	"serverless-integration": {
-		{name: "simple", test: testsuite.SimpleFunctionTest},
-		{name: "gitops", test: testsuite.GitopsSteps},
+		{name: "simple", test: testsuite.SimpleFunction},
+		{name: "gitops", test: testsuite.Gitops},
 	},
 	"serverless-integration-fips-mode": {
-		{name: "simple", test: testsuite.SimpleFunctionFIPSTest},
-		{name: "gitops", test: testsuite.GitopsSteps},
+		{name: "simple", test: testsuite.SimpleFunctionFIPS},
+		{name: "gitops", test: testsuite.Gitops},
 	},
 	"git-auth-integration": {
-		{name: "gitauth", test: testsuite.GitAuthTestSteps},
+		{name: "gitauth", test: testsuite.GitAuth},
+	},
+	"git-auth-integration-fips-mode": {
+		{name: "gitauth", test: testsuite.GitAuthFIPS},
 	},
 	"serverless-contract-tests": {
-		{name: "tracing", test: testsuite.FunctionTracingTest},
-		{name: "api-gateway", test: testsuite.FunctionAPIGatewayTest},
-		{name: "cloud-events", test: testsuite.FunctionCloudEventsTest},
-		{name: "hana-client", test: testsuite.HanaClientTest},
+		{name: "tracing", test: testsuite.FunctionTracing},
+		{name: "api-gateway", test: testsuite.FunctionAPIGateway},
+		{name: "cloud-events", test: testsuite.FunctionCloudEvents},
+		{name: "hana-client", test: testsuite.HanaClient},
 	},
 }
 
