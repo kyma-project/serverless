@@ -52,3 +52,4 @@ examples/python-text2img/resources/secrets/deepai.env
 tests/serverless/.env
 
 examples/use-sap-btp-service/k8s-resources/service-manager-credentials.env
+config/operator/dev/fips-mode-patch.yaml

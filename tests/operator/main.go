@@ -30,6 +30,8 @@ func main() {
 		os.Exit(1)
 	}
 
+	fipsMode := os.Getenv("FIPS_MODE") == "true"
+	log.Infof("Starting serverless operator tests; FIPS mode: %t", fipsMode)
 	log.Info("Configuring test essentials")
 	client, err := utils.GetKuberentesClient()
 	if err != nil {
@@ -39,6 +41,7 @@ func main() {
 
 	log.Info("Start legacy serverless scenario")
 	err = runScenario(&utils.TestUtils{
+		FipsMode:   fipsMode,
 		LegacyMode: true,
 		Namespace:  fmt.Sprintf("serverless-legacy-test-%s", uuid.New().String()),
 		Ctx:        ctx,
@@ -78,6 +81,7 @@ func main() {
 
 	log.Info("Start default serverless scenario")
 	err = runScenario(&utils.TestUtils{
+		FipsMode:   fipsMode,
 		LegacyMode: false,
 		Namespace:  fmt.Sprintf("serverless-test-%s", uuid.New().String()),
 		Ctx:        ctx,
@@ -110,6 +114,12 @@ func main() {
 }
 
 func runScenario(testutil *utils.TestUtils) error {
+
+	if testutil.FipsMode && testutil.LegacyMode {
+		testutil.Logger.Info("Skipping FIPS mode test for legacy serverless")
+		return nil
+	}
+
 	// create test namespace
 	testutil.Logger.Infof("Creating namespace '%s'", testutil.Namespace)
 	if err := namespace.Create(testutil); err != nil {

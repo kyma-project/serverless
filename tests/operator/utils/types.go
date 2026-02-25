@@ -23,4 +23,5 @@ type TestUtils struct {
 	ServerlessConfigMapName  string
 	ServerlessUpdateSpec     v1alpha1.ServerlessSpec
 	LegacyMode               bool
+	FipsMode                 bool
 }
