@@ -157,7 +157,7 @@ jobs:
         if: ${{ always() }}
         run: make -C tests/serverless cluster-info
   
-  git-auth-integration-test-fips:
+  fips-mode-git-auth-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
     steps:
@@ -172,7 +172,7 @@ jobs:
           kubectl create namespace kyma-system || true
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make install-fips-serverless-custom-operator
-          make -C tests/serverless git-auth-integration-fips
+          make -C tests/serverless git-auth-integration-fips-mode
           make remove-serverless
         env:
           APP_TEST_AZURE_BASIC_AUTH_USERNAME: ${{ secrets.GIT_AUTH_TEST_AZURE_USERNAME }}

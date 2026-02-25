@@ -71,7 +71,7 @@ var availableScenarios = map[string][]testSuite{
 	"git-auth-integration": {
 		{name: "gitauth", test: testsuite.GitAuthTestSteps},
 	},
-	"git-auth-integration-fips": {
+	"git-auth-integration-fips-mode": {
 		{name: "gitauth", test: testsuite.FIPSGitAuthTestSteps},
 	},
 	"serverless-contract-tests": {

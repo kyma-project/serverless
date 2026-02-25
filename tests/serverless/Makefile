@@ -24,9 +24,9 @@ serverless-integration-fips-mode: ## Run serverless integration scenario with ku
 git-auth-integration: ## Run git authorization integration scenario with kubectl proxy
 	./run-local.sh git-auth-integration
 
-.PHONY: git-auth-integration-fips
-git-auth-integration-fips: ## Run git authorization integration scenario with kubectl proxy in FIPS mode
-	./run-local.sh git-auth-integration-fips
+.PHONY: git-auth-integration-fips-mode
+git-auth-integration-fips-mode: ## Run git authorization integration scenario with kubectl proxy in FIPS mode
+	./run-local.sh git-auth-integration-fips-mode
 
 .PHONY: serverless-contract-tests
 serverless-contract-tests: ## Run serverless contract tests with kubectl proxy
