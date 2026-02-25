@@ -65,10 +65,10 @@ func SimpleFunction(restConfig *rest.Config, cfg internal.Config, logf *logrus.E
 		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
 		newRegistryConfigSecretStep(logf, genericContainer, cfg),
 		executor.NewParallelRunner(logf, "Fn tests",
-			newPython312TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
-			newNodejs20TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
-			newNodejs22TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
-			newNodejs24TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
+			newSimplePython312TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
+			newSimpleNodejs20TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
+			newSimpleNodejs22TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
+			newSimpleNodejs24TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
 		),
 	), nil
 }
@@ -98,8 +98,8 @@ func SimpleFunctionFIPS(restConfig *rest.Config, cfg internal.Config, logf *logr
 		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
 		newRegistryConfigSecretStep(logf, genericContainer, cfg),
 		executor.NewParallelRunner(logf, "Fn tests",
-			newNodejs22TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
-			newNodejs24TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
+			newSimpleNodejs22TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
+			newSimpleNodejs24TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
 		),
 	), nil
 }
@@ -129,7 +129,7 @@ func newRegistryConfigSecretStep(logf *logrus.Entry, genericContainer utils.Cont
 	return secret.CreateSecret(logf, pkgCfgSecret, "Create package configuration secret", pkgCfgSecretData)
 }
 
-func newNodejs20TestRunner(logf *logrus.Entry, poll utils.Poller, genericContainer utils.Container, kubectlProxyEnabled bool) *executor.SerialRunner {
+func newSimpleNodejs20TestRunner(logf *logrus.Entry, poll utils.Poller, genericContainer utils.Container, kubectlProxyEnabled bool) *executor.SerialRunner {
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
 	nodejs20Fn := function.NewFunction("nodejs20", genericContainer.Namespace, kubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
 	cmNodeJS20 := configmap.NewConfigMap("test-serverless-configmap-nodejs20", genericContainer.WithLogger(nodejs20Logger))
@@ -145,7 +145,7 @@ func newNodejs20TestRunner(logf *logrus.Entry, poll utils.Poller, genericContain
 	)
 }
 
-func newNodejs22TestRunner(logf *logrus.Entry, poll utils.Poller, genericContainer utils.Container, kubectlProxyEnabled bool) *executor.SerialRunner {
+func newSimpleNodejs22TestRunner(logf *logrus.Entry, poll utils.Poller, genericContainer utils.Container, kubectlProxyEnabled bool) *executor.SerialRunner {
 	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
 	nodejs22Fn := function.NewFunction("nodejs22", genericContainer.Namespace, kubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
 	cmNodeJS22 := configmap.NewConfigMap("test-serverless-configmap-nodejs22", genericContainer.WithLogger(nodejs22Logger))
@@ -161,7 +161,7 @@ func newNodejs22TestRunner(logf *logrus.Entry, poll utils.Poller, genericContain
 	)
 }
 
-func newNodejs24TestRunner(logf *logrus.Entry, poll utils.Poller, genericContainer utils.Container, kubectlProxyEnabled bool) *executor.SerialRunner {
+func newSimpleNodejs24TestRunner(logf *logrus.Entry, poll utils.Poller, genericContainer utils.Container, kubectlProxyEnabled bool) *executor.SerialRunner {
 	nodejs24Logger := logf.WithField(runtimeKey, "nodejs24")
 	nodejs24Fn := function.NewFunction("nodejs24", genericContainer.Namespace, kubectlProxyEnabled, genericContainer.WithLogger(nodejs24Logger))
 	cmNodeJS24 := configmap.NewConfigMap("test-serverless-configmap-nodejs24", genericContainer.WithLogger(nodejs24Logger))
@@ -177,7 +177,7 @@ func newNodejs24TestRunner(logf *logrus.Entry, poll utils.Poller, genericContain
 	)
 }
 
-func newPython312TestRunner(logf *logrus.Entry, poll utils.Poller, genericContainer utils.Container, kubectlProxyEnabled bool) *executor.SerialRunner {
+func newSimplePython312TestRunner(logf *logrus.Entry, poll utils.Poller, genericContainer utils.Container, kubectlProxyEnabled bool) *executor.SerialRunner {
 	python312Logger := logf.WithField(runtimeKey, "python312")
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, kubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
 

@@ -10,12 +10,10 @@ import (
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/function"
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/namespace"
 	"github.com/kyma-project/serverless/tests/serverless/internal/resources/runtimes"
-	"github.com/kyma-project/serverless/tests/serverless/internal/utils"
 	"github.com/pkg/errors"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/sirupsen/logrus"
-	"k8s.io/client-go/dynamic"
 	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/rest"
 )
@@ -27,14 +25,46 @@ const (
 	python312 = "python312"
 )
 
-func FunctionAPIGateway(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
+func FunctionAPIGatewayFIPS(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
 	now := time.Now()
 	cfg.Namespace = fmt.Sprintf("%s-%02dh%02dm%02ds", "test-api-gateway", now.Hour(), now.Minute(), now.Second())
 
-	dynamicCli, err := dynamic.NewForConfig(restConfig)
+	coreCli, err := typedcorev1.NewForConfig(restConfig)
 	if err != nil {
-		return nil, errors.Wrapf(err, "while creating dynamic client")
+		return nil, errors.Wrap(err, "while creating k8s CoreV1Client")
 	}
+
+	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
+	nodejs24Logger := logf.WithField(runtimeKey, "nodejs24")
+
+	genericContainer, err := newGenericContainer(logf, restConfig, cfg)
+	if err != nil {
+		return nil, errors.Wrap(err, "while creating generic container")
+	}
+
+	nodejs22Fn := function.NewFunction("nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
+	nodejs24Fn := function.NewFunction("nodejs24", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs24Logger))
+
+	logf.Infof("Testing function in namespace: %s", cfg.Namespace)
+
+	return executor.NewSerialTestRunner(logf, "Runtime test",
+		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
+		executor.NewParallelRunner(logf, "Fn tests",
+			executor.NewSerialTestRunner(nodejs22Logger, "NodeJS22 test",
+				function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.BasicNodeJSFunction("Hello from nodejs22", serverlessv1alpha2.NodeJs22)),
+				assertion.APIGatewayFunctionCheck("nodejs22", nodejs22Fn, coreCli, genericContainer.Namespace, nodejs22),
+			),
+			executor.NewSerialTestRunner(nodejs24Logger, "NodeJS24 test",
+				function.CreateFunction(nodejs24Logger, nodejs24Fn, "Create NodeJS24 Function", runtimes.BasicNodeJSFunction("Hello from nodejs24", serverlessv1alpha2.NodeJs24)),
+				assertion.APIGatewayFunctionCheck("nodejs24", nodejs24Fn, coreCli, genericContainer.Namespace, nodejs24),
+			),
+		),
+	), nil
+}
+
+func FunctionAPIGateway(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
+	now := time.Now()
+	cfg.Namespace = fmt.Sprintf("%s-%02dh%02dm%02ds", "test-api-gateway", now.Hour(), now.Minute(), now.Second())
 
 	coreCli, err := typedcorev1.NewForConfig(restConfig)
 	if err != nil {
@@ -46,12 +76,9 @@ func FunctionAPIGateway(restConfig *rest.Config, cfg internal.Config, logf *logr
 	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
 	nodejs24Logger := logf.WithField(runtimeKey, "nodejs24")
 
-	genericContainer := utils.Container{
-		DynamicCli:  dynamicCli,
-		Namespace:   cfg.Namespace,
-		WaitTimeout: cfg.WaitTimeout,
-		Verbose:     cfg.Verbose,
-		Log:         logf,
+	genericContainer, err := newGenericContainer(logf, restConfig, cfg)
+	if err != nil {
+		return nil, errors.Wrap(err, "while creating generic container")
 	}
 
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))

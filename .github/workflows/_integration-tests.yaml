@@ -122,7 +122,7 @@ jobs:
           kubectl create namespace kyma-system || true
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make install-serverless-fips-mode-custom-operator
-          make -C tests/serverless serverless-integration-fips-mode serverless-contract-tests
+          make -C tests/serverless serverless-integration-fips-mode serverless-contract-tests-fips-mode
           make remove-serverless
         env:
           IMG_DIRECTORY: ${{ inputs.img_directory }}
@@ -175,7 +175,7 @@ jobs:
         run: |
           kubectl create namespace kyma-system || true
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
-          make install-fips-serverless-custom-operator
+          make install-serverless-fips-mode-custom-operator
           make -C tests/serverless git-auth-integration-fips-mode
           make remove-serverless
         env:

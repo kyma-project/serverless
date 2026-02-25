@@ -32,6 +32,10 @@ git-auth-integration-fips-mode: ## Run git authorization integration scenario wi
 serverless-contract-tests: ## Run serverless contract tests with kubectl proxy
 	./run-local.sh serverless-contract-tests
 
+.PHONY: serverless-contract-tests-fips-mode
+serverless-contract-tests-fips-mode: ## Run serverless contract tests with kubectl proxy in FIPS mode
+	./run-local.sh serverless-contract-tests-fips-mode
+
 .PHONY: cluster-info
 cluster-info: ## Collect logs from the cluster
 	./cluster_info.sh
