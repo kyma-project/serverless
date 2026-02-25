@@ -22,7 +22,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func GitopsSteps(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
+func Gitops(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
 	now := time.Now()
 	cfg.Namespace = fmt.Sprintf("%s-%02dh%02dm%02ds", "test-serverless-gitops", now.Hour(), now.Minute(), now.Second())
 

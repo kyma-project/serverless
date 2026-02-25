@@ -23,7 +23,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func FunctionCloudEventsTest(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
+func FunctionCloudEvents(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
 	now := time.Now()
 	cfg.Namespace = fmt.Sprintf("%s-%02dh%02dm%02ds", "test-cloud-events", now.Hour(), now.Minute(), now.Second())
 
