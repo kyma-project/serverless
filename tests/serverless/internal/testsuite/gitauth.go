@@ -66,8 +66,19 @@ type AzureRepo struct {
 	SSHAuth
 }
 
+type configFIPS struct {
+	Azure AzureRepoFIPS `envconfig:"AZURE"`
+}
+
+type AzureRepoFIPS struct {
+	Reference string `envconfig:"default=main"`
+	URL       string `envconfig:"default=https://kyma-wookiee@dev.azure.com/kyma-wookiee/kyma-function/_git/kyma-function"`
+	BaseDir   string `envconfig:"default=/code"`
+	BasicAuth
+}
+
 func GitAuthFIPS(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
-	testCfg := &config{}
+	testCfg := &configFIPS{}
 	if err := envconfig.InitWithPrefix(testCfg, "APP_TEST"); err != nil {
 		return nil, errors.Wrap(err, "while loading git auth test config")
 	}
@@ -82,7 +93,7 @@ func GitAuthFIPS(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entr
 		return nil, errors.Wrapf(err, "while creating Shared Container")
 	}
 
-	azureBasicTC := getAzureDevopsBasicTestcase(testCfg)
+	azureBasicTC := getAzureDevopsBasicTestcase(testCfg.Azure.URL, testCfg.Azure.BaseDir, testCfg.Azure.Reference, testCfg.Azure.BasicAuth)
 	azureBasicSecret := secret.NewSecret(azureBasicTC.auth.SecretName, genericContainer)
 	azureBasicFn := function.NewFunction(azureBasicTC.name, genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer)
 
@@ -116,7 +127,7 @@ func GitAuth(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (
 		DataKey:            internal.TestDataKey,
 	}
 
-	azureBasicTC := getAzureDevopsBasicTestcase(testCfg)
+	azureBasicTC := getAzureDevopsBasicTestcase(testCfg.Azure.URL, testCfg.Azure.BaseDir, testCfg.Azure.Reference, testCfg.Azure.BasicAuth)
 	azureBasicSecret := secret.NewSecret(azureBasicTC.auth.SecretName, genericContainer)
 	azureBasicFn := function.NewFunction(azureBasicTC.name, genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer)
 
@@ -184,19 +195,19 @@ func createSSHAuthSecretData(auth SSHAuth) (map[string]string, error) {
 	return map[string]string{"key": string(decoded)}, err
 }
 
-func getAzureDevopsBasicTestcase(cfg *config) testRepo {
+func getAzureDevopsBasicTestcase(url, baseDir, reference string, auth BasicAuth) testRepo {
 	return testRepo{name: "azure-devops-func",
 		provider:         "AzureDevOps",
-		url:              cfg.Azure.URL,
-		baseDir:          cfg.Azure.BaseDir,
-		reference:        cfg.Azure.Reference,
+		url:              url,
+		baseDir:          baseDir,
+		reference:        reference,
 		expectedResponse: "Hello azure",
 		runtime:          serverlessv1alpha2.NodeJs24,
 		auth: &serverlessv1alpha2.RepositoryAuth{
 			Type:       serverlessv1alpha2.RepositoryAuthBasic,
 			SecretName: "azure-devops-auth-secret",
 		},
-		secretData: createBasicAuthSecretData(cfg.Azure.BasicAuth)}
+		secretData: createBasicAuthSecretData(auth)}
 }
 
 func getAzureDevopsSshTestcase(cfg *config) (testRepo, error) {
