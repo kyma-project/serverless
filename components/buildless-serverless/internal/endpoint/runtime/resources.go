@@ -71,6 +71,7 @@ func buildDeploymentFileData(functionConfig *config.FunctionConfig, function *v1
 		"",
 		nil,
 		appName,
+		true,
 		resources.DeploySetName(deployName),
 		resources.DeployTrimClusterInfoLabels(),
 		resources.DeployAppendSelectorLabels(map[string]string{

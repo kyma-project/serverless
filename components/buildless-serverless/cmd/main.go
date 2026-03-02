@@ -168,13 +168,14 @@ func main() {
 	}
 
 	fnCtrl, err := (&controller.FunctionReconciler{
-		Client:        mgr.GetClient(),
-		Scheme:        mgr.GetScheme(),
-		Log:           logWithCtx,
-		Config:        cfg,
-		EventRecorder: mgr.GetEventRecorderFor(serverlessv1alpha2.FunctionControllerValue),
-		GitChecker:    git.NewAsyncLatestCommitChecker(ctx, logWithCtx),
-		HealthCh:      healthResponseCh,
+		Client:                mgr.GetClient(),
+		Scheme:                mgr.GetScheme(),
+		Log:                   logWithCtx,
+		Config:                cfg,
+		EventRecorder:         mgr.GetEventRecorderFor(serverlessv1alpha2.FunctionControllerValue),
+		GitChecker:            git.NewAsyncLatestCommitChecker(ctx, logWithCtx),
+		HealthCh:              healthResponseCh,
+		IsKymaFipsModeEnabled: envCfg.KymaFipsModeEnabled,
 	}).SetupWithManager(mgr)
 	if err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Function")
