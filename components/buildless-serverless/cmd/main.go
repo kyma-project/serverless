@@ -200,7 +200,7 @@ func main() {
 	// disable default log to prevent http server from logging returned status codes
 	log.SetOutput(io.Discard)
 
-	internalServer := endpoint.NewInternalServer(ctx, logWithCtx, mgr.GetClient(), cfg)
+	internalServer := endpoint.NewInternalServer(ctx, logWithCtx, mgr.GetClient(), cfg, envCfg.KymaFipsModeEnabled)
 	go func() {
 		err := internalServer.ListenAndServe(cfg.InternalEndpointPort)
 		if err != nil {
