@@ -46,12 +46,13 @@ const healthCheckTimeout = time.Second
 // FunctionReconciler reconciles a Function object
 type FunctionReconciler struct {
 	client.Client
-	Scheme        *runtime.Scheme
-	Log           *zap.SugaredLogger
-	Config        config.FunctionConfig
-	EventRecorder record.EventRecorder
-	GitChecker    git.AsyncLatestCommitChecker
-	HealthCh      chan bool
+	Scheme                *runtime.Scheme
+	Log                   *zap.SugaredLogger
+	Config                config.FunctionConfig
+	EventRecorder         record.EventRecorder
+	GitChecker            git.AsyncLatestCommitChecker
+	HealthCh              chan bool
+	IsKymaFipsModeEnabled bool
 }
 
 // +kubebuilder:rbac:groups=serverless.kyma-project.io,resources=functions,verbs=get;list;watch;create;update;patch;delete
@@ -85,7 +86,7 @@ func (fr *FunctionReconciler) Reconcile(ctx context.Context, req ctrl.Request) (
 		return ctrl.Result{}, nil
 	}
 
-	sm := fsm.New(fr.Client, fr.Config, &instance, state.StartState(), fr.EventRecorder, fr.GitChecker, fr.Scheme, log)
+	sm := fsm.New(fr.Client, fr.Config, &instance, state.StartState(), fr.EventRecorder, fr.GitChecker, fr.Scheme, log, fr.IsKymaFipsModeEnabled)
 	return sm.Reconcile(ctx)
 }
 

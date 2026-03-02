@@ -41,7 +41,7 @@ func Test_sFnAdjustStatus(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Function:        f,
-				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil, ""),
+				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil, "", true),
 				ClusterDeployment: &appsv1.Deployment{
 					Status: appsv1.DeploymentStatus{
 						Replicas: int32(686)}}},
@@ -106,7 +106,7 @@ func Test_sFnAdjustStatus(t *testing.T) {
 			State: fsm.SystemState{
 				Function:        f,
 				Commit:          "test-commit",
-				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil, ""),
+				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil, "", true),
 				ClusterDeployment: &appsv1.Deployment{
 					Status: appsv1.DeploymentStatus{
 						Replicas: int32(686)}}},
@@ -181,7 +181,7 @@ func Test_sFnAdjustStatus(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Function:        f,
-				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil, ""),
+				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil, "", true),
 				ClusterDeployment: &appsv1.Deployment{
 					Status: appsv1.DeploymentStatus{
 						Replicas: int32(686)}}},
@@ -230,7 +230,7 @@ func Test_sFnAdjustStatus(t *testing.T) {
 		m := fsm.StateMachine{
 			State: fsm.SystemState{
 				Function:        f,
-				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil, ""),
+				BuiltDeployment: resources.NewDeployment(&f, &fc, nil, "test-commit", nil, "", true),
 				ClusterDeployment: &appsv1.Deployment{
 					Status: appsv1.DeploymentStatus{
 						Replicas: int32(686)}}},

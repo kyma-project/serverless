@@ -9,6 +9,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/transport"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
+	"github.com/kyma-project/serverless/components/common/fips"
 	"github.com/vrischmann/envconfig"
 
 	"github.com/go-git/go-git/v5"
@@ -21,14 +22,15 @@ import (
 const envPrefix = "APP"
 
 type initConfig struct {
-	RepositoryURL       string
-	RepositoryReference string
-	RepositoryCommit    string
-	DestinationPath     string
-	RepositoryAuthType  serverlessv1alpha2.RepositoryAuthType `envconfig:"optional"`
-	RepositoryUsername  string                                `envconfig:"optional"`
-	RepositoryPassword  string                                `envconfig:"optional"`
-	RepositoryKey       string                                `envconfig:"optional"`
+	RepositoryURL         string
+	RepositoryReference   string
+	RepositoryCommit      string
+	DestinationPath       string
+	RepositoryAuthType    serverlessv1alpha2.RepositoryAuthType `envconfig:"optional"`
+	RepositoryUsername    string                                `envconfig:"optional"`
+	RepositoryPassword    string                                `envconfig:"optional"`
+	RepositoryKey         string                                `envconfig:"optional"`
+	IsKymaFipsModeEnabled bool                                  `envconfig:"default=false"`
 }
 
 func main() {
@@ -37,6 +39,11 @@ func main() {
 	cfg := initConfig{}
 	if err := envconfig.InitWithPrefix(&cfg, envPrefix); err != nil {
 		log.Fatalf("while reading env variables: %s", err.Error())
+	}
+
+	if cfg.IsKymaFipsModeEnabled && !fips.IsFIPS140Only() {
+		fmt.Printf("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags. FIPS not enforced\n")
+		panic("FIPS 140 exclusive mode is not enabled. Check GODEBUG flags.")
 	}
 
 	auth, err := chooseAuth(cfg)

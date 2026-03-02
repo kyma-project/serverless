@@ -27,7 +27,7 @@ func TestBuildResources(t *testing.T) {
 				Name:      "test-function",
 				Namespace: "test-namespace",
 			},
-		}, "")
+		}, "", false)
 
 		require.NoError(t, err)
 		require.Len(t, files, 2)
@@ -49,7 +49,7 @@ func TestBuildResources(t *testing.T) {
 				Name:      "test-function",
 				Namespace: "test-namespace",
 			},
-		}, "")
+		}, "", false)
 
 		require.ErrorContains(t, err, "ejecting functions with git source is not supported")
 		require.Nil(t, files)
@@ -70,7 +70,7 @@ func TestBuildResources(t *testing.T) {
 				Name:      "test-function",
 				Namespace: "test-namespace",
 			},
-		}, "test-app-name")
+		}, "test-app-name", false)
 
 		require.NoError(t, err)
 		require.Len(t, files, 2)
