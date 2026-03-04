@@ -33,7 +33,7 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	}
 	m.State.ClusterDeployment = clusterDeployment
 
-	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig, clusterDeployment, m.State.Commit, m.State.GitAuth, "")
+	m.State.BuiltDeployment = resources.NewDeployment(&m.State.Function, &m.FunctionConfig, clusterDeployment, m.State.Commit, m.State.GitAuth, "", m.IsKymaFipsModeEnabled)
 	builtDeployment := m.State.BuiltDeployment.Deployment
 
 	if m.State.ClusterDeployment == nil {

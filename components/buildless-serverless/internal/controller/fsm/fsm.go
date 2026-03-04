@@ -41,14 +41,15 @@ func (s *SystemState) saveStatusSnapshot() {
 }
 
 type StateMachine struct {
-	nextFn         StateFn
-	State          SystemState
-	Log            *zap.SugaredLogger
-	Client         client.Client
-	FunctionConfig config.FunctionConfig
-	Scheme         *apimachineryruntime.Scheme
-	GitChecker     git.AsyncLatestCommitChecker
-	EventRecorder  record.EventRecorder
+	nextFn                StateFn
+	State                 SystemState
+	Log                   *zap.SugaredLogger
+	Client                client.Client
+	FunctionConfig        config.FunctionConfig
+	Scheme                *apimachineryruntime.Scheme
+	GitChecker            git.AsyncLatestCommitChecker
+	EventRecorder         record.EventRecorder
+	IsKymaFipsModeEnabled bool
 }
 
 func (m *StateMachine) stateFnName() string {
@@ -100,18 +101,19 @@ type StateMachineReconciler interface {
 	Reconcile(ctx context.Context) (ctrl.Result, error)
 }
 
-func New(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function, startState StateFn, recorder record.EventRecorder, gitChecker git.AsyncLatestCommitChecker, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger) StateMachineReconciler {
+func New(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function, startState StateFn, recorder record.EventRecorder, gitChecker git.AsyncLatestCommitChecker, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger, isKymaFipsModeEnabled bool) StateMachineReconciler {
 	sm := StateMachine{
 		nextFn: startState,
 		State: SystemState{
 			Function: *instance,
 		},
-		Log:            log,
-		FunctionConfig: functionConfig,
-		Client:         client,
-		Scheme:         scheme,
-		GitChecker:     gitChecker,
-		EventRecorder:  recorder,
+		Log:                   log,
+		FunctionConfig:        functionConfig,
+		Client:                client,
+		Scheme:                scheme,
+		GitChecker:            gitChecker,
+		EventRecorder:         recorder,
+		IsKymaFipsModeEnabled: isKymaFipsModeEnabled,
 	}
 	sm.State.saveStatusSnapshot()
 	return &sm

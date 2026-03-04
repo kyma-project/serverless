@@ -8,6 +8,7 @@ import (
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/config"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
+	"github.com/kyma-project/serverless/components/common/fips"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -85,6 +86,7 @@ type Deployment struct {
 	clusterDeployment        *appsv1.Deployment
 	commit                   string
 	gitAuth                  *git.GitAuth
+	isKymaFipsModeEnabled    bool
 	functionLabels           map[string]string
 	selectorLabels           map[string]string
 	podLabels                map[string]string
@@ -97,13 +99,14 @@ type Deployment struct {
 	containerSecurityContext *corev1.SecurityContext
 }
 
-func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clusterDeployment *appsv1.Deployment, commit string, gitAuth *git.GitAuth, appName string, opts ...deployOptions) *Deployment {
+func NewDeployment(f *serverlessv1alpha2.Function, c *config.FunctionConfig, clusterDeployment *appsv1.Deployment, commit string, gitAuth *git.GitAuth, appName string, isKymaFipsModeEnabled bool, opts ...deployOptions) *Deployment {
 	d := &Deployment{
 		functionConfig:           c,
 		function:                 f,
 		clusterDeployment:        clusterDeployment,
 		commit:                   commit,
 		gitAuth:                  gitAuth,
+		isKymaFipsModeEnabled:    isKymaFipsModeEnabled,
 		functionLabels:           f.FunctionLabels(),
 		selectorLabels:           f.SelectorLabels(),
 		podLabels:                f.PodLabels(),
@@ -305,7 +308,7 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 				"-c",
 				d.initContainerCommand(),
 			},
-			Env: d.initContainerEnvs(),
+			Env: d.initContainerEnvs(d.isKymaFipsModeEnabled),
 			Resources: corev1.ResourceRequirements{
 				Requests: corev1.ResourceList{
 					corev1.ResourceCPU:    resource.MustParse("50m"),
@@ -337,7 +340,7 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 	}
 }
 
-func (d *Deployment) initContainerEnvs() []corev1.EnvVar {
+func (d *Deployment) initContainerEnvs(isKymaFipsModeEnabled bool) []corev1.EnvVar {
 	envs := []corev1.EnvVar{
 		{
 			Name:  "APP_REPOSITORY_URL",
@@ -356,6 +359,14 @@ func (d *Deployment) initContainerEnvs() []corev1.EnvVar {
 			Value: "/git-repository/repo",
 		},
 	}
+
+	if isKymaFipsModeEnabled {
+		envs = append(envs,
+			corev1.EnvVar{Name: "APP_KYMA_FIPS_MODE_ENABLED", Value: "true"},
+			corev1.EnvVar{Name: "GODEBUG", Value: fips.GODEBUG_VALUE},
+		)
+	}
+
 	if d.gitAuth != nil {
 		envs = append(envs, d.gitAuth.GetAuthEnvs()...)
 	}

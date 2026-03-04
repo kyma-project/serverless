@@ -30,7 +30,7 @@ func (s *Server) handleFunctionRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resourceFiles, err := runtime.BuildResources(&s.functionConfig, &function, appName)
+	resourceFiles, err := runtime.BuildResources(&s.functionConfig, &function, appName, s.isKymaFipsModeEnabled)
 	if err != nil {
 		s.writeErrorResponse(w, http.StatusInternalServerError, errors.Wrapf(err, "failed to get resource files for function '%s/%s'", ns, name))
 		return

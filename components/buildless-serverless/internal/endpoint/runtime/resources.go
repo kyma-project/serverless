@@ -13,13 +13,13 @@ import (
 	"go.yaml.in/yaml/v2"
 )
 
-func BuildResources(functionConfig *config.FunctionConfig, f *v1alpha2.Function, appName string) ([]types.FileResponse, error) {
+func BuildResources(functionConfig *config.FunctionConfig, f *v1alpha2.Function, appName string, isKymaFipsModeEnabled bool) ([]types.FileResponse, error) {
 	svc, err := buildServiceFileData(f, appName)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to build service")
 	}
 
-	deployment, err := buildDeploymentFileData(functionConfig, f, appName)
+	deployment, err := buildDeploymentFileData(functionConfig, f, appName, isKymaFipsModeEnabled)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to build deployment")
 	}
@@ -53,7 +53,7 @@ func buildServiceFileData(function *v1alpha2.Function, appName string) ([]byte, 
 	return data, nil
 }
 
-func buildDeploymentFileData(functionConfig *config.FunctionConfig, function *v1alpha2.Function, appName string) ([]byte, error) {
+func buildDeploymentFileData(functionConfig *config.FunctionConfig, function *v1alpha2.Function, appName string, isKymaFipsModeEnabled bool) ([]byte, error) {
 	if function.HasGitSources() {
 		// TODO: support git source
 		return nil, errors.New("ejecting functions with git source is not supported")
@@ -71,6 +71,7 @@ func buildDeploymentFileData(functionConfig *config.FunctionConfig, function *v1
 		"",
 		nil,
 		appName,
+		isKymaFipsModeEnabled,
 		resources.DeploySetName(deployName),
 		resources.DeployTrimClusterInfoLabels(),
 		resources.DeployAppendSelectorLabels(map[string]string{
