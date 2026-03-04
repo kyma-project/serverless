@@ -19,7 +19,7 @@ func TestNewDeployment(t *testing.T) {
 		f := minimalFunction()
 		c := minimalFunctionConfig()
 
-		r := NewDeployment(f, c, nil, "test-commit", nil, "")
+		r := NewDeployment(f, c, nil, "test-commit", nil, "", true)
 
 		require.NotNil(t, r)
 		d := r.Deployment
@@ -85,7 +85,7 @@ func TestDeployment_construct(t *testing.T) {
 			"shtern": "stoic",
 			"boyd":   "vigilant",
 		}
-		d := NewDeployment(f, minimalFunctionConfig(), nil, "", nil, "")
+		d := NewDeployment(f, minimalFunctionConfig(), nil, "", nil, "", true)
 
 		r := d.construct()
 
@@ -171,7 +171,7 @@ func TestDeployment_construct(t *testing.T) {
 	t.Run("use container image based on function and function configuration", func(t *testing.T) {
 		d := NewDeployment(minimalFunction(), &config.FunctionConfig{
 			Images: config.ImagesConfig{Python312: "special-test-image"},
-		}, nil, "", nil, "")
+		}, nil, "", nil, "", true)
 
 		r := d.construct()
 
@@ -335,6 +335,30 @@ fi`,
 		require.NotNil(t, r)
 		require.Len(t, r.Spec.Template.Spec.InitContainers, 1)
 		c := r.Spec.Template.Spec.InitContainers[0]
+		expectedCommand := []string{"sh", "-c",
+			`rm -rf /git-repository/*
+/app/gitcloner
+mkdir /git-repository/src;cp -r '/git-repository/repo/recursing-mcnulty'/* /git-repository/src;`}
+		require.Equal(t, expectedCommand, c.Command)
+	})
+	t.Run("create init container for git function in fips mode with data based on function", func(t *testing.T) {
+		d := minimalDeployment()
+		d.isKymaFipsModeEnabled = true
+		d.commit = "test-commit"
+		d.function.Spec.Source = serverlessv1alpha2.Source{
+			GitRepository: &serverlessv1alpha2.GitRepositorySource{
+				URL: "wonderful-germain",
+				Repository: serverlessv1alpha2.Repository{
+					BaseDir:   "recursing-mcnulty",
+					Reference: "epic-mendel"}}}
+
+		r := d.construct()
+
+		require.NotNil(t, r)
+		require.Len(t, r.Spec.Template.Spec.InitContainers, 1)
+		c := r.Spec.Template.Spec.InitContainers[0]
+		require.Contains(t, c.Env, corev1.EnvVar{Name: "GODEBUG", Value: "fips140=only,tlsmlkem=0"})
+		require.Contains(t, c.Env, corev1.EnvVar{Name: "APP_KYMA_FIPS_MODE_ENABLED", Value: "true"})
 		expectedCommand := []string{"sh", "-c",
 			`rm -rf /git-repository/*
 /app/gitcloner
@@ -1445,7 +1469,7 @@ func TestDeployment_envs(t *testing.T) {
 			d := NewDeployment(tt.function, &config.FunctionConfig{
 				FunctionPublisherProxyAddress:  "test-proxy-address",
 				FunctionTraceCollectorEndpoint: "test-trace-collector-endpoint",
-			}, nil, "", nil, "")
+			}, nil, "", nil, "", true)
 
 			assert.ElementsMatch(t, tt.want, d.podEnvs)
 		})
@@ -1750,7 +1774,7 @@ func minimalFunctionConfig() *config.FunctionConfig {
 }
 
 func minimalDeploymentForFunction(f *serverlessv1alpha2.Function) *Deployment {
-	return NewDeployment(f, minimalFunctionConfig(), nil, "", nil, "")
+	return NewDeployment(f, minimalFunctionConfig(), nil, "", nil, "", true)
 }
 
 func minimalDeployment() *Deployment {

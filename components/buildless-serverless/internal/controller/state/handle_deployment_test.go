@@ -207,7 +207,7 @@ func Test_sFnHandleDeployment(t *testing.T) {
 		}
 		cd := appsv1.Deployment{}
 		// identical deployment will be generated inside sFnHandleDeployment
-		deployment := resources.NewDeployment(&f, &fc, &cd, "test-commit", nil, "").Deployment
+		deployment := resources.NewDeployment(&f, &fc, &cd, "test-commit", nil, "", true).Deployment
 		// scheme and fake client
 		scheme := runtime.NewScheme()
 		require.NoError(t, serverlessv1alpha2.AddToScheme(scheme))
