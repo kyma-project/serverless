@@ -11,20 +11,22 @@ import (
 )
 
 type Server struct {
-	ctx            context.Context
-	mux            *mux.Router
-	k8s            client.Client
-	log            *zap.SugaredLogger
-	functionConfig config.FunctionConfig
+	ctx                   context.Context
+	mux                   *mux.Router
+	k8s                   client.Client
+	log                   *zap.SugaredLogger
+	functionConfig        config.FunctionConfig
+	isKymaFipsModeEnabled bool
 }
 
-func NewInternalServer(ctx context.Context, log *zap.SugaredLogger, k8s client.Client, functionConfig config.FunctionConfig) *Server {
+func NewInternalServer(ctx context.Context, log *zap.SugaredLogger, k8s client.Client, functionConfig config.FunctionConfig, isKymaFipsModeEnabled bool) *Server {
 	server := &Server{
-		ctx:            ctx,
-		mux:            mux.NewRouter(),
-		k8s:            k8s,
-		log:            log,
-		functionConfig: functionConfig,
+		ctx:                   ctx,
+		mux:                   mux.NewRouter(),
+		k8s:                   k8s,
+		log:                   log,
+		functionConfig:        functionConfig,
+		isKymaFipsModeEnabled: isKymaFipsModeEnabled,
 	}
 
 	server.mux.HandleFunc("/internal/function/eject/", server.handleFunctionRequest)
