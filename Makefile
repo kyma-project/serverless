@@ -12,6 +12,10 @@ IMG ?= europe-docker.pkg.dev/kyma-project/${IMG_DIRECTORY}/serverless-operator:$
 install-serverless-main: ## Install serverless with operator using default serverless cr
 	make -C ${OPERATOR_ROOT} deploy-main apply-default-serverless-cr check-serverless-installation
 
+.PHONY: install-serverless-fips-mode-main
+install-serverless-fips-mode-main: ## Install serverless with operator using default serverless cr in FIPS mode
+	make -C ${OPERATOR_ROOT} deploy-fips-mode apply-default-serverless-cr check-serverless-installation
+
 .PHONY: install-legacy-serverless-main
 install-legacy-serverless-main: ## Install legacy serverless with operator using serverless cr with legacy function container in-cluster build
 	make -C ${OPERATOR_ROOT} deploy-main apply-legacy-serverless-cr check-serverless-installation
