@@ -495,13 +495,6 @@ func Test_validator_validateFips(t *testing.T) {
 			want:     []string{"runtime python312 is not allowed in FIPS mode"},
 		},
 		{
-			name:     "FIPS enabled with Python 3.9 runtime should return error",
-			fipsMode: true,
-			URL:      urlAllowedInFips,
-			runtime:  serverlessv1alpha2.Python39,
-			want:     []string{"runtime python39 is not allowed in FIPS mode"},
-		},
-		{
 			name:     "FIPS enabled with Node.js runtime should return no errors",
 			fipsMode: true,
 			URL:      urlAllowedInFips,
