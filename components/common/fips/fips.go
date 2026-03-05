@@ -2,15 +2,23 @@ package fips
 
 import (
 	"crypto/fips140"
+	"fmt"
 	"os"
+	"strings"
 )
 
 const (
-	GODEBUG_VALUE = "fips140=only,tlsmlkem=0"
+	FIPS140OnlyEnvVar = "fips140=only"
+	TLSMLKEMEnvVar    = "tlsmlkem=0"
+)
+
+var (
+	GODEBUG_VALUE = fmt.Sprintf("%s,%s", FIPS140OnlyEnvVar, TLSMLKEMEnvVar)
 )
 
 type FipsChecker func() bool
 
 func IsFIPS140Only() bool {
-	return fips140.Enabled() && os.Getenv("GODEBUG") == GODEBUG_VALUE
+	godebug := os.Getenv("GODEBUG")
+	return fips140.Enabled() && strings.Contains(godebug, FIPS140OnlyEnvVar) && strings.Contains(godebug, TLSMLKEMEnvVar)
 }
