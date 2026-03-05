@@ -252,7 +252,7 @@ func validateSshGitIsForbiddenInFipsMode(gitRepo *serverlessv1alpha2.GitReposito
 }
 
 func validatePython312OrOlderIsForbiddenInFipsMode(runtime serverlessv1alpha2.Runtime) error {
-	if runtime == serverlessv1alpha2.Python312 || runtime == serverlessv1alpha2.Python39 {
+	if runtime == serverlessv1alpha2.Python312 {
 		return fmt.Errorf("runtime %s is not allowed in FIPS mode", runtime)
 	}
 	return nil
