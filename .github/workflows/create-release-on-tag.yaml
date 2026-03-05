@@ -85,8 +85,7 @@ jobs:
   upload-release-report:
     needs: [integrations]
     if: ${{ needs.integrations.result == 'success' }}
-    uses: kyma-project/compliancy/.github/workflows/upload-release-report.yml@main
+    uses: kyma-project/compliancy/.github/workflows/notify-release-report.yml@main
+    secrets: inherit
     with:
-      release_version: ${{ github.ref_name }}
-    secrets:
-     RELEASE_LOG_UPLOADER_SA: ${{ secrets.RELEASE_LOG_UPLOADER_SA }}
+      release_version: ${{ github.ref_name }} 
