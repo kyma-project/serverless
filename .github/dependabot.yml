@@ -135,7 +135,14 @@ updates:
       # ignore minor python updates, e.g. 3.9 -> 3.12
       - dependency-name: kyma-project/prod/external/library/python
         update-types: ["version-update:semver-minor"]
-  
+      - dependency-name: kyma-project/restricted-prod/sap.com/python-fips
+        update-types: ["version-update:semver-minor"]
+    groups:
+      python:
+        patterns:
+          - "kyma-project/prod/external/library/python"
+          - "kyma-project/restricted-prod/sap.com/python-fips"
+
   - package-ecosystem: "docker"
     directory: "/components/runtimes/nodejs20"
     labels:
@@ -162,6 +169,13 @@ updates:
       # ignore minor node updates, e.g. 20.x -> 21.x
       - dependency-name: kyma-project/prod/external/library/node
         update-types: ["version-update:semver-major"]
+      - dependency-name: kyma-project/restricted-prod/sap.com/node-fips
+        update-types: ["version-update:semver-major"]
+    groups:
+      node:
+        patterns:
+          - "kyma-project/prod/external/library/node"
+          - "kyma-project/restricted-prod/sap.com/node-fips"
   - package-ecosystem: "docker"
     directory: "/components/runtimes/nodejs24"
     labels:
@@ -178,6 +192,13 @@ updates:
       # ignore minor node updates, e.g. 20.x -> 21.x
       - dependency-name: kyma-project/prod/external/library/node
         update-types: ["version-update:semver-major"]
+      - dependency-name: kyma-project/restricted-prod/sap.com/node-fips
+        update-types: ["version-update:semver-major"]
+    groups:
+      node:
+        patterns:
+          - "kyma-project/prod/external/library/node"
+          - "kyma-project/restricted-prod/sap.com/node-fips"
 
   - package-ecosystem: "pip"
     directory: "/components/runtimes/python312"
