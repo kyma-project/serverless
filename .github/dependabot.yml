@@ -214,6 +214,20 @@ updates:
       opentelemetry:
         patterns:
           - "opentelemetry-*"
+  - package-ecosystem: "pip"
+    directory: "/components/runtimes/python314"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "pip-python314"
+      include: "scope"
+    groups:
+      opentelemetry:
+        patterns:
+          - "opentelemetry-*"
 
   - package-ecosystem: "npm"
     directory: "/components/runtimes/nodejs20"
