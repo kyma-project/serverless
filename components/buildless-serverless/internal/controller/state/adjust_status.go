@@ -13,7 +13,7 @@ import (
 func sFnAdjustStatus(_ context.Context, m *fsm.StateMachine) (fsm.StateFn, *ctrl.Result, error) {
 	s := &m.State.Function.Status
 	f := m.State.Function
-	s.Runtime = f.Spec.Runtime.SupportedRuntimeEquivalent()
+	s.Runtime = f.Spec.Runtime
 	s.RuntimeImage = m.State.BuiltDeployment.RuntimeImage()
 	s.Replicas = m.State.ClusterDeployment.Status.Replicas
 
