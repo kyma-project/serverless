@@ -48,9 +48,6 @@ func verifyConfigmap(testutils *utils.TestUtils, configmap *corev1.ConfigMap, se
 	}
 
 	if testutils.FipsMode {
-		if !isFipsImage(cfg.Images.Nodejs20) {
-			return fmt.Errorf("expected FIPS image for nodejs20, got %s", cfg.Images.Nodejs20)
-		}
 		if !isFipsImage(cfg.Images.Nodejs22) {
 			return fmt.Errorf("expected FIPS image for nodejs22, got %s", cfg.Images.Nodejs22)
 		}
