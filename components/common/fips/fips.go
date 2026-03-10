@@ -18,7 +18,7 @@ var (
 
 type FipsChecker func() bool
 
-func doesContainValue(parts []string, want string) bool {
+func contains(parts []string, want string) bool {
 	for _, p := range parts {
 		if strings.EqualFold(strings.TrimSpace(p), want) {
 			return true
@@ -34,5 +34,5 @@ func IsFIPS140Only() bool {
 	}
 
 	parts := strings.Split(godebug, ",")
-	return doesContainValue(parts, FIPS140OnlyEnvVar) && doesContainValue(parts, TLSMLKEMEnvVar)
+	return contains(parts, FIPS140OnlyEnvVar) && contains(parts, TLSMLKEMEnvVar)
 }
