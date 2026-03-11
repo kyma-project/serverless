@@ -1,0 +1,4 @@
+kube-prometheus-stack:
+  prometheus:
+    prometheusSpec:
+      enableRemoteWriteReceiver: true
