@@ -242,7 +242,6 @@ jobs:
       - name: run tests
         run: |
           kubectl create namespace kyma-system || true
-          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make install-serverless-custom-operator
           make -C tests/serverless serverless-integration
           kubectl delete functions.serverless.kyma-project.io -A --all
