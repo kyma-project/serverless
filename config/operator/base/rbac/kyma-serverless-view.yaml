@@ -1,28 +1,25 @@
-# permissions for end users to edit serverlesses.
+# permissions for end users to view serverlesses.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
+    rbac.authorization.k8s.io/aggregate-to-view: "true"
     app.kubernetes.io/name: clusterrole
-    app.kubernetes.io/instance: serverless-operator-editor-role
+    app.kubernetes.io/instance: serverless-operator-viewer-role
     app.kubernetes.io/component: rbac
     app.kubernetes.io/created-by: serverless-operator
     app.kubernetes.io/part-of: serverless-operator
     app.kubernetes.io/managed-by: kustomize
     kyma-project.io/module: serverless
-  name: operator-editor-role
+  name: kyma-serverless-view
 rules:
 - apiGroups:
   - operator.kyma-project.io
   resources:
   - serverlesses
   verbs:
-  - create
-  - delete
   - get
   - list
-  - patch
-  - update
   - watch
 - apiGroups:
   - operator.kyma-project.io
