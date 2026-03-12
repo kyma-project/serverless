@@ -579,7 +579,7 @@ func workingSourcesDir(f *serverlessv1alpha2.Function) string {
 }
 
 func runtimeCommand(f *serverlessv1alpha2.Function) string {
-	var result []string
+	result := []string{"set -e;"}
 	result = append(result, runtimeCommandSources(f))
 	result = append(result, runtimeCommandInstall(f))
 	result = append(result, runtimeCommandStart(f))
