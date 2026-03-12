@@ -2,3 +2,6 @@ kube-prometheus-stack:
   prometheus:
     prometheusSpec:
       enableRemoteWriteReceiver: true
+k6-operator:
+  namespace:
+    create: false
