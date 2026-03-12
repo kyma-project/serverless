@@ -579,7 +579,7 @@ func workingSourcesDir(f *serverlessv1alpha2.Function) string {
 }
 
 func runtimeCommand(f *serverlessv1alpha2.Function) string {
-	var result []string
+	result := []string{"set -e;"}
 	result = append(result, runtimeCommandSources(f))
 	result = append(result, runtimeCommandInstall(f))
 	result = append(result, runtimeCommandStart(f))
@@ -615,6 +615,7 @@ func runtimeCommandInlineSources(f *serverlessv1alpha2.Function) string {
 		result = append(result, `echo "{}" > package.json;`)
 	} else if f.HasPythonRuntime() {
 		handlerName, dependenciesName = "handler.py", "requirements.txt"
+		result = append(result, `echo "" > requirements.txt;`)
 	}
 
 	result = append(result, fmt.Sprintf(`echo "${FUNC_HANDLER_SOURCE}" > %s;`, handlerName))
@@ -626,7 +627,7 @@ func runtimeCommandInlineSources(f *serverlessv1alpha2.Function) string {
 
 func runtimeCommandInstall(f *serverlessv1alpha2.Function) string {
 	if f.HasNodejsRuntime() {
-		return `npm install --prefer-offline --no-audit --progress=false;`
+		return `NPM_CONFIG_USERCONFIG=package-registry-config/.npmrc npm install --prefer-offline --no-audit --progress=false;`
 	} else if f.HasPythonRuntime() {
 		return `export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;`
