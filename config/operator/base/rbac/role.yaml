@@ -183,7 +183,6 @@ rules:
   - create
   - delete
   - deletecollection
-  - escalate
   - get
   - list
   - patch
@@ -206,7 +205,6 @@ rules:
   - serverless.kyma-project.io
   resources:
   - functions
-  - functions/finalizers
   - functions/scale
   - functions/status
   verbs:

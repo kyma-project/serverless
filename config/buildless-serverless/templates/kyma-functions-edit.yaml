@@ -40,10 +40,4 @@ rules:
   - get
   - patch
   - update
-- apiGroups:
-  - serverless.kyma-project.io
-  resources:
-  - functions/finalizers
-  verbs:
-  - update
 
