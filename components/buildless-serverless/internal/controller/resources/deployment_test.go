@@ -196,7 +196,9 @@ func TestDeployment_construct(t *testing.T) {
 			[]string{
 				"sh",
 				"-c",
-				`echo "${FUNC_HANDLER_SOURCE}" > handler.py;
+				`set -e;
+echo "" > requirements.txt;
+echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
@@ -1494,7 +1496,9 @@ func TestDeployment_runtimeCommand(t *testing.T) {
 					},
 				},
 			},
-			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
+			want: `set -e;
+echo "" > requirements.txt;
+echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
@@ -1518,7 +1522,9 @@ fi`,
 					},
 				},
 			},
-			want: `echo "${FUNC_HANDLER_SOURCE}" > handler.py;
+			want: `set -e;
+echo "" > requirements.txt;
+echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
@@ -1546,7 +1552,8 @@ fi`,
 					},
 				},
 			},
-			want: `cp -r /git-repository/src/* .;
+			want: `set -e;
+cp -r /git-repository/src/* .;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
@@ -1569,9 +1576,10 @@ fi`,
 					},
 				},
 			},
-			want: `echo "{}" > package.json;
+			want: `set -e;
+echo "{}" > package.json;
 echo "${FUNC_HANDLER_SOURCE}" > handler.js;
-npm install --prefer-offline --no-audit --progress=false;
+NPM_CONFIG_USERCONFIG=package-registry-config/.npmrc npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
 		},
@@ -1588,10 +1596,11 @@ npm start;`,
 					},
 				},
 			},
-			want: `echo "{}" > package.json;
+			want: `set -e;
+echo "{}" > package.json;
 echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
-npm install --prefer-offline --no-audit --progress=false;
+NPM_CONFIG_USERCONFIG=package-registry-config/.npmrc npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
 		},
@@ -1611,9 +1620,10 @@ npm start;`,
 					},
 				},
 			},
-			want: `echo "{}" > package.json;
+			want: `set -e;
+echo "{}" > package.json;
 cp -r /git-repository/src/* .;
-npm install --prefer-offline --no-audit --progress=false;
+NPM_CONFIG_USERCONFIG=package-registry-config/.npmrc npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
 		},
@@ -1629,9 +1639,10 @@ npm start;`,
 					},
 				},
 			},
-			want: `echo "{}" > package.json;
+			want: `set -e;
+echo "{}" > package.json;
 echo "${FUNC_HANDLER_SOURCE}" > handler.js;
-npm install --prefer-offline --no-audit --progress=false;
+NPM_CONFIG_USERCONFIG=package-registry-config/.npmrc npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
 		},
@@ -1648,10 +1659,11 @@ npm start;`,
 					},
 				},
 			},
-			want: `echo "{}" > package.json;
+			want: `set -e;
+echo "{}" > package.json;
 echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
-npm install --prefer-offline --no-audit --progress=false;
+NPM_CONFIG_USERCONFIG=package-registry-config/.npmrc npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
 		},
@@ -1671,9 +1683,10 @@ npm start;`,
 					},
 				},
 			},
-			want: `echo "{}" > package.json;
+			want: `set -e;
+echo "{}" > package.json;
 cp -r /git-repository/src/* .;
-npm install --prefer-offline --no-audit --progress=false;
+NPM_CONFIG_USERCONFIG=package-registry-config/.npmrc npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
 		},
@@ -1689,9 +1702,10 @@ npm start;`,
 					},
 				},
 			},
-			want: `echo "{}" > package.json;
+			want: `set -e;
+echo "{}" > package.json;
 echo "${FUNC_HANDLER_SOURCE}" > handler.js;
-npm install --prefer-offline --no-audit --progress=false;
+NPM_CONFIG_USERCONFIG=package-registry-config/.npmrc npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
 		},
@@ -1708,10 +1722,11 @@ npm start;`,
 					},
 				},
 			},
-			want: `echo "{}" > package.json;
+			want: `set -e;
+echo "{}" > package.json;
 echo "${FUNC_HANDLER_SOURCE}" > handler.js;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
-npm install --prefer-offline --no-audit --progress=false;
+NPM_CONFIG_USERCONFIG=package-registry-config/.npmrc npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
 		},
@@ -1731,9 +1746,10 @@ npm start;`,
 					},
 				},
 			},
-			want: `echo "{}" > package.json;
+			want: `set -e;
+echo "{}" > package.json;
 cp -r /git-repository/src/* .;
-npm install --prefer-offline --no-audit --progress=false;
+NPM_CONFIG_USERCONFIG=package-registry-config/.npmrc npm install --prefer-offline --no-audit --progress=false;
 cd ..;
 npm start;`,
 		},
