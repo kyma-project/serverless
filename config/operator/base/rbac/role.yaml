@@ -205,6 +205,7 @@ rules:
   - serverless.kyma-project.io
   resources:
   - functions
+  - functions/scale
   - functions/status
   verbs:
   - create
