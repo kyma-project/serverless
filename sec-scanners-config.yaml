@@ -8,6 +8,10 @@ bdba:
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:main
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs24:main
   - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python314:main
+  - europe-docker.pkg.dev/kyma-project/restricted-prod/function-runtime-nodejs22-fips:main
+  - europe-docker.pkg.dev/kyma-project/restricted-prod/function-runtime-nodejs24-fips:main
+  - europe-docker.pkg.dev/kyma-project/restricted-prod/function-runtime-python314-fips:main
   - europe-docker.pkg.dev/kyma-project/prod/external/gcr.io/kaniko-project/executor:v1.24.0
   - europe-docker.pkg.dev/kyma-project/prod/external/library/registry:3.0.0
   - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:main
