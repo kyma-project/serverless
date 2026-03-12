@@ -1,0 +1,18 @@
+# apiVersion: k6.io/v1alpha1
+# kind: TestRun
+# metadata:
+#   name: k6-test
+# spec:
+#   parallelism: 4
+#   # testRunId: "1"
+#   arguments: --out experimental-prometheus-rw
+#   runner:
+#     env:
+#       - name: K6_PROMETHEUS_RW_SERVER_URL
+#         value: "http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/write"
+#       - name: K6_SUMMARY_TREND_STATS
+#         value: "avg,min,med,max,p(90),p(95),p(99.9),p(99.99),count"
+#   script:
+#     configMap:
+#       name: 'k6-test'
+#       file: 'test.js'
