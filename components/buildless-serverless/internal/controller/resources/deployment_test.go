@@ -197,6 +197,7 @@ func TestDeployment_construct(t *testing.T) {
 				"sh",
 				"-c",
 				`set -e;
+echo "" > requirements.txt;
 echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
@@ -1496,6 +1497,7 @@ func TestDeployment_runtimeCommand(t *testing.T) {
 				},
 			},
 			want: `set -e;
+echo "" > requirements.txt;
 echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
@@ -1521,6 +1523,7 @@ fi`,
 				},
 			},
 			want: `set -e;
+echo "" > requirements.txt;
 echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"

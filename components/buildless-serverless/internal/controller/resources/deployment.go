@@ -615,6 +615,7 @@ func runtimeCommandInlineSources(f *serverlessv1alpha2.Function) string {
 		result = append(result, `echo "{}" > package.json;`)
 	} else if f.HasPythonRuntime() {
 		handlerName, dependenciesName = "handler.py", "requirements.txt"
+		result = append(result, `echo "" > requirements.txt;`)
 	}
 
 	result = append(result, fmt.Sprintf(`echo "${FUNC_HANDLER_SOURCE}" > %s;`, handlerName))
