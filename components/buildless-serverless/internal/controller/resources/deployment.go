@@ -626,7 +626,7 @@ func runtimeCommandInlineSources(f *serverlessv1alpha2.Function) string {
 
 func runtimeCommandInstall(f *serverlessv1alpha2.Function) string {
 	if f.HasNodejsRuntime() {
-		return `npm install --prefer-offline --no-audit --progress=false;`
+		return `NPM_CONFIG_USERCONFIG=package-registry-config/.npmrc npm install --prefer-offline --no-audit --progress=false;`
 	} else if f.HasPythonRuntime() {
 		return `export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;`
