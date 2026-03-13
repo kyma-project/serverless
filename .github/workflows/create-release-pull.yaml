@@ -1,6 +1,7 @@
 name: create pull workflow for release
 
 on:
+  workflow_dispatch:
   create:
 
 jobs:
