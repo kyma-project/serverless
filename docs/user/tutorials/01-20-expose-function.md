@@ -1,13 +1,13 @@
 # Expose a Function Using the APIRule Custom Resource
 
-This tutorial shows how you can expose your Function to access it outside the cluster, through an HTTP proxy. To expose it, use an [APIRule custom resource (CR)](https://kyma-project.io/external-content/api-gateway/docs/user/custom-resources/apirule/README). Function Controller reacts to an instance of the APIRule CR and, based on its details, it creates an Istio VirtualService and Oathkeeper Access Rules that specify your permissions for the exposed Function.
+This tutorial shows how you can expose your Function to access it outside the cluster, through an HTTP proxy. To expose it, use an [APIRule custom resource (CR)](https://kyma-project.io/external-content/api-gateway/docs/user/custom-resources/apirule/04-10-apirule-custom-resource.html). Function Controller reacts to an instance of the APIRule CR and, based on its details, it creates an Istio VirtualService and Oathkeeper Access Rules that specify your permissions for the exposed Function.
 
 When you complete this tutorial, you get a Function that:
 
 - Uses the `noAuth` access strategy, allowing access on an unsecured endpoint.
 - Accepts the `GET`, `POST`, `PUT`, and `DELETE` methods.
 
-To learn more about securing your Function, see the tutorial [Expose and secure a workload with JWT](https://kyma-project.io/external-content/api-gateway/docs/user/tutorials/01-40-expose-workload-jwt.html).
+To learn more about securing your Function, see the tutorial [Expose and Secure a Workload with a JWT Using SAP Cloud Identity Services](https://kyma-project.io/external-content/api-gateway/docs/user/expose-workloads/jwt/expose-workload-jwt.html).
 
 Read also about [Function’s specification](../technical-reference/07-70-function-specification.md) if you are interested in its signature, `event` and `context` objects, and custom HTTP responses the Function returns.
 
