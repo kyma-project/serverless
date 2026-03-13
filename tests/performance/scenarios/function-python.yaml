@@ -1,0 +1,73 @@
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  name: python
+spec:
+  env: []
+  replicas: 1
+  runtime: python312
+  runtimeImageOverride: ""
+  secretMounts: []
+  source:
+    inline:
+      dependencies: ""
+      source: |
+        def main(event, context):
+          return "Hello World!"
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: k6-test-python
+spec:
+  backoffLimit: 0
+  parallelism: 1
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: k6
+        image: grafana/k6
+        command: ["k6"]
+        args:
+          - run
+          - --out
+          - experimental-prometheus-rw
+          - --tag
+          - testid=python
+          - /scripts/test.js
+        env:
+          - name: K6_PROMETHEUS_RW_SERVER_URL
+            value: "http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/write"
+          - name: K6_PROMETHEUS_RW_TREND_STATS
+            value: "avg,min,med,max,p(90),p(95),p(99),p(99.99),count"
+          - name: K6_PROMETHEUS_RW_PUSH_INTERVAL
+            value: "1s"
+        volumeMounts:
+        - name: script
+          mountPath: /scripts
+        # resources:
+        #   requests:
+        #     cpu: "1"
+        #     memory: "512Mi"
+      volumes:
+      - name: script
+        configMap:
+          name: k6-test-python
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k6-test-python
+data:
+  test.js: |
+    import http from "k6/http";
+
+    export const options = {
+        vus: 100,
+        duration: "2m",
+    };
+
+    export default function () {
+        http.get("http://python.default.svc.cluster.local:80/");
+    }
