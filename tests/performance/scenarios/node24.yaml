@@ -1,0 +1,121 @@
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  name: nodejs24
+  labels:
+    test: performance
+    app: nodejs24
+spec:
+  replicas: 1
+  runtime: nodejs24
+  source:
+    inline:
+      dependencies: |
+        {
+          "dependencies": {}
+        }
+      source: |
+        module.exports = {
+          main: function(event, context) {
+            return 'Hello World!'
+          }
+        }
+---
+## I'm not sure if we need this and if we should call function because this can disturbe the results of the test
+
+# apiVersion: monitoring.coreos.com/v1
+# kind: ServiceMonitor
+# metadata:
+#   name: nodejs24
+# labels:
+#   test: performance
+# spec:
+#   selector:
+#     matchLabels:
+#       app: nodejs24
+#   endpoints:
+#   - port: http
+#     interval: 5s
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: k6-test-nodejs24
+  labels:
+    test: performance
+    app: k6-test-nodejs24
+spec:
+  backoffLimit: 0
+  parallelism: 4
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+      - name: wait-for-function
+        image: appropriate/curl
+        command: ["sh", "-c", "until curl -s http://nodejs24.default.svc.cluster.local:80/; do echo waiting for function; sleep 2; done"]
+      containers:
+      - name: k6
+        image: grafana/k6
+        command: ["k6"]
+        args:
+          - run
+          - --out
+          - experimental-prometheus-rw
+          - --tag
+          - testid=nodejs24
+          - /scripts/test.js
+        env:
+          - name: K6_PROMETHEUS_RW_SERVER_URL
+            value: "http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/write"
+          - name: K6_PROMETHEUS_RW_TREND_STATS
+            value: "avg,min,med,max,p(90),p(95),p(99),p(99.99),count"
+          - name: K6_PROMETHEUS_RW_PUSH_INTERVAL
+            value: "5s"
+        ports:
+          - containerPort: 6565
+            name: metrics
+        volumeMounts:
+        - name: script
+          mountPath: /scripts
+        # resources:
+        #   requests:
+        #     cpu: "1"
+        #     memory: "512Mi"
+      volumes:
+      - name: script
+        configMap:
+          name: k6-test-nodejs24
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: k6-test-nodejs24
+  labels:
+    test: performance
+spec:
+  selector:
+    matchLabels:
+      app: k6-test-nodejs24
+  podMetricsEndpoints:
+  - port: metrics
+    interval: 5s
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k6-test-nodejs24
+  labels:
+    test: performance
+data:
+  test.js: |
+    import http from "k6/http";
+
+    export const options = {
+        vus: 100,
+        duration: "2m",
+    };
+
+    export default function () {
+        http.get("http://nodejs24.default.svc.cluster.local:80/");
+    }

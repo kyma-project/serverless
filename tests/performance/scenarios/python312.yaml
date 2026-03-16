@@ -1,13 +1,12 @@
 apiVersion: serverless.kyma-project.io/v1alpha2
 kind: Function
 metadata:
-  name: python
+  name: python312
+  labels:
+    test: performance
 spec:
-  env: []
   replicas: 1
   runtime: python312
-  runtimeImageOverride: ""
-  secretMounts: []
   source:
     inline:
       dependencies: ""
@@ -18,13 +17,19 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: k6-test-python
+  name: k6-test-python312
+  labels:
+    test: performance
 spec:
   backoffLimit: 0
   parallelism: 1
   template:
     spec:
       restartPolicy: Never
+      initContainers:
+      - name: wait-for-function
+        image: appropriate/curl
+        command: ["sh", "-c", "until curl -s http://python312.default.svc.cluster.local:80/; do echo waiting for function; sleep 2; done"]
       containers:
       - name: k6
         image: grafana/k6
@@ -34,7 +39,7 @@ spec:
           - --out
           - experimental-prometheus-rw
           - --tag
-          - testid=python
+          - testid=python312
           - /scripts/test.js
         env:
           - name: K6_PROMETHEUS_RW_SERVER_URL
@@ -42,7 +47,10 @@ spec:
           - name: K6_PROMETHEUS_RW_TREND_STATS
             value: "avg,min,med,max,p(90),p(95),p(99),p(99.99),count"
           - name: K6_PROMETHEUS_RW_PUSH_INTERVAL
-            value: "1s"
+            value: "5s"
+        ports:
+          - containerPort: 6565
+            name: metrics
         volumeMounts:
         - name: script
           mountPath: /scripts
@@ -53,12 +61,28 @@ spec:
       volumes:
       - name: script
         configMap:
-          name: k6-test-python
+          name: k6-test-python312
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: k6-test-python312
+  labels:
+    test: performance
+spec:
+  selector:
+    matchLabels:
+      app: k6-test-python312
+  podMetricsEndpoints:
+  - port: metrics
+    interval: 5s
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: k6-test-python
+  name: k6-test-python312
+  labels:
+    test: performance
 data:
   test.js: |
     import http from "k6/http";
@@ -69,5 +93,5 @@ data:
     };
 
     export default function () {
-        http.get("http://python.default.svc.cluster.local:80/");
+        http.get("http://python312.default.svc.cluster.local:80/");
     }
