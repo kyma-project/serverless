@@ -87,19 +87,19 @@ spec:
         configMap:
           name: k6-test-nodejs24
 ---
-apiVersion: monitoring.coreos.com/v1
-kind: PodMonitor
-metadata:
-  name: k6-test-nodejs24
-  labels:
-    test: performance
-spec:
-  selector:
-    matchLabels:
-      app: k6-test-nodejs24
-  podMetricsEndpoints:
-  - port: metrics
-    interval: 5s
+# apiVersion: monitoring.coreos.com/v1
+# kind: PodMonitor
+# metadata:
+#   name: k6-test-nodejs24
+#   labels:
+#     test: performance
+# spec:
+#   selector:
+#     matchLabels:
+#       app: k6-test-nodejs24
+#   podMetricsEndpoints:
+#   - port: metrics
+#     interval: 5s
 ---
 apiVersion: v1
 kind: ConfigMap

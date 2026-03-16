@@ -4,6 +4,7 @@ metadata:
   name: python312
   labels:
     test: performance
+    app: python312
 spec:
   replicas: 1
   runtime: python312
@@ -13,6 +14,22 @@ spec:
       source: |
         def main(event, context):
           return "Hello World!"
+---
+## I'm not sure if we need this and if we should call function because this can disturbe the results of the test
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: python312
+  labels:
+    test: performance
+spec:
+  selector:
+    matchLabels:
+      app: python312
+  endpoints:
+  - port: http
+    interval: 5s
 ---
 apiVersion: batch/v1
 kind: Job
@@ -63,19 +80,19 @@ spec:
         configMap:
           name: k6-test-python312
 ---
-apiVersion: monitoring.coreos.com/v1
-kind: PodMonitor
-metadata:
-  name: k6-test-python312
-  labels:
-    test: performance
-spec:
-  selector:
-    matchLabels:
-      app: k6-test-python312
-  podMetricsEndpoints:
-  - port: metrics
-    interval: 5s
+# apiVersion: monitoring.coreos.com/v1
+# kind: PodMonitor
+# metadata:
+#   name: k6-test-python312
+#   labels:
+#     test: performance
+# spec:
+#   selector:
+#     matchLabels:
+#       app: k6-test-python312
+#   podMetricsEndpoints:
+#   - port: metrics
+#     interval: 5s
 ---
 apiVersion: v1
 kind: ConfigMap

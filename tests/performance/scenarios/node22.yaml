@@ -71,8 +71,8 @@ spec:
             value: "avg,min,med,max,p(90),p(95),p(99),p(99.99),count"
           - name: K6_PROMETHEUS_RW_PUSH_INTERVAL
             value: "5s"
-          - name: K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM
-            value: "true"
+          # - name: K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM
+          #   value: "true"
         ports:
           - containerPort: 6565
             name: metrics
@@ -88,19 +88,19 @@ spec:
         configMap:
           name: k6-test-nodejs22
 ---
-apiVersion: monitoring.coreos.com/v1
-kind: PodMonitor
-metadata:
-  name: k6-test-nodejs22
-  labels:
-    test: performance
-spec:
-  selector:
-    matchLabels:
-      app: k6-test-nodejs22
-  podMetricsEndpoints:
-  - port: metrics
-    interval: 5s
+# apiVersion: monitoring.coreos.com/v1
+# kind: PodMonitor
+# metadata:
+#   name: k6-test-nodejs22
+#   labels:
+#     test: performance
+# spec:
+#   selector:
+#     matchLabels:
+#       app: k6-test-nodejs22
+#   podMetricsEndpoints:
+#   - port: metrics
+#     interval: 5s
 ---
 apiVersion: v1
 kind: ConfigMap
