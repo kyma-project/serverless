@@ -6,6 +6,7 @@ export default [
   { text: 'Limitations', link: './00-50-limitations' },
   { text: 'Serverless Buildless Mode', link: './00-60-buildless-serverless' },
   { text: 'Logging Configuration', link: './00-70-configuring-logging' },
+  { text: 'Cluster Roles', link: './00-80-cluster-roles' },
   { text: 'Tutorials', link: './tutorials/README', collapsed: true, items: [
     { text: 'Create an Inline Function', link: './tutorials/01-10-create-inline-function' },
     { text: 'Create a Git Function', link: './tutorials/01-11-create-git-function' },
