@@ -47,14 +47,23 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
       - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
-      - name: run test
+        with:
+          clusterrole: cluster-admin
+      - name: deploy operator
         run: |
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make -C components/operator deploy
-          make -C tests/operator test
         env:
           IMG_DIRECTORY: ${{ inputs.img_directory }}
           IMG_VERSION: ${{ inputs.img_version }}
+      - name: switch to edit clusterrole
+        run: |
+          kubectl create clusterrolebinding ci-runner-binding \
+            --clusterrole="edit" \
+            --serviceaccount="kube-system:ci-runner" \
+            --dry-run=client -o yaml | kubectl apply -f -
+      - name: run test
+        run: make -C tests/operator test
       - if: ${{ always() }}
         uses: ./.github/actions/collect-cluster-info
         
@@ -90,15 +99,36 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
       - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
-      - name: run test
+        with:
+          clusterrole: cluster-admin
+      - name: deploy operator
         run: |
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make install-serverless-custom-operator
-          make -C tests/serverless serverless-integration serverless-contract-tests
-          make remove-serverless
         env:
           IMG_DIRECTORY: ${{ inputs.img_directory }}
           IMG_VERSION: ${{ inputs.img_version }}
+      - name: switch to edit clusterrole
+        run: |
+          kubectl create clusterrolebinding ci-runner-binding \
+            --clusterrole="edit" \
+            --serviceaccount="kube-system:ci-runner" \
+            --dry-run=client -o yaml | kubectl apply -f -
+      - name: run test
+        run: make -C tests/serverless serverless-integration serverless-contract-tests
+        env:
+          IMG_DIRECTORY: ${{ inputs.img_directory }}
+          IMG_VERSION: ${{ inputs.img_version }}
+      - name: switch back to cluster-admin for cleanup
+        if: ${{ always() }}
+        run: |
+          kubectl create clusterrolebinding ci-runner-binding \
+            --clusterrole="cluster-admin" \
+            --serviceaccount="kube-system:ci-runner" \
+            --dry-run=client -o yaml | kubectl apply -f -
+      - name: remove serverless
+        if: ${{ always() }}
+        run: make remove-serverless
       - name: collect cluster info
         if: ${{ always() }}
         run: make -C tests/serverless cluster-info
