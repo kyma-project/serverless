@@ -47,8 +47,6 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
       - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
-        with:
-          clusterrole: 'edit'
       - name: run test
         run: |
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
@@ -92,8 +90,6 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
       - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
-        with:
-          clusterrole: 'edit'
       - name: run test
         run: |
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
@@ -143,8 +139,6 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
       - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
-        with:
-          clusterrole: 'edit'
       - name: run tests
         run: |
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
