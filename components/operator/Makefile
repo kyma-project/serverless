@@ -112,7 +112,6 @@ deploy-release: ## Deploy operator to the k8s cluster specified in ~/.kube/confi
 
 .PHONY: deploy
 deploy: manifests kustomize generate-kustomization-dev ## Deploy operator to the K8s cluster specified in ~/.kube/config with image from IMG env.
-	kubectl create namespace kyma-system || true
 	cd $(CONFIG_OPERATOR_DEV) && $(KUSTOMIZE) edit set image europe-docker.pkg.dev/kyma-project/prod/serverless-operator=${IMG}
 	$(KUSTOMIZE) build $(CONFIG_OPERATOR_DEV) | kubectl apply -f -
 

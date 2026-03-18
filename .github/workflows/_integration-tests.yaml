@@ -51,7 +51,6 @@ jobs:
           clusterrole: 'edit'
       - name: run test
         run: |
-          kubectl create namespace kyma-system || true
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make -C components/operator deploy
           make -C tests/operator test
@@ -97,7 +96,6 @@ jobs:
           clusterrole: 'edit'
       - name: run test
         run: |
-          kubectl create namespace kyma-system || true
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make install-serverless-custom-operator
           make -C tests/serverless serverless-integration serverless-contract-tests
@@ -149,7 +147,6 @@ jobs:
           clusterrole: 'edit'
       - name: run tests
         run: |
-          kubectl create namespace kyma-system || true
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make install-serverless-custom-operator
           make -C tests/serverless git-auth-integration
