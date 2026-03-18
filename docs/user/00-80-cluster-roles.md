@@ -1,8 +1,8 @@
 # Cluster Roles
-Cluster Roles are a set of permissions that can be applied across the entire cluster. They are used to define what actions can be performed on which resources within the cluster. Cluster Roles can be assigned to users, groups, or service accounts through Role Bindings or Cluster Role Bindings.
+ClusterRoles are a set of permissions that can be applied across the entire cluster. They define which actions can be performed on which resources within the cluster. ClusterRoles can be assigned to users, groups, or service accounts through RoleBindings or ClusterRoleBindings.
 
-## Provided roles
-List of all Cluster Roles provided for the user.
+## Provided Roles
+List of all ClusterRoles provided for the user.
 
 | Name                 | Resource   | Verbs                                           | Installed with      | Aggregated to role |
 |----------------------|------------|-------------------------------------------------|---------------------|--------------------|
