@@ -2,8 +2,8 @@
 images:
   - source: "alpine@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659"
     tag: "3.23.3"
-  - source: "golang@sha256:d4c4845f5d60c6a974c6000ce58ae079328d03ab7f721a0734277e69905473e5"
-    tag: "1.26.0-alpine3.23"
+  - source: "golang@sha256:2389ebfa5b7f43eeafbd6be0c3700cc46690ef842ad962f6c5bd6be49ed82039"
+    tag: "1.26.1-alpine3.23"
   - source: "gcr.io/kaniko-project/executor@sha256:4e7a52dd1f14872430652bb3b027405b8dfd17c4538751c620ac005741ef9698"
     tag: "v1.24.0"
   - source: "ghcr.io/nginx/alpine-fips@sha256:15cf5753964eca17557083313d2a39e6a3cc659a5a2143ecebc476b14cc687e6"
@@ -12,8 +12,8 @@ images:
   - source: "node@sha256:7fddd9ddeae8196abf4a3ef2de34e11f7b1a722119f91f28ddf1e99dcafdf114"
     tag: "24.14.0-alpine3.23"
   # https://hub.docker.com/layers/library/node/22-alpine
-  - source: "node@sha256:e4bf2a82ad0a4037d28035ae71529873c069b13eb0455466ae0bc13363826e34"
-    tag: "22.22.0-alpine3.23"
+  - source: "node@sha256:8094c002d08262dba12645a3b4a15cd6cd627d30bc782f53229a2ec13ee22a00"
+    tag: "22.22.1-alpine3.23"
   # https://hub.docker.com/layers/library/node/20-alpine
   - source: "node@sha256:09e2b3d9726018aecf269bd35325f46bf75046a643a66d28360ec71132750ec8"
     tag: "20.20.0-alpine3.23"
