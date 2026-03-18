@@ -122,10 +122,10 @@ jobs:
       - name: switch back to cluster-admin for cleanup
         if: ${{ always() }}
         run: |
-          kubectl create clusterrolebinding ci-runner-binding \
+          KUBECONFIG=$(k3d kubeconfig get kyma) kubectl create clusterrolebinding ci-runner-binding \
             --clusterrole="cluster-admin" \
             --serviceaccount="kube-system:ci-runner" \
-            --dry-run=client -o yaml | kubectl apply -f -
+            --dry-run=client -o yaml | KUBECONFIG=$(k3d kubeconfig get kyma) kubectl apply -f -
       - name: remove serverless
         if: ${{ always() }}
         run: make remove-serverless
