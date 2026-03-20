@@ -4,6 +4,7 @@ metadata:
   name: nodejs22
   labels:
     test: performance
+    app: nodejs22
 spec:
   replicas: 1
   runtime: nodejs22
@@ -16,25 +17,27 @@ spec:
       source: |
         module.exports = {
           main: function(event, context) {
+            console.log("Hello World!");
             return 'Hello World!'
           }
         }
 ---
 ## I'm not sure if we need this and if we should call function because this can disturbe the results of the test
 
-# apiVersion: monitoring.coreos.com/v1
-# kind: ServiceMonitor
-# metadata:
-#   name: nodejs22
-# labels:
-#   test: performance
-# spec:
-#   selector:
-#     matchLabels:
-#       app: nodejs22
-#   endpoints:
-#   - port: http
-#     interval: 5s
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: nodejs22
+  labels:
+    test: performance
+spec:
+  selector:
+    matchLabels:
+      serverless.kyma-project.io/function-name: nodejs22
+  podMetricsEndpoints:
+  - portNumber: 8080
+    path: /metrics
+    interval: 5s
 ---
 apiVersion: batch/v1
 kind: Job
@@ -42,10 +45,9 @@ metadata:
   name: k6-test-nodejs22
   labels:
     test: performance
-    app: k6-test-nodejs22
 spec:
   backoffLimit: 0
-  parallelism: 4
+  parallelism: 1
   template:
     spec:
       restartPolicy: Never
@@ -88,19 +90,20 @@ spec:
         configMap:
           name: k6-test-nodejs22
 ---
-# apiVersion: monitoring.coreos.com/v1
-# kind: PodMonitor
-# metadata:
-#   name: k6-test-nodejs22
-#   labels:
-#     test: performance
-# spec:
-#   selector:
-#     matchLabels:
-#       app: k6-test-nodejs22
-#   podMetricsEndpoints:
-#   - port: metrics
-#     interval: 5s
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: k6-test-nodejs22
+  labels:
+    test: performance
+spec:
+  selector:
+    matchLabels:
+      job-name: k6-test-nodejs22
+  podMetricsEndpoints:
+  - portNumber: 6565
+    path: /metrics
+    interval: 5s
 ---
 apiVersion: v1
 kind: ConfigMap
