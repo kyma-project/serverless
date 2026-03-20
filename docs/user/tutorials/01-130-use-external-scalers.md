@@ -62,7 +62,7 @@ Follow these steps:
 
 #### **Keda CPU**
 
-1. Create your Function with the **replicas** value set to `1` to prevent the internal Serverless HPA creation:
+1. Create your Function with the `replicas` value set to `1` to prevent the internal Serverless HPA creation:
 
     ```bash
     cat <<EOF | kubectl apply -f -
@@ -126,7 +126,7 @@ Follow these steps:
 
 #### **Keda Prometheus**
 
-1. Create your Function with the **replicas** value set to `1` to prevent the internal Serverless HPA creation:
+1. Create your Function with the `replicas` value set to `1` to prevent the internal Serverless HPA creation:
 
     ```bash
     cat <<EOF | kubectl apply -f -
