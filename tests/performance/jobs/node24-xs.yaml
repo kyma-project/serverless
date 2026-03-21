@@ -1,51 +1,7 @@
-apiVersion: serverless.kyma-project.io/v1alpha2
-kind: Function
-metadata:
-  name: nodejs24-l
-  labels:
-    test: performance
-    app: nodejs24-l
-spec:
-  replicas: 1
-  runtime: nodejs24
-  resourceConfiguration:
-    function:
-      profile: L
-  source:
-    inline:
-      dependencies: |
-        {
-          "dependencies": {}
-        }
-      source: |
-        module.exports = {
-          main: function(event, context) {
-            console.log("Hello World!");
-            return 'Hello World!'
-          }
-        }
----
-## I'm not sure if we need this and if we should call function because this can disturbe the results of the test
-
-apiVersion: monitoring.coreos.com/v1
-kind: PodMonitor
-metadata:
-  name: nodejs24-l
-  labels:
-    test: performance
-spec:
-  selector:
-    matchLabels:
-      serverless.kyma-project.io/function-name: nodejs24-l
-  podMetricsEndpoints:
-  - portNumber: 8080
-    path: /metrics
-    interval: 5s
----
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: k6-test-nodejs24-l
+  name: k6-test-nodejs24-xs
   labels:
     test: performance
 spec:
@@ -57,7 +13,7 @@ spec:
       initContainers:
       - name: wait-for-function
         image: appropriate/curl
-        command: ["sh", "-c", "until curl -s http://nodejs24-l.${NAMESPACE}.svc.cluster.local:80/; do echo waiting for function; sleep 2; done"]
+        command: ["sh", "-c", "until curl -s http://nodejs24-xs.${NAMESPACE}.svc.cluster.local:80/; do echo waiting for function; sleep 2; done"]
         env:
           - name: NAMESPACE
             valueFrom:
@@ -69,7 +25,7 @@ spec:
         command: 
           - sh
           - -c
-          - k6 run --out experimental-prometheus-rw --tag testid=nodejs24-l --env FUNC_HOSTNAME=nodejs24-l.${NAMESPACE}.svc.cluster.local /scripts/test.js
+          - k6 run --out experimental-prometheus-rw --tag testid=nodejs24-xs --env FUNC_HOSTNAME=nodejs24-xs.${NAMESPACE}.svc.cluster.local /scripts/test.js
         env:
           - name: NAMESPACE
             valueFrom:
@@ -101,13 +57,13 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
-  name: k6-test-nodejs24-l
+  name: k6-test-nodejs24-xs
   labels:
     test: performance
 spec:
   selector:
     matchLabels:
-      job-name: k6-test-nodejs24-l
+      job-name: k6-test-nodejs24-xs
   podMetricsEndpoints:
   - portNumber: 6565
     path: /metrics
