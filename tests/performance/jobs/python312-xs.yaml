@@ -10,15 +10,6 @@ spec:
   template:
     spec:
       restartPolicy: Never
-      initContainers:
-      - name: wait-for-function
-        image: appropriate/curl
-        command: ["sh", "-c", "until curl -s http://python312-xs.${NAMESPACE}.svc.cluster.local:80/; do echo waiting for function; sleep 2; done"]
-        env:
-          - name: NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
       containers:
       - name: k6
         image: grafana/k6
