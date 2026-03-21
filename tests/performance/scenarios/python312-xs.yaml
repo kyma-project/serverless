@@ -1,13 +1,16 @@
 apiVersion: serverless.kyma-project.io/v1alpha2
 kind: Function
 metadata:
-  name: python312
+  name: python312-xs
   labels:
     test: performance
-    app: python312
+    app: python312-xs
 spec:
   replicas: 1
   runtime: python312
+  resourceConfiguration:
+    function:
+      profile: XS
   source:
     inline:
       dependencies: ""
@@ -21,13 +24,13 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
-  name: python312
+  name: python312-xs
   labels:
     test: performance
 spec:
   selector:
     matchLabels:
-      serverless.kyma-project.io/function-name: python312
+      serverless.kyma-project.io/function-name: python312-xs
   podMetricsEndpoints:
   - portNumber: 8080
     path: /metrics
@@ -36,7 +39,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: k6-test-python312
+  name: k6-test-python312-xs
   labels:
     test: performance
 spec:
@@ -48,19 +51,24 @@ spec:
       initContainers:
       - name: wait-for-function
         image: appropriate/curl
-        command: ["sh", "-c", "until curl -s http://python312.default.svc.cluster.local:80/; do echo waiting for function; sleep 2; done"]
+        command: ["sh", "-c", "until curl -s http://python312-xs.${NAMESPACE}.svc.cluster.local:80/; do echo waiting for function; sleep 2; done"]
+        env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
       containers:
       - name: k6
         image: grafana/k6
-        command: ["k6"]
-        args:
-          - run
-          - --out
-          - experimental-prometheus-rw
-          - --tag
-          - testid=python312
-          - /scripts/test.js
+        command: 
+          - sh
+          - -c
+          - k6 run --out experimental-prometheus-rw --tag testid=python312-xs --env FUNC_HOSTNAME=python312-xs.${NAMESPACE}.svc.cluster.local /scripts/test.js
         env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
           - name: K6_PROMETHEUS_RW_SERVER_URL
             value: "http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/write"
           - name: K6_PROMETHEUS_RW_TREND_STATS
@@ -80,38 +88,19 @@ spec:
       volumes:
       - name: script
         configMap:
-          name: k6-test-python312
+          name: k6-test
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: PodMonitor
 metadata:
-  name: k6-test-python312
+  name: k6-test-python312-xs
   labels:
     test: performance
 spec:
   selector:
     matchLabels:
-      job-name: k6-test-python312
+      job-name: k6-test-python312-xs
   podMetricsEndpoints:
   - portNumber: 6565
     path: /metrics
     interval: 5s
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: k6-test-python312
-  labels:
-    test: performance
-data:
-  test.js: |
-    import http from "k6/http";
-
-    export const options = {
-        vus: 100,
-        duration: "2m",
-    };
-
-    export default function () {
-        http.get("http://python312.default.svc.cluster.local:80/");
-    }

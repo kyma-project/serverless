@@ -1,0 +1,114 @@
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  name: nodejs24-xl
+  labels:
+    test: performance
+    app: nodejs24-xl
+spec:
+  replicas: 1
+  runtime: nodejs24
+  resourceConfiguration:
+    function:
+      profile: XL
+  source:
+    inline:
+      dependencies: |
+        {
+          "dependencies": {}
+        }
+      source: |
+        module.exports = {
+          main: function(event, context) {
+            console.log("Hello World!");
+            return 'Hello World!'
+          }
+        }
+---
+## I'm not sure if we need this and if we should call function because this can disturbe the results of the test
+
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: nodejs24-xl
+  labels:
+    test: performance
+spec:
+  selector:
+    matchLabels:
+      serverless.kyma-project.io/function-name: nodejs24-xl
+  podMetricsEndpoints:
+  - portNumber: 8080
+    path: /metrics
+    interval: 5s
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: k6-test-nodejs24-xl
+  labels:
+    test: performance
+spec:
+  backoffLimit: 0
+  parallelism: 1
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+      - name: wait-for-function
+        image: appropriate/curl
+        command: ["sh", "-c", "until curl -s http://nodejs24-xl.${NAMESPACE}.svc.cluster.local:80/; do echo waiting for function; sleep 2; done"]
+        env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+      containers:
+      - name: k6
+        image: grafana/k6
+        command: 
+          - sh
+          - -c
+          - k6 run --out experimental-prometheus-rw --tag testid=nodejs24-xl --env FUNC_HOSTNAME=nodejs24-xl.${NAMESPACE}.svc.cluster.local /scripts/test.js
+        env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: K6_PROMETHEUS_RW_SERVER_URL
+            value: "http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/write"
+          - name: K6_PROMETHEUS_RW_TREND_STATS
+            value: "avg,min,med,max,p(90),p(95),p(99),p(99.99),count"
+          - name: K6_PROMETHEUS_RW_PUSH_INTERVAL
+            value: "5s"
+          # - name: K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM
+          #   value: "true"
+        ports:
+          - containerPort: 6565
+            name: metrics
+        volumeMounts:
+        - name: script
+          mountPath: /scripts
+        # resources:
+        #   requests:
+        #     cpu: "1"
+        #     memory: "512Mi"
+      volumes:
+      - name: script
+        configMap:
+          name: k6-test
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: k6-test-nodejs24-xl
+  labels:
+    test: performance
+spec:
+  selector:
+    matchLabels:
+      job-name: k6-test-nodejs24-xl
+  podMetricsEndpoints:
+  - portNumber: 6565
+    path: /metrics
+    interval: 5s
