@@ -1,0 +1,37 @@
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  name: python312-l
+  labels:
+    test: performance
+    app: python312-l
+spec:
+  replicas: 1
+  runtime: python312
+  resourceConfiguration:
+    function:
+      profile: L
+  source:
+    inline:
+      dependencies: ""
+      source: |
+        def main(event, context):
+          print("Hello World!")
+          return "Hello World!"
+---
+## I'm not sure if we need this and if we should call function because this can disturbe the results of the test
+
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: python312-l
+  labels:
+    test: performance
+spec:
+  selector:
+    matchLabels:
+      serverless.kyma-project.io/function-name: python312-l
+  podMetricsEndpoints:
+  - portNumber: 8080
+    path: /metrics
+    interval: 5s
