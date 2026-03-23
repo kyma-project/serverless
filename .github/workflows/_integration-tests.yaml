@@ -56,7 +56,7 @@ jobs:
           IMG_VERSION: ${{ inputs.img_version }}
       - uses: kyma-project/manager-toolkit/.github/actions/configure-kubeconfig-clusterrole@main
         with:
-          clusterrole: edit
+          clusterrole: cluster-admin
       - name: run operator tests
         run: |
           make -C tests/operator test
@@ -107,7 +107,7 @@ jobs:
           IMG_VERSION: ${{ inputs.img_version }}
       - uses: kyma-project/manager-toolkit/.github/actions/configure-kubeconfig-clusterrole@main
         with:
-          clusterrole: edit
+          clusterrole: cluster-admin
       - name: run test
         run: make -C tests/serverless serverless-integration serverless-contract-tests
         env:
