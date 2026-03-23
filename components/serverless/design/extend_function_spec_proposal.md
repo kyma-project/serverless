@@ -103,7 +103,7 @@ spec:
  - Purpose focused  
  - Compact configuration - easy to adopt
  - Less confusing (as volume mounts confuse Serverless Functions are considered stateless and should not claim any persistence volumes )
- - Enables using service binding natively with dedicated SDKs (i.e @sap/xsenv) - [related read](https://blogs.sap.com/2022/07/12/the-new-way-to-consume-service-bindings-on-kyma-runtime/)
+ - Enables using service binding natively with dedicated SDKs (i.e @sap/xsenv) - [related read](https://blogs.sap.com/2022/07/12/the-new-way-to-consume-service-bindings-on-kyma-runtime/) <!-- markdown-link-check-disable-line -->
 
 Cons: 
  - Not allows mounting anything besides Secrets
