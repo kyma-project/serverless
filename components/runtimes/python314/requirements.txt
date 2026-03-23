@@ -1,6 +1,6 @@
 setuptools==82.0.1
 requests>=2.31.0
-flask==3.1.2
+flask==3.1.3
 gevent==25.9.1
 wsgi-request-logger==0.4.6
 prometheus_client==0.24.1
