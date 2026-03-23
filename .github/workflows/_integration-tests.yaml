@@ -47,10 +47,18 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
       - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
-      - name: run test
+      - name: deploy operator
         run: |
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make -C components/operator deploy
+        env:
+          IMG_DIRECTORY: ${{ inputs.img_directory }}
+          IMG_VERSION: ${{ inputs.img_version }}
+      - uses: kyma-project/manager-toolkit/.github/actions/configure-kubeconfig-clusterrole@main
+        with:
+          clusterrole: edit
+      - name: run operator tests
+        run: |
           make -C tests/operator test
         env:
           IMG_DIRECTORY: ${{ inputs.img_directory }}
@@ -90,15 +98,26 @@ jobs:
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
       - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
-      - name: run test
+      - name: install serverless
         run: |
           kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
           make install-serverless-custom-operator
-          make -C tests/serverless serverless-integration serverless-contract-tests
-          make remove-serverless
         env:
           IMG_DIRECTORY: ${{ inputs.img_directory }}
           IMG_VERSION: ${{ inputs.img_version }}
+      - uses: kyma-project/manager-toolkit/.github/actions/configure-kubeconfig-clusterrole@main
+        with:
+          clusterrole: edit
+      - name: run test
+        run: make -C tests/serverless serverless-integration serverless-contract-tests
+        env:
+          IMG_DIRECTORY: ${{ inputs.img_directory }}
+          IMG_VERSION: ${{ inputs.img_version }}
+      - uses: kyma-project/manager-toolkit/.github/actions/configure-kubeconfig-clusterrole@main
+        with:
+          clusterrole: cluster-admin
+      - name:  remove serverless
+        run: make remove-serverless
       - name: collect cluster info
         if: ${{ always() }}
         run: make -C tests/serverless cluster-info
