@@ -1,8 +1,9 @@
-# Kubernetes ClusterRole aggregation hierarchy: admin > edit > view.
+# Kubernetes ClusterRole aggregation hierarchy: admin ⊃ edit ⊃ view.
 # Only list rules unique to each role; the test merges upward.
 admin: []
 
 edit:
+  # kyma-serverless-edit
   - apiGroups:
       - operator.kyma-project.io
     resources:
@@ -21,6 +22,8 @@ edit:
       - serverlesses/status
     verbs:
       - get
+
+  # kyma-functions-edit
   - apiGroups:
       - serverless.kyma-project.io
     resources:
@@ -49,6 +52,7 @@ edit:
       - update
 
 view:
+  # kyma-serverless-view
   - apiGroups:
       - operator.kyma-project.io
     resources:
@@ -63,6 +67,8 @@ view:
       - serverlesses/status
     verbs:
       - get
+
+  # kyma-functions-view
   - apiGroups:
       - serverless.kyma-project.io
     resources:
@@ -83,4 +89,3 @@ view:
       - functions/scale
     verbs:
       - get
-
