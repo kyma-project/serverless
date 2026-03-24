@@ -3,14 +3,11 @@ install-monitoring:
 	@echo "Installing monitoring tools..."
 	helm upgrade --install monitoring -n monitoring --create-namespace config/
 
-.PHONY: apply-funcs
-apply-funcs:
-	@echo "Applying function configurations..."
-	@kubectl apply -f funcs/
-	@echo "Waiting for functions to be ready..."
-	@kubectl wait function --for='jsonpath={.status.conditions[?(@.type=="Running")].status}=True' -l "test=performance"
-
 .PHONY: start-test
-start-test: apply-funcs
-	@echo "Running performance tests..."
-	@kubectl apply -f jobs/
+start-test:
+	@kubectl create namespace performance-tests &>/dev/null || true
+	@NAMESPACE=performance-tests ./test_runtimes.sh
+
+.PHONY: start-rapid-test
+start-rapid-test:
+	@RAPID=true make start-test
