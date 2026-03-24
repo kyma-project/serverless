@@ -54,9 +54,6 @@ jobs:
         env:
           IMG_DIRECTORY: ${{ inputs.img_directory }}
           IMG_VERSION: ${{ inputs.img_version }}
-      - uses: kyma-project/manager-toolkit/.github/actions/configure-kubeconfig-clusterrole@main
-        with:
-          clusterrole: cluster-admin
       - name: run operator tests
         run: |
           make -C tests/operator test
@@ -65,7 +62,39 @@ jobs:
           IMG_VERSION: ${{ inputs.img_version }}
       - if: ${{ always() }}
         uses: ./.github/actions/collect-cluster-info
-        
+
+  rbac-integration-test:
+    if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
+      - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
+      - name: deploy operator and buildless-serverless
+        run: |
+          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
+          make -C components/operator deploy
+          make -C components/buildless-serverless deploy
+        env:
+          IMG_DIRECTORY: ${{ inputs.img_directory }}
+          IMG_VERSION: ${{ inputs.img_version }}
+      - name: prepare rbac test namespace
+        run: |
+          kubectl create namespace serverless-rbac-test
+      - name: switch kubeconfig to edit clusterrole
+        uses: kyma-project/manager-toolkit/.github/actions/configure-kubeconfig-clusterrole@main
+        with:
+          clusterrole: edit
+      - name: run rbac tests
+        run: make -C tests/rbac test
+        env:
+          RBAC_TEST_NAMESPACE: serverless-rbac-test
+      - if: ${{ always() }}
+        uses: ./.github/actions/collect-cluster-info
+
   fips-mode-operator-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
     runs-on: ubuntu-latest
