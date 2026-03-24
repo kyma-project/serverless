@@ -1,4 +1,4 @@
-# Kubernetes ClusterRole aggregation hierarchy: admin ⊃ edit ⊃ view.
+# Kubernetes ClusterRole aggregation hierarchy: admin > edit > view.
 # Only list rules unique to each role; the test merges upward.
 admin: []
 
