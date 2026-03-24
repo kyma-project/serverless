@@ -32,6 +32,7 @@ export default [
     { text: 'Git Source Type', link: './technical-reference/07-40-git-source-type' },
     { text: 'Function\'s Specification', link: './technical-reference/07-70-function-specification' },
     { text: 'Available Presets', link: './technical-reference/07-80-available-presets' },
+    { text: 'Runtime Deprecation Schedule', link: './technical-reference/07-90-runtime-deprecation-schedule' }
     ] },
   { text: 'Troubleshooting Guides', link: './troubleshooting-guides/README', collapsed: true, items: [
     { text: 'Serverless Periodically Restarting', link: './troubleshooting-guides/03-50-serverless-periodically-restaring' },
