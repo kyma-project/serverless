@@ -82,32 +82,8 @@ jobs:
         env:
           IMG_DIRECTORY: ${{ inputs.img_directory }}
           IMG_VERSION: ${{ inputs.img_version }}
-      - name: prepare rbac test namespace
-        run: |
-          kubectl create namespace serverless-rbac-test
-      - name: pre-create resources for view tests
-        run: make -C tests/rbac precreate
-        env:
-          RBAC_TEST_NAMESPACE: serverless-rbac-test
-          RESOURCES_FILE: tests/rbac/resources.yaml
-      - name: switch kubeconfig to view clusterrole
-        uses: kyma-project/manager-toolkit/.github/actions/configure-kubeconfig-clusterrole@main
-        with:
-          clusterrole: view
-      - name: run rbac view tests
-        run: make -C tests/rbac test-view
-        env:
-          RBAC_TEST_NAMESPACE: serverless-rbac-test
-          RESOURCES_FILE: tests/rbac/resources.yaml
-      - name: switch kubeconfig to edit clusterrole
-        uses: kyma-project/manager-toolkit/.github/actions/configure-kubeconfig-clusterrole@main
-        with:
-          clusterrole: edit
-      - name: run rbac edit tests
-        run: make -C tests/rbac test-edit
-        env:
-          RBAC_TEST_NAMESPACE: serverless-rbac-test
-          RESOURCES_FILE: tests/rbac/resources.yaml
+      - name: run rbac tests
+        run: make -C tests/rbac test
       - if: ${{ always() }}
         uses: ./.github/actions/collect-cluster-info
 

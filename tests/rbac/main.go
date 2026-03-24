@@ -4,132 +4,146 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"path/filepath"
+	"sort"
 	"strings"
-	"time"
 
-	"github.com/kyma-project/serverless/tests/operator/logger"
-	"github.com/kyma-project/serverless/tests/operator/utils"
-	"github.com/kyma-project/serverless/tests/rbac/clusterrole"
-	"github.com/kyma-project/serverless/tests/rbac/resource"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/clientcmd"
+	"sigs.k8s.io/yaml"
 )
 
-var testTimeout = time.Minute * 10
+type Rule struct {
+	APIGroups []string `json:"apiGroups"`
+	Resources []string `json:"resources"`
+	Verbs     []string `json:"verbs"`
+}
+
+type Config struct {
+	Admin []Rule `json:"admin"`
+	Edit  []Rule `json:"edit"`
+	View  []Rule `json:"view"`
+}
 
 func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), testTimeout)
-	defer cancel()
-
-	log, err := logger.New()
-	if err != nil {
-		fmt.Printf("unable to setup logger: %s\n", err)
+	if len(os.Args) != 2 {
+		fmt.Fprintf(os.Stderr, "Usage: %s <config.yaml>\n", os.Args[0])
 		os.Exit(1)
 	}
 
-	client, err := utils.GetKuberentesClient()
+	cfg, err := loadConfig(os.Args[1])
 	if err != nil {
-		log.Error(err)
-		os.Exit(1)
+		fatal("loading config: %v", err)
 	}
 
-	u := &utils.TestUtils{Ctx: ctx, Client: client, Logger: log}
-
-	if err := runScenario(u); err != nil {
-		log.Error(err)
-		os.Exit(1)
-	}
-}
-
-// runScenario dispatches to the correct test based on RBAC_TEST_SCENARIO ("edit" or "view").
-// Resources are loaded from the YAML file specified by the RESOURCES_FILE env var.
-func runScenario(u *utils.TestUtils) error {
-	ns := os.Getenv("RBAC_TEST_NAMESPACE")
-	if ns == "" {
-		return fmt.Errorf("RBAC_TEST_NAMESPACE env var not set")
-	}
-
-	scenario := strings.TrimSpace(strings.ToLower(os.Getenv("RBAC_TEST_SCENARIO")))
-	if scenario == "" {
-		return fmt.Errorf("RBAC_TEST_SCENARIO env var not set")
-	}
-
-	resources, err := resolveResources(u)
+	clientset, err := buildClientset()
 	if err != nil {
-		return err
+		fatal("building kubernetes client: %v", err)
 	}
 
-	switch scenario {
-	case "edit":
-		return runEditScenario(u, ns, resources)
-	case "view":
-		return runViewScenario(u, ns, resources)
-	case "precreate":
-		return runPrecreateScenario(u, ns, resources)
-	default:
-		return fmt.Errorf("unknown RBAC_TEST_SCENARIO %q (expected 'edit', 'view', or 'precreate')", scenario)
-	}
-}
+	// Kubernetes aggregation hierarchy: admin ⊃ edit ⊃ view
+	view := cfg.View
+	edit := append(cfg.Edit, view...)
+	admin := append(cfg.Admin, edit...)
 
-// resolveResources loads resources from the YAML file specified by RESOURCES_FILE.
-func resolveResources(u *utils.TestUtils) ([]resource.TestResource, error) {
-	path := os.Getenv("RESOURCES_FILE")
-	if path == "" {
-		return nil, fmt.Errorf("RESOURCES_FILE env var not set")
-	}
-	if !filepath.IsAbs(path) {
-		if wd, err := os.Getwd(); err == nil {
-			path = filepath.Join(wd, path)
+	var failed bool
+	for _, c := range []struct {
+		name  string
+		rules []Rule
+	}{
+		{"admin", admin},
+		{"edit", edit},
+		{"view", view},
+	} {
+		if err := verifyClusterRole(clientset, c.name, c.rules); err != nil {
+			fmt.Fprintf(os.Stderr, "FAIL: clusterrole/%s: %v\n", c.name, err)
+			failed = true
+		} else {
+			fmt.Printf("PASS: clusterrole/%s\n", c.name)
 		}
 	}
 
-	u.Logger.Infof("loading test resources from %s", path)
-	all, err := resource.LoadFromFile(path)
+	if failed {
+		os.Exit(1)
+	}
+	fmt.Println("ALL PASSED")
+}
+
+func fatal(format string, args ...any) {
+	fmt.Fprintf(os.Stderr, "ERROR: "+format+"\n", args...)
+	os.Exit(1)
+}
+
+func loadConfig(path string) (*Config, error) {
+	data, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("loading resources: %w", err)
+		return nil, err
 	}
-	u.Logger.Infof("loaded %d resource(s) from YAML", len(all))
-	return all, nil
+	var cfg Config
+	return &cfg, yaml.Unmarshal(data, &cfg)
 }
 
-// runEditScenario verifies that the "edit" ClusterRole grants full CRUD on the resources and forbids creating cluster-scoped resources (namespaces).
-func runEditScenario(u *utils.TestUtils, ns string, resources []resource.TestResource) error {
-	u.Logger.Infof("=== edit scenario: verifying CRUD in namespace %s ===", ns)
-	if err := clusterrole.VerifyEditCRUD(u.Ctx, u.Client, ns, resources, u.Logger); err != nil {
-		return err
+func buildClientset() (*kubernetes.Clientset, error) {
+	config, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+		clientcmd.NewDefaultClientConfigLoadingRules(), nil).ClientConfig()
+	if err != nil {
+		return nil, err
 	}
-
-	u.Logger.Info("=== edit scenario: verifying cluster-scoped restrictions ===")
-	if err := clusterrole.VerifyCannotCreateNamespace(u.Ctx, u.Client, u.Logger); err != nil {
-		return fmt.Errorf("namespace creation should be forbidden: %w", err)
-	}
-
-	u.Logger.Info("All edit ClusterRole tests passed ✓")
-	return nil
+	return kubernetes.NewForConfig(config)
 }
 
-// runViewScenario verifies that the "view" ClusterRole allows read (get/list) but forbids create, update, and delete on the resources.
-// NOTE: the resources must already exist in the namespace. Use PreCreateResources in a higher-privilege step before switching to the view role and running this scenario.
-func runViewScenario(u *utils.TestUtils, ns string, resources []resource.TestResource) error {
-	u.Logger.Infof("=== view scenario: verifying read-only access in namespace %s ===", ns)
-	if err := clusterrole.VerifyViewReadOnly(u.Ctx, u.Client, ns, resources, u.Logger); err != nil {
-		return err
+func keyFor(apiGroups, resources, verbs []string) string {
+	sorted := func(s []string) string {
+		c := make([]string, len(s))
+		copy(c, s)
+		sort.Strings(c)
+		return strings.Join(c, ",")
 	}
-
-	u.Logger.Info("=== view scenario: verifying cluster-scoped restrictions ===")
-	if err := clusterrole.VerifyCannotCreateNamespace(u.Ctx, u.Client, u.Logger); err != nil {
-		return fmt.Errorf("namespace creation should be forbidden: %w", err)
-	}
-
-	u.Logger.Info("All view ClusterRole tests passed ✓")
-	return nil
+	return sorted(apiGroups) + "/" + sorted(resources) + "/" + sorted(verbs)
 }
 
-// runPrecreateScenario creates the test resources with so they exist when the view scenario is executed with a lower-privilege kubeconfig.
-func runPrecreateScenario(u *utils.TestUtils, ns string, resources []resource.TestResource) error {
-	u.Logger.Infof("=== precreate scenario: creating resources in namespace %s ===", ns)
-	if err := clusterrole.PreCreateResources(u.Ctx, u.Client, ns, resources, u.Logger); err != nil {
-		return err
+func verifyClusterRole(clientset *kubernetes.Clientset, name string, expected []Rule) error {
+	cr, err := clientset.RbacV1().ClusterRoles().Get(context.Background(), name, metav1.GetOptions{})
+	if err != nil {
+		return fmt.Errorf("failed to get clusterrole %q: %w", name, err)
 	}
-	u.Logger.Info("All resources pre-created ✓")
+
+	// Collect relevant API groups from expected rules.
+	groups := map[string]bool{}
+	expectedSet := map[string]bool{}
+	for _, r := range expected {
+		for _, g := range r.APIGroups {
+			groups[g] = true
+		}
+		expectedSet[keyFor(r.APIGroups, r.Resources, r.Verbs)] = true
+	}
+
+	// Filter actual rules to only relevant API groups.
+	actualSet := map[string]bool{}
+	for _, r := range cr.Rules {
+		for _, g := range r.APIGroups {
+			if groups[g] {
+				actualSet[keyFor(r.APIGroups, r.Resources, r.Verbs)] = true
+				break
+			}
+		}
+	}
+
+	var errs []string
+	for k := range expectedSet {
+		if !actualSet[k] {
+			errs = append(errs, "missing: "+k)
+		}
+	}
+	for k := range actualSet {
+		if !expectedSet[k] {
+			errs = append(errs, "unexpected: "+k)
+		}
+	}
+
+	if len(errs) > 0 {
+		sort.Strings(errs)
+		return fmt.Errorf("rules mismatch:\n  %s", strings.Join(errs, "\n  "))
+	}
 	return nil
 }
