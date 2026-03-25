@@ -3,8 +3,11 @@
 set -e
 set -o pipefail
 
+export scenario=${SCENARIO:-hello_world}
 export resource_namespace=${NAMESPACE:-default}
 export RAPID=${RAPID:-false}
+
+export start_timestamp="$(date +'%T')"
 VARIANTS=(
     "nodejs22 XS"
     "nodejs22 S"
@@ -34,18 +37,18 @@ kubectl_wait() {
 test_runtime(){
     export runtime=${1:?Runtime name is required (e.g. nodejs24, python312)}
     export runtime_profile=${2:?Runtime profile is required (e.g. XS, S, M, L, XL)}
-    export scenario=${3:-hello_world} # Scenario name is optional because currently we don't have other scenarios
-
     export testid="${runtime}-$( echo $runtime_profile | tr '[:upper:]' '[:lower:]')"
     export resource_name="${testid}"
     code_dir="scenarios/${scenario}"
 
     export k6_source="$(cat $code_dir/k6.js | sed 's/^/        /')"
-    
+
     if [[ $runtime == python* ]]; then
+        export runtime_family="python"
         export dependencies="$(cat $code_dir/requirements.txt | sed 's/^/        /')"
         export source="$(cat $code_dir/handler.py | sed 's/^/        /')"
     else
+        export runtime_family="nodejs"
         export dependencies="$(cat $code_dir/package.json | sed 's/^/        /')"
         export source="$(cat $code_dir/handler.js | sed 's/^/        /')"
     fi

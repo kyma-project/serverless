@@ -17,7 +17,16 @@ spec:
         command: 
           - sh
           - -c
-          - k6 run --out experimental-prometheus-rw --tag testid=${resource_name} --env FUNC_HOSTNAME=${resource_name}.${resource_namespace}.svc.cluster.local /scripts/test.js
+          - |-
+            k6 run \
+              --out experimental-prometheus-rw \
+              --tag timestamp="${start_timestamp}" \
+              --tag testid="${resource_name}" \
+              --tag runtime="${runtime}" \
+              --tag runtime_family="${runtime_family}" \
+              --tag profile="${runtime_profile}" \
+              --env FUNC_HOSTNAME="${resource_name}.${resource_namespace}.svc.cluster.local" \
+              /scripts/test.js
         env:
           - name: K6_PROMETHEUS_RW_SERVER_URL
             value: "http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/write"
@@ -25,8 +34,6 @@ spec:
             value: "avg,min,med,max,p(90),p(95),p(99),p(99.99),count"
           - name: K6_PROMETHEUS_RW_PUSH_INTERVAL
             value: "5s"
-          # - name: K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM
-          #   value: "true"
         ports:
           - containerPort: 6565
             name: metrics
