@@ -40,6 +40,8 @@ test_runtime(){
     export resource_name="${testid}"
     code_dir="scenarios/${scenario}"
 
+    export k6_source="$(cat $code_dir/k6.js | sed 's/^/        /')"
+    
     if [[ $runtime == python* ]]; then
         export dependencies="$(cat $code_dir/requirements.txt | sed 's/^/        /')"
         export source="$(cat $code_dir/handler.py | sed 's/^/        /')"

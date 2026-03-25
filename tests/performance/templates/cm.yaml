@@ -7,42 +7,4 @@ metadata:
     test: performance
 data:
   test.js: |
-    import http from "k6/http";
-    import { sleep } from 'k6';
-
-    export const options = {
-      scenarios: {
-        warmup: {
-          executor: 'constant-vus',
-          vus: 5,
-          duration: '1m',
-          gracefulStop: '0s',
-          exec: 'call_function_then_sleep',
-        },
-        constant_load: {
-          executor: 'constant-vus',
-          vus: 50,
-          startTime: '1m',
-          duration: "2m",
-          gracefulStop: '0s',
-          exec: 'call_function_then_sleep',
-        },
-        max_load: {
-          executor: 'constant-vus',
-          vus: 100,
-          startTime: '3m',
-          duration: "2m",
-          gracefulStop: '0s',
-          exec: 'call_function',
-        },
-      },
-    };
-    
-    export function call_function() {
-      http.get(`http://${__ENV.FUNC_HOSTNAME}:80/`);
-    };
-
-    export function call_function_then_sleep() {
-      http.get(`http://${__ENV.FUNC_HOSTNAME}:80/`);
-      sleep(1);
-    };
+${k6_source}
