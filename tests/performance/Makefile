@@ -15,3 +15,11 @@ start-test:
 .PHONY: start-rapid-test
 start-rapid-test:
 	@RAPID=true make start-test
+
+.PHONY: start-mandelbrot-test
+start-mandelbrot-test:
+	@SCENARIO=mandelbrot make start-test
+
+.PHONY: start-rapid-mandelbrot-test
+start-rapid-mandelbrot-test:
+	@RAPID=true make start-mandelbrot-test
