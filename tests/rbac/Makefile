@@ -16,8 +16,5 @@ cleanup: ## Remove default CR, buildless-serverless, and operator.
 
 .PHONY: test
 test: deploy ## Deploy, run RBAC integration test, then cleanup.
-	@go run main.go config.yaml; EXIT_CODE=$$?; \
-	$(MAKE) cleanup; \
-	exit $$EXIT_CODE
-
+	@go run main.go config.yaml; exit_code=$$?; $(MAKE) cleanup; exit $$exit_code
 
