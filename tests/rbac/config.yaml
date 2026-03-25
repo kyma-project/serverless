@@ -1,91 +1,112 @@
 # Kubernetes ClusterRole aggregation hierarchy: admin ⊃ edit ⊃ view.
 # Only list rules unique to each role; the test merges upward.
-admin: []
+#
+# "forbidden" lists rules that must NOT exist in the ClusterRole.
+# The test will fail if any forbidden rule is found. Forbidden permissions are per-role only and do NOT inherit upward.
+admin:
+  rules: []
+  forbidden: []
 
 edit:
-  # kyma-serverless-edit
-  - apiGroups:
-      - operator.kyma-project.io
-    resources:
-      - serverlesses
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - operator.kyma-project.io
-    resources:
-      - serverlesses/status
-    verbs:
-      - get
+  rules:
+    # kyma-serverless-edit
+    - apiGroups:
+        - operator.kyma-project.io
+      resources:
+        - serverlesses
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - patch
+        - update
+        - watch
+    - apiGroups:
+        - operator.kyma-project.io
+      resources:
+        - serverlesses/status
+      verbs:
+        - get
 
-  # kyma-functions-edit
-  - apiGroups:
-      - serverless.kyma-project.io
-    resources:
-      - functions
-    verbs:
-      - create
-      - delete
-      - get
-      - list
-      - patch
-      - update
-      - watch
-  - apiGroups:
-      - serverless.kyma-project.io
-    resources:
-      - functions/status
-    verbs:
-      - get
-  - apiGroups:
-      - serverless.kyma-project.io
-    resources:
-      - functions/scale
-    verbs:
-      - get
-      - patch
-      - update
+    # kyma-functions-edit
+    - apiGroups:
+        - serverless.kyma-project.io
+      resources:
+        - functions
+      verbs:
+        - create
+        - delete
+        - get
+        - list
+        - patch
+        - update
+        - watch
+    - apiGroups:
+        - serverless.kyma-project.io
+      resources:
+        - functions/status
+      verbs:
+        - get
+    - apiGroups:
+        - serverless.kyma-project.io
+      resources:
+        - functions/scale
+      verbs:
+        - get
+        - patch
+        - update
+  forbidden:
+    - apiGroups:
+        - ""
+      resources:
+        - namespaces
+      verbs:
+        - create
 
 view:
-  # kyma-serverless-view
-  - apiGroups:
-      - operator.kyma-project.io
-    resources:
-      - serverlesses
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - operator.kyma-project.io
-    resources:
-      - serverlesses/status
-    verbs:
-      - get
+  rules:
+    # kyma-serverless-view
+    - apiGroups:
+        - operator.kyma-project.io
+      resources:
+        - serverlesses
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - operator.kyma-project.io
+      resources:
+        - serverlesses/status
+      verbs:
+        - get
 
-  # kyma-functions-view
-  - apiGroups:
-      - serverless.kyma-project.io
-    resources:
-      - functions
-    verbs:
-      - get
-      - list
-      - watch
-  - apiGroups:
-      - serverless.kyma-project.io
-    resources:
-      - functions/status
-    verbs:
-      - get
-  - apiGroups:
-      - serverless.kyma-project.io
-    resources:
-      - functions/scale
-    verbs:
-      - get
+    # kyma-functions-view
+    - apiGroups:
+        - serverless.kyma-project.io
+      resources:
+        - functions
+      verbs:
+        - get
+        - list
+        - watch
+    - apiGroups:
+        - serverless.kyma-project.io
+      resources:
+        - functions/status
+      verbs:
+        - get
+    - apiGroups:
+        - serverless.kyma-project.io
+      resources:
+        - functions/scale
+      verbs:
+        - get
+  forbidden:
+    - apiGroups:
+        - ""
+      resources:
+        - secrets
+      verbs:
+        - get

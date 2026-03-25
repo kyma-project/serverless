@@ -19,10 +19,15 @@ type Rule struct {
 	Verbs     []string `json:"verbs"`
 }
 
+type RoleConfig struct {
+	Rules     []Rule `json:"rules"`
+	Forbidden []Rule `json:"forbidden"`
+}
+
 type Config struct {
-	Admin []Rule `json:"admin"`
-	Edit  []Rule `json:"edit"`
-	View  []Rule `json:"view"`
+	Admin RoleConfig `json:"admin"`
+	Edit  RoleConfig `json:"edit"`
+	View  RoleConfig `json:"view"`
 }
 
 func main() {
@@ -42,20 +47,22 @@ func main() {
 	}
 
 	// Kubernetes aggregation hierarchy: admin ⊃ edit ⊃ view
-	view := cfg.View
-	edit := append(cfg.Edit, view...)
-	admin := append(cfg.Admin, edit...)
+	// Rules merge upward; forbidden rules are per-role only.
+	viewRules := cfg.View.Rules
+	editRules := append(cfg.Edit.Rules, viewRules...)
+	adminRules := append(cfg.Admin.Rules, editRules...)
 
 	var failed bool
 	for _, c := range []struct {
-		name  string
-		rules []Rule
+		name      string
+		rules     []Rule
+		forbidden []Rule
 	}{
-		{"admin", admin},
-		{"edit", edit},
-		{"view", view},
+		{"admin", adminRules, cfg.Admin.Forbidden},
+		{"edit", editRules, cfg.Edit.Forbidden},
+		{"view", viewRules, cfg.View.Forbidden},
 	} {
-		if err := verifyClusterRole(clientset, c.name, c.rules); err != nil {
+		if err := verifyClusterRole(clientset, c.name, c.rules, c.forbidden); err != nil {
 			fmt.Fprintf(os.Stderr, "FAIL: clusterrole/%s: %v\n", c.name, err)
 			failed = true
 		} else {
@@ -92,52 +99,58 @@ func buildClientset() (*kubernetes.Clientset, error) {
 	return kubernetes.NewForConfig(config)
 }
 
-func keyFor(apiGroups, resources, verbs []string) string {
-	sorted := func(s []string) string {
-		c := make([]string, len(s))
-		copy(c, s)
-		sort.Strings(c)
-		return strings.Join(c, ",")
-	}
-	return sorted(apiGroups) + "/" + sorted(resources) + "/" + sorted(verbs)
+// permission is a single (apiGroup, resource, verb) entry.
+type permission struct{ group, resource, verb string }
+
+func (p permission) String() string {
+	return p.group + "/" + p.resource + "/" + p.verb
 }
 
-func verifyClusterRole(clientset *kubernetes.Clientset, name string, expected []Rule) error {
+// expand flattens Rules into individual permissions.
+func expand(rules []Rule) map[permission]bool {
+	set := make(map[permission]bool)
+	for _, r := range rules {
+		for _, g := range r.APIGroups {
+			for _, res := range r.Resources {
+				for _, v := range r.Verbs {
+					set[permission{g, res, v}] = true
+				}
+			}
+		}
+	}
+	return set
+}
+
+func verifyClusterRole(clientset *kubernetes.Clientset, name string, expected []Rule, forbidden []Rule) error {
 	cr, err := clientset.RbacV1().ClusterRoles().Get(context.Background(), name, metav1.GetOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to get clusterrole %q: %w", name, err)
 	}
 
-	// Collect relevant API groups from expected rules.
-	groups := map[string]bool{}
-	expectedSet := map[string]bool{}
-	for _, r := range expected {
-		for _, g := range r.APIGroups {
-			groups[g] = true
-		}
-		expectedSet[keyFor(r.APIGroups, r.Resources, r.Verbs)] = true
-	}
+	expectedSet := expand(expected)
+	forbiddenSet := expand(forbidden)
 
-	// Filter actual rules to only relevant API groups.
-	actualSet := map[string]bool{}
+	// Build actual permission set from the ClusterRole.
+	actualSet := make(map[permission]bool)
 	for _, r := range cr.Rules {
 		for _, g := range r.APIGroups {
-			if groups[g] {
-				actualSet[keyFor(r.APIGroups, r.Resources, r.Verbs)] = true
-				break
+			for _, res := range r.Resources {
+				for _, v := range r.Verbs {
+					actualSet[permission{g, res, v}] = true
+				}
 			}
 		}
 	}
 
 	var errs []string
-	for k := range expectedSet {
-		if !actualSet[k] {
-			errs = append(errs, "missing: "+k)
+	for p := range expectedSet {
+		if !actualSet[p] {
+			errs = append(errs, "missing expected: "+p.String())
 		}
 	}
-	for k := range actualSet {
-		if !expectedSet[k] {
-			errs = append(errs, "unexpected: "+k)
+	for p := range forbiddenSet {
+		if actualSet[p] {
+			errs = append(errs, "forbidden found: "+p.String())
 		}
 	}
 
