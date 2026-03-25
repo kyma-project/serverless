@@ -54,9 +54,6 @@ jobs:
         env:
           IMG_DIRECTORY: ${{ inputs.img_directory }}
           IMG_VERSION: ${{ inputs.img_version }}
-      - uses: kyma-project/manager-toolkit/.github/actions/configure-kubeconfig-clusterrole@main
-        with:
-          clusterrole: cluster-admin
       - name: run operator tests
         run: |
           make -C tests/operator test
@@ -105,17 +102,11 @@ jobs:
         env:
           IMG_DIRECTORY: ${{ inputs.img_directory }}
           IMG_VERSION: ${{ inputs.img_version }}
-      - uses: kyma-project/manager-toolkit/.github/actions/configure-kubeconfig-clusterrole@main
-        with:
-          clusterrole: cluster-admin
       - name: run test
         run: make -C tests/serverless serverless-integration serverless-contract-tests
         env:
           IMG_DIRECTORY: ${{ inputs.img_directory }}
           IMG_VERSION: ${{ inputs.img_version }}
-      - uses: kyma-project/manager-toolkit/.github/actions/configure-kubeconfig-clusterrole@main
-        with:
-          clusterrole: cluster-admin
       - name:  remove serverless
         run: make remove-serverless
       - name: collect cluster info
@@ -283,4 +274,22 @@ jobs:
           btp_password: ${{ secrets.BTP_BOT_PASSWORD}}
           btp_global_account: ${{ secrets.BTP_GLOBAL_ACCOUNT }}
           btp_idp_tenant: ${{ secrets.BTP_CUSTOM_IAS_TENANT }}
+
+  rbac-integration-test:
+    if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - uses: kyma-project/manager-toolkit/.github/actions/setup-go@main
+      - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
+      - name: run rbac tests
+        run: make -C tests/rbac test
+        env:
+          IMG_DIRECTORY: ${{ inputs.img_directory }}
+          IMG_VERSION: ${{ inputs.img_version }}
+      - if: ${{ always() }}
+        uses: ./.github/actions/collect-cluster-info
 
