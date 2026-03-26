@@ -2,14 +2,14 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: functions
-  namespace: {{ .Release.Namespace }}
+  namespace: kyma-system
   labels:
     busola.io/extension: resource
     busola.io/extension-version: '0.5'
     kyma-project.io/module: serverless
     app.kubernetes.io/name: serverless
     app.kubernetes.io/instance: serverless-busola-functions
-    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    app.kubernetes.io/version: 1.0.0
     app.kubernetes.io/component: busola
     app.kubernetes.io/part-of: serverless
 data:
@@ -408,30 +408,30 @@ data:
       widget: Badge
       highlights:
         positive:
-          - RUNNING
+          - Running
         informative:
-          - INITIALIZING
-          - DEPLOYING
+          - Initializing
+          - Deploying
+          - Pending
         warning:
-          - PENDING
-          - WARNING
+          - Warning
         critical:
-          - FAILED
-          - ERROR
+          - Failed
+          - Error
       source: >-
         ($.status = undefined or $.status.conditions = undefined or
-        $count($.status.conditions) = 0) ? 'INITIALIZING' :
+        $count($.status.conditions) = 0) ? 'Initializing' :
         $count($filter($.status.conditions, function($v) { $v.status = 'False' }))
         != 0 ? $count($filter($.status.conditions, function($v) { $v.type =
-        'Running' and $v.status = 'True' })) != 0 ? 'WARNING' : 'FAILED' :
+        'Running' and $v.status = 'True' })) != 0 ? 'Warning' : 'Failed' :
         $count($filter($.status.conditions, function($v) { $v.type =
         'ConfigurationReady' and $v.status = 'True' })) != 0 ?
-        $count($filter($.status.conditions, function($v) { $v.type = 'Running' and $v.status = 'True' })) 
+        $count($filter($.status.conditions, function($v) { $v.type = 'Running' and $v.status = 'True' }))
         != 0 ? $count($filter($.status.conditions, function($v) { $contains($v.message, "Warning") }))
-        != 0 ? 'WARNING' : 'RUNNING' : $count($filter($.status.conditions, function($v) { $v.type =
+        != 0 ? 'Warning' : 'Running' : $count($filter($.status.conditions, function($v) { $v.type =
         'Running' and $v.status = 'Unknown' and $v.reason =
-        'MinReplicasNotAvailable' })) != 0 ? 'PENDING' : 'DEPLOYING' :
-        'INITIALIZING' 
+        'MinReplicasNotAvailable' })) != 0 ? 'Pending' : 'Deploying' :
+        'Initializing'
       description: >-
         ($.status = undefined or $.status.conditions = undefined or
         $count($.status.conditions) = 0) ? null :
