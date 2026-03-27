@@ -1,0 +1,42 @@
+name: build-performance-test-runner
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "tests/performance/**"
+  pull_request_target:
+    paths:
+      - "tests/performance/**"
+
+jobs:
+  compute-tags:
+    runs-on: ubuntu-latest
+    outputs:
+      tags: ${{ steps.get_tag.outputs.TAGS }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - if: ${{ !startsWith(github.event_name, 'pull_request') }}
+        name: Get the latest tag
+        id: get_tag
+        run: |
+          {
+            echo 'TAGS<<EOF'
+            echo "${{ github.sha }}"
+            echo "${{ github.ref_name}}"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+  build-perf-test-runner:
+    needs: compute-tags
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: performance-test-runner
+      dockerfile: Dockerfile
+      context: tests/performance
+      tags: ${{ needs.compute-tags.outputs.tags }}
