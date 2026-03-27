@@ -38,8 +38,8 @@ follow-remote-test: ## Follow logs of remote test runner.
 
 ##@ Dev
 
-.PHONY: start-k3d-test
-start-k3d-test: ## Build runner locally and start it on k3d cluster.
+.PHONY: start-remote-k3d-test
+start-remote-k3d-test: ## Build runner locally and start it on k3d cluster.
 	@echo "[MAKEFILE] Building test runner..."
 	@docker build -t performance-test-runner:local .
 	@k3d image import performance-test-runner:local
