@@ -408,30 +408,30 @@ data:
       widget: Badge
       highlights:
         positive:
-          - RUNNING
+          - Running
         informative:
-          - INITIALIZING
-          - DEPLOYING
+          - Initializing
+          - Deploying
+          - Pending
         warning:
-          - PENDING
-          - WARNING
+          - Warning
         critical:
-          - FAILED
-          - ERROR
+          - Failed
+          - Error
       source: >-
         ($.status = undefined or $.status.conditions = undefined or
-        $count($.status.conditions) = 0) ? 'INITIALIZING' :
+        $count($.status.conditions) = 0) ? 'Initializing' :
         $count($filter($.status.conditions, function($v) { $v.status = 'False' }))
         != 0 ? $count($filter($.status.conditions, function($v) { $v.type =
-        'Running' and $v.status = 'True' })) != 0 ? 'WARNING' : 'FAILED' :
+        'Running' and $v.status = 'True' })) != 0 ? 'Warning' : 'Failed' :
         $count($filter($.status.conditions, function($v) { $v.type =
         'ConfigurationReady' and $v.status = 'True' })) != 0 ?
-        $count($filter($.status.conditions, function($v) { $v.type = 'Running' and $v.status = 'True' })) 
+        $count($filter($.status.conditions, function($v) { $v.type = 'Running' and $v.status = 'True' }))
         != 0 ? $count($filter($.status.conditions, function($v) { $contains($v.message, "Warning") }))
-        != 0 ? 'WARNING' : 'RUNNING' : $count($filter($.status.conditions, function($v) { $v.type =
+        != 0 ? 'Warning' : 'Running' : $count($filter($.status.conditions, function($v) { $v.type =
         'Running' and $v.status = 'Unknown' and $v.reason =
-        'MinReplicasNotAvailable' })) != 0 ? 'PENDING' : 'DEPLOYING' :
-        'INITIALIZING' 
+        'MinReplicasNotAvailable' })) != 0 ? 'Pending' : 'Deploying' :
+        'Initializing'
       description: >-
         ($.status = undefined or $.status.conditions = undefined or
         $count($.status.conditions) = 0) ? null :
