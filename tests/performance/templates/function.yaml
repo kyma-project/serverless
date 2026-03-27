@@ -1,0 +1,38 @@
+apiVersion: serverless.kyma-project.io/v1alpha2
+kind: Function
+metadata:
+  name: ${resource_name}
+  namespace: ${resource_namespace}
+  labels:
+    test: performance
+    app: ${resource_name}
+spec:
+  replicas: 1
+  runtime: ${runtime}
+  resourceConfiguration:
+    function:
+      profile: ${runtime_profile}
+  source:
+    inline:
+      dependencies: |
+${dependencies}
+      source: |
+${source}
+---
+## I'm not sure if we need this and if we should call function because this can disturbe the results of the test
+
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: ${resource_name}
+  namespace: ${resource_namespace}
+  labels:
+    test: performance
+spec:
+  selector:
+    matchLabels:
+      serverless.kyma-project.io/function-name: ${resource_name}
+  podMetricsEndpoints:
+  - portNumber: 8080
+    path: /metrics
+    interval: 5s

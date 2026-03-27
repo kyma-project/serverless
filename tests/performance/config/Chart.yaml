@@ -1,0 +1,10 @@
+apiVersion: v2
+name: performance
+description: A grafana/prometheus/k6 performance testing setup for serverless functions
+type: application
+version: 0.1.0
+appVersion: "1.16.0"
+dependencies:
+  - name: kube-prometheus-stack
+    version: "82.10.3"
+    repository: "https://prometheus-community.github.io/helm-charts"
