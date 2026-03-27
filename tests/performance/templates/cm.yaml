@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k6-test
+  namespace: ${resource_namespace}
+  labels:
+    test: performance
+data:
+  test.js: |
+${k6_source}
