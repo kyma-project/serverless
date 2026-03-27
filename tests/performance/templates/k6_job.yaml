@@ -31,7 +31,7 @@ spec:
           - name: K6_PROMETHEUS_RW_SERVER_URL
             value: "http://monitoring-kube-prometheus-prometheus.monitoring.svc:9090/api/v1/write"
           - name: K6_PROMETHEUS_RW_TREND_STATS
-            value: "avg,min,med,max,p(90),p(95),p(99),p(99.99),count"
+            value: "avg,min,med,max,p(80),p(90),p(95),p(99),p(99.99),count"
           - name: K6_PROMETHEUS_RW_PUSH_INTERVAL
             value: "5s"
         ports:
