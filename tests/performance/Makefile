@@ -24,9 +24,6 @@ start-remote-test: ## Start test in the cluster using test runner image.
 
 .PHONY: forward-grafana
 forward-grafana: ## Forward grafana port to localhost.
-	@echo "[MAKEFILE] Getting grafana auth..."
-	@echo "         > Username: admin"
-	@echo "         > Password: $(shell kubectl -n monitoring get secret monitoring-grafana -o jsonpath="{.data.admin-password}" | base64 --decode)"
 	@echo "[MAKEFILE] Forwarding grafana port to localhost:$(GRAFANA_LOCAL_PORT)..."
 	@kubectl -n monitoring port-forward svc/monitoring-grafana $(GRAFANA_LOCAL_PORT):80
 
