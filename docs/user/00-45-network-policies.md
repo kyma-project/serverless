@@ -14,7 +14,7 @@ To list the network policies belonging to the Serverless module, run the followi
 kubectl get networkpolicies -n kyma-system -l kyma-project.io/module=serverless
 ```
 
-The following tables describe the network policies for the Serverless module.
+The following tables describe the network policies for the Serverless module:
 
 **Serverless Policies**
 
