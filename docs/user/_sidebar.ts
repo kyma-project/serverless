@@ -3,6 +3,7 @@ export default [
   { text: 'Configuring Serverless', link: './00-20-configure-serverless' },
   { text: 'Development Toolkit', link: './00-30-development-toolkit' },
   { text: 'Function Security', link: './00-40-security-considerations' },
+  { text: 'Network Policies', link: './00-45-network-policies' },
   { text: 'Limitations', link: './00-50-limitations' },
   { text: 'Serverless Buildless Mode', link: './00-60-buildless-serverless' },
   { text: 'Logging Configuration', link: './00-70-configuring-logging' },
