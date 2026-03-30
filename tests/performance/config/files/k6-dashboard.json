@@ -149,6 +149,10 @@
               {
                 "id": "custom.axisColorMode",
                 "value": "series"
+              },
+              {
+                "id": "custom.axisSoftMax",
+                "value": 1
               }
             ]
           }
@@ -2049,6 +2053,6 @@
   "timezone": "browser",
   "title": "Serverless Performance Tests",
   "uid": "adf9ppx",
-  "version": 4,
+  "version": 5,
   "weekStart": ""
 }
