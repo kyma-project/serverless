@@ -1239,7 +1239,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{\n      namespace=\"$namespace\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
+          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -1251,7 +1251,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "scalar(max(kube_resourcequota{namespace=\"$namespace\", cluster=\"$cluster\", type=\"hard\",resource=\"requests.cpu\"}))",
+          "expr": "scalar(max(kube_resourcequota{namespace=\"$NAMESPACE\", cluster=\"$cluster\", type=\"hard\",resource=\"requests.cpu\"}))",
           "instant": false,
           "legendFormat": "quota - requests",
           "range": true,
@@ -1263,7 +1263,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "scalar(max(kube_resourcequota{namespace=\"$namespace\", cluster=\"$cluster\", type=\"hard\",resource=\"limits.cpu\"}))",
+          "expr": "scalar(max(kube_resourcequota{namespace=\"$NAMESPACE\", cluster=\"$cluster\", type=\"hard\",resource=\"limits.cpu\"}))",
           "instant": false,
           "legendFormat": "quota - limits",
           "range": true,
@@ -1360,7 +1360,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{\n      namespace=\"$namespace\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
+          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
           "format": "table",
           "instant": true,
           "range": true,
@@ -1372,7 +1372,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{\n      namespace=\"$namespace\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
+          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
           "format": "table",
           "instant": true,
           "range": true,
@@ -1384,7 +1384,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{\n      namespace=\"$namespace\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod) \n/ \nsum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{\n      namespace=\"$namespace\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
+          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod) \n/ \nsum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_cpu:active:kube_pod_container_resource_requests{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
           "format": "table",
           "instant": true,
           "range": true,
@@ -1396,7 +1396,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{\n      namespace=\"$namespace\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
+          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
           "format": "table",
           "instant": true,
           "range": true,
@@ -1408,7 +1408,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{\n      namespace=\"$namespace\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod) \n/ \nsum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{\n      namespace=\"$namespace\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
+          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate5m{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod) \n/ \nsum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_cpu:active:kube_pod_container_resource_limits{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
           "format": "table",
           "instant": true,
           "range": true,
@@ -1615,7 +1615,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    container_memory_working_set_bytes{\n      namespace=\"$namespace\", pod=~\".*$testid.*\",\n      job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", container!=\"\", image!=\"\"}\n  )\n) by (pod)",
+          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    container_memory_working_set_bytes{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\",\n      job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", container!=\"\", image!=\"\"}\n  )\n) by (pod)",
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
@@ -1627,7 +1627,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "scalar(max(kube_resourcequota{namespace=\"$namespace\", cluster=\"$cluster\", type=\"hard\",resource=\"requests.memory\"}))",
+          "expr": "scalar(max(kube_resourcequota{namespace=\"$NAMESPACE\", cluster=\"$cluster\", type=\"hard\",resource=\"requests.memory\"}))",
           "instant": false,
           "legendFormat": "quota - requests",
           "range": true,
@@ -1639,7 +1639,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "scalar(max(kube_resourcequota{namespace=\"$namespace\", cluster=\"$cluster\", type=\"hard\",resource=\"limits.memory\"}))",
+          "expr": "scalar(max(kube_resourcequota{namespace=\"$NAMESPACE\", cluster=\"$cluster\", type=\"hard\",resource=\"limits.memory\"}))",
           "instant": false,
           "legendFormat": "quota - limits",
           "range": true,
@@ -1736,7 +1736,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    container_memory_working_set_bytes{\n      namespace=\"$namespace\", pod=~\".*$testid.*\", \n      job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", container!=\"\", image!=\"\"}\n  )\n) by (pod)",
+          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    container_memory_working_set_bytes{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\", \n      job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", container!=\"\", image!=\"\"}\n  )\n) by (pod)",
           "format": "table",
           "instant": true,
           "range": true,
@@ -1748,7 +1748,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{\n      namespace=\"$namespace\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
+          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
           "format": "table",
           "instant": true,
           "range": true,
@@ -1760,7 +1760,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    container_memory_working_set_bytes{\n      namespace=\"$namespace\", pod=~\".*$testid.*\",\n      job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", container!=\"\", image!=\"\"}\n  )\n) by (pod) \n/ \nsum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{\n      namespace=\"$namespace\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
+          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    container_memory_working_set_bytes{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\",\n      job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", container!=\"\", image!=\"\"}\n  )\n) by (pod) \n/ \nsum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_memory:active:kube_pod_container_resource_requests{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
           "format": "table",
           "instant": true,
           "range": true,
@@ -1772,7 +1772,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{\n      namespace=\"$namespace\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
+          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
           "format": "table",
           "instant": true,
           "range": true,
@@ -1784,7 +1784,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    container_memory_working_set_bytes{\n      namespace=\"$namespace\", pod=~\".*$testid.*\",\n      job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", container!=\"\", image!=\"\"}\n  )\n) by (pod) \n/ \nsum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{\n      namespace=\"$namespace\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
+          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    container_memory_working_set_bytes{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\",\n      job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", container!=\"\", image!=\"\"}\n  )\n) by (pod) \n/ \nsum(\n  max by (cluster, namespace, pod, container)(\n    cluster:namespace:pod_memory:active:kube_pod_container_resource_limits{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\", cluster=\"$cluster\"}\n  )\n) by (pod)",
           "format": "table",
           "instant": true,
           "range": true,
@@ -1796,7 +1796,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    container_memory_rss{\n      namespace=\"$namespace\", pod=~\".*$testid.*\",\n      job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", container!=\"\"}\n  )\n) by (pod)",
+          "expr": "sum(\n  max by (cluster, namespace, pod, container)(\n    container_memory_rss{\n      namespace=\"$NAMESPACE\", pod=~\".*$testid.*\",\n      job=\"kubelet\", metrics_path=\"/metrics/cadvisor\", cluster=\"$cluster\", container!=\"\"}\n  )\n) by (pod)",
           "format": "table",
           "instant": true,
           "range": true,
@@ -1954,7 +1954,7 @@
           "query": "label_values(k6_http_reqs_total,scenario)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "",
         "regexApplyTo": "value",
         "type": "query"
@@ -2002,14 +2002,13 @@
       },
       {
         "current": {
-          "text": "${VAR_NAMESPACE}",
-          "value": "${VAR_NAMESPACE}"
+          "text": "performance-tests",
+          "value": "performance-tests"
         },
         "description": "",
         "hide": 2,
-        "label": "namespace",
-        "name": "namespace",
-        "query": "${VAR_NAMESPACE}",
+        "name": "NAMESPACE",
+        "query": "performance-tests",
         "skipUrlSync": true,
         "type": "constant"
       },
@@ -2034,7 +2033,7 @@
           "query": "label_values(runtime)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
-        "refresh": 1,
+        "refresh": 2,
         "regex": "",
         "regexApplyTo": "value",
         "sort": 1,
@@ -2049,7 +2048,7 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Serverless Performance Tests",
-  "uid": "adf9ppx",
-  "version": 1,
+  "uid": "adshxw7",
+  "version": 4,
   "weekStart": ""
 }
