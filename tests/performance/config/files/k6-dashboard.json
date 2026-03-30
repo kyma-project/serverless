@@ -1,54 +1,4 @@
 {
-  "__inputs": [
-    {
-      "name": "DS_PROMETHEUS",
-      "label": "Prometheus",
-      "description": "",
-      "type": "datasource",
-      "pluginId": "prometheus",
-      "pluginName": "Prometheus"
-    },
-    {
-      "name": "VAR_NAMESPACE",
-      "type": "constant",
-      "label": "namespace",
-      "value": "performance-tests",
-      "description": ""
-    }
-  ],
-  "__elements": {},
-  "__requires": [
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "12.4.1"
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "table",
-      "name": "Table",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "timeseries",
-      "name": "Time series",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
@@ -1959,7 +1909,10 @@
     "list": [
       {
         "allowCustomValue": false,
-        "current": {},
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
@@ -1983,7 +1936,12 @@
       },
       {
         "allowCustomValue": false,
-        "current": {},
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
@@ -2004,7 +1962,10 @@
         "type": "query"
       },
       {
-        "current": {},
+        "current": {
+          "text": "Prometheus",
+          "value": "prometheus"
+        },
         "description": "Choose a Prometheus Data Source",
         "hide": 2,
         "includeAll": false,
@@ -2017,7 +1978,10 @@
         "type": "datasource"
       },
       {
-        "current": {},
+        "current": {
+          "text": "",
+          "value": ""
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
@@ -2039,29 +2003,26 @@
         "type": "query"
       },
       {
+        "current": {
+          "text": "${VAR_NAMESPACE}",
+          "value": "${VAR_NAMESPACE}"
+        },
         "description": "",
         "hide": 2,
         "label": "namespace",
         "name": "namespace",
         "query": "${VAR_NAMESPACE}",
         "skipUrlSync": true,
-        "type": "constant",
-        "current": {
-          "value": "${VAR_NAMESPACE}",
-          "text": "${VAR_NAMESPACE}",
-          "selected": false
-        },
-        "options": [
-          {
-            "value": "${VAR_NAMESPACE}",
-            "text": "${VAR_NAMESPACE}",
-            "selected": false
-          }
-        ]
+        "type": "constant"
       },
       {
         "allowCustomValue": false,
-        "current": {},
+        "current": {
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
+        },
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
@@ -2086,13 +2047,13 @@
     ]
   },
   "time": {
-    "from": "now-15m",
-    "to": "now"
+    "from": "2026-03-28T08:06:56.579Z",
+    "to": "2026-03-28T09:07:50.423Z"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Serverless Performance Tests",
   "uid": "adf9ppx",
-  "version": 2,
+  "version": 1,
   "weekStart": ""
 }
