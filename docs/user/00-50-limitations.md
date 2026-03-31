@@ -59,12 +59,12 @@ Tests are implemented using [k6](https://k6.io/) and consist of the following sc
 
 #### Python 3.12
 
-| response time             | XS [ms] | S [ms] |
-|------------------------------:|--------:|-------:|
-| average           |   16.70 |   5.11 |
-| median            |    2.61 |   2.54 |
-| 95 percentile     |   20.40 |   7.32 |
-| 99 percentile     |  180.00 |  46.10 |
+| response time             | XS [ms] | S [ms] | M [ms] | L [ms] | XL [ms] |
+|------------------------------:|--------:|-------:|-------:|-------:|--------:|
+| average           |   16.70 |   5.11 |   6.04 |   6.13 |    6.32 |
+| median            |    2.61 |   2.54 |   3.73 |   3.75 |    3.69 |
+| 95 percentile     |   20.40 |   7.32 |  11.60 |  10.80 |    8.66 |
+| 99 percentile     |  180.00 |  46.10 |  23.80 |  21.40 |   22.20 |
 
 ### Max load
 
@@ -88,12 +88,12 @@ Tests are implemented using [k6](https://k6.io/) and consist of the following sc
 
 #### Python 3.12
 
-| response time             |  XS [ms] |   S [ms] |
-|------------------------------:|---------:|---------:|
-| average           |  1070.00 |   781.00 |
-| median            |  1000.00 |   796.00 |
-| 95 percentile     |  1180.00 |   895.00 |
-| 99 percentile     |  1510.00 |  1100.00 |
+| response time             |  XS [ms] |    S [ms] | ⚠ M [ms] |  L [ms] |  XL [ms] |
+|------------------------------:|---------:|----------:|---------:|--------:|---------:|
+| average           |  1070.00 |    781.00 |   178.00 |  140.00 |   122.00 |
+| median            |  1000.00 |    796.00 |    88.10 |  135.00 |   124.00 |
+| 95 percentile     |  1180.00 |    895.00 |   387.00 |  208.00 |   172.00 |
+| 99 percentile     |  1510.00 |   1100.00 |   582.00 |  304.00 |   225.00 |
 
 ### Ramping max load
 
@@ -117,12 +117,12 @@ Tests are implemented using [k6](https://k6.io/) and consist of the following sc
 
 #### Python 3.12
 
-| response time             | ⚠ XS [ms] | ⚠ S [ms] |
-|------------------------------:|----------:|---------:|
-| average           |    916.00 |   345.00 |
-| median            |    902.00 |   337.00 |
-| 95 percentile     |   1700.00 |   604.00 |
-| 99 percentile     |   1870.00 |   792.00 |
+| response time             | ⚠ XS [ms] | ⚠ S [ms] | ⚠ M [ms] | ⚠ L [ms] | XL [ms] |
+|------------------------------:|----------:|---------:|---------:|---------:|--------:|
+| average           |    916.00 |   345.00 |    54.10 |    97.20 |   35.50 |
+| median            |    902.00 |   337.00 |    52.30 |    92.70 |   29.70 |
+| 95 percentile     |   1700.00 |   604.00 |   104.00 |   186.00 |   80.70 |
+| 99 percentile     |   1870.00 |   792.00 |   146.00 |   220.00 |  112.00 |
 
 The bigger the runtime profile, the more resources are available to serve the response quicker. Consider these limits of the serving layer as a baseline because this does not take your Function logic into account.
 
