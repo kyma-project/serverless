@@ -13,8 +13,8 @@ install-monitoring: ## Install monitoring tools in the cluster.
 	@echo "[MAKEFILE] Installing monitoring tools..."
 	helm upgrade --install monitoring -n monitoring --create-namespace config/
 
-.PHONY: start-remote-test
-start-remote-test: ## Start test in the cluster using test runner image.
+.PHONY: start-test
+start-test: ## Start test in the cluster using test runner image.
 	@echo "[MAKEFILE] Recreating test namespace..."
 	@kubectl delete namespace $(RUNNER_NAMESPACE) &>/dev/null || true
 	@kubectl create namespace $(RUNNER_NAMESPACE) &>/dev/null || true
