@@ -35,15 +35,8 @@ follow-remote-test: ## Follow logs of remote test runner.
 
 ##@ Dev
 
-.PHONY: start-remote-k3d-test
-start-remote-k3d-test: ## Build runner locally and start it on k3d cluster.
-	@echo "[MAKEFILE] Building test runner..."
-	@docker build -t performance-test-runner:local .
-	@k3d image import performance-test-runner:local
-	@RUNNER_IMAGE=performance-test-runner:local make start-remote-test 
-
-.PHONY: start-test
-start-test: ## Start test locally.
+.PHONY: start-local-test
+start-local-test: ## Start test locally.
 	@echo "[MAKEFILE] Recreating test namespace..."
 	@kubectl delete namespace $(RUNNER_NAMESPACE) &>/dev/null || true
 	@kubectl create namespace $(RUNNER_NAMESPACE) &>/dev/null || true
@@ -51,14 +44,14 @@ start-test: ## Start test locally.
 	@echo ""
 	@NAMESPACE=$(RUNNER_NAMESPACE) ./test_runtimes.sh
 
-.PHONY: start-rapid-test
-start-rapid-test: ## Start all rapidly locally.
-	@RAPID=true make start-test
+.PHONY: start-local-rapid-test
+start-local-rapid-test: ## Start all rapidly locally.
+	@RAPID=true make start-local-test
 
-.PHONY: start-mandelbrot-test
-start-mandelbrot-test: ## Start mandelbrot test locally.
-	@SCENARIO=mandelbrot make start-test
+.PHONY: start-local-mandelbrot-test
+start-local-mandelbrot-test: ## Start mandelbrot test locally.
+	@SCENARIO=mandelbrot make start-local-test
 
-.PHONY: start-rapid-mandelbrot-test
-start-rapid-mandelbrot-test: ## Start mandelbrot test rapidly locally.
-	@RAPID=true make start-mandelbrot-test
+.PHONY: start-local-rapid-mandelbrot-test
+start-local-rapid-mandelbrot-test: ## Start mandelbrot test rapidly locally.
+	@RAPID=true make start-local-mandelbrot-test

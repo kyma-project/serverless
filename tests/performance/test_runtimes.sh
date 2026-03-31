@@ -80,7 +80,7 @@ test_runtime(){
     kubectl_wait job --for=condition=complete k6-${resource_name} -n ${resource_namespace} --timeout=10m
 
     echo -e "\n[SCRIPT] Fetching k6 results"
-    kubectl_logs job/k6-${resource_name} -n ${resource_namespace} --tail=28
+    kubectl_logs job/k6-${resource_name} -n ${resource_namespace} --tail=-1
 
     if [ $RAPID == "false" ]; then
         # Removing resources
