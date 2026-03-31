@@ -18,7 +18,7 @@ spec:
           - sh
           - -c
           - |-
-            k6 run \
+            k6 run --quiet --summary-mode=full \
               --out experimental-prometheus-rw \
               --tag timestamp="${start_timestamp}" \
               --tag testid="${resource_name}" \
