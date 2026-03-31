@@ -2,14 +2,14 @@
 
 ## Controller Limitations
 
-Function Ccontroller does not serve time-critical requests from users.
+Function Controller does not serve time-critical requests from users.
 It reconciles Function custom resources (CR), stored at the Kubernetes API Server, and has no persistent state on its own.
 
 Function Controller doesn't serve Functions using its allocated runtime resources. It delegates this work to the dedicated Kubernetes workloads.
 Refer to the [architecture](technical-reference/04-10-architecture.md) diagram for more details.
 
 Having this in mind, also remember that Function Controller does not require horizontal scaling.
-It scales vertically up to `160Mi` of memory and `500m` of CPU time.
+It scales vertically up to `1Gi` of memory and `500m` of CPU time.
 
 ## Namespace Setup Limitations
 
@@ -17,7 +17,7 @@ Be aware that if you apply [LimitRanges](https://kubernetes.io/docs/concepts/pol
 
 ## Limitation for the Number of Functions
 
-There is no upper limit of Functions that you can run on Kyma. Once you define a Function and runtime Pods are always requested by Function Controller. It's up to Kubernetes to schedule them based on the available memory and CPU time on the Kubernetes worker nodes. This is determined mainly by the number of the Kubernetes worker nodes (and the node auto-scaling capabilities) and their computational capacity.
+There is no upper limit of Functions that you can run on Kyma. Once you define a Function, Pods are always requested by Function Controller. It's up to Kubernetes to schedule them based on the available memory and CPU time on the Kubernetes worker nodes. This is determined mainly by the number of the Kubernetes worker nodes (and the node auto-scaling capabilities) and their computational capacity.
 
 ## Runtime Phase Limitations
 
