@@ -51,6 +51,7 @@ spec:
       containers:
       - name: test-runner
         image: ${test_runner_image}
+        imagePullPolicy: Always
         env:
         - name: NAMESPACE
           value: "${resource_namespace}"
