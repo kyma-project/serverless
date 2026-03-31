@@ -22,7 +22,7 @@ There is no upper limit of Functions that you can run on Kyma. Once you define a
 ## Runtime Phase Limitations
 
 > [!NOTE]
-> All measurements were taken on Kubernetes with five AWS worker nodes of type m5.xlarge (four CPU 3.1 GHz x86_64 cores, 16 GiB memory).
+> All measurements were taken on Kubernetes with three Azure worker nodes of type Standard_D2s_v5 (two vCPU amd64 cores, ~8 GiB memory), distributed across availability zones westeurope-1, westeurope-2, and westeurope-3, running Garden Linux 1877.10 with kernel 6.12.66-cloud-amd64 and Kubernetes v1.34.3.
 
 Functions serve user-provided logic wrapped in the web framework, Express for Node.js and Bottle for Python. Taking the user logic aside, those frameworks have limitations and depend on the selected [runtime profile](technical-reference/07-80-available-presets.md#functions-resources) and the Kubernetes nodes specification.
 
