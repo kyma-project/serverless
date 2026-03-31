@@ -2,7 +2,7 @@ PROJECT_ROOT=../..
 include ${PROJECT_ROOT}/hack/help.mk
 
 RUNNER_NAMESPACE?=performance-tests
-RUNNER_IMAGE?=europe-docker.pkg.dev/kyma-project/dev/performance-test-runner:main
+RUNNER_IMAGE?=europe-docker.pkg.dev/kyma-project/prod/performance-test-runner:main
 
 GRAFANA_LOCAL_PORT?=3000
 
