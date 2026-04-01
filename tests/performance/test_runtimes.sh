@@ -8,6 +8,9 @@ export resource_namespace=${NAMESPACE:-default}
 export RAPID=${RAPID:-false}
 
 export start_timestamp="$(date +'%T')"
+export results_cm="k6-results-$(echo ${start_timestamp} | tr ':' '-')"
+export results_cm_ns="default"
+export result_dir="/tmp/${results_cm}"
 VARIANTS=(
     "nodejs22 XS"
     "nodejs22 S"
@@ -79,8 +82,10 @@ test_runtime(){
     echo -e "\n[SCRIPT] Waiting for k6 Job to complete"
     kubectl_wait job --for=condition=complete k6-${resource_name} -n ${resource_namespace} --timeout=10m
 
-    echo -e "\n[SCRIPT] Fetching k6 results"
-    kubectl_logs job/k6-${resource_name} -n ${resource_namespace} --tail=-1
+    echo -e "\n[SCRIPT] Saving k6 results to configmap ${results_cm}"
+    result_file="${result_dir}/${testid}"
+    kubectl logs job/k6-${resource_name} -n ${resource_namespace} --tail=-1 > ${result_file}
+    kubectl create configmap ${results_cm} -n ${results_cm_ns} --from-file=${result_dir} --dry-run=client -o yaml | kubectl apply -f -
 
     if [ $RAPID == "false" ]; then
         # Removing resources
@@ -90,6 +95,8 @@ test_runtime(){
         cat templates/k6_job.yaml | envsubst | kubectl delete -f -
     fi
 }
+
+mkdir -p ${result_dir}
 
 for variant_args in "${VARIANTS[@]}"; do
     echo -e "\n[SCRIPT] Testing runtime: ${variant_args}"
