@@ -31,6 +31,18 @@
       "tooltip": "",
       "type": "link",
       "url": "https://github.com/kyma-project/serverless/blob/main/docs/user/00-50-limitations.md#runtime-phase-limitations"
+    },
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "How to run tests and update the documentation",
+      "tooltip": "",
+      "type": "link",
+      "url": "https://github.com/kyma-project/serverless/blob/main/tests/performance/README.md"
     }
   ],
   "panels": [
