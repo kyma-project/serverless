@@ -55,3 +55,11 @@ start-local-mandelbrot-test: ## Start mandelbrot test locally.
 .PHONY: start-local-rapid-mandelbrot-test
 start-local-rapid-mandelbrot-test: ## Start mandelbrot test rapidly locally.
 	@RAPID=true make start-local-mandelbrot-test
+
+##@ Documentation
+
+.PHONY: help-update-docs
+help-update-docs: ## Show instructions for updating performance documentation.
+	@echo "To update docs/user/00-50-limitations.md after running tests:"
+	@echo "  1. Export CSV from Grafana's 'Test Results Summary' panel for each run."
+	@echo "  2. See tests/performance/README.md for detailed instructions."
