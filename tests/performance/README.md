@@ -9,31 +9,31 @@ Performance tests measure the response time overhead of the Serverless serving l
 
 ## Setup
 
-Install the monitoring stack in the cluster:
+1. Install the monitoring stack in the cluster:
 
-```bash
-make install-monitoring
-```
+   ```bash
+   make install-monitoring
+   ```
 
-Forward the Grafana port to localhost:
+2. Forward the Grafana port to localhost:
 
-```bash
-make forward-grafana
-```
+   ```bash
+   make forward-grafana
+   ```
 
 ## Running the Tests
 
-Run the full test suite three times to collect enough data for averaging:
+1. Run the full test suite three times to collect enough data for averaging:
 
-```bash
-make start-test
-```
+   ```bash
+   make start-test
+   ```
 
-Follow the progress in a separate terminal:
+2. Follow the progress in a separate terminal:
 
-```bash
-make follow-remote-test
-```
+   ```bash
+   make follow-remote-test
+   ```
 
 Each run tests all runtime/profile combinations sequentially.
 
