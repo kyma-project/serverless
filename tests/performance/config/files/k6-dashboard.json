@@ -31,6 +31,18 @@
       "tooltip": "",
       "type": "link",
       "url": "https://github.com/kyma-project/serverless/blob/main/docs/user/00-50-limitations.md#runtime-phase-limitations"
+    },
+    {
+      "asDropdown": false,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": false,
+      "tags": [],
+      "targetBlank": true,
+      "title": "How to run tests and update the documentation",
+      "tooltip": "",
+      "type": "link",
+      "url": "https://github.com/kyma-project/serverless/blob/main/tests/performance/README.md"
     }
   ],
   "panels": [
@@ -39,6 +51,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
+      "description": "Real-time view of HTTP traffic during the test run.\n\nYellow line — request throughput in requests/second, calculated as a rolling rate over the last scrape interval.\n\nRed line — percentage of failed requests. Spikes here indicate periods when the system started returning errors under load.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -214,6 +227,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
+      "description": "Response time distribution for successful requests over the course of the test, overlaid with the number of active k6 Virtual Users (VUs).\n\nColored lines — response time percentiles.\n\nFilled gray — number of active VUs on a logarithmic scale. Correlate VU ramp-up with response time growth to identify at what load level latency starts degrading.\nA healthy system should show relatively flat percentile lines even as VU count increases.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -743,7 +757,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "min/max/p95/p99 depends on the available Quantile Stats",
+      "description": "Summary of HTTP request performance per test run, scenario, runtime and resource profile. Each row represents a unique combination of these dimensions.\n\nResponse times (min, avg, med, p95, p99, max) are averaged across the test duration and show only successful responses. \n\nRows with errors are highlighted in red — the errors column shows the total number of failed requests, and the total number of all requests sent during the test.\n\nUse the testID and scenario filters above to narrow down the results.\n\nTo export the data as shown in this table, click the menu (three dots) in the top-right corner of the panel  → Inspect → Data → make sure \"Apply panel transformations\" is checked → Download CSV.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -799,7 +813,7 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "/response/"
+              "options": "/errors/"
             },
             "properties": [
               {
@@ -807,18 +821,32 @@
                 "value": [
                   {
                     "options": {
-                      "false": {
-                        "color": "#c4162a99",
-                        "index": 1,
-                        "text": "error"
-                      },
-                      "true": {
+                      "0": {
                         "color": "transparent",
-                        "index": 0,
-                        "text": "ok"
+                        "index": 0
                       }
                     },
                     "type": "value"
+                  },
+                  {
+                    "options": {
+                      "match": "null",
+                      "result": {
+                        "color": "transparent",
+                        "index": 1
+                      }
+                    },
+                    "type": "special"
+                  },
+                  {
+                    "options": {
+                      "from": 1,
+                      "result": {
+                        "color": "#c4162a99",
+                        "index": 2
+                      }
+                    },
+                    "type": "range"
                   }
                 ]
               },
@@ -828,6 +856,18 @@
                   "applyToRow": true,
                   "type": "color-background"
                 }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/errors|requests/"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "none"
               }
             ]
           }
@@ -854,7 +894,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "avg by(testid, status, scenario, expected_response, runtime, profile) (k6_http_req_duration_med{testid=~\"$testid\", scenario=~\"$scenario\"})",
+          "expr": "avg by(testid, scenario, runtime, profile) (\n  k6_http_req_duration_med{testid=~\"$testid\", scenario=~\"$scenario\", expected_response=\"true\"}\n)",
           "format": "table",
           "instant": false,
           "legendFormat": "med",
@@ -867,7 +907,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "avg by(testid, status, scenario, expected_response, runtime, profile) (k6_http_req_duration_min{testid=~\"$testid\", scenario=~\"$scenario\"})",
+          "expr": "avg by(testid, scenario, runtime, profile) (\n  k6_http_req_duration_min{testid=~\"$testid\", scenario=~\"$scenario\", expected_response=\"true\"}\n)",
           "format": "table",
           "instant": false,
           "legendFormat": "min",
@@ -880,7 +920,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "avg by(testid, status, scenario, expected_response, runtime, profile) (k6_http_req_duration_max{testid=~\"$testid\", scenario=~\"$scenario\"})",
+          "expr": "avg by(testid, scenario, runtime, profile) (\n  k6_http_req_duration_max{testid=~\"$testid\", scenario=~\"$scenario\", expected_response=\"true\"}\n)",
           "format": "table",
           "instant": false,
           "legendFormat": "max",
@@ -893,7 +933,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "avg by(testid, status, scenario, expected_response, runtime, profile) (k6_http_req_duration_p95{testid=~\"$testid\", scenario=~\"$scenario\"})",
+          "expr": "avg by(testid, scenario, runtime, profile) (\n  k6_http_req_duration_p95{testid=~\"$testid\", scenario=~\"$scenario\", expected_response=\"true\"}\n)",
           "format": "table",
           "instant": false,
           "legendFormat": "p95",
@@ -906,7 +946,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "avg by(testid, status, scenario, expected_response, runtime, profile) (k6_http_req_duration_p99{testid=~\"$testid\", scenario=~\"$scenario\"})",
+          "expr": "avg by(testid, scenario, runtime, profile) (\n  k6_http_req_duration_p99{testid=~\"$testid\", scenario=~\"$scenario\", expected_response=\"true\"}\n)",
           "format": "table",
           "instant": false,
           "legendFormat": "__auto",
@@ -919,15 +959,41 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "avg by(testid, status, scenario, expected_response, runtime, profile) (k6_http_req_duration_avg{testid=~\"$testid\", scenario=~\"$scenario\"})",
+          "expr": "avg by(testid, scenario, runtime, profile) (\n  k6_http_req_duration_avg{testid=~\"$testid\", scenario=~\"$scenario\", expected_response=\"true\"}\n)",
           "format": "table",
           "instant": false,
           "legendFormat": "avg",
           "range": true,
           "refId": "F"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum by(testid, scenario, runtime, profile) (\n  max_over_time(k6_http_reqs_total{testid=~\"$testid\", scenario=~\"$scenario\", expected_response=\"false\"}[$__range])\n)",
+          "format": "table",
+          "instant": false,
+          "legendFormat": "error_count",
+          "range": true,
+          "refId": "H"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum by(testid, scenario, runtime, profile) (\n  max_over_time(k6_http_reqs_total{testid=~\"$testid\", scenario=~\"$scenario\"}[$__range])\n)",
+          "format": "table",
+          "instant": false,
+          "legendFormat": "req_count",
+          "range": true,
+          "refId": "I"
         }
       ],
-      "title": "Response Time",
+      "title": "Test Results Summary",
       "transformations": [
         {
           "id": "merge",
@@ -970,6 +1036,24 @@
               "Value #F": {
                 "aggregations": [
                   "min"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #G": {
+                "aggregations": [
+                  "max"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #H": {
+                "aggregations": [
+                  "max"
+                ],
+                "operation": "aggregate"
+              },
+              "Value #I": {
+                "aggregations": [
+                  "max"
                 ],
                 "operation": "aggregate"
               },
@@ -1044,6 +1128,10 @@
               "Value #E (mean)": "p99",
               "Value #E (min)": "p99",
               "Value #F (min)": "avg",
+              "Value #G (lastNotNull)": "count",
+              "Value #G (max)": "error_count",
+              "Value #H (max)": "errors",
+              "Value #I (max)": "requests",
               "expected_response": "response",
               "status": ""
             }
@@ -1921,15 +2009,16 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(testid)",
-        "description": "Filter by \"testid\" tag. Define it by tagging: k6 run --tag testid=xyz",
+        "definition": "label_values(k6_http_reqs_total,testid)",
+        "description": "Filter by test ID. Each test run has a unique ID assigned via k6 tag: k6 run --tag testid=<your-id>.",
         "includeAll": true,
         "label": "testID",
         "multi": true,
         "name": "testid",
         "options": [],
         "query": {
-          "query": "label_values(testid)",
+          "qryType": 1,
+          "query": "label_values(k6_http_reqs_total,testid)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 2,
@@ -1949,6 +2038,7 @@
           "uid": "${DS_PROMETHEUS}"
         },
         "definition": "label_values(k6_http_reqs_total,scenario)",
+        "description": "Filter by k6 scenario name. Scenarios are defined in the k6 script and represent different load scenarios.",
         "includeAll": true,
         "multi": true,
         "name": "scenario",
@@ -2026,7 +2116,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(runtime)",
+        "definition": "label_values(k6_http_reqs_total,runtime)",
         "hide": 2,
         "includeAll": true,
         "multi": true,
@@ -2034,7 +2124,7 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(runtime)",
+          "query": "label_values(k6_http_reqs_total,runtime)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 2,
@@ -2053,6 +2143,6 @@
   "timezone": "browser",
   "title": "Serverless Performance Tests",
   "uid": "adf9ppx",
-  "version": 5,
+  "version": 10,
   "weekStart": ""
 }
