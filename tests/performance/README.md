@@ -46,13 +46,6 @@ After each run, open Grafana at `http://localhost:3000` and export the results:
 3. Open the **Test Results Summary** panel.
 4. Use the panel menu → **Inspect** → **Data** → **Download CSV**. Make sure the **Apply panel transformations** toggle is enabled — without it, the exported data will be raw time series instead of the aggregated summary table.
 
-Save each CSV with a descriptive name, for example:
-```
-performance-tests-run1-2026-04-02.csv
-performance-tests-run2-2026-04-02.csv
-performance-tests-run3-2026-04-02.csv
-```
-
 ## Updating the Documentation
 
 After collecting CSVs from three runs, update `docs/user/00-50-limitations.md`.
