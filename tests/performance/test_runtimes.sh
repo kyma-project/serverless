@@ -7,8 +7,9 @@ export scenario=${SCENARIO:-hello_world}
 export resource_namespace=${NAMESPACE:-default}
 export RAPID=${RAPID:-false}
 
+export start_date="$(date +'%Y-%m-%d')"
 export start_timestamp="$(date +'%T')"
-export results_cm="k6-results-$(echo ${start_timestamp} | tr ':' '-')"
+export results_cm="k6-results-${start_date}-$(echo ${start_timestamp} | tr ':' '-')"
 export results_cm_ns="default"
 export result_dir="/tmp/${results_cm}"
 VARIANTS=(
@@ -85,7 +86,7 @@ test_runtime(){
     echo -e "\n[SCRIPT] Saving k6 results to configmap ${results_cm}"
     result_file="${result_dir}/${testid}"
     kubectl logs job/k6-${resource_name} -n ${resource_namespace} --tail=-1 > ${result_file}
-    kubectl create configmap ${results_cm} -n ${results_cm_ns} --from-file=${result_dir} --dry-run=client -o yaml | kubectl apply -f -
+    kubectl create configmap ${results_cm} -n ${results_cm_ns} --from-file=${result_dir} --dry-run=client -o yaml | kubectl apply --server-side -f -
 
     if [ $RAPID == "false" ]; then
         # Removing resources
