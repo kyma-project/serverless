@@ -4,8 +4,8 @@ import importlib
 
 import requests
 import prometheus_client as prom
-from cloudevents.http import from_http, CloudEvent
-from cloudevents.conversion import to_structured
+from cloudevents.core.v1.event import CloudEvent
+from cloudevents.core.bindings.http import from_http_event, to_structured_event, HTTPMessage
 from flask import Request
 
 class Handler:
@@ -106,13 +106,14 @@ class Event:
             attributes.update(optionalCloudEventAttributes)
 
         event = CloudEvent(attributes, data)
-        headers, body = to_structured(event)
+        message = to_structured_event(event)
 
-        requests.post(self.publisher_proxy_address, data=body, headers=headers)
+        requests.post(self.publisher_proxy_address, data=message.body, headers=message.headers)
 
     
     def __build_cloud_event_attributes(self, req:Request):
-        event = from_http(req.headers, req.get_data)
+        message = HTTPMessage(headers=req.headers, body=req.get_data)
+        event = from_http_event(message)
         ceHeaders = {
             'data': event.data,
             'ce-type': event['type'],
