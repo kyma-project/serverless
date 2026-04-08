@@ -9,7 +9,7 @@ This document outlines the planned deprecation and end-of-life (EOL) dates for s
 | Node.js 20 | February 2026 | April 2026 |
 | Node.js 22 | July 2026 | November 2026 |
 | Node.js 24 | TBD | TBD |
-| Python 3.12 | January 2027 | May 2027 |
+| Python 3.12 | September 2026 | March 2027 |
 | Python 3.14 | TBD | TBD |
 
 ## Deprecation History
