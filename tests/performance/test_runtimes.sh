@@ -85,7 +85,7 @@ test_runtime(){
 
     echo -e "\n[SCRIPT] Saving k6 results to configmap ${results_cm}"
     result_file="${result_dir}/${testid}"
-    kubectl logs job/k6-${resource_name} -n ${resource_namespace} --tail=-1 > ${result_file}
+    kubectl logs job/k6-${resource_name} -n ${resource_namespace} --tail=-1 | grep -A 1000 "TOTAL RESULTS" > ${result_file}
     kubectl create configmap ${results_cm} -n ${results_cm_ns} --from-file=${result_dir} --dry-run=client -o yaml | kubectl apply --server-side -f -
 
     if [ $RAPID == "false" ]; then
