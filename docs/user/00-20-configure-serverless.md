@@ -106,28 +106,3 @@ You can configure the desired log format to be used.
 ```
 
 For more details, see [Configuring Serverless Logging](00-70-configuring-logging.md).
-
-### Disabling Buildless Mode
-
-Serverless buildless mode is enabled by default. To use the legacy image-building Serverless functionality, disable buildless mode through an annotation.
-
-> [!WARNING]  
-> The legacy image-building mode is deprecated and will be removed in a future version of Serverless. This functionality is scheduled for removal and will no longer be available in upcoming releases.
-
-To disable Serverless buildless mode and enable the legacy image build step for Functions, follow these steps:
-
-#### Prerequisites
-
-You have [kubectl](https://kubernetes.io/docs/tasks/tools/) installed.
-
-#### Procedure
-
-1. Edit the Serverless CR:
-
-   ```bash
-   kubectl edit -n kyma-system serverlesses.operator.kyma-project.io default
-   ```
-
-2. In the `metadata` section, add `annotations`, and add the `serverless.kyma-project.io/buildless-mode: "disabled"` key-value pair in it. Save the changes.
-
-You have disabled Serverless buildless mode.

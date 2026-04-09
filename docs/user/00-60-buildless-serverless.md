@@ -27,6 +27,3 @@ With the introduction of buildless mode, we significantly shortened the feedback
 - **Avoid using `latest` versions of Function dependencies**: Since dependencies are resolved at the Function's Pod start time in buildless mode, using `latest` versions can lead to inconsistencies between replicas of the same Function. This may be the case when the dependency provider releases a new version after one replica is already running and before another replica is created due to auto-scaling. Always specify exact versions of dependencies to ensure stability and predictability.
 - **Dependency resolution behavior**: Be aware that each replica of a Function may resolve and use a different version of a dependency if the version is not explicitly pinned.
 
-## Disabling Buildless Mode
-
-To learn how to disable Serverless buildless mode, see [Configuring Serverless](00-20-configure-serverless.md#disabling-buildless-mode).
