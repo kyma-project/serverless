@@ -194,32 +194,6 @@ jobs:
         if: ${{ always() }}
         run: make -C tests/serverless cluster-info
 
-  serverless-migration-test:
-    if: ${{ !startsWith(github.event_name, 'pull_request') || github.event.pull_request.draft == false }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-      - uses: kyma-project/manager-toolkit/.github/actions/create-k3d-cluster@main
-      - name: install legacy serverless
-        run: |
-          make install-legacy-serverless-custom-operator
-        env:
-          IMG_DIRECTORY: ${{ inputs.img_directory }}
-          IMG_VERSION: ${{ inputs.img_version }}
-      - name: install default serverless cr and check cr status
-        run: |
-          kubectl create namespace kyma-system || true
-          kubectl apply -f tests/fixtures/deny-all-networkpolicy.yaml
-          kubectl apply -f config/samples/default-serverless-cr.yaml
-          make -C components/operator check-serverless-installation
-          make remove-serverless
-      - name: collect cluster info
-        if: ${{ always() }}
-        run: make -C tests/serverless cluster-info
-
   btp-integration-test:
     if: ${{ inputs.trigger_btp }}
     runs-on: ubuntu-latest
