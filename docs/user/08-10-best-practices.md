@@ -40,3 +40,10 @@ Thus, you can skip rendering the Kubernetes manifests and deploying them each ti
 Have a look at this [example](https://github.com/kyma-project/serverless/tree/main/examples/incluster_eventing) that illustrates how you can set up your Git project. Mind the `k8s resources` folder with the YAML manifests to be pushed to the Kubernetes API server (for example, using kubectl in our CI/CD or GitOps) and the `src` folder containing the Functions' source code. They are pulled directly by Kyma Serverless to build new Function images whenever the source content changes in the Git repository.  
 
 Browse the [tutorials](tutorials/README.md) for Serverless to learn how to use it step-by-step in different scenarios.
+
+## Pin Your Dependency Versions
+
+Function dependencies are downloaded each time a Function Pod starts. This means different replicas of the same Function may use different dependency versions if you don't pin exact versions.
+
+- **Avoid using `latest` versions of Function dependencies**: Using `latest` versions can lead to inconsistencies between replicas of the same Function. This may happen when a dependency provider releases a new version after one replica is already running and before another replica is created due to auto-scaling. Always specify exact versions to ensure stability and predictability.
+- **Dependency resolution behavior**: Be aware that each replica of a Function may resolve and use a different version of a dependency if the version is not explicitly pinned.
