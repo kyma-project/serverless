@@ -21,7 +21,6 @@ The Serverless CR is an API to configure the Serverless module. You can use it t
 - Configuring the default runtime Pod preset.
 - Configuring the log level.
 - Configuring the log format.
-- Disabling buildless mode.
 
 The default configuration of the Serverless module is the following:
 
