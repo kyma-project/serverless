@@ -45,14 +45,12 @@ To learn how to avoid any potential threats while using Functions, see [Function
 
 ## Authorization
 
-The Serverless module provides the following ClusterRoles for RBAC aggregation:
+The Serverless module provides the following [ClusterRoles for RBAC aggregation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/):
 
 - `kyma-serverless-view`
 - `kyma-serverless-edit`
 - `kyma-functions-view`
 - `kyma-functions-edit`
-
-For a full overview of all module roles and how they integrate with the standard Kubernetes RBAC roles, see [RBAC Aggregation for Kyma Modules](PLACEHOLDER).
 
 ## Resource Consumption
 
