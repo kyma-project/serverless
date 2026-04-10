@@ -1,0 +1,28 @@
+name: 'Setup libgit2'
+description: 'Action for the libgit2 setup'
+
+inputs:
+  version:
+    description: 'libgit2 version to checkout'
+    required: true
+    default: 'v1.5.2'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install libssh2
+      run: |
+        sudo apt update 
+        sudo apt install libssh2-1-dev -y
+      shell: bash
+
+    - name: Install libgit2
+      run: |
+        git clone https://github.com/libgit2/libgit2.git
+        cd libgit2 
+        git checkout ${{ inputs.version }}
+        cmake . -DBUILD_TESTS=OFF -DBUILD_CLI=OFF -DUSE_SSH=ON
+        sudo make install
+        sudo ldconfig
+      shell: bash
+
