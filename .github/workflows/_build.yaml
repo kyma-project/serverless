@@ -68,15 +68,6 @@ jobs:
   #      context: tests/gitserver
   #      tags: ${{ needs.compute-tags.outputs.tags }}
 
-  build-serverless-controller:
-    needs: compute-tags
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: function-controller
-      dockerfile: components/serverless/deploy/manager/Dockerfile
-      tags: ${{ needs.compute-tags.outputs.tags }}
-      platforms: linux/amd64 # this image does not support arm64
-
   build-buildless-serverless-controller:
     needs: compute-tags
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
@@ -84,23 +75,6 @@ jobs:
       name: function-buildless-controller
       dockerfile: components/buildless-serverless/Dockerfile
       tags: ${{ needs.compute-tags.outputs.tags }}
-
-  build-serverless-webhook:
-    needs: compute-tags
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: function-webhook
-      dockerfile: components/serverless/deploy/webhook/Dockerfile
-      tags: ${{ needs.compute-tags.outputs.tags }}
-
-  build-serverless-jobinit:
-    needs: compute-tags
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: function-build-init
-      dockerfile: components/serverless/deploy/jobinit/Dockerfile
-      tags: ${{ needs.compute-tags.outputs.tags }}
-      platforms: linux/amd64 # this image does not support arm64
 
   build-buildless-serverless-jobinit:
     needs: compute-tags
