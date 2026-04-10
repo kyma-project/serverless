@@ -43,6 +43,15 @@ The API of the Serverless module is based on Kubernetes CustomResourceDefinition
 
 To learn how to avoid any potential threats while using Functions, see [Function Security](00-40-security-considerations.md).
 
+## Authorization
+
+To assign access permissions to the Serverless module resources, use the following [aggregated ClusterRoles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles):
+
+- `kyma-serverless-view`
+- `kyma-serverless-edit`
+- `kyma-functions-view`
+- `kyma-functions-edit`
+
 ## Resource Consumption
 
 To learn more about the resources used by the Serverless module, [see Kyma Modules' Sizing](https://help.sap.com/docs/btp/sap-business-technology-platform/kyma-modules-sizing?locale=en-US#loio3a924906857b4f01969cb684ccd25309__section_serverless).
