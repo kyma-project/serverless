@@ -4,7 +4,7 @@
 
 
 # Build the operator binary
-FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.26.1-alpine3.23 AS builder
+FROM --platform=$BUILDPLATFORM europe-docker.pkg.dev/kyma-project/prod/external/library/golang:1.26.2-alpine3.23 AS builder
 
 ARG TARGETOS TARGETARCH
 
