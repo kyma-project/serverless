@@ -16,10 +16,6 @@ install-serverless-main: ## Install serverless with operator using default serve
 install-serverless-fips-mode-main: ## Install serverless with operator using default serverless cr in FIPS mode
 	make -C ${OPERATOR_ROOT} deploy-fips-mode apply-default-serverless-cr check-serverless-installation
 
-.PHONY: install-legacy-serverless-main
-install-legacy-serverless-main: ## Install legacy serverless with operator using serverless cr with legacy function container in-cluster build
-	make -C ${OPERATOR_ROOT} deploy-main apply-legacy-serverless-cr check-serverless-installation
-
 .PHONY: install-serverless-custom-operator
 install-serverless-custom-operator: ## Install serverless with operator from IMG env using default serverless cr
 	$(call check-var,IMG)
@@ -29,11 +25,6 @@ install-serverless-custom-operator: ## Install serverless with operator from IMG
 install-serverless-fips-mode-custom-operator: ## Install serverless with operator from IMG env using default serverless cr in FIPS mode
 	$(call check-var,IMG)
 	IMG=$(IMG) make -C ${OPERATOR_ROOT} deploy-fips-mode apply-default-serverless-cr check-serverless-installation
-
-.PHONY: install-legacy-serverless-custom-operator
-install-legacy-serverless-custom-operator: ## Install serverless with operator from IMG env using default serverless cr with legacy function container in-cluster build
-	$(call check-var,IMG)
-	IMG=$(IMG) make -C ${OPERATOR_ROOT} deploy apply-legacy-serverless-cr check-serverless-installation
 
 .PHONY: install-serverless-custom-operator-custom-cr
 install-serverless-custom-operator-custom-cr: ## Install serverless with operator from IMG env using custom serverless cr
@@ -65,9 +56,6 @@ remove-serverless: ## Remove serverless-cr and serverless operator
 
 .PHONY: run-main
 run-main: create-k3d install-serverless-main ## Create k3d cluster and install serverless from main
-
-.PHONY: run-legacy-main
-run-legacy-main: create-k3d install-legacy-serverless-main ## Create k3d cluster and install legacy serverless from main
 
 check-var = $(if $(strip $($1)),,$(error "$1" is not defined))
 
