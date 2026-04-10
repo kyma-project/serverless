@@ -115,8 +115,8 @@ func main() {
 
 func runScenario(testutil *utils.TestUtils) error {
 
-	if testutil.FipsMode && testutil.LegacyMode {
-		testutil.Logger.Info("Skipping FIPS mode test for legacy serverless")
+	if testutil.LegacyMode {
+		testutil.Logger.Info("Skipping legacy serverless scenario")
 		return nil
 	}
 
