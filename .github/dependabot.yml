@@ -64,37 +64,6 @@ updates:
       include: "scope"
 
   - package-ecosystem: "docker"
-    directory: "/components/serverless/deploy/jobinit"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "jobinit"
-      include: "scope"
-  - package-ecosystem: "docker"
-    directory: "/components/serverless/deploy/manager"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "manager"
-      include: "scope"
-  - package-ecosystem: "docker"
-    directory: "/components/serverless/deploy/webhook"
-    labels:
-      - "area/dependency"
-      - "kind/chore"
-    schedule:
-      interval: "weekly"
-    commit-message:
-      prefix: "webhook"
-      include: "scope"
-
-  - package-ecosystem: "docker"
     directory: "/tests/gitserver"
     labels:
       - "area/dependency"
