@@ -45,7 +45,7 @@ To learn how to avoid any potential threats while using Functions, see [Function
 
 ## Authorization
 
-The Serverless module provides the following [ClusterRoles for RBAC aggregation](https://kubernetes.io/docs/reference/access-authn-authz/rbac/):
+To assign access permissions to the Serverless module resources, use the following [aggregated ClusterRoles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles):
 
 - `kyma-serverless-view`
 - `kyma-serverless-edit`
