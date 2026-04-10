@@ -89,6 +89,7 @@ spec:
               value: europe-docker.pkg.dev/kyma-project/prod/external/library/registry:3.0.0
           securityContext:
             allowPrivilegeEscalation: false
+            runAsNonRoot: true
             capabilities:
               drop:
                 - "ALL"
