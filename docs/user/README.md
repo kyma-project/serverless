@@ -43,6 +43,17 @@ The API of the Serverless module is based on Kubernetes CustomResourceDefinition
 
 To learn how to avoid any potential threats while using Functions, see [Function Security](00-40-security-considerations.md).
 
+## Authorization
+
+The Serverless module provides the following ClusterRoles for RBAC aggregation:
+
+- `kyma-serverless-view`
+- `kyma-serverless-edit`
+- `kyma-functions-view`
+- `kyma-functions-edit`
+
+For a full overview of all module roles and how they integrate with the standard Kubernetes RBAC roles, see [RBAC Aggregation for Kyma Modules](PLACEHOLDER).
+
 ## Resource Consumption
 
 To learn more about the resources used by the Serverless module, [see Kyma Modules' Sizing](https://help.sap.com/docs/btp/sap-business-technology-platform/kyma-modules-sizing?locale=en-US#loio3a924906857b4f01969cb684ccd25309__section_serverless).
