@@ -5,13 +5,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/kyma-project/manager-toolkit/installation/base/resource"
 	"github.com/kyma-project/manager-toolkit/installation/chart"
-	"github.com/kyma-project/manager-toolkit/installation/chart/action"
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless/components/operator/internal/flags"
-	"github.com/kyma-project/serverless/components/operator/internal/legacy"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -60,28 +56,16 @@ func install(ctx context.Context, r *reconciler, s *systemState) error {
 
 	return chart.Install(s.chartConfig, &chart.InstallOpts{
 		CustomFlags: flags,
-		PreActions: []action.PreApply{
-			// TODO: remove this callback after deleting legacy serverless
-			action.PreApplyWithPredicate(
-				adjustPVCPreApplyAction(ctx, r.client),
-				resource.HasKind("PersistentVolumeClaim"),
-			),
-		},
 	})
 }
 
 func updateImages(fb *flags.Builder, fipsModeEnabled bool) {
-	updateImageIfOverride("IMAGE_FUNCTION_CONTROLLER", fb.WithImageFunctionBuildfulController, fipsModeEnabled)
 	updateImageIfOverride("IMAGE_FUNCTION_BUILDLESS_CONTROLLER", fb.WithImageFunctionController, fipsModeEnabled)
-	updateImageIfOverride("IMAGE_FUNCTION_BUILD_INIT", fb.WithImageFunctionBuildInit, fipsModeEnabled)
 	updateImageIfOverride("IMAGE_FUNCTION_BUILDLESS_INIT", fb.WithImageFunctionInit, fipsModeEnabled)
-	updateImageIfOverride("IMAGE_REGISTRY_INIT", fb.WithImageRegistryInit, fipsModeEnabled)
 	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_NODEJS20", fb.WithImageFunctionRuntimeNodejs20, fipsModeEnabled)
 	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_NODEJS22", fb.WithImageFunctionRuntimeNodejs22, fipsModeEnabled)
 	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_NODEJS24", fb.WithImageFunctionRuntimeNodejs24, fipsModeEnabled)
 	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_PYTHON312", fb.WithImageFunctionRuntimePython312, fipsModeEnabled)
-	updateImageIfOverride("IMAGE_KANIKO_EXECUTOR", fb.WithImageKanikoExecutor, fipsModeEnabled)
-	updateImageIfOverride("IMAGE_REGISTRY", fb.WithImageRegistry, fipsModeEnabled)
 }
 
 func updateImageIfOverride(envName string, updateFunction flags.ImageReplace, fipsModeEnabled bool) {
@@ -91,13 +75,5 @@ func updateImageIfOverride(envName string, updateFunction flags.ImageReplace, fi
 	imageName := os.Getenv(envName)
 	if imageName != "" {
 		updateFunction(imageName)
-	}
-}
-
-func adjustPVCPreApplyAction(ctx context.Context, c client.Client) action.PreApply {
-	return func(u *unstructured.Unstructured) error {
-		adjusted, err := legacy.AdjustDockerRegToClusterPVCSize(ctx, c, *u)
-		*u = adjusted
-		return err
 	}
 }
