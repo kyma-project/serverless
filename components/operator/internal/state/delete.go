@@ -34,7 +34,7 @@ func sFnDeleteResources(ctx context.Context, r *reconciler, s *systemState) (sta
 	return deleteResourcesWithFilter(ctx, r, s)
 }
 
-func deleteResourcesWithFilter(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func deleteResourcesWithFilter(_ context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	done, err := chart.Uninstall(s.chartConfig, &chart.UninstallOpts{})
 	if err != nil {
 		return uninstallResourcesError(r, s, err)

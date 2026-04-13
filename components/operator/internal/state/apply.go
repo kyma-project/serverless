@@ -30,7 +30,7 @@ func sFnApplyResources(ctx context.Context, r *reconciler, s *systemState) (stat
 	updateImages(s.flagsBuilder, fipsModeEnabled)
 
 	// install component
-	err := install(ctx, r, s)
+	err := install(s)
 	if err != nil {
 		fmt.Println(err)
 		r.log.Warnf("error while installing resource %s: %s",
@@ -48,7 +48,7 @@ func sFnApplyResources(ctx context.Context, r *reconciler, s *systemState) (stat
 	return nextState(sFnVerifyResources)
 }
 
-func install(ctx context.Context, r *reconciler, s *systemState) error {
+func install(s *systemState) error {
 	flags, err := s.flagsBuilder.Build()
 	if err != nil {
 		return err
