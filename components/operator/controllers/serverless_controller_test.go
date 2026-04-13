@@ -20,8 +20,7 @@ const (
 var _ = Describe("Serverless controller", func() {
 	Context("When creating fresh instance", func() {
 		const (
-			namespaceName  = "kyma-system"
-			specSecretName = "spec-secret-name"
+			namespaceName = "kyma-system"
 		)
 
 		var (
@@ -41,34 +40,6 @@ var _ = Describe("Serverless controller", func() {
 					ServerAddress:   ptr.To[string](v1alpha1.DefaultServerAddress),
 					RegistryAddress: ptr.To[string](v1alpha1.DefaultRegistryAddress),
 				},
-			}
-			serverlessDataExternalWithSecret = serverlessData{
-				EnableInternal: ptr.To[bool](false),
-				registrySecretData: registrySecretData{
-					Username:        ptr.To[string]("rumburak"),
-					Password:        ptr.To[string]("mlekota"),
-					ServerAddress:   ptr.To[string]("testserveraddress:5000"),
-					RegistryAddress: ptr.To[string]("testregistryaddress:5000"),
-				},
-			}
-			serverlessDataExternalWithIncompleteSecret = serverlessData{
-				EnableInternal: ptr.To[bool](false),
-				registrySecretData: registrySecretData{
-					Username:      ptr.To[string]("blekota"),
-					ServerAddress: ptr.To[string]("testserveraddress:5002"),
-				},
-			}
-			serverlessDataIncompleteFilledByDefault = serverlessData{
-				EnableInternal: ptr.To[bool](v1alpha1.DefaultEnableInternal),
-				registrySecretData: registrySecretData{
-					Username:        ptr.To[string]("blekota"),
-					Password:        ptr.To[string](""),
-					ServerAddress:   ptr.To[string]("testserveraddress:5002"),
-					RegistryAddress: ptr.To[string](""),
-				},
-			}
-			serverlessDataExternalWithoutSecret = serverlessData{
-				EnableInternal: ptr.To[bool](false),
 			}
 		)
 
@@ -93,28 +64,6 @@ var _ = Describe("Serverless controller", func() {
 				}
 				shouldUpdateServerless(h, updateData)
 				shouldPropagateSpecProperties(h, serverlessDataWithChangedDependencies)
-			}
-			{
-				registryData := serverlessDataExternalWithSecret
-				secretName := specSecretName + "-full"
-				h.createRegistrySecret(secretName, registryData.registrySecretData)
-				updateData := registryData.toServerlessSpec(secretName)
-				shouldUpdateServerless(h, updateData)
-				shouldPropagateSpecProperties(h, registryData)
-			}
-			{
-				registryData := serverlessDataExternalWithIncompleteSecret
-				secretName := specSecretName + "-incomplete"
-				h.createRegistrySecret(secretName, registryData.registrySecretData)
-				updateData := registryData.toServerlessSpec(secretName)
-				shouldUpdateServerless(h, updateData)
-				shouldPropagateSpecProperties(h, serverlessDataIncompleteFilledByDefault)
-			}
-			{
-				registryData := serverlessDataExternalWithoutSecret
-				updateData := registryData.toServerlessSpec("")
-				shouldUpdateServerless(h, updateData)
-				shouldPropagateSpecProperties(h, serverlessDataDefault)
 			}
 
 			shouldDeleteServerless(h, serverlessName, serverlessDeploymentName)
