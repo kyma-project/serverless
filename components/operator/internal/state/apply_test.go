@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	envName                      = "IMAGE_FUNCTION_CONTROLLER"
+	envName                      = "IMAGE_FUNCTION_BUILDLESS_CONTROLLER"
 	runtimeImageEnvName          = "IMAGE_FUNCTION_RUNTIME_NODEJS24"
 	kymaFipsModeEnv              = "KYMA_FIPS_MODE_ENABLED"
 	fipsVariantImageEnvKeySuffix = "_FIPS"
@@ -151,15 +151,15 @@ func TestUpdateImageIfOverride(t *testing.T) {
 			name:          "Override image",
 			envKey:        envName,
 			envs:          map[string]string{envName: "newImage"},
-			bindUpdater:   func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionBuildfulController },
-			expectedKey:   "function_buildful_controller",
+			bindUpdater:   func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionController },
+			expectedKey:   "function_controller",
 			expectedValue: "newImage",
 		},
 		{
 			name:        "Don't override image when empty env",
 			envKey:      envName,
 			envs:        map[string]string{},
-			bindUpdater: func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionBuildfulController },
+			bindUpdater: func(b *flags.Builder) flags.ImageReplace { return b.WithImageFunctionController },
 		},
 		{
 			name:          "Choose FIPS variant images when Fips mode enabled",
