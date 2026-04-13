@@ -14,8 +14,14 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/yaml"
+)
+
+const (
+	// from config/buildless-serverless/values.yaml: global.configuration.function.configmapName / filename
+	functionConfigmapName = "serverless-config"
+	functionConfigmapKey  = "function-config.yaml"
 )
 
 type conditionMatcher struct {
@@ -178,24 +184,6 @@ func (h *testHelper) createNamespace() {
 	By(fmt.Sprintf("Namespace created: %s", h.namespaceName))
 }
 
-func (h *testHelper) createSecret(name string, data map[string]string) {
-	By(fmt.Sprintf("Creating secret: %s/%s", h.namespaceName, name))
-	secret := corev1.Secret{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      name,
-			Namespace: h.namespaceName,
-		},
-		StringData: data,
-	}
-	Expect(k8sClient.Create(h.ctx, &secret)).To(Succeed())
-	By(fmt.Sprintf("Secret created: %s/%s", h.namespaceName, name))
-}
-
-func (h *testHelper) createRegistrySecret(name string, data registrySecretData) {
-	secretData := data.toMap()
-	h.createSecret(name, secretData)
-}
-
 func (h *testHelper) createGetKubernetesObjectFunc(objectName string, obj client.Object) func() (bool, error) {
 	return func() (bool, error) {
 		return h.getKubernetesObjectFunc(objectName, obj)
@@ -257,22 +245,6 @@ func (h *testHelper) getServerlessStatus(serverlessName string) (v1alpha1.Server
 type serverlessData struct {
 	EventPublisherProxyURL *string
 	TraceCollectorURL      *string
-	EnableInternal         *bool
-	registrySecretData
-}
-
-func (d *serverlessData) toServerlessSpec(secretName string) v1alpha1.ServerlessSpec {
-	result := v1alpha1.ServerlessSpec{
-		Eventing: getEndpoint(d.EventPublisherProxyURL),
-		Tracing:  getEndpoint(d.TraceCollectorURL),
-		DockerRegistry: &v1alpha1.DockerRegistry{
-			EnableInternal: d.EnableInternal,
-		},
-	}
-	if secretName != "" {
-		result.DockerRegistry.SecretName = ptr.To[string](secretName)
-	}
-	return result
 }
 
 func getEndpoint(url *string) *v1alpha1.Endpoint {
@@ -282,36 +254,22 @@ func getEndpoint(url *string) *v1alpha1.Endpoint {
 	return nil
 }
 
-type registrySecretData struct {
-	Username        *string
-	Password        *string
-	ServerAddress   *string
-	RegistryAddress *string
-}
-
-func (d *registrySecretData) toMap() map[string]string {
-	result := map[string]string{}
-	if d.Username != nil {
-		result["username"] = *d.Username
-	}
-	if d.Password != nil {
-		result["password"] = *d.Password
-	}
-	if d.ServerAddress != nil {
-		result["serverAddress"] = *d.ServerAddress
-	}
-	if d.RegistryAddress != nil {
-		result["registryAddress"] = *d.RegistryAddress
-	}
-	return result
-}
-
-func (h *testHelper) createCheckOptionalDependenciesFunc(deploymentName string, expected serverlessData) func() (bool, error) {
+func (h *testHelper) createCheckOptionalDependenciesFunc(_ string, expected serverlessData) func() (bool, error) {
 	return func() (bool, error) {
-		var deploy appsv1.Deployment
-		ok, err := h.getKubernetesObjectFunc(deploymentName, &deploy)
+		var cm corev1.ConfigMap
+		ok, err := h.getKubernetesObjectFunc(functionConfigmapName, &cm)
 		if !ok || err != nil {
 			return ok, err
+		}
+
+		rawData, ok := cm.Data[functionConfigmapKey]
+		if !ok {
+			return false, fmt.Errorf("key %s not found in configmap %s", functionConfigmapKey, functionConfigmapName)
+		}
+
+		config := map[string]interface{}{}
+		if err := yaml.Unmarshal([]byte(rawData), &config); err != nil {
+			return false, fmt.Errorf("failed to parse %s: %w", functionConfigmapKey, err)
 		}
 
 		eventProxyURL := v1alpha1.DefaultEventingEndpoint
@@ -324,11 +282,11 @@ func (h *testHelper) createCheckOptionalDependenciesFunc(deploymentName string, 
 			traceCollectorURL = *expected.TraceCollectorURL
 		}
 
-		if err := deploymentContainsEnv(deploy, "APP_FUNCTION_PUBLISHER_PROXY_ADDRESS", eventProxyURL); err != nil {
+		if err := configContainsValue(config, "functionPublisherProxyAddress", eventProxyURL); err != nil {
 			return false, err
 		}
 
-		if err := deploymentContainsEnv(deploy, "APP_FUNCTION_TRACE_COLLECTOR_ENDPOINT", traceCollectorURL); err != nil {
+		if err := configContainsValue(config, "functionTraceCollectorEndpoint", traceCollectorURL); err != nil {
 			return false, err
 		}
 
@@ -336,17 +294,13 @@ func (h *testHelper) createCheckOptionalDependenciesFunc(deploymentName string, 
 	}
 }
 
-func deploymentContainsEnv(deployment appsv1.Deployment, name, value string) error {
-	envs := deployment.Spec.Template.Spec.Containers[0].Env
-	for i := range envs {
-		if envs[i].Name == name && envs[i].Value == value {
-			return nil
-		}
-
-		if envs[i].Name == name && envs[i].Value != value {
-			return fmt.Errorf("wrong value for %s env: expected %s, got %s", name, value, envs[i].Value)
-		}
+func configContainsValue(config map[string]interface{}, key, expected string) error {
+	val, ok := config[key]
+	if !ok {
+		return fmt.Errorf("key %s not found in config", key)
 	}
-
-	return fmt.Errorf("env %s does not exist", name)
+	if val != expected {
+		return fmt.Errorf("wrong value for %s: expected %s, got %v", key, expected, val)
+	}
+	return nil
 }

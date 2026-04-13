@@ -11,7 +11,7 @@ import (
 )
 
 func Test_sFnInitialize(t *testing.T) {
-	t.Run("setup and return next step sFnRegistryConfiguration", func(t *testing.T) {
+	t.Run("setup and return next step sFnStartConfiguring", func(t *testing.T) {
 		r := &reconciler{
 			cfg: cfg{
 				finalizer: v1alpha1.Finalizer,
@@ -35,7 +35,7 @@ func Test_sFnInitialize(t *testing.T) {
 		next, result, err := sFnInitialize(context.Background(), r, s)
 		require.Nil(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnRegistryConfiguration, next)
+		requireEqualFunc(t, sFnStartConfiguring, next)
 	})
 
 	t.Run("setup and return next step sFnDeleteResources", func(t *testing.T) {
