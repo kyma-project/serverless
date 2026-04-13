@@ -6,7 +6,6 @@ export default [
   { text: 'Network Policies', link: './00-45-network-policies' },
   { text: 'Limitations', link: './00-50-limitations' },
   { text: 'Logging Configuration', link: './00-70-configuring-logging' },
-  { text: 'Cluster Roles', link: './00-80-cluster-roles' },
   { text: 'Tutorials', link: './tutorials/README', collapsed: true, items: [
     { text: 'Create an Inline Function', link: './tutorials/01-10-create-inline-function' },
     { text: 'Create a Git Function', link: './tutorials/01-11-create-git-function' },

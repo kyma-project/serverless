@@ -143,11 +143,6 @@ apply-default-serverless-cr: ## Apply the serverless CR.
 	kubectl apply \
 		-f ${PROJECT_ROOT}/config/samples/default-serverless-cr.yaml
 		
-.PHONY: apply-legacy-serverless-cr
-apply-legacy-serverless-cr: ## Apply the legacy serverless CR (opt-out from buildless mode, using legacy function container in-cluster build).
-	kubectl apply \
-		-f ${PROJECT_ROOT}/config/samples/legacy-serverless-cr.yaml
-
 .PHONY: apply-custom-serverless-cr
 apply-custom-serverless-cr: ## Apply the serverless CR by path.
 	kubectl apply \
