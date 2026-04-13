@@ -17,14 +17,11 @@ if [[ ${REPLACE_SCOPE} == "main-only" ]]; then
 fi
 
 
-# temporary loop - finally we will only do the replacement in one of the serverless
-SERVERLESSES=('serverless' 'buildless-serverless')
-for SERVERLESS in "${SERVERLESSES[@]}"; do
-VALUES_FILE=${PROJECT_ROOT}/config/${SERVERLESS}/values.yaml
+VALUES_FILE=${PROJECT_ROOT}/config/buildless-serverless/values.yaml
 echo "processing ${VALUES_FILE}"
 
 if [[ ${PURPOSE} == "local" ]]; then
-  echo "Changing container registry (${SERVERLESS})"
+  echo "Changing container registry"
   yq --inplace '.global.images[] |= sub("europe-docker.pkg.dev/kyma-project/", "k3d-kyma-registry.localhost:5000/")' "${VALUES_FILE}"
 fi
 IMAGES_SELECTOR=".global.images[] | select(key == \"function_*\") ${MAIN_ONLY_SELECTOR}"
@@ -32,10 +29,9 @@ IMAGES_SELECTOR=".global.images[] | select(key == \"function_*\") ${MAIN_ONLY_SE
 yq --inplace "(${IMAGES_SELECTOR})|= sub (\"/dev/|/prod/\", \"/${IMG_DIRECTORY}/\") " "${VALUES_FILE}"
 # replace the last :.* with :IMG_VERSION, sicne the URL can contain a port number
 yq --inplace "(${IMAGES_SELECTOR}) |= sub(\":[^:]+$\",\":${IMG_VERSION}\")" "${VALUES_FILE}"
-echo "==== Local Changes (${SERVERLESS}) ===="
+echo "==== Local Changes ===="
 yq '.global.images' "${VALUES_FILE}"
-echo "==== End of Local Changes (${SERVERLESS}) ===="
-done
+echo "==== End of Local Changes ===="
 
 
 # replace envs in operator
@@ -58,5 +54,4 @@ echo "==== End of Local Changes (operator) ===="
 
 # update versions in labels
 
-yq ".global.commonLabels.version |= \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/serverless/values.yaml 
 yq --inplace ".appVersion |= \"${IMG_VERSION}\"" ${PROJECT_ROOT}/config/buildless-serverless/Chart.yaml
