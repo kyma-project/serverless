@@ -7,7 +7,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
-func sFnRegistryConfiguration(_ context.Context, _ *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
+func sFnStartConfiguring(_ context.Context, _ *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	s.setState(v1alpha1.StateProcessing)
 	s.instance.Status.DockerRegistry = ""
 	return nextState(sFnOptionalDependencies)
