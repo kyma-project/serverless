@@ -78,6 +78,7 @@ spec:
               value: europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:main
           securityContext:
             allowPrivilegeEscalation: false
+            runAsNonRoot: true
             capabilities:
               drop:
                 - "ALL"
