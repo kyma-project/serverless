@@ -20,11 +20,6 @@ type FunctionConfig struct {
 }
 
 func VerifyServerlessConfigmap(testutils *utils.TestUtils, serverless *v1alpha1.Serverless) error {
-
-	if testutils.LegacyMode {
-		testutils.Logger.Info("Skipping configmap verification for legacy serverless")
-		return nil
-	}
 	var configmap corev1.ConfigMap
 	objectKey := client.ObjectKey{
 		Name:      testutils.ServerlessConfigName,

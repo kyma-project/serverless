@@ -48,7 +48,7 @@ func VerifyOld(utils *utils.TestUtils) error {
 		return err
 	}
 
-	if err := verifyStatus(&serverless, utils.LegacyMode); err != nil {
+	if err := verifyStatus(&serverless); err != nil {
 		return err
 	}
 
@@ -73,16 +73,12 @@ func VerifyNew(utils *utils.TestUtils) error {
 		return err
 	}
 
-	if err := verifyStatus(&serverless, utils.LegacyMode); err != nil {
+	if err := verifyStatus(&serverless); err != nil {
 		return err
 	}
 
-	if utils.LegacyMode {
-		return deployment.VerifyCtrlMngrEnvs(utils, &serverless)
-	}
-
-	if !utils.LegacyMode {
-		return deployment.VerifyCtrlMngrAnnotations(utils)
+	if err := deployment.VerifyCtrlMngrAnnotations(utils); err != nil {
+		return err
 	}
 
 	return configmap.VerifyServerlessConfigmap(utils, &serverless)
@@ -135,7 +131,7 @@ func getServerless(utils *utils.TestUtils, name string) (v1alpha1.Serverless, er
 }
 
 // check if all data from the spec is reflected in the status
-func verifyStatus(serverless *v1alpha1.Serverless, legacy bool) error {
+func verifyStatus(serverless *v1alpha1.Serverless) error {
 	status := serverless.Status
 	spec := serverless.Spec
 
@@ -167,25 +163,6 @@ func verifyStatus(serverless *v1alpha1.Serverless, legacy bool) error {
 
 	if spec.Tracing != nil {
 		if err := isSpecValueReflectedInStatus(spec.Tracing.Endpoint, status.TracingEndpoint); err != nil {
-			return err
-		}
-	}
-
-	if legacy {
-
-		if err := isSpecValueReflectedInStatus(spec.TargetCPUUtilizationPercentage, status.CPUUtilizationPercentage); err != nil {
-			return err
-		}
-
-		if err := isSpecValueReflectedInStatus(spec.FunctionBuildExecutorArgs, status.BuildExecutorArgs); err != nil {
-			return err
-		}
-
-		if err := isSpecValueReflectedInStatus(spec.FunctionBuildMaxSimultaneousJobs, status.BuildMaxSimultaneousJobs); err != nil {
-			return err
-		}
-
-		if err := isSpecValueReflectedInStatus(spec.DefaultBuildJobPreset, status.DefaultBuildJobPreset); err != nil {
 			return err
 		}
 	}
