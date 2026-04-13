@@ -16,6 +16,13 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/yaml"
+)
+
+const (
+	// from config/buildless-serverless/values.yaml: global.configuration.function.configmapName / filename
+	functionConfigmapName = "serverless-config"
+	functionConfigmapKey  = "function-config.yaml"
 )
 
 type conditionMatcher struct {
@@ -306,12 +313,22 @@ func (d *registrySecretData) toMap() map[string]string {
 	return result
 }
 
-func (h *testHelper) createCheckOptionalDependenciesFunc(deploymentName string, expected serverlessData) func() (bool, error) {
+func (h *testHelper) createCheckOptionalDependenciesFunc(_ string, expected serverlessData) func() (bool, error) {
 	return func() (bool, error) {
-		var deploy appsv1.Deployment
-		ok, err := h.getKubernetesObjectFunc(deploymentName, &deploy)
+		var cm corev1.ConfigMap
+		ok, err := h.getKubernetesObjectFunc(functionConfigmapName, &cm)
 		if !ok || err != nil {
 			return ok, err
+		}
+
+		rawData, ok := cm.Data[functionConfigmapKey]
+		if !ok {
+			return false, fmt.Errorf("key %s not found in configmap %s", functionConfigmapKey, functionConfigmapName)
+		}
+
+		config := map[string]interface{}{}
+		if err := yaml.Unmarshal([]byte(rawData), &config); err != nil {
+			return false, fmt.Errorf("failed to parse %s: %w", functionConfigmapKey, err)
 		}
 
 		eventProxyURL := v1alpha1.DefaultEventingEndpoint
@@ -324,11 +341,11 @@ func (h *testHelper) createCheckOptionalDependenciesFunc(deploymentName string, 
 			traceCollectorURL = *expected.TraceCollectorURL
 		}
 
-		if err := deploymentContainsEnv(deploy, "APP_FUNCTION_PUBLISHER_PROXY_ADDRESS", eventProxyURL); err != nil {
+		if err := configContainsValue(config, "functionPublisherProxyAddress", eventProxyURL); err != nil {
 			return false, err
 		}
 
-		if err := deploymentContainsEnv(deploy, "APP_FUNCTION_TRACE_COLLECTOR_ENDPOINT", traceCollectorURL); err != nil {
+		if err := configContainsValue(config, "functionTraceCollectorEndpoint", traceCollectorURL); err != nil {
 			return false, err
 		}
 
@@ -336,17 +353,13 @@ func (h *testHelper) createCheckOptionalDependenciesFunc(deploymentName string, 
 	}
 }
 
-func deploymentContainsEnv(deployment appsv1.Deployment, name, value string) error {
-	envs := deployment.Spec.Template.Spec.Containers[0].Env
-	for i := range envs {
-		if envs[i].Name == name && envs[i].Value == value {
-			return nil
-		}
-
-		if envs[i].Name == name && envs[i].Value != value {
-			return fmt.Errorf("wrong value for %s env: expected %s, got %s", name, value, envs[i].Value)
-		}
+func configContainsValue(config map[string]interface{}, key, expected string) error {
+	val, ok := config[key]
+	if !ok {
+		return fmt.Errorf("key %s not found in config", key)
 	}
-
-	return fmt.Errorf("env %s does not exist", name)
+	if val != expected {
+		return fmt.Errorf("wrong value for %s: expected %s, got %v", key, expected, val)
+	}
+	return nil
 }
