@@ -91,7 +91,7 @@ var _ = BeforeSuite(func() {
 	reconcilerLogger, err := config.Build()
 	Expect(err).NotTo(HaveOccurred())
 
-	chartPath := filepath.Join("..", "..", "..", "config", "serverless")
+	chartPath := filepath.Join("..", "..", "..", "config", "buildless-serverless")
 	err = (NewServerlessReconciler(
 		k8sManager.GetClient(),
 		k8sManager.GetConfig(),
