@@ -21,7 +21,6 @@ const (
 	executorArgsTest           = "test-build-executor-args"
 	maxSimultaneousJobsTest    = "test-max-simultaneous-jobs"
 	healthzLivenessTimeoutTest = "test-healthz-liveness-timeout"
-	buildJobPresetTest         = "test=default-build-job-preset"
 	runtimePodPresetTest       = "test-default-runtime-pod-preset"
 	logLevelTest               = "test-log-level"
 	logFormatTest              = "test-log-format"
@@ -74,11 +73,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{},
-				ObjectMeta: metav1.ObjectMeta{
-					Annotations: map[string]string{
-						buildlessModeAnnotation: buildlessModeDisabled,
-					},
-				},
 			},
 			flagsBuilder: flags.NewBuilder(),
 		}
@@ -95,7 +89,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, slowBuildPreset, status.DefaultBuildJobPreset)
+		require.Equal(t, "", status.DefaultBuildJobPreset)
 		require.Equal(t, slowRuntimePreset, status.DefaultRuntimePodPreset)
 
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
@@ -110,7 +104,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			"Normal Configuration Default runtime pod preset set from '' to 'XS'",
 			"Normal Configuration Log level set from '' to 'info'",
 			"Normal Configuration Log format set from '' to 'json'",
-			"Normal Configuration Default build job preset set from '' to 'slow'",
 		}
 
 		for _, expectedEvent := range expectedEvents {
@@ -121,14 +114,8 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 	t.Run("update slow default to normal ones", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
-				ObjectMeta: metav1.ObjectMeta{
-					Annotations: map[string]string{
-						buildlessModeAnnotation: buildlessModeDisabled,
-					},
-				},
 				Spec: v1alpha1.ServerlessSpec{},
 				Status: v1alpha1.ServerlessStatus{
-					DefaultBuildJobPreset:   slowBuildPreset,
 					DefaultRuntimePodPreset: slowRuntimePreset,
 				},
 			},
@@ -149,7 +136,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, normalBuildPreset, status.DefaultBuildJobPreset)
+		require.Equal(t, "", status.DefaultBuildJobPreset)
 		require.Equal(t, largeRuntimePreset, status.DefaultRuntimePodPreset)
 
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
@@ -164,7 +151,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			"Normal Configuration Default runtime pod preset set from 'XS' to 'L'",
 			"Normal Configuration Log level set from '' to 'info'",
 			"Normal Configuration Log format set from '' to 'json'",
-			"Normal Configuration Default build job preset set from 'slow' to 'normal'",
 		}
 
 		for _, expectedEvent := range expectedEvents {
@@ -175,18 +161,12 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 	t.Run("update status additional configuration overrides", func(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
-				ObjectMeta: metav1.ObjectMeta{
-					Annotations: map[string]string{
-						buildlessModeAnnotation: buildlessModeDisabled,
-					},
-				},
 				Spec: v1alpha1.ServerlessSpec{
 					TargetCPUUtilizationPercentage:   cpuUtilizationTest,
 					FunctionRequeueDuration:          requeueDurationTest,
 					FunctionBuildExecutorArgs:        executorArgsTest,
 					FunctionBuildMaxSimultaneousJobs: maxSimultaneousJobsTest,
 					HealthzLivenessTimeout:           healthzLivenessTimeoutTest,
-					DefaultBuildJobPreset:            buildJobPresetTest,
 					DefaultRuntimePodPreset:          runtimePodPresetTest,
 					LogLevel:                         logLevelTest,
 					LogFormat:                        logFormatTest,
@@ -209,7 +189,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		require.Equal(t, executorArgsTest, status.BuildExecutorArgs)
 		require.Equal(t, maxSimultaneousJobsTest, status.BuildMaxSimultaneousJobs)
 		require.Equal(t, healthzLivenessTimeoutTest, status.HealthzLivenessTimeout)
-		require.Equal(t, buildJobPresetTest, status.DefaultBuildJobPreset)
 		require.Equal(t, runtimePodPresetTest, status.DefaultRuntimePodPreset)
 		require.Equal(t, logLevelTest, status.LogLevel)
 		require.Equal(t, logFormatTest, status.LogFormat)
@@ -231,7 +210,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			"Normal Configuration Default runtime pod preset set from '' to 'test-default-runtime-pod-preset'",
 			"Normal Configuration Log level set from '' to 'test-log-level'",
 			"Normal Configuration Log format set from '' to 'test-log-format'",
-			"Normal Configuration Default build job preset set from '' to 'test=default-build-job-preset'",
 		}
 
 		for _, expectedEvent := range expectedEvents {
