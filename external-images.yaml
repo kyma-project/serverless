@@ -4,8 +4,6 @@ images:
     tag: "3.23.3"
   - source: "golang@sha256:c2a1f7b2095d046ae14b286b18413a05bb82c9bca9b25fe7ff5efef0f0826166"
     tag: "1.26.2-alpine3.23"
-  - source: "gcr.io/kaniko-project/executor@sha256:4e7a52dd1f14872430652bb3b027405b8dfd17c4538751c620ac005741ef9698"
-    tag: "v1.24.0"
   - source: "ghcr.io/nginx/alpine-fips@sha256:15cf5753964eca17557083313d2a39e6a3cc659a5a2143ecebc476b14cc687e6"
     tag: "0.5.0-alpine3.23"
   # https://hub.docker.com/layers/library/node/24-alpine
