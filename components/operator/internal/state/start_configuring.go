@@ -9,6 +9,5 @@ import (
 
 func sFnStartConfiguring(_ context.Context, _ *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	s.setState(v1alpha1.StateProcessing)
-	s.instance.Status.DockerRegistry = ""
 	return nextState(sFnOptionalDependencies)
 }
