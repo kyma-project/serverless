@@ -1,0 +1,47 @@
+name: check-runtime-base-versions
+
+on:
+  workflow_call:
+
+jobs:
+  check-runtime-base-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check FIPS and non-FIPS base versions are in sync
+        run: |
+          set -e
+          failed=0
+
+          check_versions() {
+            local dockerfile=$1
+            local non_fips_version fips_version
+
+            non_fips_version=$(grep '^FROM .* AS non-fips$' "$dockerfile" | grep -oE ':[0-9]+(\.[0-9]+)*' | tr -d ':')
+            fips_version=$(grep '^FROM .* AS fips$' "$dockerfile" | grep -oE ':[0-9]+(\.[0-9]+)*' | tr -d ':')
+
+            if [ -z "$non_fips_version" ] || [ -z "$fips_version" ]; then
+              echo "ERROR: Could not extract versions from $dockerfile"
+              return 1
+            fi
+
+            if [ "$non_fips_version" != "$fips_version" ]; then
+              echo "ERROR: $dockerfile — non-FIPS version ($non_fips_version) != FIPS version ($fips_version)"
+              return 1
+            fi
+
+            echo "OK: $dockerfile — $non_fips_version"
+          }
+
+          SKIP_LIST="nodejs20 python312"
+
+          for runtime_dir in components/runtimes/*/; do
+            runtime=$(basename "$runtime_dir")
+            if echo "$SKIP_LIST" | grep -qw "$runtime"; then
+              echo "SKIP: $runtime_dir (excluded)"
+              continue
+            fi
+            check_versions "${runtime_dir}Dockerfile" || failed=1
+          done
+
+          exit $failed

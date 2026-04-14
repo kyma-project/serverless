@@ -28,6 +28,9 @@ jobs:
       img_directory: "dev"
       img_version: PR-${{ github.event.number }}
 
+  check-runtime-base-versions:
+    uses: kyma-project/serverless/.github/workflows/_check-runtime-base-versions.yaml@main
+
   integrations:
     needs: builds
     secrets: inherit
