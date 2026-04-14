@@ -38,24 +38,19 @@ type ServerlessSpec struct {
 	Tracing *Endpoint `json:"tracing,omitempty"`
 	// Used Eventing endpoint
 	Eventing *Endpoint `json:"eventing,omitempty"`
-	// Deprecated: Defines docker registry where built images should be pushed
-	// This setting should be removed from a future version where Functions won't require building images.
+	// Deprecated: No longer has any effect. Docker registry is not used by the serverless module.
 	DockerRegistry *DockerRegistry `json:"dockerRegistry,omitempty"`
-	// Deprecated: Sets a custom CPU utilization threshold for scaling Function Pods
-	// This setting should be removed from a future version where Functions won't require building images.
+	// Deprecated: No longer has any effect. CPU utilization scaling is not used by the serverless module.
 	TargetCPUUtilizationPercentage string `json:"targetCPUUtilizationPercentage,omitempty"`
 	// Sets the requeue duration for Function. By default, the Function associated with the default configuration is requeued every 5 minutes
 	FunctionRequeueDuration string `json:"functionRequeueDuration,omitempty"`
-	// Deprecated: Specifies the arguments passed to the Function build executor
-	// This setting should be removed from a future version where Functions won't require building images.
+	// Deprecated: No longer has any effect. Function build executor is not used by the serverless module.
 	FunctionBuildExecutorArgs string `json:"functionBuildExecutorArgs,omitempty"`
-	// Deprecated: A number of simultaneous jobs that can run at the same time. The default value is `5`
-	// This setting should be removed from a future version where Functions won't require building images.
+	// Deprecated: No longer has any effect. Function build jobs are not used by the serverless module.
 	FunctionBuildMaxSimultaneousJobs string `json:"functionBuildMaxSimultaneousJobs,omitempty"`
 	// Sets the timeout for the Function health check. The default value in seconds is `10`
 	HealthzLivenessTimeout string `json:"healthzLivenessTimeout,omitempty"`
-	// Deprecated: Configures the default build Job preset to be used
-	// This setting should be removed from a future version where Functions won't require building images.
+	// Deprecated: No longer has any effect. Function build jobs are not used by the serverless module.
 	DefaultBuildJobPreset string `json:"defaultBuildJobPreset,omitempty"`
 	// Configures the default runtime Pod preset to be used
 	DefaultRuntimePodPreset string `json:"defaultRuntimePodPreset,omitempty"`
@@ -63,8 +58,7 @@ type ServerlessSpec struct {
 	LogLevel string `json:"logLevel,omitempty"`
 	// Sets desired log format to be used. The default value is "json"
 	LogFormat string `json:"logFormat,omitempty"`
-	// Deprecated: Enable deployment of network policies that allow serverless' essential in-cluster communication.
-	// This setting should be removed from a future version.
+	// Deprecated: No longer has any effect. Network policies are always enabled.
 	EnableNetworkPolicies bool `json:"enableNetworkPolicies,omitempty"`
 }
 
@@ -118,18 +112,21 @@ type ServerlessStatus struct {
 	EventingEndpoint string `json:"eventingEndpoint,omitempty"`
 	TracingEndpoint  string `json:"tracingEndpoint,omitempty"`
 
+	// Deprecated: No longer has any effect.
 	CPUUtilizationPercentage string `json:"targetCPUUtilizationPercentage,omitempty"`
 	RequeueDuration          string `json:"functionRequeueDuration,omitempty"`
-	BuildExecutorArgs        string `json:"functionBuildExecutorArgs,omitempty"`
+	// Deprecated: No longer has any effect.
+	BuildExecutorArgs string `json:"functionBuildExecutorArgs,omitempty"`
+	// Deprecated: No longer has any effect.
 	BuildMaxSimultaneousJobs string `json:"functionBuildMaxSimultaneousJobs,omitempty"`
 	HealthzLivenessTimeout   string `json:"healthzLivenessTimeout,omitempty"`
-	DefaultBuildJobPreset    string `json:"defaultBuildJobPreset,omitempty"`
-	DefaultRuntimePodPreset  string `json:"defaultRuntimePodPreset,omitempty"`
-	LogLevel                 string `json:"logLevel,omitempty"`
-	LogFormat                string `json:"logFormat,omitempty"`
+	// Deprecated: No longer has any effect.
+	DefaultBuildJobPreset   string `json:"defaultBuildJobPreset,omitempty"`
+	DefaultRuntimePodPreset string `json:"defaultRuntimePodPreset,omitempty"`
+	LogLevel                string `json:"logLevel,omitempty"`
+	LogFormat               string `json:"logFormat,omitempty"`
 
-	// Used registry configuration.
-	// Contains registry URL or "internal"
+	// Deprecated: No longer has any effect.
 	DockerRegistry string `json:"dockerRegistry,omitempty"`
 
 	// State signifies current state of Serverless.
