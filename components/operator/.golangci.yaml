@@ -22,17 +22,33 @@ linters:
       - path: (.+)\.go$
         text: ^func `stopWithErrorOrRequeue` is unused$
       - path: (.+)\.go$
-        text: '^SA1019: result.DockerRegistry is deprecated:'
-      - path: (.+)\.go$
         text: '^SA1019: spec.TargetCPUUtilizationPercentage is deprecated:'
       - path: (.+)\.go$
         text: '^SA1019: spec.FunctionBuildExecutorArgs is deprecated:'
       - path: (.+)\.go$
         text: '^SA1019: spec.FunctionBuildMaxSimultaneousJobs is deprecated:'
       - path: (.+)\.go$
-        text: '^SA1019: spec.DefaultBuildJobPreset is deprecated:'
+        text: '^SA1019: instance.Status.CPUUtilizationPercentage is deprecated:'
       - path: (.+)\.go$
-        text: '^SA1019: s.instance.Spec.DockerRegistry is deprecated:'
+        text: '^SA1019: instance.Status.BuildExecutorArgs is deprecated:'
+      - path: (.+)\.go$
+        text: '^SA1019: instance.Status.BuildMaxSimultaneousJobs is deprecated:'
+      - path: (.+)\.go$
+        text: '^SA1019: s.instance.Status.CPUUtilizationPercentage is deprecated:'
+      - path: (.+)\.go$
+        text: '^SA1019: s.instance.Status.BuildExecutorArgs is deprecated:'
+      - path: (.+)\.go$
+        text: '^SA1019: s.instance.Status.BuildMaxSimultaneousJobs is deprecated:'
+      - path: (.+)\.go$
+        text: '^SA1019: status.DefaultBuildJobPreset is deprecated:'
+      - path: (.+)\.go$
+        text: '^SA1019: status.CPUUtilizationPercentage is deprecated:'
+      - path: (.+)\.go$
+        text: '^SA1019: status.BuildExecutorArgs is deprecated:'
+      - path: (.+)\.go$
+        text: '^SA1019: status.BuildMaxSimultaneousJobs is deprecated:'
+      - path: (.+)\.go$
+        text: '^SA1019: s.instance.Status.DockerRegistry is deprecated:'
       - path: (.+)\.go$
         text: '^QF1008:'
     paths:
