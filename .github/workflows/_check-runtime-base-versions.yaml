@@ -13,6 +13,7 @@ jobs:
           set -e
           failed=0
 
+          # Extracts the version from the non-FIPS and FIPS base image lines and compares them
           check_versions() {
             local dockerfile=$1
             local non_fips_version fips_version
@@ -33,10 +34,12 @@ jobs:
             echo "OK: $dockerfile — $non_fips_version"
           }
 
+          # Runtimes without a FIPS variant — must be explicitly listed here to avoid silently skipping new runtimes
           SKIP_LIST="nodejs20 python312"
 
           for runtime_dir in components/runtimes/*/; do
             runtime=$(basename "$runtime_dir")
+            # If the runtime has no FIPS variant, skip it and report — any new runtime not on this list will be checked
             if echo "$SKIP_LIST" | grep -qw "$runtime"; then
               echo "SKIP: $runtime_dir (excluded)"
               continue
