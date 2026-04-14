@@ -28,8 +28,8 @@ jobs:
       img_directory: "dev"
       img_version: PR-${{ github.event.number }}
 
-  check-runtime-base-versions:
-    uses: kyma-project/serverless/.github/workflows/_check-runtime-base-versions.yaml@main
+  check-fips-image-versions:
+    uses: kyma-project/serverless/.github/workflows/_check-fips-image-versions.yaml@main
 
   integrations:
     needs: builds
