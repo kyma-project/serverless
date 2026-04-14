@@ -42,7 +42,6 @@ ENV PROJECT_ROOT="."
 RUN apk update && apk add bash yq
 
 COPY components/operator/hack components/operator/hack
-COPY config/serverless config/serverless
 COPY config/buildless-serverless config/buildless-serverless
 COPY hack/ hack/
 
@@ -61,7 +60,6 @@ ENV GODEBUG=fips140=only,tlsmlkem=0
 
 WORKDIR /
 COPY --chown=65532:65532 --from=builder /workdir/operator .
-COPY --chown=65532:65532 --from=replacer /workdir/config/serverless /module-chart
 COPY --chown=65532:65532 --from=replacer /workdir/config/buildless-serverless /buildless-module-chart
 USER 65532:65532
 
