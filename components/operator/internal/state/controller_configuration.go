@@ -72,7 +72,6 @@ func configureControllerConfigurationFlags(s *systemState) {
 			s.instance.Status.HealthzLivenessTimeout,
 		).
 		WithDefaultPresetFlags(
-			"",
 			s.instance.Status.DefaultRuntimePodPreset,
 		).
 		WithLogLevel(s.instance.Status.LogLevel).

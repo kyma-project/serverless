@@ -46,38 +46,9 @@ func (b *Builder) WithOptionalDependencies(publisherURL, traceCollectorURL strin
 	return b
 }
 
-func (b *Builder) WithRegistryEnableInternal(enableInternal bool) *Builder {
-	b.With("dockerRegistry.enableInternal", enableInternal)
-	return b
-}
-
-func (b *Builder) WithRegistryCredentials(username, password string) *Builder {
-	b.With("dockerRegistry.username", username)
-	b.With("dockerRegistry.password", password)
-	return b
-}
-
-func (b *Builder) WithRegistryAddresses(registryAddress, serverAddress string) *Builder {
-	b.With("dockerRegistry.registryAddress", registryAddress)
-	b.With("dockerRegistry.serverAddress", serverAddress)
-
-	return b
-}
-
-func (b *Builder) WithRegistryHttpSecret(httpSecret string) *Builder {
-	b.With("docker-registry.rollme", "dontrollplease")
-	b.With("docker-registry.registryHTTPSecret", httpSecret)
-
-	return b
-}
-
-func (b *Builder) WithDefaultPresetFlags(defaultBuildJobPreset, defaultRuntimePodPreset string) *Builder {
+func (b *Builder) WithDefaultPresetFlags(defaultRuntimePodPreset string) *Builder {
 	if defaultRuntimePodPreset != "" {
 		b.With("containers.manager.configuration.data.resourcesConfiguration.function.resources.defaultPreset", defaultRuntimePodPreset)
-	}
-
-	if defaultBuildJobPreset != "" {
-		b.With("containers.manager.configuration.data.resourcesConfiguration.buildJob.resources.defaultPreset", defaultBuildJobPreset)
 	}
 
 	return b
@@ -85,11 +56,6 @@ func (b *Builder) WithDefaultPresetFlags(defaultBuildJobPreset, defaultRuntimePo
 
 func (b *Builder) WithManagedByLabel(managedBy string) *Builder {
 	b.With("global.commonLabels.app\\.kubernetes\\.io/managed-by", managedBy)
-	return b
-}
-
-func (b *Builder) WithNodePort(nodePort int64) *Builder {
-	b.With("global.registryNodePort", nodePort)
 	return b
 }
 
@@ -123,35 +89,13 @@ func (b *Builder) WithFipsModeEnabled(enabled bool) *Builder {
 	return b
 }
 
-// TODO: remove this method when buildless is enabled by default
-func (b *Builder) WithChartPath(chartPath string) *Builder {
-	b.With("chartPath", chartPath)
-	return b
-}
-
-// temporary name until buildless takes over
-func (b *Builder) WithImageFunctionBuildfulController(image string) *Builder {
-	b.With("global.images.function_buildful_controller", image)
-	return b
-}
-
 func (b *Builder) WithImageFunctionController(image string) *Builder {
 	b.With("global.images.function_controller", image)
 	return b
 }
 
-func (b *Builder) WithImageFunctionBuildInit(image string) *Builder {
-	b.With("global.images.function_build_init", image)
-	return b
-}
-
 func (b *Builder) WithImageFunctionInit(image string) *Builder {
 	b.With("global.images.function_init", image)
-	return b
-}
-
-func (b *Builder) WithImageRegistryInit(image string) *Builder {
-	b.With("global.images.registry_init", image)
 	return b
 }
 
@@ -172,15 +116,5 @@ func (b *Builder) WithImageFunctionRuntimeNodejs24(image string) *Builder {
 
 func (b *Builder) WithImageFunctionRuntimePython312(image string) *Builder {
 	b.With("global.images.function_runtime_python312", image)
-	return b
-}
-
-func (b *Builder) WithImageKanikoExecutor(image string) *Builder {
-	b.With("global.images.kaniko_executor", image)
-	return b
-}
-
-func (b *Builder) WithImageRegistry(image string) *Builder {
-	b.With("global.images.registry", image)
 	return b
 }
