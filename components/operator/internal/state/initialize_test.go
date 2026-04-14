@@ -11,7 +11,7 @@ import (
 )
 
 func Test_sFnInitialize(t *testing.T) {
-	t.Run("setup and return next step sFnStartConfiguring", func(t *testing.T) {
+	t.Run("setup and return next step sFnOptionalDependencies", func(t *testing.T) {
 		r := &reconciler{
 			cfg: cfg{
 				finalizer: v1alpha1.Finalizer,
@@ -31,11 +31,11 @@ func Test_sFnInitialize(t *testing.T) {
 			},
 		}
 
-		// setup and return buildSFnPrerequisites
+		// setup and return sFnOptionalDependencies
 		next, result, err := sFnInitialize(context.Background(), r, s)
 		require.Nil(t, err)
 		require.Nil(t, result)
-		requireEqualFunc(t, sFnStartConfiguring, next)
+		requireEqualFunc(t, sFnOptionalDependencies, next)
 	})
 
 	t.Run("setup and return next step sFnDeleteResources", func(t *testing.T) {
