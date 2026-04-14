@@ -1,10 +1,10 @@
-name: check-runtime-base-versions
+name: check-fips-image-versions
 
 on:
   workflow_call:
 
 jobs:
-  check-runtime-base-versions:
+  check-fips-image-versions:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
