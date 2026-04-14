@@ -13,6 +13,8 @@ import (
 
 // enable or disable serverless optional dependencies based on the Serverless Spec and installed module on the cluster
 func sFnOptionalDependencies(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {
+	s.setState(v1alpha1.StateProcessing)
+
 	// TODO: add functionality of auto-detecting these dependencies by checking Eventing CRs if user does not override these values.
 	// checking these URLs manually is not possible because of lack of istio-sidecar in the serverless-operator
 
