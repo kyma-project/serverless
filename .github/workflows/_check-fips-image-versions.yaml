@@ -11,7 +11,6 @@ jobs:
       - name: Check FIPS and non-FIPS base versions are in sync
         run: |
           set -e
-          failed=0
 
           # Extracts the version from the non-FIPS and FIPS base image lines and compares them
           check_versions() {
@@ -37,6 +36,7 @@ jobs:
           # Runtimes without a FIPS variant — must be explicitly listed here to avoid silently skipping new runtimes
           SKIP_LIST="nodejs20 python312"
 
+          failed=0
           for runtime_dir in components/runtimes/*/; do
             runtime=$(basename "$runtime_dir")
             # If the runtime has no FIPS variant, skip it and report — any new runtime not on this list will be checked
