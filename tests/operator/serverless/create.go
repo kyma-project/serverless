@@ -24,10 +24,6 @@ func fixServerless(testUtils *utils.TestUtils, name string) *v1alpha1.Serverless
 			Name:      name,
 			Namespace: testUtils.Namespace,
 		},
-		Spec: v1alpha1.ServerlessSpec{
-			DockerRegistry: &v1alpha1.DockerRegistry{
-				EnableInternal: utils.PtrFromVal(false),
-			},
-		},
+		Spec: v1alpha1.ServerlessSpec{},
 	}
 }
