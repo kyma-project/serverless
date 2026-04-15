@@ -1,0 +1,56 @@
+name: check-fips-image-versions
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+
+jobs:
+  check-fips-image-versions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
+      - name: Check FIPS and non-FIPS base versions are in sync
+        run: |
+          set -e
+
+          # Extracts the version from the non-FIPS and FIPS base image lines and compares them
+          check_versions() {
+            local dockerfile=$1
+            local non_fips_version fips_version
+
+            non_fips_version=$(grep '^FROM .* AS non-fips$' "$dockerfile" | grep -oE ':[0-9]+(\.[0-9]+)*' | tail -1 | tr -d ':')
+            fips_version=$(grep '^FROM .* AS fips$' "$dockerfile" | grep -oE ':[0-9]+(\.[0-9]+)*' | tail -1 | tr -d ':')
+
+            if [ -z "$non_fips_version" ] || [ -z "$fips_version" ]; then
+              echo "ERROR: Could not extract versions from $dockerfile"
+              return 1
+            fi
+
+            if [ "$non_fips_version" != "$fips_version" ]; then
+              echo "ERROR: $dockerfile — non-FIPS version ($non_fips_version) != FIPS version ($fips_version)"
+              return 1
+            fi
+
+            echo "OK: $dockerfile — $non_fips_version"
+          }
+
+          # Runtimes without a FIPS variant — must be explicitly listed here to avoid silently skipping new runtimes
+          SKIP_LIST="nodejs20 python312"
+
+          failed=0
+          for runtime_dir in components/runtimes/*/; do
+            runtime=$(basename "$runtime_dir")
+            # If the runtime has no FIPS variant, skip it and report — any new runtime not on this list will be checked
+            if echo "$SKIP_LIST" | grep -qw "$runtime"; then
+              echo "SKIP: $runtime_dir (excluded)"
+              continue
+            fi
+            check_versions "${runtime_dir}Dockerfile" || failed=1
+          done
+
+          exit $failed

@@ -28,6 +28,11 @@ jobs:
       img_directory: "dev"
       img_version: PR-${{ github.event.number }}
 
+  check-fips-image-versions:
+    uses: kyma-project/serverless/.github/workflows/_check-fips-image-versions.yaml@main
+    with:
+      ref: ${{ github.event.pull_request.head.sha }}
+
   integrations:
     needs: builds
     secrets: inherit
