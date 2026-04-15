@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/kyma-project/serverless/tests/operator/utils"
 
-	serverlessv1alpha2 "github.com/kyma-project/serverless/components/serverless/pkg/apis/serverless/v1alpha2"
+	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
