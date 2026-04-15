@@ -16,10 +16,7 @@ import (
 )
 
 const (
-	cpuUtilizationTest         = "test-CPU-utilization-percentage"
 	requeueDurationTest        = "test-requeue-duration"
-	executorArgsTest           = "test-build-executor-args"
-	maxSimultaneousJobsTest    = "test-max-simultaneous-jobs"
 	healthzLivenessTimeoutTest = "test-healthz-liveness-timeout"
 	runtimePodPresetTest       = "test-default-runtime-pod-preset"
 	logLevelTest               = "test-log-level"
@@ -49,7 +46,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, "", status.DefaultBuildJobPreset)
 		require.Equal(t, slowRuntimePreset, status.DefaultRuntimePodPreset)
 
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
@@ -89,7 +85,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, "", status.DefaultBuildJobPreset)
 		require.Equal(t, slowRuntimePreset, status.DefaultRuntimePodPreset)
 
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
@@ -136,7 +131,6 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, "", status.DefaultBuildJobPreset)
 		require.Equal(t, largeRuntimePreset, status.DefaultRuntimePodPreset)
 
 		require.Equal(t, v1alpha1.StateProcessing, status.State)
@@ -162,14 +156,11 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		s := &systemState{
 			instance: v1alpha1.Serverless{
 				Spec: v1alpha1.ServerlessSpec{
-					TargetCPUUtilizationPercentage:   cpuUtilizationTest,
-					FunctionRequeueDuration:          requeueDurationTest,
-					FunctionBuildExecutorArgs:        executorArgsTest,
-					FunctionBuildMaxSimultaneousJobs: maxSimultaneousJobsTest,
-					HealthzLivenessTimeout:           healthzLivenessTimeoutTest,
-					DefaultRuntimePodPreset:          runtimePodPresetTest,
-					LogLevel:                         logLevelTest,
-					LogFormat:                        logFormatTest,
+					FunctionRequeueDuration: requeueDurationTest,
+					HealthzLivenessTimeout:  healthzLivenessTimeoutTest,
+					DefaultRuntimePodPreset: runtimePodPresetTest,
+					LogLevel:                logLevelTest,
+					LogFormat:               logFormatTest,
 				},
 			},
 			flagsBuilder: flags.NewBuilder(),
@@ -184,10 +175,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		requireEqualFunc(t, sFnApplyResources, next)
 
 		status := s.instance.Status
-		require.Equal(t, cpuUtilizationTest, status.CPUUtilizationPercentage)
 		require.Equal(t, requeueDurationTest, status.RequeueDuration)
-		require.Equal(t, executorArgsTest, status.BuildExecutorArgs)
-		require.Equal(t, maxSimultaneousJobsTest, status.BuildMaxSimultaneousJobs)
 		require.Equal(t, healthzLivenessTimeoutTest, status.HealthzLivenessTimeout)
 		require.Equal(t, runtimePodPresetTest, status.DefaultRuntimePodPreset)
 		require.Equal(t, logLevelTest, status.LogLevel)
@@ -202,10 +190,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		)
 
 		expectedEvents := []string{
-			"Normal Configuration CPU utilization set from '' to 'test-CPU-utilization-percentage'",
 			"Normal Configuration Function requeue duration set from '' to 'test-requeue-duration'",
-			"Normal Configuration Function build executor args set from '' to 'test-build-executor-args'",
-			"Normal Configuration Max number of simultaneous jobs set from '' to 'test-max-simultaneous-jobs'",
 			"Normal Configuration Duration of health check set from '' to 'test-healthz-liveness-timeout'",
 			"Normal Configuration Default runtime pod preset set from '' to 'test-default-runtime-pod-preset'",
 			"Normal Configuration Log level set from '' to 'test-log-level'",
