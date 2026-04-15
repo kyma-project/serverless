@@ -59,17 +59,15 @@ spec:
             description: ServerlessSpec defines the desired state of Serverless
             properties:
               defaultBuildJobPreset:
-                description: |-
-                  Deprecated: Configures the default build Job preset to be used
-                  This setting should be removed from a future version where Functions won't require building images.
+                description: 'Deprecated: No longer has any effect. Function build
+                  jobs are not used by the serverless module.'
                 type: string
               defaultRuntimePodPreset:
                 description: Configures the default runtime Pod preset to be used
                 type: string
               dockerRegistry:
-                description: |-
-                  Deprecated: Defines docker registry where built images should be pushed
-                  This setting should be removed from a future version where Functions won't require building images.
+                description: 'Deprecated: No longer has any effect. Docker registry
+                  is not used by the serverless module.'
                 properties:
                   enableInternal:
                     description: When set to true, the internal Docker registry is
@@ -80,9 +78,8 @@ spec:
                     type: string
                 type: object
               enableNetworkPolicies:
-                description: |-
-                  Deprecated: Enable deployment of network policies that allow serverless' essential in-cluster communication.
-                  This setting should be removed from a future version.
+                description: 'Deprecated: No longer has any effect. Network policies
+                  are always enabled.'
                 type: boolean
               eventing:
                 description: Used Eventing endpoint
@@ -93,14 +90,12 @@ spec:
                 - endpoint
                 type: object
               functionBuildExecutorArgs:
-                description: |-
-                  Deprecated: Specifies the arguments passed to the Function build executor
-                  This setting should be removed from a future version where Functions won't require building images.
+                description: 'Deprecated: No longer has any effect. Function build
+                  executor is not used by the serverless module.'
                 type: string
               functionBuildMaxSimultaneousJobs:
-                description: |-
-                  Deprecated: A number of simultaneous jobs that can run at the same time. The default value is `5`
-                  This setting should be removed from a future version where Functions won't require building images.
+                description: 'Deprecated: No longer has any effect. Function build
+                  jobs are not used by the serverless module.'
                 type: string
               functionRequeueDuration:
                 description: Sets the requeue duration for Function. By default, the
@@ -120,9 +115,8 @@ spec:
                   is "info"
                 type: string
               targetCPUUtilizationPercentage:
-                description: |-
-                  Deprecated: Sets a custom CPU utilization threshold for scaling Function Pods
-                  This setting should be removed from a future version where Functions won't require building images.
+                description: 'Deprecated: No longer has any effect. CPU utilization
+                  scaling is not used by the serverless module.'
                 type: string
               tracing:
                 description: Used Tracing endpoint
@@ -193,20 +187,21 @@ spec:
                   type: object
                 type: array
               defaultBuildJobPreset:
+                description: 'Deprecated: No longer has any effect.'
                 type: string
               defaultRuntimePodPreset:
                 type: string
               dockerRegistry:
-                description: |-
-                  Used registry configuration.
-                  Contains registry URL or "internal"
+                description: 'Deprecated: No longer has any effect.'
                 type: string
               eventingEndpoint:
                 description: Used the Eventing endpoint and the Tracing endpoint.
                 type: string
               functionBuildExecutorArgs:
+                description: 'Deprecated: No longer has any effect.'
                 type: string
               functionBuildMaxSimultaneousJobs:
+                description: 'Deprecated: No longer has any effect.'
                 type: string
               functionRequeueDuration:
                 type: string
@@ -244,6 +239,7 @@ spec:
                 - Warning
                 type: string
               targetCPUUtilizationPercentage:
+                description: 'Deprecated: No longer has any effect.'
                 type: string
               tracingEndpoint:
                 type: string

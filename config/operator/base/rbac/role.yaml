@@ -9,7 +9,6 @@ rules:
   resources:
   - configmaps
   - namespaces
-  - persistentvolumeclaims
   - secrets
   - serviceaccounts
   - services
@@ -70,7 +69,6 @@ rules:
 - apiGroups:
   - apps
   resources:
-  - daemonsets
   - deployments
   verbs:
   - create
@@ -94,31 +92,12 @@ rules:
   verbs:
   - list
 - apiGroups:
-  - autoscaling
-  resources:
-  - horizontalpodautoscalers
-  verbs:
-  - create
-  - delete
-  - deletecollection
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
   - batch
   resources:
   - jobs
   verbs:
-  - create
   - delete
-  - deletecollection
-  - get
   - list
-  - patch
-  - update
-  - watch
 - apiGroups:
   - batch
   resources:
