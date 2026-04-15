@@ -38,7 +38,7 @@ spec:
         const _ = require('lodash')
         module.exports = {
           main: function(event, context) {
-            return _.kebabCase('Hello World from Node.js 20 Function');
+            return _.kebabCase('Hello World from Node.js Function');
           }
         }
 EOF
@@ -68,7 +68,7 @@ spec:
       source: |
         import _ from 'lodash'
         export function main (event, context) {
-            return _.kebabCase('Hello World from Node.js 20 Function');
+            return _.kebabCase('Hello World from Node.js Function');
         }
 EOF
 ```
