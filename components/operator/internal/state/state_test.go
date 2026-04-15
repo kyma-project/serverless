@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/utils/ptr"
 )
 
 var (
@@ -21,11 +20,7 @@ var (
 			Name:      "test",
 			Namespace: "test",
 		},
-		Spec: v1alpha1.ServerlessSpec{
-			DockerRegistry: &v1alpha1.DockerRegistry{
-				EnableInternal: ptr.To[bool](false),
-			},
-		},
+		Spec: v1alpha1.ServerlessSpec{},
 		Status: v1alpha1.ServerlessStatus{
 			Conditions: []metav1.Condition{
 				{
