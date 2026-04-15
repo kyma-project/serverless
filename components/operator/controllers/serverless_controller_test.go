@@ -14,7 +14,6 @@ import (
 const (
 	serverlessDeploymentName = "serverless-ctrl-mngr"
 	serverlessName           = "serverless-cr-test"
-	serverlessRegistrySecret = "serverless-registry-config-default"
 )
 
 var _ = Describe("Serverless controller", func() {
@@ -38,8 +37,6 @@ var _ = Describe("Serverless controller", func() {
 				ctx:           context.Background(),
 				namespaceName: namespaceName,
 			}
-			// TODO: implement test for enableInternal: true
-
 			h.createNamespace()
 
 			{
