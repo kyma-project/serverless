@@ -117,7 +117,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 
    ```bash
    cat <<EOF | kubectl apply -f -
-   apiVersion: gateway.kyma-project.io/v2alpha1
+   apiVersion: gateway.kyma-project.io/v2
    kind: APIRule
    metadata:
      name: incoming-http-trigger
