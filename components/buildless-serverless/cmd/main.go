@@ -37,7 +37,6 @@ import (
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/git"
 	serverlessmetrics "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/metrics"
-	orphaned_resources "github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/orphaned-resources"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/endpoint"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/logging"
 	"github.com/kyma-project/serverless/components/common/fips"
@@ -182,14 +181,6 @@ func main() {
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder
-
-	//TODO: It is a temporary solution to delete orphaned jobs. It should be removed after migration from old serverless
-	go func() {
-		err := orphaned_resources.DeleteOrphanedResources(ctx, mgr)
-		if err != nil {
-			setupLog.Error(err, "unable to delete jobs")
-		}
-	}()
 
 	err = fnCtrl.Watch(source.Channel(healthEventsCh, &handler.EnqueueRequestForObject{}))
 	if err != nil {
