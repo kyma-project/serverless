@@ -19,7 +19,6 @@ type TestUtils struct {
 	FunctionName             string
 	ServerlessCtrlDeployName string
 	ServerlessConfigName     string
-	ServerlessRegistryName   string
 	ServerlessConfigMapName  string
 	ServerlessUpdateSpec     v1alpha1.ServerlessSpec
 	FipsMode                 bool

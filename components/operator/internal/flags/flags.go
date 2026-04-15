@@ -18,15 +18,12 @@ func NewBuilder() *Builder {
 	}
 }
 
-func (b *Builder) WithControllerConfiguration(CPUUtilizationPercentage, requeueDuration, buildExecutorArgs, maxSimultaneousJobs, healthzLivenessTimeout string) *Builder {
+func (b *Builder) WithControllerConfiguration(requeueDuration, healthzLivenessTimeout string) *Builder {
 	optionalFlags := []struct {
 		key   string
 		value string
 	}{
-		{"targetCPUUtilizationPercentage", CPUUtilizationPercentage},
 		{"functionRequeueDuration", requeueDuration},
-		{"functionBuildExecutorArgs", buildExecutorArgs},
-		{"functionBuildMaxSimultaneousJobs", maxSimultaneousJobs},
 		{"healthzLivenessTimeout", healthzLivenessTimeout},
 	}
 

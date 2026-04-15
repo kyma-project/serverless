@@ -48,10 +48,7 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 	spec := instance.Spec
 
 	fields := fieldsToUpdate{
-		{spec.TargetCPUUtilizationPercentage, &instance.Status.CPUUtilizationPercentage, "CPU utilization", ""},
 		{spec.FunctionRequeueDuration, &instance.Status.RequeueDuration, "Function requeue duration", ""},
-		{spec.FunctionBuildExecutorArgs, &instance.Status.BuildExecutorArgs, "Function build executor args", ""},
-		{spec.FunctionBuildMaxSimultaneousJobs, &instance.Status.BuildMaxSimultaneousJobs, "Max number of simultaneous jobs", ""},
 		{spec.HealthzLivenessTimeout, &instance.Status.HealthzLivenessTimeout, "Duration of health check", ""},
 		{spec.DefaultRuntimePodPreset, &instance.Status.DefaultRuntimePodPreset, "Default runtime pod preset", defaultRuntimePreset},
 		{spec.LogLevel, &instance.Status.LogLevel, "Log level", defaultLogLevel},
@@ -65,10 +62,7 @@ func updateControllerConfigurationStatus(ctx context.Context, r *reconciler, ins
 func configureControllerConfigurationFlags(s *systemState) {
 	s.flagsBuilder.
 		WithControllerConfiguration(
-			s.instance.Status.CPUUtilizationPercentage,
 			s.instance.Status.RequeueDuration,
-			s.instance.Status.BuildExecutorArgs,
-			s.instance.Status.BuildMaxSimultaneousJobs,
 			s.instance.Status.HealthzLivenessTimeout,
 		).
 		WithDefaultPresetFlags(
