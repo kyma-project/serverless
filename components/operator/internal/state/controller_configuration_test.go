@@ -11,7 +11,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/record"
-	"k8s.io/utils/ptr"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
@@ -225,26 +224,15 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 				Spec: v1alpha1.ServerlessSpec{
 					Eventing: &v1alpha1.Endpoint{Endpoint: "test-event-URL"},
 					Tracing:  &v1alpha1.Endpoint{Endpoint: v1alpha1.EndpointDisabled},
-					DockerRegistry: &v1alpha1.DockerRegistry{
-						EnableInternal: ptr.To[bool](false),
-						SecretName:     ptr.To[string]("boo"),
-					},
 				},
 			},
-			statusSnapshot: v1alpha1.ServerlessStatus{
-				DockerRegistry: "",
-			},
-			flagsBuilder: flags.NewBuilder(),
-		}
-		secret := &corev1.Secret{
-			ObjectMeta: metav1.ObjectMeta{
-				Name: "boo",
-			},
+			statusSnapshot: v1alpha1.ServerlessStatus{},
+			flagsBuilder:   flags.NewBuilder(),
 		}
 		r := &reconciler{
 			log: zap.NewNop().Sugar(),
 			k8s: k8s{
-				client:        fake.NewClientBuilder().WithObjects(secret).Build(),
+				client:        fake.NewClientBuilder().Build(),
 				EventRecorder: record.NewFakeRecorder(4),
 			},
 		}
