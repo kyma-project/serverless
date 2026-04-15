@@ -26,7 +26,7 @@ There are a few environments that occur only for a specific runtimes. The follow
 
 | Environment          | Default                                                                                   | Description                                                              |
 | -------------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| **PYTHONPATH**       | `$(KUBELESS_INSTALL_VOLUME)/lib.python3.9/site-packages&nbsp;:$(KUBELESS_INSTALL_VOLUME)` | List of directories that Python must add to the sys.path directory list. |
+| **PYTHONPATH**       | `/kubeless/.local:$(PYTHONPATH)` | List of directories that Python must add to the sys.path directory list. |
 | **PYTHONUNBUFFERED** | `TRUE`                                                                                    | Defines if Python's logs must be buffered before printing them out.      |
 
 ## Configure Runtime
