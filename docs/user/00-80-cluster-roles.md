@@ -6,7 +6,7 @@ The Serverless module ships a set of ClusterRoles that extend the standard Kuber
 
 ### Function Roles
 
-Installed with the Serverless module. They cover the `Function` custom resource from the `serverless.kyma-project.io` API group.
+They are installed with the Serverless module. They cover the `Function` custom resource (CR) from the `serverless.kyma-project.io` API group.
 
 | Name | Aggregated to | Resources | Verbs |
 |---|---|---|---|
@@ -19,7 +19,7 @@ Installed with the Serverless module. They cover the `Function` custom resource 
 
 ### Serverless Operator Roles
 
-Installed with the Serverless Operator. They cover the `Serverless` custom resource from the `operator.kyma-project.io` API group, which is used to configure the module itself.
+They are installed with the Serverless Operator. They cover the `Serverless` CR from the `operator.kyma-project.io` API group, which is used to configure the module itself.
 
 | Name | Aggregated to | Resources | Verbs |
 |---|---|---|---|
