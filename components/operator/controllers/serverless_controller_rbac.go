@@ -1,20 +1,11 @@
 package controllers
 
-// TODO: serverless-manager doesn't need almost half of these rbscs. It uses them only to create another rbacs ( is there any onther option? - investigate )
-
 //+kubebuilder:rbac:groups="",resources=events,verbs=get;list;watch;create;patch
-//+kubebuilder:rbac:groups="",resources=namespaces,verbs=get;list;watch;create;update;patch;delete;deletecollection
 //+kubebuilder:rbac:groups="",resources=services;secrets;serviceaccounts;configmaps,verbs=get;list;watch;create;update;patch;delete;deletecollection
 //+kubebuilder:rbac:groups="",resources=nodes,verbs=list;watch;get
 
-//+kubebuilder:rbac:groups=apps,resources=replicasets,verbs=list
 //+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete;deletecollection
 //+kubebuilder:rbac:groups=apps,resources=deployments/status,verbs=get
-
-//+kubebuilder:rbac:groups=batch,resources=jobs,verbs=list;delete
-//+kubebuilder:rbac:groups=batch,resources=jobs/status,verbs=get
-
-//+kubebuilder:rbac:groups=policy,resources=podsecuritypolicies,verbs=use
 
 //+kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=clusterroles;clusterrolebindings,verbs=get;list;watch;create;update;patch;delete;deletecollection
 //+kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=rolebindings;roles,verbs=get;list;watch;create;update;patch;delete;deletecollection
