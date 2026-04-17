@@ -1,14 +1,14 @@
 # Docs: https://github.com/kyma-project/test-infra/tree/main/cmd/image-syncer
 images:
-  - source: "alpine@sha256:25109184c71bdad752c8312a8623239686a9a2071e8825f20acb8f2198c3f659"
-    tag: "3.23.3"
+  - source: "alpine@sha256:4d889c14e7d5a73929ab00be2ef8ff22437e7cbc545931e52554a7b00e123d8b"
+    tag: "3.23.4"
   - source: "golang@sha256:c2a1f7b2095d046ae14b286b18413a05bb82c9bca9b25fe7ff5efef0f0826166"
     tag: "1.26.2-alpine3.23"
   - source: "ghcr.io/nginx/alpine-fips@sha256:15cf5753964eca17557083313d2a39e6a3cc659a5a2143ecebc476b14cc687e6"
     tag: "0.5.0-alpine3.23"
   # https://hub.docker.com/layers/library/node/24-alpine
-  - source: "node@sha256:01743339035a5c3c11a373cd7c83aeab6ed1457b55da6a69e014a95ac4e4700b"
-    tag: "24.14.1-alpine3.23"
+  - source: "node@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f"
+    tag: "24.15.0-alpine3.23"
   # https://hub.docker.com/layers/library/node/22-alpine
   - source: "node@sha256:4d64b49e6c891c8fc821007cb1cdc6c0db7773110ac2c34bf2e6960adef62ed3"
     tag: "22.22.2-alpine3.23"
@@ -19,5 +19,5 @@ images:
   - source: "python@sha256:7747d47f92cfca63a6e2b50275e23dba8407c30d8ae929a88ddd49a5d3f2d331"
     tag: "3.12.13-alpine3.23"
   # https://hub.docker.com/layers/library/python/3.14-alpine
-  - source: "python@sha256:faee120f7885a06fcc9677922331391fa690d911c020abb9e8025ff3d908e510"
-    tag: "3.14.3-alpine3.23"
+  - source: "python@sha256:dd4d2bd5b53d9b25a51da13addf2be586beebd5387e289e798e4083d94ca837a"
+    tag: "3.14.4-alpine3.23"
