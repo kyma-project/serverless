@@ -28,6 +28,5 @@ Depending on your environment, take one of the following steps:
 
 - **SAP BTP, Kyma runtime**: Contact your landscape administrator to ensure the required root CA is included in the cluster's trusted CA bundle.
 - **Self-managed cluster**: Add the CA certificate to the cluster's system trust store or configure the relevant node/Pod CA bundle to include the missing CA. Refer to your Kubernetes distribution documentation for the exact procedure.
-- **Testing only**: If you want to skip TLS verification for a specific Git repository (not recommended for production), set the `spec.source.gitRepository.auth` field appropriately — see [Use Git Sources in Functions](../technical-reference/07-40-git-source-type.md) for details.
 
 After the CA bundle is updated, the Serverless manager will automatically retry fetching the Git source and the Function status should return to `Ready`.
