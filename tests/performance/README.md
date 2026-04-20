@@ -15,7 +15,7 @@ Performance tests measure the response time overhead of the Serverless serving l
    make install-monitoring
    ```
 
-2. Forward the Grafana port to localhost:
+2. Forward the Grafana port to localhost in a separate terminal:
 
    ```bash
    make forward-grafana
@@ -23,19 +23,19 @@ Performance tests measure the response time overhead of the Serverless serving l
 
 ## Running the Tests
 
-1. Run the full test suite three times to collect enough data for averaging:
+Run the full test suite three times to collect enough data for averaging. Each run tests all runtime/profile combinations sequentially and runs in the background, so it may take a while to complete.
 
-   ```bash
-   make start-test
-   ```
+```bash
+make start-test
+```
 
-2. Follow the progress in a separate terminal:
+Optionally, follow the progress (this step can be run in the same terminal):
 
-   ```bash
-   make follow-remote-test
-   ```
+```bash
+make follow-remote-test
+```
 
-Each run tests all runtime/profile combinations sequentially.
+You can also monitor progress in the Grafana dashboard by opening the **Serverless Performance Tests** dashboard at `http://localhost:3000`. See [Collecting Results](#collecting-results) for steps on how to export the data.
 
 ## Collecting Results
 
@@ -52,7 +52,7 @@ After collecting CSVs from three runs, update `docs/user/00-50-limitations.md`.
 
 You can use an AI assistant such as Claude Code to automate this step. Example prompt:
 
-```
+```bash
 claude "Update the performance test results in docs/user/00-50-limitations.md based on the CSV files: <path1.csv>, <path2.csv>, <path3.csv>. Recalculate averages across all runs (exclude outliers if a single value deviates more than 3x from the others). If any runtime/profile combination shows a significant error rate, note it in the document — use your judgement on what constitutes a significant error rate. Also update the node specification in the NOTE if it differs from the current cluster — check it with: kubectl get nodes -o wide and kubectl get nodes -o jsonpath='{.items[0].status.nodeInfo.kernelVersion}'. Update the test run count and last updated date accordingly."
 ```
 
