@@ -37,9 +37,3 @@ spec:
               value: ""
             - name: IMAGE_FUNCTION_BUILDLESS_INIT_FIPS
               value: ""
-            - name: IMAGE_KANIKO_EXECUTOR
-              value: ""
-            - name: IMAGE_FUNCTION_CONTROLLER
-              value: ""
-            - name: IMAGE_FUNCTION_BUILD_INIT
-              value: ""
