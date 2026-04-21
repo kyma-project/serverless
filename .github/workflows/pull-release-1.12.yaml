@@ -1,0 +1,34 @@
+name: pull
+on:
+  pull_request_target:
+    branches:
+      - release-1.12
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+permissions:
+  id-token: write # This is required for requesting the JWT token
+  contents: read # This is required for actions/checkout
+jobs:
+  unit-tests:
+    uses: kyma-project/serverless/.github/workflows/_unit-tests.yaml@release-1.12
+  gitleaks:
+    uses: kyma-project/serverless/.github/workflows/_gitleaks.yaml@release-1.12
+  images-verify:
+    if: github.event.pull_request.base.ref == 'main'
+    uses: kyma-project/serverless/.github/workflows/_images-verify.yaml@release-1.12
+  builds:
+    uses: kyma-project/serverless/.github/workflows/_build.yaml@release-1.12
+    with:
+      purpose: "dev"
+      img_directory: "dev"
+      img_version: PR-${{ github.event.number }}
+  check-fips-image-versions:
+    uses: kyma-project/serverless/.github/workflows/_check-fips-image-versions.yaml@release-1.12
+    with:
+      ref: ${{ github.event.pull_request.head.sha }}
+  integrations:
+    needs: builds
+    secrets: inherit
+    uses: kyma-project/serverless/.github/workflows/_integration-tests.yaml@release-1.12
+    with:
+      img_directory: "dev"
+      img_version: PR-${{ github.event.number }}
