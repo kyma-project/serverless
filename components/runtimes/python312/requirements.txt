@@ -1,5 +1,5 @@
 setuptools==82.0.1
-requests>=2.31.0
+requests>=2.33.1
 bottle==0.13.4
 cheroot==11.1.2
 wsgi-request-logger==0.4.6
