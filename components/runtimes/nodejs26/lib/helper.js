@@ -66,8 +66,10 @@ const isPromise = (promise) => {
 function handleError(err, span, sendResponse) {
     console.error(err);
     const errTxt = resolveErrorMsg(err);
-    span.setStatus({ code: opentelemetry.SpanStatusCode.ERROR, message: errTxt });
-    span.setAttribute("error", errTxt);
+    if (span) {
+        span.setStatus({ code: opentelemetry.SpanStatusCode.ERROR, message: errTxt });
+        span.setAttribute("error", errTxt);
+    }
     sendResponse(errTxt, 500);
 }
 
