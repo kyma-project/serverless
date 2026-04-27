@@ -1,0 +1,29 @@
+{
+  "name": "nodejs26-runtime",
+  "version": "0.1.0",
+  "description": "NodeJS v26 container for kyma serverless",
+  "engines": {
+    "node": ">= 25.0.0"
+  },
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.215.0",
+    "@opentelemetry/instrumentation": "^0.215.0",
+    "@opentelemetry/instrumentation-express": "^0.63.0",
+    "@opentelemetry/instrumentation-http": "^0.215.0",
+    "@opentelemetry/propagator-b3": "^2.0.1",
+    "@opentelemetry/sdk-trace-node": "^2.0.1",
+    "@opentelemetry/sdk-trace-base": "^2.0.1",
+    "@opentelemetry/sdk-metrics": "^2.0.1",
+    "@opentelemetry/exporter-prometheus": "^0.215.0",
+    "axios": "^1.15.2",
+    "co": "^4.6.0",
+    "express": "^5.1.0",
+    "morgan": "^1.10.0",
+    "mz": "^2.7.0",
+    "cloudevents": "^10.0.0"
+  }
+}
