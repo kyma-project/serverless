@@ -10,13 +10,11 @@ on:
     paths:
       - "tests/performance/**"
 
-permissions:
-  id-token: write # This is required for requesting the JWT token
-  contents: read # This is required for actions/checkout
-
 jobs:
   compute-tags:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # This is required for actions/checkout
     outputs:
       tags: ${{ steps.get_tag.outputs.TAGS }}
     steps:
@@ -38,6 +36,8 @@ jobs:
 
   build-perf-test-runner:
     needs: compute-tags
+    permissions:
+      id-token: write # This is required for requesting the JWT token
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: performance-test-runner
