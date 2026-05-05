@@ -662,7 +662,7 @@ func generalEnvs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []cor
 			Value: string(spec.Runtime),
 		},
 		{
-			Name:  "SERVICE_NAMESPACE",
+			Name:  "FUNC_NAMESPACE",
 			Value: f.Namespace,
 		},
 		{
@@ -682,11 +682,11 @@ func generalEnvs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []cor
 				Value: "TRUE",
 			},
 			{
-				Name:  "MOD_NAME",
+				Name:  "HANDLER_MODULE_NAME",
 				Value: "handler",
 			},
 			{
-				Name:  "FUNC_HANDLER",
+				Name:  "HANDLER_FUNCTION_NAME",
 				Value: "main",
 			},
 		}...)
@@ -721,7 +721,7 @@ func sourceEnvs(f *serverlessv1alpha2.Function) []corev1.EnvVar {
 	if f.HasPythonRuntime() {
 		envs = append(envs, []corev1.EnvVar{
 			{
-				Name:  "FUNCTION_PATH",
+				Name:  "HANDLER_FOLDER",
 				Value: "/kubeless",
 			},
 		}...)
