@@ -33,7 +33,6 @@ const callsTotalCounter = createFunctionCallsTotalCounter(funcName);
 const failuresTotalCounter = createFunctionFailuresTotalCounter(funcName);
 const durationHistogram = createFunctionDurationHistogram(funcName);
 
-// express must be imported AFTER tracer setup
 import express from 'express';
 const app = express();
 
