@@ -4,7 +4,7 @@ const opentelemetry = require('@opentelemetry/api');
 
 function configureGracefulShutdown(server) {
     let nextConnectionId = 0;
-    const connections = [];
+    const connections = {};
     let terminating = false;
 
     server.on('connection', connection => {
@@ -47,10 +47,10 @@ function configureGracefulShutdown(server) {
   }
 
 function handleTimeOut(req, res, next){
-  const timeout = Number(process.env.FUNC_TIMEOUT || '180');
-  res.setTimeout(timeout*1000, function(){
-          res.sendStatus(408);
-      });
+  const timeout = Number(process.env.SERVER_CALL_TIMEOUT || '180');
+  res.setTimeout(timeout * 1000, function(){
+    res.sendStatus(408);
+  });
   next();
 }
 
@@ -66,19 +66,15 @@ const isPromise = (promise) => {
 function handleError(err, span, sendResponse) {
     console.error(err);
     const errTxt = resolveErrorMsg(err);
-    span.setStatus({ code: opentelemetry.SpanStatusCode.ERROR, message: errTxt });
-    span.setAttribute("error", errTxt);
+    if (span) {
+        span.setStatus({ code: opentelemetry.SpanStatusCode.ERROR, message: errTxt });
+        span.setAttribute("error", errTxt);
+    }
     sendResponse(errTxt, 500);
 }
 
-function resolveErrorMsg(err) {
-    let errText
-    if (typeof err == "string") {
-        errText = err
-    } else {
-        errText = "Internal server error"
-    }
-    return errText
+function resolveErrorMsg(_err) {
+    return "Internal server error";
 }
 
 module.exports = {
