@@ -66,10 +66,7 @@ Importable as `import sdk` (Python) / `import sdk from 'sdk'` (Node.js). Configu
 
 ### SDK wiring
 
-The server calls `sdk._configure(tracer, publisher_proxy_address, func_name, func_namespace, func_runtime, server_call_timeout)` once at startup. The SDK stores these as module-level variables. This is safe because:
-
-- Python: Flask's thread-local context handles per-request isolation; the SDK only stores server-level config
-- Node.js: `AsyncLocalStorage` is used only for request-scoped data if needed; the SDK stores server-level config at module scope
+The server calls `sdk._configure(tracer, publisher_proxy_address, func_name, func_namespace, func_runtime, server_call_timeout)` once at startup. The SDK stores these as module-level variables. All configured values are server-level (not per-request), so no per-request isolation mechanism is needed in either runtime.
 
 ---
 
