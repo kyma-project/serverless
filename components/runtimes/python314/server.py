@@ -1,10 +1,16 @@
 import os
+import sys
+
+# Add lib/ to sys.path before any imports so user handlers can `import sdk` using
+# the same module instance that server.py configures (lib.sdk vs sdk would be separate).
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lib'))
 
 import flask
 from gevent import pywsgi
 import prometheus_client
 
-from lib import tracing, module, sdk
+import sdk
+from lib import tracing, module
 
 func_name = os.getenv('FUNC_NAME', '')
 func_namespace = os.getenv('FUNC_NAMESPACE', '')
