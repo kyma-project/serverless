@@ -11,11 +11,11 @@ process.on('uncaughtException', (err) => {
 });
 
 const funcName = process.env.FUNC_NAME || '';
-const funcNamespace = process.env.FUNC_NAMESPACE || '';
+const funcNamespace = process.env.SERVICE_NAMESPACE || '';
 const funcRuntime = process.env.FUNC_RUNTIME || 'nodejs26';
 const serverHost = process.env.SERVER_HOST || '0.0.0.0';
 const serverPort = parseInt(process.env.SERVER_PORT || '8080', 10);
-const serverCallTimeout = Number(process.env.SERVER_CALL_TIMEOUT || '180');
+const serverCallTimeout = Number(process.env.FUNC_TIMEOUT || '180');
 const handlerPath = process.env.HANDLER_PATH || './handler.js';
 const traceCollectorEndpoint = process.env.TRACE_COLLECTOR_ENDPOINT || '';
 const publisherProxyAddress = process.env.PUBLISHER_PROXY_ADDRESS || '';

@@ -13,15 +13,15 @@ import sdk
 from lib import tracing, module
 
 func_name = os.getenv('FUNC_NAME', '')
-func_namespace = os.getenv('FUNC_NAMESPACE', '')
+func_namespace = os.getenv('SERVICE_NAMESPACE', '')
 func_runtime = os.getenv('FUNC_RUNTIME', 'python314')
 server_host = os.getenv('SERVER_HOST', '0.0.0.0')
 server_port = int(os.getenv('SERVER_PORT', '8080'))
 server_numthreads = int(os.getenv('SERVER_NUMTHREADS', '50'))
-server_call_timeout = float(os.getenv('SERVER_CALL_TIMEOUT', '180'))
-handler_folder = os.getenv('HANDLER_FOLDER', '/kubeless')
-handler_module_name = os.getenv('HANDLER_MODULE_NAME', 'handler')
-handler_function_name = os.getenv('HANDLER_FUNCTION_NAME', 'main')
+server_call_timeout = float(os.getenv('FUNC_TIMEOUT', '180'))
+handler_folder = os.getenv('FUNCTION_PATH', '/kubeless')
+handler_module_name = os.getenv('MOD_NAME', 'handler')
+handler_function_name = os.getenv('FUNC_HANDLER', 'main')
 trace_collector_endpoint = os.getenv('TRACE_COLLECTOR_ENDPOINT', '')
 publisher_proxy_address = os.getenv('PUBLISHER_PROXY_ADDRESS', '')
 

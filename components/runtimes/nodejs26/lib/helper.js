@@ -47,7 +47,7 @@ function configureGracefulShutdown(server) {
   }
 
 function handleTimeOut(req, res, next){
-  const timeout = Number(process.env.SERVER_CALL_TIMEOUT || '180');
+  const timeout = Number(process.env.FUNC_TIMEOUT || '180');
   res.setTimeout(timeout*1000, function(){
           res.sendStatus(408);
       });
