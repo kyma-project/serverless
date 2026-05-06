@@ -17,6 +17,7 @@ const funcRuntime = process.env.FUNC_RUNTIME || 'nodejs26';
 const serverHost = process.env.SERVER_HOST || '0.0.0.0';
 const serverPort = parseInt(process.env.SERVER_PORT || '8080', 10);
 const serverCallTimeout = Number(process.env.FUNC_TIMEOUT || '180');
+const reqMbLimit = Number(process.env.REQ_MB_LIMIT || '1');
 const handlerPath = process.env.HANDLER_PATH || './handler.js';
 const traceCollectorEndpoint = process.env.TRACE_COLLECTOR_ENDPOINT || '';
 const publisherProxyAddress = process.env.PUBLISHER_PROXY_ADDRESS || '';
@@ -39,10 +40,10 @@ const app = express();
 
 let userFunction;
 
-app.use(bodyParser.json({ type: ['application/json', 'application/cloudevents+json'], limit: '1mb', strict: false }));
-app.use(bodyParser.text({ type: ['text/*'], limit: '1mb' }));
-app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
-app.use(bodyParser.raw({ limit: '1mb', type: () => true }));
+app.use(bodyParser.json({ type: ['application/json', 'application/cloudevents+json'], limit: `${reqMbLimit}mb`, strict: false }));
+app.use(bodyParser.text({ type: ['text/*'], limit: `${reqMbLimit}mb` }));
+app.use(bodyParser.urlencoded({ limit: `${reqMbLimit}mb`, extended: true }));
+app.use(bodyParser.raw({ limit: `${reqMbLimit}mb`, type: () => true }));
 
 if (process.env['KYMA_INTERNAL_LOGGER_ENABLED']) {
     app.use(morgan('combined'));

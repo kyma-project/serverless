@@ -1,3 +1,4 @@
+import logging
 import os
 import sys
 
@@ -8,6 +9,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'lib
 import flask
 from gevent import pywsgi
 import prometheus_client
+import requestlogger
 
 import sdk
 from lib import tracing, module
@@ -17,8 +19,9 @@ func_namespace = os.getenv('SERVICE_NAMESPACE', '')
 func_runtime = os.getenv('FUNC_RUNTIME', 'python314')
 server_host = os.getenv('SERVER_HOST', '0.0.0.0')
 server_port = int(os.getenv('SERVER_PORT', '8080'))
-server_numthreads = int(os.getenv('SERVER_NUMTHREADS', '50'))
+server_numthreads = int(os.getenv('SERVER_NUMTHREADS', os.getenv('CHERRYPY_NUMTHREADS', '50')))
 server_call_timeout = float(os.getenv('FUNC_TIMEOUT', '180'))
+func_memfile_max = int(os.getenv('FUNC_MEMFILE_MAX', str(100 * 1024 * 1024)))
 handler_folder = os.getenv('FUNCTION_PATH', '/kubeless')
 handler_module_name = os.getenv('MOD_NAME', 'handler')
 handler_function_name = os.getenv('FUNC_HANDLER', 'main')
@@ -36,6 +39,16 @@ sdk._configure(tracer, publisher_proxy_address, func_name, func_namespace, func_
 handler = module.Handler(handler_folder, handler_module_name, handler_function_name)
 
 app = flask.Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = func_memfile_max
+
+if os.getenv('KYMA_INTERNAL_LOGGER_ENABLED'):
+    wsgi_app = requestlogger.WSGILogger(
+        app,
+        [logging.StreamHandler(stream=sys.stdout)],
+        requestlogger.ApacheFormatter(),
+    )
+else:
+    wsgi_app = app
 
 
 @app.route('/', defaults={'path': ''}, methods=['GET', 'POST', 'PUT', 'HEAD', 'OPTIONS', 'DELETE', 'PATCH'])
@@ -67,7 +80,7 @@ def metrics():
 if __name__ == '__main__':
     pywsgi.WSGIServer(
         (server_host, server_port),
-        app,
+        wsgi_app,
         spawn=server_numthreads,
         log=None,
     ).serve_forever()
