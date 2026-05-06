@@ -13,8 +13,8 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/hashicorp/errwrap v1.1.0
 	github.com/hashicorp/go-multierror v1.1.1
-	github.com/kyma-project/manager-toolkit/installation/base v0.260323.101933-4244775
-	github.com/kyma-project/manager-toolkit/installation/chart v0.260323.101933-4244775
+	github.com/kyma-project/manager-toolkit/installation/base v0.260429.203803-de5537e
+	github.com/kyma-project/manager-toolkit/installation/chart v0.260429.203522-8cabdc3
 	github.com/kyma-project/manager-toolkit/logging v0.260128.123422-9ec1c8b
 	github.com/onsi/ginkgo/v2 v2.28.3
 	github.com/onsi/gomega v1.40.0
@@ -25,7 +25,7 @@ require (
 	github.com/spf13/pflag v1.0.10
 	github.com/stretchr/testify v1.11.1
 	github.com/vrischmann/envconfig v1.4.1
-	go.uber.org/zap v1.27.1
+	go.uber.org/zap v1.28.0
 	go.yaml.in/yaml/v2 v2.4.4
 	golang.org/x/crypto v0.50.0
 	golang.org/x/sync v0.20.0
