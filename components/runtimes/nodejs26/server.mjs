@@ -1,6 +1,7 @@
 import sdk from './lib/sdk.js';
 import helper from './lib/helper.js';
 import bodyParser from 'body-parser';
+import morgan from 'morgan';
 import process from 'process';
 
 import { setupTracer, getCurrentSpan } from './lib/tracer.js';
@@ -42,6 +43,10 @@ app.use(bodyParser.json({ type: ['application/json', 'application/cloudevents+js
 app.use(bodyParser.text({ type: ['text/*'], limit: '1mb' }));
 app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
 app.use(bodyParser.raw({ limit: '1mb', type: () => true }));
+
+if (process.env['KYMA_INTERNAL_LOGGER_ENABLED']) {
+    app.use(morgan('combined'));
+}
 
 app.use(helper.handleTimeOut);
 
