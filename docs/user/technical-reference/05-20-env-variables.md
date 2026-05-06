@@ -104,7 +104,7 @@ To configure a Function with the Python runtime, override the default values of 
 | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------- | --------------- |
 | **FUNC_MEMFILE_MAX**             | Sets the maximum HTTP request body size in bytes.                                                                                  | Number  | `100*1024*1024` |
 | **SERVER_NUMTHREADS**            | Specifies the number of requests that can be handled in parallel.                                                                  | Number  | `50`            |
-| **CHERRYPY_NUMTHREADS**          | Deprecated. Use `SERVER_NUMTHREADS` instead. Accepted as a fallback for backward compatibility.                                    | Number  | `50`            |
+| **CHERRYPY_NUMTHREADS**          | Deprecated. Use `SERVER_NUMTHREADS` instead. Supported only in python312.                                                          | Number  | `50`            |
 | **KYMA_INTERNAL_LOGGER_ENABLED** | Enables the default HTTP request logger which uses the standard Apache combined log output. To enable it, set its value to `true`. | Boolean | `false`         |
 
 See [`kubeless.py`](https://github.com/kubeless/runtimes/blob/master/stable/python/_kubeless.py) to get a deeper understanding of how the Bottle server, which acts as a runtime, uses these values internally to run Python Functions.
