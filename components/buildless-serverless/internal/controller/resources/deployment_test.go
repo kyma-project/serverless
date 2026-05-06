@@ -1225,7 +1225,7 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "nodejs20",
 				},
 				{
-					Name:  "FUNC_NAMESPACE",
+					Name:  "SERVICE_NAMESPACE",
 					Value: "function-namespace",
 				},
 				{
@@ -1277,7 +1277,7 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "nodejs22",
 				},
 				{
-					Name:  "FUNC_NAMESPACE",
+					Name:  "SERVICE_NAMESPACE",
 					Value: "function-namespace",
 				},
 				{
@@ -1329,7 +1329,7 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "nodejs24",
 				},
 				{
-					Name:  "FUNC_NAMESPACE",
+					Name:  "SERVICE_NAMESPACE",
 					Value: "function-namespace",
 				},
 				{
@@ -1384,7 +1384,7 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "nodejs22",
 				},
 				{
-					Name:  "FUNC_NAMESPACE",
+					Name:  "SERVICE_NAMESPACE",
 					Value: "function-namespace",
 				},
 				{
@@ -1428,7 +1428,7 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "python312",
 				},
 				{
-					Name:  "FUNC_NAMESPACE",
+					Name:  "SERVICE_NAMESPACE",
 					Value: "function-namespace",
 				},
 				{
@@ -1436,7 +1436,7 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "function-source-py",
 				},
 				{
-					Name:  "HANDLER_FOLDER",
+					Name:  "FUNCTION_PATH",
 					Value: "/kubeless",
 				},
 				{
@@ -1456,11 +1456,11 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "TRUE",
 				},
 				{
-					Name:  "HANDLER_MODULE_NAME",
+					Name:  "MOD_NAME",
 					Value: "handler",
 				},
 				{
-					Name:  "HANDLER_FUNCTION_NAME",
+					Name:  "FUNC_HANDLER",
 					Value: "main",
 				},
 			},

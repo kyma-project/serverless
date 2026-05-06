@@ -132,7 +132,7 @@ spec:
           value: test-function
         - name: FUNC_RUNTIME
           value: nodejs24
-        - name: FUNC_NAMESPACE
+        - name: SERVICE_NAMESPACE
           value: test-namespace
         - name: TRACE_COLLECTOR_ENDPOINT
         - name: PUBLISHER_PROXY_ADDRESS
