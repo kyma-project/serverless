@@ -35,7 +35,6 @@ jobs:
 
   integrations:
     needs: builds
-    secrets: inherit
     uses: kyma-project/serverless/.github/workflows/_integration-tests.yaml@main
     with:
       img_directory: "dev"
