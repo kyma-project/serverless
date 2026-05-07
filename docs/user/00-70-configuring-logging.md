@@ -13,10 +13,12 @@ From the least to the most verbose: `fatal`, `panic`, `dpanic`, `error`, `warn`,
 
 ## Supported Log Formats
 
+The supported log formats are the following:
+
 - `json` - Structured JSON format (default)
 - `console` - Human-readable console format
 
-## Configure Serverless Controller
+## Configuring Serverless Controller
 
 Update the log configuration by modifying the Serverless CR in the `kyma-system` namespace:
 
@@ -41,6 +43,9 @@ Verify the change:
 
 Update the log configuration in the `serverless-operator-log-config` ConfigMap in the `kyma-system` namespace:
 
+> [!NOTE]
+> You can't dynamically change the log format for the Serverless Operator. If you want to change it, update the ConfigMap and restart the Pods.
+
    ```bash
    # Change log level
    kubectl patch configmap serverless-operator-log-config -n kyma-system --type merge -p '{"data":{"log-config.yaml":"logLevel: debug"}}'
@@ -54,6 +59,3 @@ Verify the change:
    ```bash
    kubectl logs -n kyma-system -l control-plane=operator
    ```
-
-> [!NOTE]
-> It is not possible to dynamically change the log format for the Serverless Operator. If you want to change it, update the ConfigMap and restart the Pods.
