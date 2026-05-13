@@ -8,7 +8,7 @@ _publisher_proxy_address = None
 _func_name = ''
 _func_namespace = ''
 _func_runtime = ''
-_server_call_timeout = 180.0
+_server_call_timeout = 180
 _func_memfile_max = 100 * 1024 * 1024
 
 
