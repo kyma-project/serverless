@@ -1,4 +1,4 @@
-import sdk from './lib/sdk.js';
+import { configure as sdkConfigure } from 'sdk';
 import helper from './lib/helper.js';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
@@ -31,7 +31,7 @@ console.log(`Starting ${funcRuntime} server ${serverHost}:${serverPort}`);
 
 const tracer = setupTracer(functionName, traceCollectorEndpoint);
 setupMetrics(functionName);
-sdk._configure(tracer, publisherProxyAddress, functionName, serviceNamespace, funcRuntime, timeout, bodySizeLimit);
+sdkConfigure(tracer, publisherProxyAddress, functionName, serviceNamespace, funcRuntime, timeout, bodySizeLimit);
 
 const callsTotalCounter = createFunctionCallsTotalCounter(functionName);
 const failuresTotalCounter = createFunctionFailuresTotalCounter(functionName);

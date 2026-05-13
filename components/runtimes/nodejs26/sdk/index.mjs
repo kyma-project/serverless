@@ -1,7 +1,5 @@
-'use strict';
-
-const { HTTP, CloudEvent } = require('cloudevents');
-const axios = require('axios');
+import { HTTP, CloudEvent } from 'cloudevents';
+import axios from 'axios';
 
 let _tracer = null;
 let _publisherProxyAddress = null;
@@ -11,7 +9,7 @@ let _funcRuntime = '';
 let _serverCallTimeout = 180;
 let _reqMbLimit = 1;
 
-function _configure(tracer, publisherProxyAddress, funcName, funcNamespace, funcRuntime, serverCallTimeout, reqMbLimit) {
+export function configure(tracer, publisherProxyAddress, funcName, funcNamespace, funcRuntime, serverCallTimeout, reqMbLimit) {
     _tracer = tracer;
     _publisherProxyAddress = publisherProxyAddress;
     _funcName = funcName;
@@ -21,11 +19,11 @@ function _configure(tracer, publisherProxyAddress, funcName, funcNamespace, func
     _reqMbLimit = reqMbLimit;
 }
 
-function getTracer() {
+export function getTracer() {
     return _tracer;
 }
 
-function getCloudEvent(req) {
+export function getCloudEvent(req) {
     const isCloudEventContentType = req.is('application/cloudevents+json');
     const hasCeHeaders = req.get('ce-type') && req.get('ce-source');
     if (!isCloudEventContentType && !hasCeHeaders) {
@@ -38,7 +36,7 @@ function getCloudEvent(req) {
     }
 }
 
-function emitCloudEvent(type, source, data, optionalAttributes) {
+export function emitCloudEvent(type, source, data, optionalAttributes) {
     const attrs = Object.assign({ type, source }, optionalAttributes || {});
     if (!attrs.datacontenttype) {
         attrs.datacontenttype = typeof data === 'object' ? 'application/json' : 'text/plain';
@@ -48,10 +46,8 @@ function emitCloudEvent(type, source, data, optionalAttributes) {
     return axios.post(_publisherProxyAddress, message.body, { headers: message.headers });
 }
 
-function getFunctionName()  { return _funcName; }
-function getNamespace()     { return _funcNamespace; }
-function getRuntime()       { return _funcRuntime; }
-function getTimeout()       { return _serverCallTimeout; }
-function getBodySizeLimit() { return _reqMbLimit; }
-
-module.exports = { _configure, getTracer, getCloudEvent, emitCloudEvent, getFunctionName, getNamespace, getRuntime, getTimeout, getBodySizeLimit };
+export function getFunctionName()  { return _funcName; }
+export function getNamespace()     { return _funcNamespace; }
+export function getRuntime()       { return _funcRuntime; }
+export function getTimeout()       { return _serverCallTimeout; }
+export function getBodySizeLimit() { return _reqMbLimit; }
