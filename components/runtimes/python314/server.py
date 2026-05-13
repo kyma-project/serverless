@@ -14,8 +14,8 @@ import requestlogger
 import sdk
 from lib import tracing, module
 
-func_name = os.getenv('FUNC_NAME', '')
 func_namespace = os.getenv('SERVICE_NAMESPACE', '')
+func_name = os.getenv('FUNC_NAME', '')
 func_runtime = os.getenv('FUNC_RUNTIME', 'python314')
 server_host = os.getenv('SERVER_HOST', '0.0.0.0')
 server_port = int(os.getenv('SERVER_PORT', '8080'))
