@@ -26,7 +26,7 @@ function getTracer() {
 }
 
 function getCloudEvent(req) {
-    const isCloudEventContentType = (req.get('content-type') || '').includes('application/cloudevents+json');
+    const isCloudEventContentType = req.is('application/cloudevents+json');
     const hasCeHeaders = req.get('ce-type') && req.get('ce-source');
     if (!isCloudEventContentType && !hasCeHeaders) {
         return null;
