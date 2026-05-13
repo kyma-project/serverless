@@ -1,14 +1,16 @@
 import sys
 import importlib
 
+import gevent
 import prometheus_client as prom
 
 
 class Handler:
-    def __init__(self, module_folder, module_name, module_function_name):
+    def __init__(self, module_folder, module_name, module_function_name, timeout):
         sys.path.append(module_folder)
         module = importlib.import_module(module_name)
         self.func = getattr(module, module_function_name)
+        self.timeout = timeout
 
         self.func_hist = prom.Histogram(
             'function_duration_seconds', 'Duration of user function in seconds', ['method']
@@ -24,4 +26,8 @@ class Handler:
         self.func_calls.labels(method).inc()
         with self.func_errors.labels(method).count_exceptions():
             with self.func_hist.labels(method).time():
-                return self.func()
+                try:
+                    with gevent.Timeout(self.timeout):
+                        return self.func()
+                except gevent.Timeout:
+                    return 'Timeout while processing the function', 408

@@ -36,7 +36,7 @@ print(f"Starting {func_runtime} server {server_host}:{server_port}", flush=True)
 tracer = tracing.setup(trace_collector_endpoint)
 sdk._configure(tracer, publisher_proxy_address, func_name, func_namespace, func_runtime, server_call_timeout, func_memfile_max)
 
-handler = module.Handler(handler_folder, handler_module_name, handler_function_name)
+handler = module.Handler(handler_folder, handler_module_name, handler_function_name, server_call_timeout)
 
 app = flask.Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = func_memfile_max
