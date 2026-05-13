@@ -278,10 +278,10 @@ Both `nodejs26` and `python314` expose an `sdk` module that provides tracing, Cl
 
 #### **Node.js 26**
 
-Import the `sdk` module from the runtime's library:
+Import the `sdk` module:
 
 ```js
-const sdk = require('./lib/sdk.js');
+import { getCloudEvent, emitCloudEvent, getTracer } from 'sdk';
 ```
 
 | Method / Property         | Arguments                                       | Description                                                                                                                                                                                                                                                                                                               |
@@ -293,6 +293,7 @@ const sdk = require('./lib/sdk.js');
 | **getNamespace()**        | —                                               | Returns the namespace of the current Function.                                                                                                                                                                                                                                                                            |
 | **getRuntime()**          | —                                               | Returns the runtime identifier (for example, `nodejs26`).                                                                                                                                                                                                                                                                 |
 | **getTimeout()**          | —                                               | Returns the configured call timeout in seconds.                                                                                                                                                                                                                                                                           |
+| **getBodySizeLimit()**    | —                                               | Returns the configured body size limit in megabytes.                                                                                                                                                                                                                                                                      |
 
 #### **Python 314**
 
@@ -311,6 +312,7 @@ import sdk
 | **get_namespace()**        | —                                               | Returns the namespace of the current Function.                                                                                                                                                                                                                                                                            |
 | **get_runtime()**          | —                                               | Returns the runtime identifier (for example, `python314`).                                                                                                                                                                                                                                                                |
 | **get_timeout()**          | —                                               | Returns the configured call timeout in seconds.                                                                                                                                                                                                                                                                           |
+| **get_body_size_limit()**  | —                                               | Returns the configured body size limit in bytes.                                                                                                                                                                                                                                                                          |
 
 <!-- tabs:end -->
 
