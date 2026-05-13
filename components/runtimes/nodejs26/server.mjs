@@ -1,11 +1,11 @@
 import { configure as sdkConfigure } from 'sdk';
-import helper from './lib/helper.js';
+import helper from './lib/helper.cjs';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import process from 'process';
 
-import { setupTracer, getCurrentSpan } from './lib/tracer.js';
-import { getMetrics, setupMetrics, createFunctionDurationHistogram, createFunctionCallsTotalCounter, createFunctionFailuresTotalCounter } from './lib/metrics.js';
+import { setupTracer, getCurrentSpan } from './lib/tracer.cjs';
+import { getMetrics, setupMetrics, createFunctionDurationHistogram, createFunctionCallsTotalCounter, createFunctionFailuresTotalCounter } from './lib/metrics.cjs';
 
 // To catch unhandled exceptions thrown by user code async callbacks,
 // these exceptions cannot be caught by try-catch in user function invocation code below
