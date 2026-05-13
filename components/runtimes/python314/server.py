@@ -78,9 +78,21 @@ def metrics():
 
 
 if __name__ == '__main__':
-    pywsgi.WSGIServer(
+    import gevent
+    import signal
+
+    server = pywsgi.WSGIServer(
         (server_host, server_port),
         wsgi_app,
         spawn=server_numthreads,
         log=None,
-    ).serve_forever()
+    )
+
+    def shutdown():
+        print('Shutting down..', flush=True)
+        server.stop()
+
+    gevent.signal_handler(signal.SIGTERM, shutdown)
+    gevent.signal_handler(signal.SIGINT, shutdown)
+
+    server.serve_forever()
