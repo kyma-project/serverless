@@ -6,12 +6,18 @@ import prometheus_client as prom
 
 
 class Handler:
+    """Imports user function from module and calls it with timeout enforcement.
+
+    Registers prometheus metrics for user function calls, duration and errors.
+    """
     def __init__(self, module_folder, module_name, module_function_name, timeout):
+        # import user function from module and store it
         sys.path.append(module_folder)
         module = importlib.import_module(module_name)
         self.func = getattr(module, module_function_name)
         self.timeout = timeout
 
+        # register prometheus metrics for user function
         self.func_hist = prom.Histogram(
             'function_duration_seconds', 'Duration of user function in seconds', ['method']
         )

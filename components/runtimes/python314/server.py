@@ -14,6 +14,7 @@ import requestlogger
 import sdk
 from lib import tracing, module
 
+# Configuration from environment variables
 func_namespace = os.getenv('SERVICE_NAMESPACE', '')
 func_name = os.getenv('FUNC_NAME', '')
 func_runtime = os.getenv('FUNC_RUNTIME', 'python314')
@@ -76,7 +77,7 @@ def healthz():
 def metrics():
     return prometheus_client.generate_latest(prometheus_client.REGISTRY), 200, {'Content-Type': prometheus_client.CONTENT_TYPE_LATEST}
 
-
+# Run the Flask app using gevent WSGI server
 if __name__ == '__main__':
     import gevent
     import signal
