@@ -29,7 +29,7 @@ console.log(`Tracing configured with endpoint ${traceCollectorEndpoint}`);
 console.log(`Publisher Proxy available on address ${publisherProxyAddress}`);
 console.log(`Starting ${funcRuntime} server ${serverHost}:${serverPort}`);
 
-const tracer = setupTracer(funcName);
+const tracer = setupTracer(funcName, traceCollectorEndpoint);
 setupMetrics(funcName);
 sdk._configure(tracer, publisherProxyAddress, funcName, funcNamespace, funcRuntime, serverCallTimeout, reqMbLimit);
 

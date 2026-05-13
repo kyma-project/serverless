@@ -18,13 +18,11 @@ const ignoredTargets = [
   "/healthz", "/favicon.ico", "/metrics"
 ]
 
-function setupTracer(functionName){
-  
+function setupTracer(functionName, traceCollectorEndpoint){
+
   const functionResource = resourceFromAttributes({
     [ATTR_SERVICE_NAME]: functionName,
   })
-
-  const traceCollectorEndpoint = process.env.TRACE_COLLECTOR_ENDPOINT;
 
   let spanProcessors = [];
 
