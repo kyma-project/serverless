@@ -34,7 +34,7 @@ print(f"Publisher Proxy available on address {publisher_proxy_address}", flush=T
 print(f"Starting {func_runtime} server {server_host}:{server_port}", flush=True)
 
 tracer = tracing.setup(trace_collector_endpoint)
-sdk._configure(tracer, publisher_proxy_address, func_name, func_namespace, func_runtime, server_call_timeout)
+sdk._configure(tracer, publisher_proxy_address, func_name, func_namespace, func_runtime, server_call_timeout, func_memfile_max)
 
 handler = module.Handler(handler_folder, handler_module_name, handler_function_name)
 

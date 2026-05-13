@@ -31,7 +31,7 @@ console.log(`Starting ${funcRuntime} server ${serverHost}:${serverPort}`);
 
 const tracer = setupTracer(funcName);
 setupMetrics(funcName);
-sdk._configure(tracer, publisherProxyAddress, funcName, funcNamespace, funcRuntime, serverCallTimeout);
+sdk._configure(tracer, publisherProxyAddress, funcName, funcNamespace, funcRuntime, serverCallTimeout, reqMbLimit);
 
 const callsTotalCounter = createFunctionCallsTotalCounter(funcName);
 const failuresTotalCounter = createFunctionFailuresTotalCounter(funcName);

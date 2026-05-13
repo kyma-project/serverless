@@ -9,14 +9,16 @@ let _funcName = '';
 let _funcNamespace = '';
 let _funcRuntime = '';
 let _serverCallTimeout = 180;
+let _reqMbLimit = 1;
 
-function _configure(tracer, publisherProxyAddress, funcName, funcNamespace, funcRuntime, serverCallTimeout) {
+function _configure(tracer, publisherProxyAddress, funcName, funcNamespace, funcRuntime, serverCallTimeout, reqMbLimit) {
     _tracer = tracer;
     _publisherProxyAddress = publisherProxyAddress;
     _funcName = funcName;
     _funcNamespace = funcNamespace;
     _funcRuntime = funcRuntime;
     _serverCallTimeout = serverCallTimeout;
+    _reqMbLimit = reqMbLimit;
 }
 
 function getTracer() {
@@ -46,9 +48,10 @@ function emitCloudEvent(type, source, data, optionalAttributes) {
     return axios.post(_publisherProxyAddress, message.body, { headers: message.headers });
 }
 
-function getFunctionName() { return _funcName; }
-function getNamespace()    { return _funcNamespace; }
-function getRuntime()      { return _funcRuntime; }
-function getTimeout()      { return _serverCallTimeout; }
+function getFunctionName()  { return _funcName; }
+function getNamespace()     { return _funcNamespace; }
+function getRuntime()       { return _funcRuntime; }
+function getTimeout()       { return _serverCallTimeout; }
+function getBodySizeLimit() { return _reqMbLimit; }
 
-module.exports = { _configure, getTracer, getCloudEvent, emitCloudEvent, getFunctionName, getNamespace, getRuntime, getTimeout };
+module.exports = { _configure, getTracer, getCloudEvent, emitCloudEvent, getFunctionName, getNamespace, getRuntime, getTimeout, getBodySizeLimit };
