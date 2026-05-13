@@ -18,7 +18,7 @@ const serviceNamespace = process.env.SERVICE_NAMESPACE || '';
 const functionName = process.env.FUNC_NAME || '';
 const bodySizeLimit = Number(process.env.REQ_MB_LIMIT || '1');
 const serverHost = process.env.SERVER_HOST || '0.0.0.0';
-const serverPort = parseInt(process.env.SERVER_PORT || '8080', 10);
+const serverPort = parseInt(process.env.SERVER_PORT || '8080');
 const timeout = Number(process.env.FUNC_TIMEOUT || '180');
 const funcRuntime = process.env.FUNC_RUNTIME || 'nodejs26';
 const traceCollectorEndpoint = process.env.TRACE_COLLECTOR_ENDPOINT || '';
@@ -29,13 +29,13 @@ console.log(`Tracing configured with endpoint ${traceCollectorEndpoint}`);
 console.log(`Publisher Proxy available on address ${publisherProxyAddress}`);
 console.log(`Starting ${funcRuntime} server ${serverHost}:${serverPort}`);
 
-const tracer = setupTracer(functionName, traceCollectorEndpoint);
-setupMetrics(functionName);
-sdk._configure(tracer, publisherProxyAddress, functionName, serviceNamespace, funcRuntime, timeout, bodySizeLimit);
+const tracer = setupTracer(funcName, traceCollectorEndpoint);
+setupMetrics(funcName);
+sdk._configure(tracer, publisherProxyAddress, funcName, funcNamespace, funcRuntime, serverCallTimeout, reqMbLimit);
 
-const callsTotalCounter = createFunctionCallsTotalCounter(functionName);
-const failuresTotalCounter = createFunctionFailuresTotalCounter(functionName);
-const durationHistogram = createFunctionDurationHistogram(functionName);
+const callsTotalCounter = createFunctionCallsTotalCounter(funcName);
+const failuresTotalCounter = createFunctionFailuresTotalCounter(funcName);
+const durationHistogram = createFunctionDurationHistogram(funcName);
 
 //require express must be called AFTER tracer was setup!!!!!!
 import express from 'express';
@@ -44,10 +44,10 @@ const app = express();
 // User function.  Starts out undefined.
 let userFunction;
 
-app.use(bodyParser.json({ type: ['application/json', 'application/cloudevents+json'], limit: `${bodySizeLimit}mb`, strict: false }));
-app.use(bodyParser.text({ type: ['text/*'], limit: `${bodySizeLimit}mb` }));
-app.use(bodyParser.urlencoded({ limit: `${bodySizeLimit}mb`, extended: true }));
-app.use(bodyParser.raw({ limit: `${bodySizeLimit}mb`, type: () => true }));
+app.use(bodyParser.json({ type: ['application/json', 'application/cloudevents+json'], limit: `${reqMbLimit}mb`, strict: false }));
+app.use(bodyParser.text({ type: ['text/*'], limit: `${reqMbLimit}mb` }));
+app.use(bodyParser.urlencoded({ limit: `${reqMbLimit}mb`, extended: true }));
+app.use(bodyParser.raw({ limit: `${reqMbLimit}mb`, type: () => true }));
 
 // Request logger
 if (process.env['KYMA_INTERNAL_LOGGER_ENABLED']) {
