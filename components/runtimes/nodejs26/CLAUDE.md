@@ -24,7 +24,7 @@ With `"type": "module"` in package.json, handler files are treated as ESM by def
 
 ## Key Design Decisions
 
-- **ESM throughout**: All files (`server.mjs`, `sdk/index.mjs`, `lib/*.js`) are ESM. `"type": "module"` in package.json makes `.js` files ESM by default.
+- **ESM entry point, CJS internals**: `server.mjs` is ESM. `sdk/index.js` and `lib/*.js` are CommonJS — Node.js ESM can import them via named export detection. Converting lib/sdk to ESM is deferred to a future PR.
 - **Express must be imported after tracer setup**: OpenTelemetry HTTP/Express instrumentation patches modules at require-time. The `import express` is hoisted by ESM, but `app.listen()` must come after `setupTracer()`.
 - **User function loaded late**: `import(handlerPath)` runs after the server is already listening. If loading fails, healthz still responds but requests get 500.
 - **No sendResponse abstraction**: Unlike legacy runtimes, the user controls `res` directly. The server only catches unhandled promise rejections/throws as a safety net.
