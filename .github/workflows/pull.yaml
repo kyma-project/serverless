@@ -20,11 +20,20 @@ jobs:
     if: github.event.pull_request.base.ref == 'main'
     uses: kyma-project/serverless/.github/workflows/_images-verify.yaml@main
 
+  select-environment:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.pull_request.author_association != 'COLLABORATOR' && github.event.pull_request.author_association != 'OWNER' && 'restricted' || 'internal' }}
+    steps:
+      - name: Approved
+        run: echo "Build approved, environment selected"
+
+
   builds:
-    permissions:
-      id-token: write # This is required for requesting the JWT token (GCP Workload Identity)
-      contents: read
+    needs: select-environment
     uses: kyma-project/serverless/.github/workflows/_build.yaml@main
+    permissions:
+        id-token: write # This is required for requesting the JWT token
+        contents: read # This is required for actions/checkout
     with:
       purpose: "dev"
       img_directory: "dev"
@@ -37,6 +46,7 @@ jobs:
 
   integrations:
     needs: builds
+    secrets: inherit
     uses: kyma-project/serverless/.github/workflows/_integration-tests.yaml@main
     with:
       img_directory: "dev"
