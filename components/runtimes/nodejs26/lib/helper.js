@@ -62,6 +62,7 @@ const isPromise = (promise) => {
   return typeof promise.then == "function"
 }
 
+
 function handleError(err, span, sendResponse) {
     console.error(err);
     const errTxt = resolveErrorMsg(err);
