@@ -27,7 +27,6 @@ jobs:
       - name: Approved
         run: echo "Build approved, environment selected"
 
-
   builds:
     needs: select-environment
     uses: kyma-project/serverless/.github/workflows/_build.yaml@main
