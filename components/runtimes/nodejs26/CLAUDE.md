@@ -1,6 +1,6 @@
 # Node.js 26 Runtime
 
-Express 5 server running on Node.js 25+ (placeholder until Node 26 LTS is released).
+Express 5 server running on Node.js 26.
 
 ## Handler API
 

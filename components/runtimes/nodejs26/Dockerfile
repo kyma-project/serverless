@@ -1,11 +1,9 @@
 # build with --build-arg BASE=non-fips or --build-arg BASE=fips to select the base image
 ARG BASE=non-fips
 
-# Node25 runtime will be updated to Node 26 as soon as it's released, this is a placeholder for the API rework
-# TODO(Hx2): replace with synced nodejs26 image after it's released, 25 is the last non-LTS version
-FROM node:25.9.0-alpine3.23 AS non-fips
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/node:26.1.0-alpine3.23 AS non-fips
 
-FROM europe-docker.pkg.dev/kyma-project/restricted-prod/sap.com/node-fips:25.9.0-dev AS fips
+FROM europe-docker.pkg.dev/kyma-project/restricted-prod/sap.com/node-fips:26.1.0-dev AS fips
 
 FROM ${BASE}
 

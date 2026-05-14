@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "description": "NodeJS v26 container for kyma serverless",
   "engines": {
-    "node": ">= 25.0.0"
+    "node": ">= 26.0.0"
   },
+  
   "scripts": {
     "start": "node server.mjs"
   },
