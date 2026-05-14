@@ -1,8 +1,6 @@
-'use strict';
+import { SpanStatusCode } from '@opentelemetry/api';
 
-const opentelemetry = require('@opentelemetry/api');
-
-function configureGracefulShutdown(server) {
+export function configureGracefulShutdown(server) {
     let nextConnectionId = 0;
     const connections = [];
     let terminating = false;
@@ -46,7 +44,7 @@ function configureGracefulShutdown(server) {
     process.on('SIGTERM', handleShutdown);
   }
 
-function handleTimeOut(req, res, next){
+export function handleTimeOut(req, res, next){
   const timeout = Number(process.env.FUNC_TIMEOUT || '180');
   res.setTimeout(timeout*1000, function(){
           res.sendStatus(408);
@@ -54,19 +52,18 @@ function handleTimeOut(req, res, next){
   next();
 }
 
-const isFunction = (func) => {
+export const isFunction = (func) => {
   return func && func.constructor && func.call && func.apply;
 };
 
-const isPromise = (promise) => {
+export const isPromise = (promise) => {
   return typeof promise.then == "function"
 }
 
-
-function handleError(err, span, sendResponse) {
+export function handleError(err, span, sendResponse) {
     console.error(err);
     const errTxt = resolveErrorMsg(err);
-    span.setStatus({ code: opentelemetry.SpanStatusCode.ERROR, message: errTxt });
+    span.setStatus({ code: SpanStatusCode.ERROR, message: errTxt });
     span.setAttribute("error", errTxt);
     sendResponse(errTxt, 500);
 }
@@ -80,11 +77,3 @@ function resolveErrorMsg(err) {
     }
     return errText
 }
-
-module.exports = {
-  configureGracefulShutdown,
-  handleTimeOut,
-  isFunction,
-  isPromise, 
-  handleError
-};

@@ -1,13 +1,13 @@
-const opentelemetry = require('@opentelemetry/api');
-const { MeterProvider } = require('@opentelemetry/sdk-metrics');
-const { PrometheusExporter } = require('@opentelemetry/exporter-prometheus');
-const { defaultResource, resourceFromAttributes } = require( '@opentelemetry/resources');
-const { ATTR_SERVICE_NAME } = require('@opentelemetry/semantic-conventions');
+import * as opentelemetry from '@opentelemetry/api';
+import { MeterProvider } from '@opentelemetry/sdk-metrics';
+import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
+import { defaultResource, resourceFromAttributes } from '@opentelemetry/resources';
+import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 
 
 let exporter;
 
-function setupMetrics(functionName){
+export function setupMetrics(functionName){
 
     exporter = new PrometheusExporter(
         { preventServerStart: true},
@@ -26,36 +26,27 @@ function setupMetrics(functionName){
 
 }
 
-function createFunctionCallsTotalCounter(name){
-  const meter =  opentelemetry.metrics.getMeter(name)
+export function createFunctionCallsTotalCounter(name){
+  const meter = opentelemetry.metrics.getMeter(name)
   return meter.createCounter('function_calls_total',{
     description: 'Number of calls to user function',
-  }); 
+  });
 }
-  
-  
-function createFunctionFailuresTotalCounter(name){
-  const meter =  opentelemetry.metrics.getMeter(name)
+
+export function createFunctionFailuresTotalCounter(name){
+  const meter = opentelemetry.metrics.getMeter(name)
   return meter.createCounter('function_failures_total',{
     description: 'Number of exceptions in user function',
-  });  
+  });
 }
 
-function createFunctionDurationHistogram(name){
-  const meter =  opentelemetry.metrics.getMeter(name)
+export function createFunctionDurationHistogram(name){
+  const meter = opentelemetry.metrics.getMeter(name)
   return meter.createHistogram("function_duration_miliseconds",{
     description: 'Duration of user function in miliseconds',
-  });  
+  });
 }
 
-const getMetrics = (req, res) => {
+export const getMetrics = (req, res) => {
   exporter.getMetricsRequestHandler(req, res);
 };
-
-module.exports = {
-    setupMetrics,
-    createFunctionCallsTotalCounter,
-    createFunctionFailuresTotalCounter,
-    createFunctionDurationHistogram,
-    getMetrics,
-}

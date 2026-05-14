@@ -63,7 +63,7 @@ Both new runtimes expose an `sdk` module for user handlers:
 - **Node.js 26**: `import { getCloudEvent, emitCloudEvent, getTracer } from 'sdk'`
 - **Python 314**: `import sdk` then `sdk.get_cloud_event()`, `sdk.emit_cloud_event()`, `sdk.get_tracer()`
 
-The SDK is configured once at server startup via `configure()`/`_configure()` — user handlers get the pre-configured singleton.
+The SDK is configured once at server startup — user handlers get the pre-configured singleton.
 
 ## Testing Changes
 

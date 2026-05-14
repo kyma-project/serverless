@@ -1,11 +1,11 @@
 import { configure as sdkConfigure } from 'sdk';
-import helper from './lib/helper.cjs';
+import { configureGracefulShutdown, handleTimeOut, isFunction, isPromise, handleError } from './lib/helper.js';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import process from 'process';
 
-import { setupTracer, getCurrentSpan } from './lib/tracer.cjs';
-import { getMetrics, setupMetrics, createFunctionDurationHistogram, createFunctionCallsTotalCounter, createFunctionFailuresTotalCounter } from './lib/metrics.cjs';
+import { setupTracer, getCurrentSpan } from './lib/tracer.js';
+import { getMetrics, setupMetrics, createFunctionDurationHistogram, createFunctionCallsTotalCounter, createFunctionFailuresTotalCounter } from './lib/metrics.js';
 
 // To catch unhandled exceptions thrown by user code async callbacks,
 // these exceptions cannot be caught by try-catch in user function invocation code below
@@ -54,7 +54,7 @@ if (process.env['KYMA_INTERNAL_LOGGER_ENABLED']) {
     app.use(morgan('combined'));
 }
 
-app.use(helper.handleTimeOut);
+app.use(handleTimeOut);
 
 app.get('/healthz', (req, res) => res.status(200).send('OK'));
 app.get('/metrics', (req, res) => getMetrics(req, res));
@@ -87,17 +87,17 @@ app.all('*path', (req, res) => {
 
     try {
         const out = userFunction(req, res);
-        if (out && helper.isPromise(out)) {
+        if (out && isPromise(out)) {
             out.catch((err) => {
                 failuresTotalCounter.add(1);
-                helper.handleError(err, currentSpan, (body, status) => {
+                handleError(err, currentSpan, (body, status) => {
                     if (!res.writableEnded) res.status(status || 500).send(body);
                 });
             });
         }
     } catch (err) {
         failuresTotalCounter.add(1);
-        helper.handleError(err, currentSpan, (body, status) => {
+        handleError(err, currentSpan, (body, status) => {
             if (!res.writableEnded) res.status(status || 500).send(body);
         });
     }
@@ -107,11 +107,11 @@ app.all('*path', (req, res) => {
 });
 
 const server = app.listen(serverPort, serverHost);
-helper.configureGracefulShutdown(server);
+configureGracefulShutdown(server);
 
 const startTime = process.hrtime();
 import(handlerPath).then((fn) => {
-    if (helper.isFunction(fn.main)) {
+    if (isFunction(fn.main)) {
         userFunction = fn.main;
         const elapsed = process.hrtime(startTime);
         console.log(`user code loaded in ${elapsed[0]}sec ${elapsed[1] / 1000000}ms`);
