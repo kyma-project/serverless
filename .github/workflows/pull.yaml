@@ -1,7 +1,7 @@
 name: pull
 
 on:
-  pull_request_target:
+  pull_request:
     branches:
       - main
     types: [opened, edited, synchronize, reopened, ready_for_review]
@@ -20,32 +20,7 @@ jobs:
     if: github.event.pull_request.base.ref == 'main'
     uses: kyma-project/serverless/.github/workflows/_images-verify.yaml@main
 
-  select-environment:
-    runs-on: ubuntu-latest
-    environment: ${{ github.event.pull_request.author_association != 'COLLABORATOR' && github.event.pull_request.author_association != 'OWNER' && 'restricted' || 'internal' }}
-    steps:
-      - name: Approved
-        run: echo "Build approved, environment selected"
-
-  builds:
-    needs: select-environment
-    uses: kyma-project/serverless/.github/workflows/_build.yaml@main
-    permissions:
-        id-token: write # This is required for requesting the JWT token
-        contents: read # This is required for actions/checkout
-    with:
-      purpose: "dev"
-      img_directory: "dev"
-      img_version: PR-${{ github.event.number }}
-
   check-fips-image-versions:
     uses: kyma-project/serverless/.github/workflows/_check-fips-image-versions.yaml@main
     with:
       ref: ${{ github.event.pull_request.head.sha }}
-
-  integrations:
-    needs: builds
-    uses: kyma-project/serverless/.github/workflows/_integration-tests.yaml@main
-    with:
-      img_directory: "dev"
-      img_version: PR-${{ github.event.number }}
