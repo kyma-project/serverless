@@ -6,7 +6,7 @@ import (
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless/tests/operator/utils"
-	"gopkg.in/yaml.v2"
+	"go.yaml.in/yaml/v3"
 	corev1 "k8s.io/api/core/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
