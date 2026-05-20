@@ -13,8 +13,8 @@ images:
   - source: "node@sha256:d1b3b4da11eefd5941e7f0b9cf17783fc99d9c6fc34884a665f40a06dbdfc94f"
     tag: "24.15.0-alpine3.23"
   # https://hub.docker.com/layers/library/node/22-alpine
-  - source: "node@sha256:4d64b49e6c891c8fc821007cb1cdc6c0db7773110ac2c34bf2e6960adef62ed3"
-    tag: "22.22.2-alpine3.23"
+  - source: "node@sha256:968df39aedcea65eeb078fb336ed7191baf48f972b4479711397108be0966920"
+    tag: "22.22.3-alpine3.23"
   # https://hub.docker.com/layers/library/node/20-alpine
   - source: "node@sha256:f598378b5240225e6beab68fa9f356db1fb8efe55173e6d4d8153113bb8f333c"
     tag: "20.20.2-alpine3.23"
@@ -22,5 +22,5 @@ images:
   - source: "python@sha256:7747d47f92cfca63a6e2b50275e23dba8407c30d8ae929a88ddd49a5d3f2d331"
     tag: "3.12.13-alpine3.23"
   # https://hub.docker.com/layers/library/python/3.14-alpine
-  - source: "python@sha256:dd4d2bd5b53d9b25a51da13addf2be586beebd5387e289e798e4083d94ca837a"
-    tag: "3.14.4-alpine3.23"
+  - source: "python@sha256:5a824eb82cc75361f98611f3cfc5091ea33f10a6ccea4d4ebdabbc523b9a1614"
+    tag: "3.14.5-alpine3.23"
