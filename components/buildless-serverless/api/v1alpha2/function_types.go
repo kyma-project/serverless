@@ -327,7 +327,7 @@ type Function struct {
 type FunctionList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata"`
-	Items           []Function `json:"items"`
+	Items           []Function `json:"itemsXD"`
 }
 
 func init() {
