@@ -46,18 +46,20 @@ All runtimes read configuration from env vars injected by the Function Controlle
 | `SERVICE_NAMESPACE` | Kubernetes namespace |
 | `FUNC_RUNTIME` | Runtime identifier (e.g. `nodejs26`, `python314`) |
 | `FUNC_TIMEOUT` | Request timeout in seconds (default: 180) |
-| `FUNC_HANDLER` | Exported function name (default: `main`) |
-| `MOD_NAME` | Handler module filename without extension (default: `handler`) |
-| `FUNCTION_PATH` | Path to user source code (default: `/kubeless`) |
+| `HANDLER_FUNC_NAME` | (nodejs26, python314) Exported function name (default: `main`) |
+| `FUNC_HANDLER` | (nodejs20-24, python312, deprecated) Exported function name |
+| `HANDLER_MOD_NAME` | (nodejs26, python314) Handler module filename without extension (default: `handler`) |
+| `MOD_NAME` | (nodejs20-24, python312, deprecated) Handler module filename |
+| `HANDLER_PATH` | (nodejs26, python314) Path to user source code (default: `/`) |
+| `KUBELESS_INSTALL_VOLUME` | (nodejs20-24, python312, deprecated) Path to user source code |
 | `TRACE_COLLECTOR_ENDPOINT` | OTLP trace collector URL |
 | `PUBLISHER_PROXY_ADDRESS` | Eventing publisher proxy URL |
-| `REQ_MB_LIMIT` | (nodejs20-24 only, deprecated) Body size limit in MB |
-| `FUNC_BODY_MB_LIMIT` | (nodejs26) Body size limit in MB |
-| `FUNC_MEMFILE_MAX` | (python312 only, deprecated) Body size limit in bytes |
-| `FUNC_BODY_MB_LIMIT` | (python314) Body size limit in MB |
+| `FUNC_BODY_MB_LIMIT` | (nodejs26, python314) Body size limit in MB |
+| `REQ_MB_LIMIT` | (nodejs20-24, deprecated) Body size limit in MB |
+| `FUNC_MEMFILE_MAX` | (python312, deprecated) Body size limit in bytes |
 | `SERVER_NUMTHREADS` | (Python) gevent spawn pool size |
-| `KYMA_INTERNAL_LOGGER_ENABLED` | (nodejs20-24, python312, deprecated) Enable Apache combined request logging |
 | `SERVER_INTERNAL_LOGGER` | (nodejs26, python314) Enable Apache combined request logging |
+| `KYMA_INTERNAL_LOGGER_ENABLED` | (nodejs20-24, python312, deprecated) Enable Apache combined request logging |
 
 ## SDK Module
 

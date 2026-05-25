@@ -10,11 +10,12 @@ Every runtime provides its own unique environment configuration which can be rea
 
 | Environment                  | Default                                                                       | Description                                                                                                                                                                    |
 | ---------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **FUNC_HANDLER**             | `main`                                                                        | The name of the exported Function inside the `MOD_NAME` file.                                                                                                                  |
-| **MOD_NAME**                 | `handler`                                                                     | The name of the main exported file. It must have an extension of `.py` for the Python runtimes and `.js` for the Node.js ones. The extension must be added on the server side. |
-| **SERVICE_NAMESPACE**        | None                                                                          | Deprecated. Use `FUNC_NAMESPACE` instead.                                                                                                                                      |
-| **FUNC_NAMESPACE**           | None                                                                          | The namespace where the right Function exists in a cluster.                                                                                                                    |
-| **KUBELESS_INSTALL_VOLUME**  | `/kubeless`                                                                   | Full path to volume mount with users source code.                                                                                                                              |
+| **FUNC_HANDLER**             | `main`                                                                        | Deprecated. Use `HANDLER_FUNC_NAME` instead. Supported only in nodejs20, nodejs22, nodejs24, and python312.                                                                    |
+| **HANDLER_FUNC_NAME**        | `main`                                                                        | The name of the exported Function inside the `HANDLER_MOD_NAME` file.                                                                                                         |
+| **MOD_NAME**                 | `handler`                                                                     | Deprecated. Use `HANDLER_MOD_NAME` instead. Supported only in nodejs20, nodejs22, nodejs24, and python312.                                                                     |
+| **HANDLER_MOD_NAME**         | `handler`                                                                     | The name of the main exported file. It must have an extension of `.py` for the Python runtimes and `.js` for the Node.js ones. The extension must be added on the server side. |
+| **KUBELESS_INSTALL_VOLUME**  | `/kubeless`                                                                   | Deprecated. Use `HANDLER_PATH` instead. Supported only in nodejs20, nodejs22, nodejs24, and python312.                                                                         |
+| **HANDLER_PATH**             | `/`                                                                           | Full path to volume mount with user's source code.                                                                                                                             |
 | **FUNC_RUNTIME**             | None                                                                          | The name of the actual runtime. Possible values: `nodejs20` - deprecated, `nodejs22`, `nodejs24`, `nodejs26`, `python312`, and `python314`.                                    |
 | **TRACE_COLLECTOR_ENDPOINT** | None                                                                          | Full address of OpenTelemetry Trace Collector is exported if the trace collector's endpoint is present.                                                                        |                                                      |
 | **PUBLISHER_PROXY_ADDRESS**  | `http://eventing-publisher-proxy.kyma-system.svc&nbsp;.cluster.local/publish` | Full address of the Publisher Proxy service.                                                                                                                                   |                                                                                                                   |
@@ -86,7 +87,7 @@ spec:
   env:
     - name: FUNC_TIMEOUT
       value: '2'
-    - name: HANDLER_BODY_MB_LIMIT
+    - name: FUNC_BODY_MB_LIMIT
       value: '10'
   runtime: nodejs26
   source:

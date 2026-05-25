@@ -8,18 +8,18 @@ _publisher_proxy_address = None
 _func_name = ''
 _func_namespace = ''
 _func_runtime = ''
-_server_call_timeout = 180
+_func_timeout = 180
 _func_body_mb_limit = 100
 
 
-def _configure(tracer, publisher_proxy_address, func_name, func_namespace, func_runtime, server_call_timeout, func_body_mb_limit):
-    global _tracer, _publisher_proxy_address, _func_name, _func_namespace, _func_runtime, _server_call_timeout, _func_body_mb_limit
+def _configure(tracer, publisher_proxy_address, func_name, func_namespace, func_runtime, func_timeout, func_body_mb_limit):
+    global _tracer, _publisher_proxy_address, _func_name, _func_namespace, _func_runtime, _func_timeout, _func_body_mb_limit
     _tracer = tracer
     _publisher_proxy_address = publisher_proxy_address
     _func_name = func_name
     _func_namespace = func_namespace
     _func_runtime = func_runtime
-    _server_call_timeout = server_call_timeout
+    _func_timeout = func_timeout
     _func_body_mb_limit = func_body_mb_limit
 
 
@@ -60,7 +60,7 @@ def get_runtime():
 
 
 def get_timeout():
-    return _server_call_timeout
+    return _func_timeout
 
 
 def get_body_size_limit():

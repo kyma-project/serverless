@@ -40,5 +40,5 @@ make run                    # creates venv, pip install, python server.py
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 echo 'def main(): return "ok"' > /tmp/handler.py
-FUNCTION_PATH=/tmp .venv/bin/python server.py
+HANDLER_PATH=/tmp .venv/bin/python server.py
 ```
