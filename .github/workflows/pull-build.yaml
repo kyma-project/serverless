@@ -1,8 +1,6 @@
 name: pull-build
 on:
   pull_request_target:
-    branches:
-      - main
     types: [opened, edited, synchronize, reopened, ready_for_review]
 
 permissions:
@@ -19,7 +17,7 @@ jobs:
 
   builds:
     needs: select-environment
-    uses: kyma-project/serverless/.github/workflows/_build.yaml@main
+    uses: ./.github/workflows/_build.yaml
     permissions:
       id-token: write # This is required for requesting the JWT token
       contents: read # This is required for actions/checkout
@@ -30,7 +28,7 @@ jobs:
 
   integrations:
     needs: builds
-    uses: kyma-project/serverless/.github/workflows/_integration-tests.yaml@main
+    uses: ./.github/workflows/_integration-tests.yaml
     with:
       img_directory: "dev"
       img_version: PR-${{ github.event.number }}

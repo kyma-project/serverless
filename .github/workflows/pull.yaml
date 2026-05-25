@@ -2,8 +2,7 @@ name: pull
 
 on:
   pull_request:
-    branches:
-      - main
+
     types: [opened, edited, synchronize, reopened, ready_for_review]
 
 permissions:
@@ -11,16 +10,16 @@ permissions:
 
 jobs:
   unit-tests:
-    uses: kyma-project/serverless/.github/workflows/_unit-tests.yaml@main
+    uses: ./.github/workflows/_unit-tests.yaml
 
   gitleaks:
-    uses: kyma-project/serverless/.github/workflows/_gitleaks.yaml@main
+    uses: ./.github/workflows/_gitleaks.yaml
 
   images-verify:
     if: github.event.pull_request.base.ref == 'main'
-    uses: kyma-project/serverless/.github/workflows/_images-verify.yaml@main
+    uses: ./.github/workflows/_images-verify.yaml
 
   check-fips-image-versions:
-    uses: kyma-project/serverless/.github/workflows/_check-fips-image-versions.yaml@main
+    uses: ./.github/workflows/_check-fips-image-versions.yaml
     with:
       ref: ${{ github.event.pull_request.head.sha }}
