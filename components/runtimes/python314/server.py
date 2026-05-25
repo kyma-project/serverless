@@ -22,7 +22,7 @@ server_host = os.getenv('SERVER_HOST', '0.0.0.0')
 server_port = int(os.getenv('SERVER_PORT', '8080'))
 server_numthreads = int(os.getenv('SERVER_NUMTHREADS', '50'))
 server_call_timeout = int(os.getenv('FUNC_TIMEOUT', '180'))
-func_memfile_max = int(os.getenv('FUNC_MEMFILE_MAX', str(100 * 1024 * 1024)))
+func_body_mb_limit = int(os.getenv('FUNC_BODY_MB_LIMIT', '100'))
 handler_folder = os.getenv('FUNCTION_PATH', '/kubeless')
 handler_module_name = os.getenv('MOD_NAME', 'handler')
 handler_function_name = os.getenv('FUNC_HANDLER', 'main')
@@ -35,14 +35,14 @@ print(f"Publisher Proxy available on address {publisher_proxy_address}", flush=T
 print(f"Starting {func_runtime} server {server_host}:{server_port}", flush=True)
 
 tracer = tracing.setup(trace_collector_endpoint)
-sdk._configure(tracer, publisher_proxy_address, func_name, func_namespace, func_runtime, server_call_timeout, func_memfile_max)
+sdk._configure(tracer, publisher_proxy_address, func_name, func_namespace, func_runtime, server_call_timeout, func_body_mb_limit)
 
 handler = module.Handler(handler_folder, handler_module_name, handler_function_name, server_call_timeout)
 
 app = flask.Flask(__name__)
-app.config['MAX_CONTENT_LENGTH'] = func_memfile_max
+app.config['MAX_CONTENT_LENGTH'] = func_body_mb_limit * 1024 * 1024
 
-if os.getenv('KYMA_INTERNAL_LOGGER_ENABLED'):
+if os.getenv('SERVER_INTERNAL_LOGGER'):
     wsgi_app = requestlogger.WSGILogger(
         app,
         [logging.StreamHandler(stream=sys.stdout)],

@@ -9,18 +9,18 @@ _func_name = ''
 _func_namespace = ''
 _func_runtime = ''
 _server_call_timeout = 180
-_func_memfile_max = 100 * 1024 * 1024
+_func_body_mb_limit = 100
 
 
-def _configure(tracer, publisher_proxy_address, func_name, func_namespace, func_runtime, server_call_timeout, func_memfile_max):
-    global _tracer, _publisher_proxy_address, _func_name, _func_namespace, _func_runtime, _server_call_timeout, _func_memfile_max
+def _configure(tracer, publisher_proxy_address, func_name, func_namespace, func_runtime, server_call_timeout, func_body_mb_limit):
+    global _tracer, _publisher_proxy_address, _func_name, _func_namespace, _func_runtime, _server_call_timeout, _func_body_mb_limit
     _tracer = tracer
     _publisher_proxy_address = publisher_proxy_address
     _func_name = func_name
     _func_namespace = func_namespace
     _func_runtime = func_runtime
     _server_call_timeout = server_call_timeout
-    _func_memfile_max = func_memfile_max
+    _func_body_mb_limit = func_body_mb_limit
 
 
 def get_tracer():
@@ -64,4 +64,4 @@ def get_timeout():
 
 
 def get_body_size_limit():
-    return _func_memfile_max
+    return _func_body_mb_limit

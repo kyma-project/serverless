@@ -26,7 +26,7 @@ def main():
 - **No arguments to handler**: Flask's thread-local `flask.request` provides per-request isolation natively via gevent greenlets. No need to pass request explicitly.
 - **gevent.Timeout for FUNC_TIMEOUT**: User function calls are wrapped in `gevent.Timeout(seconds)` — returns 408 if exceeded (matches python312 behavior).
 - **Graceful shutdown**: SIGTERM/SIGINT handlers call `server.stop()` via `gevent.signal_handler`.
-- **Request body limit**: `app.config['MAX_CONTENT_LENGTH'] = func_memfile_max` (Flask built-in).
+- **Request body limit**: `app.config['MAX_CONTENT_LENGTH'] = func_body_mb_limit * 1024 * 1024` (Flask built-in, from `FUNC_BODY_MB_LIMIT` env var in MB).
 
 ## Dependencies
 

@@ -51,10 +51,13 @@ All runtimes read configuration from env vars injected by the Function Controlle
 | `FUNCTION_PATH` | Path to user source code (default: `/kubeless`) |
 | `TRACE_COLLECTOR_ENDPOINT` | OTLP trace collector URL |
 | `PUBLISHER_PROXY_ADDRESS` | Eventing publisher proxy URL |
-| `REQ_MB_LIMIT` | (Node.js) Body size limit in MB |
-| `FUNC_MEMFILE_MAX` | (Python) Body size limit in bytes |
+| `REQ_MB_LIMIT` | (nodejs20-24 only, deprecated) Body size limit in MB |
+| `FUNC_BODY_MB_LIMIT` | (nodejs26) Body size limit in MB |
+| `FUNC_MEMFILE_MAX` | (python312 only, deprecated) Body size limit in bytes |
+| `FUNC_BODY_MB_LIMIT` | (python314) Body size limit in MB |
 | `SERVER_NUMTHREADS` | (Python) gevent spawn pool size |
-| `KYMA_INTERNAL_LOGGER_ENABLED` | Enable Apache combined request logging |
+| `KYMA_INTERNAL_LOGGER_ENABLED` | (nodejs20-24, python312, deprecated) Enable Apache combined request logging |
+| `SERVER_INTERNAL_LOGGER` | (nodejs26, python314) Enable Apache combined request logging |
 
 ## SDK Module
 

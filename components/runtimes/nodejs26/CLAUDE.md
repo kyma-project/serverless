@@ -12,12 +12,12 @@ export function main(req, res) {
 }
 ```
 
-With `"type": "module"` in package.json, handler files are treated as ESM by default. CommonJS handlers (using `module.exports`) still work but trigger a Node.js re-parse warning.
+With `"type": "module"` removed from package.json, `.js` handler files default to CJS. Use `.mjs` extension or add `"type": "module"` to your handler's package.json for ESM.
 
 ## File Layout
 
 - `server.mjs` — Entry point. Reads all env vars, sets up tracer/metrics, loads user handler via dynamic `import(handlerPath)`
-- `sdk/index.mjs` — ESM package exposing `getCloudEvent(req)`, `emitCloudEvent()`, `getTracer()`, metadata getters. Registered as local dep in package.json (`"sdk": "file:./sdk"`) so users can `import { ... } from 'sdk'`
+- `sdk/index.js` — CJS package exposing `getCloudEvent(req)`, `emitCloudEvent()`, `getTracer()`, metadata getters. Registered as local dep in package.json (`"sdk": "file:./sdk"`) so users can `import { ... } from 'sdk'`
 - `lib/tracer.js` — OpenTelemetry tracer setup (NodeTracerProvider, OTLP exporter, Express+HTTP instrumentation)
 - `lib/metrics.js` — Prometheus metrics via OpenTelemetry SDK (PrometheusExporter)
 - `lib/helper.js` — Request timeout middleware, graceful shutdown, error handling utilities
@@ -41,6 +41,6 @@ The `sdk` package is a `file:` dependency — `npm install` symlinks `node_modul
 make run                    # npm install + npm start
 # or manually:
 npm install
-echo 'export function main(req, res) { res.send("ok"); }' > handler.js
+echo 'module.exports = { main: (req, res) => res.send("ok") }' > handler.js
 HANDLER_PATH=./handler.js npm start
 ```

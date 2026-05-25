@@ -12,11 +12,12 @@ Every runtime provides its own unique environment configuration which can be rea
 | ---------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **FUNC_HANDLER**             | `main`                                                                        | The name of the exported Function inside the `MOD_NAME` file.                                                                                                                  |
 | **MOD_NAME**                 | `handler`                                                                     | The name of the main exported file. It must have an extension of `.py` for the Python runtimes and `.js` for the Node.js ones. The extension must be added on the server side. |
-| **SERVICE_NAMESPACE**        | None                                                                          | The namespace where the right Function exists in a cluster.                                                                                                                    |
+| **SERVICE_NAMESPACE**        | None                                                                          | Deprecated. Use `FUNC_NAMESPACE` instead.                                                                                                                                      |
+| **FUNC_NAMESPACE**           | None                                                                          | The namespace where the right Function exists in a cluster.                                                                                                                    |
 | **KUBELESS_INSTALL_VOLUME**  | `/kubeless`                                                                   | Full path to volume mount with users source code.                                                                                                                              |
-| **FUNC_RUNTIME**             | None                                                                          | The name of the actual runtime. Possible values: `nodejs20` - deprecated, `nodejs22`, `nodejs24`, `nodejs26`, `python312`, and `python314`.                                               |
-| **TRACE_COLLECTOR_ENDPOINT** | None                                                                          | Full address of OpenTelemetry Trace Collector is exported if the trace collector's endpoint is present.                                                                        |
-| **PUBLISHER_PROXY_ADDRESS**  | `http://eventing-publisher-proxy.kyma-system.svc&nbsp;.cluster.local/publish` | Full address of the Publisher Proxy service.                                                                                                                                   |
+| **FUNC_RUNTIME**             | None                                                                          | The name of the actual runtime. Possible values: `nodejs20` - deprecated, `nodejs22`, `nodejs24`, `nodejs26`, `python312`, and `python314`.                                    |
+| **TRACE_COLLECTOR_ENDPOINT** | None                                                                          | Full address of OpenTelemetry Trace Collector is exported if the trace collector's endpoint is present.                                                                        |                                                      |
+| **PUBLISHER_PROXY_ADDRESS**  | `http://eventing-publisher-proxy.kyma-system.svc&nbsp;.cluster.local/publish` | Full address of the Publisher Proxy service.                                                                                                                                   |                                                                                                                   |
 
 ### Specific Environments
 
@@ -65,11 +66,13 @@ spec:
 
 To configure the Function with the Node.js runtime, override the default values of these environment variables:
 
-| Environment variable             | Description                                                                                                                        | Type    | Default value |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------- |
-| **FUNC_TIMEOUT**                 | Specifies the number of seconds in which a runtime must execute the code.                                                          | Number  | `180`         |
-| **REQ_MB_LIMIT**                 | Specifies the payload body size limit in megabytes.                                                                                | Number  | `1`           |
-| **KYMA_INTERNAL_LOGGER_ENABLED** | Enables the default HTTP request logger which uses the standard Apache combined log output. To enable it, set its value to `true`. | Boolean | `false`       |
+| Environment variable                | Description                                                                                                                        | Type    | Default value |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------- | ------------- |
+| **FUNC_TIMEOUT**                    | Specifies the number of seconds in which a runtime must execute the code.                                                          | Number  | `180`         |
+| **REQ_MB_LIMIT**                    | Deprecated. Use `FUNC_BODY_MB_LIMIT` instead. Supported only in nodejs20, nodejs22, and nodejs24.                                  | Number  | `1`           |
+| **FUNC_BODY_MB_LIMIT**              | Specifies the payload body size limit in megabytes.                                                                                | Number  | `1`           |
+| **KYMA_INTERNAL_LOGGER_ENABLED**    | Deprecated. Use `SERVER_INTERNAL_LOGGER` instead. Supported only in nodejs20, nodejs22, and nodejs24.                              | Boolean | `false`       |
+| **SERVER_INTERNAL_LOGGER**          | Enables the default HTTP request logger which uses the standard Apache combined log output. To enable it, set its value to `true`. | Boolean | `false`       |
 
 See the example of a Function with these environment variables set:
 
@@ -83,15 +86,15 @@ spec:
   env:
     - name: FUNC_TIMEOUT
       value: '2'
-    - name: REQ_MB_LIMIT
+    - name: HANDLER_BODY_MB_LIMIT
       value: '10'
-  runtime: nodejs22
+  runtime: nodejs26
   source:
     inline:
       source: |
         module.exports = {
-          main: function (event, context) {
-            return "Hello World!";
+          main: function (req, res) {
+            res.send("Hello World!");
           }
         }
 ```
@@ -100,12 +103,14 @@ spec:
 
 To configure a Function with the Python runtime, override the default values of these environment variables:
 
-| Environment variable             | Description                                                                                                                        | Unit    | Default value   |
-| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------- | --------------- |
-| **FUNC_MEMFILE_MAX**             | Sets the maximum HTTP request body size in bytes.                                                                                  | Number  | `100*1024*1024` |
-| **SERVER_NUMTHREADS**            | Specifies the number of requests that can be handled in parallel.                                                                  | Number  | `50`            |
-| **CHERRYPY_NUMTHREADS**          | Deprecated. Use `SERVER_NUMTHREADS` instead. Supported only in python312.                                                          | Number  | `50`            |
-| **KYMA_INTERNAL_LOGGER_ENABLED** | Enables the default HTTP request logger which uses the standard Apache combined log output. To enable it, set its value to `true`. | Boolean | `false`         |
+| Environment variable                | Description                                                                                                                        | Unit    | Default value   |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------- | --------------- |
+| **FUNC_MEMFILE_MAX**                | Deprecated. Use `FUNC_BODY_MB_LIMIT` instead. Supported only in python312.                                                         | Number  | `100*1024*1024` |
+| **FUNC_BODY_MB_LIMIT**              | Sets the maximum HTTP request body size in megabytes.                                                                              | Number  | `1` |
+| **SERVER_NUMTHREADS**               | Specifies the number of requests that can be handled in parallel.                                                                  | Number  | `50`            |
+| **CHERRYPY_NUMTHREADS**             | Deprecated. Use `SERVER_NUMTHREADS` instead. Supported only in python312.                                                          | Number  | `50`            |
+| **KYMA_INTERNAL_LOGGER_ENABLED**    | Deprecated. Use `SERVER_INTERNAL_LOGGER` instead. Supported only in python312.                                                     | Boolean | `false`         |
+| **SERVER_INTERNAL_LOGGER**          | Enables the default HTTP request logger which uses the standard Apache combined log output. To enable it, set its value to `true`. | Boolean | `false`         |
 
 See [`kubeless.py`](https://github.com/kubeless/runtimes/blob/master/stable/python/_kubeless.py) to get a deeper understanding of how the Bottle server, which acts as a runtime, uses these values internally to run Python Functions.
 
@@ -117,12 +122,12 @@ metadata:
   namespace: default
 spec:
   env:
-    - name: FUNC_MEMFILE_MAX
-      value: '1048576' #1MiB
-  runtime: python312
+    - name: FUNC_BODY_MB_LIMIT
+      value: '1'
+  runtime: python314
   source:
     inline:
       source: |
-        def main(event, context):
+        def main():
           return "Hello World!"
 ```
