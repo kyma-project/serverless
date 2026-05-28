@@ -11,20 +11,17 @@ const { B3Propagator, B3InjectEncoding } = require("@opentelemetry/propagator-b3
 const { ExpressInstrumentation, ExpressLayerType } = require( '@opentelemetry/instrumentation-express');
 const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http');
 const { ATTR_SERVICE_NAME } = require('@opentelemetry/semantic-conventions');
-const axios = require("axios")
 
 
 const ignoredTargets = [
   "/healthz", "/favicon.ico", "/metrics"
 ]
 
-function setupTracer(functionName){
-  
+function setupTracer(functionName, traceCollectorEndpoint){
+
   const functionResource = resourceFromAttributes({
     [ATTR_SERVICE_NAME]: functionName,
   })
-
-  const traceCollectorEndpoint = process.env.TRACE_COLLECTOR_ENDPOINT;
 
   let spanProcessors = [];
 
@@ -45,7 +42,7 @@ function setupTracer(functionName){
 
   const propagator = new CompositePropagator({
     propagators: [
-      new W3CTraceContextPropagator(), 
+      new W3CTraceContextPropagator(),
       new B3Propagator({injectEncoding: B3InjectEncoding.MULTI_HEADER})
     ],
   })

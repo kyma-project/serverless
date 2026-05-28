@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "description": "NodeJS v26 container for kyma serverless",
   "engines": {
-    "node": ">= 25.0.0"
+    "node": ">= 26.0.0"
   },
+  
   "scripts": {
     "start": "node server.mjs"
   },
@@ -22,8 +23,10 @@
     "axios": "^1.15.2",
     "co": "^4.6.0",
     "express": "^5.1.0",
+    "body-parser": "^1.20.0",
     "morgan": "^1.10.0",
     "mz": "^2.7.0",
-    "cloudevents": "^10.0.0"
+    "cloudevents": "^10.0.0",
+    "sdk": "file:./sdk"
   }
 }

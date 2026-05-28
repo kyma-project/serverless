@@ -85,6 +85,6 @@ module.exports = {
   configureGracefulShutdown,
   handleTimeOut,
   isFunction,
-  isPromise, 
+  isPromise,
   handleError
 };
