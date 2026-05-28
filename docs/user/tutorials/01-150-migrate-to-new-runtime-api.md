@@ -1,6 +1,6 @@
 # Migrate Functions to the New Runtime API
 
-The `nodejs26` and `python314` runtimes introduce a new handler API that replaces the legacy `event`/`context` arguments. This tutorial shows how to migrate existing Functions from `nodejs22`/`nodejs24`/`python312` to the new runtimes.
+The `nodejs26` and `python314` runtimes introduce a new handler API that replaces the legacy `event` and `context` arguments. This tutorial shows how to migrate existing Functions from `nodejs22`, `nodejs24`, or `python312` to the new runtimes.
 
 ## Handler Signature
 
@@ -8,11 +8,11 @@ The `nodejs26` and `python314` runtimes introduce a new handler API that replace
 
 #### **Node.js**
 
-The handler now receives raw Express `req` and `res` objects instead of a custom `event` and `context`.
+The handler now receives raw Express `req` and `res` objects instead of the custom `event` and `context`.
 
 | Before (nodejs22/nodejs24) | After (nodejs26) |
-|---|---|
-| `main(event, context)` | `main(req, res)` |
+| -------------------------- | ---------------- |
+| `main(event, context)`     | `main(req, res)` |
 
 ```javascript
 // Before
@@ -34,11 +34,11 @@ module.exports = {
 
 #### **Python**
 
-The handler now takes no arguments. Use `flask.request` to access the incoming request.
+The handler now takes no arguments. To access the incoming request, use `flask.request`.
 
-| Before (python312) | After (python314) |
-|---|---|
-| `main(event, context)` | `main()` |
+| Before (python312)     | After (python314) |
+| ---------------------- | ----------------- |
+| `main(event, context)` | `main()`          |
 
 ```python
 # Before
@@ -59,8 +59,9 @@ def main():
 
 ## SDK Functions
 
-The `sdk` module replaces the helpers that were previously embedded in the `event` object. Import it explicitly in your handler.
+The `sdk` module replaces the helpers that were previously embedded in the `event` object. To use it, import it in your handler. [Function's specification](../technical-reference/07-70-function-specification.md) contains a with list of all available functions.
 
+Examples:
 <!-- tabs:start -->
 
 #### **Node.js**
@@ -173,7 +174,7 @@ def main():
 
 #### **Node.js**
 
-Use the Express `res` object directly instead of returning a value.
+To send a response, use the Express `res` object directly instead of returning a value.
 
 ```javascript
 // Before
@@ -215,13 +216,13 @@ def main():
 
 The following environment variables were renamed in the new runtimes:
 
-| Old name | New name | Runtimes |
-|---|---|---|
-| `FUNC_HANDLER` | `HANDLER_FUNC_NAME` | nodejs26, python314 |
-| `MOD_NAME` | `HANDLER_MOD_NAME` | nodejs26, python314 |
-| `KUBELESS_INSTALL_VOLUME` | `HANDLER_PATH` | nodejs26, python314 |
-| `REQ_MB_LIMIT` | `FUNC_BODY_MB_LIMIT` | nodejs26 |
-| `FUNC_MEMFILE_MAX` | `FUNC_BODY_MB_LIMIT` | python314 |
+| Old name                       | New name                 | Runtimes            |
+| ------------------------------ | ------------------------ | ------------------- |
+| `FUNC_HANDLER`                 | `HANDLER_FUNC_NAME`      | nodejs26, python314 |
+| `MOD_NAME`                     | `HANDLER_MOD_NAME`       | nodejs26, python314 |
+| `KUBELESS_INSTALL_VOLUME`      | `HANDLER_PATH`           | nodejs26, python314 |
+| `REQ_MB_LIMIT`                 | `FUNC_BODY_MB_LIMIT`     | nodejs26            |
+| `FUNC_MEMFILE_MAX`             | `FUNC_BODY_MB_LIMIT`     | python314           |
 | `KYMA_INTERNAL_LOGGER_ENABLED` | `SERVER_INTERNAL_LOGGER` | nodejs26, python314 |
 
 Update any environment variable overrides in your Function CR accordingly.

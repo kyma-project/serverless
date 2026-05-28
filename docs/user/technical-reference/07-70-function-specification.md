@@ -2,8 +2,7 @@
 
 With the Serverless module, you can create Functions in both Node.js and Python. Although the Function's interface is unified, its specification differs depending on the runtime used to run the Function.
 
-> [!NOTE]
-> The `nodejs26` and `python314` runtimes use a new, simplified API. Handlers receive the raw HTTP request and response objects directly instead of the legacy `event` and `context` wrapper objects. See the [New API (nodejs26, python314)](#new-api-nodejs26-python314) section.
+> **Note:** The `nodejs26` and `python314` runtimes use a new, simplified API. Handlers receive the raw HTTP request and response objects directly instead of the legacy `event` and `context` wrapper objects. See the [New API (nodejs26, python314)](#new-api-nodejs26-python314) section.
 
 ## Legacy API (nodejs20, nodejs22, nodejs24, python312)
 
@@ -100,7 +99,7 @@ See the detailed descriptions of these fields:
 | **ce-id**               | Unique identifier of the event                                                                                                                                                                                                                                                                                                                                   |
 | **ce-time**             | Time at which the event was sent                                                                                                                                                                                                                                                                                                                                 |
 | **data**                | Either JSON or a string, depending on the request type. Read more about [Buffer](https://nodejs.org/api/buffer.html) in Node.js and [bytes literals](https://docs.python.org/3/reference/lexical_analysis.html#string-and-bytes-literals) in Python. <!-- markdown-link-check-disable-line -->                                                                   |
-| **tracer**              | Fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) object that allows you to communicate with the user-defined trace backend service to share tracing data. For more information on how to use the tracer object see [Customize Function traces](../tutorials/01-100-customize-function-traces.md) |
+| **tracer**              | Fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) object that allows you to communicate with the user-defined trace backend service to share tracing data. For more information, see [Customize Function Traces](../tutorials/01-100-customize-function-traces.md)                                |
 | **extensions**          | JSON object that can contain event payload, a Function's incoming request, or an outgoing response                                                                                                                                                                                                                                                               |
 
 ### Event Object SDK
@@ -150,13 +149,17 @@ See the detailed descriptions of these fields:
 | **runtime**       | Environment used to run the Function. You can use `nodejs20` - deprecated, `nodejs22`, `nodejs24` or `python312`. |
 | **memory-limit**  | Deprecated: Maximum amount of memory assigned to run a Function                                       |
 
-### HTTP Requests
+## HTTP Requests
 
 You can use the **event.extensions.request** object to access properties and methods of a given request that vary depending on the runtime. For more information, read the API documentation for [Node.js Express](http://expressjs.com/en/api.html#req) and [Python](https://bottlepy.org/docs/dev/api.html#the-request-object).
 
-### Custom HTTP Responses
+## Custom HTTP Responses
 
-By default, a failing Function simply throws an error to tell the Event Service to reinject the event at a later point. Such an HTTP-based Function returns the HTTP status code `500`. If you manage to invoke a Function successfully, the system returns the default HTTP status code `200`.
+By default, a failing Function simply throws an error to tell the Event Service to reinject the event at a later point. Such an HTTP-based Function returns the HTTP status code `500`.  If you manage to invoke a Function successfully, the system returns the default HTTP status code `200`.
+
+Apart from these two default codes, you can define custom responses. Learn how to do that in Node.js and Python:
+
+By default, a failing Function simply throws an error to tell the Event Service to reinject the event at a later point. Such an HTTP-based Function returns the HTTP status code `500`.  If you manage to invoke a Function successfully, the system returns the default HTTP status code `200`.
 
 Apart from these two default codes, you can define custom responses. Learn how to do that in Node.js and Python:
 
@@ -164,7 +167,7 @@ Apart from these two default codes, you can define custom responses. Learn how t
 
 #### **Node.js**
 
-To define custom responses in Node.js runtimes (nodejs20, nodejs22, nodejs24), use the **event.extensions.response** object.
+To define custom responses in all Node.js runtimes, use the **event.extensions.response** object.
 
 This object is created by the Express framework and can be customized. For more information, read [Node.js API documentation](https://nodejs.org/docs/latest-v12.x/api/http.html#http_class_http_serverresponse).
 
@@ -185,7 +188,7 @@ module.exports = {
 
 #### **Python**
 
-To define custom responses in Python runtimes (python312), use the **HTTPResponse** object available in Bottle.
+To define custom responses in all Python runtimes, use the **HTTPResponse** object available in Bottle.
 
 This object must be instantiated and can be customized. For more information, read [Bottle API documentation](https://bottlepy.org/docs/dev/api.html#the-response-object).
 
@@ -284,16 +287,16 @@ Import the `sdk` module:
 import { getCloudEvent, emitCloudEvent, getTracer } from 'sdk';
 ```
 
-| Method / Property         | Arguments                                       | Description                                                                                                                                                                                                                                                                                                               |
-| ------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **getTracer()**           | —                                               | Returns the fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) for this Function.                                                                                                                                                                           |
-| **getCloudEvent(req)**    | req                                             | Parses a CloudEvent from the incoming request. Returns `null` if the request is not a CloudEvent.                                                                                                                                                                                                                         |
-| **emitCloudEvent**        | type, source, data, optionalCloudEventAttribute | Builds a CloudEvent based on the arguments and emits it on the eventing publisher service. You can pass any additional [cloudevent attributes](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/formats/json-format.md#2-attributes) as properties of the last optional argument `optionalCloudEventAttribute` |
-| **getFunctionName()**     | —                                               | Returns the name of the current Function.                                                                                                                                                                                                                                                                                 |
-| **getNamespace()**        | —                                               | Returns the namespace of the current Function.                                                                                                                                                                                                                                                                            |
-| **getRuntime()**          | —                                               | Returns the runtime identifier (for example, `nodejs26`).                                                                                                                                                                                                                                                                 |
-| **getTimeout()**          | —                                               | Returns the configured call timeout in seconds.                                                                                                                                                                                                                                                                           |
-| **getBodySizeLimit()**    | —                                               | Returns the configured body size limit in megabytes.                                                                                                                                                                                                                                                                      |
+| Method / Property    | Arguments                                       | Description                                                                                                                                                                                                                                                                                                               |
+| -------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **getTracer**        | —                                               | Returns the fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) for this Function.                                                                                                                                                                           |
+| **getCloudEvent**    | Express request                                 | Parses a CloudEvent from the incoming request. Returns `null` if the request is not a CloudEvent.                                                                                                                                                                                                                         |
+| **emitCloudEvent**   | type, source, data, optionalCloudEventAttribute | Builds a CloudEvent based on the arguments and emits it on the eventing publisher service. You can pass any additional [cloudevent attributes](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/formats/json-format.md#2-attributes) as properties of the last optional argument `optionalCloudEventAttribute` |
+| **getFunctionName**  | —                                               | Returns the name of the current Function.                                                                                                                                                                                                                                                                                 |
+| **getNamespace**     | —                                               | Returns the namespace of the current Function.                                                                                                                                                                                                                                                                            |
+| **getRuntime**       | —                                               | Returns the runtime identifier (for example, `nodejs26`).                                                                                                                                                                                                                                                                 |
+| **getTimeout**       | —                                               | Returns the configured call timeout in seconds.                                                                                                                                                                                                                                                                           |
+| **getBodySizeLimit** | —                                               | Returns the configured body size limit in megabytes.                                                                                                                                                                                                                                                                      |
 
 #### **Python 314**
 
@@ -303,16 +306,16 @@ Import the `sdk` module:
 import sdk
 ```
 
-| Method / Property          | Arguments                                       | Description                                                                                                                                                                                                                                                                                                               |
-| -------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **get_tracer()**           | —                                               | Returns the fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) for this Function.                                                                                                                                                                           |
-| **get_cloud_event()**      | —                                               | Parses a CloudEvent from the current Flask request. Returns `None` if the request is not a CloudEvent.                                                                                                                                                                                                                    |
-| **emit_cloud_event**       | type, source, data, optional_attributes         | Builds a CloudEvent based on the arguments and emits it on the eventing publisher service. You must pass [`datacontenttype`](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/formats/json-format.md#2-attributes) in `optional_attributes`.                                                                   |
-| **get_function_name()**    | —                                               | Returns the name of the current Function.                                                                                                                                                                                                                                                                                 |
-| **get_namespace()**        | —                                               | Returns the namespace of the current Function.                                                                                                                                                                                                                                                                            |
-| **get_runtime()**          | —                                               | Returns the runtime identifier (for example, `python314`).                                                                                                                                                                                                                                                                |
-| **get_timeout()**          | —                                               | Returns the configured call timeout in seconds.                                                                                                                                                                                                                                                                           |
-| **get_body_size_limit()**  | —                                               | Returns the configured body size limit in bytes.                                                                                                                                                                                                                                                                          |
+| Method / Property       | Arguments                               | Description                                                                                                                                                                                                                                             |
+| ----------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **get_tracer**          | —                                       | Returns the fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) for this Function.                                                                                                         |
+| **get_cloud_event**     | —                                       | Parses a CloudEvent from the current Flask request. Returns `None` if the request is not a CloudEvent.                                                                                                                                                  |
+| **emit_cloud_event**    | type, source, data, optional_attributes | Builds a CloudEvent based on the arguments and emits it on the eventing publisher service. You must pass [`datacontenttype`](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/formats/json-format.md#2-attributes) in `optional_attributes`. |
+| **get_function_name**   | —                                       | Returns the name of the current Function.                                                                                                                                                                                                               |
+| **get_namespace**       | —                                       | Returns the namespace of the current Function.                                                                                                                                                                                                          |
+| **get_runtime**         | —                                       | Returns the runtime identifier (for example, `python314`).                                                                                                                                                                                              |
+| **get_timeout**         | —                                       | Returns the configured call timeout in seconds.                                                                                                                                                                                                         |
+| **get_body_size_limit** | —                                       | Returns the configured body size limit in bytes.                                                                                                                                                                                                        |
 
 <!-- tabs:end -->
 
