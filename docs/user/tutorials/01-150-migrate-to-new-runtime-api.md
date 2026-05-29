@@ -115,6 +115,8 @@ def main():
 
 ## CloudEvents
 
+### Receiving CloudEvents
+
 <!-- tabs:start -->
 
 #### **Node.js**
@@ -164,6 +166,69 @@ def main():
     if ce:
         return ce.get_type()
     return "not a cloud event"
+```
+
+<!-- tabs:end -->
+
+### Emitting CloudEvents
+
+<!-- tabs:start -->
+
+#### **Node.js**
+
+```javascript
+// Before
+module.exports = {
+    main: async function (event, context) {
+        await event.emitCloudEvent(
+            'com.example.order.created',
+            '/orders',
+            { orderId: '123' }
+        );
+        return "event emitted";
+    }
+}
+```
+
+```javascript
+// After
+import { emitCloudEvent } from 'sdk';
+
+export async function main(req, res) {
+    await emitCloudEvent(
+        'com.example.order.created',
+        '/orders',
+        { orderId: '123' }
+    );
+    res.send("event emitted");
+}
+```
+
+#### **Python**
+
+```python
+# Before
+def main(event, context):
+    event.emitCloudEvent(
+        'com.example.order.created',
+        '/orders',
+        {'orderId': '123'}
+    )
+    return "event emitted"
+```
+
+```python
+# After
+import sdk
+
+def main():
+    sdk.emit_cloud_event(
+        'com.example.order.created',
+        '/orders',
+        {'orderId': '123'},
+        {'datacontenttype': 'application/json'}
+    )
+    return "event emitted"
 ```
 
 <!-- tabs:end -->
