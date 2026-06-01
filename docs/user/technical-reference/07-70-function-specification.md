@@ -2,7 +2,8 @@
 
 With the Serverless module, you can create Functions in both Node.js and Python. Although the Function's interface is unified, its specification differs depending on the runtime used to run the Function.
 
-> **Note:** The `nodejs26` and `python314` runtimes use a new, simplified API. Handlers receive the raw HTTP request and response objects directly instead of the legacy `event` and `context` wrapper objects. See the [New API (nodejs26, python314)](#new-api-nodejs26-python314) section.
+> [!NOTE] 
+> The `nodejs26` and `python314` runtimes use a new, simplified API. Handlers receive the raw HTTP request and response objects directly instead of the legacy `event` and `context` wrapper objects. See the [New API (nodejs26, python314)](#new-api-nodejs26-python314) section.
 
 ## Legacy API (nodejs20, nodejs22, nodejs24, python312)
 
