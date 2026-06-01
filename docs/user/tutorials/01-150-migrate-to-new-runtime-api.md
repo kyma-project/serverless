@@ -65,7 +65,7 @@ def main():
 
 ### 2. Update SDK Usage
 
-Replace `event.*` and `context.*` helpers with explicit imports from the `sdk` module. For the full list of available functions, see [Function's Specification](../technical-reference/07-70-function-specification.md#sdk-module).
+Replace `event.*` and `context.*` helpers with explicit imports from the `sdk` module. For more information, see [Function's Specification](../technical-reference/07-70-function-specification.md#sdk-module).
 
 <!-- tabs:start -->
 
@@ -75,9 +75,9 @@ Replace `event.*` and `context.*` helpers with explicit imports from the `sdk` m
 // Before
 module.exports = {
     main: async function (event, context) {
-        const ce = event.ce;
+        const ce = event['ce-type'];
         const tracer = event.tracer;
-        console.log(context.funcName);
+        console.log(context['function-name']);
     }
 }
 ```
@@ -99,9 +99,9 @@ export function main(req, res) {
 ```python
 # Before
 def main(event, context):
-    ce = event.ce
+    ce = event['ce-type']
     tracer = event.tracer
-    print(context.function_name)
+    print(context['function-name'])
     return "ok"
 ```
 
@@ -128,8 +128,8 @@ def main():
 // Before
 module.exports = {
     main: async function (event, context) {
-        if (event.ce) {
-            return event.ce.type;
+        if (event['ce-type']) {
+            return event['ce-type'];
         }
         return "not a cloud event";
     }
@@ -155,8 +155,8 @@ export function main(req, res) {
 ```python
 # Before
 def main(event, context):
-    if event.ce:
-        return event.ce["type"]
+    if event['ce-type']:
+        return event['ce-type']
     return "not a cloud event"
 ```
 
