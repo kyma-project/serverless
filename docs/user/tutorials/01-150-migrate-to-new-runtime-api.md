@@ -1,8 +1,14 @@
 # Migrate Functions to the New Runtime API
 
-The `nodejs26` and `python314` runtimes introduce a new handler API that replaces the legacy `event` and `context` arguments. This tutorial shows how to migrate existing Functions from `nodejs22`, `nodejs24`, or `python312` to the new runtimes.
+This tutorial shows how to migrate an existing Function from `nodejs22`, `nodejs24`, or `python312` to the new `nodejs26` or `python314` runtime.
 
-## Handler Signature
+## Prerequisites
+
+- You have a Function deployed with runtime `nodejs22`, `nodejs24`, or `python312`.
+
+## Steps
+
+### 1. Update the Handler Code
 
 <!-- tabs:start -->
 
@@ -57,11 +63,10 @@ def main():
 
 <!-- tabs:end -->
 
-## SDK Functions
+### 2. Update SDK Usage
 
-The `sdk` module replaces the helpers that were previously embedded in the `event` object. To use it, import it in your handler. [Function's specification](../technical-reference/07-70-function-specification.md) contains a with list of all available functions.
+Replace `event.*` and `context.*` helpers with explicit imports from the `sdk` module. For the full list of available functions, see [Function's Specification](../technical-reference/07-70-function-specification.md#sdk-module).
 
-Examples:
 <!-- tabs:start -->
 
 #### **Node.js**
@@ -113,9 +118,7 @@ def main():
 
 <!-- tabs:end -->
 
-## CloudEvents
-
-### Receiving CloudEvents
+### 3. Update CloudEvent Handling
 
 <!-- tabs:start -->
 
@@ -170,7 +173,7 @@ def main():
 
 <!-- tabs:end -->
 
-### Emitting CloudEvents
+### 4. Emit CloudEvents
 
 <!-- tabs:start -->
 
@@ -231,9 +234,11 @@ def main():
     return "event emitted"
 ```
 
+> **Note:** In `python314`, `datacontenttype` is required in `optional_attributes`. In `nodejs26`, it is inferred automatically if omitted.
+
 <!-- tabs:end -->
 
-## HTTP Responses
+### 5. Update HTTP Responses
 
 <!-- tabs:start -->
 
@@ -277,9 +282,9 @@ def main():
 
 <!-- tabs:end -->
 
-## Environment Variables
+### 6. Update Environment Variables
 
-The following environment variables were renamed in the new runtimes:
+If you override any of the following environment variables in your Function CR, update them to the new names:
 
 | Old name                       | New name                 | Runtimes            |
 | ------------------------------ | ------------------------ | ------------------- |
@@ -290,4 +295,32 @@ The following environment variables were renamed in the new runtimes:
 | `FUNC_MEMFILE_MAX`             | `FUNC_BODY_MB_LIMIT`     | python314           |
 | `KYMA_INTERNAL_LOGGER_ENABLED` | `SERVER_INTERNAL_LOGGER` | nodejs26, python314 |
 
-Update any environment variable overrides in your Function CR accordingly.
+### 7. Change the Runtime Version
+
+Update `spec.runtime` in your Function CR to the new runtime:
+
+<!-- tabs:start -->
+
+#### **Node.js**
+
+```bash
+kubectl patch function <function-name> --type merge -p '{"spec":{"runtime":"nodejs26"}}'
+```
+
+#### **Python**
+
+```bash
+kubectl patch function <function-name> --type merge -p '{"spec":{"runtime":"python314"}}'
+```
+
+<!-- tabs:end -->
+
+### 8. Verify the Migration
+
+Check that the Function is running with the new runtime:
+
+```bash
+kubectl get function <function-name>
+```
+
+The **STATE** column shows `Running` when the migration is complete.
