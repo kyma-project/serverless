@@ -266,7 +266,7 @@ module.exports = {
 
 #### **Python**
 
-Return values work the same way as in the legacy runtime — Flask response tuples are supported.
+Return values work the same way as in the legacy runtime – Flask response tuples are supported.
 
 ```python
 # Before
@@ -323,4 +323,4 @@ Check that the Function is running with the new runtime:
 kubectl get function <function-name>
 ```
 
-The **STATE** column shows `Running` when the migration is complete.
+The `STATE` column shows `Running` when the migration is complete.
