@@ -329,16 +329,16 @@ def main():
 
 ### 6. Update Environment Variables
 
-If you override any of the following environment variables in your Function CR, update them to the new names:
+If you override any of the following environment variables in your Function CR, update them to the new names and values:
 
-| Old name                       | New name                 | Runtimes            |
-| ------------------------------ | ------------------------ | ------------------- |
-| `FUNC_HANDLER`                 | `HANDLER_FUNC_NAME`      | nodejs26, python314 |
-| `MOD_NAME`                     | `HANDLER_MOD_NAME`       | nodejs26, python314 |
-| `KUBELESS_INSTALL_VOLUME`      | `HANDLER_PATH`           | nodejs26, python314 |
-| `REQ_MB_LIMIT`                 | `FUNC_BODY_MB_LIMIT`     | nodejs26            |
-| `FUNC_MEMFILE_MAX`             | `FUNC_BODY_MB_LIMIT`     | python314           |
-| `KYMA_INTERNAL_LOGGER_ENABLED` | `SERVER_INTERNAL_LOGGER` | nodejs26, python314 |
+| Old name                       | New name                 | Runtimes            | Notes                                   |
+| ------------------------------ | ------------------------ | ------------------- | --------------------------------------- |
+| `FUNC_HANDLER`                 | `HANDLER_FUNC_NAME`      | nodejs26, python314 |                                         |
+| `MOD_NAME`                     | `HANDLER_MOD_NAME`       | nodejs26, python314 |                                         |
+| `KUBELESS_INSTALL_VOLUME`      | `HANDLER_PATH`           | nodejs26, python314 |                                         |
+| `REQ_MB_LIMIT`                 | `FUNC_BODY_MB_LIMIT`     | nodejs26            |                                         |
+| `FUNC_MEMFILE_MAX`             | `FUNC_BODY_MB_LIMIT`     | python314           | Unit changed from bytes to megabytes    |
+| `KYMA_INTERNAL_LOGGER_ENABLED` | `SERVER_INTERNAL_LOGGER` | nodejs26, python314 |                                         |
 
 ### 7. Change the Runtime Version
 
