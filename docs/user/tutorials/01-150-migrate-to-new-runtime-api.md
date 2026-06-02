@@ -276,13 +276,10 @@ def main():
     sdk.emit_cloud_event(
         'com.example.order.created',
         '/orders',
-        {'orderId': '123'},
-        {'datacontenttype': 'application/json'}
+        {'orderId': '123'}
     )
     return "event emitted"
 ```
-
-> **Note:** In `python314`, `datacontenttype` is required in `optional_attributes`. In `nodejs26`, it is inferred automatically if omitted.
 
 <!-- tabs:end -->
 
