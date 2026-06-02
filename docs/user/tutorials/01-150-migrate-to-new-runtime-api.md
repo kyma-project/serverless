@@ -221,7 +221,7 @@ def main():
 
 ### 4. Emit CloudEvents
 
-Previously, you emitted CloudEvents using `event.emitCloudEvent()`. To emit a CloudEvent in the new runtimes, import `emitCloudEvent` from the `sdk` module and call it directly.
+Previously, CloudEvents were emitted using `event.emitCloudEvent()`. To emit a CloudEvent in the new runtimes, import `emitCloudEvent` from the `sdk` module and call it directly.
 
 <!-- tabs:start -->
 
