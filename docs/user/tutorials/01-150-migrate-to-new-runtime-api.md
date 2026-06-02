@@ -8,7 +8,7 @@ This tutorial shows how to migrate an existing Function from `nodejs22`, `nodejs
 
 ## Steps
 
-### 1. Update the Handler Code
+### 1. Update the Handler signature
 
 <!-- tabs:start -->
 
@@ -65,31 +65,37 @@ def main():
 
 ### 2. Update SDK Usage
 
-Replace `event.*` and `context.*` helpers with explicit imports from the `sdk` module. For more information, see [Function's Specification](../technical-reference/07-70-function-specification.md#sdk-module).
+Previously, function metadata was available through the `context` object passed to the handler. The `sdk` module replaces it with explicit functions. For more information, see [Function's Specification](../technical-reference/07-70-function-specification.md#sdk-module).
 
 <!-- tabs:start -->
 
 #### **Node.js**
 
 ```javascript
-// Before
+// Before — context fields and event.tracer
 module.exports = {
     main: async function (event, context) {
-        const ce = event['ce-type'];
         const tracer = event.tracer;
         console.log(context['function-name']);
+        console.log(context['namespace']);
+        console.log(context['runtime']);
+        console.log(context['timeout']);
+        console.log(context['body-size-limit']);
     }
 }
 ```
 
 ```javascript
-// After
-import { getCloudEvent, getTracer, getFunctionName } from 'sdk';
+// After — sdk functions
+import { getTracer, getFunctionName, getNamespace, getRuntime, getTimeout, getBodySizeLimit } from 'sdk';
 
 export function main(req, res) {
-    const ce = getCloudEvent(req);
     const tracer = getTracer();
     console.log(getFunctionName());
+    console.log(getNamespace());
+    console.log(getRuntime());
+    console.log(getTimeout());
+    console.log(getBodySizeLimit());
     res.send('ok');
 }
 ```
@@ -97,22 +103,28 @@ export function main(req, res) {
 #### **Python**
 
 ```python
-# Before
+# Before — context fields and event.tracer
 def main(event, context):
-    ce = event['ce-type']
     tracer = event.tracer
     print(context['function-name'])
+    print(context['namespace'])
+    print(context['runtime'])
+    print(context['timeout'])
+    print(context['body-size-limit'])
     return "ok"
 ```
 
 ```python
-# After
+# After — sdk functions
 import sdk
 
 def main():
-    ce = sdk.get_cloud_event()
     tracer = sdk.get_tracer()
     print(sdk.get_function_name())
+    print(sdk.get_namespace())
+    print(sdk.get_runtime())
+    print(sdk.get_timeout())
+    print(sdk.get_body_size_limit())
     return "ok"
 ```
 
@@ -120,29 +132,37 @@ def main():
 
 ### 3. Update CloudEvent Handling
 
+Previously, CloudEvent attributes were spread as individual fields on the `event` object (for example, `event['ce-type']`, `event['ce-source']`). The `sdk` module returns a standard `CloudEvent` object with typed properties.
+
 <!-- tabs:start -->
 
 #### **Node.js**
 
 ```javascript
-// Before
+// Before — CloudEvent fields were individual keys on the event object
 module.exports = {
     main: async function (event, context) {
         if (event['ce-type']) {
-            return event['ce-type'];
+            console.log(event['ce-type']);
+            console.log(event['ce-source']);
+            console.log(event['ce-id']);
+            console.log(event['data']);
         }
-        return "not a cloud event";
     }
 }
 ```
 
 ```javascript
-// After
+// After — getCloudEvent() returns a standard CloudEvent object
 import { getCloudEvent } from 'sdk';
 
 export function main(req, res) {
     const ce = getCloudEvent(req);
     if (ce) {
+        console.log(ce.type);
+        console.log(ce.source);
+        console.log(ce.id);
+        console.log(ce.data);
         res.send(ce.type);
         return;
     }
@@ -153,20 +173,26 @@ export function main(req, res) {
 #### **Python**
 
 ```python
-# Before
+# Before — CloudEvent fields were individual keys on the event object
 def main(event, context):
     if event['ce-type']:
-        return event['ce-type']
-    return "not a cloud event"
+        print(event['ce-type'])
+        print(event['ce-source'])
+        print(event['ce-id'])
+        print(event['data'])
 ```
 
 ```python
-# After
+# After — get_cloud_event() returns a standard CloudEvent object
 import sdk
 
 def main():
     ce = sdk.get_cloud_event()
     if ce:
+        print(ce.get_type())
+        print(ce.get_source())
+        print(ce.get_id())
+        print(ce.data)
         return ce.get_type()
     return "not a cloud event"
 ```
@@ -266,7 +292,7 @@ module.exports = {
 
 #### **Python**
 
-Return values work the same way as in the legacy runtime – Flask response tuples are supported.
+Return values work the same way as in the legacy runtime - Flask response tuples are supported.
 
 ```python
 # Before
