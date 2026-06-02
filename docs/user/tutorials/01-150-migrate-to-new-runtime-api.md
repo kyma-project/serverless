@@ -132,7 +132,7 @@ def main():
 
 ### 3. Update CloudEvent Handling
 
-Previously, CloudEvent attributes were spread as individual fields on the `event` object (for example, `event['ce-type']`, `event['ce-source']`). The `sdk` module returns a standard `CloudEvent` object with typed properties.
+Previously, CloudEvent attributes were spread as individual fields of the `event` object. The `sdk` module returns a standard `CloudEvent` object with typed properties.
 
 <!-- tabs:start -->
 
@@ -145,9 +145,16 @@ module.exports = {
         if (event['ce-type']) {
             console.log(event['ce-type']);
             console.log(event['ce-source']);
+            // eventtypeversion was dropped in CloudEvents version 0.2
+            // console.log(event['ca-eventtypeversion']);
+            console.log(event['ce-specversion']);
             console.log(event['ce-id']);
+            console.log(event['ce-time']);
+            console.log(event['ce-datacontenttype']);
             console.log(event['data']);
+            return event['ce-type'];
         }
+        return "not a cloud event";
     }
 }
 ```
@@ -161,7 +168,10 @@ export function main(req, res) {
     if (ce) {
         console.log(ce.type);
         console.log(ce.source);
+        console.log(ce.specversion);
         console.log(ce.id);
+        console.log(ce.time);
+        console.log(ce.datacontenttype);
         console.log(ce.data);
         res.send(ce.type);
         return;
@@ -178,8 +188,15 @@ def main(event, context):
     if event['ce-type']:
         print(event['ce-type'])
         print(event['ce-source'])
+        # eventtypeversion was dropped in CloudEvents version 0.2
+        # print(event['ce-eventtypeversion'])
+        print(event['ce-specversion'])
         print(event['ce-id'])
+        print(event['ce-time'])
+        print(event['ce-datacontenttype'])
         print(event['data'])
+        return event['ce-type']
+    return "not a cloud event"
 ```
 
 ```python
@@ -191,8 +208,11 @@ def main():
     if ce:
         print(ce.get_type())
         print(ce.get_source())
+        print(ce.get_specversion())
         print(ce.get_id())
-        print(ce.data)
+        print(ce.get_time())
+        print(ce.get_datacontenttype())
+        print(ce.get_data())
         return ce.get_type()
     return "not a cloud event"
 ```
