@@ -221,6 +221,8 @@ def main():
 
 ### 4. Emit CloudEvents
 
+Previously, you emitted CloudEvents using `event.emitCloudEvent()`. In the new runtimes, import `emitCloudEvent` from the `sdk` module and call it directly.
+
 <!-- tabs:start -->
 
 #### **Node.js**
