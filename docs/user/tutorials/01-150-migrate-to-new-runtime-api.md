@@ -285,7 +285,7 @@ def main():
     return "event emitted"
 ```
 
-> **Note:** In `python314`, `datacontenttype` is required in `optional_attributes`. In `nodejs26`, it is inferred automatically if omitted.
+> **Note:** If `datacontenttype` is not provided in `optional_attributes`, the `python314` runtime defaults to `application/json`. In `nodejs26`, it is also inferred automatically from the data type.
 
 <!-- tabs:end -->
 
