@@ -5,6 +5,7 @@ export default [
   { text: 'Function Security', link: './00-40-security-considerations' },
   { text: 'Limitations', link: './00-50-limitations' },
   { text: 'Logging Configuration', link: './00-70-configuring-logging' },
+  { text: 'Migrate to the New Runtime API', link: './00-80-migrate-to-new-runtime-api' },
   { text: 'Tutorials', link: './tutorials/README', collapsed: true, items: [
     { text: 'Create an Inline Function', link: './tutorials/01-10-create-inline-function' },
     { text: 'Create a Git Function', link: './tutorials/01-11-create-git-function' },
@@ -16,8 +17,7 @@ export default [
     { text: 'Override Runtime Image', link: './tutorials/01-110-override-runtime-image' },
     { text: 'Inject Environment Variables', link: './tutorials/01-120-inject-envs' },
     { text: 'Use External Scalers', link: './tutorials/01-130-use-external-scalers' },
-    { text: 'Access to Secrets Mounted as Volume', link: './tutorials/01-140-use-secret-mounts' },
-    { text: 'Migrate to the New Runtime API', link: './tutorials/01-150-migrate-to-new-runtime-api' }
+    { text: 'Access to Secrets Mounted as Volume', link: './tutorials/01-140-use-secret-mounts' }
     ] },
   { text: 'Resources', link: './resources/README', collapsed: true, items: [
     { text: 'Function CR', link: './resources/06-10-function-cr' },
