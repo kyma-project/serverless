@@ -6,7 +6,11 @@ This tutorial shows how to migrate an existing Function from `nodejs22`, `nodejs
 
 - You have a Function deployed with runtime `nodejs22`, `nodejs24`, or `python312`.
 
-## Steps
+## Context
+
+The `nodejs26` and `python314` runtimes introduce a new handler API that removes the `event` and `context` wrapper objects. Handlers receive the raw HTTP framework objects directly (`req`/`res` in Node.js, `flask.request` in Python), and function metadata previously available through `context` is now provided by an explicit `sdk` module. Migrating gives you direct access to the underlying framework, a typed CloudEvent object, and a consistent SDK across both runtimes.
+
+## Procedure
 
 ### 1. Update the Handler signature
 
@@ -281,6 +285,8 @@ def main():
     return "event emitted"
 ```
 
+> **Note:** In `python314`, `datacontenttype` is required in `optional_attributes`. In `nodejs26`, it is inferred automatically if omitted.
+
 <!-- tabs:end -->
 
 ### 5. Update HTTP Responses
@@ -311,7 +317,7 @@ module.exports = {
 
 #### **Python**
 
-Return values work the same way as in the legacy runtime - Flask response tuples are supported.
+Return values work the same way as in the legacy runtime – Flask response tuples are supported.
 
 ```python
 # Before
@@ -331,14 +337,14 @@ def main():
 
 If you override any of the following environment variables in your Function CR, update them to the new names and values:
 
-| Old name                       | New name                 | Runtimes            | Notes                                   |
-| ------------------------------ | ------------------------ | ------------------- | --------------------------------------- |
-| `FUNC_HANDLER`                 | `HANDLER_FUNC_NAME`      | nodejs26, python314 |                                         |
-| `MOD_NAME`                     | `HANDLER_MOD_NAME`       | nodejs26, python314 |                                         |
-| `KUBELESS_INSTALL_VOLUME`      | `HANDLER_PATH`           | nodejs26, python314 |                                         |
-| `REQ_MB_LIMIT`                 | `FUNC_BODY_MB_LIMIT`     | nodejs26            |                                         |
-| `FUNC_MEMFILE_MAX`             | `FUNC_BODY_MB_LIMIT`     | python314           | Unit changed from bytes to megabytes    |
-| `KYMA_INTERNAL_LOGGER_ENABLED` | `SERVER_INTERNAL_LOGGER` | nodejs26, python314 |                                         |
+| Old name                       | New name                 | Runtimes            | Notes                                |
+| ------------------------------ | ------------------------ | ------------------- | ------------------------------------ |
+| `FUNC_HANDLER`                 | `HANDLER_FUNC_NAME`      | nodejs26, python314 |                                      |
+| `MOD_NAME`                     | `HANDLER_MOD_NAME`       | nodejs26, python314 |                                      |
+| `KUBELESS_INSTALL_VOLUME`      | `HANDLER_PATH`           | nodejs26, python314 |                                      |
+| `REQ_MB_LIMIT`                 | `FUNC_BODY_MB_LIMIT`     | nodejs26            |                                      |
+| `FUNC_MEMFILE_MAX`             | `FUNC_BODY_MB_LIMIT`     | python314           | Unit changed from bytes to megabytes |
+| `KYMA_INTERNAL_LOGGER_ENABLED` | `SERVER_INTERNAL_LOGGER` | nodejs26, python314 |                                      |
 
 ### 7. Change the Runtime Version
 
@@ -360,12 +366,17 @@ kubectl patch function <function-name> --type merge -p '{"spec":{"runtime":"pyth
 
 <!-- tabs:end -->
 
-### 8. Verify the Migration
+## Result
 
-Check that the Function is running with the new runtime:
+Verify that the Function is running with the new runtime:
 
 ```bash
 kubectl get function <function-name>
 ```
 
 The `STATE` column shows `Running` when the migration is complete.
+
+## Related Information
+
+- [Function's Specification](../technical-reference/07-70-function-specification.md) — full SDK reference for `nodejs26` and `python314`
+- [Environment Variables](../technical-reference/05-20-env-variables.md) — complete list of runtime environment variables
