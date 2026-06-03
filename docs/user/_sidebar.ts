@@ -6,6 +6,7 @@ export default [
   { text: 'Limitations', link: './00-50-limitations' },
   { text: 'Logging Configuration', link: './00-70-configuring-logging' },
   { text: 'Migrate to the New Runtime API', link: './00-80-migrate-to-new-runtime-api' },
+  { text: 'Runtime Deprecation Schedule', link: './00-90-runtime-deprecation-schedule' },
   { text: 'Tutorials', link: './tutorials/README', collapsed: true, items: [
     { text: 'Create an Inline Function', link: './tutorials/01-10-create-inline-function' },
     { text: 'Create a Git Function', link: './tutorials/01-11-create-git-function' },
@@ -30,8 +31,7 @@ export default [
     { text: 'Function Processing', link: './technical-reference/07-20-function-processing-stages' },
     { text: 'Git Source Type', link: './technical-reference/07-40-git-source-type' },
     { text: 'Function\'s Specification', link: './technical-reference/07-70-function-specification' },
-    { text: 'Available Presets', link: './technical-reference/07-80-available-presets' },
-    { text: 'Runtime Deprecation Schedule', link: './technical-reference/07-90-runtime-deprecation-schedule' }
+    { text: 'Available Presets', link: './technical-reference/07-80-available-presets' }
     ] },
   { text: 'Troubleshooting Guides', link: './troubleshooting-guides/README', collapsed: true, items: [
     { text: 'Serverless Periodically Restarting', link: './troubleshooting-guides/03-50-serverless-periodically-restaring' },
