@@ -2,7 +2,12 @@
 
 With the Serverless module, you can create Functions in both Node.js and Python. Although the Function's interface is unified, its specification differs depending on the runtime used to run the Function.
 
-## Signature
+> [!NOTE] 
+> The `nodejs26` and `python314` runtimes use a new, simplified API. Handlers receive the raw HTTP request and response objects directly instead of the legacy `event` and `context` wrapper objects. See the [New API (nodejs26, python314)](#new-api-nodejs26-python314) section.
+
+## Legacy API (nodejs20, nodejs22, nodejs24, python312)
+
+### Signature
 
 Function's code is represented by a handler that is a method that processes events. When your Function is invoked, it runs this handler method to process a given request and return a response.
 
@@ -95,7 +100,7 @@ See the detailed descriptions of these fields:
 | **ce-id**               | Unique identifier of the event                                                                                                                                                                                                                                                                                                                                   |
 | **ce-time**             | Time at which the event was sent                                                                                                                                                                                                                                                                                                                                 |
 | **data**                | Either JSON or a string, depending on the request type. Read more about [Buffer](https://nodejs.org/api/buffer.html) in Node.js and [bytes literals](https://docs.python.org/3/reference/lexical_analysis.html#string-and-bytes-literals) in Python. <!-- markdown-link-check-disable-line -->                                                                   |
-| **tracer**              | Fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) object that allows you to communicate with the user-defined trace backend service to share tracing data. For more information on how to use the tracer object see [Customize Function traces](../tutorials/01-100-customize-function-traces.md) |
+| **tracer**              | Fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) object that allows you to communicate with the user-defined trace backend service to share tracing data. For more information, see [Customize Function Traces](../tutorials/01-100-customize-function-traces.md)                                |
 | **extensions**          | JSON object that can contain event payload, a Function's incoming request, or an outgoing response                                                                                                                                                                                                                                                               |
 
 ### Event Object SDK
@@ -116,7 +121,7 @@ The `event` object is extended by methods making some operations easier. You can
 #### **Python**
 
 | Method name | Arguments | Description |
-| **emitCloudEvent** | type, source, data, optionalCloudEventAttribute | Builds a CloudEvent based on the arguments and emits it on the eventing publisher service. You must pass [`datacontenttype`](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/formats/json-format.md#2-attributes) as properties of the last optional argument `optionalCloudEventAttribute` |
+| **emitCloudEvent** | type, source, data, optionalCloudEventAttribute | Builds a CloudEvent based on the arguments and emits it on the eventing publisher service. You can pass any additional [cloudevent attributes](https://github.com/cloudevents/spec/blob/v1.0.2/cloudevents/formats/json-format.md#2-attributes) as properties of the last optional argument `optionalCloudEventAttribute` |
 
 <!-- tabs:end -->
 
@@ -211,6 +216,151 @@ def main(event, context):
         response_payload = json.dumps({'error': 'Invalid Content-Type.'})
 
     return HTTPResponse(body=response_payload, status=status, headers=headers)
+```
+
+<!-- tabs:end -->
+
+## New API (nodejs26, python314)
+
+The `nodejs26` and `python314` runtimes use a simplified handler API. Instead of `event` and `context` wrapper objects, handlers receive the raw HTTP request and response objects directly.
+
+### Signature
+
+<!-- tabs:start -->
+
+#### **Node.js 26**
+
+The handler receives the Express [Request](https://expressjs.com/en/api.html#req) and [Response](https://expressjs.com/en/api.html#res) objects directly. Return values are ignored — use `res` to send the response.
+
+```js
+module.exports = {
+    main: function (req, res) {
+        res.send('Hello World!')
+    }
+}
+```
+
+Async handlers are also supported:
+
+```js
+module.exports = {
+    main: async function (req, res) {
+        const data = await fetchSomething();
+        res.json(data);
+    }
+}
+```
+
+#### **Python 314**
+
+The handler takes no arguments. Use [Flask's `request`](https://flask.palletsprojects.com/en/stable/api/#flask.request) context-local to access the incoming request, and return a value or a Flask [Response](https://flask.palletsprojects.com/en/stable/api/#flask.Response).
+
+```python
+import flask
+
+def main():
+    return 'Hello World!'
+```
+
+Accessing the request:
+
+```python
+import flask
+
+def main():
+    name = flask.request.args.get('name', 'World')
+    return f'Hello {name}!'
+```
+
+<!-- tabs:end -->
+
+### SDK Module
+
+Both `nodejs26` and `python314` expose an `sdk` module that provides tracing, CloudEvent helpers, and function metadata.
+
+<!-- tabs:start -->
+
+#### **Node.js 26**
+
+Import the `sdk` module:
+
+```js
+import { getCloudEvent, emitCloudEvent, getTracer } from 'sdk';
+```
+
+| Method / Property    | Arguments                                       | Description                                                                                                                                     |
+| -------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **getTracer**        | —                                               | Returns the fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) for this Function. |
+| **getCloudEvent**    | Express request                                 | Parses a CloudEvent from the incoming request. Returns `null` if the request is not a CloudEvent.                                               |
+| **emitCloudEvent**   | type, source, data, optionalCloudEventAttribute | Builds a CloudEvent based on the arguments and emits it on the eventing publisher service.                                                      |
+| **getFunctionName**  | —                                               | Returns the name of the current Function.                                                                                                       |
+| **getNamespace**     | —                                               | Returns the namespace of the current Function.                                                                                                  |
+| **getRuntime**       | —                                               | Returns the runtime identifier (for example, `nodejs26`).                                                                                       |
+| **getTimeout**       | —                                               | Returns the configured call timeout in seconds.                                                                                                 |
+| **getBodySizeLimit** | —                                               | Returns the configured body size limit in megabytes.                                                                                            |
+
+#### **Python 314**
+
+Import the `sdk` module:
+
+```python
+import sdk
+```
+
+| Method / Property       | Arguments                               | Description                                                                                                                                     |
+| ----------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **get_tracer**          | —                                       | Returns the fully configured OpenTelemetry [tracer](https://opentelemetry.io/docs/reference/specification/trace/api/#tracer) for this Function. |
+| **get_cloud_event**     | —                                       | Parses a CloudEvent from the current Flask request. Returns `None` if the request is not a CloudEvent.                                          |
+| **emit_cloud_event**    | type, source, data, optional_attributes | Builds a CloudEvent based on the arguments and emits it on the eventing publisher service.                                                      |
+| **get_function_name**   | —                                       | Returns the name of the current Function.                                                                                                       |
+| **get_namespace**       | —                                       | Returns the namespace of the current Function.                                                                                                  |
+| **get_runtime**         | —                                       | Returns the runtime identifier (for example, `python314`).                                                                                      |
+| **get_timeout**         | —                                       | Returns the configured call timeout in seconds.                                                                                                 |
+| **get_body_size_limit** | —                                       | Returns the configured body size limit in bytes.                                                                                                |
+
+<!-- tabs:end -->
+
+### Custom HTTP Responses
+
+<!-- tabs:start -->
+
+#### **Node.js 26**
+
+Use the Express `res` object directly:
+
+```js
+module.exports = {
+    main: function (req, res) {
+        if (req.query.id === undefined) {
+            res.status(400).send('Missing id parameter');
+            return;
+        }
+        res.json({ id: req.query.id });
+    }
+}
+```
+
+#### **Python 314**
+
+Return a string, dict, or a Flask [Response](https://flask.palletsprojects.com/en/stable/api/#flask.Response) object:
+
+```python
+import flask
+
+SUPPORTED_CONTENT_TYPES = ['application/json']
+
+def main():
+    if flask.request.content_type not in SUPPORTED_CONTENT_TYPES:
+        return flask.Response(
+            response='{"error": "Invalid Content-Type."}',
+            status=400,
+            mimetype='application/json',
+        )
+    return flask.Response(
+        response='{"success": "Message accepted."}',
+        status=202,
+        mimetype='application/json',
+    )
 ```
 
 <!-- tabs:end -->
