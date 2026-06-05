@@ -168,6 +168,29 @@ updates:
         patterns:
           - "kyma-project/prod/external/library/node"
           - "kyma-project/restricted-prod/sap.com/node-fips"
+  - package-ecosystem: "docker"
+    directory: "/components/runtimes/nodejs26"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    registries:
+      - restricted
+    commit-message:
+      prefix: "nodejs26"
+      include: "scope"
+    ignore:
+      # ignore minor node updates, e.g. 20.x -> 21.x
+      - dependency-name: kyma-project/prod/external/library/node
+        update-types: ["version-update:semver-major"]
+      - dependency-name: kyma-project/restricted-prod/sap.com/node-fips
+        update-types: ["version-update:semver-major"]
+    groups:
+      node:
+        patterns:
+          - "kyma-project/prod/external/library/node"
+          - "kyma-project/restricted-prod/sap.com/node-fips"
 
   - package-ecosystem: "pip"
     directory: "/components/runtimes/python312"
@@ -235,6 +258,21 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "npm-nodejs24"
+      include: "scope"
+    groups:
+      opentelemetry:
+        patterns:
+          - "@opentelemetry/*"
+
+  - package-ecosystem: "npm"
+    directory: "/components/runtimes/nodejs26"
+    labels:
+      - "area/dependency"
+      - "kind/chore"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "npm-nodejs26"
       include: "scope"
     groups:
       opentelemetry:
