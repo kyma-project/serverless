@@ -30,15 +30,15 @@ jobs:
           IMG_DIRECTORY: "prod"
           IMG_VERSION: ${{ github.event.inputs.name }}
           PROJECT_ROOT: "."
-      
+
       - name: Bump operator kustomize
         run: ./.github/scripts/upgrade-operator-kustomize.sh
         env:
           IMG: "europe-docker.pkg.dev/kyma-project/prod/serverless-operator:${{ github.event.inputs.name }}"
           MODULE_VERSION: ${{ github.event.inputs.name }}
 
-      - name: Bump sec-scanners-config.yaml based on values.yaml
-        run: ./.github/scripts/upgrade-sec-scanners-config.sh
+      - name: Bump component-config.yaml based on values.yaml
+        run: ./.github/scripts/upgrade-component-config.sh
         env:
           IMG_VERSION: ${{ github.event.inputs.name }}
 
@@ -63,7 +63,7 @@ jobs:
           token: ${{ secrets.BOT_TOKEN }}
           fetch-depth: 0
           ref: ${{ github.ref_name }} # Checkout to latest branch changes
-      
+
       - name: Tag latest
         if: ${{ github.event.inputs.latest_release }}
         # tag commit to inform another workload, responsible for creating right release
@@ -76,6 +76,6 @@ jobs:
         run: |
           git tag ${{ github.event.inputs.name }}
           git push origin ${{ github.event.inputs.name }}
-  
+
 # this workload ends on creating the right tag
 # the next steps are located in the .github/workloads/create-release-on-tag.yaml file

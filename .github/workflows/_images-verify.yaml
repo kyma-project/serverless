@@ -5,8 +5,8 @@ on:
   workflow_call:
 
 jobs:
-  # check if developer doesn't change `main` images in the values.yaml and sec-scanners-config.yaml files
-  verify-sec-scanner-and-values-files:
+  # check if developer doesn't change `main` images in the values.yaml and component-config.yaml files
+  verify-component-and-values-files:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout to main
@@ -16,9 +16,9 @@ jobs:
 
       - name: Export main images from the main ref
         run: |
-          # export sec-scanners-config.yaml images with the main tag as github env
-          echo SSC_MAIN_IMAGES=$(yq '.bdba[] | select(contains(":main")) | sub(":.*", "")' sec-scanners-config.yaml) >> $GITHUB_ENV
-          
+          # export component-config.yaml images with the main tag as github env
+          echo SSC_MAIN_IMAGES=$(yq '.images[] | select(contains(":main")) | sub(":.*", "")' component-config.yaml) >> $GITHUB_ENV
+
           # export values. images with the main tag as github env
           echo VALUES_MAIN_IMAGES=$(yq '.global.images[] | select(.version == "main") | .name' config/buildless-serverless/values.yaml) >> $GITHUB_ENV
 
@@ -27,14 +27,14 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
-      
-      - name: Verify sec-scanners-config.yaml images
+
+      - name: Verify component-config.yaml images
         run: |
-          PR_NOT_MAIN_IMAGES=$(yq '.bdba[] | select(contains(":main") | not ) | sub(":.*", "")' sec-scanners-config.yaml) \
+          PR_NOT_MAIN_IMAGES=$(yq '.images[] | select(contains(":main") | not ) | sub(":.*", "")' component-config.yaml) \
             .github/scripts/verify-image-changes.sh
         env:
           MAIN_IMAGES: ${{ env.SSC_MAIN_IMAGES }}
-      
+
       - name: Verify values.yaml images
         run: |
           PR_NOT_MAIN_IMAGES=$(yq '.global.images[] | select(.version != "main") | .name' config/buildless-serverless/values.yaml) \
