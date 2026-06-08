@@ -1,0 +1,14 @@
+name: kyma-project.io/module/serverless
+team: kyma/otters-dev
+images:
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs20:main
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs22:main
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-nodejs24:main
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python312:main
+  - europe-docker.pkg.dev/kyma-project/prod/function-runtime-python314:main
+  - europe-docker.pkg.dev/kyma-project/restricted-prod/function-runtime-nodejs22-fips:main
+  - europe-docker.pkg.dev/kyma-project/restricted-prod/function-runtime-nodejs24-fips:main
+  - europe-docker.pkg.dev/kyma-project/restricted-prod/function-runtime-python314-fips:main
+  - europe-docker.pkg.dev/kyma-project/prod/serverless-operator:main
+  - europe-docker.pkg.dev/kyma-project/prod/function-buildless-controller:main
+  - europe-docker.pkg.dev/kyma-project/prod/function-buildless-init:main
