@@ -9,4 +9,4 @@ opentelemetry-sdk==1.42.1
 opentelemetry-exporter-otlp-proto-http==1.42.1
 opentelemetry-propagator-b3==1.42.1
 opentelemetry-instrumentation-requests==0.63b1
-cloudevents==2.0.0
+cloudevents==2.1.0
