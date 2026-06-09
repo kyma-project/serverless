@@ -24,6 +24,7 @@ jobs:
     name: Create draft release
     needs: builds
     runs-on: ubuntu-latest
+    environment: secrets
 
     steps:
       - name: Checkout code
@@ -64,6 +65,7 @@ jobs:
     name: Publish release
     needs: [integrations, create-draft]
     runs-on: ubuntu-latest
+    environment: secrets
 
     steps:
       - name: Checkout code
