@@ -130,6 +130,27 @@ jobs:
       build-args: |
         BASE=fips
 
+  build-nodejs26:
+    needs: compute-tags
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: function-runtime-nodejs26
+      dockerfile: Dockerfile
+      context: components/runtimes/nodejs26
+      tags: ${{ needs.compute-tags.outputs.tags }}
+
+  build-nodejs26-fips:
+    needs: compute-tags
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: function-runtime-nodejs26-fips
+      dockerfile: Dockerfile
+      context: components/runtimes/nodejs26
+      tags: ${{ needs.compute-tags.outputs.tags }}
+      use-restricted-registry: true
+      build-args: |
+        BASE=fips
+
   build-python312:
     needs: compute-tags
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
