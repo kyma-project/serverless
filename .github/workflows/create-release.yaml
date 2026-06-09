@@ -16,6 +16,7 @@ jobs:
   upgrade-images:
     name: Upgrade main images
     runs-on: ubuntu-latest
+    environment: secrets
 
     steps:
       - name: Checkout code
@@ -55,6 +56,7 @@ jobs:
     name: Create tag
     needs: upgrade-images
     runs-on: ubuntu-latest
+    environment: secrets
 
     steps:
       - name: Checkout code

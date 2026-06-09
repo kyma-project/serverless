@@ -116,6 +116,7 @@ jobs:
   fips-mode-serverless-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') }}
     runs-on: ubuntu-latest
+    environment: secrets
     steps:
       - uses: actions/checkout@v6
         with:
@@ -142,6 +143,7 @@ jobs:
   git-auth-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') }}
     runs-on: ubuntu-latest
+    environment: secrets
     steps:
       - uses: actions/checkout@v6
         with:
@@ -169,6 +171,7 @@ jobs:
   fips-mode-git-auth-integration-test:
     if: ${{ !startsWith(github.event_name, 'pull_request') }}
     runs-on: ubuntu-latest
+    environment: secrets
     steps:
       - uses: actions/checkout@v6
         with:
@@ -197,6 +200,7 @@ jobs:
   btp-integration-test:
     if: ${{ inputs.trigger_btp }}
     runs-on: ubuntu-latest
+    environment: secrets
     steps:
       - uses: actions/checkout@v6
         with:
