@@ -18,5 +18,5 @@ data:
   list: |- {{ (.Files.Get "busola.yaml" | fromYaml).list | toYaml | nindent 4 }}
   translations: |- {{ (.Files.Get "busola.yaml" | fromYaml).translations | toYaml | nindent 4 }}
   form: |- {{ (.Files.Get "busola.yaml" | fromYaml).form | toYaml | nindent 4 }}
-  dataSources |- {{ (.Files.Get "busola.yaml" | fromYaml).dataSources | toYaml | nindent 4 }}
-  presets |- {{ (.Files.Get "busola.yaml" | fromYaml).presets | toYaml | nindent 4 }}
+  dataSources: |- {{ (.Files.Get "busola.yaml" | fromYaml).dataSources | toYaml | nindent 4 }}
+  presets: |- {{ (.Files.Get "busola.yaml" | fromYaml).presets | toYaml | nindent 4 }}
