@@ -337,9 +337,9 @@ subCommands:
         default: ""
       - type: string
         name: "version"
-        description: "specifies which version of node runtime should be used {20 - deprecated|22}"
+        description: "specifies which version of node runtime should be used {20 - deprecated|22|24|26}"
         shorthand: "v"
-        default: "22"
+        default: "24"
       with:
         dryRun: ${{ .flags.dryrun.value }}
         output: ${{ .flags.output.value }}

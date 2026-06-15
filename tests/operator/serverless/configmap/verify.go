@@ -16,6 +16,7 @@ type FunctionConfig struct {
 		Nodejs20 string `yaml:"nodejs20"`
 		Nodejs22 string `yaml:"nodejs22"`
 		Nodejs24 string `yaml:"nodejs24"`
+		Nodejs26 string `yaml:"nodejs26"`
 	} `yaml:"images"`
 }
 
@@ -48,6 +49,9 @@ func verifyConfigmap(testutils *utils.TestUtils, configmap *corev1.ConfigMap, se
 		}
 		if !isFipsImage(cfg.Images.Nodejs24) {
 			return fmt.Errorf("expected FIPS image for nodejs24, got %s", cfg.Images.Nodejs24)
+		}
+		if !isFipsImage(cfg.Images.Nodejs26) {
+			return fmt.Errorf("expected FIPS image for nodejs26, got %s", cfg.Images.Nodejs26)
 		}
 	}
 
