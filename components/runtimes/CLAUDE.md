@@ -50,8 +50,7 @@ All runtimes read configuration from env vars injected by the Function Controlle
 | `FUNC_HANDLER` | (nodejs20-24, python312, deprecated) Exported function name |
 | `HANDLER_MOD_NAME` | (nodejs26, python314) Handler module filename without extension (default: `handler`) |
 | `MOD_NAME` | (nodejs20-24, python312, deprecated) Handler module filename |
-| `HANDLER_PATH` | (nodejs26, python314) Path to user source code (default: `/`) |
-| `KUBELESS_INSTALL_VOLUME` | (nodejs20-24, python312, deprecated) Path to user source code |
+| `HANDLER_PATH` | Path to user source code (default: `/`) |
 | `TRACE_COLLECTOR_ENDPOINT` | OTLP trace collector URL |
 | `PUBLISHER_PROXY_ADDRESS` | Eventing publisher proxy URL |
 | `FUNC_BODY_MB_LIMIT` | (nodejs26, python314) Body size limit in MB |
