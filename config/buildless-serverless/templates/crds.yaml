@@ -412,8 +412,8 @@ spec:
                     type: object
                   type: array
                   x-kubernetes-validations:
-                    - message: 'Following envs are reserved and cannot be used: [''FUNC_RUNTIME'',''FUNC_HANDLER'',''FUNC_PORT'',''FUNC_HANDLER_SOURCE'',''FUNC_HANDLER_DEPENDENCIES'',''MOD_NAME'',''NODE_PATH'',''PYTHONPATH'']'
-                      rule: (self.all(e, !(e.name in ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH'])))
+                    - message: 'Following envs are reserved and cannot be used: [''FUNC_RUNTIME'',''FUNC_HANDLER'',''FUNC_PORT'',''FUNC_HANDLER_SOURCE'',''FUNC_HANDLER_DEPENDENCIES'',''MOD_NAME'',''NODE_PATH'',''PYTHONPATH'', ''HANDLER_FUNC_NAME'', ''HANDLER_MOD_NAME'']'
+                      rule: (self.all(e, !(e.name in ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH', 'HANDLER_FUNC_NAME', 'HANDLER_MOD_NAME'])))
                 labels:
                   additionalProperties:
                     type: string

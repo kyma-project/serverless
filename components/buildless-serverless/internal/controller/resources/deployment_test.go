@@ -1902,11 +1902,11 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "TRUE",
 				},
 				{
-					Name:  "MOD_NAME",
+					Name:  "HANDLER_MOD_NAME",
 					Value: "handler",
 				},
 				{
-					Name:  "FUNC_HANDLER",
+					Name:  "HANDLER_FUNC_NAME",
 					Value: "main",
 				},
 			},

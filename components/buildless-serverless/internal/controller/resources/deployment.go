@@ -680,17 +680,23 @@ func generalEnvs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []cor
 	}
 
 	if f.HasPythonRuntime() {
+		funcHandlerEnv := "HANDLER_FUNC_NAME"
+		modNeNameEnv := "HANDLER_MOD_NAME"
+		if(f.Spec.Runtime.IsRuntimeLegacy()) {
+			funcHandlerEnv = "FUNC_HANDLER"
+			modNeNameEnv = "MOD_NAME"
+		}
 		envs = append(envs, []corev1.EnvVar{
 			{
 				Name:  "PYTHONUNBUFFERED",
 				Value: "TRUE",
 			},
 			{
-				Name:  "MOD_NAME",
+				Name:  modNeNameEnv,
 				Value: "handler",
 			},
 			{
-				Name:  "FUNC_HANDLER",
+				Name:  funcHandlerEnv,
 				Value: "main",
 			},
 		}...)
