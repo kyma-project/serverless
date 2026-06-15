@@ -23,11 +23,21 @@ VARIANTS=(
     "nodejs24 M"
     "nodejs24 L"
     "nodejs24 XL"
+    "nodejs26 XS"
+    "nodejs26 S"
+    "nodejs26 M"
+    "nodejs26 L"
+    "nodejs26 XL"
     "python312 XS"
     "python312 S"
     "python312 M"
     "python312 L"
     "python312 XL"
+    "python314 XS"
+    "python314 S"
+    "python314 M"
+    "python314 L"
+    "python314 XL"
 )
 
 kubectl_wait() {
