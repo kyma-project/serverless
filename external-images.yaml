@@ -22,5 +22,5 @@ images:
   - source: "python@sha256:7747d47f92cfca63a6e2b50275e23dba8407c30d8ae929a88ddd49a5d3f2d331"
     tag: "3.12.13-alpine3.23"
   # https://hub.docker.com/layers/library/python/3.14-alpine
-  - source: "python@sha256:5a824eb82cc75361f98611f3cfc5091ea33f10a6ccea4d4ebdabbc523b9a1614"
-    tag: "3.14.5-alpine3.23"
+  - source: "python@sha256:02da11a8d221ca167aa07de20b3cd7104c1f01227f4b02b1fa13cf6517280a81"
+    tag: "3.14.6-alpine3.23"
