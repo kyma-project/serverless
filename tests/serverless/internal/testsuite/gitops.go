@@ -73,7 +73,7 @@ func Gitops(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (e
 
 func createFunctionStep(logf *logrus.Entry, gitFn *function.Function, gitCfg git.GitopsConfig) executor.Step {
 	gitopsFunction := runtimes.
-		NewGitopsFunctionBuilder(gitCfg.GetGitServerInClusterURL(), serverlessv1alpha2.NodeJs24).
+		NewGitopsFunctionBuilder(gitCfg.GetGitServerInClusterURL(), serverlessv1alpha2.NodeJs26).
 		Reference("master").
 		AddLabel("sidecar.istio.io/inject", "true"). // configured with istio sidecar
 		Build()

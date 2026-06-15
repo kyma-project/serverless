@@ -561,8 +561,12 @@ func runtimeImage(f *serverlessv1alpha2.Function, c *config.FunctionConfig) stri
 		return c.Images.NodeJs22
 	case serverlessv1alpha2.NodeJs24:
 		return c.Images.NodeJs24
+	case serverlessv1alpha2.NodeJs26:
+		return c.Images.NodeJs26
 	case serverlessv1alpha2.Python312:
 		return c.Images.Python312
+	case serverlessv1alpha2.Python314:
+		return c.Images.Python314
 	default:
 		return ""
 	}

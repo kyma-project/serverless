@@ -30,6 +30,7 @@ func HanaClientFIPS(restConfig *rest.Config, cfg internal.Config, logf *logrus.E
 
 	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
 	nodejs24Logger := logf.WithField(runtimeKey, "nodejs24")
+	nodejs26Logger := logf.WithField(runtimeKey, "nodejs26")
 
 	genericContainer, err := newGenericContainer(logf, restConfig, cfg)
 	if err != nil {
@@ -38,6 +39,7 @@ func HanaClientFIPS(restConfig *rest.Config, cfg internal.Config, logf *logrus.E
 
 	nodejs22Fn := function.NewFunction("hana-nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
 	nodejs24Fn := function.NewFunction("hana-nodejs24", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs24Logger))
+	nodejs26Fn := function.NewFunction("hana-nodejs26", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs26Logger))
 
 	logf.Infof("Testing function in namespace: %s", cfg.Namespace)
 
@@ -58,6 +60,10 @@ func HanaClientFIPS(restConfig *rest.Config, cfg internal.Config, logf *logrus.E
 				function.CreateFunction(nodejs24Logger, nodejs24Fn, "Create NodeJS24 Function", runtimes.NodeJSFunctionUsingHanaClient(serverlessv1alpha2.NodeJs24)),
 				assertion.NewHTTPCheck(nodejs24Logger, "Testing hana-client in nodejs24 function", nodejs24Fn.FunctionURL, poll, "OK"),
 			),
+			executor.NewSerialTestRunner(nodejs26Logger, "NodeJS26 test",
+				function.CreateFunction(nodejs26Logger, nodejs26Fn, "Create NodeJS26 Function", runtimes.NodeJSFunctionUsingHanaClient(serverlessv1alpha2.NodeJs26)),
+				assertion.NewHTTPCheck(nodejs26Logger, "Testing hana-client in nodejs26 function", nodejs26Fn.FunctionURL, poll, "OK"),
+			),
 		),
 	), nil
 }
@@ -74,6 +80,7 @@ func HanaClient(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
 	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
 	nodejs24Logger := logf.WithField(runtimeKey, "nodejs24")
+	nodejs26Logger := logf.WithField(runtimeKey, "nodejs26")
 
 	genericContainer, err := newGenericContainer(logf, restConfig, cfg)
 	if err != nil {
@@ -83,6 +90,7 @@ func HanaClient(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry
 	nodejs20Fn := function.NewFunction("hana-nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
 	nodejs22Fn := function.NewFunction("hana-nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
 	nodejs24Fn := function.NewFunction("hana-nodejs24", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs24Logger))
+	nodejs26Fn := function.NewFunction("hana-nodejs26", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs26Logger))
 
 	logf.Infof("Testing function in namespace: %s", cfg.Namespace)
 
@@ -106,6 +114,10 @@ func HanaClient(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry
 			executor.NewSerialTestRunner(nodejs24Logger, "NodeJS24 test",
 				function.CreateFunction(nodejs24Logger, nodejs24Fn, "Create NodeJS24 Function", runtimes.NodeJSFunctionUsingHanaClient(serverlessv1alpha2.NodeJs24)),
 				assertion.NewHTTPCheck(nodejs24Logger, "Testing hana-client in nodejs24 function", nodejs24Fn.FunctionURL, poll, "OK"),
+			),
+			executor.NewSerialTestRunner(nodejs26Logger, "NodeJS26 test",
+				function.CreateFunction(nodejs26Logger, nodejs26Fn, "Create NodeJS26 Function", runtimes.NodeJSFunctionUsingHanaClient(serverlessv1alpha2.NodeJs26)),
+				assertion.NewHTTPCheck(nodejs26Logger, "Testing hana-client in nodejs26 function", nodejs26Fn.FunctionURL, poll, "OK"),
 			),
 		),
 	), nil

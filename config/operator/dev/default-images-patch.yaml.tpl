@@ -21,6 +21,10 @@ spec:
               value: ""
             - name: IMAGE_FUNCTION_RUNTIME_NODEJS24_FIPS
               value: ""
+            - name: IMAGE_FUNCTION_RUNTIME_NODEJS26
+              value: ""
+            - name: IMAGE_FUNCTION_RUNTIME_NODEJS26_FIPS
+              value: ""
             - name: IMAGE_FUNCTION_RUNTIME_PYTHON312
               value: ""
             - name: IMAGE_FUNCTION_RUNTIME_PYTHON312_FIPS

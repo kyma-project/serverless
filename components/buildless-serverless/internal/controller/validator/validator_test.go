@@ -147,7 +147,7 @@ func Test_functionValidator_validateInlineDeps(t *testing.T) {
 		{
 			name: "when js runtime with invalid dependencies then return error",
 			spec: serverlessv1alpha2.FunctionSpec{
-				Runtime: serverlessv1alpha2.NodeJs24,
+				Runtime: serverlessv1alpha2.NodeJs26,
 				Source: serverlessv1alpha2.Source{
 					Inline: &serverlessv1alpha2.InlineSource{
 						Source:       "intelligent-fermi",
@@ -162,7 +162,7 @@ func Test_functionValidator_validateInlineDeps(t *testing.T) {
 		{
 			name: "when js runtime with valid dependencies then no errors",
 			spec: serverlessv1alpha2.FunctionSpec{
-				Runtime: serverlessv1alpha2.NodeJs24,
+				Runtime: serverlessv1alpha2.NodeJs26,
 				Source: serverlessv1alpha2.Source{
 					Inline: &serverlessv1alpha2.InlineSource{
 						Source:       "epic-swirles",
@@ -206,7 +206,7 @@ func Test_functionValidator_validateRuntime(t *testing.T) {
 			},
 		},
 	}
-	for _, runtime := range []serverlessv1alpha2.Runtime{serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22, serverlessv1alpha2.NodeJs24, serverlessv1alpha2.Python312} {
+	for _, runtime := range []serverlessv1alpha2.Runtime{serverlessv1alpha2.NodeJs20, serverlessv1alpha2.NodeJs22, serverlessv1alpha2.NodeJs24, serverlessv1alpha2.NodeJs26, serverlessv1alpha2.Python312, serverlessv1alpha2.Python314} {
 		tests = append(tests, testData{
 			name:    fmt.Sprintf("when %s then no errors", runtime),
 			runtime: runtime,
@@ -449,7 +449,7 @@ func Test_validator_validateFips(t *testing.T) {
 		runtime  serverlessv1alpha2.Runtime
 		want     []string
 	}
-	runtimeAllowedInFips := serverlessv1alpha2.NodeJs24
+	runtimeAllowedInFips := serverlessv1alpha2.NodeJs26
 	urlAllowedInFips := "http://github.com/user/repo.git"
 	tests := []testData{
 		{
@@ -494,6 +494,14 @@ func Test_validator_validateFips(t *testing.T) {
 			runtime:  serverlessv1alpha2.Python312,
 			want:     []string{"runtime python312 is not allowed in FIPS mode"},
 		},
+		// TODO(Hx2): is this correct????????
+		{
+			name:     "FIPS enabled with Python 3.14 runtime should return no errors",
+			fipsMode: true,
+			URL:      urlAllowedInFips,
+			runtime:  serverlessv1alpha2.Python314,
+			want:     []string{},
+		},
 		{
 			name:     "FIPS enabled with Node.js 20 runtime should return error",
 			fipsMode: true,
@@ -516,7 +524,14 @@ func Test_validator_validateFips(t *testing.T) {
 			want:     []string{},
 		},
 		{
-			name:     "FIPS disabled with Python 3.12 runtime should return no errors",
+			name:     "FIPS enabled with Node.js 26 runtime should return no errors",
+			fipsMode: true,
+			URL:      urlAllowedInFips,
+			runtime:  serverlessv1alpha2.NodeJs26,
+			want:     []string{},
+		},
+		{
+			name:     "FIPS  disabled with Python 3.12 runtime should return no errors",
 			fipsMode: false,
 			URL:      urlAllowedInFips,
 			runtime:  serverlessv1alpha2.Python312,

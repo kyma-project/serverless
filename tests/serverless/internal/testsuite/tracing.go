@@ -62,8 +62,10 @@ func FunctionTracingFIPS(restConfig *rest.Config, cfg internal.Config, logf *log
 		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
 		app.NewApplication("Create HTTP basic application", HTTPAppName, HTTPAppImage, int32(80), appsCli.Deployments(genericContainer.Namespace), coreCli.Services(genericContainer.Namespace), genericContainer),
 		executor.NewParallelRunner(logf, "Fn tests",
+			newTracingPython314Runner(logf, genericContainer, poll, httpAppURL.String(), cfg.KubectlProxyEnabled),
 			newTracingNodejs22Runner(logf, genericContainer, poll, httpAppURL.String(), cfg.KubectlProxyEnabled),
 			newTracingNodejs24Runner(logf, genericContainer, poll, httpAppURL.String(), cfg.KubectlProxyEnabled),
+			newTracingNodejs26Runner(logf, genericContainer, poll, httpAppURL.String(), cfg.KubectlProxyEnabled),
 		),
 	), nil
 }
@@ -105,9 +107,11 @@ func FunctionTracing(restConfig *rest.Config, cfg internal.Config, logf *logrus.
 		app.NewApplication("Create HTTP basic application", HTTPAppName, HTTPAppImage, int32(80), appsCli.Deployments(genericContainer.Namespace), coreCli.Services(genericContainer.Namespace), genericContainer),
 		executor.NewParallelRunner(logf, "Fn tests",
 			newTracingPython312Runner(logf, genericContainer, poll, httpAppURL.String(), cfg.KubectlProxyEnabled),
+			newTracingPython314Runner(logf, genericContainer, poll, httpAppURL.String(), cfg.KubectlProxyEnabled),
 			newTracingNodejs20Runner(logf, genericContainer, poll, httpAppURL.String(), cfg.KubectlProxyEnabled),
 			newTracingNodejs22Runner(logf, genericContainer, poll, httpAppURL.String(), cfg.KubectlProxyEnabled),
 			newTracingNodejs24Runner(logf, genericContainer, poll, httpAppURL.String(), cfg.KubectlProxyEnabled),
+			newTracingNodejs26Runner(logf, genericContainer, poll, httpAppURL.String(), cfg.KubectlProxyEnabled),
 		),
 	), nil
 }
@@ -119,6 +123,16 @@ func newTracingPython312Runner(logf *logrus.Entry, genericContainer utils.Contai
 	return executor.NewSerialTestRunner(python312Logger, "Python312 test",
 		function.CreateFunction(python312Logger, python312Fn, "Create Python312 Function", runtimes.BasicTracingPythonFunction(serverlessv1alpha2.Python312, httpAppURL)),
 		assertion.TracingHTTPCheck(python312Logger, "Python312 tracing headers check", python312Fn.FunctionURL, poll),
+	)
+}
+
+func newTracingPython314Runner(logf *logrus.Entry, genericContainer utils.Container, poll utils.Poller, httpAppURL string, kubectlProxyEnabled bool) executor.Step {
+	python314Logger := logf.WithField(runtimeKey, "python314")
+	python314Fn := function.NewFunction("python314", genericContainer.Namespace, kubectlProxyEnabled, genericContainer.WithLogger(python314Logger))
+
+	return executor.NewSerialTestRunner(python314Logger, "Python314 test",
+		function.CreateFunction(python314Logger, python314Fn, "Create Python314 Function", runtimes.BasicTracingPythonFunction(serverlessv1alpha2.Python314, httpAppURL)),
+		assertion.TracingHTTPCheck(python314Logger, "Python314 tracing headers check", python314Fn.FunctionURL, poll),
 	)
 }
 
@@ -149,5 +163,15 @@ func newTracingNodejs24Runner(logf *logrus.Entry, genericContainer utils.Contain
 	return executor.NewSerialTestRunner(nodejs24Logger, "NodeJS24 test",
 		function.CreateFunction(nodejs24Logger, nodejs24Fn, "Create NodeJS24 Function", runtimes.BasicTracingNodeFunction(serverlessv1alpha2.NodeJs24, httpAppURL)),
 		assertion.TracingHTTPCheck(nodejs24Logger, "NodeJS24 tracing headers check", nodejs24Fn.FunctionURL, poll),
+	)
+}
+
+func newTracingNodejs26Runner(logf *logrus.Entry, genericContainer utils.Container, poll utils.Poller, httpAppURL string, kubectlProxyEnabled bool) executor.Step {
+	nodejs26Logger := logf.WithField(runtimeKey, "nodejs26")
+	nodejs26Fn := function.NewFunction("nodejs26", genericContainer.Namespace, kubectlProxyEnabled, genericContainer.WithLogger(nodejs26Logger))
+
+	return executor.NewSerialTestRunner(nodejs26Logger, "NodeJS26 test",
+		function.CreateFunction(nodejs26Logger, nodejs26Fn, "Create NodeJS26 Function", runtimes.BasicTracingNodeFunction(serverlessv1alpha2.NodeJs26, httpAppURL)),
+		assertion.TracingHTTPCheck(nodejs26Logger, "NodeJS26 tracing headers check", nodejs26Fn.FunctionURL, poll),
 	)
 }
