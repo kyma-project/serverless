@@ -331,7 +331,6 @@ The following environment variables were renamed in the new runtimes. The `FUNC_
 | ------------------------------ | ------------------------ | ------------------- | ------------------------------------ |
 | `FUNC_HANDLER`                 | `HANDLER_FUNC_NAME`      | nodejs26, python314 |                                      |
 | `MOD_NAME`                     | `HANDLER_MOD_NAME`       | nodejs26, python314 |                                      |
-| `KUBELESS_INSTALL_VOLUME`      | `HANDLER_PATH`           | nodejs26, python314 |                                      |
 | `REQ_MB_LIMIT`                 | `FUNC_BODY_MB_LIMIT`     | nodejs26            |                                      |
 | `FUNC_MEMFILE_MAX`             | `FUNC_BODY_MB_LIMIT`     | python314           | Unit changed from bytes to megabytes |
 | `KYMA_INTERNAL_LOGGER_ENABLED` | `SERVER_INTERNAL_LOGGER` | nodejs26, python314 |                                      |
