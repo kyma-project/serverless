@@ -191,6 +191,7 @@ form:
             module.exports = {
               main: async function (event, context) {
                 var queryParams = event['extensions']['request']['query'];
+                
                 //read query param, for example `?greeting=Hi`
                 var greetingMsg = queryParams['greeting']; 
                 if(!greetingMsg) {
@@ -213,7 +214,8 @@ form:
                 return message" :
             '' : ''
           language: |-
-            $language = 'JavaScript' ? $exists($root.metadata.creationTimestamp) ? $root.spec.source.inline.source : "/*
+            $exists($root.metadata.creationTimestamp) ? $root.spec.source.inline.source:
+            $language = 'JavaScript' ? $root.spec.runtime in ["nodejs20", "nodejs22", "nodejs24"] ? "/*
             If you prefer mjs import/export syntax over cjs you need to specify
               'type': 'module'
             in the Function dependencies (package.json) and along with that change the import/export syntax to:
@@ -239,16 +241,29 @@ form:
                 console.log(message);
                 return message;
               }
+            }" : 
+            "/*
+            If you prefer mjs import/export syntax over cjs you need to specify
+              'type': 'module'
+            in the Function dependencies (package.json) and along with that change the import/export syntax to:
+            import foo from 'foo'
+            export function main(event, context) {
+              //your logic using foo library
+              return
+            }
+            */
+
+            module.exports = {
+              TODO
             }" :
-            $language = 'Python' ? $exists($root.metadata.creationTimestamp) ? $root.spec.source.inline.source : "def main(event, context):
+            $language = 'Python' ? $item.spec.runtime.value = "pythonn312" ? "def main(event, context):
                 request = event['extensions']['request']
                 greetingMsg = request.query.get('greeting')
                 if not greetingMsg:
                   greetingMsg = 'Hello world'
                 message = greetingMsg + ' from the Kyma Function '+context['function-name']+' running on '+context['runtime']+ '!';
                 print(message)
-                return message" :
-            ''
+                return message" : $item.spec.runtime : ''
       - path: dependencies
         widget: CodeEditor
         formatAsString: true
