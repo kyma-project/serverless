@@ -682,7 +682,7 @@ func generalEnvs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []cor
 	if f.HasPythonRuntime() {
 		funcHandlerEnv := "HANDLER_FUNC_NAME"
 		modNeNameEnv := "HANDLER_MOD_NAME"
-		if(f.Spec.Runtime.IsRuntimeLegacy()) {
+		if f.Spec.Runtime.IsRuntimeLegacy() {
 			funcHandlerEnv = "FUNC_HANDLER"
 			modNeNameEnv = "MOD_NAME"
 		}
