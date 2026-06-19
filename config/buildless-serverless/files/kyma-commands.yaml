@@ -233,9 +233,7 @@ subCommands:
         name: "source"
         description: "function source file path"
         shorthand: "s"
-        default: |
-          def main(event, context):
-            return "Hello World!"
+        default: ""
       - type: path
         name: "dependencies"
         description: "function dependencies file path"
@@ -258,6 +256,11 @@ subCommands:
         shorthand: o
         description: "Output format. It can be json or yaml."
         default: ""
+      - type: string
+        name: "version"
+        description: "specifies which version of python runtime should be used {3.12|3.14}"
+        shorthand: "v"
+        default: "3.12"
       with:
         output: ${{ .flags.output.value }}
         dryRun: ${{ .flags.dryrun.value }}
@@ -269,14 +272,23 @@ subCommands:
             namespace: ${{ .flags.namespace.value }}
           spec:
             runtimeImageOverride: ${{ .flags.runtimeimageoverride.value }}
-            runtime: python312
+            runtime: python${{ .flags.version.value | replace "." "" }}
             replicas: ${{ .flags.replicas.value }}
             env: ${{ .flags.env.value | toEnvs }}
             secretMounts: ${{ .flags.secretmount.value | toArray "{'secretName':'{{.key}}','mountPath':'{{.value}}'}" }}
             source:
               inline:
                 source: |
+                  ${{ if .flags.source.value -}}
                   ${{ .flags.source.value | newLineIndent 20 }}
+                  ${{- else -}}${{ if eq .flags.version.value "3.12" -}}
+                  def main(event, context):
+                    return "Hello World!"
+                  ${{- else -}}
+                  import sdk
+                  def main():
+                    return "Hello World!"
+                  ${{- end }}${{- end }}
                 dependencies: |
                   ${{ .flags.dependencies.value | newLineIndent 20 }}
     - metadata:
@@ -304,12 +316,7 @@ subCommands:
         name: "source"
         description: "function source file path"
         shorthand: "s"
-        default: |
-          module.exports = {
-            main: function(event, context) {
-              return 'Hello World!'
-            }
-          }
+        default: ""
       - type: path
         name: "dependencies"
         description: "function dependencies file path"
@@ -362,7 +369,18 @@ subCommands:
             source:
               inline:
                 source: |
+                  ${{ if .flags.source.value -}}
                   ${{ .flags.source.value | newLineIndent 20 }}
+                  ${{- else}}${{ if lt (.flags.version.value | atoi) 26 -}}
+                  module.exports = {
+                    main: function(event, context) {
+                      return 'Hello Worsld!'
+                    }
+                  }
+                  ${{- else -}}
+                  export function main(req, res) {
+                    res.send('Hello World!');
+                  }${{- end }}${{- end }}
                 dependencies: |
                   ${{ .flags.dependencies.value | newLineIndent 20 }}
 
