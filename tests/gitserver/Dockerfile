@@ -1,4 +1,4 @@
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.24.0
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.24.1
 
 RUN apk add --no-cache git-daemon && \
   # apache2 and apache2-utils need to be in version smaller or equal to 2.4.58-r0
