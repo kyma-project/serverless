@@ -80,7 +80,8 @@ jobs:
           make -C components/operator deploy-fips-mode
           make -C tests/operator test
         env:
-          IMG: ${{ inputs.image }}
+          IMG_DIRECTORY: ${{ inputs.img_directory }}
+          IMG_VERSION: ${{ inputs.img_version }}
           FIPS_MODE: "true"
       - if: ${{ always() }}
         uses: ./.github/actions/collect-cluster-info
