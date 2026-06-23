@@ -25,4 +25,7 @@ USER 1000
 ENV OTEL_PROPAGATORS=tracecontext,baggage,b3multi
 ENV OTEL_PYTHON_REQUESTS_EXCLUDED_URLS="healthz,favicon.ico,metrics"
 
+# Set PYTHONUNBUFFERED to ensure that logs are flushed immediately
+ENV PYTHONUNBUFFERED=TRUE
+
 CMD ["python", "/server.py"]
