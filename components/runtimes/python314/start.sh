@@ -12,8 +12,8 @@ else
 fi
 
 # install packages
-export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
+export PYTHONPATH="/usr/src/app/.local:${PYTHONPATH}"
+PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/usr/src/app/.local --no-cache-dir -r requirements.txt;
 
 # start the server
 cd ..;
