@@ -37,10 +37,8 @@ type cloudEventResponse struct {
 	// Optional
 	CeTime string `json:"ce-time"`
 	// Optional
-	CeDataContentType string `json:"ce-datacontenttype"`
-	// Extension field, optional.
-	CeEventTypeVersion string         `json:"ce-eventtypeversion"`
-	Data               cloudEventData `json:"data"`
+	CeDataContentType string         `json:"ce-datacontenttype"`
+	Data              cloudEventData `json:"data"`
 }
 
 type cloudEventData struct {
@@ -72,10 +70,9 @@ func (ce cloudEventCheck) Name() string {
 func (ce cloudEventCheck) Run() error {
 	ceEventType := fmt.Sprintf("test-%s", ce.encoding.String())
 	expResp := cloudEventResponse{
-		CeType:             ceEventType,
-		CeSource:           "contract-test",
-		CeSpecVersion:      cloudevents.VersionV1,
-		CeEventTypeVersion: "v1alpha2",
+		CeType:        ceEventType,
+		CeSource:      "contract-test",
+		CeSpecVersion: cloudevents.VersionV1,
 	}
 	ceCtx, data, err := ce.createCECtx()
 	if err != nil {
@@ -172,11 +169,10 @@ func (s cloudEventSendCheck) Run() error {
 	}
 
 	expected := cloudEventResponse{
-		CeType:             "send-check",
-		CeSource:           s.ceSource,
-		CeSpecVersion:      cloudevents.VersionV1,
-		CeEventTypeVersion: "v1alpha2",
-		Data:               eventData,
+		CeType:        "send-check",
+		CeSource:      s.ceSource,
+		CeSpecVersion: cloudevents.VersionV1,
+		Data:          eventData,
 	}
 
 	// retry GET request to cover situations when a POST request will reach publisher-proxy after GET
@@ -225,7 +221,6 @@ func sentCloudEvent(ceCtx context.Context, expResp cloudEventResponse) error {
 	event.SetSource(expResp.CeSource)
 	event.SetType(expResp.CeType)
 	event.SetSpecVersion(expResp.CeSpecVersion)
-	event.SetExtension("eventtypeversion", expResp.CeEventTypeVersion)
 
 	result := c.Send(ceCtx, event)
 	if cloudevents.IsUndelivered(result) {
@@ -303,10 +298,6 @@ func assertCloudEvent(response cloudEventResponse, expectedResponse cloudEventRe
 
 	if response.CeSpecVersion != expectedResponse.CeSpecVersion {
 		errJoined = goerrors.Join(errors.Errorf("expected spec version %s, got: %s", expectedResponse.CeSpecVersion, response.CeSpecVersion))
-	}
-
-	if response.CeEventTypeVersion != expectedResponse.CeEventTypeVersion {
-		errJoined = goerrors.Join(errors.Errorf("expected event type version %s, got: %s", expectedResponse.CeEventTypeVersion, response.CeEventTypeVersion))
 	}
 
 	_, err = uuid.Parse(response.CeID)
