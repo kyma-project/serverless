@@ -576,12 +576,23 @@ func workingSourcesDir(f *serverlessv1alpha2.Function) string {
 	if f.HasNodejsRuntime() {
 		return "/usr/src/app/function"
 	} else if f.HasPythonRuntime() {
-		return "/kubeless"
+		if f.Spec.Runtime.IsRuntimeLegacy() {
+			return "/kubeless"
+		} else {
+			return "/usr/src/app/function"
+		}
 	}
 	return ""
 }
 
 func runtimeCommand(f *serverlessv1alpha2.Function) string {
+	if f.Spec.Runtime.IsRuntimeLegacy() {
+		return runtimeCommandLegacy(f)
+	}
+	return "./start.sh"
+}
+
+func runtimeCommandLegacy(f *serverlessv1alpha2.Function) string {
 	result := []string{"set -e;"}
 	result = append(result, runtimeCommandSources(f))
 	result = append(result, runtimeCommandInstall(f))
@@ -607,6 +618,7 @@ func runtimeCommandGitSources(f *serverlessv1alpha2.Function) string {
 	return strings.Join(result, "\n")
 }
 
+// TODO: move to image
 func runtimeCommandInlineSources(f *serverlessv1alpha2.Function) string {
 	var result []string
 	spec := &f.Spec
@@ -692,11 +704,15 @@ func sourceEnvs(f *serverlessv1alpha2.Function) []corev1.EnvVar {
 			},
 		}...)
 	}
-	if f.HasPythonRuntime() && f.Spec.Runtime.IsRuntimeLegacy() {
+	if f.HasPythonRuntime() {
+		functionPath := "/usr/src/app/function"
+		if f.Spec.Runtime.IsRuntimeLegacy() {
+			functionPath = "/kubeless"
+		}
 		envs = append(envs, []corev1.EnvVar{
 			{
 				Name:  "FUNCTION_PATH",
-				Value: "/kubeless",
+				Value: functionPath,
 			},
 		}...)
 	}
