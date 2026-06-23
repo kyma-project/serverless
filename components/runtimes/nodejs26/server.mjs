@@ -13,7 +13,11 @@ process.on('uncaughtException', (err) => {
     console.error(`Caught exception: ${err}`);
 });
 
-const handlerPath = process.env.HANDLER_PATH || './handler.js';
+const handlerFolder = process.env.HANDLER_PATH || './function';
+const handlerModuleName = process.env.HANDLER_MOD_NAME || 'handler';
+const handlerFunctionName = process.env.HANDLER_FUNC_NAME || 'main';
+const handlerPath = `${handlerFolder}/${handlerModuleName}.js`;
+
 const serviceNamespace = process.env.SERVICE_NAMESPACE || '';
 const functionName = process.env.FUNC_NAME || '';
 const bodySizeLimit = Number(process.env.FUNC_BODY_MB_LIMIT || '1');
@@ -24,7 +28,7 @@ const funcRuntime = process.env.FUNC_RUNTIME || 'nodejs26';
 const traceCollectorEndpoint = process.env.TRACE_COLLECTOR_ENDPOINT || '';
 const publisherProxyAddress = process.env.PUBLISHER_PROXY_ADDRESS || '';
 
-console.log(`Importing function sources from ${handlerPath}:main`);
+console.log(`Importing function sources from ${handlerPath}:${handlerFunctionName}`);
 console.log(`Tracing configured with endpoint ${traceCollectorEndpoint}`);
 console.log(`Publisher Proxy available on address ${publisherProxyAddress}`);
 console.log(`Starting ${funcRuntime} server ${serverHost}:${serverPort}`);
@@ -111,12 +115,12 @@ configureGracefulShutdown(server);
 
 const startTime = process.hrtime();
 import(handlerPath).then((fn) => {
-    if (isFunction(fn.main)) {
-        userFunction = fn.main;
+    if (isFunction(fn[handlerFunctionName])) {
+        userFunction = fn[handlerFunctionName];
         const elapsed = process.hrtime(startTime);
         console.log(`user code loaded in ${elapsed[0]}sec ${elapsed[1] / 1000000}ms`);
     } else {
-        console.error("Content loaded is not a function. Make sure your function exports 'main' function", fn);
+        console.error(`Content loaded from ${handlerPath} is not a function. Make sure your function exports '${handlerFunctionName}' function`, fn);
     }
 }).catch((err) => {
     console.error('Failed to load user function:', err);
