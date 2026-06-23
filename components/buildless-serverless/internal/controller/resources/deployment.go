@@ -642,12 +642,7 @@ func runtimeCommandStart(f *serverlessv1alpha2.Function) string {
 npm start;`
 	} else if f.HasPythonRuntime() {
 		return `cd ..;
-if [ -f "./kubeless.py" ]; then
-  # old file location support
-  python kubeless.py;
-else
-  python server.py;
-fi`
+python server.py;`
 	}
 	return ""
 }
@@ -676,29 +671,6 @@ func generalEnvs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []cor
 			Value: c.FunctionPublisherProxyAddress,
 		},
 	}
-
-	if f.HasPythonRuntime() {
-		funcHandlerEnv := "HANDLER_FUNC_NAME"
-		modNeNameEnv := "HANDLER_MOD_NAME"
-		if f.Spec.Runtime.IsRuntimeLegacy() {
-			funcHandlerEnv = "FUNC_HANDLER"
-			modNeNameEnv = "MOD_NAME"
-		}
-		envs = append(envs, []corev1.EnvVar{
-			{
-				Name:  "PYTHONUNBUFFERED",
-				Value: "TRUE",
-			},
-			{
-				Name:  modNeNameEnv,
-				Value: "handler",
-			},
-			{
-				Name:  funcHandlerEnv,
-				Value: "main",
-			},
-		}...)
-	}
 	envs = append(envs, spec.Env...) //TODO: this order is critical, should we provide option for users to override envs?
 	return envs
 }
@@ -718,15 +690,7 @@ func sourceEnvs(f *serverlessv1alpha2.Function) []corev1.EnvVar {
 			},
 		}...)
 	}
-	if f.HasNodejsRuntime() {
-		envs = append(envs, []corev1.EnvVar{
-			{
-				Name:  "HANDLER_PATH",
-				Value: "./function/handler.js",
-			},
-		}...)
-	}
-	if f.HasPythonRuntime() {
+	if f.HasPythonRuntime() && f.Spec.Runtime.IsRuntimeLegacy() {
 		envs = append(envs, []corev1.EnvVar{
 			{
 				Name:  "FUNCTION_PATH",

@@ -202,12 +202,7 @@ echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
-if [ -f "./kubeless.py" ]; then
-  # old file location support
-  python kubeless.py;
-else
-  python server.py;
-fi`,
+python server.py;`,
 			},
 			r.Spec.Template.Spec.Containers[0].Command)
 	})
@@ -1448,10 +1443,6 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "function-dependencies",
 				},
 				{
-					Name:  "HANDLER_PATH",
-					Value: "./function/handler.js",
-				},
-				{
 					Name:  "TRACE_COLLECTOR_ENDPOINT",
 					Value: "test-trace-collector-endpoint",
 				},
@@ -1498,10 +1489,6 @@ func TestDeployment_envs(t *testing.T) {
 				{
 					Name:  "FUNC_HANDLER_DEPENDENCIES",
 					Value: "function-dependencies",
-				},
-				{
-					Name:  "HANDLER_PATH",
-					Value: "./function/handler.js",
 				},
 				{
 					Name:  "TRACE_COLLECTOR_ENDPOINT",
@@ -1552,10 +1539,6 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "function-dependencies",
 				},
 				{
-					Name:  "HANDLER_PATH",
-					Value: "./function/handler.js",
-				},
-				{
 					Name:  "TRACE_COLLECTOR_ENDPOINT",
 					Value: "test-trace-collector-endpoint",
 				},
@@ -1599,10 +1582,6 @@ func TestDeployment_envs(t *testing.T) {
 					Value: "function-namespace",
 				},
 				{
-					Name:  "HANDLER_PATH",
-					Value: "./function/handler.js",
-				},
-				{
 					Name:  "TRACE_COLLECTOR_ENDPOINT",
 					Value: "test-trace-collector-endpoint",
 				},
@@ -1644,10 +1623,6 @@ func TestDeployment_envs(t *testing.T) {
 				{
 					Name:  "SERVICE_NAMESPACE",
 					Value: "function-namespace",
-				},
-				{
-					Name:  "HANDLER_PATH",
-					Value: "./function/handler.js",
 				},
 				{
 					Name:  "TRACE_COLLECTOR_ENDPOINT",
@@ -1709,18 +1684,6 @@ func TestDeployment_envs(t *testing.T) {
 					Name:  "PUBLISHER_PROXY_ADDRESS",
 					Value: "test-proxy-address",
 				},
-				{
-					Name:  "PYTHONUNBUFFERED",
-					Value: "TRUE",
-				},
-				{
-					Name:  "MOD_NAME",
-					Value: "handler",
-				},
-				{
-					Name:  "FUNC_HANDLER",
-					Value: "main",
-				},
 			},
 		},
 		{
@@ -1773,18 +1736,6 @@ func TestDeployment_envs(t *testing.T) {
 					Name:  "PUBLISHER_PROXY_ADDRESS",
 					Value: "test-proxy-address",
 				},
-				{
-					Name:  "PYTHONUNBUFFERED",
-					Value: "TRUE",
-				},
-				{
-					Name:  "HANDLER_MOD_NAME",
-					Value: "handler",
-				},
-				{
-					Name:  "HANDLER_FUNC_NAME",
-					Value: "main",
-				},
 			},
 		},
 	}
@@ -1824,12 +1775,7 @@ echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
-if [ -f "./kubeless.py" ]; then
-  # old file location support
-  python kubeless.py;
-else
-  python server.py;
-fi`,
+python server.py;`,
 		},
 		{
 			name: "build runtime command for inline python312 with dependencies",
@@ -1851,12 +1797,7 @@ echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
-if [ -f "./kubeless.py" ]; then
-  # old file location support
-  python kubeless.py;
-else
-  python server.py;
-fi`,
+python server.py;`,
 		},
 		{
 			name: "build runtime command for git python312",
@@ -1879,12 +1820,7 @@ cp -r /git-repository/src/* .;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
-if [ -f "./kubeless.py" ]; then
-  # old file location support
-  python kubeless.py;
-else
-  python server.py;
-fi`,
+python server.py;`,
 		},
 		{
 			name: "build runtime command for inline python314 without dependencies",
@@ -1904,12 +1840,7 @@ echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
-if [ -f "./kubeless.py" ]; then
-  # old file location support
-  python kubeless.py;
-else
-  python server.py;
-fi`,
+python server.py;`,
 		},
 		{
 			name: "build runtime command for inline python314 with dependencies",
@@ -1931,12 +1862,7 @@ echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
-if [ -f "./kubeless.py" ]; then
-  # old file location support
-  python kubeless.py;
-else
-  python server.py;
-fi`,
+python server.py;`,
 		},
 		{
 			name: "build runtime command for git python314",
@@ -1959,12 +1885,7 @@ cp -r /git-repository/src/* .;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
-if [ -f "./kubeless.py" ]; then
-  # old file location support
-  python kubeless.py;
-else
-  python server.py;
-fi`,
+python server.py;`,
 		},
 		{
 			name: "build runtime command for inline nodejs22 without dependencies",
