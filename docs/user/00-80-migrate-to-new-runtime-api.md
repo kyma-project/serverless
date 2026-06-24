@@ -83,16 +83,18 @@ module.exports = {
 
 ```javascript
 // After — sdk functions
-import { getTracer, getFunctionName, getNamespace, getRuntime, getTimeout, getBodySizeLimit } from 'sdk';
+const { getTracer, getFunctionName, getNamespace, getRuntime, getTimeout, getBodySizeLimit } = require('sdk');
 
-export function main(req, res) {
-    const tracer = getTracer();
-    console.log(getFunctionName());
-    console.log(getNamespace());
-    console.log(getRuntime());
-    console.log(getTimeout());
-    console.log(getBodySizeLimit());
-    res.send('ok');
+module.exports = {
+    main: async function (req, res) {
+        const tracer = getTracer();
+        console.log(getFunctionName());
+        console.log(getNamespace());
+        console.log(getRuntime());
+        console.log(getTimeout());
+        console.log(getBodySizeLimit());
+        res.send('ok');
+    }
 }
 ```
 
@@ -157,22 +159,24 @@ module.exports = {
 
 ```javascript
 // After — getCloudEvent() returns a standard CloudEvent object
-import { getCloudEvent } from 'sdk';
+const { getCloudEvent } = require('sdk');
 
-export function main(req, res) {
-    const ce = getCloudEvent(req);
-    if (ce) {
-        console.log(ce.type);
-        console.log(ce.source);
-        console.log(ce.specversion);
-        console.log(ce.id);
-        console.log(ce.time);
-        console.log(ce.datacontenttype);
-        console.log(ce.data);
-        res.send(ce.type);
-        return;
+module.exports = {
+    main: function (req, res) {
+        const ce = getCloudEvent(req);
+        if (ce) {
+            console.log(ce.type);
+            console.log(ce.source);
+            console.log(ce.specversion);
+            console.log(ce.id);
+            console.log(ce.time);
+            console.log(ce.datacontenttype);
+            console.log(ce.data);
+            res.send(ce.type);
+            return;
+        }
+        res.send("not a cloud event");
     }
-    res.send("not a cloud event");
 }
 ```
 
@@ -239,15 +243,17 @@ module.exports = {
 
 ```javascript
 // After
-import { emitCloudEvent } from 'sdk';
+const { emitCloudEvent } = require('sdk');
 
-export async function main(req, res) {
-    await emitCloudEvent(
-        'com.example.order.created',
-        '/orders',
-        { orderId: '123' }
-    );
-    res.send("event emitted");
+module.exports = {
+    main: async function (req, res) {
+        await emitCloudEvent(
+            'com.example.order.created',
+            '/orders',
+            { orderId: '123' }
+        );
+        res.send("event emitted");
+    }
 }
 ```
 
