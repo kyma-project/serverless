@@ -13,7 +13,7 @@ process.on('uncaughtException', (err) => {
     console.error(`Caught exception: ${err}`);
 });
 
-const handlerFolder = process.env.HANDLER_PATH || './function';
+const handlerFolder = process.env.HANDLER_PATH || './';
 const handlerModuleName = process.env.HANDLER_MOD_NAME || 'handler';
 const handlerFunctionName = process.env.HANDLER_FUNC_NAME || 'main';
 const handlerPath = `${handlerFolder}/${handlerModuleName}.js`;
