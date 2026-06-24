@@ -587,7 +587,7 @@ func runtimeCommand(f *serverlessv1alpha2.Function) string {
 	if f.Spec.Runtime.IsRuntimeLegacy() {
 		return runtimeCommandLegacy(f)
 	}
-	return "./start.sh;"
+	return "/usr/src/app/start.sh;"
 }
 
 func runtimeCommandLegacy(f *serverlessv1alpha2.Function) string {
@@ -699,6 +699,18 @@ func sourceEnvs(f *serverlessv1alpha2.Function) []corev1.EnvVar {
 			{
 				Name:  "FUNC_HANDLER_DEPENDENCIES",
 				Value: spec.Source.Inline.Dependencies,
+			},
+		}...)
+	}
+	if f.HasNodejsRuntime() {
+		functionPath := "./function"
+		if f.Spec.Runtime.IsRuntimeLegacy() {
+			functionPath = "./function/handler.js"
+		}
+		envs = append(envs, []corev1.EnvVar{
+			{
+				Name:  "HANDLER_PATH",
+				Value: functionPath,
 			},
 		}...)
 	}
