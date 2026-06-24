@@ -1422,34 +1422,14 @@ func TestDeployment_envs(t *testing.T) {
 				},
 			},
 			want: []corev1.EnvVar{
-				{
-					Name:  "FUNC_NAME",
-					Value: "function-name",
-				},
-				{
-					Name:  "FUNC_RUNTIME",
-					Value: "nodejs22",
-				},
-				{
-					Name:  "SERVICE_NAMESPACE",
-					Value: "function-namespace",
-				},
-				{
-					Name:  "FUNC_HANDLER_SOURCE",
-					Value: "function-source",
-				},
-				{
-					Name:  "FUNC_HANDLER_DEPENDENCIES",
-					Value: "function-dependencies",
-				},
-				{
-					Name:  "TRACE_COLLECTOR_ENDPOINT",
-					Value: "test-trace-collector-endpoint",
-				},
-				{
-					Name:  "PUBLISHER_PROXY_ADDRESS",
-					Value: "test-proxy-address",
-				},
+				{Name: "FUNC_NAME", Value: "function-name"},
+				{Name: "FUNC_RUNTIME", Value: "nodejs22"},
+				{Name: "SERVICE_NAMESPACE", Value: "function-namespace"},
+				{Name: "FUNC_HANDLER_SOURCE", Value: "function-source"},
+				{Name: "FUNC_HANDLER_DEPENDENCIES", Value: "function-dependencies"},
+				{Name: "TRACE_COLLECTOR_ENDPOINT", Value: "test-trace-collector-endpoint"},
+				{Name: "PUBLISHER_PROXY_ADDRESS", Value: "test-proxy-address"},
+				{Name: "HANDLER_PATH", Value: "./function/handler.js"},
 			},
 		},
 		{
@@ -1470,34 +1450,14 @@ func TestDeployment_envs(t *testing.T) {
 				},
 			},
 			want: []corev1.EnvVar{
-				{
-					Name:  "FUNC_NAME",
-					Value: "function-name",
-				},
-				{
-					Name:  "FUNC_RUNTIME",
-					Value: "nodejs24",
-				},
-				{
-					Name:  "SERVICE_NAMESPACE",
-					Value: "function-namespace",
-				},
-				{
-					Name:  "FUNC_HANDLER_SOURCE",
-					Value: "function-source",
-				},
-				{
-					Name:  "FUNC_HANDLER_DEPENDENCIES",
-					Value: "function-dependencies",
-				},
-				{
-					Name:  "TRACE_COLLECTOR_ENDPOINT",
-					Value: "test-trace-collector-endpoint",
-				},
-				{
-					Name:  "PUBLISHER_PROXY_ADDRESS",
-					Value: "test-proxy-address",
-				},
+				{Name: "FUNC_NAME", Value: "function-name"},
+				{Name: "FUNC_RUNTIME", Value: "nodejs24"},
+				{Name: "SERVICE_NAMESPACE", Value: "function-namespace"},
+				{Name: "FUNC_HANDLER_SOURCE", Value: "function-source"},
+				{Name: "FUNC_HANDLER_DEPENDENCIES", Value: "function-dependencies"},
+				{Name: "TRACE_COLLECTOR_ENDPOINT", Value: "test-trace-collector-endpoint"},
+				{Name: "PUBLISHER_PROXY_ADDRESS", Value: "test-proxy-address"},
+				{Name: "HANDLER_PATH", Value: "./function/handler.js"},
 			},
 		},
 		{
@@ -1518,34 +1478,14 @@ func TestDeployment_envs(t *testing.T) {
 				},
 			},
 			want: []corev1.EnvVar{
-				{
-					Name:  "FUNC_NAME",
-					Value: "function-name",
-				},
-				{
-					Name:  "FUNC_RUNTIME",
-					Value: "nodejs26",
-				},
-				{
-					Name:  "SERVICE_NAMESPACE",
-					Value: "function-namespace",
-				},
-				{
-					Name:  "FUNC_HANDLER_SOURCE",
-					Value: "function-source",
-				},
-				{
-					Name:  "FUNC_HANDLER_DEPENDENCIES",
-					Value: "function-dependencies",
-				},
-				{
-					Name:  "TRACE_COLLECTOR_ENDPOINT",
-					Value: "test-trace-collector-endpoint",
-				},
-				{
-					Name:  "PUBLISHER_PROXY_ADDRESS",
-					Value: "test-proxy-address",
-				},
+				{Name: "FUNC_NAME", Value: "function-name"},
+				{Name: "FUNC_RUNTIME", Value: "nodejs26"},
+				{Name: "SERVICE_NAMESPACE", Value: "function-namespace"},
+				{Name: "FUNC_HANDLER_SOURCE", Value: "function-source"},
+				{Name: "FUNC_HANDLER_DEPENDENCIES", Value: "function-dependencies"},
+				{Name: "TRACE_COLLECTOR_ENDPOINT", Value: "test-trace-collector-endpoint"},
+				{Name: "PUBLISHER_PROXY_ADDRESS", Value: "test-proxy-address"},
+				{Name: "HANDLER_PATH", Value: "./function"},
 			},
 		},
 		{
@@ -1569,26 +1509,12 @@ func TestDeployment_envs(t *testing.T) {
 				},
 			},
 			want: []corev1.EnvVar{
-				{
-					Name:  "FUNC_NAME",
-					Value: "function-name",
-				},
-				{
-					Name:  "FUNC_RUNTIME",
-					Value: "nodejs22",
-				},
-				{
-					Name:  "SERVICE_NAMESPACE",
-					Value: "function-namespace",
-				},
-				{
-					Name:  "TRACE_COLLECTOR_ENDPOINT",
-					Value: "test-trace-collector-endpoint",
-				},
-				{
-					Name:  "PUBLISHER_PROXY_ADDRESS",
-					Value: "test-proxy-address",
-				},
+				{Name: "FUNC_NAME", Value: "function-name"},
+				{Name: "FUNC_RUNTIME", Value: "nodejs22"},
+				{Name: "SERVICE_NAMESPACE", Value: "function-namespace"},
+				{Name: "TRACE_COLLECTOR_ENDPOINT", Value: "test-trace-collector-endpoint"},
+				{Name: "PUBLISHER_PROXY_ADDRESS", Value: "test-proxy-address"},
+				{Name: "HANDLER_PATH", Value: "./function/handler.js"},
 			},
 		},
 		{
@@ -1612,26 +1538,12 @@ func TestDeployment_envs(t *testing.T) {
 				},
 			},
 			want: []corev1.EnvVar{
-				{
-					Name:  "FUNC_NAME",
-					Value: "function-name",
-				},
-				{
-					Name:  "FUNC_RUNTIME",
-					Value: "nodejs26",
-				},
-				{
-					Name:  "SERVICE_NAMESPACE",
-					Value: "function-namespace",
-				},
-				{
-					Name:  "TRACE_COLLECTOR_ENDPOINT",
-					Value: "test-trace-collector-endpoint",
-				},
-				{
-					Name:  "PUBLISHER_PROXY_ADDRESS",
-					Value: "test-proxy-address",
-				},
+				{Name: "FUNC_NAME", Value: "function-name"},
+				{Name: "FUNC_RUNTIME", Value: "nodejs26"},
+				{Name: "SERVICE_NAMESPACE", Value: "function-namespace"},
+				{Name: "TRACE_COLLECTOR_ENDPOINT", Value: "test-trace-collector-endpoint"},
+				{Name: "PUBLISHER_PROXY_ADDRESS", Value: "test-proxy-address"},
+				{Name: "HANDLER_PATH", Value: "./function"},
 			},
 		},
 		{
@@ -1652,14 +1564,8 @@ func TestDeployment_envs(t *testing.T) {
 				},
 			},
 			want: []corev1.EnvVar{
-				{
-					Name:  "FUNC_NAME",
-					Value: "function-name",
-				},
-				{
-					Name:  "FUNC_RUNTIME",
-					Value: "python312",
-				},
+				{Name: "FUNC_NAME", Value: "function-name"},
+				{Name: "FUNC_RUNTIME", Value: "python312"},
 				{
 					Name:  "SERVICE_NAMESPACE",
 					Value: "function-namespace",
