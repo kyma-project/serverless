@@ -5,6 +5,7 @@ Flask + gevent WSGI server running on Python 3.14.
 ## Handler API
 
 User functions take no arguments — use Flask's request context-local:
+
 ```python
 import flask
 
@@ -12,6 +13,15 @@ def main():
     name = flask.request.args.get('name', 'World')
     return f'Hello {name}!'
 ```
+
+## Handler Loading and `HANDLER_PATH`
+
+`server.py` constructs the handler module path from `HANDLER_PATH` (default: `/`) and `HANDLER_MOD_NAME` (default: `handler`). At runtime a `start.sh` script writes the user handler to `handler.py`, installs dependencies, then `cd ..` and starts the server.
+
+Two layouts are supported:
+
+- **`kyma cli function eject`**: handler files sit flat next to `server.py`; default `HANDLER_PATH=/` works as-is.
+- **buildless-serverless**: the controller runs `/usr/src/app/start.sh`, which writes sources to `/usr/src/app/function/` and sets `HANDLER_PATH=/usr/src/app/function` in the Pod.
 
 ## File Layout
 
@@ -39,6 +49,6 @@ make run                    # creates venv, pip install, python server.py
 # or manually:
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-echo 'def main(): return "ok"' > /tmp/handler.py
-HANDLER_PATH=/tmp .venv/bin/python server.py
+echo 'def main(): return "ok"' > handler.py
+.venv/bin/python server.py
 ```
