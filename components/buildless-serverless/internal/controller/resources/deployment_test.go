@@ -441,7 +441,7 @@ func TestDeployment_workingSourcesDir(t *testing.T) {
 		{
 			name:    "get working dir for python314",
 			runtime: serverlessv1alpha2.Python314,
-			want:    "/kubeless",
+			want:    "/usr/src/app/function",
 		},
 	}
 	for _, tt := range tests {
@@ -764,7 +764,7 @@ func TestDeployment_volumeMounts(t *testing.T) {
 			want: []corev1.VolumeMount{
 				{
 					Name:      "sources",
-					MountPath: "/kubeless",
+					MountPath: "/usr/src/app/function",
 				},
 				{
 					Name:      "tmp",
@@ -778,7 +778,7 @@ func TestDeployment_volumeMounts(t *testing.T) {
 				{
 					Name:      "package-registry-config",
 					ReadOnly:  false,
-					MountPath: "/kubeless/package-registry-config/pip.conf",
+					MountPath: "/usr/src/app/function/package-registry-config/pip.conf",
 					SubPath:   "pip.conf",
 				},
 			},
@@ -907,7 +907,7 @@ func TestDeployment_volumeMounts(t *testing.T) {
 			want: []corev1.VolumeMount{
 				{
 					Name:      "sources",
-					MountPath: "/kubeless",
+					MountPath: "/usr/src/app/function",
 				},
 				{
 					Name:      "tmp",
@@ -926,7 +926,7 @@ func TestDeployment_volumeMounts(t *testing.T) {
 				{
 					Name:      "package-registry-config",
 					ReadOnly:  false,
-					MountPath: "/kubeless/package-registry-config/pip.conf",
+					MountPath: "/usr/src/app/function/package-registry-config/pip.conf",
 					SubPath:   "pip.conf",
 				},
 			},
@@ -1722,7 +1722,7 @@ func TestDeployment_envs(t *testing.T) {
 				},
 				{
 					Name:  "FUNCTION_PATH",
-					Value: "/kubeless",
+					Value: "/usr/src/app/function",
 				},
 				{
 					Name:  "FUNC_HANDLER_DEPENDENCIES",
@@ -1834,13 +1834,7 @@ python server.py;`,
 					},
 				},
 			},
-			want: `set -e;
-echo "" > requirements.txt;
-echo "${FUNC_HANDLER_SOURCE}" > handler.py;
-export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
-cd ..;
-python server.py;`,
+			want: `./start.sh;`,
 		},
 		{
 			name: "build runtime command for inline python314 with dependencies",
@@ -1855,14 +1849,7 @@ python server.py;`,
 					},
 				},
 			},
-			want: `set -e;
-echo "" > requirements.txt;
-echo "${FUNC_HANDLER_SOURCE}" > handler.py;
-echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
-export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
-cd ..;
-python server.py;`,
+			want: `./start.sh;`,
 		},
 		{
 			name: "build runtime command for git python314",
@@ -1880,12 +1867,7 @@ python server.py;`,
 					},
 				},
 			},
-			want: `set -e;
-cp -r /git-repository/src/* .;
-export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
-PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
-cd ..;
-python server.py;`,
+			want: `./start.sh;`,
 		},
 		{
 			name: "build runtime command for inline nodejs22 without dependencies",
@@ -2025,12 +2007,7 @@ npm start;`,
 					},
 				},
 			},
-			want: `set -e;
-echo "{}" > package.json;
-echo "${FUNC_HANDLER_SOURCE}" > handler.js;
-NPM_CONFIG_USERCONFIG=package-registry-config/.npmrc npm install --prefer-offline --no-audit --progress=false;
-cd ..;
-npm start;`,
+			want: `./start.sh;`,
 		},
 		{
 			name: "build runtime command for inline nodejs26 with dependencies",
@@ -2045,13 +2022,7 @@ npm start;`,
 					},
 				},
 			},
-			want: `set -e;
-echo "{}" > package.json;
-echo "${FUNC_HANDLER_SOURCE}" > handler.js;
-echo "${FUNC_HANDLER_DEPENDENCIES}" > package.json;
-NPM_CONFIG_USERCONFIG=package-registry-config/.npmrc npm install --prefer-offline --no-audit --progress=false;
-cd ..;
-npm start;`,
+			want: `./start.sh;`,
 		},
 		{
 			name: "build runtime command for git nodejs26",
@@ -2069,12 +2040,7 @@ npm start;`,
 					},
 				},
 			},
-			want: `set -e;
-echo "{}" > package.json;
-cp -r /git-repository/src/* .;
-NPM_CONFIG_USERCONFIG=package-registry-config/.npmrc npm install --prefer-offline --no-audit --progress=false;
-cd ..;
-npm start;`,
+			want: `./start.sh;`,
 		},
 	}
 	for _, tt := range tests {
