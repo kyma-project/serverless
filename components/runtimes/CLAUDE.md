@@ -50,7 +50,7 @@ All runtimes read configuration from env vars injected by the Function Controlle
 | `FUNC_HANDLER` | (nodejs20-24, python312, deprecated) Exported function name |
 | `HANDLER_MOD_NAME` | (nodejs26, python314) Handler module filename without extension (default: `handler`) |
 | `MOD_NAME` | (nodejs20-24, python312, deprecated) Handler module filename |
-| `HANDLER_PATH` | Path to user source code (default: `/`) |
+| `HANDLER_PATH` | Directory containing the user handler (default: `./`, i.e. same dir as `server.mjs`/`server.py`). buildless-serverless overrides this to `./function`. |
 | `TRACE_COLLECTOR_ENDPOINT` | OTLP trace collector URL |
 | `PUBLISHER_PROXY_ADDRESS` | Eventing publisher proxy URL |
 | `FUNC_BODY_MB_LIMIT` | (nodejs26, python314) Body size limit in MB |
@@ -64,7 +64,7 @@ All runtimes read configuration from env vars injected by the Function Controlle
 
 Both new runtimes expose an `sdk` module for user handlers:
 
-- **Node.js 26**: `import { getCloudEvent, emitCloudEvent, getTracer } from 'sdk'`
+- **Node.js 26**: `const { getCloudEvent, emitCloudEvent, getTracer } = require('sdk')`
 - **Python 314**: `import sdk` then `sdk.get_cloud_event()`, `sdk.emit_cloud_event()`, `sdk.get_tracer()`
 
 The SDK is configured once at server startup — user handlers get the pre-configured singleton.
