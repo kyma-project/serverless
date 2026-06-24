@@ -4,15 +4,28 @@ Express 5 server running on Node.js 26.
 
 ## Handler API
 
-User functions receive raw Express objects:
+User functions receive raw Express objects. Handler files default to **CommonJS** (no `"type": "module"` in package.json):
 
 ```js
-export function main(req, res) {
-    res.send('Hello!');
+const { getCloudEvent } = require('sdk');
+
+module.exports = {
+    main: function (req, res) {
+        res.send('Hello!');
+    }
 }
 ```
 
-With `"type": "module"` removed from package.json, `.js` handler files default to CJS. Use `.mjs` extension or add `"type": "module"` to your handler's package.json for ESM.
+Use `.mjs` extension or add `"type": "module"` to your handler's package.json to write ESM (`import`/`export`) instead.
+
+## Handler Loading and `HANDLER_PATH`
+
+`server.mjs` constructs the handler path as `${HANDLER_PATH}/${HANDLER_MOD_NAME}.js` (defaults: `HANDLER_PATH=./`, `HANDLER_MOD_NAME=handler` → `./handler.js`).
+
+Two layouts are supported:
+
+- **`kyma cli function eject`**: handler files sit flat next to `server.mjs`; default `HANDLER_PATH=./` works as-is.
+- **buildless-serverless**: the controller mounts sources at `/usr/src/app/function/` and sets `HANDLER_PATH=./function` in the Pod, pointing the server at the mounted directory.
 
 ## File Layout
 
@@ -42,5 +55,5 @@ make run                    # npm install + npm start
 # or manually:
 npm install
 echo 'module.exports = { main: (req, res) => res.send("ok") }' > handler.js
-HANDLER_PATH=./handler.js npm start
+npm start
 ```
