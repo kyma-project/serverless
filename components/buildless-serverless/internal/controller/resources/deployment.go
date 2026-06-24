@@ -589,7 +589,7 @@ func runtimeCommand(f *serverlessv1alpha2.Function) string {
 	if f.Spec.Runtime.IsRuntimeLegacy() {
 		return runtimeCommandLegacy(f)
 	}
-	return "./start.sh"
+	return "./start.sh;"
 }
 
 func runtimeCommandLegacy(f *serverlessv1alpha2.Function) string {
