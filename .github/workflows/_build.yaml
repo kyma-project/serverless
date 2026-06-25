@@ -55,6 +55,7 @@ jobs:
         IMG_VERSION=${{ inputs.img_version }}
 
   build-gitserver:
+    needs: compute-tags
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: gitserver
