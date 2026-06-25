@@ -2,6 +2,7 @@ package runtimes
 
 import (
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
+	corev1 "k8s.io/api/core/v1"
 )
 
 type GitopsFunctionBuilder struct {
@@ -108,6 +109,12 @@ func (b *GitopsFunctionBuilder) Build() serverlessv1alpha2.FunctionSpec {
 			},
 			Build: &serverlessv1alpha2.ResourceRequirements{
 				Profile: b.buildProfile,
+			},
+		},
+		Env: []corev1.EnvVar{
+			{
+				Name:  "SERVER_INTERNAL_LOGGER",
+				Value: "true",
 			},
 		},
 		Labels: b.labels,
