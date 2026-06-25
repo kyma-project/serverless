@@ -1,5 +1,5 @@
 module.exports = {
-  main: function (event, context) {
-      return 'GITOPS 1'
-  }
-}
+  main: function (req, res) {
+    res.send("GITOPS 1");
+  },
+};
