@@ -67,5 +67,5 @@ func verifyConfigmap(testutils *utils.TestUtils, configmap *corev1.ConfigMap, se
 }
 
 func isFipsImage(image string) bool {
-	return image != "" && strings.Contains(image, "fips") && strings.Contains(image, "restricted-prod")
+	return image != "" && strings.Contains(image, "fips") && (strings.Contains(image, "restricted-prod") || strings.Contains(image, "restricted-dev"))
 }
