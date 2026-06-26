@@ -29,11 +29,10 @@ handler_function_name = os.getenv('HANDLER_FUNC_NAME', 'main')
 trace_collector_endpoint = os.getenv('TRACE_COLLECTOR_ENDPOINT', '')
 publisher_proxy_address = os.getenv('PUBLISHER_PROXY_ADDRESS', '')
 
-# TODO(Hx2): check if this is really necessary for the kyma cli eject
 function_location = os.getenv('FUNCTION_PATH', default='/')
 sys.path.append(function_location)
 
-print(f"Importing function sources from {handler_folder}/{handler_module_name}:{handler_function_name}", flush=True)
+print(f"Importing function sources from {os.path.join(handler_folder, handler_module_name)}:{handler_function_name}", flush=True)
 print(f"Tracing configured with endpoint {trace_collector_endpoint}", flush=True)
 print(f"Publisher Proxy available on address {publisher_proxy_address}", flush=True)
 print(f"Starting {func_runtime} server {server_host}:{server_port}", flush=True)
