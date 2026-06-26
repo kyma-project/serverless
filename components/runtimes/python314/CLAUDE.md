@@ -23,11 +23,12 @@ def main():
 Two layouts are supported:
 
 - **`kyma cli function eject`**: `handler.py` sits flat next to `server.py`; default `HANDLER_PATH=/` and `FUNCTION_PATH=/` resolve it from the working directory.
-- **buildless-serverless**: the controller runs `/usr/src/app/start.sh`, which writes sources to `/usr/src/app/function/` and sets `FUNCTION_PATH=/usr/src/app/function` in the Pod so Python can find `handler.py` there.
+- **buildless-serverless**: the controller runs `/usr/src/app/start.sh` (absolute path, because `workingDir` is the sources mount at `/usr/src/app/function/`), which writes sources there and sets `FUNCTION_PATH=/usr/src/app/function` in the Pod so Python can find `handler.py`.
 
 ## File Layout
 
 - `server.py` — Entry point. Reads env vars, configures sdk/tracer, sets up Flask app with routes, wraps with WSGILogger if logging enabled, runs gevent WSGIServer with graceful shutdown
+- `start.sh` — Container startup script. Writes the inline `FUNC_HANDLER_SOURCE`/`FUNC_HANDLER_DEPENDENCIES` envs (or copies git sources) into the working directory, runs `pip install`, then `cd ..` and `python server.py`
 - `lib/sdk.py` — User-facing SDK: `get_cloud_event()`, `emit_cloud_event()`, `get_tracer()`, metadata getters. Uses `flask.request` internally for CloudEvent parsing
 - `lib/tracing.py` — OpenTelemetry tracer setup (OTLP exporter, B3 propagation, requests auto-instrumentation)
 - `lib/module.py` — `Handler` class: imports user module, wraps calls with Prometheus metrics and gevent.Timeout
