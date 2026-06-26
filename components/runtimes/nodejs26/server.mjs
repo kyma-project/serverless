@@ -2,6 +2,7 @@ import { configure as sdkConfigure } from 'sdk';
 import { configureGracefulShutdown, handleTimeOut, isFunction, isPromise, handleError } from './lib/helper.js';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
+import path from 'path';
 import process from 'process';
 
 import { setupTracer, getCurrentSpan } from './lib/tracer.js';
@@ -16,7 +17,9 @@ process.on('uncaughtException', (err) => {
 const handlerFolder = process.env.HANDLER_PATH || './';
 const handlerModuleName = process.env.HANDLER_MOD_NAME || 'handler';
 const handlerFunctionName = process.env.HANDLER_FUNC_NAME || 'main';
-const handlerPath = `${handlerFolder}/${handlerModuleName}.js`;
+// import() treats bare specifiers as packages, so keep the leading './' for relative paths
+const joinedHandlerPath = path.join(handlerFolder, `${handlerModuleName}.js`);
+const handlerPath = path.isAbsolute(joinedHandlerPath) ? joinedHandlerPath : `./${joinedHandlerPath}`;
 
 const serviceNamespace = process.env.SERVICE_NAMESPACE || '';
 const functionName = process.env.FUNC_NAME || '';
