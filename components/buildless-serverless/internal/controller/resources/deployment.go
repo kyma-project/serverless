@@ -618,7 +618,6 @@ func runtimeCommandGitSources(f *serverlessv1alpha2.Function) string {
 	return strings.Join(result, "\n")
 }
 
-// TODO: move to image
 func runtimeCommandInlineSources(f *serverlessv1alpha2.Function) string {
 	var result []string
 	spec := &f.Spec
