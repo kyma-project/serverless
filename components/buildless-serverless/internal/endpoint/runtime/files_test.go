@@ -25,8 +25,10 @@ func Test_readNodejsFiles(t *testing.T) {
 
 		gotList, gotErr := readNodejsFiles(inline, runtimeDir)
 		require.NoError(t, gotErr)
-		require.Len(t, gotList, 11)
+		require.Len(t, gotList, 13)
 		requireFileWithName(t, gotList, "package.json")
+		requireFileWithName(t, gotList, "/sdk/index.js")
+		requireFileWithName(t, gotList, "/sdk/package.json")
 		require.Contains(t, gotList, types.FileResponse{Name: "handler.js", Data: handlerBase64Data})
 	})
 	t.Run("read true nodejs24 runtime files", func(t *testing.T) {
