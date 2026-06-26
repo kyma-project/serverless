@@ -16,12 +16,14 @@ def main():
 
 ## Handler Loading and `HANDLER_PATH`
 
-`server.py` constructs the handler module path from `HANDLER_PATH` (default: `/`) and `HANDLER_MOD_NAME` (default: `handler`). At runtime a `start.sh` script writes the user handler to `handler.py`, installs dependencies, then `cd ..` and starts the server.
+`server.py` resolves the handler via two env vars:
+- `HANDLER_PATH` (default: `/`) — appended to `sys.path`; `importlib.import_module(HANDLER_MOD_NAME)` finds `handler.py` there.
+- `FUNCTION_PATH` (default: `/`) — also appended to `sys.path` for `kyma cli function eject` compatibility.
 
 Two layouts are supported:
 
-- **`kyma cli function eject`**: handler files sit flat next to `server.py`; default `HANDLER_PATH=/` works as-is.
-- **buildless-serverless**: the controller runs `/usr/src/app/start.sh`, which writes sources to `/usr/src/app/function/` and sets `HANDLER_PATH=/usr/src/app/function` in the Pod.
+- **`kyma cli function eject`**: `handler.py` sits flat next to `server.py`; default `HANDLER_PATH=/` and `FUNCTION_PATH=/` resolve it from the working directory.
+- **buildless-serverless**: the controller runs `/usr/src/app/start.sh`, which writes sources to `/usr/src/app/function/` and sets `FUNCTION_PATH=/usr/src/app/function` in the Pod so Python can find `handler.py` there.
 
 ## File Layout
 
