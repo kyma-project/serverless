@@ -494,7 +494,6 @@ func Test_validator_validateFips(t *testing.T) {
 			runtime:  serverlessv1alpha2.Python312,
 			want:     []string{"runtime python312 is not allowed in FIPS mode"},
 		},
-		// TODO(Hx2): is this correct????????
 		{
 			name:     "FIPS enabled with Python 3.14 runtime should return no errors",
 			fipsMode: true,
