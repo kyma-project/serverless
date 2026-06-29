@@ -54,14 +54,14 @@ jobs:
         IMG_DIRECTORY=${{ inputs.img_directory }}
         IMG_VERSION=${{ inputs.img_version }}
 
-  # https://github.com/kyma-project/serverless/issues/998#issuecomment-2191556454
-  #  build-gitserver:
-  #    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-  #    with:
-  #      name: gitserver
-  #      dockerfile: Dockerfile
-  #      context: tests/gitserver
-  #      tags: ${{ needs.compute-tags.outputs.tags }}
+  build-gitserver:
+    needs: compute-tags
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: gitserver
+      dockerfile: Dockerfile
+      context: tests/gitserver
+      tags: ${{ needs.compute-tags.outputs.tags }}
 
   build-buildless-serverless-controller:
     needs: compute-tags
@@ -159,7 +159,7 @@ jobs:
       dockerfile: Dockerfile
       context: components/runtimes/python312
       tags: ${{ needs.compute-tags.outputs.tags }}
-  
+
   build-python314:
     needs: compute-tags
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main # Usage: kyma-project/test-infra/.github/workflows/image-builder.yml@main
