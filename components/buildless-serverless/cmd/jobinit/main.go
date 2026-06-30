@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 
 	"github.com/go-git/go-git/v5/plumbing/protocol/packp/capability"
 	"github.com/go-git/go-git/v5/plumbing/transport"
@@ -20,6 +21,8 @@ import (
 )
 
 const envPrefix = "APP"
+
+var commitSHARegexp = regexp.MustCompile(`^[0-9a-fA-F]{40}$`)
 
 type initConfig struct {
 	RepositoryURL         string
@@ -63,12 +66,29 @@ func main() {
 }
 
 func clone(c initConfig, auth transport.AuthMethod) error {
-	r, err := git.PlainClone(c.DestinationPath, false, &git.CloneOptions{
-		URL:           c.RepositoryURL,
-		ReferenceName: plumbing.ReferenceName(c.RepositoryReference),
-		SingleBranch:  true,
-		Auth:          auth,
-	})
+	cloneOpts := &git.CloneOptions{
+		URL:  c.RepositoryURL,
+		Auth: auth,
+	}
+
+	// For a commit SHA the controller already resolved the exact hash; clone the
+	// default branch and let the checkout below land on it.  For a named reference
+	// (branch or tag) use SingleBranch for efficiency: try refs/heads/ first,
+	// fall back to refs/tags/ if the branch clone fails.
+	if !commitSHARegexp.MatchString(c.RepositoryReference) {
+		cloneOpts.ReferenceName = plumbing.NewBranchReferenceName(c.RepositoryReference)
+		cloneOpts.SingleBranch = true
+	}
+
+	r, err := git.PlainClone(c.DestinationPath, false, cloneOpts)
+	if err != nil && !commitSHARegexp.MatchString(c.RepositoryReference) {
+		// Branch ref not found — retry as a tag.
+		cloneOpts.ReferenceName = plumbing.NewTagReferenceName(c.RepositoryReference)
+		if err2 := os.RemoveAll(c.DestinationPath); err2 != nil {
+			return errors.Wrap(err2, "while cleaning destination path before tag retry")
+		}
+		r, err = git.PlainClone(c.DestinationPath, false, cloneOpts)
+	}
 	if err != nil {
 		return err
 	}
