@@ -2,25 +2,25 @@
 images:
   - source: "alpine@sha256:a2d49ea686c2adfe3c992e47dc3b5e7fa6e6b5055609400dc2acaeb241c829f4"
     tag: "3.24.0"
-  - source: "golang@sha256:f23e8b227fb4493eabe03bede4d5a32d04092da71962f1fb79b5f7d1e6c2a17f"
-    tag: "1.26.4-alpine3.23"
+  - source: "golang@sha256:3ad57304ad93bbec8548a0437ad9e06a455660655d9af011d58b993f6f615648"
+    tag: "1.26.4-alpine3.24"
   - source: "ghcr.io/nginx/alpine-fips@sha256:15cf5753964eca17557083313d2a39e6a3cc659a5a2143ecebc476b14cc687e6"
     tag: "0.5.0-alpine3.23"
   # https://hub.docker.com/layers/library/node/26-alpine
-  - source: "node@sha256:144769ec3f32e8ee36b3cfde91e82bee25d9367b20f31a151f3f7eea3a2a8541"
-    tag: "26.3.0-alpine3.23"
+  - source: "node@sha256:725aeba2364a9b16beae49e180d83bd597dbd0b15c47f1f28875c290bfd255b9"
+    tag: "26.4.0-alpine3.24"
   # https://hub.docker.com/layers/library/node/24-alpine
-  - source: "node@sha256:2bdb65ed1dab192432bc31c95f94155ca5ad7fc1392fb7eb7526ab682fa5bf14"
-    tag: "24.16.0-alpine3.23"
+  - source: "node@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd"
+    tag: "24.18.0-alpine3.24"
   # https://hub.docker.com/layers/library/node/22-alpine
-  - source: "node@sha256:968df39aedcea65eeb078fb336ed7191baf48f972b4479711397108be0966920"
-    tag: "22.22.3-alpine3.23"
+  - source: "node@sha256:ab07539e0988b63558ff621f5fbe1077054c39d9809112974fb79993949d41cd"
+    tag: "22.23.0-alpine3.24"
   # https://hub.docker.com/layers/library/node/20-alpine
   - source: "node@sha256:f598378b5240225e6beab68fa9f356db1fb8efe55173e6d4d8153113bb8f333c"
     tag: "20.20.2-alpine3.23"
   # https://hub.docker.com/layers/library/python/3.12-alpine
-  - source: "python@sha256:7747d47f92cfca63a6e2b50275e23dba8407c30d8ae929a88ddd49a5d3f2d331"
-    tag: "3.12.13-alpine3.23"
+  - source: "python@sha256:6d43704baacd1bfbe7c295d7f13079d5d8104ed33568873133f8fc69980419df"
+    tag: "3.12.13-alpine3.24"
   # https://hub.docker.com/layers/library/python/3.14-alpine
-  - source: "python@sha256:02da11a8d221ca167aa07de20b3cd7104c1f01227f4b02b1fa13cf6517280a81"
-    tag: "3.14.6-alpine3.23"
+  - source: "python@sha256:26730869004e2b9c4b9ad09cab8625e81d256d1ce97e72df5520e806b1709f92"
+    tag: "3.14.6-alpine3.24"
