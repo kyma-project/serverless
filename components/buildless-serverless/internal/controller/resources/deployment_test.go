@@ -202,7 +202,12 @@ echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
-python server.py;`,
+if [ -f "./kubeless.py" ]; then
+  # old file location support
+  python kubeless.py;
+else
+  python server.py;
+fi`,
 			},
 			r.Spec.Template.Spec.Containers[0].Command)
 	})
@@ -1781,7 +1786,12 @@ echo "${FUNC_HANDLER_SOURCE}" > handler.py;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
-python server.py;`,
+if [ -f "./kubeless.py" ]; then
+  # old file location support
+  python kubeless.py;
+else
+  python server.py;
+fi`,
 		},
 		{
 			name: "build runtime command for inline python312 with dependencies",
@@ -1803,7 +1813,12 @@ echo "${FUNC_HANDLER_DEPENDENCIES}" > requirements.txt;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
-python server.py;`,
+if [ -f "./kubeless.py" ]; then
+  # old file location support
+  python kubeless.py;
+else
+  python server.py;
+fi`,
 		},
 		{
 			name: "build runtime command for git python312",
@@ -1826,7 +1841,12 @@ cp -r /git-repository/src/* .;
 export PYTHONPATH="/kubeless/.local:${PYTHONPATH}"
 PIP_CONFIG_FILE=package-registry-config/pip.conf pip install --target=/kubeless/.local --no-cache-dir -r requirements.txt;
 cd ..;
-python server.py;`,
+if [ -f "./kubeless.py" ]; then
+  # old file location support
+  python kubeless.py;
+else
+  python server.py;
+fi`,
 		},
 		{
 			name: "build runtime command for inline python314 without dependencies",
