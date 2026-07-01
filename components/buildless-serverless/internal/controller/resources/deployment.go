@@ -655,7 +655,12 @@ func runtimeCommandStart(f *serverlessv1alpha2.Function) string {
 npm start;`
 	} else if f.HasPythonRuntime() {
 		return `cd ..;
-python server.py;`
+if [ -f "./kubeless.py" ]; then
+  # old file location support
+  python kubeless.py;
+else
+  python server.py;
+fi`
 	}
 	return ""
 }
