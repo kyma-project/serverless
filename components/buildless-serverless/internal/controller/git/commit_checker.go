@@ -1,6 +1,8 @@
 package git
 
 import (
+	"regexp"
+
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing/protocol/packp/capability"
@@ -8,6 +10,8 @@ import (
 	"github.com/go-git/go-git/v5/storage/memory"
 	"github.com/pkg/errors"
 )
+
+var commitSHARegexp = regexp.MustCompile(`^[0-9a-fA-F]{40}$`)
 
 func init() {
 	// required by Azure Devops (works with Github, Gitlab, Bitbucket)
@@ -18,6 +22,11 @@ func init() {
 }
 
 func GetLatestCommit(url, reference string, gitAuth *GitAuth) (string, error) {
+	// A full 40-character SHA is already the commit — no remote listing needed.
+	if commitSHARegexp.MatchString(reference) {
+		return reference, nil
+	}
+
 	repo, err := git.Init(memory.NewStorage(), nil)
 	if err != nil {
 		return "", err
