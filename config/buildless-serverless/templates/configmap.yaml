@@ -21,7 +21,9 @@ data:
       nodejs20: "{{ .Values.global.images.function_runtime_nodejs20 }}"
       nodejs22: "{{ .Values.global.images.function_runtime_nodejs22 }}"
       nodejs24: "{{ .Values.global.images.function_runtime_nodejs24 }}"
+      nodejs26: "{{ .Values.global.images.function_runtime_nodejs26 }}"
       python312: "{{ .Values.global.images.function_runtime_python312 }}"
+      python314: "{{ .Values.global.images.function_runtime_python314 }}"
     {{- $config:= .Values.containers.manager.configuration.data }}
     packageRegistryConfigSecretName: "{{ $config.packageRegistryConfigSecretName }}"
     functionTraceCollectorEndpoint: "{{ $config.functionTraceCollectorEndpoint }}"

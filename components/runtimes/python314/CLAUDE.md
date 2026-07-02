@@ -5,6 +5,7 @@ Flask + gevent WSGI server running on Python 3.14.
 ## Handler API
 
 User functions take no arguments — use Flask's request context-local:
+
 ```python
 import flask
 
@@ -13,9 +14,21 @@ def main():
     return f'Hello {name}!'
 ```
 
+## Handler Loading and `HANDLER_PATH`
+
+`server.py` resolves the handler via two env vars:
+- `HANDLER_PATH` (default: `/`) — appended to `sys.path`; `importlib.import_module(HANDLER_MOD_NAME)` finds `handler.py` there.
+- `FUNCTION_PATH` (default: `/`) — also appended to `sys.path` for `kyma cli function eject` compatibility.
+
+Two layouts are supported:
+
+- **`kyma cli function eject`**: `handler.py` sits flat next to `server.py`; default `HANDLER_PATH=/` and `FUNCTION_PATH=/` resolve it from the working directory.
+- **buildless-serverless**: the controller runs `/usr/src/app/start.sh` (absolute path, because `workingDir` is the sources mount at `/usr/src/app/function/`), which writes sources there and sets `FUNCTION_PATH=/usr/src/app/function` in the Pod so Python can find `handler.py`.
+
 ## File Layout
 
 - `server.py` — Entry point. Reads env vars, configures sdk/tracer, sets up Flask app with routes, wraps with WSGILogger if logging enabled, runs gevent WSGIServer with graceful shutdown
+- `start.sh` — Container startup script. Writes the inline `FUNC_HANDLER_SOURCE`/`FUNC_HANDLER_DEPENDENCIES` envs (or copies git sources) into the working directory, runs `pip install`, then `cd ..` and `python server.py`
 - `lib/sdk.py` — User-facing SDK: `get_cloud_event()`, `emit_cloud_event()`, `get_tracer()`, metadata getters. Uses `flask.request` internally for CloudEvent parsing
 - `lib/tracing.py` — OpenTelemetry tracer setup (OTLP exporter, B3 propagation, requests auto-instrumentation)
 - `lib/module.py` — `Handler` class: imports user module, wraps calls with Prometheus metrics and gevent.Timeout
@@ -39,6 +52,6 @@ make run                    # creates venv, pip install, python server.py
 # or manually:
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-echo 'def main(): return "ok"' > /tmp/handler.py
-HANDLER_PATH=/tmp .venv/bin/python server.py
+echo 'def main(): return "ok"' > handler.py
+.venv/bin/python server.py
 ```

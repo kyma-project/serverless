@@ -561,8 +561,12 @@ func runtimeImage(f *serverlessv1alpha2.Function, c *config.FunctionConfig) stri
 		return c.Images.NodeJs22
 	case serverlessv1alpha2.NodeJs24:
 		return c.Images.NodeJs24
+	case serverlessv1alpha2.NodeJs26:
+		return c.Images.NodeJs26
 	case serverlessv1alpha2.Python312:
 		return c.Images.Python312
+	case serverlessv1alpha2.Python314:
+		return c.Images.Python314
 	default:
 		return ""
 	}
@@ -572,12 +576,23 @@ func workingSourcesDir(f *serverlessv1alpha2.Function) string {
 	if f.HasNodejsRuntime() {
 		return "/usr/src/app/function"
 	} else if f.HasPythonRuntime() {
-		return "/kubeless"
+		if f.Spec.Runtime.IsRuntimeLegacy() {
+			return "/kubeless"
+		} else {
+			return "/usr/src/app/function"
+		}
 	}
 	return ""
 }
 
 func runtimeCommand(f *serverlessv1alpha2.Function) string {
+	if f.Spec.Runtime.IsRuntimeLegacy() {
+		return runtimeCommandLegacy(f)
+	}
+	return "/usr/src/app/start.sh;"
+}
+
+func runtimeCommandLegacy(f *serverlessv1alpha2.Function) string {
 	result := []string{"set -e;"}
 	result = append(result, runtimeCommandSources(f))
 	result = append(result, runtimeCommandInstall(f))
@@ -674,23 +689,6 @@ func generalEnvs(f *serverlessv1alpha2.Function, c *config.FunctionConfig) []cor
 			Value: c.FunctionPublisherProxyAddress,
 		},
 	}
-
-	if f.HasPythonRuntime() {
-		envs = append(envs, []corev1.EnvVar{
-			{
-				Name:  "PYTHONUNBUFFERED",
-				Value: "TRUE",
-			},
-			{
-				Name:  "MOD_NAME",
-				Value: "handler",
-			},
-			{
-				Name:  "FUNC_HANDLER",
-				Value: "main",
-			},
-		}...)
-	}
 	envs = append(envs, spec.Env...) //TODO: this order is critical, should we provide option for users to override envs?
 	return envs
 }
@@ -711,18 +709,26 @@ func sourceEnvs(f *serverlessv1alpha2.Function) []corev1.EnvVar {
 		}...)
 	}
 	if f.HasNodejsRuntime() {
+		functionPath := "./function"
+		if f.Spec.Runtime.IsRuntimeLegacy() {
+			functionPath = "./function/handler.js"
+		}
 		envs = append(envs, []corev1.EnvVar{
 			{
 				Name:  "HANDLER_PATH",
-				Value: "./function/handler.js",
+				Value: functionPath,
 			},
 		}...)
 	}
 	if f.HasPythonRuntime() {
+		functionPath := "/usr/src/app/function"
+		if f.Spec.Runtime.IsRuntimeLegacy() {
+			functionPath = "/kubeless"
+		}
 		envs = append(envs, []corev1.EnvVar{
 			{
 				Name:  "FUNCTION_PATH",
-				Value: "/kubeless",
+				Value: functionPath,
 			},
 		}...)
 	}

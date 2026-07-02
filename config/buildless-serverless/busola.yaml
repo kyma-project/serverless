@@ -150,6 +150,8 @@ form:
   - simple: true
     path: spec.runtime
     placeholder: placeholders.spec.runtime
+    var: runtime
+    trigger: [runtime]
     enum: |
       $language = 'JavaScript' ? ['nodejs20', 'nodejs22', 'nodejs24', 'nodejs26'] :
       $language = 'Python' ? ['python312', 'python314'] :
@@ -176,8 +178,12 @@ form:
         language: '$contains($root.spec.runtime, "node") ? "javascript" : "python"'
         defaultExpanded: true
         subscribe:
-          sourceType: |-
-            $sourceType = 'Inline' ? $language = 'JavaScript' ? $exists($root.metadata.creationTimestamp) ? $root.spec.source.inline.source : "/*
+          # TODO: remove $not($exists($item.spec.runtime)) when the nodejs26/python314 will be default
+          # `$item.spec.runtime in` contains  runtimes from the other language because changing Langage box changes the runtime without triggering the value recalculation
+          #  We're defining the soruce code once, labeling it with &sourceCodeLogic and reusing it for other subscribe events with *sourceCodeLogic
+          sourceType: &sourceCodeLogic |-
+            $sourceType = 'Inline' ? $exists($root.metadata.creationTimestamp) ? $root.spec.source.inline.source :
+            $language = 'JavaScript' ? $not($exists($item.spec.runtime)) or $item.spec.runtime in ["nodejs20", "nodejs22", "nodejs24", "python312", "python314"] ? "/*
             If you prefer mjs import/export syntax over cjs you need to specify
               'type': 'module'
             in the Function dependencies (package.json) and along with that change the import/export syntax to:
@@ -191,6 +197,7 @@ form:
             module.exports = {
               main: async function (event, context) {
                 var queryParams = event['extensions']['request']['query'];
+                
                 //read query param, for example `?greeting=Hi`
                 var greetingMsg = queryParams['greeting']; 
                 if(!greetingMsg) {
@@ -202,18 +209,7 @@ form:
                 console.log(message);
                 return message;
               }
-            }" :
-            $language = 'Python' ? $exists($root.metadata.creationTimestamp) ? $root.spec.source.inline.source : "def main(event, context):
-                request = event['extensions']['request']
-                greetingMsg = request.query.get('greeting')
-                if not greetingMsg:
-                  greetingMsg = 'Hello world'
-                message = greetingMsg + ' from the Kyma Function '+context['function-name']+' running on '+context['runtime']+ '!';
-                print(message)
-                return message" :
-            '' : ''
-          language: |-
-            $language = 'JavaScript' ? $exists($root.metadata.creationTimestamp) ? $root.spec.source.inline.source : "/*
+            }" :  "/*
             If you prefer mjs import/export syntax over cjs you need to specify
               'type': 'module'
             in the Function dependencies (package.json) and along with that change the import/export syntax to:
@@ -224,31 +220,42 @@ form:
             }
             */
 
-            module.exports = {
-              main: async function (event, context) {
-                var queryParams = event['extensions']['request']['query'];
+            import { getFunctionName, getRuntime } from 'sdk';
 
+            module.exports = {
+              main: async function (req, res) {
                 //read query param, for example `?greeting=Hi`
-                var greetingMsg = queryParams['greeting']; 
+                var greetingMsg = req.query.greeting; 
                 if(!greetingMsg) {
                   greetingMsg = 'Hello world';
                 } 
                 const message = greetingMsg
-                  + ` from the Kyma Function ${context['function-name']}`
-                  + ` running on ${context.runtime}!`;
+                  + ` from the Kyma Function ${getFunctionName()}`
+                  + ` running on ${getRuntime()}!`;
                 console.log(message);
                 return message;
               }
             }" :
-            $language = 'Python' ? $exists($root.metadata.creationTimestamp) ? $root.spec.source.inline.source : "def main(event, context):
+            $language = 'Python' ? $not($exists($item.spec.runtime)) or $item.spec.runtime in ["python312", "nodejs20", "nodejs22", "nodejs24", "nodejs26"] ? "def main(event, context):
                 request = event['extensions']['request']
                 greetingMsg = request.query.get('greeting')
                 if not greetingMsg:
-                  greetingMsg = 'Hello world'
+                    greetingMsg = 'Hello world'
                 message = greetingMsg + ' from the Kyma Function '+context['function-name']+' running on '+context['runtime']+ '!';
                 print(message)
-                return message" :
-            ''
+                return message" : "import sdk
+            from flask import request
+
+            def main():
+                greetingMsg = request.args.get('greeting')
+                if not greetingMsg:
+                    greetingMsg = 'Hello world'
+                message = greetingMsg + ' from the Kyma Function '+sdk.get_function_name()+' running on '+sdk.get_runtime()+ '!';
+                print(message)
+                return message"
+                 : '' : ''
+          language: *sourceCodeLogic
+          runtime: *sourceCodeLogic
       - path: dependencies
         widget: CodeEditor
         formatAsString: true

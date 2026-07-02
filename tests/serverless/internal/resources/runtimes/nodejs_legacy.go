@@ -8,12 +8,12 @@ import (
 	v1 "k8s.io/api/core/v1"
 )
 
-func BasicNodeJSFunction(msg string, rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
+func BasicNodeJSFunctionLegacy(msg string, rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
 	return serverlessv1alpha2.FunctionSpec{
 		Runtime: rtm,
 		Source: serverlessv1alpha2.Source{
 			Inline: &serverlessv1alpha2.InlineSource{
-				Source:       fmt.Sprintf(`module.exports = { main: function(req, res) { res.send("%s") } }`, msg),
+				Source:       fmt.Sprintf(`module.exports = { main: function(event, context) { return "%s" } }`, msg),
 				Dependencies: `{ "name": "hellobasic", "version": "0.0.1", "dependencies": {} }`,
 			},
 		},
@@ -28,7 +28,7 @@ func BasicNodeJSFunction(msg string, rtm serverlessv1alpha2.Runtime) serverlessv
 	}
 }
 
-func BasicTracingNodeFunction(rtm serverlessv1alpha2.Runtime, externalSvcURL string) serverlessv1alpha2.FunctionSpec {
+func BasicTracingNodeFunctionLegacy(rtm serverlessv1alpha2.Runtime, externalSvcURL string) serverlessv1alpha2.FunctionSpec {
 	dpd := `{
   "name": "sanitise-fn",
   "version": "0.0.1",
@@ -40,13 +40,13 @@ func BasicTracingNodeFunction(rtm serverlessv1alpha2.Runtime, externalSvcURL str
 
 
 module.exports = {
-    main: async function (req, res) {
-        console.log("event: ", req)
+    main: async function (event, context) {
+        console.log("event: ", event)
         let resp = await axios("%s",{timeout: 1000});
         let interceptedHeaders = resp.request._header
         let tracingHeaders = getTracingHeaders(interceptedHeaders)
         console.log("return: ", JSON.stringify(tracingHeaders, null, 4))
-        res.send(tracingHeaders)
+        return tracingHeaders
     }
 }
 
@@ -95,12 +95,12 @@ function getTracingHeaders(textHeaders) {
 	}
 }
 
-func BasicNodeJSFunctionWithCustomDependency(msg string, rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
+func BasicNodeJSFunctionWithCustomDependencyLegacy(msg string, rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
 	return serverlessv1alpha2.FunctionSpec{
 		Runtime: rtm,
 		Source: serverlessv1alpha2.Source{
 			Inline: &serverlessv1alpha2.InlineSource{
-				Source:       fmt.Sprintf(`module.exports = { main: function(req, res) { res.send("%s") } }`, msg),
+				Source:       fmt.Sprintf(`module.exports = { main: function(event, context) { return "%s" } }`, msg),
 				Dependencies: `{ "name": "hellobasic", "version": "0.0.1", "dependencies": { "@kyma/kyma-npm-test": "1.0.0" } }`,
 			},
 		},
@@ -115,11 +115,11 @@ func BasicNodeJSFunctionWithCustomDependency(msg string, rtm serverlessv1alpha2.
 	}
 }
 
-func NodeJSFunctionWithEnvFromConfigMapAndSecret(configMapName, cmEnvKey, secretName, secretEnvKey string, rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
+func NodeJSFunctionWithEnvFromConfigMapAndSecretLegacy(configMapName, cmEnvKey, secretName, secretEnvKey string, rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
 	mappedCmEnvKey := "CM_KEY"
 	mappedSecretEnvKey := "SECRET_KEY"
 
-	src := fmt.Sprintf(`module.exports = { main: function(req, res) { res.send(process.env["%s"] + "-" + process.env["%s"]); } }`, mappedCmEnvKey, mappedSecretEnvKey)
+	src := fmt.Sprintf(`module.exports = { main: function(event, context) { return process.env["%s"] + "-" + process.env["%s"]; } }`, mappedCmEnvKey, mappedSecretEnvKey)
 	dpd := `{ "name": "hellowithconfigmapsecretenvs", "version": "0.0.1", "dependencies": { } }`
 
 	return serverlessv1alpha2.FunctionSpec{
@@ -165,127 +165,47 @@ func NodeJSFunctionWithEnvFromConfigMapAndSecret(configMapName, cmEnvKey, secret
 	}
 }
 
-func NodeJSPublishingProxyMock(rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
-	src := `const { getCloudEvent } = require('sdk');
-
-let event_data = new Map();
-
-module.exports = {
-  main: async function (req, res) {
-    console.log("event headers: " + JSON.stringify(req.headers));
-    console.log("event data: ", JSON.stringify(req.body));
-    console.log("event method: ", req.method);
-
-    if (req.method === "GET") {
-      const event_type = req.query.type;
-      if (event_type === undefined) {
-        const data = JSON.stringify(Object.fromEntries(event_data));
-        console.log("type is not specified, returning all event data: " + data);
-        res.send(data);
-        return;
-      }
-      const source = req.query.source;
-      const runtime_events = event_data.get(source);
-      console.log(JSON.stringify(runtime_events));
-      const saved_event = runtime_events[event_type];
-      console.log("getting saved event from memory for type:", event_type, ", for source: ", source, ", returning: ", JSON.stringify(saved_event));
-      res.send(JSON.stringify(saved_event));
-      return;
-    }
-
-    if (req.method === "POST") {
-      const ce = getCloudEvent(req);
-      const stored = {
-        "ce-type": ce.type,
-        "ce-source": ce.source,
-        "ce-specversion": ce.specversion,
-        "ce-id": ce.id,
-        "ce-time": ce.time,
-        "ce-datacontenttype": ce.datacontenttype,
-        data: ce.data,
-      };
-      const subMap = new Map();
-      subMap.set(ce.type, stored);
-      event_data.set(ce.source, Object.fromEntries(subMap));
-      console.log("saving event data to memory: " + JSON.stringify(stored));
-      console.log("currently saved events: " + JSON.stringify(Object.fromEntries(event_data)));
-      res.status(201).send("");
-      return;
-    }
-
-    res.status(405).send("Unexpected call, returning: 405");
-  }
-}
-`
-
-	return serverlessv1alpha2.FunctionSpec{
-		Runtime: rtm,
-		Source: serverlessv1alpha2.Source{
-			Inline: &serverlessv1alpha2.InlineSource{
-				Source:       src,
-				Dependencies: `{ "dependencies": {} }`,
-			},
-		},
-		Env: []v1.EnvVar{},
-		Labels: map[string]string{
-			"app.kubernetes.io/name": "eventing-publisher-proxy",
-		},
-		ResourceConfiguration: &serverlessv1alpha2.ResourceConfiguration{
-			Function: &serverlessv1alpha2.ResourceRequirements{
-				Profile: "L",
-			},
-			Build: &serverlessv1alpha2.ResourceRequirements{
-				Profile: "fast",
-			},
-		},
-	}
-}
-
-func NodeJSFunctionWithCloudEvent(rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
+func NodeJSFunctionWithCloudEventLegacy(rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
 	src := `const process = require("process");
 const axios = require('axios');
-const { getCloudEvent, emitCloudEvent } = require('sdk');
 
 let cloudevent = {}
 
-const send_check_event_type = "send-check"
+send_check_event_type = "send-check"
 
-const runtime = process.env.CE_SOURCE
+runtime = process.env.CE_SOURCE
 
 module.exports = {
-    main: async function (req, res) {
-        console.log("event: ", req)
-        switch (req.method) {
+    main: async function (event, context) {
+        console.log("event: ", event)
+        switch (event.extensions.request.method) {
             case "POST":
-                res.send(handlePost(req))
-                return;
+                res = handlePost(event)
+                return res
             case "GET":
-                res.send(await handleGet(req))
-                return;
+                res = handleGet(event.extensions.request)
+                return res
             default:
+                event.extensions.response.statusCode = 405
                 console.log("Unexpected call, return: 405")
-                res.status(405).send("")
+                return ""
         }
     }
 }
 
-function handlePost(req) {
-    const ce = getCloudEvent(req);
-    if (!ce) {
-        emitCloudEvent(send_check_event_type, runtime, req.body)
-        console.log("publishing CE, type: ", send_check_event_type, ", source: ", runtime, ", data: ", req.body)
+function handlePost(event) {
+    if (!Object.keys(event).includes("ce-type")) {
+        event.emitCloudEvent(send_check_event_type, runtime, event.data, {'eventtypeversion': 'v1alpha2'})
+        console.log("publishing CE, type: ", send_check_event_type, ", source: ", runtime, ", data: ", event.data,  ", attr: {eventtypeversion: v1alpha2}")
         return ""
     }
-    cloudevent = {
-        "ce-type": ce.type,
-        "ce-source": ce.source,
-        "ce-specversion": ce.specversion,
-        "ce-id": ce.id,
-        "ce-time": ce.time,
-        "ce-datacontenttype": ce.datacontenttype,
-        data: ce.data,
-    }
-    console.log("saving received cloud event, type: ", ce.type, "data: ", cloudevent.data)
+    Object.keys(event).filter((val) => {
+        return val.startsWith("ce-")
+    }).forEach((item) => {
+        cloudevent[item] = event[item]
+    })
+    cloudevent.data = event.data
+    console.log("saving received cloud event, type: ", event["ce-type"], "data: ", cloudevent.data)
     return ""
 }
 
@@ -296,7 +216,7 @@ async function handleGet(req) {
         await axios.get(publisherProxy, {
             params: {
                 type: req.query.type,
-                source: runtime
+				source: runtime
             }
         }).then((res) => {
             data = res.data
@@ -336,11 +256,11 @@ async function handleGet(req) {
 	}
 }
 
-func NodeJSFunctionUsingHanaClient(rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
+func NodeJSFunctionUsingHanaClientLegacy(rtm serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
 	src := `var hana = require('@sap/hana-client');
 
 	module.exports = {
-		main: async function (req, res) {
+		main: async function (event, context) {
 			//this is fake
 			var conn_params = {
 				serverNode: "62e223c1-7de9-4c8a-bab6-411f70fdf925.hana.canary-eu10.hanacloud.ondemand.com:443",
@@ -353,17 +273,14 @@ func NodeJSFunctionUsingHanaClient(rtm serverlessv1alpha2.Runtime) serverlessv1a
 			  try {
 				await conn.connect(conn_params)
 				let result = await conn.exec('SELECT 1 AS "One" FROM DUMMY')
-				res.send(result);
-				return;
+				return result;
 			  } catch(err) {
 				// it is expected to leave here. The purpose is to check if hana client returns a known error instead of crashing the whole container with SIGSEGV
 				// HY000 means general error - https://stackoverflow.com/questions/7472884/what-is-sql-error-5-sqlstate-hy000-and-what-can-cause-this-error
 				if(err.sqlState && err.sqlState=="HY000"){
-                  res.send("OK");
-                  return;
+                  return "OK";
                 } 
-				res.send("NOK");
-				return;
+				return "NOK";
 			  }
 		}
 	}
