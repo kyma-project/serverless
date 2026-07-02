@@ -1,9 +1,9 @@
 # build with --build-arg BASE=non-fips or --build-arg BASE=fips to select the base image
 ARG BASE=non-fips
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/node:22.23.0-alpine3.24 AS non-fips
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/node:22.23.1-alpine3.24 AS non-fips
 
-FROM europe-docker.pkg.dev/kyma-project/restricted-prod/sap.com/node-fips:22.23.0-dev AS fips
+FROM europe-docker.pkg.dev/kyma-project/restricted-prod/sap.com/node-fips:22.23.1-dev AS fips
 
 FROM ${BASE}
 
