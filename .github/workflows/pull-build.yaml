@@ -28,9 +28,12 @@ jobs:
       img_directory: "dev"
       img_version: PR-${{ github.event.number }}
 
-  integrations:
-    needs: builds
-    uses: ./.github/workflows/_integration-tests.yaml
-    with:
-      img_directory: "dev"
-      img_version: PR-${{ github.event.number }}
+  # Integration tests are intentionally disabled for pull_request_target.
+  # actions/checkout@v7 blocks fork checkouts in pull_request_target by default (safer-pull_request_target-defaults).
+  # Only the build job above runs here - it uses id-token to push images but does not expose secrets to untrusted fork code.
+  # integrations:
+  #   needs: builds
+  #   uses: ./.github/workflows/_integration-tests.yaml
+  #   with:
+  #     img_directory: "dev"
+  #     img_version: PR-${{ github.event.number }}
