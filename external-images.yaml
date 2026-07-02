@@ -13,8 +13,8 @@ images:
   - source: "node@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd"
     tag: "24.18.0-alpine3.24"
   # https://hub.docker.com/layers/library/node/22-alpine
-  - source: "node@sha256:ab07539e0988b63558ff621f5fbe1077054c39d9809112974fb79993949d41cd"
-    tag: "22.23.0-alpine3.24"
+  - source: "node@sha256:16e22a550f3863206a3f701448c45f7912c6896a62de43add43bb9c86130c3e2"
+    tag: "22.23.1-alpine3.24"
   # https://hub.docker.com/layers/library/node/20-alpine
   - source: "node@sha256:f598378b5240225e6beab68fa9f356db1fb8efe55173e6d4d8153113bb8f333c"
     tag: "20.20.2-alpine3.23"
