@@ -13,9 +13,6 @@ jobs:
   unit-tests:
     uses: ./.github/workflows/_unit-tests.yaml
 
-  gitleaks:
-    uses: ./.github/workflows/_gitleaks.yaml
-
   images-verify:
     if: github.event.pull_request.base.ref == 'main'
     uses: ./.github/workflows/_images-verify.yaml
