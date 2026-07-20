@@ -83,16 +83,18 @@ module.exports = {
 
 ```javascript
 // After — sdk functions
-import { getTracer, getFunctionName, getNamespace, getRuntime, getTimeout, getBodySizeLimit } from 'sdk';
+const { getTracer, getFunctionName, getNamespace, getRuntime, getTimeout, getBodySizeLimit } = require('sdk');
 
-export function main(req, res) {
-    const tracer = getTracer();
-    console.log(getFunctionName());
-    console.log(getNamespace());
-    console.log(getRuntime());
-    console.log(getTimeout());
-    console.log(getBodySizeLimit());
-    res.send('ok');
+module.exports = {
+    main: async function (req, res) {
+        const tracer = getTracer();
+        console.log(getFunctionName());
+        console.log(getNamespace());
+        console.log(getRuntime());
+        console.log(getTimeout());
+        console.log(getBodySizeLimit());
+        res.send('ok');
+    }
 }
 ```
 
@@ -157,22 +159,24 @@ module.exports = {
 
 ```javascript
 // After — getCloudEvent() returns a standard CloudEvent object
-import { getCloudEvent } from 'sdk';
+const { getCloudEvent } = require('sdk');
 
-export function main(req, res) {
-    const ce = getCloudEvent(req);
-    if (ce) {
-        console.log(ce.type);
-        console.log(ce.source);
-        console.log(ce.specversion);
-        console.log(ce.id);
-        console.log(ce.time);
-        console.log(ce.datacontenttype);
-        console.log(ce.data);
-        res.send(ce.type);
-        return;
+module.exports = {
+    main: function (req, res) {
+        const ce = getCloudEvent(req);
+        if (ce) {
+            console.log(ce.type);
+            console.log(ce.source);
+            console.log(ce.specversion);
+            console.log(ce.id);
+            console.log(ce.time);
+            console.log(ce.datacontenttype);
+            console.log(ce.data);
+            res.send(ce.type);
+            return;
+        }
+        res.send("not a cloud event");
     }
-    res.send("not a cloud event");
 }
 ```
 
@@ -239,15 +243,17 @@ module.exports = {
 
 ```javascript
 // After
-import { emitCloudEvent } from 'sdk';
+const { emitCloudEvent } = require('sdk');
 
-export async function main(req, res) {
-    await emitCloudEvent(
-        'com.example.order.created',
-        '/orders',
-        { orderId: '123' }
-    );
-    res.send("event emitted");
+module.exports = {
+    main: async function (req, res) {
+        await emitCloudEvent(
+            'com.example.order.created',
+            '/orders',
+            { orderId: '123' }
+        );
+        res.send("event emitted");
+    }
 }
 ```
 
@@ -331,7 +337,6 @@ The following environment variables were renamed in the new runtimes. The `FUNC_
 | ------------------------------ | ------------------------ | ------------------- | ------------------------------------ |
 | `FUNC_HANDLER`                 | `HANDLER_FUNC_NAME`      | nodejs26, python314 |                                      |
 | `MOD_NAME`                     | `HANDLER_MOD_NAME`       | nodejs26, python314 |                                      |
-| `KUBELESS_INSTALL_VOLUME`      | `HANDLER_PATH`           | nodejs26, python314 |                                      |
 | `REQ_MB_LIMIT`                 | `FUNC_BODY_MB_LIMIT`     | nodejs26            |                                      |
 | `FUNC_MEMFILE_MAX`             | `FUNC_BODY_MB_LIMIT`     | python314           | Unit changed from bytes to megabytes |
 | `KYMA_INTERNAL_LOGGER_ENABLED` | `SERVER_INTERNAL_LOGGER` | nodejs26, python314 |                                      |
