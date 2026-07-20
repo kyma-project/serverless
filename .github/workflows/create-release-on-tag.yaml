@@ -91,3 +91,15 @@ jobs:
     secrets: inherit
     with:
       release_version: ${{ github.ref_name }} 
+
+  notify-sbom:
+    needs: [ integrations ]                # released only after successful release tests
+    if: ${{ needs.integrations.result == 'success' }}
+    permissions:
+      id-token: write
+      contents: read
+    uses: kyma-project/compliancy/.github/workflows/notify-component-sbom.yml@main
+    secrets: inherit
+    with:
+      component: kyma-project.io/module/serverless   # full OCM component name
+      version: ${{ github.ref_name }}
