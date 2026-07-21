@@ -412,8 +412,8 @@ spec:
                     type: object
                   type: array
                   x-kubernetes-validations:
-                    - message: 'Following envs are reserved and cannot be used: [''FUNC_RUNTIME'',''FUNC_HANDLER'',''FUNC_PORT'',''FUNC_HANDLER_SOURCE'',''FUNC_HANDLER_DEPENDENCIES'',''MOD_NAME'',''NODE_PATH'',''PYTHONPATH'']'
-                      rule: (self.all(e, !(e.name in ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH'])))
+                    - message: 'Following envs are reserved and cannot be used: [''FUNC_RUNTIME'',''FUNC_HANDLER'',''FUNC_PORT'',''FUNC_HANDLER_SOURCE'',''FUNC_HANDLER_DEPENDENCIES'',''MOD_NAME'',''NODE_PATH'',''PYTHONPATH'', ''HANDLER_FUNC_NAME'', ''HANDLER_MOD_NAME'']'
+                      rule: (self.all(e, !(e.name in ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH', 'HANDLER_FUNC_NAME', 'HANDLER_MOD_NAME'])))
                 labels:
                   additionalProperties:
                     type: string
@@ -819,12 +819,14 @@ spec:
                           rule: (!has(self.profile) || self.profile in ['XS','S','M','L','XL'])
                   type: object
                 runtime:
-                  description: Specifies the runtime of the Function. The available values are `nodejs20` - deprecated, `nodejs22`, `nodejs24`, and `python312`.
+                  description: Specifies the runtime of the Function. The available values are `nodejs20` - deprecated, `nodejs22`, `nodejs24`, `nodejs26`, `python312`, and `python314`.
                   enum:
                     - nodejs20
                     - nodejs22
                     - nodejs24
+                    - nodejs26
                     - python312
+                    - python314
                   type: string
                 runtimeImageOverride:
                   description: Specifies the runtime image used instead of the default one.

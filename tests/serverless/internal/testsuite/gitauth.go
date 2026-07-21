@@ -202,7 +202,7 @@ func getAzureDevopsBasicTestcase(url, baseDir, reference string, auth BasicAuth)
 		baseDir:          baseDir,
 		reference:        reference,
 		expectedResponse: "Hello azure",
-		runtime:          serverlessv1alpha2.NodeJs24,
+		runtime:          serverlessv1alpha2.NodeJs26,
 		auth: &serverlessv1alpha2.RepositoryAuth{
 			Type:       serverlessv1alpha2.RepositoryAuthBasic,
 			SecretName: "azure-devops-auth-secret",
@@ -221,7 +221,7 @@ func getAzureDevopsSshTestcase(cfg *config) (testRepo, error) {
 		baseDir:          cfg.Azure.BaseDir,
 		reference:        cfg.Azure.Reference,
 		expectedResponse: "Hello azure",
-		runtime:          serverlessv1alpha2.NodeJs24,
+		runtime:          serverlessv1alpha2.NodeJs26,
 		auth: &serverlessv1alpha2.RepositoryAuth{
 			Type:       serverlessv1alpha2.RepositoryAuthSSHKey,
 			SecretName: "azure-devops-ssh-secret",
