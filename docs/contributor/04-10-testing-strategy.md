@@ -10,7 +10,6 @@ Each pull request to the repository triggers the following CI/CD jobs that verif
 - `pull / unit tests / serverless-unit-tests` - Runs unit tests of Serverless's logic. For the configuration, see the [_unit-tests.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/_unit-tests.yaml) file.
 - `pull / integrations / operator-integration-test` - Runs the create/update/delete Serverless integration tests in k3d cluster. For the configuration, see the [_integration-tests.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/_integration-tests.yaml) file.
 - `pull / integrations / serverless-integration-test` - Runs the basic functionality integration and the `tracing`, `api-gateway`, and `cloud-event` contract compatibility integration test suite for the Serverless in a k3d cluster. For the configuration, see the [_integration-tests.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/_integration-tests.yaml) file.
-- `pull / gitleaks / gitleaks-scan` - Scans the pull request for secrets and credentials. For the configuration, see the [_gitleaks.yaml.yaml](https://github.com/kyma-project/serverless/blob/main/.github/workflows/_gitleaks.yaml) file.
 
 ## CI/CD Jobs Running on the Main Branch
 
