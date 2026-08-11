@@ -1,11 +1,9 @@
 # Docs: https://github.com/kyma-project/test-infra/tree/main/cmd/image-syncer
 images:
-  - source: "alpine@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b"
-    tag: "3.24.1"
-  - source: "golang@sha256:18b460dd17542c2ba43299a633cf6ebfc1115101509531471d7cfce1019af083"
-    tag: "1.26.4-alpine3.23"
-  - source: "golang@sha256:622e56dbc11a8cfe87cafa2331e9a201877271cbff918af53d3be315f3da88cc"
-    tag: "1.26.5-alpine3.23"
+  - source: "alpine@sha256:a2d49ea686c2adfe3c992e47dc3b5e7fa6e6b5055609400dc2acaeb241c829f4"
+    tag: "3.24.0"
+  - source: "golang@sha256:0178a641fbb4858c5f1b48e34bdaabe0350a330a1b1149aabd498d0699ff5fb2"
+    tag: "1.26.5-alpine3.24"
   - source: "ghcr.io/nginx/alpine-fips@sha256:15cf5753964eca17557083313d2a39e6a3cc659a5a2143ecebc476b14cc687e6"
     tag: "0.5.0-alpine3.23"
   # https://hub.docker.com/layers/library/node/26-alpine
@@ -14,16 +12,15 @@ images:
   # https://hub.docker.com/layers/library/node/24-alpine
   - source: "node@sha256:f70403e87646dc51b45295f4b8b70cdad0b63d2297c4c9899119b03f7af7a6b3"
     tag: "24.18.1-alpine3.24"
-  # https://hub.docker.com/layers/library/node/26-alpine
-  - source: "node@sha256:e88a35be04478413b7c71c455cd9865de9b9360e1f43456be5951032d7ac1a66"
-    tag: "26.5.0-alpine3.24"
-  # https://hub.docker.com/layers/library/node/24-alpine
-  - source: "node@sha256:a0b9bf06e4e6193cf7a0f58816cc935ff8c2a908f81e6f1a95432d679c54fbfd"
-    tag: "24.18.0-alpine3.24"
   # https://hub.docker.com/layers/library/node/22-alpine
   - source: "node@sha256:16e22a550f3863206a3f701448c45f7912c6896a62de43add43bb9c86130c3e2"
     tag: "22.23.1-alpine3.24"
-  - source: "python@sha256:601d3d3797e90e2534782e69c85fafb7971b43f24c7b1b079b7e48dd435e458d"
-    tag: "3.12.13-alpine3.23"
-  - source: "python@sha256:b165067c5afc37fa5608a3c05609cc3d51aafd808a30fbfd822ee594fef55ad4"
-    tag: "3.14.6-alpine3.23"
+  # https://hub.docker.com/layers/library/node/20-alpine
+  - source: "node@sha256:f598378b5240225e6beab68fa9f356db1fb8efe55173e6d4d8153113bb8f333c"
+    tag: "20.20.2-alpine3.23"
+  # https://hub.docker.com/layers/library/python/3.12-alpine
+  - source: "python@sha256:6d43704baacd1bfbe7c295d7f13079d5d8104ed33568873133f8fc69980419df"
+    tag: "3.12.13-alpine3.24"
+  # https://hub.docker.com/layers/library/python/3.14-alpine
+  - source: "python@sha256:26730869004e2b9c4b9ad09cab8625e81d256d1ce97e72df5520e806b1709f92"
+    tag: "3.14.6-alpine3.24"
