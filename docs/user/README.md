@@ -47,10 +47,10 @@ To learn how to avoid any potential threats while using Functions, see [Function
 
 To assign access permissions to the Serverless module resources, use the following [aggregated ClusterRoles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles):
 
-- `kyma-serverless-view`
-- `kyma-serverless-edit`
-- `kyma-functions-view`
-- `kyma-functions-edit`
+- `kyma-serverless-view` - Grants read-only access to the Serverless custom resource.
+- `kyma-serverless-edit` - Grants full access to the Serverless custom resource.
+- `kyma-functions-view` - Grants read-only access to the Function custom resources.
+- `kyma-functions-edit` - Grants full access to the Function custom resources.
 
 ## Resource Consumption
 
