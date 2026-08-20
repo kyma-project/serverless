@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"fmt"
+	"time"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
@@ -55,7 +56,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 			serverlessv1alpha2.ConditionReasonMinReplicasNotAvailable,
 			fmt.Sprintf("Minimum replicas not available for deployment %s", deploymentName))
 
-		return requeue()
+		return requeueAfter(time.Second)
 	}
 
 	// deployment not ready
@@ -68,7 +69,7 @@ func sFnDeploymentStatus(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 			serverlessv1alpha2.ConditionReasonDeploymentWaiting,
 			fmt.Sprintf("Deployment %s is not ready yet", deploymentName))
 
-		return requeue()
+		return requeueAfter(time.Second)
 	}
 
 	// deployment failed

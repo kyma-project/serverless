@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"fmt"
+	"time"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
@@ -45,5 +46,5 @@ func sFnDeleteDeployments(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn
 		metav1.ConditionFalse,
 		serverlessv1alpha2.ConditionReasonDeploymentDeleted,
 		"Duplicated Deployments deleted")
-	return requeue()
+	return requeueAfter(time.Second)
 }

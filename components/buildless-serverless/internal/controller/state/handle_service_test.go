@@ -62,7 +62,7 @@ func Test_sFnHandleService(t *testing.T) {
 		require.Nil(t, err)
 		// we expect stop and requeue
 		require.NotNil(t, result)
-		require.Equal(t, ctrl.Result{Requeue: true}, *result)
+		require.Equal(t, ctrl.Result{RequeueAfter: time.Second}, *result)
 		// no next state (we will stop)
 		require.Nil(t, next)
 		// service has not been updated
@@ -255,7 +255,7 @@ func Test_sFnHandleService(t *testing.T) {
 		require.Nil(t, err)
 		// we expect stop and requeue
 		require.NotNil(t, result)
-		require.Equal(t, ctrl.Result{Requeue: true}, *result)
+		require.Equal(t, ctrl.Result{RequeueAfter: time.Second}, *result)
 		// no next state (we will stop)
 		require.Nil(t, next)
 		// function has proper condition

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"testing"
+	"time"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
@@ -122,7 +123,7 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 		require.Nil(t, err)
 		// we expect stop and requeue
 		require.NotNil(t, result)
-		require.Equal(t, ctrl.Result{Requeue: true}, *result)
+		require.Equal(t, ctrl.Result{RequeueAfter: time.Second}, *result)
 		// no next state (we will stop)
 		require.Nil(t, next)
 		// function has proper condition
@@ -174,7 +175,7 @@ func Test_sFnDeploymentStatus(t *testing.T) {
 		require.Nil(t, err)
 		// we expect stop and requeue
 		require.NotNil(t, result)
-		require.Equal(t, ctrl.Result{Requeue: true}, *result)
+		require.Equal(t, ctrl.Result{RequeueAfter: time.Second}, *result)
 		// no next state (we will stop)
 		require.Nil(t, next)
 		// function has proper condition
