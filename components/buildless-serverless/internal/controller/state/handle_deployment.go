@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"time"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
@@ -50,7 +51,7 @@ func sFnHandleDeployment(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn,
 	}
 	m.State.Function.CopyAnnotationsToStatus()
 	if requeueNeeded {
-		return requeue()
+		return requeueAfter(time.Second)
 	}
 	return nextState(sFnHandleService)
 }
@@ -101,7 +102,7 @@ func createDeployment(ctx context.Context, m *fsm.StateMachine, deployment *apps
 		serverlessv1alpha2.ConditionReasonDeploymentCreated,
 		fmt.Sprintf("Deployment %s created", deployment.GetName()))
 
-	return &ctrl.Result{Requeue: true}, nil
+	return &ctrl.Result{RequeueAfter: time.Second}, nil
 }
 
 func updateDeploymentIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment, builtDeployment *appsv1.Deployment) (requeueNeeded bool, err error) {

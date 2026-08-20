@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"fmt"
+	"time"
 
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/controller/fsm"
@@ -32,7 +33,7 @@ func sFnHandleService(ctx context.Context, m *fsm.StateMachine) (fsm.StateFn, *c
 		return stopWithError(errUpdate)
 	}
 	if requeueNeeded {
-		return requeue()
+		return requeueAfter(time.Second)
 	}
 	return nextState(sFnDeploymentStatus)
 }
@@ -85,7 +86,7 @@ func createService(ctx context.Context, m *fsm.StateMachine, service *corev1.Ser
 		serverlessv1alpha2.ConditionReasonServiceCreated,
 		fmt.Sprintf("Service %s created", service.GetName()))
 
-	return &ctrl.Result{Requeue: true}, nil
+	return &ctrl.Result{RequeueAfter: time.Second}, nil
 }
 
 func updateServiceIfNeeded(ctx context.Context, m *fsm.StateMachine, clusterService *corev1.Service, builtService *corev1.Service) (requeueNeeded bool, err error) {
