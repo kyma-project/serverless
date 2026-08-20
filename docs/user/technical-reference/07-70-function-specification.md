@@ -371,7 +371,7 @@ You can use a custom runtime image to override the existing one. Your image must
 
 - Expose the workload endpoint on the right port
 - Provide liveness and readiness check endpoints at `/healthz`
-- Fetch sources from the path under the `KUBELESS_INSTALL_VOLUME` environment
+- Fetch sources from the path under the `HANDLER_PATH` environment
 - Security support. Kyma runtimes are secure by default. You only need to protect your images.
 
 Every Function's Pods container has the same system environments, which helps you configure the Functions server. For more information, read the [Environment variables](05-20-env-variables.md) page.
