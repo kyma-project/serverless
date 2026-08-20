@@ -4,6 +4,7 @@ import (
 	"context"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/kyma-project/manager-toolkit/installation/chart"
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
@@ -24,7 +25,7 @@ var (
 	}
 
 	testResult = ctrl.Result{
-		Requeue: true,
+		RequeueAfter: time.Second,
 	}
 
 	canceledCtx = func() context.Context {

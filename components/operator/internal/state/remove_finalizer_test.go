@@ -3,6 +3,7 @@ package state
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"github.com/stretchr/testify/require"
@@ -62,7 +63,7 @@ func Test_sFnRemoveFinalizer(t *testing.T) {
 		// remove finalizer
 		next, result, err := sFnRemoveFinalizer(context.Background(), r, s)
 		require.Nil(t, err)
-		require.Equal(t, &ctrl.Result{Requeue: true}, result)
+		require.Equal(t, &ctrl.Result{RequeueAfter: time.Second}, result)
 		require.Nil(t, next)
 	})
 }
