@@ -2,6 +2,7 @@ package state
 
 import (
 	"context"
+	"time"
 
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
@@ -9,7 +10,7 @@ import (
 
 func sFnRemoveFinalizer(ctx context.Context, r *reconciler, s *systemState) (stateFn, *ctrl.Result, error) {
 	if !controllerutil.RemoveFinalizer(&s.instance, r.finalizer) {
-		return requeue()
+		return requeueAfter(time.Second)
 	}
 
 	err := updateServerlessWithoutStatus(ctx, r, s)
