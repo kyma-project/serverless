@@ -5,7 +5,7 @@ With the Serverless module, you can create Functions in both Node.js and Python.
 > [!NOTE] 
 > The `nodejs26` and `python314` runtimes use a new, simplified API. Handlers receive the raw HTTP request and response objects directly instead of the legacy `event` and `context` wrapper objects. See the [New API (nodejs26, python314)](#new-api-nodejs26-python314) section.
 
-## Legacy API (nodejs20, nodejs22, nodejs24, python312)
+## Legacy API (nodejs22, nodejs24, python312)
 
 ### Signature
 
@@ -147,7 +147,7 @@ See the detailed descriptions of these fields:
 | ----------------- | ----------------------------------------------------------------------------------------------------- |
 | **function-name** | Name of the invoked Function                                                                          |
 | **timeout**       | Time, in seconds, after which the system cancels the request to invoke the Function                   |
-| **runtime**       | Environment used to run the Function. You can use `nodejs20` - deprecated, `nodejs22`, `nodejs24` or `python312`. |
+| **runtime**       | Environment used to run the Function. You can use `nodejs22`, `nodejs24`, or `python312`. |
 | **memory-limit**  | Deprecated: Maximum amount of memory assigned to run a Function                                       |
 
 ## HTTP Requests
