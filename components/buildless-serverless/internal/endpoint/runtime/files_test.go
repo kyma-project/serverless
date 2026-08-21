@@ -16,6 +16,21 @@ const (
 )
 
 func Test_readNodejsFiles(t *testing.T) {
+	t.Run("read true nodejs26 runtime files", func(t *testing.T) {
+		inline := &v1alpha2.InlineSource{
+			Source:       handlerData,
+			Dependencies: "{}",
+		}
+		runtimeDir := fmt.Sprintf("%s/%s", runtimesDir, "nodejs26")
+
+		gotList, gotErr := readNodejsFiles(inline, runtimeDir)
+		require.NoError(t, gotErr)
+		require.Len(t, gotList, 13)
+		requireFileWithName(t, gotList, "package.json")
+		requireFileWithName(t, gotList, "/sdk/index.js")
+		requireFileWithName(t, gotList, "/sdk/package.json")
+		require.Contains(t, gotList, types.FileResponse{Name: "handler.js", Data: handlerBase64Data})
+	})
 	t.Run("read true nodejs24 runtime files", func(t *testing.T) {
 		inline := &v1alpha2.InlineSource{
 			Source:       handlerData,
@@ -82,6 +97,19 @@ func Test_readPythonFiles(t *testing.T) {
 		gotList, gotErr := readPythonFiles(inline, runtimeDir)
 		require.NoError(t, gotErr)
 		require.Len(t, gotList, 10)
+		requireFileWithName(t, gotList, "requirements.txt")
+		require.Contains(t, gotList, types.FileResponse{Name: "handler.py", Data: handlerBase64Data})
+	})
+	t.Run("read true python314 runtime files", func(t *testing.T) {
+		inline := &v1alpha2.InlineSource{
+			Source:       handlerData,
+			Dependencies: "",
+		}
+		runtimeDir := fmt.Sprintf("%s/%s", runtimesDir, "python314")
+
+		gotList, gotErr := readPythonFiles(inline, runtimeDir)
+		require.NoError(t, gotErr)
+		require.Len(t, gotList, 11)
 		requireFileWithName(t, gotList, "requirements.txt")
 		require.Contains(t, gotList, types.FileResponse{Name: "handler.py", Data: handlerBase64Data})
 	})

@@ -22,7 +22,9 @@ const (
 	nodejs20  = "nodejs20"
 	nodejs22  = "nodejs22"
 	nodejs24  = "nodejs24"
+	nodejs26  = "nodejs26"
 	python312 = "python312"
+	python314 = "python314"
 )
 
 func FunctionAPIGatewayFIPS(restConfig *rest.Config, cfg internal.Config, logf *logrus.Entry) (executor.Step, error) {
@@ -34,29 +36,41 @@ func FunctionAPIGatewayFIPS(restConfig *rest.Config, cfg internal.Config, logf *
 		return nil, errors.Wrap(err, "while creating k8s CoreV1Client")
 	}
 
+	python314Logger := logf.WithField(runtimeKey, "python314")
 	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
 	nodejs24Logger := logf.WithField(runtimeKey, "nodejs24")
+	nodejs26Logger := logf.WithField(runtimeKey, "nodejs26")
 
 	genericContainer, err := newGenericContainer(logf, restConfig, cfg)
 	if err != nil {
 		return nil, errors.Wrap(err, "while creating generic container")
 	}
 
+	python314Fn := function.NewFunction("python314", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python314Logger))
 	nodejs22Fn := function.NewFunction("nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
 	nodejs24Fn := function.NewFunction("nodejs24", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs24Logger))
+	nodejs26Fn := function.NewFunction("nodejs26", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs26Logger))
 
 	logf.Infof("Testing function in namespace: %s", cfg.Namespace)
 
 	return executor.NewSerialTestRunner(logf, "Runtime test",
 		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
 		executor.NewParallelRunner(logf, "Fn tests",
+			executor.NewSerialTestRunner(python314Logger, "Python314 test",
+				function.CreateFunction(python314Logger, python314Fn, "Create Python314 Function", runtimes.BasicPythonFunction("Hello from python314", serverlessv1alpha2.Python314)),
+				assertion.APIGatewayFunctionCheck("python314", python314Fn, coreCli, genericContainer.Namespace, python314),
+			),
 			executor.NewSerialTestRunner(nodejs22Logger, "NodeJS22 test",
-				function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.BasicNodeJSFunction("Hello from nodejs22", serverlessv1alpha2.NodeJs22)),
+				function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.BasicNodeJSFunctionLegacy("Hello from nodejs22", serverlessv1alpha2.NodeJs22)),
 				assertion.APIGatewayFunctionCheck("nodejs22", nodejs22Fn, coreCli, genericContainer.Namespace, nodejs22),
 			),
 			executor.NewSerialTestRunner(nodejs24Logger, "NodeJS24 test",
-				function.CreateFunction(nodejs24Logger, nodejs24Fn, "Create NodeJS24 Function", runtimes.BasicNodeJSFunction("Hello from nodejs24", serverlessv1alpha2.NodeJs24)),
+				function.CreateFunction(nodejs24Logger, nodejs24Fn, "Create NodeJS24 Function", runtimes.BasicNodeJSFunctionLegacy("Hello from nodejs24", serverlessv1alpha2.NodeJs24)),
 				assertion.APIGatewayFunctionCheck("nodejs24", nodejs24Fn, coreCli, genericContainer.Namespace, nodejs24),
+			),
+			executor.NewSerialTestRunner(nodejs26Logger, "NodeJS26 test",
+				function.CreateFunction(nodejs26Logger, nodejs26Fn, "Create NodeJS26 Function", runtimes.BasicNodeJSFunction("Hello from nodejs26", serverlessv1alpha2.NodeJs26)),
+				assertion.APIGatewayFunctionCheck("nodejs26", nodejs26Fn, coreCli, genericContainer.Namespace, nodejs26),
 			),
 		),
 	), nil
@@ -72,9 +86,11 @@ func FunctionAPIGateway(restConfig *rest.Config, cfg internal.Config, logf *logr
 	}
 
 	python312Logger := logf.WithField(runtimeKey, "python312")
+	python314Logger := logf.WithField(runtimeKey, "python314")
 	nodejs20Logger := logf.WithField(runtimeKey, "nodejs20")
 	nodejs22Logger := logf.WithField(runtimeKey, "nodejs22")
 	nodejs24Logger := logf.WithField(runtimeKey, "nodejs24")
+	nodejs26Logger := logf.WithField(runtimeKey, "nodejs26")
 
 	genericContainer, err := newGenericContainer(logf, restConfig, cfg)
 	if err != nil {
@@ -82,9 +98,11 @@ func FunctionAPIGateway(restConfig *rest.Config, cfg internal.Config, logf *logr
 	}
 
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
+	python314Fn := function.NewFunction("python314", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(python314Logger))
 	nodejs20Fn := function.NewFunction("nodejs20", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs20Logger))
 	nodejs22Fn := function.NewFunction("nodejs22", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs22Logger))
 	nodejs24Fn := function.NewFunction("nodejs24", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs24Logger))
+	nodejs26Fn := function.NewFunction("nodejs26", genericContainer.Namespace, cfg.KubectlProxyEnabled, genericContainer.WithLogger(nodejs26Logger))
 
 	logf.Infof("Testing function in namespace: %s", cfg.Namespace)
 
@@ -92,20 +110,28 @@ func FunctionAPIGateway(restConfig *rest.Config, cfg internal.Config, logf *logr
 		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
 		executor.NewParallelRunner(logf, "Fn tests",
 			executor.NewSerialTestRunner(python312Logger, "Python312 test",
-				function.CreateFunction(python312Logger, python312Fn, "Create Python312 Function", runtimes.BasicPythonFunction("Hello from python312", serverlessv1alpha2.Python312)),
+				function.CreateFunction(python312Logger, python312Fn, "Create Python312 Function", runtimes.BasicPythonFunctionLegacy("Hello from python312", serverlessv1alpha2.Python312)),
 				assertion.APIGatewayFunctionCheck("python312", python312Fn, coreCli, genericContainer.Namespace, python312),
 			),
+			executor.NewSerialTestRunner(python314Logger, "Python314 test",
+				function.CreateFunction(python314Logger, python314Fn, "Create Python314 Function", runtimes.BasicPythonFunction("Hello from python314", serverlessv1alpha2.Python314)),
+				assertion.APIGatewayFunctionCheck("python314", python314Fn, coreCli, genericContainer.Namespace, python314),
+			),
 			executor.NewSerialTestRunner(nodejs20Logger, "NodeJS20 test",
-				function.CreateFunction(nodejs20Logger, nodejs20Fn, "Create NodeJS20 Function", runtimes.BasicNodeJSFunction("Hello from nodejs20", serverlessv1alpha2.NodeJs20)),
+				function.CreateFunction(nodejs20Logger, nodejs20Fn, "Create NodeJS20 Function", runtimes.BasicNodeJSFunctionLegacy("Hello from nodejs20", serverlessv1alpha2.NodeJs20)),
 				assertion.APIGatewayFunctionCheck("nodejs20", nodejs20Fn, coreCli, genericContainer.Namespace, nodejs20),
 			),
 			executor.NewSerialTestRunner(nodejs22Logger, "NodeJS22 test",
-				function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.BasicNodeJSFunction("Hello from nodejs22", serverlessv1alpha2.NodeJs22)),
+				function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.BasicNodeJSFunctionLegacy("Hello from nodejs22", serverlessv1alpha2.NodeJs22)),
 				assertion.APIGatewayFunctionCheck("nodejs22", nodejs22Fn, coreCli, genericContainer.Namespace, nodejs22),
 			),
 			executor.NewSerialTestRunner(nodejs24Logger, "NodeJS24 test",
-				function.CreateFunction(nodejs24Logger, nodejs24Fn, "Create NodeJS24 Function", runtimes.BasicNodeJSFunction("Hello from nodejs24", serverlessv1alpha2.NodeJs24)),
+				function.CreateFunction(nodejs24Logger, nodejs24Fn, "Create NodeJS24 Function", runtimes.BasicNodeJSFunctionLegacy("Hello from nodejs24", serverlessv1alpha2.NodeJs24)),
 				assertion.APIGatewayFunctionCheck("nodejs24", nodejs24Fn, coreCli, genericContainer.Namespace, nodejs24),
+			),
+			executor.NewSerialTestRunner(nodejs26Logger, "NodeJS26 test",
+				function.CreateFunction(nodejs26Logger, nodejs26Fn, "Create NodeJS26 Function", runtimes.BasicNodeJSFunction("Hello from nodejs26", serverlessv1alpha2.NodeJs26)),
+				assertion.APIGatewayFunctionCheck("nodejs26", nodejs26Fn, coreCli, genericContainer.Namespace, nodejs26),
 			),
 		),
 	), nil

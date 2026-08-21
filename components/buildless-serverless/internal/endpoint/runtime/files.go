@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"os"
+	"path"
 
 	"github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
 	"github.com/kyma-project/serverless/components/buildless-serverless/internal/endpoint/packagejson"
@@ -46,11 +47,18 @@ func readNodejsFiles(inline *v1alpha2.InlineSource, runtimeDir string) ([]types.
 		return nil, errors.Wrap(err, "failed to read server.mjs")
 	}
 
-	return append(commonFiles, []types.FileResponse{
+	// read sdk/ directory (nodejs26 only — legacy runtimes have no sdk/)
+	sdkFiles, err := readDirFiles(runtimeDir, "/sdk")
+	if err != nil && !os.IsNotExist(err) {
+		return nil, errors.Wrap(err, "failed to read sdk directory")
+	}
+
+	files := append(commonFiles, []types.FileResponse{
 		{Name: "package.json", Data: base64.StdEncoding.EncodeToString(packagejsonFile)},
 		{Name: "server.mjs", Data: base64.StdEncoding.EncodeToString(serverFile)},
 		{Name: "handler.js", Data: base64.StdEncoding.EncodeToString([]byte(inline.Source))},
-	}...), nil
+	}...)
+	return append(files, sdkFiles...), nil
 }
 
 func readPythonFiles(inline *v1alpha2.InlineSource, runtimeDir string) ([]types.FileResponse, error) {
@@ -84,22 +92,9 @@ func readPythonFiles(inline *v1alpha2.InlineSource, runtimeDir string) ([]types.
 
 func readCommonFiles(runtimeDir string) ([]types.FileResponse, error) {
 	// read lib files
-	libFilesInfo, dirErr := os.ReadDir(runtimeDir + "/lib")
-	if dirErr != nil {
-		return nil, errors.Wrap(dirErr, "failed to read lib directory")
-	}
-
-	libFiles := make([]types.FileResponse, 0, len(libFilesInfo))
-	for _, f := range libFilesInfo {
-		if f.IsDir() {
-			continue
-		}
-
-		data, err := os.ReadFile(runtimeDir + "/lib/" + f.Name())
-		if err != nil {
-			return nil, errors.Wrapf(err, "failed to read lib file '%s'", f.Name())
-		}
-		libFiles = append(libFiles, types.FileResponse{Name: fmt.Sprintf("/lib/%s", f.Name()), Data: base64.StdEncoding.EncodeToString(data)})
+	libFiles, err := readDirFiles(runtimeDir, "/lib")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read lib directory")
 	}
 
 	// read .gitignore
@@ -139,4 +134,29 @@ func readCommonFiles(runtimeDir string) ([]types.FileResponse, error) {
 		{Name: "Dockerfile", Data: base64.StdEncoding.EncodeToString(dockerfileFile)},
 		{Name: "Makefile", Data: base64.StdEncoding.EncodeToString(makefileFile)},
 	}...), nil
+}
+
+// readDirFiles returns the non-directory entries in runtimeDir/folder as FileResponses,
+// each named "<folder>/<basename>".
+func readDirFiles(runtimeDir, folder string) ([]types.FileResponse, error) {
+	entries, err := os.ReadDir(path.Join(runtimeDir, folder))
+	if err != nil {
+		return nil, err
+	}
+
+	files := make([]types.FileResponse, 0, len(entries))
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		data, err := os.ReadFile(path.Join(runtimeDir, folder, e.Name()))
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to read file '%s'", e.Name())
+		}
+		files = append(files, types.FileResponse{
+			Name: fmt.Sprintf("%s/%s", folder, e.Name()),
+			Data: base64.StdEncoding.EncodeToString(data),
+		})
+	}
+	return files, nil
 }

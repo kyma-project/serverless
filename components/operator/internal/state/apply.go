@@ -65,7 +65,9 @@ func updateImages(fb *flags.Builder, fipsModeEnabled bool) {
 	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_NODEJS20", fb.WithImageFunctionRuntimeNodejs20, fipsModeEnabled)
 	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_NODEJS22", fb.WithImageFunctionRuntimeNodejs22, fipsModeEnabled)
 	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_NODEJS24", fb.WithImageFunctionRuntimeNodejs24, fipsModeEnabled)
+	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_NODEJS26", fb.WithImageFunctionRuntimeNodejs26, fipsModeEnabled)
 	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_PYTHON312", fb.WithImageFunctionRuntimePython312, fipsModeEnabled)
+	updateImageIfOverride("IMAGE_FUNCTION_RUNTIME_PYTHON314", fb.WithImageFunctionRuntimePython314, fipsModeEnabled)
 }
 
 func updateImageIfOverride(envName string, updateFunction flags.ImageReplace, fipsModeEnabled bool) {

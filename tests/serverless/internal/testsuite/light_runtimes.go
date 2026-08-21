@@ -66,9 +66,11 @@ func SimpleFunction(restConfig *rest.Config, cfg internal.Config, logf *logrus.E
 		newRegistryConfigSecretStep(logf, genericContainer, cfg),
 		executor.NewParallelRunner(logf, "Fn tests",
 			newSimplePython312TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
+			newSimplePython314TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
 			newSimpleNodejs20TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
 			newSimpleNodejs22TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
 			newSimpleNodejs24TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
+			newSimpleNodejs26TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
 		),
 	), nil
 }
@@ -98,8 +100,10 @@ func SimpleFunctionFIPS(restConfig *rest.Config, cfg internal.Config, logf *logr
 		namespace.NewNamespaceStep(logf, fmt.Sprintf("Create %s namespace", genericContainer.Namespace), genericContainer.Namespace, coreCli),
 		newRegistryConfigSecretStep(logf, genericContainer, cfg),
 		executor.NewParallelRunner(logf, "Fn tests",
+			newSimplePython314TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
 			newSimpleNodejs22TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
 			newSimpleNodejs24TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
+			newSimpleNodejs26TestRunner(logf, poll, genericContainer, cfg.KubectlProxyEnabled),
 		),
 	), nil
 }
@@ -138,9 +142,9 @@ func newSimpleNodejs20TestRunner(logf *logrus.Entry, poll utils.Poller, genericC
 	return executor.NewSerialTestRunner(nodejs20Logger, "NodeJS20 test",
 		configmap.CreateConfigMap(nodejs20Logger, cmNodeJS20, "Create Test ConfigMap", cmData),
 		secret.CreateSecret(nodejs20Logger, secNodeJS20, "Create Test Secret", secretData),
-		function.CreateFunction(nodejs20Logger, nodejs20Fn, "Create NodeJS20 Function", runtimes.NodeJSFunctionWithEnvFromConfigMapAndSecret(cmNodeJS20.Name(), cmEnvKey, secNodeJS20.Name(), secEnvKey, serverlessv1alpha2.NodeJs20)),
+		function.CreateFunction(nodejs20Logger, nodejs20Fn, "Create NodeJS20 Function", runtimes.NodeJSFunctionWithEnvFromConfigMapAndSecretLegacy(cmNodeJS20.Name(), cmEnvKey, secNodeJS20.Name(), secEnvKey, serverlessv1alpha2.NodeJs20)),
 		assertion.NewHTTPCheck(nodejs20Logger, "NodeJS20 pre update simple check through service", nodejs20Fn.FunctionURL, poll, fmt.Sprintf("%s-%s", cmEnvValue, secEnvValue)),
-		function.UpdateFunction(nodejs20Logger, nodejs20Fn, "Update NodeJS20 Function", runtimes.BasicNodeJSFunctionWithCustomDependency("Hello from updated nodejs20", serverlessv1alpha2.NodeJs20)),
+		function.UpdateFunction(nodejs20Logger, nodejs20Fn, "Update NodeJS20 Function", runtimes.BasicNodeJSFunctionWithCustomDependencyLegacy("Hello from updated nodejs20", serverlessv1alpha2.NodeJs20)),
 		assertion.NewHTTPCheck(nodejs20Logger, "NodeJS20 post update simple check through service", nodejs20Fn.FunctionURL, poll, "Hello from updated nodejs20"),
 	)
 }
@@ -154,9 +158,9 @@ func newSimpleNodejs22TestRunner(logf *logrus.Entry, poll utils.Poller, genericC
 	return executor.NewSerialTestRunner(nodejs22Logger, "NodeJS22 test",
 		configmap.CreateConfigMap(nodejs22Logger, cmNodeJS22, "Create Test ConfigMap", cmData),
 		secret.CreateSecret(nodejs22Logger, secNodeJS22, "Create Test Secret", secretData),
-		function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.NodeJSFunctionWithEnvFromConfigMapAndSecret(cmNodeJS22.Name(), cmEnvKey, secNodeJS22.Name(), secEnvKey, serverlessv1alpha2.NodeJs22)),
+		function.CreateFunction(nodejs22Logger, nodejs22Fn, "Create NodeJS22 Function", runtimes.NodeJSFunctionWithEnvFromConfigMapAndSecretLegacy(cmNodeJS22.Name(), cmEnvKey, secNodeJS22.Name(), secEnvKey, serverlessv1alpha2.NodeJs22)),
 		assertion.NewHTTPCheck(nodejs22Logger, "NodeJS22 pre update simple check through service", nodejs22Fn.FunctionURL, poll, fmt.Sprintf("%s-%s", cmEnvValue, secEnvValue)),
-		function.UpdateFunction(nodejs22Logger, nodejs22Fn, "Update NodeJS22 Function", runtimes.BasicNodeJSFunctionWithCustomDependency("Hello from updated nodejs22", serverlessv1alpha2.NodeJs22)),
+		function.UpdateFunction(nodejs22Logger, nodejs22Fn, "Update NodeJS22 Function", runtimes.BasicNodeJSFunctionWithCustomDependencyLegacy("Hello from updated nodejs22", serverlessv1alpha2.NodeJs22)),
 		assertion.NewHTTPCheck(nodejs22Logger, "NodeJS22 post update simple check through service", nodejs22Fn.FunctionURL, poll, "Hello from updated nodejs22"),
 	)
 }
@@ -170,10 +174,26 @@ func newSimpleNodejs24TestRunner(logf *logrus.Entry, poll utils.Poller, genericC
 	return executor.NewSerialTestRunner(nodejs24Logger, "NodeJS24 test",
 		configmap.CreateConfigMap(nodejs24Logger, cmNodeJS24, "Create Test ConfigMap", cmData),
 		secret.CreateSecret(nodejs24Logger, secNodeJS24, "Create Test Secret", secretData),
-		function.CreateFunction(nodejs24Logger, nodejs24Fn, "Create NodeJS24 Function", runtimes.NodeJSFunctionWithEnvFromConfigMapAndSecret(cmNodeJS24.Name(), cmEnvKey, secNodeJS24.Name(), secEnvKey, serverlessv1alpha2.NodeJs24)),
+		function.CreateFunction(nodejs24Logger, nodejs24Fn, "Create NodeJS24 Function", runtimes.NodeJSFunctionWithEnvFromConfigMapAndSecretLegacy(cmNodeJS24.Name(), cmEnvKey, secNodeJS24.Name(), secEnvKey, serverlessv1alpha2.NodeJs24)),
 		assertion.NewHTTPCheck(nodejs24Logger, "NodeJS24 pre update simple check through service", nodejs24Fn.FunctionURL, poll, fmt.Sprintf("%s-%s", cmEnvValue, secEnvValue)),
-		function.UpdateFunction(nodejs24Logger, nodejs24Fn, "Update NodeJS24 Function", runtimes.BasicNodeJSFunctionWithCustomDependency("Hello from updated nodejs24", serverlessv1alpha2.NodeJs24)),
+		function.UpdateFunction(nodejs24Logger, nodejs24Fn, "Update NodeJS24 Function", runtimes.BasicNodeJSFunctionWithCustomDependencyLegacy("Hello from updated nodejs24", serverlessv1alpha2.NodeJs24)),
 		assertion.NewHTTPCheck(nodejs24Logger, "NodeJS24 post update simple check through service", nodejs24Fn.FunctionURL, poll, "Hello from updated nodejs24"),
+	)
+}
+
+func newSimpleNodejs26TestRunner(logf *logrus.Entry, poll utils.Poller, genericContainer utils.Container, kubectlProxyEnabled bool) *executor.SerialRunner {
+	nodejs26Logger := logf.WithField(runtimeKey, "nodejs26")
+	nodejs26Fn := function.NewFunction("nodejs26", genericContainer.Namespace, kubectlProxyEnabled, genericContainer.WithLogger(nodejs26Logger))
+	cmNodeJS26 := configmap.NewConfigMap("test-serverless-configmap-nodejs26", genericContainer.WithLogger(nodejs26Logger))
+	secNodeJS26 := secret.NewSecret("test-serverless-secret-nodejs26", genericContainer.WithLogger(nodejs26Logger))
+
+	return executor.NewSerialTestRunner(nodejs26Logger, "NodeJS26 test",
+		configmap.CreateConfigMap(nodejs26Logger, cmNodeJS26, "Create Test ConfigMap", cmData),
+		secret.CreateSecret(nodejs26Logger, secNodeJS26, "Create Test Secret", secretData),
+		function.CreateFunction(nodejs26Logger, nodejs26Fn, "Create NodeJS26 Function", runtimes.NodeJSFunctionWithEnvFromConfigMapAndSecret(cmNodeJS26.Name(), cmEnvKey, secNodeJS26.Name(), secEnvKey, serverlessv1alpha2.NodeJs26)),
+		assertion.NewHTTPCheck(nodejs26Logger, "NodeJS26 pre update simple check through service", nodejs26Fn.FunctionURL, poll, fmt.Sprintf("%s-%s", cmEnvValue, secEnvValue)),
+		function.UpdateFunction(nodejs26Logger, nodejs26Fn, "Update NodeJS26 Function", runtimes.BasicNodeJSFunctionWithCustomDependency("Hello from updated nodejs26", serverlessv1alpha2.NodeJs26)),
+		assertion.NewHTTPCheck(nodejs26Logger, "NodeJS26 post update simple check through service", nodejs26Fn.FunctionURL, poll, "Hello from updated nodejs26"),
 	)
 }
 
@@ -182,9 +202,21 @@ func newSimplePython312TestRunner(logf *logrus.Entry, poll utils.Poller, generic
 	python312Fn := function.NewFunction("python312", genericContainer.Namespace, kubectlProxyEnabled, genericContainer.WithLogger(python312Logger))
 
 	return executor.NewSerialTestRunner(python312Logger, "Python312 test",
-		function.CreateFunction(python312Logger, python312Fn, "Create Python312 Function", runtimes.BasicPythonFunction("Hello From python", serverlessv1alpha2.Python312)),
+		function.CreateFunction(python312Logger, python312Fn, "Create Python312 Function", runtimes.BasicPythonFunctionLegacy("Hello From python", serverlessv1alpha2.Python312)),
 		assertion.NewHTTPCheck(python312Logger, "Python312 pre update simple check through service", python312Fn.FunctionURL, poll, "Hello From python"),
-		function.UpdateFunction(python312Logger, python312Fn, "Update Python312 Function", runtimes.BasicPythonFunctionWithCustomDependency("Hello From updated python", serverlessv1alpha2.Python312)),
+		function.UpdateFunction(python312Logger, python312Fn, "Update Python312 Function", runtimes.BasicPythonFunctionWithCustomDependencyLegacy("Hello From updated python", serverlessv1alpha2.Python312)),
 		assertion.NewHTTPCheck(python312Logger, "Python312 post update simple check through service", python312Fn.FunctionURL, poll, "Hello From updated python"),
+	)
+}
+
+func newSimplePython314TestRunner(logf *logrus.Entry, poll utils.Poller, genericContainer utils.Container, kubectlProxyEnabled bool) *executor.SerialRunner {
+	python314Logger := logf.WithField(runtimeKey, "python314")
+	python314Fn := function.NewFunction("python314", genericContainer.Namespace, kubectlProxyEnabled, genericContainer.WithLogger(python314Logger))
+
+	return executor.NewSerialTestRunner(python314Logger, "Python314 test",
+		function.CreateFunction(python314Logger, python314Fn, "Create Python314 Function", runtimes.BasicPythonFunction("Hello From python", serverlessv1alpha2.Python314)),
+		assertion.NewHTTPCheck(python314Logger, "Python314 pre update simple check through service", python314Fn.FunctionURL, poll, "Hello From python"),
+		function.UpdateFunction(python314Logger, python314Fn, "Update Python314 Function", runtimes.BasicPythonFunctionWithCustomDependency("Hello From updated python", serverlessv1alpha2.Python314)),
+		assertion.NewHTTPCheck(python314Logger, "Python314 post update simple check through service", python314Fn.FunctionURL, poll, "Hello From updated python"),
 	)
 }

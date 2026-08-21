@@ -9,9 +9,10 @@ import (
 )
 
 func BasicPythonFunction(msg string, runtime serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
-	src := fmt.Sprintf(`import arrow 
-def main(event, context):
-	return "%s"`, msg)
+	src := fmt.Sprintf(`import arrow
+import sdk
+def main():
+    return "%s"`, msg)
 
 	dpd := `requests==2.31.0
 arrow==0.15.8`
@@ -43,15 +44,17 @@ func BasicTracingPythonFunction(runtime serverlessv1alpha2.Runtime, externalURL 
 	//requests>=2.31.0`
 
 	src := fmt.Sprintf(`import json
+import sdk
+from flask import request
 
 import requests
 from opentelemetry.instrumentation.requests import RequestsInstrumentor
 
 
-def main(event, context):
-    print("event headers: ", vars(event['extensions']['request'].headers))
-    print("event data: ", vars(event['extensions']['request'].body))
-    print("event method: ", event['extensions']['request'].method)
+def main():
+    print("event headers: ", dict(request.headers))
+    print("event data: ", request.get_data(as_text=True))
+    print("event method: ", request.method)
     RequestsInstrumentor().instrument()
     response = requests.get('%s', timeout=1)
     headers = response.request.headers
@@ -76,7 +79,7 @@ def main(event, context):
 func BasicPythonFunctionWithCustomDependency(msg string, runtime serverlessv1alpha2.Runtime) serverlessv1alpha2.FunctionSpec {
 	src := fmt.Sprintf(
 		`import arrow
-def main(event, context):
+def main():
 	return "%s"`, msg)
 
 	dpd := `requests==2.31.0
@@ -106,46 +109,54 @@ func PythonPublisherProxyMock() serverlessv1alpha2.FunctionSpec {
 	dpd := ``
 
 	src := `import json
-
-import bottle
+import sdk
+from flask import request
 
 event_data = {}
 
 
-def main(event, context):
-    print("event headers: ", vars(event['extensions']['request'].headers))
-    print("event data: ", vars(event['extensions']['request'].body))
-    print("event method: ", event['extensions']['request'].method)
+def main():
+    print("event headers: ", dict(request.headers))
+    print("event data: ", request.get_data(as_text=True))
+    print("event method: ", request.method)
     global event_data
-    req = event.ceHeaders['extensions']['request']
 
-    if req.method == 'GET':
-        event_type = req.query.get(key='type')
+    if request.method == 'GET':
+        event_type = request.args.get('type')
         if event_type is None:
             print("type is not specified, returning all event data: ", json.dumps(event_data))
             return json.dumps(event_data)
-        source = req.query.get(key='source')
+        source = request.args.get('source')
         runtime_events = event_data.get(source, {})
         saved_event = runtime_events.get(event_type, "")
         print("getting saved event from memory for type:", event_type, ", for source: ", source, ", returning: ", json.dumps(saved_event))
         return json.dumps(saved_event)
 
-    elif req.method == 'POST':
-        event_ce_headers = event.ceHeaders
-        event_ce_headers.pop('extensions')
-        event_data[str(event_ce_headers['ce-source'])] = {
-            event_ce_headers['ce-type']: event_ce_headers
+    elif request.method == 'POST':
+        ce = sdk.get_cloud_event()
+        ce_time = ce.get_time()
+        stored = {
+            'ce-type': ce.get_type(),
+            'ce-source': str(ce.get_source()),
+            'ce-specversion': ce.get_specversion(),
+            'ce-id': ce.get_id(),
+            'ce-time': ce_time.isoformat() if ce_time else '',
+            'ce-datacontenttype': ce.get_datacontenttype() or '',
+            'data': ce.get_data(),
         }
-        print("saving CE headers in-memory, source: ", event_ce_headers['ce-source'], ", headers: ", event_data[str(event_ce_headers['ce-source'])], ", returning: 201")
+        event_data[str(ce.get_source())] = {
+            ce.get_type(): stored,
+        }
+        print("saving CE headers in-memory, source: ", ce.get_source(), ", headers: ", event_data[str(ce.get_source())], ", returning: 201")
         print("current event_data: ", event_data)
-        return bottle.HTTPResponse(status=201)
+        return "", 201
 
     print("Unexpected call, returning: 405")
-    return bottle.HTTPResponse(status=405)
+    return "", 405
 `
 
 	return serverlessv1alpha2.FunctionSpec{
-		Runtime: serverlessv1alpha2.Python312,
+		Runtime: serverlessv1alpha2.Python314,
 		Source: serverlessv1alpha2.Source{
 			Inline: &serverlessv1alpha2.InlineSource{
 				Source:       src,
@@ -172,6 +183,8 @@ func PythonCloudEvent(runtime serverlessv1alpha2.Runtime) serverlessv1alpha2.Fun
 
 	src := `import json
 import os
+import sdk
+from flask import request
 
 import requests
 
@@ -182,38 +195,45 @@ send_check_event_type = "send-check"
 runtime = os.getenv("CE_SOURCE")
 
 
-def main(event, context):
-    print("event headers: ", vars(event['extensions']['request'].headers))
-    print("event data: ", vars(event['extensions']['request'].body))
-    print("event method: ", event['extensions']['request'].method)
+def main():
+    print("event headers: ", dict(request.headers))
+    print("event data: ", request.get_data(as_text=True))
+    print("event method: ", request.method)
     global event_data
-    req = event.ceHeaders['extensions']['request']
-    
-    if req.method == 'GET':
-        event_type = req.query.get(key='type')
+
+    if request.method == 'GET':
+        event_type = request.args.get('type')
         if event_type == send_check_event_type:
             publisher_proxy = os.getenv("PUBLISHER_PROXY_ADDRESS")
             resp = requests.get(publisher_proxy, params={
                 "type": event_type,
-				"source": runtime
+                "source": runtime
             })
             print("getting saved events from publisher proxy, type: ", send_check_event_type, ", source: ", runtime, ", returning: ", resp.json())
             return resp.json()
-        
+
         saved_event = event_data.get(event_type, {})
         print("getting saved event from memory for type: ", event_type, ", returning: ", json.dumps(saved_event))
         return json.dumps(saved_event)
-    
-    if 'ce-type' not in event.ceHeaders:
-        event.emitCloudEvent(send_check_event_type, runtime, req.json, {'eventtypeversion': 'v1alpha2'})
-        print("publishing CE, type: ", send_check_event_type, ", source: ", runtime, ", data: ", req.json, ", attr: ", {'eventtypeversion': 'v1alpha2'})
+
+    ce = sdk.get_cloud_event()
+    if ce is None:
+        sdk.emit_cloud_event(send_check_event_type, runtime, request.get_json())
+        print("publishing CE, type: ", send_check_event_type, ", source: ", runtime, ", data: ", request.get_json())
         return ""
 
-    event_ce_headers = event.ceHeaders
-    event_ce_headers.pop('extensions')
-    
-    event_data[event_ce_headers['ce-type']] = event_ce_headers
-    print("saving received cloud event, type: ", event_ce_headers['ce-type'], " headers: ", event_data[event_ce_headers['ce-type']])
+    ce_time = ce.get_time()
+    stored = {
+        'ce-type': ce.get_type(),
+        'ce-source': str(ce.get_source()),
+        'ce-specversion': ce.get_specversion(),
+        'ce-id': ce.get_id(),
+        'ce-time': ce_time.isoformat() if ce_time else '',
+        'ce-datacontenttype': ce.get_datacontenttype() or '',
+        'data': ce.get_data(),
+    }
+    event_data[ce.get_type()] = stored
+    print("saving received cloud event, type: ", ce.get_type(), " headers: ", event_data[ce.get_type()])
     return ""
 `
 
