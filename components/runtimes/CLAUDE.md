@@ -6,7 +6,7 @@ Pre-built Docker images that host user-defined serverless functions. Each runtim
 
 There are two generations of handler API:
 
-### Legacy API (nodejs20, nodejs22, nodejs24, python312)
+### Legacy API (nodejs22, nodejs24, python312)
 - Handler signature: `main(event, context)` 
 - `event` wraps the HTTP request with CloudEvent parsing, tracer, and response helpers
 - `context` provides function metadata (name, namespace, timeout, runtime)
@@ -47,19 +47,19 @@ All runtimes read configuration from env vars injected by the Function Controlle
 | `FUNC_RUNTIME` | Runtime identifier (e.g. `nodejs26`, `python314`) |
 | `FUNC_TIMEOUT` | Request timeout in seconds (default: 180) |
 | `HANDLER_FUNC_NAME` | (nodejs26, python314) Exported function name (default: `main`) |
-| `FUNC_HANDLER` | (nodejs20-24, python312, deprecated) Exported function name |
+| `FUNC_HANDLER` | (nodejs22-24, python312, deprecated) Exported function name |
 | `HANDLER_MOD_NAME` | (nodejs26, python314) Handler module filename without extension (default: `handler`) |
-| `MOD_NAME` | (nodejs20-24, python312, deprecated) Handler module filename |
+| `MOD_NAME` | (nodejs22-24, python312, deprecated) Handler module filename |
 | `HANDLER_PATH` | (nodejs26, python314) Path to user source code (default: `/`) |
-| `KUBELESS_INSTALL_VOLUME` | (nodejs20-24, python312, deprecated) Path to user source code |
+| `KUBELESS_INSTALL_VOLUME` | (nodejs22-24, python312, deprecated) Path to user source code |
 | `TRACE_COLLECTOR_ENDPOINT` | OTLP trace collector URL |
 | `PUBLISHER_PROXY_ADDRESS` | Eventing publisher proxy URL |
 | `FUNC_BODY_MB_LIMIT` | (nodejs26, python314) Body size limit in MB |
-| `REQ_MB_LIMIT` | (nodejs20-24, deprecated) Body size limit in MB |
+| `REQ_MB_LIMIT` | (nodejs22-24, deprecated) Body size limit in MB |
 | `FUNC_MEMFILE_MAX` | (python312, deprecated) Body size limit in bytes |
 | `SERVER_NUMTHREADS` | (Python) gevent spawn pool size |
 | `SERVER_INTERNAL_LOGGER` | (nodejs26, python314) Enable Apache combined request logging |
-| `KYMA_INTERNAL_LOGGER_ENABLED` | (nodejs20-24, python312, deprecated) Enable Apache combined request logging |
+| `KYMA_INTERNAL_LOGGER_ENABLED` | (nodejs22-24, python312, deprecated) Enable Apache combined request logging |
 
 ## SDK Module
 
