@@ -2,8 +2,8 @@
 images:
   - source: "alpine@sha256:a2d49ea686c2adfe3c992e47dc3b5e7fa6e6b5055609400dc2acaeb241c829f4"
     tag: "3.24.0"
-  - source: "golang@sha256:51a7c389a5ddaf82f527191a1e9bff9928655130a44e4975dd1d7e0acf59f1ae"
-    tag: "1.26.8-alpine3.24"
+  - source: "golang@sha256:4cb7ac979db5fcc41cae44b2227ba5ab8a51e8807f40d9ba4dee20a0ad960b5b"
+    tag: "1.27.1-alpine3.24"
   - source: "ghcr.io/nginx/alpine-fips@sha256:2122f993efed0ba145bfc118699f042a7c7dce82274d01e7f72ed3884cdfed4b"
     tag: "0.6.0-alpine3.24"
   # https://hub.docker.com/layers/library/node/26-alpine
