@@ -53,7 +53,9 @@ func defaultFunctionConfig() FunctionConfig {
 type ImagesConfig struct {
 	NodeJs22    string `yaml:"nodejs22"`
 	NodeJs24    string `yaml:"nodejs24"`
+	NodeJs26    string `yaml:"nodejs26"`
 	Python312   string `yaml:"python312"`
+	Python314   string `yaml:"python314"`
 	RepoFetcher string `yaml:"repoFetcher"`
 }
 

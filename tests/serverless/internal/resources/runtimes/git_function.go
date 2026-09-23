@@ -2,6 +2,7 @@ package runtimes
 
 import (
 	serverlessv1alpha2 "github.com/kyma-project/serverless/components/buildless-serverless/api/v1alpha2"
+	corev1 "k8s.io/api/core/v1"
 )
 
 type GitopsFunctionBuilder struct {
@@ -13,7 +14,6 @@ type GitopsFunctionBuilder struct {
 	minReplicas     int32
 	maxReplicas     int32
 	functionProfile string
-	buildProfile    string
 	labels          map[string]string
 }
 
@@ -26,7 +26,6 @@ func NewGitopsFunctionBuilder(repoURL string, runtime serverlessv1alpha2.Runtime
 		minReplicas:     1,
 		maxReplicas:     2,
 		functionProfile: "M",
-		buildProfile:    "fast",
 		labels:          make(map[string]string),
 	}
 }
@@ -69,13 +68,6 @@ func (b *GitopsFunctionBuilder) FunctionProfile(functionProfile string) *GitopsF
 	return b
 }
 
-func (b *GitopsFunctionBuilder) BuildProfile(buildProfile string) *GitopsFunctionBuilder {
-	if buildProfile != "" {
-		b.buildProfile = buildProfile
-	}
-	return b
-}
-
 func (b *GitopsFunctionBuilder) AddLabel(key, value string) *GitopsFunctionBuilder {
 	b.labels[key] = value
 
@@ -106,8 +98,11 @@ func (b *GitopsFunctionBuilder) Build() serverlessv1alpha2.FunctionSpec {
 			Function: &serverlessv1alpha2.ResourceRequirements{
 				Profile: b.functionProfile,
 			},
-			Build: &serverlessv1alpha2.ResourceRequirements{
-				Profile: b.buildProfile,
+		},
+		Env: []corev1.EnvVar{
+			{
+				Name:  "SERVER_INTERNAL_LOGGER",
+				Value: "true",
 			},
 		},
 		Labels: b.labels,

@@ -32,15 +32,17 @@ const (
 	PythonPrefix string  = "python"
 	NodeJsPrefix string  = "nodejs"
 	Python312    Runtime = "python312"
+	Python314    Runtime = "python314"
 	NodeJs24     Runtime = "nodejs24"
+	NodeJs26     Runtime = "nodejs26"
 	// deprecated runtimes
 	NodeJs22 Runtime = "nodejs22"
 )
 
 // FunctionSpec defines the desired state of Function.
 type FunctionSpec struct {
-	// Specifies the runtime of the Function. The available values are `nodejs22` - deprecated, `nodejs24` and `python312`.
-	// +kubebuilder:validation:Enum=nodejs22;nodejs24;python312;
+	// Specifies the runtime of the Function. The available values are `nodejs22` - deprecated, `nodejs24`, `nodejs26`, `python312`, and `python314`.
+	// +kubebuilder:validation:Enum=nodejs22;nodejs24;nodejs26;python312;python314
 	Runtime Runtime `json:"runtime"`
 
 	// Specifies the runtime image used instead of the default one.
@@ -61,7 +63,7 @@ type FunctionSpec struct {
 	// Specifies an array of key-value pairs to be used as environment variables for the Function.
 	// You can define values as static strings or reference values from ConfigMaps or Secrets.
 	// For configuration details, see the [official Kubernetes documentation](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/).
-	// +kubebuilder:validation:XValidation:message="Following envs are reserved and cannot be used: ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH']",rule="(self.all(e, !(e.name in ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH'])))"
+	// +kubebuilder:validation:XValidation:message="Following envs are reserved and cannot be used: ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH', 'HANDLER_FUNC_NAME', 'HANDLER_MOD_NAME']",rule="(self.all(e, !(e.name in ['FUNC_RUNTIME','FUNC_HANDLER','FUNC_PORT','FUNC_HANDLER_SOURCE','FUNC_HANDLER_DEPENDENCIES','MOD_NAME','NODE_PATH','PYTHONPATH', 'HANDLER_FUNC_NAME', 'HANDLER_MOD_NAME'])))"
 	Env []corev1.EnvVar `json:"env,omitempty"`
 
 	// Specifies resources requested by the Function and the build Job.
@@ -442,7 +444,7 @@ func (f *Function) CopyAnnotationsToStatus() {
 // almost all functions that check for supported runtime versions should be here, for simpler bumps
 
 func (runtime Runtime) IsRuntimeSupported() bool {
-	supportedRuntimes := []Runtime{NodeJs22, NodeJs24, Python312}
+	supportedRuntimes := []Runtime{NodeJs22, NodeJs24, NodeJs26, Python312, Python314}
 	for _, r := range supportedRuntimes {
 		if r == runtime {
 			return true
@@ -456,6 +458,17 @@ func (runtime Runtime) IsRuntimeSupported() bool {
 func (runtime Runtime) IsRuntimeDeprecated() bool {
 	deprecatedRuntimes := []Runtime{NodeJs22}
 	for _, r := range deprecatedRuntimes {
+		if r == runtime {
+			return true
+		}
+	}
+	return false
+}
+
+// IsRuntimeLegacy checks if the runtime uses old API
+func (runtime Runtime) IsRuntimeLegacy() bool {
+	legacyRuntimes := []Runtime{NodeJs22, NodeJs24, Python312}
+	for _, r := range legacyRuntimes {
 		if r == runtime {
 			return true
 		}

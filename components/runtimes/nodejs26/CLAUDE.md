@@ -4,20 +4,34 @@ Express 5 server running on Node.js 26.
 
 ## Handler API
 
-User functions receive raw Express objects:
+User functions receive raw Express objects. Handler files default to **CommonJS** (no `"type": "module"` in package.json):
 
 ```js
-export function main(req, res) {
-    res.send('Hello!');
+const { getCloudEvent } = require('sdk');
+
+module.exports = {
+    main: function (req, res) {
+        res.send('Hello!');
+    }
 }
 ```
 
-With `"type": "module"` removed from package.json, `.js` handler files default to CJS. Use `.mjs` extension or add `"type": "module"` to your handler's package.json for ESM.
+Use `.mjs` extension or add `"type": "module"` to your handler's package.json to write ESM (`import`/`export`) instead.
+
+## Handler Loading and `HANDLER_PATH`
+
+`server.mjs` builds the handler path with `path.join(HANDLER_PATH, HANDLER_MOD_NAME + '.js')` (defaults: `HANDLER_PATH=./`, `HANDLER_MOD_NAME=handler` → `./handler.js`). A leading `./` is re-prefixed for relative results so dynamic `import()` does not treat the path as a bare specifier.
+
+Two layouts are supported:
+
+- **`kyma cli function eject`**: handler files sit flat next to `server.mjs`; default `HANDLER_PATH=./` works as-is.
+- **buildless-serverless**: the controller mounts sources at `/usr/src/app/function/` and sets `HANDLER_PATH=./function` in the Pod, pointing the server at the mounted directory. The container runs `/usr/src/app/start.sh` (absolute path, because `workingDir` is the sources mount, not `/usr/src/app`).
 
 ## File Layout
 
 - `server.mjs` — Entry point. Reads all env vars, sets up tracer/metrics, loads user handler via dynamic `import(handlerPath)`
-- `sdk/index.js` — CJS package exposing `getCloudEvent(req)`, `emitCloudEvent()`, `getTracer()`, metadata getters. Registered as local dep in package.json (`"sdk": "file:./sdk"`) so users can `import { ... } from 'sdk'`
+- `start.sh` — Container startup script. Writes the inline `FUNC_HANDLER_SOURCE`/`FUNC_HANDLER_DEPENDENCIES` envs (or copies git sources) into the working directory, runs `npm install`, then `cd ..` and `npm start`
+- `sdk/index.js` — CJS package exposing `getCloudEvent(req)`, `emitCloudEvent()`, `getTracer()`, metadata getters. Registered as a local dep in package.json (`"sdk": "file:./sdk"`); user handlers consume it via `const { ... } = require('sdk')`
 - `lib/tracer.js` — OpenTelemetry tracer setup (NodeTracerProvider, OTLP exporter, Express+HTTP instrumentation)
 - `lib/metrics.js` — Prometheus metrics via OpenTelemetry SDK (PrometheusExporter)
 - `lib/helper.js` — Request timeout middleware, graceful shutdown, error handling utilities
@@ -42,5 +56,5 @@ make run                    # npm install + npm start
 # or manually:
 npm install
 echo 'module.exports = { main: (req, res) => res.send("ok") }' > handler.js
-HANDLER_PATH=./handler.js npm start
+npm start
 ```
