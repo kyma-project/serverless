@@ -125,7 +125,7 @@ func newGenericContainer(logf *logrus.Entry, restConfig *rest.Config, cfg intern
 func newRegistryConfigSecretStep(logf *logrus.Entry, genericContainer utils.Container, cfg internal.Config) executor.Step {
 	pkgCfgSecret := secret.NewSecret(cfg.PackageRegistryConfigSecretName, genericContainer)
 	pkgCfgSecretData := map[string]string{
-		".npmrc":   fmt.Sprintf("@kyma:registry=%s\nalways-auth=true", cfg.PackageRegistryConfigURLNode),
+		".npmrc":   fmt.Sprintf("@kyma:registry=%s\nallow-remote=all", cfg.PackageRegistryConfigURLNode),
 		"pip.conf": fmt.Sprintf("[global]\nextra-index-url = %s", cfg.PackageRegistryConfigURLPython),
 	}
 
