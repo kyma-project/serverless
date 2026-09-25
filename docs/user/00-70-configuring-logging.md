@@ -1,3 +1,4 @@
+<!-- loio: 28d3d7013f6e4d6086977f999c351026 -->
 # Configuring Logging
 
 This document describes how to configure logging for Serverless components. The Serverless module supports dynamic log reconfiguration through the Serverless custom resource (CR).
