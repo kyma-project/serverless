@@ -4,4 +4,4 @@ metadata:
   name: default
   namespace: kyma-system
 spec:
-  functionRequeueDuration: 10s
+  functionRequeueDuration: 30s

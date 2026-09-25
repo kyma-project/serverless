@@ -10,9 +10,9 @@ kubectl apply -f ../../tests/fixtures/serverless-cr-integration-test.yaml
 
 # Wait for the operator to reconcile the configmap with the updated requeue duration
 SECONDS_WAITED=0
-until kubectl get configmap serverless-config -n kyma-system -o jsonpath='{.data.function-config\.yaml}' 2>/dev/null | grep -q 'functionReadyRequeueDuration: "10s"'; do
+until kubectl get configmap serverless-config -n kyma-system -o jsonpath='{.data.function-config\.yaml}' 2>/dev/null | grep -q 'functionReadyRequeueDuration: "30s"'; do
   if [ $SECONDS_WAITED -ge 60 ]; then
-    echo "Timed out waiting for serverless-config to reflect functionReadyRequeueDuration=10s"
+    echo "Timed out waiting for serverless-config to reflect functionReadyRequeueDuration=30s"
     exit 1
   fi
   sleep 2
