@@ -241,7 +241,7 @@ func getGithubTestcase(cfg *config) (testRepo, error) {
 		baseDir:          cfg.Github.BaseDir,
 		reference:        cfg.Github.Reference,
 		expectedResponse: "hello github",
-		runtime:          serverlessv1alpha2.Python312,
+		runtime:          serverlessv1alpha2.Python314,
 		auth: &serverlessv1alpha2.RepositoryAuth{
 			Type:       serverlessv1alpha2.RepositoryAuthSSHKey,
 			SecretName: "github-auth-secret",
