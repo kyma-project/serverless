@@ -3,7 +3,7 @@ ARG BASE=non-fips
 
 FROM europe-docker.pkg.dev/kyma-project/prod/external/library/python:3.14.7-alpine3.24 AS non-fips
 
-FROM europe-docker.pkg.dev/kyma-project/restricted-prod/sap.com/python-fips:3.14.7-dev AS fips
+FROM europe-docker.pkg.dev/kyma-project/restricted-prod/sap.com/python-fips:3.14.8-dev AS fips
 
 FROM ${BASE}
 
