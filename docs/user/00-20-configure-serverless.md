@@ -1,3 +1,4 @@
+<!-- loio: b40a11952da84394b430118082754e6c -->
 # Configuring Serverless
 
 By default, the Serverless module comes with the default configuration. You can change the configuration using the Serverless CustomResourceDefinition (CRD), which manages Serverless custom resource (CR).
