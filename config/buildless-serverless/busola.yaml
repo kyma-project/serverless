@@ -312,62 +312,43 @@ form:
   - path: spec.env
     widget: GenericList
     children:
-      - path: "[]"
+      - path: '[]'
         children:
-          - var: envType
-            widget: Text
-            name: spec.env.source
+          - dynamicValue: "$exists($item.valueFrom.secretKeyRef) ? 'From Secret' : ($exists($item.valueFrom.configMapKeyRef) ? 'From Config Map' : 'Custom')"
             enum:
               - Custom
               - From Config Map
               - From Secret
-            dynamicValue: >-
-              $exists($item.valueFrom.secretKeyRef) ? 'From Secret' :
-              ($exists($item.valueFrom.configMapKeyRef) ? 'From Config Map' :
-              'Custom')
+            name: spec.env.source
+            var: envType
+            widget: Text
           - path: name
           - path: value
             visibility: $envType = 'Custom'
           - path: valueFrom.secretKeyRef.name
-            widget: Resource
+            provideVar: secret
             resource:
               kind: Secret
-              version: v1
               scope: namespace
-            provideVar: secret
-            overwrite: false
-            visibility: $canI('v1', 'Secret') and $envType = 'From Secret'
-          - simple: true
-            var: separator
-            value: ""
-          - path: valueFrom.secretKeyRef.name
-            widget: Text
-            overwrite: false
-            visibility: $not($canI('v1', 'Secret')) and $envType = 'From Secret'
-          - path: valueFrom.secretKeyRef.key
-            widget: Text
-            enum: $keys($secret.data)
+              version: v1
             visibility: $envType = 'From Secret'
-          - path: valueFrom.configMapKeyRef.name
             widget: Resource
+          - enum: $keys($secret.data)
+            path: valueFrom.secretKeyRef.key
+            visibility: $envType = 'From Secret'
+            widget: Text
+          - path: valueFrom.configMapKeyRef.name
+            provideVar: configMap
             resource:
               kind: ConfigMap
-              version: v1
               scope: namespace
-            provideVar: configMap
-            overwrite: false
-            visibility: $canI('v1', 'ConfgMap') and $envType = 'From Config Map'
-          - simple: true
-            var: separator
-            value: ""
-          - path: valueFrom.configMapKeyRef.name
-            widget: Text
-            overwrite: false
-            visibility: $not($canI('v1', 'ConfgMap')) and $envType = 'From Config Map'
-          - path: valueFrom.configMapKeyRef.key
-            widget: Text
-            enum: $keys($configMap.data)
+              version: v1
             visibility: $envType = 'From Config Map'
+            widget: Resource
+          - enum: $keys($configMap.data)
+            path: valueFrom.configMapKeyRef.key
+            visibility: $envType = 'From Config Map'
+            widget: Text
   - path: spec
     widget: FormGroup
     children:
