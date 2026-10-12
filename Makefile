@@ -48,6 +48,10 @@ run-main: create-k3d install-serverless-main ## Create k3d cluster and install s
 
 check-var = $(if $(strip $($1)),,$(error "$1" is not defined))
 
+.PHONY: build-for-codeql
+build-for-codeql: ## Build all binaries for CodeQL analysis.
+	go build -o /dev/null ./...
+
 ##@ Actions
 .PHONY: module-config
 module-config:
