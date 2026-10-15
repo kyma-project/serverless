@@ -333,8 +333,10 @@ func (d *Deployment) initContainerForGitRepository() []corev1.Container {
 						"ALL",
 					},
 				},
-				ProcMount:              ptr.To(corev1.DefaultProcMount),
-				ReadOnlyRootFilesystem: ptr.To(true),
+				ProcMount:                ptr.To(corev1.DefaultProcMount),
+				ReadOnlyRootFilesystem:   ptr.To(true),
+				AllowPrivilegeEscalation: ptr.To(false),
+				RunAsNonRoot:             ptr.To(true),
 			},
 		},
 	}

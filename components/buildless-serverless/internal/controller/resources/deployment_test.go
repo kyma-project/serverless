@@ -342,6 +342,16 @@ fi`,
 /app/gitcloner
 mkdir /git-repository/src;cp -r '/git-repository/repo/recursing-mcnulty'/* /git-repository/src;`}
 		require.Equal(t, expectedCommand, c.Command)
+		require.Equal(t, &corev1.SecurityContext{
+			Privileged: ptr.To(false),
+			Capabilities: &corev1.Capabilities{
+				Drop: []corev1.Capability{"ALL"},
+			},
+			ProcMount:                ptr.To(corev1.DefaultProcMount),
+			ReadOnlyRootFilesystem:   ptr.To(true),
+			AllowPrivilegeEscalation: ptr.To(false),
+			RunAsNonRoot:             ptr.To(true),
+		}, c.SecurityContext)
 	})
 	t.Run("create init container for git function in fips mode with data based on function", func(t *testing.T) {
 		d := minimalDeployment()

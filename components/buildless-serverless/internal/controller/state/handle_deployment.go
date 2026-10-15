@@ -175,11 +175,13 @@ func initContainerChanged(a *appsv1.Deployment, b *appsv1.Deployment) bool {
 	commandChanged := !reflect.DeepEqual(aContainer.Command, bContainer.Command)
 	envChanged := !reflect.DeepEqual(aContainer.Env, bContainer.Env)
 	volumeMountsChanged := !reflect.DeepEqual(aContainer.VolumeMounts, bContainer.VolumeMounts)
+	securityContextChanged := !reflect.DeepEqual(aContainer.SecurityContext, bContainer.SecurityContext)
 	return imageChanged ||
 		workingDirChanged ||
 		commandChanged ||
 		envChanged ||
-		volumeMountsChanged
+		volumeMountsChanged ||
+		securityContextChanged
 }
 
 func updateDeployment(ctx context.Context, m *fsm.StateMachine, clusterDeployment *appsv1.Deployment) (requeueNeeded bool, err error) {
