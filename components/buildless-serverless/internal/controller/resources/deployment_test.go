@@ -377,6 +377,58 @@ mkdir /git-repository/src;cp -r '/git-repository/repo/recursing-mcnulty'/* /git-
 mkdir /git-repository/src;cp -r '/git-repository/repo/recursing-mcnulty'/* /git-repository/src;`}
 		require.Equal(t, expectedCommand, c.Command)
 	})
+	t.Run("git init container security context matches the runtime container security context", func(t *testing.T) {
+		d := minimalDeployment()
+		d.commit = "test-commit"
+		d.function.Spec.Source = serverlessv1alpha2.Source{
+			GitRepository: &serverlessv1alpha2.GitRepositorySource{
+				URL: "wonderful-germain",
+				Repository: serverlessv1alpha2.Repository{
+					BaseDir:   "recursing-mcnulty",
+					Reference: "epic-mendel"}}}
+
+		r := d.construct()
+
+		require.NotNil(t, r)
+		require.Len(t, r.Spec.Template.Spec.InitContainers, 1)
+		require.Len(t, r.Spec.Template.Spec.Containers, 1)
+		initSecCtx := r.Spec.Template.Spec.InitContainers[0].SecurityContext
+		runtimeSecCtx := r.Spec.Template.Spec.Containers[0].SecurityContext
+		require.NotNil(t, initSecCtx)
+		require.NotNil(t, runtimeSecCtx)
+		require.Equal(t, runtimeSecCtx, initSecCtx)
+	})
+	t.Run("git init container security context ignores the function custom container security context", func(t *testing.T) {
+		d := minimalDeployment()
+		d.commit = "test-commit"
+		d.function.Spec.Source = serverlessv1alpha2.Source{
+			GitRepository: &serverlessv1alpha2.GitRepositorySource{
+				URL: "wonderful-germain",
+				Repository: serverlessv1alpha2.Repository{
+					BaseDir:   "recursing-mcnulty",
+					Reference: "epic-mendel"}}}
+		d.function.Spec.ContainerSecurityContext = &corev1.SecurityContext{
+			RunAsNonRoot:             ptr.To(false),
+			AllowPrivilegeEscalation: ptr.To(true),
+			ReadOnlyRootFilesystem:   ptr.To(false),
+		}
+
+		r := d.construct()
+
+		require.NotNil(t, r)
+		require.Len(t, r.Spec.Template.Spec.InitContainers, 1)
+		initSecCtx := r.Spec.Template.Spec.InitContainers[0].SecurityContext
+		require.Equal(t, &corev1.SecurityContext{
+			Privileged: ptr.To(false),
+			Capabilities: &corev1.Capabilities{
+				Drop: []corev1.Capability{"ALL"},
+			},
+			ProcMount:                ptr.To(corev1.DefaultProcMount),
+			ReadOnlyRootFilesystem:   ptr.To(true),
+			AllowPrivilegeEscalation: ptr.To(false),
+			RunAsNonRoot:             ptr.To(true),
+		}, initSecCtx)
+	})
 	t.Run("create init container for git function with baseDir containing whitespaces", func(t *testing.T) {
 		d := minimalDeployment()
 		d.commit = "test-commit"
@@ -2106,6 +2158,7 @@ func Test_containerSecurityContext(t *testing.T) {
 						"ALL",
 					},
 				},
+				ProcMount:                ptr.To(corev1.DefaultProcMount),
 				ReadOnlyRootFilesystem:   ptr.To(true),
 				AllowPrivilegeEscalation: ptr.To(false),
 				RunAsNonRoot:             ptr.To(true),
@@ -2125,6 +2178,7 @@ func Test_containerSecurityContext(t *testing.T) {
 						"ALL",
 					},
 				},
+				ProcMount:                ptr.To(corev1.DefaultProcMount),
 				ReadOnlyRootFilesystem:   ptr.To(true),
 				AllowPrivilegeEscalation: ptr.To(false),
 				RunAsNonRoot:             ptr.To(true),
@@ -2153,6 +2207,7 @@ func Test_containerSecurityContext(t *testing.T) {
 						"SYS_TIME",
 					},
 				},
+				ProcMount:                ptr.To(corev1.DefaultProcMount),
 				ReadOnlyRootFilesystem:   ptr.To(false),
 				AllowPrivilegeEscalation: ptr.To(true),
 				RunAsNonRoot:             ptr.To(true),

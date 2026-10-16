@@ -489,6 +489,7 @@ func containerSecurityContext(f *serverlessv1alpha2.Function) *corev1.SecurityCo
 				"ALL",
 			},
 		},
+		ProcMount:                ptr.To(corev1.DefaultProcMount),
 		ReadOnlyRootFilesystem:   ptr.To(true),
 		AllowPrivilegeEscalation: ptr.To(false),
 		RunAsNonRoot:             ptr.To(true),
