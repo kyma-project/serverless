@@ -162,6 +162,7 @@ spec:
             drop:
             - ALL
           privileged: false
+          procMount: Default
           readOnlyRootFilesystem: true
           runAsNonRoot: true
         startupProbe:
