@@ -1,3 +1,4 @@
+<!-- loio: 28d3d7013f6e4d6086977f999c351026 -->
 # From Code to Function
 
 Pick the programming language for your Function and decide where you want to keep the source code. The Serverless module uses it to create the workload.
