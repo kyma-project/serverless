@@ -1,3 +1,4 @@
+<!-- loio: 0f9bb43ce217414f882f0fadd4516376 -->
 # Function Runtime Deprecation Schedule
 
 This document outlines the planned deprecation and end-of-life (EOL) dates for supported Function runtimes in Kyma Serverless.
