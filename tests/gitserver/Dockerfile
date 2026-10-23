@@ -1,4 +1,4 @@
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.24.2
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/alpine:3.24.3
 
 RUN apk add --no-cache git-daemon apache2 apache2-utils
 
