@@ -59,7 +59,7 @@ You can expose a Function using Kyma dashboard, Kyma CLI, or kubectl:
 1. Run the following command to get the domain name of your Kyma cluster:
 
     ```bash
-    kubectl get gateway -n kyma-system kyma-gateway \
+    kubectl get gateways.networking.istio.io -n kyma-system kyma-gateway \
         -o jsonpath='{.spec.servers[0].hosts[0]}'
     ```
 

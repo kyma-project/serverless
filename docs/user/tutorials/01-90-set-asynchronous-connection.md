@@ -139,7 +139,7 @@ This tutorial shows only one possible use case. There are many more use cases on
 5. Run the following command to get the domain name of your Kyma cluster:
 
     ```bash
-    kubectl get gateway -n kyma-system kyma-gateway \
+    kubectl get gateways.networking.istio.io -n kyma-system kyma-gateway \
         -o jsonpath='{.spec.servers[0].hosts[0]}'
     ```
 
