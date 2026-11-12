@@ -1,3 +1,4 @@
+<!-- loio: ef499954a5fa44fdbca726f6bf159ef0 -->
 # New Runtime API
 
 The `nodejs26` and `python314` runtimes introduce a new handler API that removes the `event` and `context` wrapper objects. Handlers receive the raw HTTP framework objects directly, and function metadata is provided by an explicit `sdk` module. This document explains what changed and how the new API compares to the legacy one.
