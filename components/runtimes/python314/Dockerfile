@@ -1,9 +1,9 @@
 # build with --build-arg BASE=non-fips or --build-arg BASE=fips to select the base image
 ARG BASE=non-fips
 
-FROM europe-docker.pkg.dev/kyma-project/prod/external/library/python:3.14.7-alpine3.24 AS non-fips
+FROM europe-docker.pkg.dev/kyma-project/prod/external/library/python:3.14.10-alpine3.24 AS non-fips
 
-FROM europe-docker.pkg.dev/kyma-project/restricted-prod/sap.com/python-fips:3.14.7-dev AS fips
+FROM europe-docker.pkg.dev/kyma-project/restricted-prod/sap.com/python-fips:3.14.10-dev AS fips
 
 FROM ${BASE}
 
