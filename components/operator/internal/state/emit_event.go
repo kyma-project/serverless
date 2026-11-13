@@ -23,9 +23,11 @@ func emitEvent(m *reconciler, s *systemState) {
 			memorizedCondition.Message == condition.Message {
 			continue
 		}
-		m.Event(
+		m.Eventf(
 			&s.instance,
+			nil,
 			eventType(condition, condition.Message),
+			condition.Reason,
 			condition.Reason,
 			condition.Message,
 		)

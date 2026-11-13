@@ -8,16 +8,16 @@ import (
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"go.uber.org/zap"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/recorder"
 )
 
 type StateReconciler interface {
 	Reconcile(ctx context.Context, v v1alpha1.Serverless) (ctrl.Result, error)
 }
 
-func NewMachine(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, cache chart.ManifestCache, chartPath string, kymaFipsEnabled bool) StateReconciler {
+func NewMachine(client client.Client, config *rest.Config, recorder recorder.EventRecorder, log *zap.SugaredLogger, cache chart.ManifestCache, chartPath string, kymaFipsEnabled bool) StateReconciler {
 	return &reconciler{
 		fn:    sFnServedFilter,
 		cache: cache,

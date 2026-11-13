@@ -156,7 +156,7 @@ func main() {
 
 	reconciler := controllers.NewServerlessReconciler(
 		mgr.GetClient(), mgr.GetConfig(),
-		mgr.GetEventRecorderFor("serverless-operator"),
+		mgr.GetEventRecorder("serverless-operator"),
 		logWithCtx.Desugar().Sugar(),
 		opCfg.ChartPath,
 		opCfg.KymaFIPSModeEnabled)

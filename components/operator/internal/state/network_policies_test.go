@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/tools/events"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
@@ -53,7 +53,7 @@ func TestUpdateNetworkPoliciesStatus(t *testing.T) {
 				flagsBuilder: flags.NewBuilder(),
 			}
 			c := fake.NewClientBuilder().WithScheme(scheme).Build()
-			r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: record.NewFakeRecorder(5)}}
+			r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: events.NewFakeRecorder(5)}}
 			next, result, err := sFnConfigureNetworkPolicies(ctx, r, s)
 
 			require.Nil(t, err)

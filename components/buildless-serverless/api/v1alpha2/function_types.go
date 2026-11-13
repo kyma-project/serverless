@@ -331,10 +331,6 @@ type FunctionList struct {
 	Items           []Function `json:"items"`
 }
 
-func init() {
-	SchemeBuilder.Register(&Function{}, &FunctionList{})
-}
-
 const MaxConditionMessageLength = 32768
 
 func trimConditionMessage(msg string) string {

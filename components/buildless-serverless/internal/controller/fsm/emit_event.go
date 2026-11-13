@@ -22,9 +22,11 @@ func emitEvent(m *StateMachine) {
 			continue
 		}
 
-		m.EventRecorder.Event(
+		m.EventRecorder.Eventf(
 			&m.State.Function,
+			nil,
 			eventType(condition, condition.Message),
+			condition.Reason,
 			condition.Reason,
 			condition.Message,
 		)

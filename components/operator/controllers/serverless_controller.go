@@ -29,13 +29,13 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/builder"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/handler"
+	"sigs.k8s.io/controller-runtime/pkg/recorder"
 )
 
 // serverlessReconciler reconciles a Serverless object
@@ -45,7 +45,7 @@ type serverlessReconciler struct {
 	log              *zap.SugaredLogger
 }
 
-func NewServerlessReconciler(client client.Client, config *rest.Config, recorder record.EventRecorder, log *zap.SugaredLogger, chartPath string, kymaFipsEnabled bool) *serverlessReconciler {
+func NewServerlessReconciler(client client.Client, config *rest.Config, recorder recorder.EventRecorder, log *zap.SugaredLogger, chartPath string, kymaFipsEnabled bool) *serverlessReconciler {
 	cache := chart.NewSecretManifestCache(client)
 
 	return &serverlessReconciler{

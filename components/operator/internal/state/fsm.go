@@ -14,9 +14,9 @@ import (
 	"go.uber.org/zap"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/recorder"
 )
 
 var (
@@ -83,7 +83,7 @@ func chartConfig(ctx context.Context, r *reconciler, namespace string) *chart.Co
 type k8s struct {
 	client client.Client
 	config *rest.Config
-	record.EventRecorder
+	recorder.EventRecorder
 }
 
 type reconciler struct {

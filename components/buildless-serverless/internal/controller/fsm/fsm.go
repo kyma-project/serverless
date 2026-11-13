@@ -16,9 +16,9 @@ import (
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
 	apimachineryruntime "k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/tools/record"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/recorder"
 )
 
 type StateFn func(context.Context, *StateMachine) (StateFn, *ctrl.Result, error)
@@ -48,7 +48,7 @@ type StateMachine struct {
 	FunctionConfig        config.FunctionConfig
 	Scheme                *apimachineryruntime.Scheme
 	GitChecker            git.AsyncLatestCommitChecker
-	EventRecorder         record.EventRecorder
+	EventRecorder         recorder.EventRecorder
 	IsKymaFipsModeEnabled bool
 }
 
@@ -101,7 +101,7 @@ type StateMachineReconciler interface {
 	Reconcile(ctx context.Context) (ctrl.Result, error)
 }
 
-func New(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function, startState StateFn, recorder record.EventRecorder, gitChecker git.AsyncLatestCommitChecker, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger, isKymaFipsModeEnabled bool) StateMachineReconciler {
+func New(client client.Client, functionConfig config.FunctionConfig, instance *serverlessv1alpha2.Function, startState StateFn, recorder recorder.EventRecorder, gitChecker git.AsyncLatestCommitChecker, scheme *apimachineryruntime.Scheme, log *zap.SugaredLogger, isKymaFipsModeEnabled bool) StateMachineReconciler {
 	sm := StateMachine{
 		nextFn: startState,
 		State: SystemState{
