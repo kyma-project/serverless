@@ -1,7 +1,8 @@
 # Docs: https://github.com/kyma-project/test-infra/tree/main/cmd/image-syncer
 images:
-  - source: "alpine@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf"
-    tag: "3.24.4"
+  # the image is bumped elsewhere, we don't want to introduce collisions due to existing synced tag SHA mismatch
+  # - source: "alpine@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf"
+  #   tag: "3.24.4"
   - source: "golang@sha256:0a5f7fe796599ff487605987432e7619ae45beeb2fba4c2ce0b907879932aebf"
     tag: "1.27.4-alpine3.24"
   - source: "ghcr.io/nginx/alpine-fips@sha256:2122f993efed0ba145bfc118699f042a7c7dce82274d01e7f72ed3884cdfed4b"
