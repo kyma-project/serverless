@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
-	"sigs.k8s.io/controller-runtime/pkg/recorder"
 	controllerruntime "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/recorder"
 )
 
 func sFnConfigureNetworkPolicies(ctx context.Context, r *reconciler, s *systemState) (stateFn, *controllerruntime.Result, error) {

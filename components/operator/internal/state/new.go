@@ -8,9 +8,9 @@ import (
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"go.uber.org/zap"
 	"k8s.io/client-go/rest"
-	"sigs.k8s.io/controller-runtime/pkg/recorder"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/recorder"
 )
 
 type StateReconciler interface {

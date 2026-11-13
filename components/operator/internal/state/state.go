@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
-	"sigs.k8s.io/controller-runtime/pkg/recorder"
 	ctrl "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/recorder"
 )
 
 func nextState(next stateFn) (stateFn, *ctrl.Result, error) {

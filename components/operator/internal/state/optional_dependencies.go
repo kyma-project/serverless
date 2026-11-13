@@ -6,9 +6,9 @@ import (
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"github.com/kyma-project/serverless/components/operator/internal/tracing"
 	"github.com/pkg/errors"
-	"sigs.k8s.io/controller-runtime/pkg/recorder"
 	controllerruntime "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/recorder"
 )
 
 // enable or disable serverless optional dependencies based on the Serverless Spec and installed module on the cluster
