@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
-	"k8s.io/client-go/tools/record"
+	"sigs.k8s.io/controller-runtime/pkg/recorder"
 	ctrl "sigs.k8s.io/controller-runtime"
 )
 
@@ -33,7 +33,7 @@ type fieldsToUpdate []struct {
 	defaultValue string
 }
 
-func updateStatusFields(eventRecorder record.EventRecorder, instance *v1alpha1.Serverless, fields fieldsToUpdate) {
+func updateStatusFields(eventRecorder recorder.EventRecorder, instance *v1alpha1.Serverless, fields fieldsToUpdate) {
 	for _, field := range fields {
 		// set default value if spec field is empty
 		if field.specField == "" {
@@ -45,7 +45,9 @@ func updateStatusFields(eventRecorder record.EventRecorder, instance *v1alpha1.S
 			*field.statusField = field.specField
 			eventRecorder.Eventf(
 				instance,
+				nil,
 				"Normal",
+				string(v1alpha1.ConditionReasonConfiguration),
 				string(v1alpha1.ConditionReasonConfiguration),
 				"%s set from '%s' to '%s'",
 				field.fieldName,

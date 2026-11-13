@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/tools/events"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
 
@@ -37,7 +37,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			fixTestNode("node-1"),
 			fixTestNode("node-2"),
 		).Build()
-		eventRecorder := record.NewFakeRecorder(4)
+		eventRecorder := events.NewFakeRecorder(4)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
 		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
 		require.Nil(t, err)
@@ -76,7 +76,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			fixTestNode("node-1"),
 			fixTestNode("node-2"),
 		).Build()
-		eventRecorder := record.NewFakeRecorder(4)
+		eventRecorder := events.NewFakeRecorder(4)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
 		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
 		require.Nil(t, err)
@@ -122,7 +122,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			fixTestNode("node-3"),
 			fixTestNode("node-4"),
 		).Build()
-		eventRecorder := record.NewFakeRecorder(4)
+		eventRecorder := events.NewFakeRecorder(4)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
 		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
 		require.Nil(t, err)
@@ -166,7 +166,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 		}
 
 		c := fake.NewClientBuilder().Build()
-		eventRecorder := record.NewFakeRecorder(10)
+		eventRecorder := events.NewFakeRecorder(10)
 		r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: eventRecorder}}
 		next, result, err := sFnControllerConfiguration(context.TODO(), r, s)
 		require.Nil(t, err)
@@ -233,7 +233,7 @@ func Test_sFnControllerConfiguration(t *testing.T) {
 			log: zap.NewNop().Sugar(),
 			k8s: k8s{
 				client:        fake.NewClientBuilder().Build(),
-				EventRecorder: record.NewFakeRecorder(4),
+				EventRecorder: events.NewFakeRecorder(4),
 			},
 		}
 

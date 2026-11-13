@@ -31,7 +31,6 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -39,6 +38,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/event"
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
+	"sigs.k8s.io/controller-runtime/pkg/recorder"
 )
 
 const healthCheckTimeout = time.Second
@@ -49,7 +49,7 @@ type FunctionReconciler struct {
 	Scheme                *runtime.Scheme
 	Log                   *zap.SugaredLogger
 	Config                config.FunctionConfig
-	EventRecorder         record.EventRecorder
+	EventRecorder         recorder.EventRecorder
 	GitChecker            git.AsyncLatestCommitChecker
 	HealthCh              chan bool
 	IsKymaFipsModeEnabled bool

@@ -171,7 +171,7 @@ func main() {
 		Scheme:                mgr.GetScheme(),
 		Log:                   logWithCtx,
 		Config:                cfg,
-		EventRecorder:         mgr.GetEventRecorderFor(serverlessv1alpha2.FunctionControllerValue),
+		EventRecorder:         mgr.GetEventRecorder(serverlessv1alpha2.FunctionControllerValue),
 		GitChecker:            git.NewAsyncLatestCommitChecker(ctx, logWithCtx),
 		HealthCh:              healthResponseCh,
 		IsKymaFipsModeEnabled: envCfg.KymaFipsModeEnabled,

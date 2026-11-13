@@ -26,7 +26,7 @@ import (
 	uberzap "go.uber.org/zap"
 	"k8s.io/client-go/kubernetes/scheme"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/tools/events"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
@@ -95,7 +95,7 @@ var _ = BeforeSuite(func() {
 	err = (NewServerlessReconciler(
 		k8sManager.GetClient(),
 		k8sManager.GetConfig(),
-		record.NewFakeRecorder(100),
+		events.NewFakeRecorder(100),
 		reconcilerLogger.Sugar(),
 		chartPath,
 		false)).

@@ -217,7 +217,3 @@ type ServerlessList struct {
 	metav1.ListMeta `json:"metadata"`
 	Items           []Serverless `json:"items"`
 }
-
-func init() {
-	SchemeBuilder.Register(&Serverless{}, &ServerlessList{})
-}

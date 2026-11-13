@@ -12,7 +12,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/tools/events"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/client/fake"
 )
@@ -73,7 +73,7 @@ func Test_sFnOptionalDependencies(t *testing.T) {
 				flagsBuilder: flags.NewBuilder(),
 			}
 			c := fake.NewClientBuilder().WithScheme(scheme).WithObjects(testCase.extraCR...).Build()
-			r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: record.NewFakeRecorder(5)}}
+			r := &reconciler{log: zap.NewNop().Sugar(), k8s: k8s{client: c, EventRecorder: events.NewFakeRecorder(5)}}
 			next, result, err := sFnOptionalDependencies(ctx, r, s)
 			require.Nil(t, err)
 			require.Nil(t, result)

@@ -6,7 +6,7 @@ import (
 	"github.com/kyma-project/serverless/components/operator/api/v1alpha1"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/tools/record"
+	"k8s.io/client-go/tools/events"
 )
 
 var (
@@ -50,7 +50,7 @@ var (
 
 func Test_emitEvent(t *testing.T) {
 	t.Run("don't emit event", func(t *testing.T) {
-		eventRecorder := record.NewFakeRecorder(5)
+		eventRecorder := events.NewFakeRecorder(5)
 		s := &systemState{
 			instance:       *testServerlessConditions1.DeepCopy(),
 			statusSnapshot: *testServerlessConditions1.Status.DeepCopy(),
@@ -68,7 +68,7 @@ func Test_emitEvent(t *testing.T) {
 	})
 
 	t.Run("emit events", func(t *testing.T) {
-		eventRecorder := record.NewFakeRecorder(5)
+		eventRecorder := events.NewFakeRecorder(5)
 		s := &systemState{
 			instance:       *testServerlessConditions2.DeepCopy(),
 			statusSnapshot: *testServerlessConditions1.Status.DeepCopy(),
