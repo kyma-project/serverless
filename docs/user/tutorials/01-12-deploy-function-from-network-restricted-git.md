@@ -21,6 +21,9 @@ On every push to the configured branch, GitHub Actions:
 3. Authenticates to the Kyma cluster using a kubeconfig stored as a GitHub Secret.
 4. Deploys the Function as an inline Function using `kyma function create nodejs`.
 
+> [!NOTE]
+> The `kyma function` commands are Kyma CLI extensions served by the Serverless module installed on your cluster. The GitHub Actions runner must be able to reach the Kyma API server to discover and run these commands.
+
 ## Procedure
 
 ### Step 1: Create a Service Account and Kubeconfig
@@ -46,20 +49,23 @@ Generate a token and save it as a kubeconfig file:
 ```bash
 TOKEN=$(kubectl -n $NAMESPACE create token function-deployer --duration=8760h)
 
+CLUSTER=$(kubectl config view --minify -o jsonpath='{.clusters[0].name}')
 kubectl config set-credentials function-deployer --token=$TOKEN
 kubectl config set-context function-deployer-ctx \
-  --cluster=$(kubectl config current-context) \
+  --cluster=$CLUSTER \
   --user=function-deployer \
   --namespace=$NAMESPACE
+
+CURRENT_CONTEXT=$(kubectl config current-context)
 kubectl config use-context function-deployer-ctx
 kubectl config view --minify --flatten > function-deployer-kubeconfig.yaml
 
 # Restore your original context
-kubectl config use-context {YOUR_ORIGINAL_CONTEXT}
+kubectl config use-context $CURRENT_CONTEXT
 ```
 
 > [!WARNING]
-> The generated token grants write access to Functions in the namespace. Store it securely and rotate it regularly.
+> The generated token may expire earlier than requested. Managed Kyma clusters cap the token lifetime (often 24–48 hours). If the workflow starts failing with authentication errors, the token has expired — re-run Step 1 to generate a new one and update the GitHub Secret. Store the kubeconfig securely and rotate it regularly.
 
 ### Step 2: Store the Kubeconfig as a GitHub Secret
 
@@ -103,7 +109,7 @@ jobs:
 ```
 
 > [!NOTE]
-> Adjust `paths`, `branches`, `--namespace`, `--source`, and `--dependencies` to match your repository structure. To use Python, replace `nodejs` with `python`. For a specific Node.js version, add `--version 22` or `--version 26`.
+> Replace `{YOUR_NAMESPACE}` and `my-function` with your actual namespace and Function name. Adjust `paths`, `branches`, `--source`, and `--dependencies` to match your repository structure. To use Python, replace `nodejs` with `python`. For a specific Node.js version, add `--version 22` or `--version 26`.
 
 ### Step 4: Verify the Deployment
 
@@ -115,13 +121,13 @@ kubectl get functions my-function -n {YOUR_NAMESPACE}
 
 Expected output:
 
-```
+```text
 NAME          CONFIGURED   BUILT   RUNNING   RUNTIME    VERSION   AGE
 my-function   True         True    True      nodejs24   1         60s
 ```
 
 ## Security Considerations
 
-- Use a **dedicated service account** with the minimum required permissions. Do not use a cluster admin kubeconfig.
+- Use a **dedicated service account** with the minimum required permissions. Don't use a cluster admin kubeconfig.
 - **Rotate the token regularly.** The `kubectl create token` command accepts a `--duration` flag. Set a rotation schedule that matches your security policy.
 - The kubeconfig grants write access to Functions in the namespace. Treat it as a sensitive credential.
