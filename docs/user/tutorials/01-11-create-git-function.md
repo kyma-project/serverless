@@ -1,7 +1,7 @@
 # Create a Git Function
 
 > [!WARNING]
-> Git-sourced Functions require that your Kyma cluster can reach the Git repository over the network. If outbound connectivity to external Git hosts is restricted, for example, in regulated markets like China, fetching code from external repositories fails.
+> Git-sourced Functions require that your Kyma cluster can reach the Git repository over the network. If outbound connectivity to external Git hosts is restricted, for example, in regulated markets like China, fetching code from external repositories fails. If your repository is hosted on a server that is not reachable from the cluster network, see [Deploy a Function from a Network-Restricted Git Repository](./01-12-deploy-function-from-network-restricted-git.md).
 
 This tutorial shows how you can build a Function from code and dependencies stored in a Git repository, which is an alternative way to keeping the code in the Function CR. The tutorial is based on the Function from the [`redis rest` example](https://github.com/kyma-project/serverless/tree/main/examples/redis-rest). It describes steps required to fetch the Function's source code and dependencies from a public Git repository that does not need any authentication method. However, it also provides additional guidance on how to secure it if you are using a private repository.
 
