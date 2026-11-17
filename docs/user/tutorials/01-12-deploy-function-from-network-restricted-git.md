@@ -65,7 +65,7 @@ kubectl config use-context $CURRENT_CONTEXT
 ```
 
 > [!WARNING]
-> The generated token may expire earlier than requested. Managed Kyma clusters cap the token lifetime (often 24–48 hours). If the workflow starts failing with authentication errors, the token has expired — re-run Step 1 to generate a new one and update the GitHub Secret. Store the kubeconfig securely and rotate it regularly.
+> The generated token may expire earlier than requested. Managed Kyma clusters cap the token lifetime (often 24–48 hours). If the workflow starts failing with authentication errors, the token has expired. Re-run Step 1 to generate a new one and update the GitHub Secret. Store the kubeconfig securely and rotate it regularly.
 
 ### Step 2: Store the Kubeconfig as a GitHub Secret
 
