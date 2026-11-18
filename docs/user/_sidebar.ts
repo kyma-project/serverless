@@ -10,6 +10,7 @@ export default [
   { text: 'Tutorials', link: './tutorials/README', collapsed: true, items: [
     { text: 'Create an Inline Function', link: './tutorials/01-10-create-inline-function' },
     { text: 'Create a Git Function', link: './tutorials/01-11-create-git-function' },
+    { text: 'Deploy a Function from a Network-Restricted Git Repository', link: './tutorials/01-12-deploy-function-from-network-restricted-git' },
     { text: 'Expose the Function', link: './tutorials/01-20-expose-function' },
     { text: 'Manage Functions Through Kyma CLI', link: './tutorials/01-30-manage-functions-with-kyma-cli' },
     { text: 'Log Into a Private Package Registry', link: './tutorials/01-80-log-into-private-packages-registry' },
