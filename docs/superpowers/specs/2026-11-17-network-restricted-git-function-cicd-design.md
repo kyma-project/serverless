@@ -42,7 +42,7 @@ This works because:
 
 Git-sourced Functions require the Kyma cluster to reach the Git repository over the network. When the repository is hosted on a Git server that is not reachable from the Kyma cluster network (for example, a GitHub Enterprise instance behind a corporate firewall), the Function controller cannot fetch the source code. The Function never reaches the `RUNNING` state.
 
-The existing documentation warns about this in the [Create a Git Function](../tutorials/01-11-create-git-function.md) tutorial but does not describe an alternative.
+The existing documentation warns about this in the [Create a Git Function](../../user/tutorials/01-11-create-git-function.md) tutorial but does not describe an alternative.
 
 ### Proposed solution
 
@@ -66,7 +66,7 @@ Add a new tutorial that documents how to use a GitHub Actions workflow to deploy
 ### Deploy a Function from a Network-Restricted Git Repository
 
 > [!NOTE]
-> Use this approach when your Git repository is hosted on a server that is not reachable from the Kyma cluster network, for example, a GitHub Enterprise instance behind a corporate firewall. If your cluster can reach the repository, use [Git-sourced Functions](./01-11-create-git-function.md) instead.
+> Use this approach when your Git repository is hosted on a server that is not reachable from the Kyma cluster network, for example, a GitHub Enterprise instance behind a corporate firewall. If your cluster can reach the repository, use [Git-sourced Functions](../../user/tutorials/01-11-create-git-function.md) instead.
 
 This tutorial shows how to use a GitHub Actions workflow to deploy a Kyma Function whenever you push changes to your repository. Instead of letting the cluster pull source code from Git, the workflow pushes the Function code directly to the cluster as an inline Function. The cluster does not need to reach the Git repository.
 
